@@ -18,13 +18,9 @@ It can be either on testnet or mainnet
 
 Fetch sources from the RTL git repository:
 
-`git clone https://github.com/ShahanaFarooqui/RTLFullApplication.git`
+`git clone https://github.com/ShahanaFarooqui/RTL.git`
 
 Move into the newly created directory:
-
-`cd RTLFullApplication`
-
-Move into the install directory:
 
 `cd RTL`
 
@@ -44,6 +40,9 @@ This path needs to be provided as a command line argument to start the server
 ## Start the Webserver
 Run the following command:
 
+`node rtl --lndir <macaroon-path>` 
+
+For example:
 `node rtl --lndir /home/admin/.lnd`
 
 If the server started successfully, you should get the below output on the console:
