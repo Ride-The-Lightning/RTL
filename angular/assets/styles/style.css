@@ -31,3 +31,7 @@
 .yellow {
   color: #ffd740 !important;
 }
+
+.mat-dialog-container {
+  padding: 0 !important;
+}
