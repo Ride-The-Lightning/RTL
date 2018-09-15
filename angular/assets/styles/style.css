@@ -1,0 +1,33 @@
+.mat-raised-button {
+  margin-top: 5px !important;
+  max-height: 36px;
+}
+
+.mat-card {
+  padding: 12px 24px !important;
+}
+
+.mat-card-header-text {
+  margin: 0 !important;
+}
+
+.mat-form-field-wrapper {
+  width: 100%;
+  margin: 0 15px 0 0;
+}
+
+.mat-select {
+  margin: 0 15px 0 0;
+}
+
+.green {
+  color: #388e3c !important;
+}
+
+.red {
+  color: #c62828 !important;
+}
+
+.yellow {
+  color: #ffd740 !important;
+}
