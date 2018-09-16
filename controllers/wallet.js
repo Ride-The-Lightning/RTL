@@ -3,8 +3,6 @@ var options = require("../connect");
 var config = require('../config');
 
 exports.operateWallet = (req, res, next) => {
-  console.log('\nRequest Body before conversion: ');
-  console.log(req.body);
   var requestBody =  {
     wallet_password: Buffer.from(req.body.wallet_password).toString('base64')
   };

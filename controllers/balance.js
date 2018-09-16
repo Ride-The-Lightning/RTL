@@ -3,6 +3,8 @@ var options = require("../connect");
 var config = require('../config');
 
 exports.getBalance = (req, res, next) => {
+  // setTimeout(()=>{res.status(201).json({"balance":{"total_balance":"15305209","confirmed_balance":"15305209"}});}, 5000);
+  // setTimeout(()=>{res.status(201).json({"balance":{"balance":"5983797"}});}, 5000);
   options.url = config.lnd_server_url + '/balance/' + req.params.source;
   options.qs = req.query;
   request.get(options, (error, response, body) => {
