@@ -50,4 +50,4 @@ const server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListening);
 server.listen(port);
-console.log('Server is up and running, please open the UI at http://localhost:3000');
+console.log('Server is up and running, please open the UI at http://localhost:' + port);
