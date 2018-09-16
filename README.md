@@ -14,6 +14,8 @@ Please ensure that you have completed the installation of lightning node.
 
 It can be either on testnet or mainnet
 
+Recommended Browsers: Chrome, Chromium (rpi), MS Edge.
+
 ## Installation
 
 Fetch sources from the RTL git repository:
