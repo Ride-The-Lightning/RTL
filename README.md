@@ -6,13 +6,15 @@ Lightning Network Daemon is an implementation of Lightning Network BOLT protocol
 
 Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/README.md) for details on Lightning Network and LND implementation.
 
-This UI builds upon the below raspberry pi guide:
+For setting up your Lightning Network node, you can follow the below guide:
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
 ## Prerequisites
-Please ensure that you have completed the installation of lightning node on your raspberry pi, based on the above guide.
+Please ensure that you have completed the installation of lightning node.
 
 It can be either on testnet or mainnet
+
+Recommended Browsers: Chrome, Chromium (rpi), MS Edge.
 
 ## Installation
 
@@ -31,7 +33,7 @@ Fetch the dependencies and build the application by running:
 ## Execution
 Make sure you are in the RTL directory, where the application was built.
 
-Locate the complete path of the readable macroon file on your pi.
+Locate the complete path of the readable macroon file (admin.macroon) on your node.
 
 If you followed the guide above, it should be `/home/admin/.lnd`.
 
@@ -49,4 +51,4 @@ If the server started successfully, you should get the below output on the conso
 
 `Server is up and running, please open the UI at http://localhost:3000`
 
-Open your browser at the following address: http://localhost:3000 to access the RTL application on your pi.
+Open your browser at the following address: http://localhost:3000 to access the RTL application.
