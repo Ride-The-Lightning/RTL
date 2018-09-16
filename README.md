@@ -49,4 +49,4 @@ If the server started successfully, you should get the below output on the conso
 
 `Server is up and running, please open the UI at http://localhost:3000`
 
-Open your browser at the following address: http://localhost:3000 to access the RTL application on your pi.
+Open your browser at the following address: http://localhost:3000 to access the RTL application.
