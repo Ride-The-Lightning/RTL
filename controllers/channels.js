@@ -23,6 +23,7 @@ exports.getChannels = (req, res, next) => {
 };
 
 exports.postChannel = (req, res, next) => {
+  // setTimeout(()=>{res.status(201).json({message: 'Channel Open!'});}, 5000);
   options.url = config.lnd_server_url + '/channels';
   options.form = JSON.stringify({ 
     node_pubkey_string: req.body.node_pubkey,

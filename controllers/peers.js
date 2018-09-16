@@ -19,6 +19,7 @@ exports.getPeers = (req, res, next) => {
 };
 
 exports.postPeer = (req, res, next) => {
+  // setTimeout(()=>{res.status(201).json({message: 'Peer Added!'});}, 5000);
   options.url = 'https://localhost:8080/v1/peers';
   options.form = JSON.stringify({ 
     addr: { host: req.body.host, pubkey: req.body.pubkey },

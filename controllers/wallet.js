@@ -24,11 +24,27 @@ exports.operateWallet = (req, res, next) => {
   request.post(options, (error, response, body) => {
     console.log('\nUnlock Wallet Response: ');
     console.log(body);
-    if(undefined === body || body.error) {
+    const body_str = (undefined === body) ? '' : JSON.stringify(body);
+    const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
+    if(undefined === body) {
       res.status(500).json({
         message: err_message,
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: 'Unlocking wallet failed! Verify that lnd is running!'
       });
+    } else if(search_idx > -1) {
+      res.status(500).json({
+        message: err_message,
+        error: 'Unlocking wallet failed! Verify that lnd is running!'
+      });
+    } else if(body.error) {
+      if(body.code === 1 && body.error === 'context canceled') {
+        res.status(201).json({wallet: 'successful'});  
+      } else {
+        res.status(500).json({
+          message: err_message,
+          error: body.error
+        });
+      }
     } else {
       res.status(201).json({wallet: 'successful'});
     }
