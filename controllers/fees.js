@@ -22,7 +22,7 @@ exports.getFees = (req, res, next) => {
       if (undefined === body.month_fee_sum) {
         body.month_fee_sum = 0;
       }
-      res.status(200).json({fees: body});
+      res.status(200).json(body);
     }
   });
 };

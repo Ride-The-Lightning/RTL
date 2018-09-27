@@ -10,6 +10,9 @@ const peersRoutes = require("./routes/peers");
 const feesRoutes = require("./routes/fees");
 const balanceRoutes = require("./routes/balance");
 const walletRoutes = require("./routes/wallet");
+const graphInfoRoutes = require("./routes/graphInfo");
+const newAddressRoutes = require("./routes/newAddress");
+const transactionsRoutes = require("./routes/transactions");
 const UISettingsRoutes = require("./routes/UISettings");
 
 app.use(bodyParser.json());
@@ -38,6 +41,9 @@ app.use("/api/peers", peersRoutes);
 app.use("/api/fees", feesRoutes);
 app.use("/api/balance", balanceRoutes);
 app.use("/api/wallet", walletRoutes);
+app.use("/api/network", graphInfoRoutes);
+app.use("/api/newaddress", newAddressRoutes);
+app.use("/api/transactions", transactionsRoutes);
 app.use("/api/uisettings", UISettingsRoutes);
 
 // sending angular application when route doesn't match
