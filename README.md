@@ -61,3 +61,4 @@ Open your browser at the following address: http://localhost:3000 to access the 
 
 ### Remotely from another computer on the same local network as the node
 To access the application remotely from a computer, ensure that the firewall running on your node allows access on port 3000.
+Open your browser at the address: http://<IP address of your node>:3000 to access the RTL application.
