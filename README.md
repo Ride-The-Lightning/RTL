@@ -1,3 +1,5 @@
+[ **Intro** ] -- [ [Application Features](Application_features.md) ]
+-----
 # RTL - Ride The Lightning
 
 RTL is a web UI for Lightning Network Daemon.
@@ -51,4 +53,14 @@ If the server started successfully, you should get the below output on the conso
 
 `Server is up and running, please open the UI at http://localhost:3000`
 
+## Accessing the Application
+
+You can access the application in two ways:
+### Same computer as the webserver
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
+
+### Remotely from another computer on the same local network as the node
+To access the application remotely from a computer, ensure that the firewall running on your node allows access on port 3000.
+You would need the IP address of your application to access the application.
+
+E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
