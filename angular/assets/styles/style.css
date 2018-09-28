@@ -164,6 +164,14 @@
   overflow-x: auto;
 }
 
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
 .mat-footer-row, .mat-header-row, .mat-row {
   border-bottom-width: 0px;
 }
@@ -215,3 +223,4 @@
 .cursor-pointer {
   cursor: pointer !important;
 }
+

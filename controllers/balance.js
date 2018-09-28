@@ -9,13 +9,25 @@ exports.getBalance = (req, res, next) => {
   options.qs = req.query;
   request.get(options, (error, response, body) => {
     console.log('Request params: ' + JSON.stringify(req.params) + '\nRequest Query: ' + JSON.stringify(req.query) + ' \nBalance Received: ' + JSON.stringify(body));
-    if(undefined === body || body.error) {
+    const body_str = (undefined === body) ? '' : JSON.stringify(body);
+    const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
+    console.log('Balance Information Received: ' + body_str);
+    if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching balance failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
       });
     } else {
+      body.balance = (undefined === body.balance) ? 0 : convertToBTC(body.balance);
+      body.total_balance = (undefined === body.total_balance) ? 0 : convertToBTC(body.total_balance);
+      body.confirmed_balance = (undefined === body.confirmed_balance) ? 0 : convertToBTC(body.confirmed_balance);
+      body.unconfirmed_balance = (undefined === body.unconfirmed_balance) ? 0 : convertToBTC(body.unconfirmed_balance);
       res.status(200).json({balance: body});
     }
   });
+
+  convertToBTC = (num) => {
+    return (num / 100000000).toFixed(6);
+  };
+
 };
