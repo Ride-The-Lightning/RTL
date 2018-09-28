@@ -196,8 +196,22 @@
   top: 5px !important;
 }
 
-.qr-code-position {
+.top-minus-5px {
   position: relative;
-  top: -80px;
-  margin-bottom: -80px;
+  top:-5px;
+}
+
+.top-minus-15px {
+  position: relative;
+  top:-15px;
+}
+
+.top-minus-25px {
+  position: relative;
+  top:-25px;
+  margin-bottom: -25px !important;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
 }
