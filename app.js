@@ -14,6 +14,7 @@ const graphInfoRoutes = require("./routes/graphInfo");
 const newAddressRoutes = require("./routes/newAddress");
 const transactionsRoutes = require("./routes/transactions");
 const UISettingsRoutes = require("./routes/UISettings");
+const LNDSettingsRoutes = require("./routes/lndConfSettings");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, filePath"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -45,6 +46,7 @@ app.use("/api/network", graphInfoRoutes);
 app.use("/api/newaddress", newAddressRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/uisettings", UISettingsRoutes);
+app.use("/api/lndconf", LNDSettingsRoutes);
 
 // sending angular application when route doesn't match
 app.use((req, res, next) => {
