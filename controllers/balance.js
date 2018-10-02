@@ -18,16 +18,16 @@ exports.getBalance = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
       });
     } else {
-      body.balance = (undefined === body.balance) ? 0 : convertToBTC(body.balance);
-      body.total_balance = (undefined === body.total_balance) ? 0 : convertToBTC(body.total_balance);
-      body.confirmed_balance = (undefined === body.confirmed_balance) ? 0 : convertToBTC(body.confirmed_balance);
-      body.unconfirmed_balance = (undefined === body.unconfirmed_balance) ? 0 : convertToBTC(body.unconfirmed_balance);
+      // body.balance = (undefined === body.balance) ? 0 : convertToBTC(body.balance);
+      // body.total_balance = (undefined === body.total_balance) ? 0 : convertToBTC(body.total_balance);
+      // body.confirmed_balance = (undefined === body.confirmed_balance) ? 0 : convertToBTC(body.confirmed_balance);
+      // body.unconfirmed_balance = (undefined === body.unconfirmed_balance) ? 0 : convertToBTC(body.unconfirmed_balance);
       res.status(200).json({balance: body});
     }
   });
 
-  convertToBTC = (num) => {
-    return (num / 100000000).toFixed(6);
-  };
+  // convertToBTC = (num) => {
+  //   return (num / 100000000).toFixed(6);
+  // };
 
 };
