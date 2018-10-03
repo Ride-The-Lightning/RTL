@@ -15,10 +15,11 @@ exports.getGraphInfo = (req, res, next) => {
       });
     } else {
       body.avg_out_degree = (undefined === body.avg_out_degree) ? 0 : twoDecimalRound(body.avg_out_degree);
-      // body.total_network_capacity = (undefined === body.total_network_capacity) ? 0 : convertToBTC(body.total_network_capacity);
-      // body.avg_channel_size = (undefined === body.avg_channel_size) ? 0 : convertToBTC(body.avg_channel_size);
-      // body.min_channel_size = (undefined === body.min_channel_size) ? 0 : convertToBTC(body.min_channel_size);
-      // body.max_channel_size = (undefined === body.max_channel_size) ? 0 : convertToBTC(body.max_channel_size);
+      body.avg_channel_size = (undefined === body.avg_channel_size) ? 0 : twoDecimalRound(body.avg_channel_size);
+      body.btc_total_network_capacity = (undefined === body.total_network_capacity) ? 0 : convertToBTC(body.total_network_capacity);
+      body.btc_avg_channel_size = (undefined === body.avg_channel_size) ? 0 : convertToBTC(body.avg_channel_size);
+      body.btc_min_channel_size = (undefined === body.min_channel_size) ? 0 : convertToBTC(body.min_channel_size);
+      body.btc_max_channel_size = (undefined === body.max_channel_size) ? 0 : convertToBTC(body.max_channel_size);
       console.log('Network Information After Rounding and Conversion: ' + body_str);
       res.status(200).json(body);
     }
@@ -28,8 +29,8 @@ exports.getGraphInfo = (req, res, next) => {
     return num.toFixed(2);
   };
 
-  // convertToBTC = (num) => {
-  //   return (num / 100000000).toFixed(6);
-  // };
+  convertToBTC = (num) => {
+    return (num / 100000000).toFixed(6);
+  };
 
 };
