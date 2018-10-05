@@ -4,9 +4,9 @@ exports.getLNDSettings = (req, res, next) => {
   console.log('Getting LND Conf Settings!');
   fs.readFile(req.headers.filepath, function(err, data) {
     if (err) {
-      console.log('Reading LND Conf Settings Failed!');
+      console.log('Reading Config File Failed!');
       res.status(500).json({
-        message: "Reading LND Conf Settings Failed!",
+        message: "Reading Config File Failed!",
         error: err
       });
     } else {
