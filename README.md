@@ -38,10 +38,11 @@ Make sure you are in the RTL directory, where the application was built.
 Locate the complete path of the readable macroon file (admin.macroon) on your node.
 
 If you followed the guide above, and your on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
-For lnd version 0.5 it should be '/home/admin/.lnd/data/chain/bitcoin/testnet'.
+For lnd version 0.5 it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
+
 Other platform users should accordingly locate the directory of the readable macroon file.
 
-This path needs to be provided as a command line argument to start the server
+The path of the macroon directory needs to be provided as a command line argument to start the server.
 
 ## Start the Webserver
 Run the following command:
@@ -49,11 +50,18 @@ Run the following command:
 `node rtl --lndir <macaroon-path>` 
 
 For example:
-`node rtl --lndir /home/admin/.lnd`
+`$ node rtl --lndir /home/admin/.lnd`
+or
+`$ node rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet`
+or (for windows)
+`$ node rtl --lndir C:\Users\<your user directory>\AppData\Local\Lnd\data\chain\bitcoin\testnet`
 
 If the server started successfully, you should get the below output on the console:
 
 `Server is up and running, please open the UI at http://localhost:3000`
+
+### Running RTL as a service (rpi or Linux platform users)
+In case you are running a headless rpi or Linux node, you can configure RTL as a service.
 
 ## Accessing the Application
 
@@ -63,6 +71,6 @@ Open your browser at the following address: http://localhost:3000 to access the 
 
 ### Remotely from another computer on the same local network as the node
 To access the application remotely from a computer, ensure that the firewall running on your node allows access on port 3000.
-You would need the IP address of your application to access the application.
+You would need the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
