@@ -51,16 +51,20 @@ Run the following command:
 
 For example:
 `$ node rtl --lndir /home/admin/.lnd`
+
 or
+
 `$ node rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet`
+
 or (for windows)
+
 `$ node rtl --lndir C:\Users\<your user directory>\AppData\Local\Lnd\data\chain\bitcoin\testnet`
 
 If the server started successfully, you should get the below output on the console:
 
 `Server is up and running, please open the UI at http://localhost:3000`
 
-### Running RTL as a service (rpi or Linux platform users)
+### Optional: Running RTL as a service (rpi or Linux platform users)
 In case you are running a headless rpi or Linux node, you can configure RTL as a service.
 
 ## Accessing the Application
