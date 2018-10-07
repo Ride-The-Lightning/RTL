@@ -12,19 +12,19 @@ For setting up your Lightning Network node, you can follow the below guide:
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
 ## Prerequisites
-Please ensure that you have completed the installation of lightning node.
+Please ensure that you have completed the installation of LND lightning node.
 
-It can be either on testnet or mainnet
+Its recommended to run this application on testnet, untill the aplha testing phase is over.
 
 Recommended Browsers: Chrome, Chromium (rpi), MS Edge.
 
 ## Installation
 
-Fetch sources from the RTL git repository:
+Fetch sources from the RTL git repository, by executing the below command at the command prompt:
 
 `git clone https://github.com/ShahanaFarooqui/RTL.git`
 
-Move into the newly created directory:
+Move to the newly created directory:
 
 `cd RTL`
 
