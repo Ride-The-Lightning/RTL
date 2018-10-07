@@ -22,22 +22,24 @@ Recommended Browsers: Chrome, Chromium (rpi), MS Edge.
 
 Fetch sources from the RTL git repository, by executing the below command at the command prompt:
 
-`git clone https://github.com/ShahanaFarooqui/RTL.git`
+`$ git clone https://github.com/ShahanaFarooqui/RTL.git`
 
 Move to the newly created directory:
 
-`cd RTL`
+`$ cd RTL`
 
 Fetch the dependencies and build the application by running:
 
-`npm install`
+`$ npm install`
 
 ## Execution
 Make sure you are in the RTL directory, where the application was built.
 
 Locate the complete path of the readable macroon file (admin.macroon) on your node.
 
-If you followed the guide above, it should be `/home/admin/.lnd`.
+If you followed the guide above, and your on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
+For lnd version 0.5 it should be '/home/admin/.lnd/data/chain/bitcoin/testnet'.
+Other platform users should accordingly locate the directory of the readable macroon file.
 
 This path needs to be provided as a command line argument to start the server
 
