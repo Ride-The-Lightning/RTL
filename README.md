@@ -84,18 +84,24 @@ After=lnd.service
 [Service]
 
 ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet/
+
 User=root
+
 Restart=always
+
 TimeoutSec=120
+
 RestartSec=30
 
 [Install]
 
 WantedBy=multi-user.target
 
+
 * enable and start RTL
 
 `$ sudo systemctl enable RTL`
+
 `$ sudo systemctl start RTL`
 
 * montior the RTL log file in realtime(exit with Ctrl-C)
