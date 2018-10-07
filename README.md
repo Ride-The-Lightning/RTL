@@ -94,10 +94,12 @@ RestartSec=30
 WantedBy=multi-user.target
 
 * enable and start RTL
+
 `$ sudo systemctl enable RTL`
 `$ sudo systemctl start RTL`
 
 * montior the RTL log file in realtime(exit with Ctrl-C)
+
 `$ sudo jounrnalctl -f -u RTL`
 
 ## Accessing the Application
