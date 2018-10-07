@@ -1,5 +1,6 @@
+var path = require('path');
 var fs = require('fs');
-var file_path = './settings/ui.settings.json';  
+var file_path = path.normalize(__dirname + '/..') + '/settings/ui.settings.json';  
 
 exports.getUISettings = (req, res, next) => {
   console.log('Getting UI Settings!');
