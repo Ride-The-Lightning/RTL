@@ -67,6 +67,25 @@ If the server started successfully, you should get the below output on the conso
 ### Optional: Running RTL as a service (rpi or Linux platform users)
 In case you are running a headless rpi or Linux node, you can configure RTL as a service.
 
+* Create RTL systemd unit and with the following content. Save and exit.
+`# Raspibolt RTL: systemd unit for RTL`
+`# /etc/systemd/system/RTL.service`
+
+[Unit]
+Description=RTL daemon
+Wants=lnd.service
+After=lnd.service
+
+[Service]
+ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet/
+User=root
+Restart=always
+TimeoutSec=120
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+
 ## Accessing the Application
 
 You can access the application in two ways:
