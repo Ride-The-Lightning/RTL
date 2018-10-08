@@ -85,7 +85,7 @@ After=lnd.service
 
 ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet/
 
-User=<user>
+User=`<user>`
 
 Restart=always
 
