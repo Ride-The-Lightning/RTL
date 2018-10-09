@@ -38,6 +38,7 @@ Make sure you are in the RTL directory, where the application was built.
 Locate the complete path of the readable macroon file (admin.macroon) on your node.
 
 If you followed the guide above, and your on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
+
 For lnd version 0.5 it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
 
 Other platform users should accordingly locate the directory of the readable macroon file.
@@ -79,7 +80,7 @@ After=lnd.service
 
 [Service]
 ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet/
-User=`<user>`
+User=<user>
 Restart=always
 TimeoutSec=120
 RestartSec=30
