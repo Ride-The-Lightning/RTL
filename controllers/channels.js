@@ -1,12 +1,12 @@
 var request = require('request');
 var options = require("../connect");
-var config = require('../config');
+var common = require('../common');
 
 exports.getChannels = (req, res, next) => {
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
-    options.url = config.lnd_server_url + '/channels';
+    options.url = common.lnd_server_url + '/channels';
   } else {
-    options.url = config.lnd_server_url + '/channels/' + req.params.channelType;
+    options.url = common.lnd_server_url + '/channels/' + req.params.channelType;
   }
   options.qs = req.query;
   request.get(options, (error, response, body) => {
@@ -24,7 +24,7 @@ exports.getChannels = (req, res, next) => {
 
 exports.postChannel = (req, res, next) => {
   // setTimeout(()=>{res.status(201).json({message: 'Channel Open!'});}, 5000);
-  options.url = config.lnd_server_url + '/channels';
+  options.url = common.lnd_server_url + '/channels';
   options.form = JSON.stringify({ 
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount

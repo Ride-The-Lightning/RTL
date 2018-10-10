@@ -1,10 +1,10 @@
 var fs = require('fs');
 var request = require('request');
 var options = require("../connect");
-var config = require('../config');
+var common = require('../common');
 
 exports.getPeers = (req, res, next) => {
-  options.url = config.lnd_server_url + '/peers';
+  options.url = common.lnd_server_url + '/peers';
   request.get(options, (error, response, body) => {
     console.log('Peers Received: ' + JSON.stringify(body));
     if(error) {
@@ -20,7 +20,7 @@ exports.getPeers = (req, res, next) => {
 
 exports.postPeer = (req, res, next) => {
   // setTimeout(()=>{res.status(201).json({message: 'Peer Added!'});}, 5000);
-  options.url = config.lnd_server_url + '/peers';
+  options.url = common.lnd_server_url + '/peers';
   options.form = JSON.stringify({ 
     addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm

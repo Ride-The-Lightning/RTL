@@ -2,24 +2,22 @@ var request = require('request');
 var options = require("../connect");
 var common = require('../common');
 
-exports.getNewAddress = (req, res, next) => {
-  options.url = common.lnd_server_url + '/newaddress?type=' + req.query.type;
-  console.log('\n-------------------------------------------------');
-  console.log('Get New Address');
-  console.log('-------------------------------------------------');
-  console.log('Request Query Params: ' + JSON.stringify(req.query));
+exports.decodePayment = (req, res, next) => {
+  options.url = common.lnd_server_url + '/payreq/' + req.params.payRequest;
   console.log('Options URL: ' + JSON.stringify(options.url));
   request.get(options, (error, response, body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log("New Address Received: " + body_str);
+    console.log("Payment Request Decoded Received: " + body_str);
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
-        message: "Fetching new address failed!",
+        message: "Payment Request Decode Failed!",
         error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
       });
     } else {
-        res.status(200).json(body);
+      body.btc_num_satoshis = (undefined === body.num_satoshis) ? 0 : common.convertToBTC(body.num_satoshis);
+      body.timestamp_str =  (undefined === body.timestamp) ? '' : common.convertTimestampToDate(body.timestamp);
+      res.status(200).json(body);
     }
   });
 };

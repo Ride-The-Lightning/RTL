@@ -1,9 +1,9 @@
 var request = require('request');
 var options = require("../connect");
-var config = require('../config');
+var common = require('../common');
 
 exports.getInfo = (req, res, next) => {
-  options.url = config.lnd_server_url + '/getinfo';
+  options.url = common.lnd_server_url + '/getinfo';
   request.get(options, (error, response, body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');

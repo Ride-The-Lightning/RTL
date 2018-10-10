@@ -13,6 +13,8 @@ const walletRoutes = require("./routes/wallet");
 const graphInfoRoutes = require("./routes/graphInfo");
 const newAddressRoutes = require("./routes/newAddress");
 const transactionsRoutes = require("./routes/transactions");
+const payReqRoutes = require("./routes/payReq");
+const paymentsRoutes = require("./routes/payments");
 const UISettingsRoutes = require("./routes/UISettings");
 const LNDSettingsRoutes = require("./routes/lndConfSettings");
 
@@ -45,6 +47,8 @@ app.use("/api/wallet", walletRoutes);
 app.use("/api/network", graphInfoRoutes);
 app.use("/api/newaddress", newAddressRoutes);
 app.use("/api/transactions", transactionsRoutes);
+app.use("/api/payreq", payReqRoutes);
+app.use("/api/payments", paymentsRoutes);
 app.use("/api/uisettings", UISettingsRoutes);
 app.use("/api/lndconf", LNDSettingsRoutes);
 

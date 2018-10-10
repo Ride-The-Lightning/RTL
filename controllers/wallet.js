@@ -1,6 +1,6 @@
 var request = require('request');
 var options = require("../connect");
-var config = require('../config');
+var common = require('../common');
 
 exports.operateWallet = (req, res, next) => {
   var requestBody =  {
@@ -9,11 +9,11 @@ exports.operateWallet = (req, res, next) => {
   console.log('\nRequest Body after conversion into Uint8Array: ');
   console.log(requestBody);
   if (undefined === req.params.operation || req.params.operation === 'unlock') {
-    options.url = config.lnd_server_url + '/unlockwallet';
+    options.url = common.lnd_server_url + '/unlockwallet';
     options.form = JSON.stringify(requestBody);
     err_message = 'Unlocking wallet failed! Verify that lnd is running!';
   } else {
-    options.url = config.lnd_server_url + '/initwallet';
+    options.url = common.lnd_server_url + '/initwallet';
     options.form = JSON.stringify(requestBody);
     err_message = 'Initializing wallet failed!';
   }

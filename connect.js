@@ -1,16 +1,16 @@
 var fs = require('fs');
-var config = require('./config');
+var common = require('./common');
 var clArgs = require('optimist').argv;
 
 if(undefined !== clArgs.lndir) {
-  config.lnd_dir = clArgs.lndir;
+  common.lnd_dir = clArgs.lndir;
 } else {
-  if(config.lnd_dir === '') {
-    config.lnd_dir = __dirname;
+  if(common.lnd_dir === '') {
+    common.lnd_dir = __dirname;
   }
 }
 
-var macaroon = fs.readFileSync(config.lnd_dir + '/admin.macaroon').toString('hex');
+var macaroon = fs.readFileSync(common.lnd_dir + '/admin.macaroon').toString('hex');
 var options = {
   url: '',
   rejectUnauthorized: false,

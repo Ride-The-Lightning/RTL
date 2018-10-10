@@ -1,9 +1,9 @@
 var request = require('request');
 var options = require("../connect");
-var config = require('../config');
+var common = require('../common');
 
 exports.postTransactions = (req, res, next) => {
-  options.url = config.lnd_server_url + '/transactions';
+  options.url = common.lnd_server_url + '/transactions';
   options.form = JSON.stringify({ 
     amount: req.body.amount,
     addr: req.body.address,
