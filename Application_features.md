@@ -35,3 +35,6 @@
 ## Payments
 - List Payments
 - Verify and Send Payments
+
+## Node Config
+- Read-only view of Node conf files for lnd and bitcoin
