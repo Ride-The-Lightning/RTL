@@ -9,6 +9,13 @@
 - Fee Report
 - Network Info
 
+## Settings
+- Current Unit Toggle (Sats to BTC)
+- Layout Customization
+- Menu Customization
+- Theme Skins
+- Nav Options
+
 ## LND Wallet (Wallet functions available on LND)
 - Total Balance
 - Confirmed Balance
@@ -24,3 +31,7 @@
 - Channel Status (Number of Active, Inactive and Pending channels)
 - Open Channel with connected peers
 - List of channels
+
+## Payments
+- List Payments
+- Verify and Send Payments
