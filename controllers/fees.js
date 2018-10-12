@@ -10,7 +10,7 @@ exports.getFees = (req, res, next) => {
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching fee failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       if (undefined === body.day_fee_sum) {

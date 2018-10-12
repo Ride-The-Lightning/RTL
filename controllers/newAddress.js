@@ -16,7 +16,7 @@ exports.getNewAddress = (req, res, next) => {
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching new address failed!",
-        error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
+        error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
         res.status(200).json(body);

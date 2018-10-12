@@ -16,7 +16,7 @@ exports.postTransactions = (req, res, next) => {
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Transactions post failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);

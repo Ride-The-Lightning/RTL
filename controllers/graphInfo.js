@@ -11,11 +11,9 @@ exports.getGraphInfo = (req, res, next) => {
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching network Info failed!",
-        error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
+        error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      body.avg_out_degree = (undefined === body.avg_out_degree) ? 0 : common.twoDecimalRound(body.avg_out_degree);
-      body.avg_channel_size = (undefined === body.avg_channel_size) ? 0 : common.twoDecimalRound(body.avg_channel_size);
       body.btc_total_network_capacity = (undefined === body.total_network_capacity) ? 0 : common.convertToBTC(body.total_network_capacity);
       body.btc_avg_channel_size = (undefined === body.avg_channel_size) ? 0 : common.convertToBTC(body.avg_channel_size);
       body.btc_min_channel_size = (undefined === body.min_channel_size) ? 0 : common.convertToBTC(body.min_channel_size);

@@ -71,6 +71,7 @@
     "karma-jasmine": "1.1.2",
     "karma-jasmine-html-reporter": "1.1.0",
     "nodemon": "^1.17.4",
+    "perfume.js": "^1.2.0",
     "protractor": "^5.4.1",
     "ts-node": "6.0.3",
     "tslint": "5.10.0",

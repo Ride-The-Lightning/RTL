@@ -32,7 +32,7 @@ exports.postPeer = (req, res, next) => {
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Adding peers failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json({message: 'Peer Added!'});

@@ -12,7 +12,7 @@ exports.decodePayment = (req, res, next) => {
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Payment Request Decode Failed!",
-        error: (undefined === body || search_idx > -1) ? 'ERROR From Server!' : body.error
+        error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
       body.btc_num_satoshis = (undefined === body.num_satoshis) ? 0 : common.convertToBTC(body.num_satoshis);

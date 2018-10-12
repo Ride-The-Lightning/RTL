@@ -14,7 +14,7 @@ exports.getChannels = (req, res, next) => {
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching channels failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(200).json(body);
@@ -34,8 +34,28 @@ exports.postChannel = (req, res, next) => {
     console.log(body);
     if(undefined === body || body.error) {
       res.status(500).json({
-        message: "Open channel failed!",
-        error: (undefined === body) ? 'ERROR From Server!' : body.error
+        message: "Open Channel Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(201).json(body);
+    }
+  });
+};
+
+exports.postTransactions = (req, res, next) => {
+  options.url = common.lnd_server_url + '/channels/transactions';
+  options.form = JSON.stringify({ 
+    payment_request: req.body.paymentReq
+  });
+  console.log('Send Payment Options Form:' + options.form);
+  request.post(options, (error, response, body) => {
+    console.log('Send Payment Response: ');
+    console.log(body);
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Send Payment Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);
