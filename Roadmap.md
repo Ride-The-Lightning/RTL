@@ -22,7 +22,7 @@
 - Listing of Channels
 - Open Channel with connected peers
 
-## Version 0.0.2
+## Version 0.0.2-alpha
 ### Home Page
 - Network Information
 
@@ -35,10 +35,17 @@
 - Send payment
 - List payments
 
-## Version 0.0.3
+## Version 0.0.3-alpha
 ### UI Theme refresh
 
 ## Feature Backlog
+### Peers
+- Add alias identifier for peers
+- Connect peer with Pub key (w/o IP address)
+
+### Channels
+- Add alias to channel list
+
 ### Start
 - Create Wallet
 
