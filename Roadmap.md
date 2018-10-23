@@ -49,6 +49,9 @@
 ### Start
 - Create Wallet
 
+### LN Wallet
+- List chain transactions
+
 ### Channel Management
 - Channel Detail - Bi-Directional channel balance view
 - Close Channel
