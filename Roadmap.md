@@ -37,6 +37,7 @@
 
 ## Version 0.0.3-alpha
 ### UI Theme refresh
+- Refresh the UI with a customized RTL theme
 
 ## Feature Backlog
 ### Peers
