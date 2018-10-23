@@ -42,12 +42,16 @@
 ### Peers
 - Add alias identifier for peers
 - Connect peer with Pub key (w/o IP address)
+- Disconnect Peer
 
 ### Channels
 - Add alias to channel list
 
 ### Start
 - Create Wallet
+
+### Describe Graph
+- Create a graphical view of the LN network from the node data
 
 ### LN Wallet
 - List chain transactions
@@ -56,4 +60,5 @@
 - Channel Detail - Bi-Directional channel balance view
 - Close Channel
 
-### Globalization - Allow for Language customization
+### Globalization
+- Allow for Language customization
