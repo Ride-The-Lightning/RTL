@@ -13,6 +13,7 @@ exports.getUISettings = (req, res, next) => {
       });
     } else {
       console.log('UI theme read successfully');
+      console.log(JSON.parse(data));
       res.status(200).json({settings: JSON.parse(data)});
     }
   });
