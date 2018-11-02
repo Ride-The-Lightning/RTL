@@ -1,4 +1,4 @@
-[ **Intro** ] -- [ [Application Features](Application_features.md) ]
+[ **Intro** ] -- [ [Application Features](Application_features.md) ] -- [ [Road Map](Roadmap.md) ]
 -----
 # RTL - Ride The Lightning
 
@@ -16,7 +16,11 @@ Please ensure that you have completed the installation of LND lightning node.
 
 Its recommended to run this application on testnet, untill the aplha testing phase is over.
 
-Recommended Browsers: Chrome, Chromium (rpi), MS Edge.
+The application also requires Node.js, which can be downloaded from the below location:
+
+https://nodejs.org/en/download/
+
+Recommended Browsers: Chrome, Firefox, MS Edge
 
 ## Installation
 
