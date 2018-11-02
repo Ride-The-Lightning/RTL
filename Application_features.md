@@ -1,4 +1,4 @@
-[ [Intro](Readme.md) ] -- [ **[Application Features]** ] -- [ [Road Map](Roadmap.md) ]
+[ [Intro](README.md) ] -- [ **[Application Features]** ] -- [ [Road Map](Roadmap.md) ]
 
 # RTL - Feature List
 
