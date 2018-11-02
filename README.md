@@ -1,5 +1,5 @@
 [ **Intro** ] -- [ [Application Features](Application_features.md) ] -- [ [Road Map](Roadmap.md) ]
------
+----
 # RTL - Ride The Lightning
 
 RTL is a web UI for Lightning Network Daemon.
