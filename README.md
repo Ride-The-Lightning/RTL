@@ -8,7 +8,7 @@ Lightning Network Daemon is an implementation of Lightning Network BOLT protocol
 
 Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/README.md) for details on Lightning Network and LND implementation.
 
-For setting up your Lightning Network node, you can follow the below guide:
+For setting up your Lightning Network node on a Raspberry Pi, you can follow the below guide:
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
 ## Prerequisites
