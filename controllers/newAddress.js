@@ -4,9 +4,6 @@ var common = require('../common');
 
 exports.getNewAddress = (req, res, next) => {
   options.url = common.lnd_server_url + '/newaddress?type=' + req.query.type;
-  console.log('\n-------------------------------------------------');
-  console.log('Get New Address');
-  console.log('-------------------------------------------------');
   console.log('Request Query Params: ' + JSON.stringify(req.query));
   console.log('Options URL: ' + JSON.stringify(options.url));
   request.get(options, (error, response, body) => {

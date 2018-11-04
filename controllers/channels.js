@@ -62,3 +62,20 @@ exports.postTransactions = (req, res, next) => {
     }
   });
 };
+
+exports.closeChannel = (req, res, next) => {
+  let channelpoint = req.params.channelPoint.replace(":", "/");
+  options.url = common.lnd_server_url + '/channels/' + channelpoint;  
+  request.delete(options, (error, response, body) => {
+    console.log('Close Channel Response: ');
+    console.log(body);
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Close Channel Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(204).json({message: 'Channel Closed!'});
+    }
+  });
+}
