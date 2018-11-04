@@ -65,3 +65,6 @@
 
 ### Globalization
 - Allow for Language customization
+
+### Application Security
+- Implement authentication b/w RTL server and browser
