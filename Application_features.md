@@ -26,13 +26,14 @@
 - Send funds
 
 ## Peers (Manage LN Peers)
-- Connect to a peer with the LN Public key and IP address
-- List of connected peers
+- Connect to a peer with the LN Public key and/or IP address
+- List of connected peers with alias
 
 ## Channels (Manage channels with network peers)
 - Channel Status (Number of Active, Inactive and Pending channels)
 - Open Channel with connected peers
 - List of channels
+- Close channel
 
 ## Payments
 - List Payments
