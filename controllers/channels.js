@@ -1,6 +1,7 @@
 var request = require('request');
 var options = require("../connect");
 var common = require('../common');
+var graph = require('./graph');
 
 exports.getChannels = (req, res, next) => {
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
@@ -65,9 +66,11 @@ exports.postTransactions = (req, res, next) => {
 
 exports.closeChannel = (req, res, next) => {
   let channelpoint = req.params.channelPoint.replace(":", "/");
-  options.url = common.lnd_server_url + '/channels/' + channelpoint;  
+  options.url = common.lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
+  console.log('\nClosing Channel URL: ');
+  console.log(options.url);
   request.delete(options, (error, response, body) => {
-    console.log('Close Channel Response: ');
+    console.log('\nClose Channel Response: ');
     console.log(body);
     if(undefined === body || body.error) {
       res.status(500).json({
