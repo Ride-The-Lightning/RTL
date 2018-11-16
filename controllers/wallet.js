@@ -6,8 +6,8 @@ exports.operateWallet = (req, res, next) => {
   var requestBody =  {
     wallet_password: Buffer.from(req.body.wallet_password).toString('base64')
   };
-  console.log('\nRequest Body after conversion into Uint8Array: ');
-  console.log(requestBody);
+  // console.log('\nRequest Body after conversion into Uint8Array: ');
+  // console.log(requestBody);
   if (undefined === req.params.operation || req.params.operation === 'unlock') {
     options.url = common.lnd_server_url + '/unlockwallet';
     options.form = JSON.stringify(requestBody);
@@ -18,7 +18,7 @@ exports.operateWallet = (req, res, next) => {
     err_message = 'Initializing wallet failed!';
   }
   options.qs = req.query;
-  console.log('\nForm: ' + options.form);
+  // console.log('\nForm: ' + options.form);
   request.post(options, (error, response, body) => {
     console.log('\nUnlock Wallet Response: ');
     console.log(body);

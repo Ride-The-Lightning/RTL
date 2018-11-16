@@ -15,12 +15,21 @@ exports.getFees = (req, res, next) => {
     } else {
       if (undefined === body.day_fee_sum) {
         body.day_fee_sum = 0;
+        body.btc_day_fee_sum = 0;
+      } else {
+        body.btc_day_fee_sum = common.convertToBTC(body.day_fee_sum);
       }
       if (undefined === body.week_fee_sum) {
         body.week_fee_sum = 0;
+        body.btc_week_fee_sum = 0;
+      } else {
+        body.btc_week_fee_sum = common.convertToBTC(body.week_fee_sum);
       }
       if (undefined === body.month_fee_sum) {
         body.month_fee_sum = 0;
+        body.btc_month_fee_sum = 0;
+      } else {
+        body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
       }
       res.status(200).json(body);
     }
