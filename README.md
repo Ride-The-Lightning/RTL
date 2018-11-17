@@ -1,6 +1,6 @@
 [ **Intro** ] -- [ [Application Features](Application_features.md) ] -- [ [Road Map](Roadmap.md) ]
 
-# RTL - Ride The Lightning
+## RTL - Ride The Lightning
 
 RTL is a web UI for Lightning Network Daemon.
 
@@ -11,7 +11,7 @@ Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/REA
 For setting up your Lightning Network node on a Raspberry Pi, you can follow the below guide:
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
-## Prerequisites
+### Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
 Its recommended to run this application on testnet, untill the aplha testing phase is over.
@@ -22,7 +22,7 @@ https://nodejs.org/en/download/
 
 Recommended Browsers: Chrome, Firefox, MS Edge
 
-## Installation
+### Installation
 
 Fetch sources from the RTL git repository, by executing the below command at the command prompt:
 
@@ -36,7 +36,7 @@ Fetch the dependencies and build the application by running:
 
 `$ npm install`
 
-## Execution
+### Execution
 Make sure you are in the RTL directory, where the application was built.
 
 Locate the complete path of the readable macroon file (admin.macroon) on your node.
@@ -49,7 +49,7 @@ Other platform users should accordingly locate the directory of the readable mac
 
 The path of the macroon directory needs to be provided as a command line argument to start the server.
 
-## Start the Webserver
+### Start the Webserver
 Run the following command:
 
 `node rtl --lndir <macaroon-path>` 
@@ -69,7 +69,7 @@ If the server started successfully, you should get the below output on the conso
 
 `Server is up and running, please open the UI at http://localhost:3000`
 
-### Optional: Running RTL as a service (rpi or Linux platform users)
+#### Optional: Running RTL as a service (rpi or Linux platform users)
 In case you are running a headless rpi or Linux node, you can configure RTL as a service.
 
 * Create RTL systemd unit and with the following content. Save and exit.
@@ -103,13 +103,13 @@ WantedBy=multi-user.target
 
 `$ sudo jounrnalctl -f -u RTL`
 
-## Accessing the Application
+### Accessing the Application
 
 You can access the application in two ways:
-### Same computer as the webserver
+#### Same computer as the webserver
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
-### Remotely from another computer on the same local network as the node
+#### Remotely from another computer on the same local network as the node
 To access the application remotely from a computer, ensure that the firewall running on your node allows access on port 3000.
 You would need the IP address of your node to access the application.
 
