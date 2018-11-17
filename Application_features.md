@@ -29,14 +29,19 @@
 - Connect to a peer with the LN Public key and/or IP address
 - List of connected peers with alias
 
-## Channels (Manage channels with network peers)
-- Channel Status (Number of Active, Inactive and Pending channels)
+## Channels
+### Dashboard
+- Channel Status - Number of Active, Inactive and Pending channels)
+- Total Channel Balances - Aggregated balance view for local and remote channels
+### Management
 - Open Channel with connected peers
 - List of channels
 - Close channel
 
 ## Payments
-- List Payments
+### List Payments
+- List of payments made via node
+### Send Payment
 - Verify and Send Payments
 
 ## Node Config
