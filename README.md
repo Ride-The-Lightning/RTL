@@ -40,8 +40,11 @@ Fetch the dependencies and build the application by running:
 
 #### Updating existing build
 `$ cd RTL`
+
 Reset Git (for the changes you may have made to the config file).
+
 Warning: This step will revert the settings changes, you may have made on RTL earlier. We will address this in future revisions.
+
 `$ git reset --hard HEAD`
 `$ git clean -f -d`
 `$ git pull`
