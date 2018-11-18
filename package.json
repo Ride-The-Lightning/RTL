@@ -7,7 +7,7 @@
     "start": "ng build --prod && ng serve",
     "serve": "ng serve",
     "prebuild": "node ./prebuild",
-    "build": "ng build --prod",
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -26,6 +26,8 @@
     "@angular/platform-browser": "^7.0.0",
     "@angular/platform-browser-dynamic": "^7.0.0",
     "@angular/router": "^7.0.0",
+    "@swimlane/ngx-charts": "^10.0.0",
+    "@types/sigmajs": "^1.0.27",
     "angular2-qrcode": "^2.0.1",
     "core-js": "^2.5.4",
     "express": "^4.16.4",
@@ -35,6 +37,7 @@
     "optimist": "^0.6.1",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.3.3",
+    "sigma": "^1.2.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
