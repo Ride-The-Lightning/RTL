@@ -70,6 +70,7 @@ Run the following command:
 `node rtl --lndir <macaroon-path>` 
 
 For example:
+
 `$ node rtl --lndir /home/admin/.lnd`
 
 or
