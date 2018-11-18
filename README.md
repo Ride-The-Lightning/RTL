@@ -9,6 +9,7 @@ Lightning Network Daemon is an implementation of Lightning Network BOLT protocol
 Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/README.md) for details on Lightning Network and LND implementation.
 
 For setting up your Lightning Network node on a Raspberry Pi, you can follow the below guide:
+
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
 ### Prerequisites
@@ -24,6 +25,7 @@ Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### Installation
 
+#### First time setup
 Fetch sources from the RTL git repository, by executing the below command at the command prompt:
 
 `$ git clone https://github.com/ShahanaFarooqui/RTL.git`
@@ -35,6 +37,14 @@ Move to the newly created directory:
 Fetch the dependencies and build the application by running:
 
 `$ npm install`
+
+#### Updating existing build
+`$ cd RTL`
+Reset Git (for the changes you may have made to the config file).
+Warning: This step will revert the settings changes, you may have made on RTL earlier. We will address this in future revisions.
+`$ git reset --hard HEAD`
+`$ git clean -f -d`
+`$ git pull`
 
 ### Execution
 Make sure you are in the RTL directory, where the application was built.
