@@ -17,6 +17,7 @@ const payReqRoutes = require("./routes/payReq");
 const paymentsRoutes = require("./routes/payments");
 const UISettingsRoutes = require("./routes/UISettings");
 const LNDSettingsRoutes = require("./routes/lndConfSettings");
+const invoiceRoutes = require("./routes/invoices");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -51,6 +52,7 @@ app.use("/api/payreq", payReqRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/uisettings", UISettingsRoutes);
 app.use("/api/lndconf", LNDSettingsRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 // sending angular application when route doesn't match
 app.use((req, res, next) => {
