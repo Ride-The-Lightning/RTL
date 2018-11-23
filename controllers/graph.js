@@ -1,4 +1,5 @@
-var request = require('request');
+// var request = require('request');
+var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
 
@@ -43,17 +44,22 @@ exports.getGraphInfo = (req, res, next) => {
 
 exports.getGraphNode = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/node/' + req.params.pubKey;
-  request.get(options, (error, response, body) => {
-    const body_str = (undefined === body) ? '' : JSON.stringify(body);
-    const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log('Node Information Received: ' + body_str);
-    if(undefined === body || search_idx > -1 || body.error) {
+  request(options).then((body) => {
+    console.log(`Node Information Received: ${JSON.stringify(body)}`);
+    if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching node Info failed!",
-        error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
-    } else {
-      res.status(200).json(body);
     }
-  });
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    console.error(`Fetching node Info failed! ${err}`);
+    res.status(500).json({
+      message: "Fetching node Info failed!",
+      error: (undefined === body) ? 'Error From Server!' : body.error
+    });
+  });  
 };
+

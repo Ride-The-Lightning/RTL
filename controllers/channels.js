@@ -1,7 +1,17 @@
-var request = require('request');
+// var request = require('request');
+var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
-var graph = require('./graph');
+
+
+var getAlias = (channel) => new Promise(function(resolve, reject) {
+  options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
+  request(options).then(function(aliasBody) {
+    console.log(`\nReceived alias: ${aliasBody.node.alias}`);
+    channel.alias = aliasBody.node.alias;
+    resolve(aliasBody.node.alias);
+  }).catch(err => reject(err));
+});
 
 exports.getChannels = (req, res, next) => {
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
@@ -10,16 +20,16 @@ exports.getChannels = (req, res, next) => {
     options.url = common.lnd_server_url + '/channels/' + req.params.channelType;
   }
   options.qs = req.query;
-  request.get(options, (error, response, body) => {
-    console.log('Request params: ' + JSON.stringify(req.params) + '\nRequest Query: ' + JSON.stringify(req.query) + ' \nChannel Received: ' + JSON.stringify(body));
-    if(undefined === body || body.error) {
-      res.status(500).json({
-        message: "Fetching channels failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
-      });
-    } else {
+  request(options).then(function (body) {
+    let channels = body.channels;
+    Promise.all(
+      channels.map(channel => {
+        return getAlias(channel);
+      }))
+    .then(function(values) {
+      console.log(`\nChannel Reading Finished: ${JSON.stringify(body)}`);
       res.status(200).json(body);
-    }
+    });
   });
 };
 

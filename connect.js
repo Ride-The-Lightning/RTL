@@ -14,6 +14,7 @@ var macaroon = fs.readFileSync(common.lnd_dir + '/admin.macaroon').toString('hex
 var options = {
   url: '',
   rejectUnauthorized: false,
+//  resolveWithFullResponse: true,
   json: true,
   headers: {
     'Grpc-Metadata-macaroon': macaroon,
