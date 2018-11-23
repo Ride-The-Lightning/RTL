@@ -51,6 +51,8 @@ Warning: This step will revert the settings changes, you may have made on RTL ea
 
 `$ git pull`
 
+`$ npm install`
+
 ### Execution
 Make sure you are in the RTL directory, where the application was built.
 
