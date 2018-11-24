@@ -23,6 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+@angular/router
+MIT
+
 hammerjs
 MIT
 The MIT License (MIT)
@@ -618,9 +621,6 @@ THE SOFTWARE.
 MIT
 
 @angular/material/progress-spinner
-
-@angular/router
-MIT
 
 @angular/material/form-field
 
