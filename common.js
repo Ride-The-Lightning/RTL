@@ -8,7 +8,11 @@ common.convertToBTC = (num) => {
 };
 
 common.convertTimestampToDate = (num) => {
-	return new Date(+num*1000).toLocaleString();
+	return new Date(+num*1000).toUTCString();
+	// datetoConvert = new Date(+num*1000);
+	// // (datetoConvert.getMonth() + 1) // Because in JS, months is an array and index starts with 0 (January gives 0)
+	// return (datetoConvert.getMonth() + 1) + '/' + datetoConvert.getDate() + '/' + datetoConvert.getFullYear() + ' ' +
+	// datetoConvert.getHours() + ':' + datetoConvert.getMinutes() + ':' + datetoConvert.getSeconds();
 };
 
 module.exports = common;
