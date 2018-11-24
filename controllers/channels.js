@@ -1,17 +1,31 @@
-// var request = require('request');
 var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
 
-
-var getAlias = (channel) => new Promise(function(resolve, reject) {
-  options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
-  request(options).then(function(aliasBody) {
-    console.log(`\nReceived alias: ${aliasBody.node.alias}`);
-    channel.alias = aliasBody.node.alias;
-    resolve(aliasBody.node.alias);
-  }).catch(err => reject(err));
-});
+getAlias = (channel, channelType) => {
+  // console.log('CHANNEL: ');
+  // console.log(channel);
+  return new Promise(function(resolve, reject) {
+    if (undefined === channelType || channelType === 'all') {
+      options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
+    } else {
+      options.url = common.lnd_server_url + '/graph/node/' + channel.channel.remote_node_pub;
+    }
+    console.log('URL: ' + options.url);
+    request(options)
+    .then(function(aliasBody) {
+      console.log('Alias: ' + JSON.stringify(aliasBody.node.alias));
+      if (undefined === channelType || channelType === 'all') {
+        channel.remote_alias = aliasBody.node.alias;
+        resolve(aliasBody.node.alias);
+      } else {
+        channel.channel.remote_alias = aliasBody.node.alias;
+        resolve(aliasBody.node.alias);
+      }
+    })
+    .catch(err => reject(err));
+  });
+}
 
 exports.getChannels = (req, res, next) => {
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
@@ -21,13 +35,18 @@ exports.getChannels = (req, res, next) => {
   }
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = body.channels;
+    let channels = [];
+    if (undefined === req.params.channelType || req.params.channelType === 'all') {
+      channels = (undefined === body.channels) ? [] : body.channels;
+    } else {
+      channels = (undefined === body.pending_open_channels) ? [] : body.pending_open_channels;
+    }
     Promise.all(
       channels.map(channel => {
-        return getAlias(channel);
+        return getAlias(channel, req.params.channelType);
       }))
     .then(function(values) {
-      console.log(`\nChannel Reading Finished: ${JSON.stringify(body)}`);
+      console.log(`\nChannels Fetched with Alias: ${JSON.stringify(body)}`);
       res.status(200).json(body);
     });
   });

@@ -1,4 +1,3 @@
-// var request = require('request');
 var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
