@@ -44,5 +44,9 @@
 #### Send Payment
 - Verify and Send Payments
 
+### Invoices
+- Add Invoice with Optional Memo and Amount and Generate payment request
+- List Invoices
+
 ### Node Config
 - Read-only view of Node conf files for lnd and bitcoin
