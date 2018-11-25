@@ -31,7 +31,7 @@
 
 ### Channels
 #### Dashboard
-- Channel Status - Number of Active, Inactive and Pending channels)
+- Channel Status - Number of Active, Inactive and Pending channels
 - Total Channel Balances - Aggregated balance view for local and remote channels
 #### Management
 - Open Channel with connected peers
