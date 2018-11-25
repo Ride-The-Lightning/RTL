@@ -38,22 +38,25 @@
 - List payments
 
 ### Version 0.0.3-alpha
-### UI Theme refresh
+#### UI Theme refresh
 - Refresh the UI with a customized RTL theme
 #### Channel Management
 - Channel Detail - Bi-Directional channel balance view
 - Close Channel
+- Add alias to channel list
+#### Peer Management
+- Add alias identifier for peers
+- Connect peer with Pub key (w/o IP address)
+#### Invoice Management
+- Add Invoice
+- List Invoice
 
 ### Version 0.0.4-alpha
-#### Describe Graph
-- Create a graphical view of the LN network from the node data
-#### Channels
-- Add alias to channel list
+- Technical Improvements for performance
+- Implement authentication b/w RTL server and browser client
 
 ### Feature Backlog
 #### Peers
-- Add alias identifier for peers
-- Connect peer with Pub key (w/o IP address)
 - Disconnect Peer
 
 #### Start
@@ -65,10 +68,8 @@
 #### Globalization
 - Allow for Language customization
 
-#### Application Security
-- Implement authentication b/w RTL server and browser
-
 #### Invoice Management
-- Add Invoice
-- List Invoice
 - Lookup Invoice
+
+#### Describe Graph
+- Create a graphical view of the LN network from the node data
