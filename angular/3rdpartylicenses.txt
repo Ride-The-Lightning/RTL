@@ -609,9 +609,9 @@ THE SOFTWARE.
 >>>>>>> Initial commit
 
 
-@angular/material/card
-
 @angular/material/icon
+
+@angular/material/card
 
 @angular/material/divider
 
