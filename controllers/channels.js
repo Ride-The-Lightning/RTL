@@ -23,7 +23,7 @@ getAliasForChannel = (channel, channelType) => {
         resolve(aliasBody.node.alias);
       }
     })
-    .catch(err => reject(err));
+    .catch(err => resolve(''));
   });
 }
 

@@ -12,7 +12,7 @@ getAliasForPeers = (peer) => {
       peer.alias = aliasBody.node.alias;
       resolve(aliasBody.node.alias);
     })
-    .catch(err => reject(err));
+    .catch(err => resolve(''));
   });
 }
 
