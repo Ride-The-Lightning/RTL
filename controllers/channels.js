@@ -2,9 +2,9 @@ var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
 
-getAlias = (channel, channelType) => {
-  // console.log('CHANNEL: ');
-  // console.log(channel);
+getAliasForChannel = (channel, channelType) => {
+  console.log('CHANNEL: ');
+  console.log(channel);
   return new Promise(function(resolve, reject) {
     if (undefined === channelType || channelType === 'all') {
       options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
@@ -43,11 +43,15 @@ exports.getChannels = (req, res, next) => {
     }
     Promise.all(
       channels.map(channel => {
-        return getAlias(channel, req.params.channelType);
-      }))
+        // console.log(`\nChannel before getting Alias: ${JSON.stringify(channel)} \nAnd Channel Type: ${req.params.channelType}`);
+        return getAliasForChannel(channel, req.params.channelType);
+      })
+    )
     .then(function(values) {
       console.log(`\nChannels Fetched with Alias: ${JSON.stringify(body)}`);
       res.status(200).json(body);
+    }).catch(err => {
+      console.error(err.error);
     });
   });
 };

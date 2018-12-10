@@ -23,9 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@angular/router
-MIT
-
 hammerjs
 MIT
 The MIT License (MIT)
@@ -316,7 +313,7 @@ Apache-2.0
  
 
 
-@angular/common
+@ngrx/store
 MIT
 
 @angular/material/dialog
@@ -373,6 +370,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+
+@angular/common
+MIT
 
 @angular/platform-browser
 MIT
@@ -622,6 +622,9 @@ MIT
 
 @angular/material/progress-spinner
 
+@angular/router
+MIT
+
 @angular/material/form-field
 
 @angular/material/progress-bar
@@ -633,6 +636,9 @@ MIT
 @angular/material/sort
 
 @angular/material/table
+
+@ngrx/effects
+MIT
 
 @angular/material/select
 

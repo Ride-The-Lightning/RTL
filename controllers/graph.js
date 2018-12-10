@@ -57,7 +57,7 @@ exports.getGraphNode = (req, res, next) => {
     console.error(`Fetching node Info failed! ${err}`);
     res.status(500).json({
       message: "Fetching node Info failed!",
-      error: (undefined === body) ? 'Error From Server!' : body.error
+      error: (undefined !== err.error) ? err.error : 'Error From Server!'
     });
   });  
 };
