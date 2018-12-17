@@ -12,6 +12,10 @@ For setting up your Lightning Network node on a Raspberry Pi, you can follow the
 
 https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
 
+RTL source code is available at the below repo:
+
+https://github.com/ShahanaFarooqui/RTLFullApplication
+
 ### Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
