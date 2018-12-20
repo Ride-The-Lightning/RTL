@@ -48,7 +48,18 @@ exports.postPeer = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      res.status(201).json({message: 'Peer Added!'});
+      options.url = common.lnd_server_url + '/peers';
+      request(options).then(function (body) {
+        let peers = (undefined === body.peers) ? [] : body.peers;
+        Promise.all(
+          peers.map(peer => {
+            return getAliasForPeers(peer);
+          }))
+        .then(function(values) {
+          console.log(`\nPeers Fetched with Alias: ${JSON.stringify(body)}`);
+          res.status(201).json(body.peers);
+        });
+      })
     }
   });
 };
