@@ -47,7 +47,7 @@ Fetch the dependencies and build the application by running:
 
 Reset Git (for the changes you may have made to the config file).
 
-Warning: This step will revert the settings changes, you may have made on RTL earlier. We will address this in future revisions.
+Warning: This step will revert the UI settings, you may have changed on RTL (We will address this in future revisions).
 
 `$ git reset --hard HEAD`
 
@@ -62,9 +62,9 @@ Make sure you are in the RTL directory, where the application was built.
 
 Locate the complete path of the readable macroon file (admin.macroon) on your node.
 
-If you followed the guide above, and your on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
+If you followed Stacidus's guide referenced above, and you are on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
 
-For lnd version 0.5 it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
+For lnd versions 0.5 and above, it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
 
 Other platform users should accordingly locate the directory of the readable macroon file.
 
