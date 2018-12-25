@@ -16,7 +16,8 @@ getAliasForPeers = (peer) => {
   });
 }
 
-exports.getPeers = (req, res, next) => {
+exports.getPeers = (req, res, next) =>
+{
   options.url = common.lnd_server_url + '/peers';
   request(options).then(function (body) {
     let peers = (undefined === body.peers) ? [] : body.peers;
@@ -44,7 +45,7 @@ exports.postPeer = (req, res, next) => {
     console.log(body);
     if(undefined === body || body.error) {
       res.status(500).json({
-        message: "Adding peers failed!",
+        message: "Adding peer failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
@@ -60,6 +61,25 @@ exports.postPeer = (req, res, next) => {
           res.status(201).json(body.peers);
         });
       })
+    }
+  });
+};
+
+exports.deletePeer = (req, res, next) => {
+  options.url = common.lnd_server_url + '/peers/' + req.params.peerPubKey;
+  console.log('Detach Peer Options: ');
+  console.log(options.url);
+  request.delete(options, (error, response, body) => {
+    console.log('Detach Peer Response: ');
+    console.log(body);
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Detach peer failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      console.log('\nPeer Detached: ' + req.params.peerPubKey);
+      res.status(204).json({message: 'Peer Detached!'});
     }
   });
 };

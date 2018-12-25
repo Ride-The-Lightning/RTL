@@ -38,21 +38,28 @@ exports.getChannels = (req, res, next) => {
     let channels = [];
     if (undefined === req.params.channelType || req.params.channelType === 'all') {
       channels = (undefined === body.channels) ? [] : body.channels;
+      Promise.all(
+        channels.map(channel => {
+          // console.log(`\nChannel before getting Alias: ${JSON.stringify(channel)} \nAnd Channel Type: ${req.params.channelType}`);
+          return getAliasForChannel(channel, req.params.channelType);
+        })
+      )
+      .then(function(values) {
+        console.log(`\nChannels Fetched with Alias: ${JSON.stringify(body)}`);
+        res.status(200).json(body);
+      }).catch(err => {
+        console.error(err.error);
+      });
     } else {
-      channels = (undefined === body.pending_open_channels) ? [] : body.pending_open_channels;
-    }
-    Promise.all(
-      channels.map(channel => {
-        // console.log(`\nChannel before getting Alias: ${JSON.stringify(channel)} \nAnd Channel Type: ${req.params.channelType}`);
-        return getAliasForChannel(channel, req.params.channelType);
-      })
-    )
-    .then(function(values) {
-      console.log(`\nChannels Fetched with Alias: ${JSON.stringify(body)}`);
+      if (undefined === body.total_limbo_balance) {
+        body.total_limbo_balance = 0;
+        body.btc_total_limbo_balance = 0;
+      } else {
+        body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
+      }
+      console.log(`\nPending Channels Fetched: ${JSON.stringify(body)}`);
       res.status(200).json(body);
-    }).catch(err => {
-      console.error(err.error);
-    });
+    }
   });
 };
 
