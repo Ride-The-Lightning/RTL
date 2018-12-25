@@ -47,18 +47,18 @@
 #### Peer Management
 - Add alias identifier for peers
 - Connect peer with Pub key (w/o IP address)
+- Disconnect peer
 #### Invoice Management
 - Add Invoice
 - List Invoice
+#### Miscellaneous
+- Technical Improvements for performance
+- UI Interaction improvements
 
 ### Version 0.0.4-alpha
-- Technical Improvements for performance
 - Implement authentication b/w RTL server and browser client
 
 ### Feature Backlog
-#### Peers
-- Disconnect Peer
-
 #### Start
 - Create Wallet
 

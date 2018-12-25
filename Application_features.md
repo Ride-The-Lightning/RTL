@@ -28,6 +28,7 @@
 ### Peers (Manage LN Peers)
 - Connect to a peer with the LN Public key and/or IP address
 - List of connected peers with alias
+- Detach Peer
 
 ### Channels
 #### Dashboard
@@ -37,6 +38,11 @@
 - Open Channel with connected peers
 - List of channels
 - Close channel
+#### Pending
+- Pending Open Channels (Default)
+- Pending Force Closing Channels
+- Pending Closing Channels
+- Waiting Close
 
 ### Payments
 #### List Payments
