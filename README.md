@@ -16,6 +16,10 @@ RTL source code is available at the below repo:
 
 https://github.com/ShahanaFarooqui/RTLFullApplication
 
+Screenshots and UI operation guide is availble on the below medium post:
+
+https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
+
 ### Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
@@ -136,3 +140,7 @@ To access the application remotely from a computer, ensure that the firewall run
 You would need the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
+
+### Troubleshooting
+Feel free to open issues on our github, in case you are running into issues with the application.
+You can also reach out via twitter DM @Sauby_k. Thanks.
