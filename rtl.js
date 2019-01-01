@@ -32,7 +32,11 @@ const onError = error => {
       console.error(bind + " is already in use");
       process.exit(1);
       break;
+    case "ECONNREFUSED":
+      console.error("LND Server is down/locked");
     default:
+      console.error("DEFUALT ERROR");
+      console.error(error.code);
       throw error;
   }
 };

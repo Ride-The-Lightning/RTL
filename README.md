@@ -53,45 +53,60 @@ Reset Git (for the changes you may have made to the config file).
 
 Warning: This step will revert the UI settings, you may have changed on RTL (We will address this in future revisions).
 
-```
-$ git reset --hard HEAD
+`$ git reset --hard HEAD`
 
-$ git clean -f -d
+`$ git clean -f -d`
 
-$ git pull
+`$ git pull`
 
-$ npm install
-```
+`$ npm install`
 
-### Execution
+### Prep for Execution
 Make sure you are in the RTL directory, where the application was built.
 
-Locate the complete path of the readable macroon file (admin.macroon) on your node.
+RTL requires a config file `RTL.conf` to start the server and provide user authentication for the app.
+
+Locate the complete path of the readable macroon file (admin.macroon) on your node and lnd.conf file
 
 If you followed Stacidus's guide referenced above, and you are on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
 
 For lnd versions 0.5 and above, it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
 
-Other platform users should accordingly locate the directory of the readable macroon file.
+Other platform users should accordingly locate the directory of the readable macroon and lnd.conf files.
 
-The path of the macroon directory needs to be provided as a command line argument to start the server.
+The path of the macroon directory and lnd.conf needs to be provided in the RTL.conf file to start the server.
+
+Sample RTL.conf:
+```
+[Authentication]
+lndServerUrl=https://localhost:8080/v1
+macroonPath=C:\Users\suheb\AppData\Local\Lnd\data\chain\bitcoin\testnet
+nodeAuthType=DEFAULT
+lndConfigPath=C:\Users\Suheb\AppData\Local\Lnd\lnd.conf
+[Settings]
+flgSidenavOpened=true
+flgSidenavPinned=true
+menu=Vertical
+menuType=Regular
+theme=dark-blue
+satsToBTC=false
+```
+
+#### User Authentication on RTL
+Basic user authentication has now been added on RTL. This requires user to login to RTL server first, before accessing LND functions.
+There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
+
+For `nodeAuthType=DEFAULT`
+Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
+
+For `nodeAuthType=CUSTOM`
+Specific password can be provided in RTL.conf, to be used by RTL for authentication.
+Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
 ### Start the Webserver
 Run the following command:
 
-`node rtl --lndir <macaroon-path>` 
-
-For example:
-
-`$ node rtl --lndir /home/admin/.lnd`
-
-or
-
-`$ node rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet`
-
-or (for windows)
-
-`$ node rtl --lndir C:\Users\<your user directory>\AppData\Local\Lnd\data\chain\bitcoin\testnet`
+`node rtl` 
 
 If the server started successfully, you should get the below output on the console:
 
@@ -111,7 +126,7 @@ Wants=lnd.service
 After=lnd.service
 
 [Service]
-ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl --lndir /home/admin/.lnd/data/chain/bitcoin/testnet/
+ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl
 User=<user>
 Restart=always
 TimeoutSec=120

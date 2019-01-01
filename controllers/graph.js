@@ -4,7 +4,7 @@ var common = require('../common');
 
 exports.getDescribeGraph = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph';
-  request.get(options, (error, response, body) => {
+  request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     console.log('Describe Graph Received: ' + body_str);
@@ -16,12 +16,18 @@ exports.getDescribeGraph = (req, res, next) => {
     } else {
       res.status(200).json(body);
     }
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Fetching Describe Graph Failed!",
+      error: err.error
+    });
   });
 };
 
 exports.getGraphInfo = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/info';
-  request.get(options, (error, response, body) => {
+  request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     console.log('Network Information Received: ' + body_str);
@@ -38,6 +44,12 @@ exports.getGraphInfo = (req, res, next) => {
       console.log('Network Information After Rounding and Conversion: ' + body_str);
       res.status(200).json(body);
     }
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Fetching network Info failed!",
+      error: err.error
+    });
   });
 };
 
@@ -54,10 +66,9 @@ exports.getGraphNode = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch((err) => {
-    console.error(`Fetching node Info failed! ${err}`);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Fetching node Info failed!",
-      error: (undefined !== err.error) ? err.error : 'Error From Server!'
+      error: err.error
     });
   });  
 };

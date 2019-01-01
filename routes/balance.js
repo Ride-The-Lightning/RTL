@@ -1,8 +1,8 @@
 const BalanceController = require("../controllers/balance");
 const express = require("express");
 const router = express.Router();
+const authCheck = require("./authCheck");
 
-router.get("/", BalanceController.getBalance);
-router.get("/:source", BalanceController.getBalance);
+router.get("/:source", authCheck, BalanceController.getBalance);
 
 module.exports = router;

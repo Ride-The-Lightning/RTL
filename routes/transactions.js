@@ -1,7 +1,8 @@
 const TransactionsController = require("../controllers/transactions");
 const express = require("express");
 const router = express.Router();
+const authCheck = require("./authCheck");
 
-router.post("/", TransactionsController.postTransactions);
+router.post("/", authCheck, TransactionsController.postTransactions);
 
 module.exports = router;

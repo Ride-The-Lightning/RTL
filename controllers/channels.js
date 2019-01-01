@@ -12,8 +12,7 @@ getAliasForChannel = (channel, channelType) => {
       options.url = common.lnd_server_url + '/graph/node/' + channel.channel.remote_node_pub;
     }
     console.log('URL: ' + options.url);
-    request(options)
-    .then(function(aliasBody) {
+    request(options).then(function(aliasBody) {
       console.log('Alias: ' + JSON.stringify(aliasBody.node.alias));
       if (undefined === channelType || channelType === 'all') {
         channel.remote_alias = aliasBody.node.alias;
@@ -60,6 +59,12 @@ exports.getChannels = (req, res, next) => {
       console.log(`\nPending Channels Fetched: ${JSON.stringify(body)}`);
       res.status(200).json(body);
     }
+  })
+  .catch(function (err) {
+    return res.status(500).json({
+      message: "Fetching channels failed!",
+      error: err.error
+    });
   });
 };
 
@@ -70,7 +75,7 @@ exports.postChannel = (req, res, next) => {
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount
   });
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     console.log('Channel Open Response: ');
     console.log(body);
     if(undefined === body || body.error) {
@@ -81,6 +86,12 @@ exports.postChannel = (req, res, next) => {
     } else {
       res.status(201).json(body);
     }
+  })
+  .catch(function (err) {
+    return res.status(500).json({
+      message: "Open Channel failed!",
+      error: err.error
+    });
   });
 };
 
@@ -90,7 +101,7 @@ exports.postTransactions = (req, res, next) => {
     payment_request: req.body.paymentReq
   });
   console.log('Send Payment Options Form:' + options.form);
-  request.post(options, (error, response, body) => {
+  request.post(options).then((body) => {
     console.log('Send Payment Response: ');
     console.log(body);
     if(undefined === body || body.error) {
@@ -101,6 +112,12 @@ exports.postTransactions = (req, res, next) => {
     } else {
       res.status(201).json(body);
     }
+  })
+  .catch(function (err) {
+    return res.status(500).json({
+      message: "Send Payment Failed!",
+      error: err.error
+    });
   });
 };
 
@@ -109,7 +126,7 @@ exports.closeChannel = (req, res, next) => {
   options.url = common.lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
   console.log('\nClosing Channel URL: ');
   console.log(options.url);
-  request.delete(options, (error, response, body) => {
+  request.delete(options).then((body) => {
     console.log('\nClose Channel Response: ');
     console.log(body);
     if(undefined === body || body.error) {
@@ -120,5 +137,11 @@ exports.closeChannel = (req, res, next) => {
     } else {
       res.status(204).json({message: 'Channel Closed!'});
     }
+  })
+  .catch(function (err) {
+    return res.status(500).json({
+      message: "Close Channel failed!",
+      error: err.error
+    });
   });
 }

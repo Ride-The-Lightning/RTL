@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const app = express();
 
 //Declare all Routes here
+const authenticateRoutes = require("./routes/authenticate");
 const infoRoutes = require("./routes/getInfo");
 const channelsRoutes = require("./routes/channels");
 const peersRoutes = require("./routes/peers");
@@ -15,8 +16,7 @@ const newAddressRoutes = require("./routes/newAddress");
 const transactionsRoutes = require("./routes/transactions");
 const payReqRoutes = require("./routes/payReq");
 const paymentsRoutes = require("./routes/payments");
-const UISettingsRoutes = require("./routes/UISettings");
-const LNDSettingsRoutes = require("./routes/lndConfSettings");
+const RTLConfRoutes = require("./routes/RTLConf");
 const invoiceRoutes = require("./routes/invoices");
 
 app.use(bodyParser.json());
@@ -39,6 +39,7 @@ app.use((req, res, next) => {
 // CORS fix, Only required for developement due to separate backend and frontend servers
 
 // Use declared routes here
+app.use("/api/authenticate", authenticateRoutes);
 app.use("/api/getinfo", infoRoutes);
 app.use("/api/channels", channelsRoutes);
 app.use("/api/peers", peersRoutes);
@@ -50,8 +51,7 @@ app.use("/api/newaddress", newAddressRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/payreq", payReqRoutes);
 app.use("/api/payments", paymentsRoutes);
-app.use("/api/uisettings", UISettingsRoutes);
-app.use("/api/lndconf", LNDSettingsRoutes);
+app.use("/api/rtlconf", RTLConfRoutes);
 app.use("/api/invoices", invoiceRoutes);
 
 // sending angular application when route doesn't match

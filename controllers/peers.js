@@ -29,11 +29,16 @@ exports.getPeers = (req, res, next) =>
       console.log(`\nPeers Fetched with Alias: ${JSON.stringify(body)}`);
       res.status(200).json(body.peers);
     });
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Peers Fetched Failed!",
+      error: err.error
+    });
   });
 };
 
 exports.postPeer = (req, res, next) => {
-  // setTimeout(()=>{res.status(201).json({message: 'Peer Added!'});}, 5000);
   options.url = common.lnd_server_url + '/peers';
   options.form = JSON.stringify({ 
     addr: { host: req.body.host, pubkey: req.body.pubkey },
@@ -57,8 +62,15 @@ exports.postPeer = (req, res, next) => {
             return getAliasForPeers(peer);
           }))
         .then(function(values) {
+          console.log(`\nPeer Added Succesfully!`);
           console.log(`\nPeers Fetched with Alias: ${JSON.stringify(body)}`);
           res.status(201).json(body.peers);
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            message: "Peer Add Failed!",
+            error: err.error
+          });
         });
       })
     }
@@ -69,7 +81,7 @@ exports.deletePeer = (req, res, next) => {
   options.url = common.lnd_server_url + '/peers/' + req.params.peerPubKey;
   console.log('Detach Peer Options: ');
   console.log(options.url);
-  request.delete(options, (error, response, body) => {
+  request.delete(options).then((body) => {
     console.log('Detach Peer Response: ');
     console.log(body);
     if(undefined === body || body.error) {
@@ -79,7 +91,13 @@ exports.deletePeer = (req, res, next) => {
       });
     } else {
       console.log('\nPeer Detached: ' + req.params.peerPubKey);
-      res.status(204).json({message: 'Peer Detached!'});
+      res.status(204).json({});
     }
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Detach Peer Failed!",
+      error: err.error
+    });
   });
 };
