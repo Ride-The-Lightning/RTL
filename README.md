@@ -80,9 +80,9 @@ Sample RTL.conf:
 ```
 [Authentication]
 lndServerUrl=https://localhost:8080/v1
-macroonPath=C:\Users\suheb\AppData\Local\Lnd\data\chain\bitcoin\testnet
+macroonPath=C:\Users\<User>\AppData\Local\Lnd\data\chain\bitcoin\testnet
 nodeAuthType=DEFAULT
-lndConfigPath=C:\Users\Suheb\AppData\Local\Lnd\lnd.conf
+lndConfigPath=C:\Users\<User>\AppData\Local\Lnd\lnd.conf
 [Settings]
 flgSidenavOpened=true
 flgSidenavPinned=true
