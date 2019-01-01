@@ -53,13 +53,15 @@ Reset Git (for the changes you may have made to the config file).
 
 Warning: This step will revert the UI settings, you may have changed on RTL (We will address this in future revisions).
 
-`$ git reset --hard HEAD`
+```
+$ git reset --hard HEAD
 
-`$ git clean -f -d`
+$ git clean -f -d
 
-`$ git pull`
+$ git pull
 
-`$ npm install`
+$ npm install
+```
 
 ### Execution
 Make sure you are in the RTL directory, where the application was built.
