@@ -1,11 +1,12 @@
 var fs = require('fs');
 var clArgs = require('optimist').argv;
 var ini = require('ini');
-var file_path = './RTL.conf';  
 var common = require('./common');
 var upperCase = require('upper-case');
+var path = require('path');
 var macaroonPath = '';
 var options = {};
+var file_path = path.normalize(__dirname) + '/RTL.conf';
 
 var defaultConfig = {
   authentication: {
