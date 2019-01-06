@@ -39,7 +39,6 @@ exports.getChannels = (req, res, next) => {
       channels = (undefined === body.channels) ? [] : body.channels;
       Promise.all(
         channels.map(channel => {
-          // console.log(`\nChannel before getting Alias: ${JSON.stringify(channel)} \nAnd Channel Type: ${req.params.channelType}`);
           return getAliasForChannel(channel, req.params.channelType);
         })
       )
