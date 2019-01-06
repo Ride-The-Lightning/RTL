@@ -97,9 +97,18 @@ exports.postChannel = (req, res, next) => {
 
 exports.postTransactions = (req, res, next) => {
   options.url = common.lnd_server_url + '/channels/transactions';
-  options.form = JSON.stringify({ 
-    payment_request: req.body.paymentReq
-  });
+  if(req.body.paymentReq) {
+    options.form = JSON.stringify({ 
+      payment_request: req.body.paymentReq
+    });
+  } else if(req.body.paymentDecoded) {
+    options.form = JSON.stringify({ 
+      payment_hash_string: req.body.paymentDecoded.payment_hash,
+      final_cltv_delta: parseInt(req.body.paymentDecoded.cltv_expiry),
+      amt: req.body.paymentDecoded.num_satoshis,
+      dest_string: req.body.paymentDecoded.destination
+    });
+  }
   console.log('Send Payment Options Form:' + options.form);
   request.post(options).then((body) => {
     console.log('Send Payment Response: ');
@@ -108,6 +117,11 @@ exports.postTransactions = (req, res, next) => {
       res.status(500).json({
         message: "Send Payment Failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else if (body.payment_error) {
+      res.status(500).json({
+        message: "Send Payment Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.payment_error
       });
     } else {
       res.status(201).json(body);
