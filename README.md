@@ -16,7 +16,7 @@ RTL source code is available at the below repo:
 
 https://github.com/ShahanaFarooqui/RTLFullApplication
 
-Screenshots and UI operation guide is availble on the below medium post:
+For Screenshots and UI operation guide you can visit the below medium post:
 
 https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
 
