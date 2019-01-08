@@ -21,7 +21,7 @@ const invoiceRoutes = require("./routes/invoices");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/", express.static(path.join(__dirname, "angular")));
+app.use("/rtl/", express.static(path.join(__dirname, "angular")));
 
 // CORS fix, Only required for developement due to separate backend and frontend servers
 app.use((req, res, next) => {
