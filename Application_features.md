@@ -49,9 +49,10 @@
 - List of payments made via node
 #### Send Payment
 - Verify and Send Payments
+- Pay empty invoice with custom amount
 
 ### Invoices
-- Add Invoice with Optional Memo and Amount and Generate payment request
+- Add Invoice with Optional Memo and Amount and Generate payment request (with QR Code)
 - List Invoices
 
 ### Node Config
