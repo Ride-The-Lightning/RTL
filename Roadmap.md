@@ -1,4 +1,4 @@
-[ [Intro](README.md) ] -- [ [Application Features](Application_features.md) ] -- [ **[Road Map]** ]
+[Intro](README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [LND API Coverage](LNDAPICoverage.md)
 
 ## Product Roadmap for RTL Application
 
