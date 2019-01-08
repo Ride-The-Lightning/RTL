@@ -1,0 +1,46 @@
+- [ ] GenSeed
+- [ ] InitWallet
+- [x] UnlockWallet
+- [ ] ChangePassword
+- [x] WalletBalance
+- [x] ChannelBalance
+- [ ] GetTransactions
+- [x] SendCoins
+- [ ] SubscribeTransactions
+- [ ] SendMany
+- [x] NewAddress
+- [ ] SignMessage
+- [ ] VerifyMessage
+- [x] ConnectPeer
+- [x] DisconnectPeer
+- [x] ListPeers
+- [x] GetInfo
+- [x] PendingChannels
+- [x] ListChannels
+- [ ] ClosedChannels
+- [ ] OpenChannelSync
+- [x] OpenChannel
+- [x] CloseChannel
+- [ ] AbandonChannel
+- [x] SendPayment
+- [ ] SendPaymentSync
+- [ ] SendToRoute
+- [ ] SendToRouteSync
+- [x] AddInvoice
+- [x] ListInvoices
+- [ ] LookupInvoice
+- [ ] SubscribeInvoices
+- [x] DecodePayReq
+- [x] ListPayments
+- [ ] DeleteAllPayments
+- [ ] DescribeGraph
+- [ ] GetChanInfo
+- [ ] GetNodeInfo
+- [ ] QueryRoutes
+- [x] GetNetworkInfo
+- [ ] StopDaemon
+- [ ] SubscribeChannelGraph
+- [ ] DebugLevel
+- [x] FeeReport
+- [ ] UpdateChannelPolicy
+- [ ] ForwardingHistory
