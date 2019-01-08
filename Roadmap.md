@@ -55,12 +55,17 @@
 - Technical Improvements for performance
 - UI Interaction improvements
 
-### Version 0.0.4-alpha
+### Version 0.1.6-alpha
 - Implement authentication b/w RTL server and browser client
 
 ### Feature Backlog
-#### Start
-- Create Wallet
+#### Peers
+- Peer Lookup
+
+#### Channels
+- Closed Channels
+- Lookup Channel Info
+- Update Channel/s
 
 #### LN Wallet
 - List chain transactions
@@ -71,5 +76,11 @@
 #### Invoice Management
 - Lookup Invoice
 
-#### Describe Graph
-- Create a graphical view of the LN network from the node data
+#### Routing Info
+- Forwarding History
+
+#### Network
+- Network explorer
+
+#### Start
+- Create Wallet
