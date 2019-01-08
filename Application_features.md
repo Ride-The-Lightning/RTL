@@ -1,4 +1,4 @@
-[ [Intro](README.md) ] -- [ **[Application Features]** ] -- [ [Road Map](Roadmap.md) ]
+[Intro](README.md) -- **[Application Features]** -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md)
 
 ## RTL - Feature List
 
