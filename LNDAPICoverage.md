@@ -19,7 +19,7 @@
 - [x] GetInfo
 - [x] PendingChannels
 - [x] ListChannels
-- [ ] ClosedChannels
+- [x] ClosedChannels
 - [ ] OpenChannelSync
 - [x] OpenChannel
 - [x] CloseChannel
