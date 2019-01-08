@@ -1,4 +1,4 @@
-[ **Intro** ] -- [ [Application Features](Application_features.md) ] -- [ [Road Map](Roadmap.md) ]
+**Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md)
 
 ## RTL - Ride The Lightning
 
