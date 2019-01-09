@@ -6,7 +6,7 @@
 - [ ] ChangePassword
 - [x] WalletBalance
 - [x] ChannelBalance
-- [ ] GetTransactions
+- [x] GetTransactions
 - [x] SendCoins
 - [ ] SubscribeTransactions
 - [ ] SendMany
