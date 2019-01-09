@@ -73,3 +73,22 @@ exports.getGraphNode = (req, res, next) => {
   });  
 };
 
+exports.getGraphEdge = (req, res, next) => {
+  options.url = common.lnd_server_url + '/graph/edge/' + req.params.chanid;
+  request(options).then((body) => {
+    console.log(`Edge Information Received: ${JSON.stringify(body)}`);
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Fetching Edge Info Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    }
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Fetching Edge Info Failed!",
+      error: err.error
+    });
+  });  
+};

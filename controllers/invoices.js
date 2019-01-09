@@ -2,6 +2,26 @@ var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
 
+exports.getInvoice = (req, res, next) => {
+  options.url = common.lnd_server_url + '/invoice/' + req.params.rHashStr;
+  request(options).then((body) => {
+    console.log(`Invoice Information Received: ${JSON.stringify(body)}`);
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Fetching Invoice Info Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    }
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Fetching Invoice Info Failed!",
+      error: err.error
+    });
+  });  
+};
+
 exports.listInvoices = (req, res, next) => {
   options.url = common.lnd_server_url + '/invoices';
   request(options).then((body) => {
