@@ -18,12 +18,15 @@
 - Theme Skins
 - Nav Options
 
-### LND Wallet (Wallet functions available on LND)
+### LND Wallet
+#### Send/Receive
 - Total Balance
 - Confirmed Balance
 - Unconfirmed Balance
-- Generate Address (with QR Code)
+- Receive Funds, Generate Address (with QR Code)
 - Send funds
+#### List Transactions
+- List of on-chain transactions
 
 ### Peers (Manage LN Peers)
 - Connect to a peer with the LN Public key and/or IP address
@@ -43,6 +46,8 @@
 - Pending Force Closing Channels
 - Pending Closing Channels
 - Waiting Close
+#### Closed
+- List of Closed Channels
 
 ### Payments
 #### List Payments
