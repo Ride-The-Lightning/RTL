@@ -144,7 +144,7 @@ WantedBy=multi-user.target
 
 * montior the RTL log file in realtime(exit with Ctrl-C)
 
-`$ sudo jounrnalctl -f -u RTL`
+`$ sudo journalctl -f -u RTL`
 
 ### Accessing the Application
 
