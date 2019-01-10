@@ -37,7 +37,7 @@
 - [ ] DeleteAllPayments
 - [ ] DescribeGraph
 - [ ] GetChanInfo
-- [ ] GetNodeInfo
+- [x] GetNodeInfo
 - [ ] QueryRoutes
 - [x] GetNetworkInfo
 - [ ] StopDaemon
