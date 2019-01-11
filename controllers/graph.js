@@ -55,6 +55,7 @@ exports.getGraphInfo = (req, res, next) => {
 
 exports.getGraphNode = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/node/' + req.params.pubKey;
+  console.log(`Node Information url: ` + options.url);
   request(options).then((body) => {
     console.log(`Node Information Received: ${JSON.stringify(body)}`);
     if(undefined === body || body.error) {
@@ -75,6 +76,7 @@ exports.getGraphNode = (req, res, next) => {
 
 exports.getGraphEdge = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/edge/' + req.params.chanid;
+  console.log(`Edge Information url: ` + options.url);
   request(options).then((body) => {
     console.log(`Edge Information Received: ${JSON.stringify(body)}`);
     if(undefined === body || body.error) {

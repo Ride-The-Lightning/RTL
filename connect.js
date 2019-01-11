@@ -9,14 +9,14 @@ var options = {};
 var file_path = path.normalize(__dirname) + '/RTL.conf';
 
 var defaultConfig = {
-  authentication: {
+  Authentication: {
     lndServerUrl:'https://localhost:8080/v1',
     macroonPath:'',
     nodeAuthType:'DEFAULT',
     lndConfigPath:'',
     rtlPass:''
   },
-  settings: {
+  Settings: {
     flgSidenavOpened:true,
     flgSidenavPinned:true,
     menu:'Vertical',

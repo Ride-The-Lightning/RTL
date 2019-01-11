@@ -23,9 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@angular/router
-MIT
-
 hammerjs
 MIT
 The MIT License (MIT)
@@ -318,6 +315,9 @@ Apache-2.0
  limitations under the License.
  
 
+
+@angular/router
+MIT
 
 @angular/common
 MIT
