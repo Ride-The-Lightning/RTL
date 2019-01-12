@@ -465,9 +465,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @angular/material/expansion
 
-@angular/material/sidenav
-
 @angular/material/tree
+
+@angular/material/sidenav
 
 @angular/material/toolbar
 
