@@ -36,7 +36,7 @@
 - [x] ListPayments
 - [ ] DeleteAllPayments
 - [ ] DescribeGraph
-- [ ] GetChanInfo
+- [x] GetChanInfo
 - [x] GetNodeInfo
 - [ ] QueryRoutes
 - [x] GetNetworkInfo

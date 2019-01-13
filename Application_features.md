@@ -60,5 +60,9 @@
 - Add Invoice with Optional Memo and Amount and Generate payment request (with QR Code)
 - List Invoices
 
+### Lookups
+- Lookup a node details with pubkey
+- Lookup a channel details with Channel ID
+
 ### Node Config
 - Read-only view of Node conf files for lnd and bitcoin
