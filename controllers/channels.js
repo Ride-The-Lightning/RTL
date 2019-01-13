@@ -1,19 +1,17 @@
 var request = require('request-promise');
 var options = require('../connect');
 var common = require('../common');
+var logger = require('./logger');
 
 getAliasForChannel = (channel, channelType) => {
-  console.log('CHANNEL: ');
-  console.log(channel);
   return new Promise(function(resolve, reject) {
     if (undefined === channelType || channelType === 'all') {
       options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
     } else {
       options.url = common.lnd_server_url + '/graph/node/' + channel.channel.remote_node_pub;
     }
-    console.log('URL: ' + options.url);
     request(options).then(function(aliasBody) {
-      console.log('Alias: ' + JSON.stringify(aliasBody.node.alias));
+      logger.info('\r\nChannels: 13: ' + JSON.stringify(Date.now()) + ': INFO: Alias: ' + JSON.stringify(aliasBody.node.alias));
       if (undefined === channelType || channelType === 'all') {
         channel.remote_alias = aliasBody.node.alias;
         resolve(aliasBody.node.alias);
@@ -43,7 +41,7 @@ exports.getChannels = (req, res, next) => {
         })
       )
       .then(function(values) {
-        console.log(`\nChannels Fetched with Alias: ${JSON.stringify(body)}`);
+        logger.info('\r\nChannels: 43: ' + JSON.stringify(Date.now()) + ': INFO: Channels with Alias: ' + JSON.stringify(body));
         res.status(200).json(body);
       }).catch(err => {
         console.error(err.error);
@@ -55,7 +53,7 @@ exports.getChannels = (req, res, next) => {
       } else {
         body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
       }
-      console.log(`\nPending Channels Fetched: ${JSON.stringify(body)}`);
+      logger.info('\r\nChannels: 55: ' + JSON.stringify(Date.now()) + ': INFO: Pending Channels: ' + JSON.stringify(body));
       res.status(200).json(body);
     }
   })
@@ -68,15 +66,13 @@ exports.getChannels = (req, res, next) => {
 };
 
 exports.postChannel = (req, res, next) => {
-  // setTimeout(()=>{res.status(201).json({message: 'Channel Open!'});}, 5000);
   options.url = common.lnd_server_url + '/channels';
   options.form = JSON.stringify({ 
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount
   });
   request.post(options).then((body) => {
-    console.log('Channel Open Response: ');
-    console.log(body);
+    logger.info('\r\nChannels: 74: ' + JSON.stringify(Date.now()) + ': INFO: Channel Open Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Open Channel Failed!',
@@ -108,10 +104,8 @@ exports.postTransactions = (req, res, next) => {
       dest_string: req.body.paymentDecoded.destination
     });
   }
-  console.log('Send Payment Options Form:' + options.form);
   request.post(options).then((body) => {
-    console.log('Send Payment Response: ');
-    console.log(body);
+    logger.info('\r\nChannels: 107: ' + JSON.stringify(Date.now()) + ': INFO: Send Payment Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Send Payment Failed!',
@@ -137,11 +131,8 @@ exports.postTransactions = (req, res, next) => {
 exports.closeChannel = (req, res, next) => {
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
-  console.log('\nClosing Channel URL: ');
-  console.log(options.url);
   request.delete(options).then((body) => {
-    console.log('\nClose Channel Response: ');
-    console.log(body);
+    logger.info('\r\nChannels: 134: ' + JSON.stringify(Date.now()) + ': INFO: Close Channel Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Close Channel Failed!',

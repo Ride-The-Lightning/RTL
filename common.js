@@ -1,6 +1,7 @@
 var common = {};
 
 common.lnd_server_url = '';
+common.enable_logging = false;
 
 common.convertToBTC = (num) => {
 	return (num / 100000000).toFixed(6);

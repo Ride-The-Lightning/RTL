@@ -1,6 +1,7 @@
 var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
+var logger = require('./logger');
 
 exports.operateWallet = (req, res, next) => {
   var requestBody =  {
@@ -17,8 +18,7 @@ exports.operateWallet = (req, res, next) => {
   }
   options.qs = req.query;
   request.post(options).then((body) => {
-    console.log('\nUnlock Wallet Response: ');
-    console.log(body);
+    logger.info('\r\nWallet: 20: ' + JSON.stringify(Date.now()) + ': INFO: Unlock Wallet Response: ' + JSON.stringify(body));
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     if(undefined === body) {

@@ -7,6 +7,7 @@ var path = require('path');
 var macaroonPath = '';
 var options = {};
 var file_path = path.normalize(__dirname) + '/RTL.conf';
+var log_file_path = path.normalize(__dirname) + '/RTL.log';  
 
 var defaultConfig = {
   Authentication: {
@@ -14,7 +15,8 @@ var defaultConfig = {
     macroonPath:'',
     nodeAuthType:'DEFAULT',
     lndConfigPath:'',
-    rtlPass:''
+    rtlPass:'',
+    enableLogging: false
   },
   Settings: {
     flgSidenavOpened:true,
@@ -57,6 +59,22 @@ var validateConfigFile = (macaroonPath, config) => {
 
   if(upperCase(config.Authentication.nodeAuthType) === 'CUSTOM' && (config.Authentication.rtlPass === '' ||  undefined === config.Authentication.rtlPass)) {
     errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password in RTL.conf';
+  }
+
+  if(undefined !== config.Authentication.enableLogging) {
+    common.enable_logging = config.Authentication.enableLogging;
+    let exists = fs.existsSync(log_file_path);
+    if(exists) {
+      fs.writeFile(log_file_path, '');
+    } else if (!exists && config.Authentication.enableLogging) {
+      try {
+        var createStream = fs.createWriteStream(log_file_path);
+        createStream.end();
+      }
+      catch(err) {
+        console.error('Something went wrong, unable to create log file!' + err);
+      }
+    } 
   }
 
   if(errMsg !== '') {

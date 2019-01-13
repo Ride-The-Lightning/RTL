@@ -1,13 +1,14 @@
 var request = require("request-promise");
 var options = require("../connect");
 var common = require('../common');
+var logger = require('./logger');
 
 exports.getDescribeGraph = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log('Describe Graph Received: ' + body_str);
+    logger.info('\r\nGraph: 10: ' + JSON.stringify(Date.now()) + ': INFO: Describe Graph Received: ' + body_str);
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching Describe Graph Failed!",
@@ -30,7 +31,7 @@ exports.getGraphInfo = (req, res, next) => {
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log('Network Information Received: ' + body_str);
+    logger.info('\r\nGraph: 33: ' + JSON.stringify(Date.now()) + ': INFO: Network Info Received: ' + body_str);
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching network Info failed!",
@@ -41,7 +42,7 @@ exports.getGraphInfo = (req, res, next) => {
       body.btc_avg_channel_size = (undefined === body.avg_channel_size) ? 0 : common.convertToBTC(body.avg_channel_size);
       body.btc_min_channel_size = (undefined === body.min_channel_size) ? 0 : common.convertToBTC(body.min_channel_size);
       body.btc_max_channel_size = (undefined === body.max_channel_size) ? 0 : common.convertToBTC(body.max_channel_size);
-      console.log('Network Information After Rounding and Conversion: ' + body_str);
+      logger.info('\r\nGraph: 44: ' + JSON.stringify(Date.now()) + ': INFO: Network Information After Rounding and Conversion: ' + body_str);
       res.status(200).json(body);
     }
   })
@@ -55,9 +56,8 @@ exports.getGraphInfo = (req, res, next) => {
 
 exports.getGraphNode = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/node/' + req.params.pubKey;
-  console.log(`Node Information url: ` + options.url);
   request(options).then((body) => {
-    console.log(`Node Information Received: ${JSON.stringify(body)}`);
+    logger.info('\r\nGraph: 59: ' + JSON.stringify(Date.now()) + ': INFO: Node Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching node Info failed!",
@@ -76,9 +76,8 @@ exports.getGraphNode = (req, res, next) => {
 
 exports.getGraphEdge = (req, res, next) => {
   options.url = common.lnd_server_url + '/graph/edge/' + req.params.chanid;
-  console.log(`Edge Information url: ` + options.url);
   request(options).then((body) => {
-    console.log(`Edge Information Received: ${JSON.stringify(body)}`);
+    logger.info('\r\nGraph: 79: ' + JSON.stringify(Date.now()) + ': INFO: Edge Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching Edge Info Failed!",

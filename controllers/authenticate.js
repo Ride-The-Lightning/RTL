@@ -5,12 +5,13 @@ var rtl_config_path = path.normalize(__dirname + '/..') + '/RTL.conf';
 const jwt = require("jsonwebtoken");
 var upperCase = require('upper-case');
 var atob = require('atob');
+var logger = require('./logger');
 
 exports.authenticateUser = (req, res, next) => {
   password = atob(req.body.password);
   fs.readFile(rtl_config_path, 'utf8', function (err, data) {
     if (err) {
-      console.log('RTL Config Reading Failed!');
+      logger.error('\r\nAuthenticate: 13: ' + JSON.stringify(Date.now()) + ': ERROR: RTL Config Reading Failed!');
       res.status(500).json({
         message: "RTL Config Reading Failed!",
         error: err
@@ -42,7 +43,7 @@ exports.authenticateUser = (req, res, next) => {
       } else {
         fs.readFile(lndConfigPath, 'utf8', function (err, data) {
           if (err) {
-            console.log('LND Config Reading Failed!');
+            logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: RTL Config Reading Failed!');
             res.status(500).json({
               message: "LND Config Reading Failed!",
               error: err

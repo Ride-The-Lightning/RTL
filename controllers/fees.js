@@ -1,11 +1,12 @@
 var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
+var logger = require('./logger');
 
 exports.getFees = (req, res, next) => {
   options.url = common.lnd_server_url + '/fees';
   request(options).then((body) => {
-    console.log("Fee Received: " + JSON.stringify(body));
+    logger.info('\r\nFees: 8: ' + JSON.stringify(Date.now()) + ': INFO: Fee Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching fee failed!",

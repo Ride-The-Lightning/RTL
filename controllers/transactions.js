@@ -1,13 +1,14 @@
 var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
+var logger = require('./logger');
 
 exports.getTransactions = (req, res, next) => {
   options.url = common.lnd_server_url + '/transactions';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log('Transactions Received: ' + body_str);
+    logger.info('\r\nTransactions: 10: ' + JSON.stringify(Date.now()) + ': INFO: Transaction Received: ' + body_str);
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching Transactions Failed!",
@@ -39,8 +40,7 @@ exports.postTransactions = (req, res, next) => {
     target_conf: req.body.blocks
   });
   request.post(options).then((body) => {
-    console.log('Transactions Post Response: ');
-    console.log(body);
+    logger.info('\r\nTransactions: 42: ' + JSON.stringify(Date.now()) + ': INFO: Transaction Post Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Transactions post failed!",

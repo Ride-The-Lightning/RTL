@@ -1,11 +1,12 @@
 var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
+var logger = require('./logger');
 
 exports.getInvoice = (req, res, next) => {
   options.url = common.lnd_server_url + '/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
-    console.log(`Invoice Information Received: ${JSON.stringify(body)}`);
+    logger.info('\r\nInvoice: 8: ' + JSON.stringify(Date.now()) + ': INFO: Invoice Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info Failed!",
@@ -27,7 +28,7 @@ exports.listInvoices = (req, res, next) => {
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    console.log('Information Received: ' + body_str);
+    logger.info('\r\nInvoice: 30: ' + JSON.stringify(Date.now()) + ': INFO: Invoices List Received: ' + body_str);
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
@@ -42,7 +43,7 @@ exports.listInvoices = (req, res, next) => {
             invoice.btc_amt_paid_sat =  (undefined === invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
           });
         }
-      console.log('\nInvoices Received: ' + JSON.stringify(body));
+      logger.info('\r\nInvoice: 45: ' + JSON.stringify(Date.now()) + ': INFO: Invoices List Received: ' + JSON.stringify(body));
       res.status(200).json(body);
     }
   })
@@ -60,10 +61,8 @@ exports.addInvoice = (req, res, next) => {
     memo: req.body.memo,
     value: req.body.amount
   });
-  console.log('Add Invoice Options Form:' + options.form);
   request.post(options).then((body) => {
-    console.log('Add Invoice Response: ');
-    console.log(body);
+    logger.info('\r\nInvoice: 64: ' + JSON.stringify(Date.now()) + ': INFO: Add Invoice Responce: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Add Invoice Failed!",
