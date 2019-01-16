@@ -51,7 +51,7 @@ app.use("/api/newaddress", newAddressRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/payreq", payReqRoutes);
 app.use("/api/payments", paymentsRoutes);
-app.use("/api/rtlconf", RTLConfRoutes);
+app.use("/api/conf", RTLConfRoutes);
 app.use("/api/invoices", invoiceRoutes);
 
 // sending angular application when route doesn't match
