@@ -12,9 +12,10 @@ var log_file_path = path.normalize(__dirname) + '/RTL.log';
 var defaultConfig = {
   Authentication: {
     lndServerUrl:'https://localhost:8080/v1',
-    macroonPath:'',
+    macaroonPath:'',
     nodeAuthType:'DEFAULT',
     lndConfigPath:'',
+    bitcoindConfigPath: '',
     rtlPass:'',
     enableLogging: false
   },
@@ -34,6 +35,9 @@ var setMacaroonPath = (clArgs, config) => {
   } else {
     if(config.Authentication.macroonPath !== '') {
       macaroonPath = config.Authentication.macroonPath;
+    }
+    if(config.Authentication.macaroonPath !== '') {
+      macaroonPath = config.Authentication.macaroonPath;
     }
   }
 }
@@ -55,6 +59,12 @@ var validateConfigFile = (macaroonPath, config) => {
   
   if(upperCase(config.Authentication.nodeAuthType) === 'DEFAULT' && (config.Authentication.lndConfigPath === '' ||  undefined === config.Authentication.lndConfigPath)) {
     errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path in RTL.conf';
+  } else {
+    common.lnd_config_path = config.Authentication.lndConfigPath;
+  }
+
+  if(config.Authentication.bitcoindConfigPath !== '' ||  undefined !== config.Authentication.bitcoindConfigPath) {
+    common.bitcoind_config_path = config.Authentication.bitcoindConfigPath;
   }
 
   if(upperCase(config.Authentication.nodeAuthType) === 'CUSTOM' && (config.Authentication.rtlPass === '' ||  undefined === config.Authentication.rtlPass)) {

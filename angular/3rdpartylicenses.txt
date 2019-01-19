@@ -467,6 +467,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @angular/material/tree
 
+@angular/material/radio
+
 @angular/material/sidenav
 
 @angular/material/toolbar
@@ -678,8 +680,6 @@ Apache-2.0
  limitations under the License.
  
 
-
-@angular/material/radio
 
 @angular/material/slide-toggle
 

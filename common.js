@@ -1,6 +1,8 @@
 var common = {};
 
 common.lnd_server_url = '';
+common.lnd_config_path = '';
+common.bitcoind_config_path = '';
 common.enable_logging = false;
 
 common.convertToBTC = (num) => {

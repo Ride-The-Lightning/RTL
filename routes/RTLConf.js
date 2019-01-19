@@ -5,6 +5,6 @@ const authCheck = require("./authCheck");
 
 router.get("/rtlconf", RTLConfController.getRTLConfig);
 router.post("/", authCheck, RTLConfController.updateUISettings);
-router.get("/lndconfig", authCheck, RTLConfController.getLNDConfig);
+router.get("/config/:nodeType", authCheck, RTLConfController.getConfig);
 
 module.exports = router;
