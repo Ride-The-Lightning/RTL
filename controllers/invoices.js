@@ -36,13 +36,14 @@ exports.listInvoices = (req, res, next) => {
       });
     } else {
       if (undefined !== body.invoices) {
-          body.invoices.forEach(invoice => {
-            invoice.creation_date_str =  (undefined === invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
-            invoice.settle_date_str =  (undefined === invoice.settle_date) ? '' : common.convertTimestampToDate(invoice.settle_date);
-            invoice.btc_value = (undefined === invoice.value) ? 0 : common.convertToBTC(invoice.value);
-            invoice.btc_amt_paid_sat =  (undefined === invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
-          });
-        }
+        body.invoices.forEach(invoice => {
+          invoice.creation_date_str =  (undefined === invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
+          invoice.settle_date_str =  (undefined === invoice.settle_date) ? '' : common.convertTimestampToDate(invoice.settle_date);
+          invoice.btc_value = (undefined === invoice.value) ? 0 : common.convertToBTC(invoice.value);
+          invoice.btc_amt_paid_sat =  (undefined === invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
+        });
+        body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
+      }
       logger.info('\r\nInvoice: 45: ' + JSON.stringify(Date.now()) + ': INFO: Invoices List Received: ' + JSON.stringify(body));
       res.status(200).json(body);
     }

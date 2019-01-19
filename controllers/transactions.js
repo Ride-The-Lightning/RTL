@@ -19,6 +19,7 @@ exports.getTransactions = (req, res, next) => {
         body.transactions.forEach(transaction => {
           transaction.time_stamp_str =  (undefined === transaction.time_stamp) ? '' : common.convertTimestampToDate(transaction.time_stamp);
         });
+        body.transactions = common.sortDescByKey(body.transactions, 'time_stamp');
       }
       res.status(200).json(body.transactions);
     }

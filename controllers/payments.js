@@ -19,6 +19,7 @@ exports.getPayments = (req, res, next) => {
         body.payments.forEach(payment => {
           payment.creation_date_str =  (undefined === payment.creation_date) ? '' : common.convertTimestampToDate(payment.creation_date);
         });
+        body.payments = common.sortDescByKey(body.payments, 'creation_date');
       }
       res.status(200).json(body.payments);
     }

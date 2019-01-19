@@ -8,5 +8,6 @@ router.post("/", authCheck, ChannelsController.postChannel);
 router.get("/:channelType", authCheck, ChannelsController.getChannels);
 router.post("/transactions", authCheck, ChannelsController.postTransactions);
 router.delete("/:channelPoint", authCheck, ChannelsController.closeChannel);
+router.post("/chanPolicy", authCheck, ChannelsController.postChanPolicy);
 
 module.exports = router;

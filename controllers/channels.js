@@ -58,6 +58,7 @@ exports.getChannels = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.info('\r\nChannels: 61: ' + JSON.stringify(Date.now()) + ': ERROR: Get Channel: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Fetching Channels Failed!',
       error: err.error
@@ -83,6 +84,7 @@ exports.postChannel = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.info('\r\nChannels: 86: ' + JSON.stringify(Date.now()) + ': ERROR: Open Channel: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Open Channel Failed!',
       error: err.error
@@ -121,6 +123,7 @@ exports.postTransactions = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.info('\r\nChannels: 124: ' + JSON.stringify(Date.now()) + ': ERROR: Send Payment: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Send Payment Failed!',
       error: err.error
@@ -143,9 +146,51 @@ exports.closeChannel = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.info('\r\nChannels: 146: ' + JSON.stringify(Date.now()) + ': ERROR: Close Channel: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Close Channel Failed!',
       error: err.error
     });
   });
 }
+
+exports.postChanPolicy = (req, res, next) => {
+  options.url = common.lnd_server_url + '/chanpolicy';
+  if(req.body.chanPoint === 'all') {
+    options.form = JSON.stringify({
+      global: true, 
+      base_fee_msat: req.body.baseFeeMsat,
+      fee_rate: parseFloat(req.body.feeRate/1000000),
+      time_lock_delta: parseInt(req.body.timeLockDelta)
+    });
+  } else {
+    let breakPoint = req.body.chanPoint.indexOf(':');
+    let txid_str = req.body.chanPoint.substring(0, breakPoint);
+    let output_idx = req.body.chanPoint.substring(breakPoint+1, req.body.chanPoint.length);
+    options.form = JSON.stringify({ 
+      base_fee_msat: req.body.baseFeeMsat,
+      fee_rate: parseFloat(req.body.feeRate/1000000),
+      time_lock_delta: parseInt(req.body.timeLockDelta),
+      chan_point: {funding_txid_str: txid_str, output_index: parseInt(output_idx)}
+    });
+  }
+  logger.info('\r\nChannels: 161: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy Options: ' + JSON.stringify(options));
+  request.post(options).then((body) => {
+    logger.info('\r\nChannels: 163: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy: ' + JSON.stringify(body));
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: 'Update Channel Failed!',
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(201).json(body);
+    }
+  })
+  .catch(function (err) {
+    logger.info('\r\nChannels: 177: ' + JSON.stringify(Date.now()) + ': ERROR: Update Channel Policy: ' + JSON.stringify(err));
+    return res.status(500).json({
+      message: 'Update Channel Failed!',
+      error: err.error
+    });
+  });
+};
