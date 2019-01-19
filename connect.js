@@ -33,10 +33,9 @@ var setMacaroonPath = (clArgs, config) => {
   if(undefined !== clArgs.lndir) {
     macaroonPath = clArgs.lndir;
   } else {
-    if(config.Authentication.macroonPath !== '') {
+    if(undefined !== config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
       macaroonPath = config.Authentication.macroonPath;
-    }
-    if(config.Authentication.macaroonPath !== '') {
+    } else if(undefined !== config.Authentication.macaroonPath && config.Authentication.macaroonPath !== '') {
       macaroonPath = config.Authentication.macaroonPath;
     }
   }
