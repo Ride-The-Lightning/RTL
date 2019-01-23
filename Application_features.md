@@ -41,6 +41,7 @@
 - Open Channel with connected peers
 - List of channels
 - Close channel
+- Update Channel (One or All)
 #### Pending
 - Pending Open Channels (Default)
 - Pending Force Closing Channels

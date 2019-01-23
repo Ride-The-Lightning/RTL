@@ -44,5 +44,5 @@
 - [ ] SubscribeChannelGraph
 - [ ] DebugLevel
 - [x] FeeReport
-- [ ] UpdateChannelPolicy
+- [x] UpdateChannelPolicy
 - [ ] ForwardingHistory
