@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.1.12-alpha",
+  "version": "0.1.13-alpha",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -31,6 +31,7 @@
     "@ngrx/store": "^7.0.0",
     "@ngrx/store-devtools": "^7.0.0",
     "@swimlane/ngx-charts": "^10.0.0",
+    "angular-user-idle": "^2.0.0",
     "angular2-qrcode": "^2.0.1",
     "atob": "^2.1.2",
     "core-js": "^2.5.4",

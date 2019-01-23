@@ -331,6 +331,9 @@ MIT
 @ngrx/effects
 MIT
 
+angular-user-idle
+MIT
+
 @angular/material/dialog
 
 @angular/material
