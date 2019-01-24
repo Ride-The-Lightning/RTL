@@ -316,15 +316,6 @@ Apache-2.0
  
 
 
-@angular/router
-MIT
-
-@angular/common
-MIT
-
-@angular/platform-browser
-MIT
-
 @ngrx/store
 MIT
 
@@ -389,6 +380,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+@angular/common
+MIT
+
+@angular/platform-browser
+MIT
+
 @angular/material/tooltip
 
 @angular/flex-layout
@@ -430,6 +427,9 @@ MIT
 @angular/material/progress-spinner
 
 @angular/material/form-field
+
+@angular/router
+MIT
 
 @angular/material/progress-bar
 
