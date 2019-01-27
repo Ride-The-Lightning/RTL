@@ -27,6 +27,9 @@ exports.getPeers = (req, res, next) =>
         return getAliasForPeers(peer);
       }))
     .then(function(values) {
+      if (undefined !== body.peers) {
+        body.peers = common.sortDescByKey(body.peers, 'alias');
+      }
       logger.info('\r\nPeers: 29: ' + JSON.stringify(Date.now()) + ': INFO: Peers with Alias: ' + JSON.stringify(body));
       res.status(200).json(body.peers);
     });

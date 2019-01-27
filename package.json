@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng build --prod && ng serve",
+    "start": "ng build --prod --base-href /rtl/ && ng serve",
     "serve": "ng serve",
     "prebuild": "node ./prebuild",
     "build": "ng build --prod --base-href /rtl/",
