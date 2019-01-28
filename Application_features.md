@@ -61,6 +61,9 @@
 - Add Invoice with Optional Memo and Amount and Generate payment request (with QR Code)
 - List Invoices
 
+### Forwarding History
+- View all the forwarded HTLCs within a date range (default view is past 24 hours)
+
 ### Lookups
 - Lookup a node details with pubkey
 - Lookup a channel details with Channel ID
