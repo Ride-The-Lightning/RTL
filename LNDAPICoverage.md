@@ -45,4 +45,4 @@
 - [ ] DebugLevel
 - [x] FeeReport
 - [x] UpdateChannelPolicy
-- [ ] ForwardingHistory
+- [x] ForwardingHistory
