@@ -53,7 +53,13 @@ exports.getChannels = (req, res, next) => {
       } else {
         body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
       }
-      logger.info('\r\nChannels: 55: ' + JSON.stringify(Date.now()) + ': INFO: Pending Channels: ' + JSON.stringify(body));
+      if (req.params.channelType === 'closed') {
+        body.channels.forEach(channel => {
+          channel.close_type = (undefined === channel.close_type) ? '' : channel.close_type;
+        });
+        body.channels = common.sortDescByKey(body.channels, 'close_type');
+      }
+      logger.info('\r\nChannels: 55: ' + JSON.stringify(Date.now()) + ': INFO: Pending/Closed Channels: ' + JSON.stringify(body));
       res.status(200).json(body);
     }
   })

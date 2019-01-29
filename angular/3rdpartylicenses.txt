@@ -23,9 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@angular/router
-MIT
-
 hammerjs
 MIT
 The MIT License (MIT)
@@ -425,26 +422,6 @@ THE SOFTWARE.
 
 @angular/material/icon
 
-@angular/material/card
-
-@angular/material/divider
-
-@angular/material/progress-spinner
-
-@angular/material/form-field
-
-@angular/material/progress-bar
-
-@angular/material/list
-
-@angular/material/core
-
-@angular/material/sort
-
-@angular/material/table
-
-@angular/material/select
-
 angular2-qrcode
 MIT
 
@@ -468,11 +445,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-@angular/material/expansion
+@angular/material/card
+
+@angular/material/divider
+
+@angular/material/progress-spinner
+
+@angular/material/form-field
+
+@angular/router
+MIT
+
+@angular/material/progress-bar
+
+@angular/material/list
+
+@angular/material/core
+
+@angular/material/sort
+
+@angular/material/table
+
+@angular/material/select
 
 @angular/material/tree
 
 @angular/material/radio
+
+@angular/material/expansion
 
 @angular/material/sidenav
 
