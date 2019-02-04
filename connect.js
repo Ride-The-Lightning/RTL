@@ -74,7 +74,7 @@ var validateConfigFile = (macaroonPath, config) => {
     common.enable_logging = config.Authentication.enableLogging;
     let exists = fs.existsSync(log_file_path);
     if(exists) {
-      fs.writeFile(log_file_path, '');
+      fs.writeFile(log_file_path, '', () => {});
     } else if (!exists && config.Authentication.enableLogging) {
       try {
         var createStream = fs.createWriteStream(log_file_path);

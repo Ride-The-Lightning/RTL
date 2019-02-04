@@ -64,8 +64,13 @@ exports.postPeer = (req, res, next) => {
             return getAliasForPeers(peer);
           }))
         .then(function(values) {
-          logger.info('\r\nPeers: 63: ' + JSON.stringify(Date.now()) + ': INFO: Peer Added Successfully');
-          logger.info('\r\nPeers: 64: ' + JSON.stringify(Date.now()) + ': INFO: Peer with Alias: ' + JSON.stringify(body));
+          if (undefined !== body.peers) {
+            body.peers = common.sortDescByKey(body.peers, 'alias');
+            logger.info('\r\nPeers: 69: ' + JSON.stringify(Date.now()) + ': INFO: Peer with Alias: ' + JSON.stringify(body));
+            body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
+            logger.info('\r\nPeers: 71: ' + JSON.stringify(Date.now()) + ': INFO: Peer with Newest On Top: ' + JSON.stringify(body));
+          }
+          logger.info('\r\nPeers: 73: ' + JSON.stringify(Date.now()) + ': INFO: Peer Added Successfully');
           res.status(201).json(body.peers);
         })
         .catch((err) => {

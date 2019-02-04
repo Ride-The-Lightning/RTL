@@ -27,4 +27,13 @@ common.sortDescByKey = (array, key) => {
     });
 }
 
+common.newestOnTop = (array, key, value) => {
+    var index = array.findIndex(function(item){
+      return item[key] === value
+    });
+    var newlyAddedRecord = array.splice(index, 1);
+    array.unshift(newlyAddedRecord[0]);
+    return array;
+}
+
 module.exports = common;

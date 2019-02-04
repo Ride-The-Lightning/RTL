@@ -468,11 +468,11 @@ MIT
 
 @angular/material/select
 
+@angular/material/expansion
+
 @angular/material/tree
 
 @angular/material/radio
-
-@angular/material/expansion
 
 @angular/material/sidenav
 
