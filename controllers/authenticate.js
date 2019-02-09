@@ -1,15 +1,15 @@
 var ini = require('ini');
-var path = require('path');
 var fs = require('fs');
-var rtl_config_path = path.normalize(__dirname + '/..') + '/RTL.conf';
+var common = require('../common');
 const jwt = require("jsonwebtoken");
 var upperCase = require('upper-case');
 var atob = require('atob');
 var logger = require('./logger');
 
 exports.authenticateUser = (req, res, next) => {
+  const RTLConfFilePath = common.rtl_conf_file_path + '/RTL.conf';
   password = atob(req.body.password);
-  fs.readFile(rtl_config_path, 'utf8', function (err, data) {
+  fs.readFile(RTLConfFilePath, 'utf8', function (err, data) {
     if (err) {
       logger.error('\r\nAuthenticate: 13: ' + JSON.stringify(Date.now()) + ': ERROR: RTL Config Reading Failed!');
       res.status(500).json({
@@ -17,12 +17,11 @@ exports.authenticateUser = (req, res, next) => {
         error: err
       });
     } else {
-      var jsonRTLConfig = ini.parse(data);
-      const nodeAuthType = jsonRTLConfig.Authentication.nodeAuthType;
-      const macaroonPath = jsonRTLConfig.Authentication.macroonPath;
-      const lndConfigPath = (undefined !== jsonRTLConfig.Authentication.lndConfigPath) ? jsonRTLConfig.Authentication.lndConfigPath : '';
+      const nodeAuthType = common.node_auth_type;
+      const macaroonPath = common.macaroon_path;
+      const lndConfigPath = (undefined !== common.lnd_config_path) ? common.lnd_config_path : '';
       if(upperCase(nodeAuthType) === 'CUSTOM') {
-        const rtlPass = jsonRTLConfig.Authentication.rtlPass;
+        const rtlPass = ini.parse(data).Authentication.rtlPass;
         if (rtlPass === password) {
           var rpcUser = 'Custom_User';
           const token = jwt.sign(

@@ -1,7 +1,10 @@
 var common = {};
 
+common.rtl_conf_file_path = '';
 common.lnd_server_url = '';
 common.lnd_config_path = '';
+common.node_auth_type = '';
+common.macaroon_path = '';
 common.bitcoind_config_path = '';
 common.enable_logging = false;
 

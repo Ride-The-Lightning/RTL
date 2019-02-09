@@ -1,13 +1,13 @@
 var ini = require('ini');
 var path = require('path');
 var fs = require('fs');
-var file_path = path.normalize(__dirname + '/..') + '/RTL.conf';  
 var logger = require('./logger');
 var common = require('../common');
+var RTLConfFilePath = common.rtl_conf_file_path + '/RTL.conf';
 
 exports.getRTLConfig = (req, res, next) => {
   logger.info('\r\nConf: 7: ' + JSON.stringify(Date.now()) + ': INFO: Getting RTL Config');
-  fs.readFile(file_path, 'utf8', function(err, data) {
+  fs.readFile(RTLConfFilePath, 'utf8', function(err, data) {
     if (err) {
       logger.error('\r\nConf: 10: ' + JSON.stringify(Date.now()) + ': ERROR: Getting RTL Config Failed!');
       res.status(500).json({
@@ -17,9 +17,9 @@ exports.getRTLConfig = (req, res, next) => {
     } else {
       const jsonConfig = ini.parse(data);
       authSettings = {
-        nodeAuthType: (jsonConfig.Authentication.nodeAuthType) ? jsonConfig.Authentication.nodeAuthType : 'DEFAULT',
-        lndConfigPath: (jsonConfig.Authentication.lndConfigPath) ? jsonConfig.Authentication.lndConfigPath : '',
-        bitcoindConfigPath: (jsonConfig.Authentication.bitcoindConfigPath) ? jsonConfig.Authentication.bitcoindConfigPath : ''
+        nodeAuthType: (common.node_auth_type) ? common.node_auth_type : 'DEFAULT',
+        lndConfigPath: (common.lnd_config_path) ? common.lnd_config_path : '',
+        bitcoindConfigPath: (common.bitcoind_config_path) ? common.bitcoind_config_path : ''
       };
       res.status(200).json({settings: jsonConfig.Settings, authSettings: authSettings});
     }
@@ -27,10 +27,10 @@ exports.getRTLConfig = (req, res, next) => {
 };
 
 exports.updateUISettings = (req, res, next) => {
-  var config = ini.parse(fs.readFileSync(file_path, 'utf-8'));
+  var config = ini.parse(fs.readFileSync(RTLConfFilePath, 'utf-8'));
   delete config.Settings;
-  fs.writeFileSync(file_path, ini.stringify(config));
-  fs.appendFile(file_path, ini.stringify(req.body.updatedSettings, { section: 'Settings' }), function(err) {
+  fs.writeFileSync(RTLConfFilePath, ini.stringify(config));
+  fs.appendFile(RTLConfFilePath, ini.stringify(req.body.updatedSettings, { section: 'Settings' }), function(err) {
     if (err) {
       logger.error('\r\nConf: 28: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
       res.status(500).json({
@@ -54,7 +54,7 @@ exports.getConfig = (req, res, next) => {
       confFilePath = common.bitcoind_config_path
       break;
     case 'rtl':
-      confFilePath = file_path;
+      confFilePath = RTLConfFilePath;
       break;
     default:
       confFilePath = '';
