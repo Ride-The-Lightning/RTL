@@ -5,10 +5,11 @@
 ### Home Page (Dashboard and Node Status)
 - Wallet Balance
 - Number of Peers connected
-- Number of Active channels
 - Channel Balance
 - Chain Sync status indicator
 - Fee Report
+- Channel Status
+- Channel Balance comparison (aggregate local vs remote)
 - Network Info
 
 ### Settings
@@ -34,9 +35,6 @@
 - Detach Peer
 
 ### Channels
-#### Dashboard
-- Channel Status - Number of Active, Inactive and Pending channels
-- Total Channel Balances - Aggregated balance view for local and remote channels
 #### Management
 - Open Channel with connected peers
 - List of channels
