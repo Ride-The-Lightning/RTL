@@ -10,7 +10,7 @@ common.bitcoind_config_path = '';
 common.enable_logging = false;
 common.log_file = '';
 common.rtl_sso = 0;
-common.rtl_cookie_file = '';
+common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
 

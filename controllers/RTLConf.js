@@ -3,11 +3,11 @@ var path = require('path');
 var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
-var RTLConfFilePath = common.rtl_conf_file_path + '/RTL.conf';
+var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
 
 exports.getRTLConfig = (req, res, next) => {
   logger.info('\r\nConf: 7: ' + JSON.stringify(Date.now()) + ': INFO: Getting RTL Config');
-  fs.readFile(RTLConfFilePath, 'utf8', function(err, data) {
+  fs.readFile(RTLConfFile, 'utf8', function(err, data) {
     if (err) {
       logger.error('\r\nConf: 10: ' + JSON.stringify(Date.now()) + ': ERROR: Getting RTL Config Failed!');
       res.status(500).json({
@@ -29,10 +29,10 @@ exports.getRTLConfig = (req, res, next) => {
 };
 
 exports.updateUISettings = (req, res, next) => {
-  var config = ini.parse(fs.readFileSync(RTLConfFilePath, 'utf-8'));
+  var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   delete config.Settings;
-  fs.writeFileSync(RTLConfFilePath, ini.stringify(config));
-  fs.appendFile(RTLConfFilePath, ini.stringify(req.body.updatedSettings, { section: 'Settings' }), function(err) {
+  fs.writeFileSync(RTLConfFile, ini.stringify(config));
+  fs.appendFile(RTLConfFile, ini.stringify(req.body.updatedSettings, { section: 'Settings' }), function(err) {
     if (err) {
       logger.error('\r\nConf: 28: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
       res.status(500).json({
@@ -47,23 +47,23 @@ exports.updateUISettings = (req, res, next) => {
 };
 
 exports.getConfig = (req, res, next) => {
-  let confFilePath = '';
+  let confFile = '';
   switch (req.params.nodeType) {
     case 'lnd':
-      confFilePath = common.lnd_config_path
+      confFile = common.lnd_config_path
       break;
     case 'bitcoind':
-      confFilePath = common.bitcoind_config_path
+      confFile = common.bitcoind_config_path
       break;
     case 'rtl':
-      confFilePath = RTLConfFilePath;
+      confFile = common.rtl_conf_file_path + '/RTL.conf';
       break;
     default:
-      confFilePath = '';
+      confFile = '';
       break;
   }
-  logger.info('\r\nConf: 43: ' + JSON.stringify(Date.now()) + ': INFO: Node Type: ' + req.params.nodeType + ', File Path: ' + confFilePath);
-  fs.readFile(confFilePath, 'utf8', function(err, data) {
+  logger.info('\r\nConf: 43: ' + JSON.stringify(Date.now()) + ': INFO: Node Type: ' + req.params.nodeType + ', File Path: ' + confFile);
+  fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
       logger.error('\r\nConf: 59: ' + JSON.stringify(Date.now()) + ': ERROR: Reading Conf Failed!');
       res.status(500).json({

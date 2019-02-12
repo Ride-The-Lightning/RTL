@@ -122,13 +122,13 @@ var setSSOParams = () => {
       common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
     }
 
-    if(undefined !== process.env.RTL_COOKIE_FILE) {
-      common.rtl_cookie_file = process.env.RTL_COOKIE_FILE;
+    if(undefined !== process.env.RTL_COOKIE_PATH) {
+      common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
     } else {
-      common.rtl_cookie_file = common.rtl_conf_file_path + '/cookies/auth.cookie';
+      common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
     }
     
-    readCookie(common.rtl_cookie_file);
+    readCookie(common.rtl_cookie_path);
   }
 };
 
@@ -188,8 +188,10 @@ var setOptions = () => {
 
 var errMsg = '';
 var configFileExists = () => {
-  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
+  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
+  console.log(common.rtl_conf_file_path);
+  console.log(RTLConfFile);
   let exists = fs.existsSync(RTLConfFile);
   if (exists) {
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
