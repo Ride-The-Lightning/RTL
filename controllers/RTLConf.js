@@ -17,9 +17,11 @@ exports.getRTLConfig = (req, res, next) => {
     } else {
       const jsonConfig = ini.parse(data);
       authSettings = {
-        nodeAuthType: (common.node_auth_type) ? common.node_auth_type : 'DEFAULT',
-        lndConfigPath: (common.lnd_config_path) ? common.lnd_config_path : '',
-        bitcoindConfigPath: (common.bitcoind_config_path) ? common.bitcoind_config_path : ''
+        nodeAuthType: common.node_auth_type,
+        lndConfigPath: common.lnd_config_path,
+        bitcoindConfigPath: common.bitcoind_config_path,
+        rtlSSO: common.rtl_sso,
+        logoutRedirectLink: common.logout_redirect_link
       };
       res.status(200).json({settings: jsonConfig.Settings, authSettings: authSettings});
     }

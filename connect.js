@@ -2,8 +2,9 @@ var fs = require('fs');
 var clArgs = require('optimist').argv;
 var ini = require('ini');
 var common = require('./common');
-var upperCase = require('upper-case');
 var path = require('path');
+var crypto = require('crypto');
+var upperCase = require('upper-case');
 var options = {};
 
 var defaultConfig = {
@@ -29,8 +30,8 @@ var defaultConfig = {
 var setMacaroonPath = (clArgs, config) => {
   if(undefined !== clArgs.lndir) {
     common.macaroon_path = clArgs.lndir;
-  } else if (undefined !== clArgs.macaroonPath) {
-    common.macaroon_path = clArgs.macaroonPath;
+  } else if (undefined !== process.env.MACAROON_PATH) {
+    common.macaroon_path = process.env.MACAROON_PATH;
   } else {
     if(undefined !== config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
       common.macaroon_path = config.Authentication.macroonPath;
@@ -45,8 +46,8 @@ var validateConfigFile = (config) => {
     errMsg = 'Please set macaroon path through environment/RTL.conf!';
   }
   
-  if(undefined !== clArgs.lndServerUrl) {
-    common.lnd_server_url = clArgs.lndServerUrl;
+  if(undefined !== process.env.LND_SERVER_URL) {
+    common.lnd_server_url = process.env.LND_SERVER_URL;
   } else {
     if(config.Authentication.lndServerUrl === '' ||  undefined === config.Authentication.lndServerUrl) {
       errMsg = errMsg + '\nPlease set LND Server URL through environment/RTL.conf!';
@@ -55,8 +56,8 @@ var validateConfigFile = (config) => {
     }
   }
 
-  if(undefined !== clArgs.nodeAuthType) {
-    common.node_auth_type = clArgs.nodeAuthType;
+  if(undefined !== process.env.NODE_AUTH_TYPE) {
+    common.node_auth_type = process.env.NODE_AUTH_TYPE;
   } else {
     if(config.Authentication.nodeAuthType === '' ||  undefined === config.Authentication.nodeAuthType) {
       errMsg = errMsg + '\nPlease set Node Auth Type through environment/RTL.conf!';
@@ -65,8 +66,8 @@ var validateConfigFile = (config) => {
     }
   }
 
-  if(undefined !== clArgs.lndConfigPath) {
-    common.lnd_config_path = clArgs.lndConfigPath;
+  if(undefined !== process.env.LND_CONFIG_PATH) {
+    common.lnd_config_path = process.env.LND_CONFIG_PATH;
   } else {
     if(config.Authentication.lndConfigPath !== '' &&  undefined !== config.Authentication.lndConfigPath) {
       common.lnd_config_path = config.Authentication.lndConfigPath;
@@ -77,8 +78,8 @@ var validateConfigFile = (config) => {
     }
   }
 
-  if(undefined !== clArgs.bitcoindConfigPath) {
-    common.bitcoind_config_path = clArgs.bitcoindConfigPath;
+  if(undefined !== process.env.BITCOIND_CONFIG_PATH) {
+    common.bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH;
   } else {
     if(config.Authentication.bitcoindConfigPath !== '' ||  undefined !== config.Authentication.bitcoindConfigPath) {
       common.bitcoind_config_path = config.Authentication.bitcoindConfigPath;
@@ -91,13 +92,15 @@ var validateConfigFile = (config) => {
 
   if(undefined !== config.Authentication.enableLogging) {
     common.enable_logging = config.Authentication.enableLogging;
-    var logFile = common.rtl_conf_file_path + '/RTL.log';
-    let exists = fs.existsSync(logFile);
+    common.log_file = common.rtl_conf_file_path + '/logs/RTL.log';
+    let exists = fs.existsSync(common.log_file);
     if(exists) {
-      fs.writeFile(logFile, '', () => {});
+      fs.writeFile(common.log_file, '', () => {});
     } else if (!exists && config.Authentication.enableLogging) {
       try {
-        var createStream = fs.createWriteStream(logFile);
+        var dirname = path.dirname(common.log_file);
+        createDirectory(dirname);
+        var createStream = fs.createWriteStream(common.log_file);
         createStream.end();
       }
       catch(err) {
@@ -109,6 +112,65 @@ var validateConfigFile = (config) => {
   if(errMsg !== '') {
     throw new Error(errMsg);
   }
+}
+
+var setSSOParams = () => {
+  if(undefined !== process.env.RTL_SSO) {
+    common.rtl_sso = process.env.RTL_SSO;
+
+    if(undefined !== process.env.LOGOUT_REDIRECT_LINK) {
+      common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+    }
+
+    if(undefined !== process.env.RTL_COOKIE_FILE) {
+      common.rtl_cookie_file = process.env.RTL_COOKIE_FILE;
+    } else {
+      common.rtl_cookie_file = common.rtl_conf_file_path + '/cookies/auth.cookie';
+    }
+    
+    readCookie(common.rtl_cookie_file);
+  }
+};
+
+var createDirectory = (dirname) => {
+  try {
+    fs.mkdirSync(dirname);
+  } catch (err) {
+    if (err.code === 'EEXIST') {
+      return dirname;
+    }
+    if (err.code === 'ENOENT') {
+      throw new Error(`EACCES: permission denied, mkdir '${dirname}'`);
+    }
+  }
+}
+
+var readCookie = (cookieFile) => {
+  let exists = fs.existsSync(cookieFile);
+  if (exists) {
+    common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+  } else {
+    try {
+      var dirname = path.dirname(cookieFile);
+      createDirectory(dirname);
+      fs.writeFileSync(cookieFile, String.random(50));
+      common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+    }
+    catch(err) {
+      console.error('Something went wrong, unable to create cookie file!\n' + err);
+      throw new Error(err);
+    }
+  }
+}
+
+String.random = function (length) {
+	let radom13chars = function () {
+		return Math.random().toString(16).substring(2, 15).toUpperCase();
+	}
+	let loops = Math.ceil(length / 13);
+	return new Array(loops).fill(radom13chars).reduce((string, func) => {
+		return string + func();
+	}, '').substring(-length);
 }
 
 var setOptions = () => {
@@ -126,7 +188,7 @@ var setOptions = () => {
 
 var errMsg = '';
 var configFileExists = () => {
-  common.rtl_conf_file_path = (undefined !== clArgs.rtlConfFilePath) ? clArgs.rtlConfFilePath : path.normalize(__dirname);
+  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   let exists = fs.existsSync(RTLConfFile);
   if (exists) {
@@ -134,6 +196,7 @@ var configFileExists = () => {
     setMacaroonPath(clArgs, config)
     validateConfigFile(config);
     setOptions();
+    setSSOParams();
   } else {
     try {
       fs.writeFileSync(RTLConfFile, ini.stringify(defaultConfig));
@@ -141,6 +204,7 @@ var configFileExists = () => {
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
       setOptions();
+      setSSOParams();
     }
     catch(err) {
       console.error('Something went wrong, unable to create config file!\n' + err);

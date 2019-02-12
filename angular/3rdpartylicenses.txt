@@ -316,6 +316,15 @@ Apache-2.0
  
 
 
+@angular/router
+MIT
+
+@angular/common
+MIT
+
+@angular/platform-browser
+MIT
+
 @ngrx/store
 MIT
 
@@ -379,12 +388,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
-@angular/common
-MIT
-
-@angular/platform-browser
-MIT
 
 @angular/material/datepicker
 
@@ -452,9 +455,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @angular/material/progress-spinner
 
 @angular/material/form-field
-
-@angular/router
-MIT
 
 @angular/material/progress-bar
 

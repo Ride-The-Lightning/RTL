@@ -1,12 +1,18 @@
 var common = {};
 
+common.port = 3000;
 common.rtl_conf_file_path = '';
 common.lnd_server_url = '';
 common.lnd_config_path = '';
-common.node_auth_type = '';
+common.node_auth_type = 'DEFAULT';
 common.macaroon_path = '';
 common.bitcoind_config_path = '';
 common.enable_logging = false;
+common.log_file = '';
+common.rtl_sso = 0;
+common.rtl_cookie_file = '';
+common.logout_redirect_link = '/login';
+common.cookie = '';
 
 common.convertToBTC = (num) => {
 	return (num / 100000000).toFixed(6);
