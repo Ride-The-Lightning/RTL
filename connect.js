@@ -190,8 +190,6 @@ var errMsg = '';
 var configFileExists = () => {
   common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
-  console.log(common.rtl_conf_file_path);
-  console.log(RTLConfFile);
   let exists = fs.existsSync(RTLConfFile);
   if (exists) {
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
