@@ -6,7 +6,6 @@ WORKDIR /RTL
 COPY . /RTL
 
 # Install dependencies
-RUN apk add --no-cache python2 freetype build-base cairo-dev cairo cairo-tools
 RUN npm install
 
 #Run the app server
