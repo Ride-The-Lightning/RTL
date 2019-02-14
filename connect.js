@@ -3,8 +3,8 @@ var clArgs = require('optimist').argv;
 var ini = require('ini');
 var common = require('./common');
 var path = require('path');
-var crypto = require('crypto');
 var upperCase = require('upper-case');
+var logger = require('./controllers/logger');
 var options = {};
 
 var defaultConfig = {
@@ -186,6 +186,22 @@ var setOptions = () => {
   };
 }
 
+var logEnvVariables = () => {
+  if (!common.enable_logging) {
+    return;
+  }
+  logger.info('\r\nConfig Setup Variable PORT: ' + common.port);
+  logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + common.lnd_server_url);
+  logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + common.macaroon_path);
+  logger.info('\r\nConfig Setup Variable NODE_AUTH_TYPE: ' + common.node_auth_type);
+  logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + common.lnd_config_path);
+  logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + common.rtl_conf_file_path);
+  logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + common.bitcoind_config_path);
+  logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso);
+  logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path);
+  logger.info('\r\nConfig Setup Variable LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link);
+}
+
 var errMsg = '';
 var configFileExists = () => {
   common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
@@ -197,6 +213,7 @@ var configFileExists = () => {
     validateConfigFile(config);
     setOptions();
     setSSOParams();
+    logEnvVariables();
   } else {
     try {
       fs.writeFileSync(RTLConfFile, ini.stringify(defaultConfig));
@@ -205,6 +222,7 @@ var configFileExists = () => {
       validateConfigFile(config);
       setOptions();
       setSSOParams();
+      logEnvVariables();
     }
     catch(err) {
       console.error('Something went wrong, unable to create config file!\n' + err);

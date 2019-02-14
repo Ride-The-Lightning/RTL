@@ -17,8 +17,8 @@ exports.authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else {
       res.status(401).json({
-        message: "SSO Authentication Failed!",
-        error: "Please check app stack configurations!"
+        message: "Login Failure!",
+        error: "SSO Authentication Failed!"
       });
     }
   } else {

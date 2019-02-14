@@ -5,6 +5,7 @@ var logger = require('./logger');
 
 exports.getInfo = (req, res, next) => {
   options.url = common.lnd_server_url + '/getinfo';
+  logger.info('\r\nCalling getinfo from lnd server url: INFO: ' + options.url);
   request(options).then((body) => {
     logger.info('\r\nGetInfo: 9: ' + JSON.stringify(Date.now()) + ': INFO: ' + JSON.stringify(body));
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
