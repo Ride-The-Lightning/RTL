@@ -32,7 +32,7 @@
     "@ngrx/store-devtools": "^7.0.0",
     "@swimlane/ngx-charts": "^10.0.0",
     "angular-user-idle": "^2.0.0",
-    "angular2-qrcode": "^2.0.1",
+    "angularx-qrcode": "^1.5.3",
     "atob": "^2.1.2",
     "core-js": "^2.5.4",
     "express": "^4.16.4",

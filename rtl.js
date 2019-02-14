@@ -30,7 +30,7 @@ const onError = error => {
       process.exit(1);
       break;
     case "ECONNREFUSED":
-      console.error("LND Server is down/locked");
+      console.error("Server is down/locked");
     default:
       console.error("DEFUALT ERROR");
       console.error(error.code);
@@ -42,6 +42,7 @@ const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + port;
   debug("Listening on " + bind);
+  console.log('Server is up and running, please open the UI at http://localhost:' + port);
 };
 
 const port = normalizePort(process.env.PORT || common.port);
@@ -50,4 +51,4 @@ const server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListening);
 server.listen(port);
-console.log('Server is up and running, please open the UI at http://localhost:' + port);
+

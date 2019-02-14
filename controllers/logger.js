@@ -2,7 +2,9 @@ var fs = require('fs');
 var common = require('../common');
 
 exports.info = (msgStr) => {
-  console.log('Console: ' + msgStr);
+  if (msgStr.indexOf('Config Setup Variable') === -1) {
+    console.log('Console: ' + msgStr);
+  }
   if(common.enable_logging) {
     fs.appendFile(common.log_file, msgStr, function(err) {
       if (err) {
