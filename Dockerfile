@@ -1,5 +1,7 @@
 FROM node:10-alpine
 
+RUN apk add --no-cache tini
+
 WORKDIR /RTL
 
 COPY . /RTL
@@ -9,5 +11,6 @@ RUN npm install
 
 EXPOSE 3000
 
-#Run the app server
-ENTRYPOINT ["node", "rtl"]
+ENTRYPOINT ["/sbin/tini", "-g", "--"]
+
+CMD ["node", "rtl"]
