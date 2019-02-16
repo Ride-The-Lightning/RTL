@@ -8,26 +8,43 @@ var logger = require('./controllers/logger');
 var options = {};
 
 var defaultConfig = {
-  Authentication: {
-    lndServerUrl:'https://localhost:8080/v1',
-    macaroonPath:'',
-    nodeAuthType:'DEFAULT',
-    lndConfigPath:'',
-    bitcoindConfigPath: '',
-    rtlPass:'',
-    enableLogging: false
-  },
-  Settings: {
-    flgSidenavOpened:true,
-    flgSidenavPinned:true,
-    menu:'Vertical',
-    menuType:'Regular',
-    theme:'dark-blue',
-    satsToBTC:false
-  }
+	Authentication: {
+		macaroonPath: '',
+		nodeAuthType: 'DEFAULT',
+		lndConfigPath: '',
+		rtlPass: ''
+	},
+	Settings: {
+		flgSidenavOpened: true,
+		flgSidenavPinned: true,
+		menu: 'Vertical',
+		menuType: 'Regular',
+		theme: 'dark-blue',
+		satsToBTC: false,
+		lndServerUrl: 'https://localhost:8080/v1',
+		bitcoindConfigPath: '',
+		enableLogging: false,
+		port: 3000
+	},
+	SSO: {
+		rtlSSO: 0,
+		rtlCookiePath: '',
+		logoutRedirectLink: '/login'
+	}
 };
 
-var setMacaroonPath = (clArgs, config) => {
+const normalizePort = val => {
+  var port = parseInt(val, 10);
+  if (isNaN(port)) {
+    return val;
+  }
+  if (port >= 0) {
+    return port;
+  }
+  return false;
+};
+
+const setMacaroonPath = (clArgs, config) => {
   if(undefined !== clArgs.lndir) {
     common.macaroon_path = clArgs.lndir;
   } else if (undefined !== process.env.MACAROON_PATH) {
@@ -41,7 +58,7 @@ var setMacaroonPath = (clArgs, config) => {
   }
 }
 
-var validateConfigFile = (config) => {
+const validateConfigFile = (config) => {
   if(common.macaroon_path === '' || undefined === common.macaroon_path) {
     errMsg = 'Please set macaroon path through environment/RTL.conf!';
   }
@@ -49,10 +66,14 @@ var validateConfigFile = (config) => {
   if(undefined !== process.env.LND_SERVER_URL) {
     common.lnd_server_url = process.env.LND_SERVER_URL;
   } else {
-    if(config.Authentication.lndServerUrl === '' ||  undefined === config.Authentication.lndServerUrl) {
+    if((config.Authentication.lndServerUrl === '' ||  undefined === config.Authentication.lndServerUrl) && (config.Settings.lndServerUrl === '' ||  undefined === config.Settings.lndServerUrl)) {
       errMsg = errMsg + '\nPlease set LND Server URL through environment/RTL.conf!';
     } else {
-      common.lnd_server_url = config.Authentication.lndServerUrl;
+      if (config.Settings.lndServerUrl !== '' &&  undefined !== config.Settings.lndServerUrl) {
+        common.lnd_server_url = config.Settings.lndServerUrl;
+      } else if (config.Authentication.lndServerUrl !== '' &&  undefined !== config.Authentication.lndServerUrl) {
+        common.lnd_server_url = config.Authentication.lndServerUrl;
+      } 
     }
   }
 
@@ -81,58 +102,87 @@ var validateConfigFile = (config) => {
   if(undefined !== process.env.BITCOIND_CONFIG_PATH) {
     common.bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH;
   } else {
-    if(config.Authentication.bitcoindConfigPath !== '' ||  undefined !== config.Authentication.bitcoindConfigPath) {
+    if(config.Settings.bitcoindConfigPath !== '' ||  undefined !== config.Settings.bitcoindConfigPath) {
+      common.bitcoind_config_path = config.Settings.bitcoindConfigPath;
+    } else if(config.Authentication.bitcoindConfigPath !== '' ||  undefined !== config.Authentication.bitcoindConfigPath) {
       common.bitcoind_config_path = config.Authentication.bitcoindConfigPath;
     }
   }
 
-  if(upperCase(common.node_auth_type) === 'CUSTOM' && (config.Authentication.rtlPass === '' ||  undefined === config.Authentication.rtlPass)) {
-    errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password in RTL.conf';
-  }
+	if (undefined !== process.env.RTL_PASS) {
+		common.rtl_pass = process.env.RTL_PASS;
+	} else if (config.Authentication.rtlPass !== '' || undefined !== config.Authentication.rtlPass) {
+		common.rtl_pass = config.Authentication.rtlPass;
 
-  if(undefined !== config.Authentication.enableLogging) {
-    common.enable_logging = config.Authentication.enableLogging;
-    common.log_file = common.rtl_conf_file_path + '/logs/RTL.log';
-    let exists = fs.existsSync(common.log_file);
-    if(exists) {
-      fs.writeFile(common.log_file, '', () => {});
-    } else if (!exists && config.Authentication.enableLogging) {
-      try {
-        var dirname = path.dirname(common.log_file);
-        createDirectory(dirname);
-        var createStream = fs.createWriteStream(common.log_file);
-        createStream.end();
-      }
-      catch(err) {
-        console.error('Something went wrong, unable to create log file!' + err);
-      }
-    } 
-  }
+	}
 
-  if(errMsg !== '') {
-    throw new Error(errMsg);
-  }
+	if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
+		errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment/RTL.conf';
+	}
+
+	if (undefined !== process.env.ENABLE_LOGGING) {
+		common.enable_logging = process.env.ENABLE_LOGGING;
+	} else if (undefined !== config.Settings.enableLogging) {
+		common.enable_logging = config.Settings.enableLogging;
+	} else if (undefined !== config.Authentication.enableLogging) {
+		common.enable_logging = config.Authentication.enableLogging;
+	}
+	if (common.enable_logging) {
+		common.log_file = common.rtl_conf_file_path + '/logs/RTL.log';
+		let exists = fs.existsSync(common.log_file);
+		if (exists) {
+			fs.writeFile(common.log_file, '', () => { });
+		} else if (!exists && config.Authentication.enableLogging) {
+			try {
+				var dirname = path.dirname(common.log_file);
+				createDirectory(dirname);
+				var createStream = fs.createWriteStream(common.log_file);
+				createStream.end();
+			}
+			catch (err) {
+				console.error('Something went wrong: \n' + err);
+			}
+		}
+	}
+	if (undefined !== process.env.PORT) {
+		common.port = normalizePort(process.env.PORT);
+	} else if (undefined !== config.Settings.port) {
+		common.port = normalizePort(config.Settings.port);
+	}
+	setSSOParams(config);
+	if (errMsg !== '') {
+		throw new Error(errMsg);
+	}
 }
 
-var setSSOParams = () => {
-  if(undefined !== process.env.RTL_SSO) {
-    common.rtl_sso = process.env.RTL_SSO;
+const setSSOParams = (config) => {
+	if (undefined !== process.env.RTL_SSO) {
+		common.rtl_sso = process.env.RTL_SSO;
+	} else if (undefined !== config.SSO.rtlSSO) {
+		common.rtl_sso = config.SSO.rtlSSO;
+	}
 
-    if(undefined !== process.env.LOGOUT_REDIRECT_LINK) {
-      common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
-    }
+	if (undefined !== process.env.LOGOUT_REDIRECT_LINK) {
+		common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+	} else if (undefined !== config.SSO.logoutRedirectLink) {
+		common.logout_redirect_link = config.SSO.logoutRedirectLink;
+	}
 
-    if(undefined !== process.env.RTL_COOKIE_PATH) {
-      common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
-    } else {
-      common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
-    }
-    
+
+	if (undefined !== process.env.RTL_COOKIE_PATH) {
+		common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
+	} else if (undefined !== config.SSO.rtlCookiePath) {
+		common.rtl_cookie_path = config.SSO.rtlCookiePath;
+	} else {
+		common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
+	}
+
+	if (+common.rtl_sso) {
     readCookie(common.rtl_cookie_path);
   }
 };
 
-var createDirectory = (dirname) => {
+const createDirectory = (dirname) => {
   try {
     fs.mkdirSync(dirname);
   } catch (err) {
@@ -145,7 +195,7 @@ var createDirectory = (dirname) => {
   }
 }
 
-var readCookie = (cookieFile) => {
+const readCookie = (cookieFile) => {
   let exists = fs.existsSync(cookieFile);
   if (exists) {
     common.cookie = fs.readFileSync(cookieFile, 'utf-8');
@@ -157,7 +207,7 @@ var readCookie = (cookieFile) => {
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     }
     catch(err) {
-      console.error('Something went wrong, unable to create cookie file!\n' + err);
+      console.error('Something went wrong: \n' + err);
       throw new Error(err);
     }
   }
@@ -173,7 +223,7 @@ String.random = function (length) {
 	}, '').substring(-length);
 }
 
-var setOptions = () => {
+const setOptions = () => {
   var macaroon = fs.readFileSync(common.macaroon_path + '/admin.macaroon').toString('hex');
   options = {
     url: '',
@@ -186,7 +236,7 @@ var setOptions = () => {
   };
 }
 
-var logEnvVariables = () => {
+const logEnvVariables = () => {
   if (!common.enable_logging) {
     return;
   }
@@ -203,7 +253,7 @@ var logEnvVariables = () => {
 }
 
 var errMsg = '';
-var configFileExists = () => {
+const configFileExists = () => {
   common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   let exists = fs.existsSync(RTLConfFile);
@@ -212,7 +262,6 @@ var configFileExists = () => {
     setMacaroonPath(clArgs, config)
     validateConfigFile(config);
     setOptions();
-    setSSOParams();
     logEnvVariables();
   } else {
     try {
@@ -221,11 +270,10 @@ var configFileExists = () => {
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
       setOptions();
-      setSSOParams();
       logEnvVariables();
     }
     catch(err) {
-      console.error('Something went wrong, unable to create config file!\n' + err);
+      console.error('Something went wrong: \n' + err);
       throw new Error(err);
     }
   }

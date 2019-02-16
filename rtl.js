@@ -3,18 +3,6 @@ const common = require("./common");
 const debug = require("debug")("node-angular");
 const http = require("http");
 
-const normalizePort = val => {
-  var port = parseInt(val, 10);
-  if (isNaN(port)) {
-    return val;
-  }
-  if (port >= 0) {
-    common.port = port;
-    return port;
-  }
-  return false;
-};
-
 const onError = error => {
   if (error.syscall !== "listen") {
     throw error;
@@ -40,15 +28,12 @@ const onError = error => {
 
 const onListening = () => {
   const addr = server.address();
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + port;
+  const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
   debug("Listening on " + bind);
-  console.log('Server is up and running, please open the UI at http://localhost:' + port);
+  console.log('Server is up and running, please open the UI at http://localhost:' + common.port);
 };
-
-const port = normalizePort(process.env.PORT || common.port);
 
 const server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListening);
-server.listen(port);
-
+server.listen(common.port);

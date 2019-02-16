@@ -7,6 +7,7 @@ common.lnd_config_path = '';
 common.node_auth_type = 'DEFAULT';
 common.macaroon_path = '';
 common.bitcoind_config_path = '';
+common.rtl_pass = '';
 common.enable_logging = false;
 common.log_file = '';
 common.rtl_sso = 0;

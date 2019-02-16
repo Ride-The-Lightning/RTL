@@ -3,9 +3,9 @@ var path = require('path');
 var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
-var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
 
 exports.getRTLConfig = (req, res, next) => {
+  var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   logger.info('\r\nConf: 7: ' + JSON.stringify(Date.now()) + ': INFO: Getting RTL Config');
   fs.readFile(RTLConfFile, 'utf8', function(err, data) {
     if (err) {
@@ -29,6 +29,7 @@ exports.getRTLConfig = (req, res, next) => {
 };
 
 exports.updateUISettings = (req, res, next) => {
+  var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   delete config.Settings;
   fs.writeFileSync(RTLConfFile, ini.stringify(config));
