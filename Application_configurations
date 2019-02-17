@@ -43,6 +43,8 @@ lndServerUrl=https://localhost:8080/v1
 rtlSSO=0
 ;Required if 'rtlSSO=1'
 ;Full path of the cookie file including the file name
+;The application url needs to pass the value from this cookie file as query param 'access-key'
+;for the SSO authentication to work
 rtlCookiePath=<>
 ;Required if 'rtlSSO=1'
 ;URL to re-direct to after logout/timeout from RTL
