@@ -55,10 +55,8 @@ Fetch the dependencies and build the application by running:
 `$ npm install`
 
 #### Updating existing build
-`$ cd RTL`
-
-Reset Git (for the changes you may have made to the config file).
 ```
+$ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
