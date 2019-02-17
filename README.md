@@ -5,8 +5,14 @@
 ## RTL - Ride The Lightning
 
 * [Introduction](#intro)
+* [Prerequisites](#prereq)
+* [Installation](#install)
+* [Prep For Execution](#prep)
+* [Start The Server](#start)
+* [Access The Application](#access)
+* [Troubleshooting](#trouble)
 
-# <a name="intro"></a>Introduction
+### <a name="intro"></a>Introduction
 RTL is a web UI for Lightning Network Daemon.
 
 Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by Lightning Labs (https://lightning.engineering/).
@@ -25,7 +31,7 @@ For Screenshots and UI operation guide you can visit the below medium post:
 
 https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
 
-### Prerequisites
+### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
 Its recommended to run this application on testnet, untill the aplha testing phase is over.
@@ -36,8 +42,7 @@ https://nodejs.org/en/download/
 
 Recommended Browsers: Chrome, Firefox, MS Edge
 
-### Installation
-
+### <a name="install"></a>Installation
 #### First time setup
 Fetch sources from the RTL git repository, by executing the below command at the command prompt:
 
@@ -66,7 +71,7 @@ Warning: This step will revert the UI settings, you may have changed on RTL (We 
 
 `$ npm install`
 
-### Prep for Execution
+### <a name="prep"></a>Prep for Execution
 Make sure you are in the RTL directory, where the application was built.
 
 RTL requires a config file `RTL.conf` to start the server and provide user authentication for the app.
@@ -108,7 +113,7 @@ For `nodeAuthType=CUSTOM`
 Specific password can be provided in RTL.conf, to be used by RTL for authentication.
 Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
-### Start the Webserver
+### <a name="start"></a>Start the Server
 Run the following command:
 
 `node rtl` 
@@ -151,10 +156,9 @@ WantedBy=multi-user.target
 
 `$ sudo journalctl -f -u RTL`
 
-### Accessing the Application
-
+### <a name="access"></a>Accessing the Application
 You can access the application in two ways:
-#### Same computer as the webserver
+#### Same computer as the server
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
 #### Remotely from another computer on the same local network as the node
@@ -163,6 +167,6 @@ You would need the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
-### Troubleshooting
+### <a name="trouble"></a>Troubleshooting
 Feel free to open issues on our github, in case you are running into issues with the application.
 You can also reach out via twitter DM @Sauby_k. Thanks.
