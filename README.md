@@ -34,8 +34,6 @@ https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
-Its recommended to run this application on testnet, untill the aplha testing phase is over.
-
 The application also requires Node.js, which can be downloaded from the below location:
 
 https://nodejs.org/en/download/
@@ -169,4 +167,5 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 
 ### <a name="trouble"></a>Troubleshooting
 Feel free to open issues on our github, in case you are running into issues with the application.
-You can also reach out via twitter DM @Sauby_k. Thanks.
+
+You can also reach out via twitter DM on @Sauby_k or @RTL_app Thanks.
