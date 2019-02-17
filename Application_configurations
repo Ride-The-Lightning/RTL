@@ -49,3 +49,15 @@ rtlCookiePath=<>
 logoutRedirectLink=/login
 
 #### Environment variables
+;The environment variable can also be used for all of the above configurations except the UI settings.
+;If the environment variables are set, it will take precedence over the parameters in the RTL.conf file.
+PORT (port number for the rtl node server, default 3000)
+LND_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1)
+MACAROON_PATH (Path for the folder containing 'admin.macaroon' file)
+NODE_AUTH_TYPE (For stand alone RTL authentication allowed values - CUSTOM, DEFAULT)
+LND_CONFIG_PATH (Full path of the lnd.conf file including the file name)
+RTL_CONFIG_PATH (Full path of the RTL.conf file including the file name)
+BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file name)
+RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication)
+RTL_COOKIE_PATH (Full path of the cookie file including the file name)
+LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
