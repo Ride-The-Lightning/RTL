@@ -5,12 +5,19 @@ The parameters can be configured via RTL.conf file or through environment variab
 
 [Authentication]
 ;Path for the folder containing 'admin.macaroon' file
+
 macaroonPath=<>
+
 ;For stand alone RTL authentication. Allowed values - CUSTOM, DEFAULT
+
 nodeAuthType=<>
+
 ;Full path of the lnd.conf file including the file name
+
 lndConfigPath=<>
+
 ;For 'nodeAuthType=CUSTOM', the password in plain text
+
 rtlPass=<>
 
 [Settings]
