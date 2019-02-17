@@ -4,6 +4,9 @@
 
 ## RTL - Ride The Lightning
 
+* [Introduction](#intro)
+
+# <a name="intro"></a>Introduction
 RTL is a web UI for Lightning Network Daemon.
 
 Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by Lightning Labs (https://lightning.engineering/).
