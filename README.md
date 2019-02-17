@@ -59,8 +59,6 @@ Fetch the dependencies and build the application by running:
 
 Reset Git (for the changes you may have made to the config file).
 
-Warning: This step will revert the UI settings, you may have changed on RTL (We will address this in future revisions).
-
 `$ git reset --hard HEAD`
 
 `$ git clean -f -d`
