@@ -58,15 +58,12 @@ Fetch the dependencies and build the application by running:
 `$ cd RTL`
 
 Reset Git (for the changes you may have made to the config file).
-
-`$ git reset --hard HEAD`
-
-`$ git clean -f -d`
-
-`$ git pull`
-
-`$ npm install`
-
+```
+$ git reset --hard HEAD
+$ git clean -f -d
+$ git pull
+$ npm install
+```
 ### <a name="prep"></a>Prep for Execution
 Make sure you are in the RTL directory, where the application was built.
 
@@ -97,7 +94,6 @@ menuType=Regular
 theme=dark-blue
 satsToBTC=false
 ```
-
 #### User Authentication on RTL
 Basic user authentication has now been added on RTL. This requires user to login to RTL server first, before accessing LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
@@ -143,11 +139,10 @@ WantedBy=multi-user.target
 ```
 
 * enable and start RTL
-
-`$ sudo systemctl enable RTL`
-
-`$ sudo systemctl start RTL`
-
+```
+$ sudo systemctl enable RTL
+$ sudo systemctl start RTL
+```
 * montior the RTL log file in realtime(exit with Ctrl-C)
 
 `$ sudo journalctl -f -u RTL`
