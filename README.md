@@ -1,8 +1,9 @@
+## Ride The Lightning (RTL)
+![](screenshots/RTL_Home.png)
+
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 
 **Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
-
-## RTL - Ride The Lightning
 
 * [Introduction](#intro)
 * [Prerequisites](#prereq)
