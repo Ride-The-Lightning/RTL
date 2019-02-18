@@ -6,6 +6,7 @@
 **Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
 * [Introduction](#intro)
+* [Architecture](#arch)
 * [Prerequisites](#prereq)
 * [Installation](#install)
 * [Prep For Execution](#prep)
@@ -24,6 +25,8 @@ Pre-requisite for running RTL is a functioning LND node. You can setup your own 
 RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/RTLFullApplication)
 
 For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
+
+### <a name="arch"></a>Architecture
 
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
