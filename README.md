@@ -27,6 +27,7 @@ RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/R
 For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
 ### <a name="arch"></a>Architecture
+![](screenshots/RTL_Arch.png)
 
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
