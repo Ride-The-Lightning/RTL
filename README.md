@@ -28,9 +28,7 @@ For detailed screenshots and UI operation guide you can visit our [medium post](
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
-The application also requires Node.js, which can be downloaded from the below location:
-
-https://nodejs.org/en/download/
+The application also requires Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
 
 Recommended Browsers: Chrome, Firefox, MS Edge
 
