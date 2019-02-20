@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  build:
+    machine: 
+      docker_layer_caching: true
+    steps: 
+      - checkout
+
+  # Everytimes if a tag of specific format is push on git, a docker image is created and pushed to dockerhub
+  # eg. You tag v1.0, then the docker image  $DOCKERHUB_REPO:1.0 will be built and push to docker hub.
+  # Requires: $DOCKERHUB_USER, $DOCKERHUB_PASS, $DOCKERHUB_REPO defined
+  publish_linuxamd64:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - checkout  
+      - run:
+          command: |
+            LATEST_TAG="${CIRCLE_TAG:1}"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
+            DOCKERHUB_DOCKEFILE="Dockerfile"
+            #
+            echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
+            sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
+            sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" .
+            sudo docker push $DOCKERHUB_DESTINATION
+            # Push a manifest like image, we support only amd64 now, so no need to create real manifest
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG"
+            sudo docker tag "$DOCKERHUB_DESTINATION-amd64" "$DOCKERHUB_DESTINATION"
+            sudo docker push "$DOCKERHUB_DESTINATION"
+workflows:
+  version: 2
+  publish:
+    jobs:
+      - publish_linuxamd64:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
