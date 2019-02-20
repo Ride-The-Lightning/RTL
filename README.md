@@ -1,10 +1,12 @@
+## Ride The Lightning (RTL)
+![](screenshots/RTL_Home.png)
+
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 
 **Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
-## RTL - Ride The Lightning
-
 * [Introduction](#intro)
+* [Architecture](#arch)
 * [Prerequisites](#prereq)
 * [Installation](#install)
 * [Prep For Execution](#prep)
@@ -13,30 +15,24 @@
 * [Troubleshooting](#trouble)
 
 ### <a name="intro"></a>Introduction
-RTL is a web UI for Lightning Network Daemon.
+RTL is a full function, device agnostic web user interface for Lightning Network Daemon, to help manage lightning node operations.
+Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
-Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by Lightning Labs (https://lightning.engineering/).
+Pre-requisite for running RTL is a functioning LND node. You can setup your own node, by following the below guides:
+* Windows/Mac users can explore Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
+* Linux or Raspberry Pi users can explore Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
 
-Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/README.md) for details on Lightning Network and LND implementation.
+RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/RTLFullApplication)
 
-For setting up your Lightning Network node on a Raspberry Pi, you can follow the below guide:
+For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
-https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
-
-RTL source code is available at the below repo:
-
-https://github.com/ShahanaFarooqui/RTLFullApplication
-
-For Screenshots and UI operation guide you can visit the below medium post:
-
-https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
+### <a name="arch"></a>Architecture
+![](screenshots/RTL_Arch.png)
 
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
-The application also requires Node.js, which can be downloaded from the below location:
-
-https://nodejs.org/en/download/
+The application also requires Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
 
 Recommended Browsers: Chrome, Firefox, MS Edge
 
