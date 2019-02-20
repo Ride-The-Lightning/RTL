@@ -1,4 +1,4 @@
-FROM arm32v7/node:10-slim
+FROM arm32v7/node:10-jessie-slim
 
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel /tini
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel.asc /tini.asc
