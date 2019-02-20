@@ -1,15 +1,8 @@
 version: 2
 jobs:
-  build:
-    machine: 
-      docker_layer_caching: true
-    steps: 
-      - checkout
-
-  # Everytimes if a tag of specific format is push on git, a docker image is created and pushed to dockerhub
-  # eg. You tag v1.0, then the docker image  $DOCKERHUB_REPO:1.0 will be built and push to docker hub.
-  # Requires: $DOCKERHUB_USER, $DOCKERHUB_PASS, $DOCKERHUB_REPO defined
-  publish_linuxamd64:
+  # Define in CircleCi Project Variables: $DOCKERHUB_REPO, $DOCKERHUB_USER, $DOCKERHUB_PASS
+  # Publish jobs require those variables
+  publish_docker_linuxamd64:
     machine:
       docker_layer_caching: true
     steps:
@@ -18,21 +11,65 @@ jobs:
           command: |
             LATEST_TAG="${CIRCLE_TAG:1}"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
-            DOCKERHUB_DOCKEFILE="Dockerfile"
-            #
-            echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
+            DOCKERHUB_DOCKERFILE="Dockerfile"
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
-            sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" .
-            sudo docker push $DOCKERHUB_DESTINATION
-            # Push a manifest like image, we support only amd64 now, so no need to create real manifest
-            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG"
-            sudo docker tag "$DOCKERHUB_DESTINATION-amd64" "$DOCKERHUB_DESTINATION"
+            sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
+
+  publish_docker_linuxarm32v7:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - checkout  
+      - run:
+          command: |
+            sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+            LATEST_TAG="${CIRCLE_TAG:1}"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
+            DOCKERHUB_DOCKERFILE="Dockerfile"
+            sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
+            sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
+            sudo docker push "$DOCKERHUB_DESTINATION"
+
+  publish_docker_multiarch:
+    machine:
+      enabled: true
+      image: circleci/classic:201808-01
+    steps:
+      - run:
+          command: |
+            # Turn on Experimental features
+            LATEST_TAG="${CIRCLE_TAG:1}"
+            sudo mkdir $HOME/.docker
+            sudo sh -c 'echo "{ \"experimental\": \"enabled\" }" >> $HOME/.docker/config.json'
+            #
+            sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
+            #
+            sudo docker manifest create --amend "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-amd64" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
+            sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-amd64" --os linux --arch amd64
+            sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7" --os linux --arch arm --variant v7
+            sudo docker manifest push "$DOCKERHUB_REPO:$LATEST_TAG" -p
+
 workflows:
   version: 2
   publish:
     jobs:
-      - publish_linuxamd64:
+      - publish_docker_linuxamd64:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+      - publish_docker_linuxarm32v7:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+      - publish_docker_multiarch:
+          requires:
+            - publish_docker_linuxamd64
+            - publish_docker_linuxarm32v7
           filters:
             branches:
               ignore: /.*/
