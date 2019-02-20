@@ -1,10 +1,12 @@
+## Ride The Lightning (RTL)
+![](screenshots/RTL_Home.png)
+
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 
-**Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md)
-
-## RTL - Ride The Lightning
+**Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
 * [Introduction](#intro)
+* [Architecture](#arch)
 * [Prerequisites](#prereq)
 * [Installation](#install)
 * [Prep For Execution](#prep)
@@ -13,30 +15,24 @@
 * [Troubleshooting](#trouble)
 
 ### <a name="intro"></a>Introduction
-RTL is a web UI for Lightning Network Daemon.
+RTL is a full function, device agnostic web user interface for Lightning Network Daemon, to help manage lightning node operations.
+Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
-Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by Lightning Labs (https://lightning.engineering/).
+Pre-requisite for running RTL is a functioning LND node. You can setup your own node, by following the below guides:
+* Windows/Mac users can explore Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
+* Linux or Raspberry Pi users can explore Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
 
-Visit their Github repo (https://github.com/lightningnetwork/lnd/blob/master/README.md) for details on Lightning Network and LND implementation.
+RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/RTLFullApplication)
 
-For setting up your Lightning Network node on a Raspberry Pi, you can follow the below guide:
+For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
-https://github.com/Stadicus/guides/blob/master/raspibolt/README.md
-
-RTL source code is available at the below repo:
-
-https://github.com/ShahanaFarooqui/RTLFullApplication
-
-For Screenshots and UI operation guide you can visit the below medium post:
-
-https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2
+### <a name="arch"></a>Architecture
+![](screenshots/RTL_Arch.png)
 
 ### <a name="prereq"></a>Prerequisites
 Please ensure that you have completed the installation of LND lightning node.
 
-The application also requires Node.js, which can be downloaded from the below location:
-
-https://nodejs.org/en/download/
+The application also requires Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
 
 Recommended Browsers: Chrome, Firefox, MS Edge
 
@@ -55,20 +51,13 @@ Fetch the dependencies and build the application by running:
 `$ npm install`
 
 #### Updating existing build
-`$ cd RTL`
-
-Reset Git (for the changes you may have made to the config file).
-
-Warning: This step will revert the UI settings, you may have changed on RTL (We will address this in future revisions).
-
-`$ git reset --hard HEAD`
-
-`$ git clean -f -d`
-
-`$ git pull`
-
-`$ npm install`
-
+```
+$ cd RTL
+$ git reset --hard HEAD
+$ git clean -f -d
+$ git pull
+$ npm install
+```
 ### <a name="prep"></a>Prep for Execution
 Make sure you are in the RTL directory, where the application was built.
 
@@ -99,7 +88,6 @@ menuType=Regular
 theme=dark-blue
 satsToBTC=false
 ```
-
 #### User Authentication on RTL
 Basic user authentication has now been added on RTL. This requires user to login to RTL server first, before accessing LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
@@ -145,27 +133,26 @@ WantedBy=multi-user.target
 ```
 
 * enable and start RTL
-
-`$ sudo systemctl enable RTL`
-
-`$ sudo systemctl start RTL`
-
+```
+$ sudo systemctl enable RTL
+$ sudo systemctl start RTL
+```
 * montior the RTL log file in realtime(exit with Ctrl-C)
 
 `$ sudo journalctl -f -u RTL`
 
 ### <a name="access"></a>Accessing the Application
 You can access the application in two ways:
-#### Same computer as the server
+#### Same device as the server
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
-#### Remotely from another computer on the same local network as the node
-To access the application remotely from a computer, ensure that the firewall running on your node allows access on port 3000.
-You would need the IP address of your node to access the application.
+#### Remotely from another device on the same local network as the node
+Ensure that the firewall running on your node allows access on port 3000 (or the custom port configured for RTL).
+Determine the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
 ### <a name="trouble"></a>Troubleshooting
 Feel free to open issues on our github, in case you are running into issues with the application.
 
-You can also reach out via twitter DM on @Sauby_k or @RTL_app Thanks.
+You can also reach out via twitter DM on @Sauby_k or @RTL_App. Thanks for your interest.
