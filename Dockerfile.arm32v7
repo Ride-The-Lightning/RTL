@@ -1,10 +1,10 @@
 FROM arm32v7/node:10-slim
 
-ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel /tini
-ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel.asc /tini.asc
-RUN gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 && gpg --batch --verify /tini.asc /tini
-RUN chmod +x /tini
-COPY /tini /sbin/tini
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel /tini-static-armel
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel.asc /tini-static-armel.asc
+RUN gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 && gpg --batch --verify /tini-static-armel.asc /tini-static-armel
+COPY /tini-static-armel /sbin/tini
+RUN chmod +x /sbin/tini
 
 WORKDIR /RTL
 
