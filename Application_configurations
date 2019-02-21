@@ -34,6 +34,11 @@ port=3000
 ;<LND server URL for REST APIs.
 ;Default is 'https://localhost:8080/v1'
 lndServerUrl=https://localhost:8080/v1 
+;Reverse Proxy flag for webserver configuration.
+;Default value is 0
+;Value=0, indicates no reverse proxy used for running RTL
+;Value=1, indicates reverse proxy is being used to serve RTL
+reverseProxy=0
 
 [SSO]
 ;Single Sign On control
@@ -63,3 +68,4 @@ BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file nam
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
+REVERSE_PROXY (Flag to indicate reverse proxy use for serving RTL. 0-No, 1-Yes)
