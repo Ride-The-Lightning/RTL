@@ -61,27 +61,26 @@ $ git pull
 $ npm install
 ```
 ### <a name="prep"></a>Prep for Execution
-Make sure you are in the RTL directory, where the application was built.
-
-RTL requires a config file `RTL.conf` to start the server and provide user authentication for the app.
-
+Rename `sample-RTL.conf` file to `RTL.conf`.
+RTL requires its config file `RTL.conf`, to start the server and provide user authentication on the app.
 Locate the complete path of the readable macroon file (admin.macroon) on your node and lnd.conf file
-
-If you followed Stacidus's guide referenced above, and you are on lnd version 0.4.2 or below it should be `/home/admin/.lnd`.
-
-For lnd versions 0.5 and above, it should be `/home/admin/.lnd/data/chain/bitcoin/testnet`.
-
-Other platform users should accordingly locate the directory of the readable macroon and lnd.conf files.
-
 The path of the macroon directory and lnd.conf needs to be provided in the RTL.conf file to start the server.
+
+For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
 
 Sample RTL.conf:
 ```
 [Authentication]
-lndServerUrl=https://localhost:8080/v1
-macroonPath=C:\Users\<User>\AppData\Local\Lnd\data\chain\bitcoin\testnet
-nodeAuthType=DEFAULT
-lndConfigPath=C:\Users\<User>\AppData\Local\Lnd\lnd.conf
+macaroonPath=C:\Users\<user>\AppData\Local\Lnd\data\chain\bitcoin\testnet
+nodeAuthType=CUSTOM
+lndConfigPath=C:\Users\<user>\AppData\Local\Lnd\lnd.conf
+rtlPass=***
+
+[SSO]
+rtlSSO=0
+rtlCookiePath=C:\RTL\cookies\auth.cookie
+logoutRedirectLink=/login
+
 [Settings]
 flgSidenavOpened=true
 flgSidenavPinned=true
@@ -89,16 +88,21 @@ menu=Vertical
 menuType=Regular
 theme=dark-blue
 satsToBTC=false
+lndServerUrl=https://192.168.0.0:8080/v1
+bitcoindConfigPath=
+enableLogging=false
+port=3000
+reverseProxy=0
 ```
 #### User Authentication on RTL
-Basic user authentication has now been added on RTL. This requires user to login to RTL server first, before accessing LND functions.
+Basic user authentication has now been added on RTL. This requires user to be authenticated by RTL first, before accessing LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
 
 For `nodeAuthType=DEFAULT`
 Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
 
 For `nodeAuthType=CUSTOM`
-Specific password can be provided in RTL.conf, to be used by RTL for authentication.
+Specific password can be provided in RTL.conf (in plain text), to be used by RTL for authentication.
 Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
 ### <a name="start"></a>Start the Server
