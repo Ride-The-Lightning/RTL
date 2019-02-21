@@ -24,7 +24,8 @@ var defaultConfig = {
 		lndServerUrl: 'https://localhost:8080/v1',
 		bitcoindConfigPath: '',
 		enableLogging: false,
-		port: 3000
+    port: 3000,
+    reverseProxy: 0
 	},
 	SSO: {
 		rtlSSO: 0,
@@ -144,12 +145,22 @@ const validateConfigFile = (config) => {
 			}
 		}
 	}
-	if (undefined !== process.env.PORT) {
+
+  if (undefined !== process.env.PORT) {
 		common.port = normalizePort(process.env.PORT);
 	} else if (undefined !== config.Settings.port) {
 		common.port = normalizePort(config.Settings.port);
 	}
-	setSSOParams(config);
+
+  if (undefined !== process.env.REVERSE_PROXY) {
+    common.reverse_proxy = process.env.REVERSE_PROXY;
+    common.ng_api_root = (common.reverse_proxy == 1) ? '/' : '/rtl/';
+	} else if (undefined !== config.Settings.reverseProxy) {
+		common.reverse_proxy = config.Settings.reverseProxy;
+    common.ng_api_root = (common.reverse_proxy == 1) ? '/' : '/rtl/';
+	}
+
+  setSSOParams(config);
 	if (errMsg !== '') {
 		throw new Error(errMsg);
 	}

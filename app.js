@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const common = require("./common");
 
 //Declare all Routes here
 const authenticateRoutes = require("./routes/authenticate");
@@ -22,7 +23,7 @@ const switchRoutes = require("./routes/switch");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/", express.static(path.join(__dirname, "angular")));
+app.use(common.ng_api_root, express.static(path.join(__dirname, "angular")));
 
 // CORS fix, Only required for developement due to separate backend and frontend servers
 app.use((req, res, next) => {

@@ -14,6 +14,8 @@ common.rtl_sso = 0;
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
+common.reverse_proxy = 0;
+common.ng_api_root = '/rtl/';
 
 common.convertToBTC = (num) => {
 	return (num / 100000000).toFixed(6);
