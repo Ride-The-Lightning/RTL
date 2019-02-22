@@ -2,7 +2,6 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const common = require("./common");
 
 //Declare all Routes here
 const authenticateRoutes = require("./routes/authenticate");
@@ -43,7 +42,6 @@ app.use((req, res, next) => {
 // CORS fix, Only required for developement due to separate backend and frontend servers
 
 // Use declared routes here
-
 app.use(apiRoot + "authenticate", authenticateRoutes);
 app.use(apiRoot + "getinfo", infoRoutes);
 app.use(apiRoot + "channels", channelsRoutes);
