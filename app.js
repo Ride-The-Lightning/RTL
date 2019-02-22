@@ -62,8 +62,6 @@ app.use(apiRoot + "switch", switchRoutes);
 
 // sending angular application when route doesn't match
 app.use((req, res, next) => {
-  console.log(apiRoot);
-  console.log(req.url);
   res.sendFile(path.join(__dirname, "angular", "index.html"));
 });
 
