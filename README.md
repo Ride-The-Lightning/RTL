@@ -92,7 +92,6 @@ lndServerUrl=https://192.168.0.0:8080/v1
 bitcoindConfigPath=
 enableLogging=false
 port=3000
-reverseProxy=0
 ```
 #### User Authentication on RTL
 Basic user authentication has now been added on RTL. This requires user to be authenticated by RTL first, before accessing LND functions.
