@@ -34,11 +34,6 @@ port=3000
 ;<LND server URL for REST APIs.
 ;Default is 'https://localhost:8080/v1'
 lndServerUrl=https://localhost:8080/v1 
-;Reverse Proxy flag for webserver configuration.
-;Default value is 0
-;Value=0, indicates no reverse proxy used for running RTL
-;Value=1, indicates reverse proxy is being used to serve RTL
-reverseProxy=0
 
 [SSO]
 ;Single Sign On control
