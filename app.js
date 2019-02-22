@@ -20,10 +20,12 @@ const paymentsRoutes = require("./routes/payments");
 const RTLConfRoutes = require("./routes/RTLConf");
 const invoiceRoutes = require("./routes/invoices");
 const switchRoutes = require("./routes/switch");
+const baseHref = '/rtl/';
+const apiRoot = baseHref + 'api/';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(common.ng_api_root, express.static(path.join(__dirname, "angular")));
+app.use(baseHref, express.static(path.join(__dirname, "angular")));
 
 // CORS fix, Only required for developement due to separate backend and frontend servers
 app.use((req, res, next) => {
@@ -41,24 +43,27 @@ app.use((req, res, next) => {
 // CORS fix, Only required for developement due to separate backend and frontend servers
 
 // Use declared routes here
-app.use("/api/authenticate", authenticateRoutes);
-app.use("/api/getinfo", infoRoutes);
-app.use("/api/channels", channelsRoutes);
-app.use("/api/peers", peersRoutes);
-app.use("/api/fees", feesRoutes);
-app.use("/api/balance", balanceRoutes);
-app.use("/api/wallet", walletRoutes);
-app.use("/api/network", graphRoutes);
-app.use("/api/newaddress", newAddressRoutes);
-app.use("/api/transactions", transactionsRoutes);
-app.use("/api/payreq", payReqRoutes);
-app.use("/api/payments", paymentsRoutes);
-app.use("/api/conf", RTLConfRoutes);
-app.use("/api/invoices", invoiceRoutes);
-app.use("/api/switch", switchRoutes);
+
+app.use(apiRoot + "authenticate", authenticateRoutes);
+app.use(apiRoot + "getinfo", infoRoutes);
+app.use(apiRoot + "channels", channelsRoutes);
+app.use(apiRoot + "peers", peersRoutes);
+app.use(apiRoot + "fees", feesRoutes);
+app.use(apiRoot + "balance", balanceRoutes);
+app.use(apiRoot + "wallet", walletRoutes);
+app.use(apiRoot + "network", graphRoutes);
+app.use(apiRoot + "newaddress", newAddressRoutes);
+app.use(apiRoot + "transactions", transactionsRoutes);
+app.use(apiRoot + "payreq", payReqRoutes);
+app.use(apiRoot + "payments", paymentsRoutes);
+app.use(apiRoot + "conf", RTLConfRoutes);
+app.use(apiRoot + "invoices", invoiceRoutes);
+app.use(apiRoot + "switch", switchRoutes);
 
 // sending angular application when route doesn't match
 app.use((req, res, next) => {
+  console.log(apiRoot);
+  console.log(req.url);
   res.sendFile(path.join(__dirname, "angular", "index.html"));
 });
 

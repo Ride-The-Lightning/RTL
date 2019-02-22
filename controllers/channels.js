@@ -138,10 +138,12 @@ exports.postTransactions = (req, res, next) => {
 };
 
 exports.closeChannel = (req, res, next) => {
+  req.setTimeout(60000 * 10); // timeout 10 mins
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
+  logger.info('\r\nChannels: 144: ' + JSON.stringify(Date.now()) + ': INFO: Closing Channel: ' + options.url);
   request.delete(options).then((body) => {
-    logger.info('\r\nChannels: 134: ' + JSON.stringify(Date.now()) + ': INFO: Close Channel Response: ' + JSON.stringify(body));
+    logger.info('\r\nChannels: 146: ' + JSON.stringify(Date.now()) + ': INFO: Close Channel Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Close Channel Failed!',
@@ -152,7 +154,7 @@ exports.closeChannel = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 146: ' + JSON.stringify(Date.now()) + ': ERROR: Close Channel: ' + JSON.stringify(err));
+    logger.info('\r\nChannels: 157: ' + JSON.stringify(Date.now()) + ': ERROR: Close Channel: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Close Channel Failed!',
       error: err.error
@@ -180,9 +182,9 @@ exports.postChanPolicy = (req, res, next) => {
       chan_point: {funding_txid_str: txid_str, output_index: parseInt(output_idx)}
     });
   }
-  logger.info('\r\nChannels: 161: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy Options: ' + JSON.stringify(options));
+  logger.info('\r\nChannels: 185: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy Options: ' + JSON.stringify(options));
   request.post(options).then((body) => {
-    logger.info('\r\nChannels: 163: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy: ' + JSON.stringify(body));
+    logger.info('\r\nChannels: 187: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Update Channel Failed!',
@@ -193,7 +195,7 @@ exports.postChanPolicy = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 177: ' + JSON.stringify(Date.now()) + ': ERROR: Update Channel Policy: ' + JSON.stringify(err));
+    logger.info('\r\nChannels: 198: ' + JSON.stringify(Date.now()) + ': ERROR: Update Channel Policy: ' + JSON.stringify(err));
     return res.status(500).json({
       message: 'Update Channel Failed!',
       error: err.error
