@@ -6,15 +6,21 @@ var upperCase = require('upper-case');
 var atob = require('atob');
 var logger = require('./logger');
 
+exports.redirectUser = (req, res, next) => {
+  common.password = req.params.pwd;
+  res.redirect(301, '/rtl/');
+}
+
 exports.authenticateUser = (req, res, next) => {
-  password = atob(req.body.password);
   if(+common.rtl_sso) {
+    password = common.password;
+    common.password = '';
     if (common.cookie === password) {
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
         'default_secret_key'
       );
-      res.status(200).json({ token: token });
+      res.status(200).json({token: token});
     } else {
       res.status(401).json({
         message: "Login Failure!",
@@ -22,6 +28,7 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
+    password = atob(req.body.password);
     if(upperCase(common.node_auth_type) === 'CUSTOM') {
       if (common.rtl_pass === password) {
         var rpcUser = 'Custom_User';
