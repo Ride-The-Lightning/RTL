@@ -158,6 +158,5 @@ Determine the IP address of your node to access the application.
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
 ### <a name="trouble"></a>Troubleshooting
-Feel free to open issues on our github, in case you are running into issues with the application.
-
-You can also reach out via twitter DM on @Sauby_k or @RTL_App. Thanks for your interest.
+In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
+You can also reach out to us via twitter DM on @Sauby_k or @RTL_App. Thanks for your interest.
