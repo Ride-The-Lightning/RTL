@@ -6,25 +6,10 @@ var upperCase = require('upper-case');
 var atob = require('atob');
 var logger = require('./logger');
 
-exports.authenticateUserWithCookie = (req, res, next) => {
-  if(+common.rtl_sso) {
-    res.cookie('access-key', req.query['access-key'], { signed: true, httpOnly: true, sameSite: true, secure: app.enabled('tls'), maxAge: 2592000000 });
-    res.redirect(301, '/rtl/');
-  }
-  else
-  {
-    res.status(404).json({
-      message: "Login Failure!",
-      error: "SSO not available"
-    });
-  }
-};
-
 exports.authenticateUser = (req, res, next) => {
+  password = atob(req.body.password);
   if(+common.rtl_sso) {
-    const access_key = req.cookies['access-key'];
-    res.clearCookie("access-key");
-    if (common.cookie === access_key) {
+    if (common.cookie === password) {
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
         'default_secret_key'
@@ -37,7 +22,6 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
-    password = atob(req.body.password);
     if(upperCase(common.node_auth_type) === 'CUSTOM') {
       if (common.rtl_pass === password) {
         var rpcUser = 'Custom_User';
