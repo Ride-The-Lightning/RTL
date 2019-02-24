@@ -38,19 +38,14 @@ For detailed screenshots and UI operation guide you can visit our [medium post](
 
 ### <a name="install"></a>Installation
 #### First time setup
-Fetch sources from the RTL git repository, by executing the below command at the command prompt:
-
+* Fetch sources from the RTL git repository, by executing the below on the command prompt:
 `$ git clone https://github.com/ShahanaFarooqui/RTL.git`
-
-Move to the newly created directory:
-
+* Change directory to RTL folder:
 `$ cd RTL`
-
-Fetch the dependencies and build the application by running:
-
+* Fetch the dependencies and build the application by running:
 `$ npm install`
 
-#### Or: Updating existing build
+#### Or: Update existing build
 ```
 $ cd RTL
 $ git reset --hard HEAD
@@ -59,13 +54,13 @@ $ git pull
 $ npm install
 ```
 ### <a name="prep"></a>Prep for Execution
-RTL requires its config file `RTL.conf`, to start the server and provide user authentication on the app.
+RTL requires its own config file `RTL.conf`, to start the server and provide user authentication on the app.
 
 * Rename `sample-RTL.conf` file to `RTL.conf`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
-* Modify the `RTL.conf` file per the sample file below
+* Modify the `RTL.conf` file per the example file below
 
-RTL.conf:
+Example RTL.conf:
 ```
 [Authentication]
 macaroonPath=C:\Users\<user>\AppData\Local\Lnd\data\chain\bitcoin\testnet
