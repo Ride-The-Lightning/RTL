@@ -52,7 +52,7 @@ Fetch the dependencies and build the application by running:
 
 `$ npm install`
 
-#### Updating existing build
+#### Or: Updating existing build
 ```
 $ cd RTL
 $ git reset --hard HEAD
@@ -95,24 +95,24 @@ port=3000
 For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
 
 #### User Authentication on RTL
-RTL requires the user to be authenticated by RTL first, before accessing LND functions.
+RTL requires the user to be authenticated by the application first, before accessing LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
 
 For `nodeAuthType=DEFAULT`
 Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
 
 For `nodeAuthType=CUSTOM`
-Specific password can be provided in RTL.conf (in plain text), to be used by RTL for authentication.
+Specific password must be provided in RTL.conf (in plain text) for authentication.
 Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
 ### <a name="start"></a>Start the Server
 Run the following command:
 
-`node rtl` 
+`$ node rtl` 
 
 If the server started successfully, you should get the below output on the console:
 
-`Server is up and running, please open the UI at http://localhost:3000`
+`$ Server is up and running, please open the UI at http://localhost:3000`
 
 #### Optional: Running RTL as a service (rpi or Linux platform users)
 In case you are running a headless rpi or Linux node, you can configure RTL as a service.
