@@ -24,7 +24,7 @@ const switchRoutes = require("./routes/switch");
 const baseHref = '/rtl/';
 const apiRoot = baseHref + 'api/';
 
-app.use(cookieParser(common.cookieParserSecret));
+app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(baseHref, express.static(path.join(__dirname, "angular")));

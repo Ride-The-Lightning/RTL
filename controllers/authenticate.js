@@ -32,7 +32,7 @@ exports.authenticateUser = (req, res, next) => {
     if (common.cookie === access_key) {
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
-        'default_secret_key'
+        common.secret_key
       );
       res.status(200).json({ token: token });
     } else {
@@ -48,7 +48,7 @@ exports.authenticateUser = (req, res, next) => {
         var rpcUser = 'Custom_User';
         const token = jwt.sign(
           { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
-          'default_secret_key'
+          common.secret_key
         );
         res.status(200).json({ token: token });
       } else {
@@ -72,7 +72,7 @@ exports.authenticateUser = (req, res, next) => {
               var rpcUser = (undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
               const token = jwt.sign(
                 { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
-                'default_secret_key'
+                common.secret_key
               );
               res.status(200).json({ token: token });
             } else {

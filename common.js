@@ -16,7 +16,7 @@ common.rtl_sso = 0;
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
-common.cookieParserSecret = crypto.randomBytes(64).toString('hex');
+common.secret_key = crypto.randomBytes(64).toString('hex');
 
 common.convertToBTC = (num) => {
 	return (num / 100000000).toFixed(6);
