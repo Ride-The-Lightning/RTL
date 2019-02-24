@@ -95,15 +95,11 @@ port=3000
 For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
 
 #### User Authentication on RTL
-RTL requires the user to be authenticated by the application first, before accessing LND functions.
+RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
 
-For `nodeAuthType=DEFAULT`
-Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
-
-For `nodeAuthType=CUSTOM`
-Specific password must be provided in RTL.conf (in plain text) for authentication.
-Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
+* For `nodeAuthType=DEFAULT`; Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
+* For `nodeAuthType=CUSTOM`; Specific password must be provided in RTL.conf (in plain text) for authentication. Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
 ### <a name="start"></a>Start the Server
 Run the following command:
@@ -114,8 +110,8 @@ If the server started successfully, you should get the below output on the conso
 
 `$ Server is up and running, please open the UI at http://localhost:3000`
 
-#### Optional: Running RTL as a service (rpi or Linux platform users)
-In case you are running a headless rpi or Linux node, you can configure RTL as a service.
+#### Optional: Running RTL as a service (Rpi or Linux platform users)
+In case you are running a headless Rpi or a Linux node, you can configure RTL as a service.
 
 * Create RTL systemd unit and with the following content. Save and exit.
 ```bash
