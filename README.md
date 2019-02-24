@@ -61,14 +61,13 @@ $ git pull
 $ npm install
 ```
 ### <a name="prep"></a>Prep for Execution
-Rename `sample-RTL.conf` file to `RTL.conf`.
 RTL requires its config file `RTL.conf`, to start the server and provide user authentication on the app.
-Locate the complete path of the readable macroon file (admin.macroon) on your node and lnd.conf file
-The path of the macroon directory and lnd.conf needs to be provided in the RTL.conf file to start the server.
 
-For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
+* Rename `sample-RTL.conf` file to `RTL.conf`.
+* Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
+* Modify the `RTL.conf` file per the sample file below
 
-Sample RTL.conf:
+RTL.conf:
 ```
 [Authentication]
 macaroonPath=C:\Users\<user>\AppData\Local\Lnd\data\chain\bitcoin\testnet
@@ -93,8 +92,10 @@ bitcoindConfigPath=
 enableLogging=false
 port=3000
 ```
+For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
+
 #### User Authentication on RTL
-Basic user authentication has now been added on RTL. This requires user to be authenticated by RTL first, before accessing LND functions.
+RTL requires the user to be authenticated by RTL first, before accessing LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
 
 For `nodeAuthType=DEFAULT`
@@ -127,7 +128,7 @@ Wants=lnd.service
 After=lnd.service
 
 [Service]
-ExecStart=/usr/bin/node /home/admin/Projects/RTL/rtl
+ExecStart=/usr/bin/node <Full path of the RTL folder>/rtl
 User=<user>
 Restart=always
 TimeoutSec=120
@@ -152,8 +153,8 @@ You can access the application in two ways:
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
 #### Remotely from another device on the same local network as the node
-Ensure that the firewall running on your node allows access on port 3000 (or the custom port configured for RTL).
-Determine the IP address of your node to access the application.
+* Ensure that the if a firewall running on your node, it allows access on port 3000 (or the custom port configured for RTL).
+* Determine the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
