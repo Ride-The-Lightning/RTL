@@ -96,8 +96,8 @@ For details on all the configuration options refer to [this page](https://github
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
 There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
 
-* For `nodeAuthType=DEFAULT`; Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
-* For `nodeAuthType=CUSTOM`; Specific password must be provided in RTL.conf (in plain text) for authentication. Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
+* Option 1: `nodeAuthType=DEFAULT`; Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
+* Option 2: `nodeAuthType=CUSTOM`; Specific password must be provided in RTL.conf (in plain text) for authentication. Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
 
 ### <a name="start"></a>Start the Server
 Run the following command:
