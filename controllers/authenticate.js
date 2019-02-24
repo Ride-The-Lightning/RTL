@@ -26,10 +26,9 @@ exports.authenticateUserWithCookie = (req, res, next) => {
 };
 
 exports.authenticateUser = (req, res, next) => {
+  password = atob(req.body.password);
   if(+common.rtl_sso) {
-    const access_key = req.cookies['access-key'];
-    res.clearCookie("access-key");
-    if (common.cookie === access_key) {
+    if (common.cookie === password) {
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
         'default_secret_key'
@@ -42,7 +41,6 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
-    password = atob(req.body.password);
     if(upperCase(common.node_auth_type) === 'CUSTOM') {
       if (common.rtl_pass === password) {
         var rpcUser = 'Custom_User';
