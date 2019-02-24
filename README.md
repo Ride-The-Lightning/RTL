@@ -39,10 +39,13 @@ For detailed screenshots and UI operation guide you can visit our [medium post](
 ### <a name="install"></a>Installation
 #### First time setup
 * Fetch sources from the RTL git repository, by executing the below on the command prompt:
+
 `$ git clone https://github.com/ShahanaFarooqui/RTL.git`
 * Change directory to RTL folder:
+
 `$ cd RTL`
 * Fetch the dependencies and build the application by running:
+
 `$ npm install`
 
 #### Or: Update existing build
