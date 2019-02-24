@@ -8,7 +8,7 @@ var logger = require('./logger');
 
 exports.authenticateUserWithCookie = (req, res, next) => {
   if(+common.rtl_sso) {
-    res.cookie('access-key', req.query['access-key'], { signed: true, httpOnly: true, sameSite: true, secure: true });
+    res.cookie('access-key', req.query['access-key'], { httpOnly: true, sameSite: true, secure: true });
     res.set(
       {
         'Cache-Control': 'private, no-cache'
