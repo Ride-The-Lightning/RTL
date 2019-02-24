@@ -21,14 +21,10 @@ const invoiceRoutes = require("./routes/invoices");
 const switchRoutes = require("./routes/switch");
 const baseHref = '/rtl/';
 const apiRoot = baseHref + 'api/';
-var options = {
-  setHeaders: function (res, path, stat) {
-    res.status(301)
-  }
-}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(baseHref, express.static(path.join(__dirname, "angular"), options));
+app.use(baseHref, express.static(path.join(__dirname, "angular")));
 
 // CORS fix, Only required for developement due to separate backend and frontend servers
 app.use((req, res, next) => {
