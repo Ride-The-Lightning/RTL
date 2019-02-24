@@ -20,9 +20,9 @@
 RTL is a full function, device agnostic web user interface for Lightning Network Daemon, to help manage lightning node operations.
 Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
-Pre-requisite for running RTL is a functioning LND node. You can setup your own node, by following the below guides:
-* Windows/Mac users can explore Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
-* Linux or Raspberry Pi users can explore Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
+Pre-requisite for running RTL is a functioning and synced LND node. You can setup your own node, by following the below guides:
+* Windows/Mac users can follow Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
+* Linux or Raspberry Pi users can follow Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
 
 RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/RTLFullApplication)
 
@@ -32,11 +32,9 @@ For detailed screenshots and UI operation guide you can visit our [medium post](
 ![](screenshots/RTL_Arch.png)
 
 ### <a name="prereq"></a>Prerequisites
-Please ensure that you have completed the installation of LND lightning node.
-
-The application also requires Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
-
-Recommended Browsers: Chrome, Firefox, MS Edge
+* Functioning and synced LND lightning node.
+* Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
+* Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### <a name="install"></a>Installation
 #### First time setup
