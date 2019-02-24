@@ -1,4 +1,5 @@
 var fs = require('fs');
+var crypto = require('crypto');
 var clArgs = require('optimist').argv;
 var ini = require('ini');
 var common = require('./common');
@@ -205,7 +206,7 @@ const readCookie = (cookieFile) => {
     try {
       var dirname = path.dirname(cookieFile);
       createDirectory(dirname);
-      fs.writeFileSync(cookieFile, String.random(50));
+      fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     }
     catch(err) {

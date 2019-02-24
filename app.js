@@ -1,6 +1,8 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const common = require("./common");
 const app = express();
 
 //Declare all Routes here
@@ -22,6 +24,7 @@ const switchRoutes = require("./routes/switch");
 const baseHref = '/rtl/';
 const apiRoot = baseHref + 'api/';
 
+app.use(cookieParser(common.cookieParserSecret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(baseHref, express.static(path.join(__dirname, "angular")));
