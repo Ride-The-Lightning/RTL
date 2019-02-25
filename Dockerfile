@@ -4,10 +4,13 @@ RUN apk add --no-cache tini
 
 WORKDIR /RTL
 
-COPY . /RTL
+COPY package.json /RTL/package.json
+COPY package-lock.json /RTL/package-lock.json
 
 # Install dependencies
 RUN npm install
+
+COPY . /RTL
 
 EXPOSE 3000
 
