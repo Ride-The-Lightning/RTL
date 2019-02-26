@@ -165,22 +165,21 @@ const setSSOParams = (config) => {
 		common.rtl_sso = config.SSO.rtlSSO;
 	}
 
-	if (undefined !== process.env.LOGOUT_REDIRECT_LINK) {
-		common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
-	} else if (undefined !== config.SSO && undefined !== config.SSO.logoutRedirectLink) {
-		common.logout_redirect_link = config.SSO.logoutRedirectLink;
-	}
-
-
-	if (undefined !== process.env.RTL_COOKIE_PATH) {
-		common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
-	} else if (undefined !== config.SSO && undefined !== config.SSO.rtlCookiePath) {
-		common.rtl_cookie_path = config.SSO.rtlCookiePath;
-	} else {
-		common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
-	}
-
 	if (+common.rtl_sso) {
+    if (undefined !== process.env.LOGOUT_REDIRECT_LINK) {
+      common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+    } else if (undefined !== config.SSO && undefined !== config.SSO.logoutRedirectLink) {
+      common.logout_redirect_link = config.SSO.logoutRedirectLink;
+    }
+  
+  
+    if (undefined !== process.env.RTL_COOKIE_PATH) {
+      common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
+    } else if (undefined !== config.SSO && undefined !== config.SSO.rtlCookiePath) {
+      common.rtl_cookie_path = config.SSO.rtlCookiePath;
+    } else {
+      common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
+    }
     readCookie(common.rtl_cookie_path);
   }
 };

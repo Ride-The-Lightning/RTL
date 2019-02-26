@@ -29,6 +29,8 @@ exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
     const access_key = req.cookies['access-key'];
     res.clearCookie("access-key");
+    // Replace access_key value from req.cookies['access-key'] to req.body.password to test SSO on http
+    // const access_key = atob(req.body.password);
     if (common.cookie === access_key) {
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
