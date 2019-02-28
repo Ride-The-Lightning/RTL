@@ -2,9 +2,9 @@
 
 ## Product Roadmap for RTL Application
 
-### Version 0.2.2-beta
-- UX optimization
-- Query Routes
+### Version 0.3.0-beta
+- UX optimization (candidate)
+- Multi-node management (candidate)
 
 ### Feature Backlog
 #### Channel re-balancing
