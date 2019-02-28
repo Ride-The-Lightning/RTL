@@ -5,6 +5,7 @@
 ### Version 0.3.0-beta
 - Improved Look n Feel with Pastel themes and day/night mode (candidate)
 - Multi-node management (candidate)
+- Globalization framework (candidate)
 
 ### Feature Backlog
 #### Channel re-balancing
