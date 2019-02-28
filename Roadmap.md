@@ -3,7 +3,7 @@
 ## Product Roadmap for RTL Application
 
 ### Version 0.3.0-beta
-- UX optimization (candidate)
+- Improved Look n Feel with Pastel themes and day/night mode (candidate)
 - Multi-node management (candidate)
 
 ### Feature Backlog
