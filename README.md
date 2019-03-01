@@ -28,6 +28,11 @@ RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/R
 
 For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
+RTL is already available on:
+* [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
+* [Nodl](https://www.nodl.it/)
+* [BTCPayserver](https://github.com/btcpayserver/btcpayserver-docker)
+
 ### <a name="arch"></a>Architecture
 ![](screenshots/RTL_Arch.png)
 
