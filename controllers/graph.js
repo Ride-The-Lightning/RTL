@@ -1,9 +1,10 @@
 var request = require("request-promise");
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 exports.getDescribeGraph = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/graph';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
@@ -27,6 +28,7 @@ exports.getDescribeGraph = (req, res, next) => {
 };
 
 exports.getGraphInfo = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/graph/info';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
@@ -55,6 +57,7 @@ exports.getGraphInfo = (req, res, next) => {
 };
 
 exports.getGraphNode = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
     logger.info('\r\nGraph: 59: ' + JSON.stringify(Date.now()) + ': INFO: Node Info Received: ' + JSON.stringify(body));
@@ -63,6 +66,9 @@ exports.getGraphNode = (req, res, next) => {
         message: "Fetching node Info failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
+    }
+    if (undefined !== body) {
+      body.node.last_update_str =  (undefined === body.node.last_update) ? '' : common.convertTimestampToDate(body.node.last_update);
     }
     res.status(200).json(body);
   })
@@ -75,6 +81,7 @@ exports.getGraphNode = (req, res, next) => {
 };
 
 exports.getGraphEdge = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.info('\r\nGraph: 79: ' + JSON.stringify(Date.now()) + ': INFO: Edge Info Received: ' + JSON.stringify(body));
@@ -83,6 +90,9 @@ exports.getGraphEdge = (req, res, next) => {
         message: "Fetching Edge Info Failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
+    }
+    if (undefined !== body) {
+      body.last_update_str =  (undefined === body.last_update) ? '' : common.convertTimestampToDate(body.last_update);
     }
     res.status(200).json(body);
   })

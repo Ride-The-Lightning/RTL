@@ -1,9 +1,10 @@
 var request = require('request-promise');
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 exports.forwardingHistory = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/switch';
   options.form = {};
   if (undefined !== req.body.num_max_events) {

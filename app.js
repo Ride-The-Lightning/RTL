@@ -21,8 +21,8 @@ const paymentsRoutes = require("./routes/payments");
 const RTLConfRoutes = require("./routes/RTLConf");
 const invoiceRoutes = require("./routes/invoices");
 const switchRoutes = require("./routes/switch");
-const baseHref = '/rtl/';
-const apiRoot = baseHref + 'api/';
+const baseHref = "/rtl/";
+const apiRoot = baseHref + "api/";
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());

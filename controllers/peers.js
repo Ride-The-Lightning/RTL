@@ -1,8 +1,7 @@
-var fs = require('fs');
 var request = require('request-promise');
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 getAliasForPeers = (peer) => {
   return new Promise(function(resolve, reject) {
@@ -19,6 +18,7 @@ getAliasForPeers = (peer) => {
 
 exports.getPeers = (req, res, next) =>
 {
+  options = common.options;
   options.url = common.lnd_server_url + '/peers';
   request(options).then(function (body) {
     let peers = (undefined === body.peers) ? [] : body.peers;
@@ -43,6 +43,7 @@ exports.getPeers = (req, res, next) =>
 };
 
 exports.postPeer = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/peers';
   options.form = JSON.stringify({ 
     addr: { host: req.body.host, pubkey: req.body.pubkey },
@@ -85,6 +86,7 @@ exports.postPeer = (req, res, next) => {
 };
 
 exports.deletePeer = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/peers/' + req.params.peerPubKey;
   request.delete(options).then((body) => {
     logger.info('\r\nPeers: 81: ' + JSON.stringify(Date.now()) + ': INFO: Detach Peer Response: ' + JSON.stringify(body));

@@ -1,9 +1,10 @@
 var request = require('request-promise');
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 exports.getInfo = (req, res, next) => {
+  options = common.setOptions();
   options.url = common.lnd_server_url + '/getinfo';
   logger.info('\r\nCalling getinfo from lnd server url: INFO: ' + options.url);
   request(options).then((body) => {

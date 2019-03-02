@@ -1,9 +1,10 @@
 var request = require('request');
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 exports.operateWallet = (req, res, next) => {
+  options = common.options;
   var requestBody = {
     wallet_password: Buffer.from(req.body.wallet_password).toString('base64')
   };

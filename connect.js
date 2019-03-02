@@ -6,7 +6,7 @@ var common = require('./common');
 var path = require('path');
 var upperCase = require('upper-case');
 var logger = require('./controllers/logger');
-var options = {};
+var connect = {};
 
 var defaultConfig = {
 	Authentication: {
@@ -225,19 +225,6 @@ String.random = function (length) {
 	}, '').substring(-length);
 }
 
-const setOptions = () => {
-  var macaroon = fs.readFileSync(common.macaroon_path + '/admin.macaroon').toString('hex');
-  options = {
-    url: '',
-    rejectUnauthorized: false,
-    json: true,
-    headers: {
-      'Grpc-Metadata-macaroon': macaroon,
-    },
-    form: ''
-  };
-}
-
 const logEnvVariables = () => {
   if (!common.enable_logging) {
     return;
@@ -255,7 +242,7 @@ const logEnvVariables = () => {
 }
 
 var errMsg = '';
-const configFileExists = () => {
+connect.configFileExists = () => {
   common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   let exists = fs.existsSync(RTLConfFile);
@@ -263,7 +250,6 @@ const configFileExists = () => {
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     setMacaroonPath(clArgs, config)
     validateConfigFile(config);
-    setOptions();
     logEnvVariables();
   } else {
     try {
@@ -271,7 +257,6 @@ const configFileExists = () => {
       var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
-      setOptions();
       logEnvVariables();
     }
     catch(err) {
@@ -280,5 +265,5 @@ const configFileExists = () => {
     }
   }
 }
-configFileExists();
-module.exports = options;
+
+module.exports = connect.configFileExists();

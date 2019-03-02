@@ -1,9 +1,10 @@
 var request = require('request-promise');
-var options = require("../connect");
 var common = require('../common');
 var logger = require('./logger');
+var options = {};
 
 exports.getPayments = (req, res, next) => {
+  options = common.options;
   options.url = common.lnd_server_url + '/payments';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);

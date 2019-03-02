@@ -1,10 +1,10 @@
 {
   "name": "rtl",
-  "version": "0.2.13-beta",
+  "version": "0.2.14-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng build --prod && ng serve",
+    "start": "ng serve",
     "serve": "ng serve",
     "prebuild": "node ./prebuild",
     "build": "ng build --prod --base-href /rtl/",
