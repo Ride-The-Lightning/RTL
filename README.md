@@ -148,16 +148,16 @@ $ sudo systemctl start RTL
 
 ### <a name="access"></a>Accessing the Application
 You can access the application in two ways:
-#### Same device as the server
+1. Same device as the server
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
-#### Remotely from another device on the same local network (home network) as the node
+2. Remotely from another device on the same local network (home network) as the node
 * Ensure that the if a firewall running on your node, it allows access on port 3000 (or the custom port configured for RTL).
 * Determine the IP address of your node to access the application.
 
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
-#### Any Other setup
+3. Any Other setup
 **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt to setup https access for RTL.**
 
 ### <a name="trouble"></a>Troubleshooting
