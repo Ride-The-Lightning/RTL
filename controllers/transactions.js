@@ -36,12 +36,16 @@ exports.getTransactions = (req, res, next) => {
 exports.postTransactions = (req, res, next) => {
   options = common.options;
   options.url = common.lnd_server_url + '/transactions';
-  options.form = JSON.stringify({ 
+  options.form = { 
     amount: req.body.amount,
     addr: req.body.address,
     sat_per_byte: req.body.fees,
     target_conf: req.body.blocks
-  });
+  };
+  if (req.body.sendAll) {
+    options.form.send_all = req.body.sendAll;
+  }
+  options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.info('\r\nTransactions: 42: ' + JSON.stringify(Date.now()) + ': INFO: Transaction Post Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
