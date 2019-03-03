@@ -33,6 +33,8 @@ RTL is already available on:
 * [Nodl](https://www.nodl.it/)
 * [BTCPayserver](https://github.com/btcpayserver/btcpayserver-docker)
 
+Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
+
 ### <a name="arch"></a>Architecture
 ![](screenshots/RTL_Arch.png)
 
