@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.2.12
+### Stable Release: v0.2.14
 
 **Intro** -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
@@ -32,6 +32,8 @@ RTL is already available on:
 * [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
 * [Nodl](https://www.nodl.it/)
 * [BTCPayserver](https://github.com/btcpayserver/btcpayserver-docker)
+
+Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
 ### <a name="arch"></a>Architecture
 ![](screenshots/RTL_Arch.png)
@@ -145,15 +147,16 @@ $ sudo systemctl start RTL
 `$ sudo journalctl -f -u RTL`
 
 ### <a name="access"></a>Accessing the Application
-You can access the application in two ways:
-#### Same device as the server
+You can access the application in two ways (Please make note of the 3rd exception):
+1. Same device as the server:
 Open your browser at the following address: http://localhost:3000 to access the RTL application.
 
-#### Remotely from another device on the same local network as the node
+2. Remotely from another device on the same local network (home network) as the node:
 * Ensure that the if a firewall running on your node, it allows access on port 3000 (or the custom port configured for RTL).
 * Determine the IP address of your node to access the application.
-
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
+
+3. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt to setup https access for RTL.**
 
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
