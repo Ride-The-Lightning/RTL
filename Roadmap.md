@@ -1,6 +1,8 @@
 [Intro](README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
-## Product Roadmap for RTL Application
+# Product Roadmap for RTL Application
+
+## High Level Goals
 
 ### Multi-node Management
 We want to provide users an ability to manage multiple-nodes via a single UI. The idea is to provide a top-level page, which will list all the nodes which are configured for RTL. User would be able drill down to each node from that page and manage nodes from a single RTL instance.
@@ -21,12 +23,12 @@ Multi-language support. We can provide a customizable framework for multi-langua
 We believe UX improvement is a never-ending cycle. And, we must keep the UI/UX fresh and optimal with ongoing user feedback and inputs from UX subject-matter-experts. Contribution on UX suggestions is more than welcome and we have created a project to exclusively focus on UX issues and priorities. 
 Automated Testing – As the functional complexity increases, we need to add automated testing to ensure quality and less bugs. Another area, where developer contribution is more than welcome.
 
-### Feature Backlog
-#### Channel re-balancing
+## Feature Backlog
+### Channel re-balancing
 - Self routing to re-balance channels
-#### Invoice Management
+### Invoice Management
 - Lookup Invoice
-#### Network
+### Network
 - Network explorer
-#### Start
+### Start
 - Create Wallet
