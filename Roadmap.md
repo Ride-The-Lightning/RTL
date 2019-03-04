@@ -8,7 +8,7 @@ We want to provide users an ability to manage multiple-nodes via a single UI. Th
 ### RTL installer
 Automate RTL setup so that installation process is simpler than the current method of following the steps provided in the Readme file. This should also help with configuration of nginx and letsencrypt, to enable access via https. Contribution on this is more than welcome.
 
-#### Better Mobile UX
+### Better Mobile UX
 Current UX for mobile users is less than optimal. We are attempting to provide a responsive UI, so that users can access the same app via browser on any device. This requires more UX optimization for mobile resolution.
 
 ### C-Lightning
