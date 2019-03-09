@@ -4,10 +4,10 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --base-href /rtl/",
+    "build": "ng build --prod --base-href /rtl/",
     "serve": "ng serve",
     "prebuild": "node ./prebuild",
-    "build": "ng build --prod --base-href /rtl/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
