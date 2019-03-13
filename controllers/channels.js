@@ -76,10 +76,17 @@ exports.getChannels = (req, res, next) => {
 exports.postChannel = (req, res, next) => {
   options = common.options;
   options.url = common.lnd_server_url + '/channels';
-  options.form = JSON.stringify({ 
+  options.form = { 
     node_pubkey_string: req.body.node_pubkey,
-    local_funding_amount: req.body.local_funding_amount
-  });
+    local_funding_amount: req.body.local_funding_amount,
+    spend_unconfirmed: req.body.spend_unconfirmed
+  };
+  if (req.body.trans_type === '1') {
+    options.form.target_conf = req.body.trans_type_value;
+  } else if (req.body.trans_type === '2') {
+    options.form.sat_per_byte = req.body.trans_type_value;
+  }
+  options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.info('\r\nChannels: 74: ' + JSON.stringify(Date.now()) + ': INFO: Channel Open Response: ' + JSON.stringify(body));
     if(undefined === body || body.error) {

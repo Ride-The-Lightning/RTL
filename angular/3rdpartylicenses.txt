@@ -486,6 +486,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 @angular/material/select
 
+@angular/material/checkbox
+
 @angular/material/expansion
 
 @angular/material/radio
