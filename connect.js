@@ -8,31 +8,36 @@ var upperCase = require('upper-case');
 var logger = require('./controllers/logger');
 var connect = {};
 
-var defaultConfig = {
-	Authentication: {
-		macaroonPath: '',
-		nodeAuthType: 'DEFAULT',
-		lndConfigPath: '',
-		rtlPass: ''
-	},
-	Settings: {
-		flgSidenavOpened: true,
-		flgSidenavPinned: true,
-		menu: 'Vertical',
-		menuType: 'Regular',
-		theme: 'dark-blue',
-		satsToBTC: false,
-		lndServerUrl: 'https://localhost:8080/v1',
-		bitcoindConfigPath: '',
-		enableLogging: false,
-    port: 3000
-	},
-	SSO: {
-		rtlSSO: 0,
-		rtlCookiePath: '',
-		logoutRedirectLink: '/login'
-	}
-};
+const setDefaultConfig = () => {
+  var macaroonPath = '';
+  var lndConfigPath = '';
+  var bitcoindConfigPath = '';
+  return {
+    Authentication: {
+      macaroonPath: macaroonPath,
+      nodeAuthType: 'DEFAULT',
+      lndConfigPath: lndConfigPath,
+      rtlPass: ''
+    },
+    Settings: {
+      flgSidenavOpened: true,
+      flgSidenavPinned: true,
+      menu: 'Vertical',
+      menuType: 'Regular',
+      theme: 'dark-blue',
+      satsToBTC: false,
+      lndServerUrl: 'https://localhost:8080/v1',
+      bitcoindConfigPath: bitcoindConfigPath,
+      enableLogging: false,
+      port: 3000
+    },
+    SSO: {
+      rtlSSO: 0,
+      rtlCookiePath: '',
+      logoutRedirectLink: '/login'
+    }
+  };
+}
 
 const normalizePort = val => {
   var port = parseInt(val, 10);
@@ -253,7 +258,7 @@ connect.configFileExists = () => {
     logEnvVariables();
   } else {
     try {
-      fs.writeFileSync(RTLConfFile, ini.stringify(defaultConfig));
+      fs.writeFileSync(RTLConfFile, ini.stringify(setDefaultConfig()));
       var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
