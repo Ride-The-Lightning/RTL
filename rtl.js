@@ -8,7 +8,7 @@ const onError = error => {
   if (error.syscall !== "listen") {
     throw error;
   }
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + port;
+  const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
   switch (error.code) {
     case "EACCES":
       console.error(bind + " requires elevated privileges");
