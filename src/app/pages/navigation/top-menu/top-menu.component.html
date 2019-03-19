@@ -1,0 +1,22 @@
+<mat-menu #topMenu="matMenu" [overlapTrigger]="false" class="top-menu">
+  <p mat-menu-item>
+    <mat-icon>publish</mat-icon>
+    <span>Version: {{version}}</span>
+  </p>
+  <a mat-menu-item routerLink="/sconfig">
+    <mat-icon>perm_data_setting</mat-icon>
+    <span routerLink="/sconfig">Node Config</span>
+  </a>
+  <a mat-menu-item routerLink="/help">
+    <mat-icon>help</mat-icon>
+    <span routerLink="/help">Help</span>
+  </a>
+  <a *ngIf="showLogout" mat-menu-item (click)="onClick()">
+    <mat-icon>eject</mat-icon>
+    <span>Logout</span>
+  </a>
+</mat-menu>
+
+<button mat-icon-button [matMenuTriggerFor]="topMenu">
+  <mat-icon>account_circle</mat-icon>
+</button>

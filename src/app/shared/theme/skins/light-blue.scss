@@ -1,0 +1,50 @@
+$custom-light-theme-background: (
+  status-bar: map_get($mat-grey, 300),
+  app-bar:    map_get($mat-grey, 100),
+  background:map_get($mat-gray, 100),
+  hover:      rgba(black, 0.04),
+  card:       map_get($mat-gray, 100),
+  dialog:     map_get($mat-gray, 100),
+  disabled-button: rgba(black, 0.12),
+  raised-button: map_get($mat-grey, 50),
+  focused-button: $dark-focused,
+  selected-button: map_get($mat-grey, 300),
+  selected-disabled-button: map_get($mat-grey, 400),
+  disabled-button-toggle: map_get($mat-grey, 200),
+  unselected-chip: map_get($mat-grey, 300),
+  disabled-list-option: map_get($mat-grey, 200),
+);
+
+$custom-light-theme-foreground: (
+  base:              black,
+  divider:           $dark-dividers,
+  dividers:          $dark-dividers,
+  disabled:          $dark-disabled-text,
+  disabled-button:   rgba(black, 0.26),
+  disabled-text:     $dark-disabled-text,
+  hint-text:         $dark-disabled-text,
+  secondary-text:    $dark-secondary-text,
+  icon:              rgba(black, 0.54),
+  icons:             rgba(black, 0.54),
+  text:              rgba(black, 0.87),
+  slider-min:        rgba(black, 0.87),
+  slider-off:        rgba(black, 0.26),
+  slider-off-active: rgba(black, 0.38),
+);
+
+@function create-custom-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+  @return (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+    is-dark: false,
+    foreground: $custom-light-theme-foreground,
+    background: $custom-light-theme-background
+  );
+}
+
+$blue-light-primary: mat-palette($mat-indigo, 800, 300, 900);
+$blue-light-accent: mat-palette($mat-pink, A200, A100, A400);
+$blue-light-warn: mat-palette($mat-red, 500);
+
+$blue-light-theme: create-custom-theme($blue-light-primary, $blue-light-accent, $blue-light-warn);

@@ -1,0 +1,81 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Verify and Send Payments</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" #sendPaymentForm="ngForm">
+          <div fxFlex="69" fxLayoutAlign="space-between stretch">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" required #paymentReq="ngModel">
+            </mat-form-field>
+          </div>
+          <div fxFlex="30" fxLayoutAlign="space-between stretch">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="paymentReq.invalid" (click)="onSendPayment()" tabindex="2">
+              <p *ngIf="paymentReq.invalid && (paymentReq.dirty || paymentReq.touched); else sendText">Invalid Req</p>
+              <ng-template #sendText><p>Send Payment</p></ng-template>
+            </button>
+            <button fxFlex="48" mat-raised-button color="accent" type="reset" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-content class="table-card-content">
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <mat-form-field fxFlex="30">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+          </mat-form-field>
+        </div>
+        <div perfectScrollbar class="table-container mat-elevation-z8">
+          <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+          <table mat-table #table [dataSource]="payments" matSort [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+            <ng-container matColumnDef="creation_date">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Creation Date</th>
+              <td mat-cell *matCellDef="let payment">{{payment?.creation_date_str}}</td>
+            </ng-container>
+            <ng-container matColumnDef="payment_hash">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
+              <td mat-cell *matCellDef="let payment">
+                <div>{{payment?.payment_hash | slice:0:10}}...</div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="fee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee</th>
+              <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.fee | number}}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Value</th>
+              <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.value | number}}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="payment_preimage">
+              <th mat-header-cell class="pl-4" *matHeaderCellDef mat-sort-header>Payment Pre Image</th>
+              <td mat-cell class="pl-4" *matCellDef="let payment">
+                <div>{{payment?.payment_preimage | slice:0:10}}...</div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="value_msat">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Value MSat</th>
+              <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.value_msat | number}}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="value_sat">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Value Sat</th>
+              <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.value_sat | number}}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="path">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Path</th>
+              <td mat-cell *matCellDef="let payment">{{payment?.path?.length || 0}} Hops</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment  && flgAnimate) ? 'added' : 'notAdded'" (click)="onPaymentClick(row, $event)"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

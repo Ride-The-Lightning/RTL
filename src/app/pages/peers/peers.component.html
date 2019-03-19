@@ -1,0 +1,87 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Add Peer</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="addPeerForm.form.valid && onAddPeer(addPeerForm)" #addPeerForm="ngForm">
+          <mat-form-field fxFlex="70" fxLayoutAlign="start end">
+            <input matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" name="peerAddress" [(ngModel)]="peerAddress" tabindex="1" required #peerAdd="ngModel">
+          </mat-form-field>
+          <div fxFlex="15" fxLayoutAlign="start start">
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="peerAdd.invalid" type="submit" tabindex="2">
+              <p *ngIf="peerAdd.invalid && (peerAdd.dirty || peerAdd.touched); else addText">Invalid Address</p>
+              <ng-template #addText><p>Add</p></ng-template>
+            </button>
+          </div>
+          <div fxFlex="15" fxLayoutAlign="start start">
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="2" type="reset" (click)="resetData()">Clear</button>
+          </div>
+        </form>                              
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-content class="table-card-content">
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <mat-form-field fxFlex="30">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+          </mat-form-field>
+        </div>
+        <div perfectScrollbar class="table-container mat-elevation-z8">
+          <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+          <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'mat-elevation-z8 overflow-x-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-x-auto': true}">
+            <ng-container matColumnDef="detach">
+              <th mat-header-cell *matHeaderCellDef>Detach</th>
+              <td mat-cell *matCellDef="let peer"><mat-icon color="accent" (click)="onPeerDetach(peer)">link_off</mat-icon></td>
+            </ng-container>
+            <ng-container matColumnDef="pub_key">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Pub Key </th>
+              <td mat-cell *matCellDef="let peer">
+                <div> {{peer?.pub_key | slice:0:10}}... </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+              <td mat-cell *matCellDef="let peer"> {{peer?.alias}} </td>
+            </ng-container>
+            <ng-container matColumnDef="address">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
+              <td mat-cell *matCellDef="let peer"> {{peer?.address}} </td>
+            </ng-container>
+            <ng-container matColumnDef="bytes_sent">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Bytes Sent </th>
+              <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.bytes_sent | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="bytes_recv">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Bytes Recv </th>
+              <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.bytes_recv | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="sat_sent">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> {{information?.smaller_currency_unit}} Sent </th>
+              <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_sent | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="sat_recv">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> {{information?.smaller_currency_unit}} Recv </th>
+              <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_recv | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="inbound">
+              <th mat-header-cell class="pl-4" *matHeaderCellDef mat-sort-header> Inbound </th>
+              <td mat-cell class="pl-4" *matCellDef="let peer"> {{peer?.inbound}} </td>
+            </ng-container>
+            <ng-container matColumnDef="ping_time">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Ping </th>
+              <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.ping_time | number}} </span></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.pub_key === newlyAddedPeer && flgAnimate) ? 'added' : 'notAdded'" (click)="onPeerClick(row, $event)"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

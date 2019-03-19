@@ -1,0 +1,37 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Show Configurations</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap">
+          <mat-radio-group fxFlex="20" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
+            <mat-radio-button class="pr-5" value="lnd" *ngIf="showLND" [checked]="selectedNodeType=='lnd'">LND</mat-radio-button>
+            <mat-radio-button class="pr-5" value="bitcoind" *ngIf="showBitcoind" [checked]="selectedNodeType=='bitcoind'">BITCOIND</mat-radio-button>
+            <mat-radio-button class="pr-5" value="rtl" [checked]="selectedNodeType=='rtl'">RTL</mat-radio-button>
+          </mat-radio-group>
+          <div fxFlex="30" fxLayoutAlign="space-between stretch">
+            <button fxFlex="50" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onShowConfig()" tabindex="2">Show Config</button>
+            <button fxFlex="50" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" type="reset" class="ml-2" (click)="resetData()">Clear</button>
+          </div>
+        </form>     
+        <div *ngIf="configData !== ''">
+          <mat-list>
+            <mat-list-item *ngFor="let conf of configData; index as i;">
+              <mat-card-subtitle class="my-1">
+                <h2 *ngIf="conf.indexOf('[') >= 0">{{conf}}</h2>
+              </mat-card-subtitle>
+              <mat-card-subtitle class="m-0">
+                <h4 *ngIf="conf.indexOf('[') < 0" class="ml-4">{{conf}}</h4>
+              </mat-card-subtitle>
+              <mat-divider [inset]="true" *ngIf="conf.indexOf('[') < 0"></mat-divider>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

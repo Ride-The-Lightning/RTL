@@ -1,0 +1,74 @@
+<mat-toolbar color="primary" fxLayoutAlign = "space-between center" class="">
+  <h4>Settings</h4>
+</mat-toolbar>
+<div fxLayout="column" class="container">
+  <button fxLayoutAlign="center center" mat-raised-button color="accent" class="mt-2" type="reset" (click)="onClose()">Close</button>
+  <div fxLayout="column">
+    <h4>Currency Unit</h4>
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <span>{{currencyUnit}}</span>
+      <mat-slide-toggle [checked]="settings?.satsToBTC" (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
+    </div>
+    <mat-divider class="mt-2"></mat-divider>
+    <div *ngIf="showSettingOption">
+      <h4>Menu</h4>
+      <mat-radio-group [(ngModel)]="selectedMenu" (change)="chooseMenu()">
+        <mat-radio-button *ngFor="let menu of menus" [value]="menu">{{menu}}</mat-radio-button>
+      </mat-radio-group>
+      <mat-divider class="mt-2"></mat-divider>
+    </div>
+    <h4>Menu Type</h4>
+    <mat-radio-group [(ngModel)]="selectedMenuType" (change)="chooseMenuType()">
+      <mat-radio-button *ngFor="let menuType of menuTypes" [value]="menuType">{{menuType}}</mat-radio-button>
+    </mat-radio-group>
+    <mat-divider class="mt-2"></mat-divider>
+    <div *ngIf="showSettingOption">
+      <div fxLayout="column">
+        <h4>Sidenav Options</h4>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <span>Opened</span>
+          <mat-slide-toggle [checked]="settings.flgSidenavOpened" (change)="toggleSettings('flgSidenavOpened')"
+            labelPosition="before"></mat-slide-toggle>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <span>Pinned</span>
+          <mat-slide-toggle [checked]="settings.flgSidenavPinned" (change)="toggleSettings('flgSidenavPinned')"
+            labelPosition="before"></mat-slide-toggle>
+        </div>
+      </div>
+      <mat-divider class="mt-2"></mat-divider>
+    </div>
+    <h4>Skins</h4>
+    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin dark-blue m-1px" (click)="changeTheme('dark-blue')"></div>
+      <div class="skin dark-green m-1px" (click)="changeTheme('dark-green')"></div>
+      <div class="skin dark-pink m-1px" (click)="changeTheme('dark-pink')"></div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin light-blue m-1px" (click)="changeTheme('light-blue')"></div>
+      <div class="skin light-teal m-1px" (click)="changeTheme('light-teal')"></div>
+      <div class="skin light-red m-1px" (click)="changeTheme('light-red')"></div>
+    </div>
+    <!-- <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin bluegray-amber m-1px" (click)="changeTheme('bluegray-amber')"></div>
+      <div class="skin bluegray-deeppurple m-1px" (click)="changeTheme('bluegray-deeppurple')"></div>
+      <div class="skin bluegray-lightgreen m-1px" (click)="changeTheme('bluegray-lightgreen')"></div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin gray-blue m-1px" (click)="changeTheme('gray-blue')"></div>
+      <div class="skin gray-lime m-1px" (click)="changeTheme('gray-lime')"></div>
+      <div class="skin gray-purple m-1px" (click)="changeTheme('gray-purple')"></div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin self-gray m-1px" (click)="changeTheme('self-gray')"></div>
+      <div class="skin self-blue m-1px" (click)="changeTheme('self-blue')"></div>
+      <div class="skin self-brown m-1px" (click)="changeTheme('self-brown')"></div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+      <div class="skin self-yellow m-1px" (click)="changeTheme('self-yellow')"></div>
+      <div class="skin self-green m-1px" (click)="changeTheme('self-green')"></div>
+      <div class="skin self-pink m-1px" (click)="changeTheme('self-pink')"></div>
+    </div> -->
+    <mat-divider class="mt-2"></mat-divider>
+  </div>
+</div>

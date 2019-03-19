@@ -1,0 +1,20 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Help</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content *ngFor="let helpTopic of helpTopics">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+              <mat-panel-title>{{helpTopic.question}}</mat-panel-title>
+            </mat-expansion-panel-header>
+          <mat-panel-description>{{helpTopic.answer}}</mat-panel-description>
+        </mat-expansion-panel>
+        <div class="divider"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

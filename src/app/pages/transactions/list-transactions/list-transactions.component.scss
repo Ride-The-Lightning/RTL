@@ -1,0 +1,31 @@
+.mat-column-tx_hash, .mat-column-block_hash {
+  padding-left: 10px;
+}
+
+.mat-expansion-panel-header {
+  padding: 0;
+}
+
+.mat-accordion .mat-expansion-panel {
+  padding: 0 10px;
+}
+
+.ml-minus-24px {
+  margin-left: -24px;
+}
+
+table {
+  width:100%;
+}
+
+.table-container {
+  height: 78vh;
+  overflow: auto;
+}
+
+@media screen and (max-width: 414px) {
+  .table-container {
+    height: 68vh;
+    overflow: auto;
+  }
+}

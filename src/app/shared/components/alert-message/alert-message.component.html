@@ -1,0 +1,35 @@
+<div fxLayout="row">
+  <div class="w-100">
+    <mat-card-header [ngClass]="msgTypeBackground" fxLayoutAlign="end">
+      <h2 fxFlex="91">{{data.type}}</h2>
+      <mat-icon fxFlex="7" fxLayoutAlign="end" type="button" (click)="onClose()" class="cursor-pointer">close</mat-icon>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="pb-2 p-2 wrap-text new-line">
+        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="title-message pb-1 pl-1">{{data.titleMessage | titlecase}}</p>
+        <div *ngIf="messageObj?.length>0">
+          <div *ngFor="let obj of messageObj" fxLayout="row" fxLayoutAlign="center flex-start">
+            <div fxFlex="20">{{obj[0] | titlecase}}</div>
+            <div fxFlex="2">:</div>
+            <div [fxFlex]="showCopyOption(obj[0]) ? 60 : 75" class="pr-2">
+              <div *ngIf="isNumber(obj[1], obj[0]);else notNumberTemplate">
+                <span>{{obj[1] | number:'1.0-3'}}</span>
+              </div>
+              <ng-template #notNumberTemplate>
+                <span>{{obj[1]}}</span>
+              </ng-template>
+              <mat-icon *ngIf="showCopyOption(obj[0])" class="icon-small cursor-pointer pl-1 top-5px" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)">file_copy</mat-icon><span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
+            </div>
+            <div *ngIf="showCopyOption(obj[0])" fxFlex="15" fxLayoutAlign="center center">
+              <qrcode [qrdata]="obj[1]" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (obj[1] === '') ? 'hidden' : 'visible'}" class="mt-minus-40px qr-border"></qrcode>
+            </div>  
+          </div>
+        </div>
+      </div>
+      <mat-divider class="pb-1"></mat-divider>
+      <div fxLayoutAlign="center">
+        <button mat-raised-button [color]="msgTypeForeground" fxFlex="30" class="mb-1" type="button" [mat-dialog-close]="false" default>OK</button>
+      </div>
+    </mat-card-content>
+  </div>
+</div>

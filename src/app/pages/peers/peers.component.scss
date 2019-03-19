@@ -1,0 +1,30 @@
+.mat-column-detach {
+  flex: 0 0 5%;
+  min-width: 50px;
+}
+
+.mat-column-alias, .mat-column-address {
+  flex: 0 0 15%;
+  min-width: 100px;
+}
+
+mat-cell.mat-column-detach {
+  cursor: pointer;
+}
+
+
+table {
+  width:100%;
+}
+
+.table-container {
+  height: 68vh;
+  overflow: auto;
+}
+
+@media screen and (max-width: 414px) {
+  .table-container {
+    height: 40vh;
+    overflow: auto;
+  }
+}

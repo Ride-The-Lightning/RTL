@@ -1,0 +1,26 @@
+.mat-menu-panel.top-menu{
+  .mat-toolbar, .mat-toolbar-row{
+    height: 100px !important;
+    padding: 0 16px !important;
+  }
+  .info-block{
+    width: 230px;
+    p{
+      font-size: 16px;
+      line-height: 22px;
+      text-align: center;
+    }
+  }
+  .mat-menu-item{
+    height: 36px;
+    line-height: 36px;
+  }
+  .mat-menu-content {
+    p{
+      cursor: default;
+      mat-icon, span, div {
+        cursor: default;
+      }
+    }
+  }
+}

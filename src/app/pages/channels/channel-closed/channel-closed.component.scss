@@ -1,0 +1,25 @@
+.mat-column-close_type {
+    flex: 0 0 16%;
+    min-width: 160px;
+}
+
+.mat-column-chan_id {
+    flex: 0 0 17%;
+    min-width: 170px;
+}
+
+table {
+    width:100%;
+}
+
+.table-container {
+    height: 79vh;
+    overflow: auto;
+}
+
+@media screen and (max-width: 414px) {
+    .table-container {
+        height: 68vh;
+        overflow: auto;
+    }
+}

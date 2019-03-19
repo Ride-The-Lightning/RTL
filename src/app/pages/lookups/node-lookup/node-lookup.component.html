@@ -1,0 +1,56 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-content *ngIf="lookupResult">
+        <div fxLayout="column">
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Alias</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.alias}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Pub Key</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.pub_key}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Color</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start"><span [ngStyle]="{'background-color': lookupResult.node?.color}">{{lookupResult.node?.color}}</span></mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Last Update</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.last_update_str}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Total Capacity (Sats)</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.total_capacity | number}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Number of Channels</mat-list-item>
+            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.num_channels | number}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayout="column" fxLayoutAlign="start start">
+            <mat-divider></mat-divider>
+            <mat-list-item fxFlex="100" fxLayoutAlign="start start">Addresses</mat-list-item>
+            <mat-table [dataSource]="lookupResult.node.addresses" matSort class="mat-elevation-z8 overflow-auto">
+              <ng-container matColumnDef="network">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Network</mat-header-cell>
+                <mat-cell *matCellDef="let address"><div>{{address?.network}}</div></mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="addr">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                <mat-cell *matCellDef="let address"><div>{{address?.addr}}</div></mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
+              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+          </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

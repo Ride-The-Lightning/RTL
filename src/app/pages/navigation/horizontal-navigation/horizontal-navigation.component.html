@@ -1,0 +1,19 @@
+<div fxLayout="row" fxLayoutAlign="start center">
+  <div *ngFor="let menuNode of menuNodes">
+    <button mat-button *ngIf="undefined === menuNode.children" class="horizontal-button" routerLinkActive="h-active-link" [routerLinkActiveOptions]="{exact: true}" routerLink="{{menuNode.link}}" matTooltip="{{menuNode.name}}" matTooltipPosition="above" (click)="onClick(menuNode)">
+      <mat-icon class="mat-icon-36">{{menuNode.icon}}</mat-icon>
+    </button>
+    <div *ngIf="undefined !== menuNode.children" fxLayoutAlign="center center">
+      <button mat-button class="horizontal-button" matTooltip="{{menuNode.name}}" matTooltipPosition="above">
+        <mat-icon [matMenuTriggerFor]="childMenu" class="mat-icon-36">{{menuNode.icon}}</mat-icon>
+      </button>
+      <mat-menu #childMenu="matMenu" xPosition="after" overlapTrigger="false" class="child-menu">
+        <div *ngFor="let childNode of menuNode.children">
+          <button mat-button class="horizontal-button bg-primary p-0" fxFlex="100" [routerLinkActive]="'h-active-link'" routerLink="{{childNode.link}}" [routerLinkActiveOptions]="{exact: true}">
+            <mat-icon matTooltip="{{childNode.name}}" matTooltipPosition="after" class="mat-icon-36">{{childNode.icon}}<span *ngIf="childNode.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
+          </button>
+        </div>
+      </mat-menu>
+    </div>
+  </div>
+</div>

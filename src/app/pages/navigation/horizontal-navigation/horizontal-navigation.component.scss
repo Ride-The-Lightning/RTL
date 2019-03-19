@@ -1,0 +1,19 @@
+.mat-menu-panel.child-menu {
+	min-width: 88px;
+	width:88px;
+	border-radius: 0;
+	margin-left: 30%;
+	margin-top: 6%;
+	.mat-menu-content {
+		.mat-menu-item {
+			padding: 0;
+			margin-top: -3px;
+			.mat-icon {
+				margin-right: 0;
+			}
+			button {
+				border-radius: 0;
+			}
+		}
+	}
+}

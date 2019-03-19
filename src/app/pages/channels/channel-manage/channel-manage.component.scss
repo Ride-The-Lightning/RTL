@@ -1,0 +1,50 @@
+.mat-column-close, .mat-column-update, .mat-column-active {
+  flex: 0 0 6%;
+  min-width: 50px;
+}
+
+mat-cell.mat-column-close, .mat-column-update {
+  cursor: pointer;
+}
+  
+.mat-column-chan_id {
+  flex: 0 0 16%;
+  min-width: 160px;
+}
+
+.mat-checkbox-inner-container:focus, .mat-checkbox-input:focus {
+  outline: none !important;
+}
+
+.size-40 {
+  font-size: 40px;
+  margin-left: -30%;
+}
+
+.mat-button-text {
+  font-size: 24px;
+  padding-bottom: 20px;
+}
+
+.flex-ellipsis {
+  padding-right: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table {
+  width:100%;
+}
+
+.table-container {
+  height: 68vh;
+  overflow: auto;
+}
+
+@media screen and (max-width: 414px) {
+  .table-container {
+    height: 31vh;
+    overflow: auto;
+  }
+}

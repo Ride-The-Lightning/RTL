@@ -1,0 +1,64 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Closed Channels</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="table-card-content">
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <mat-form-field fxFlex="30">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+          </mat-form-field>
+        </div>
+        <div perfectScrollbar class="table-container mat-elevation-z8">
+          <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+          <table mat-table #table [dataSource]="closedChannels" matSort [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+            <ng-container matColumnDef="close_type">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
+              <td mat-cell *matCellDef="let channel"> {{channel.close_type || 'COOPERATIVE_CLOSE'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="channel_point">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+              <td mat-cell *matCellDef="let channel"> {{channel.channel_point | slice:0:10}}...</td>
+            </ng-container>
+            <ng-container matColumnDef="chan_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let channel"> {{channel.chan_id}} </td>
+            </ng-container>
+            <ng-container matColumnDef="closing_tx_hash">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Closing Txn Hash </th>
+              <td mat-cell *matCellDef="let channel">
+              <div>{{channel.closing_tx_hash | slice:0:10}}...</div></td>
+            </ng-container>
+            <ng-container matColumnDef="remote_pubkey">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Pub Key </th>
+              <td mat-cell *matCellDef="let channel">
+              <div>{{channel.remote_pubkey | slice:0:10}}...</div></td>
+            </ng-container>
+            <ng-container matColumnDef="capacity">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Capacity </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.capacity | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="close_height">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Close Height </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.close_height | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="settled_balance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Settled Balance </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.settled_balance | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="time_locked_balance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Time Locked Balance </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.time_locked_balance | number}} </span></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onClosedChannelClick(row, $event)"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+  

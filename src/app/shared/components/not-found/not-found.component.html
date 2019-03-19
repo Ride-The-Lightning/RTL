@@ -1,0 +1,16 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+  <mat-card class="mat-elevation-z24 not-found-box">
+    <div fxLayout="column" fxLayoutAlign="center center" class="bg-primary">
+      <button mat-fab color="accent" class="mat-elevation-z12">
+        <mat-icon>error</mat-icon>
+      </button>
+      <h1 class="error">404</h1>
+    </div>
+    <mat-card-content fxLayout="row" fxLayoutAlign="center center">
+      <mat-card fxLayout="column" fxLayoutAlign="center center" class="mat-elevation-z12 w-100">
+        <div class="box-text">This page does not exist!</div>
+        <button mat-raised-button color="primary" class="mat-elevation-z12 padding-gap-x" type="button" (click)="goHome()">HOME</button>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+</div>

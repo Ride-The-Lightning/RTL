@@ -1,0 +1,63 @@
+@import "constants";
+
+@mixin change-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $testColor: mat-palette($mat-red, A200);
+
+  .bg-primary {
+    @include _mat-toolbar-color($primary);
+  }
+
+  .bg-accent {
+    @include _mat-toolbar-color($accent);
+  }
+
+  .bg-warn {
+    @include _mat-toolbar-color($warn);
+  }
+
+  .bg-test {
+    @include _mat-toolbar-color($testColor);
+  }
+
+  .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
+    stroke: mat-color($foreground, text);
+  }
+
+  .mat-toolbar-row, 
+  .mat-toolbar-single-row {
+    height: $toolbar-height;
+  }
+
+  .lnd-info{
+    border-bottom: 1px solid mat-color($foreground, divider);
+  }
+  .horizontal-nav {
+    position: fixed;
+    top:74px;
+    z-index: 9999;
+  }
+  a {
+    color: mat-color($foreground, text);
+  }
+
+  .active-link {
+    background: mat-color($primary); 
+  }
+
+  .h-active-link {
+    background: mat-color($primary, lighter) !important;
+  }
+  
+  .ngx-charts {
+    fill: mat-color($foreground, text);
+    .bar {
+      fill: mat-color($primary) !important;
+      cursor: default;
+    }
+  }  
+}

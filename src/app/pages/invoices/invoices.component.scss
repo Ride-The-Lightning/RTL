@@ -1,0 +1,23 @@
+.mat-column-value {
+  padding-right: 1rem;
+}
+
+.mat-column-settled {
+  padding-left: 1rem;
+}
+
+table {
+  width:100%;
+}
+
+.table-container {
+  height: 68vh;
+  overflow: auto;
+}
+
+@media screen and (max-width: 414px) {
+  .table-container {
+    max-height: 31vh;
+    overflow: auto;
+  }
+}

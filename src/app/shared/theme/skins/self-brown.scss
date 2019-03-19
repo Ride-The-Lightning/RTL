@@ -1,0 +1,83 @@
+$custom-brown: (
+  50 : #fcf7f3,
+  100 : #f8ece2,
+  200 : #f4dfcf,
+  300 : #efd2bc,
+  400 : #ebc9ad,
+  500 : #e8bf9f,
+  600 : #e5b997,
+  700 : #e2b18d,
+  800 : #dea983,
+  900 : #d89b72,
+  A100 : #ffffff,
+  A200 : #ffffff,
+  A400 : #fff5ee,
+  A700 : #ffe5d4,
+    contrast: (
+        50 : #ECEFF1,
+        100 : #CFD8DC,
+        200 : #37474F,
+        300 : #37474F,
+        400 : #37474F,
+        500 : #607D8B,
+        600 : #546E7A,
+        700 : #455A64,
+        800 : #37474F,
+        900 : #263238,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$custom-light-theme-background: (
+  status-bar: map_get($mat-blue-gray, 300),
+  app-bar:    map_get($mat-blue-gray, 300),
+  background: map_get($custom-brown, 50),
+  hover:      rgba(black, 0.04),
+  card:       map_get($custom-brown, 100),
+  dialog:     map_get($custom-brown, 100),
+  disabled-button: rgba(black, 0.12),
+  raised-button: map_get($mat-blue-gray, 100),
+  focused-button: $dark-focused,
+  selected-button: map_get($mat-blue-gray, 300),
+  selected-disabled-button: map_get($mat-blue-gray, 400),
+  disabled-button-toggle: map_get($mat-blue-gray, 200),
+  unselected-chip: map_get($mat-blue-gray, 300),
+  disabled-list-option: map_get($mat-blue-gray, 200),
+);
+
+$custom-light-theme-foreground: (
+  base:              map_get($mat-blue-gray, 900),
+  divider:           $dark-dividers,
+  dividers:          $dark-dividers,
+  disabled:          $dark-disabled-text,
+  disabled-button:   rgba(map_get($mat-blue-gray, 900), 0.26),
+  disabled-text:     $dark-disabled-text,
+  hint-text:         $dark-disabled-text,
+  secondary-text:    $dark-secondary-text,
+  icon:              rgba(map_get($mat-blue-gray, 900), 0.54),
+  icons:             rgba(map_get($mat-blue-gray, 900), 0.54),
+  text:              rgba(map_get($mat-blue-gray, 900), 0.87),
+  slider-min:        rgba(map_get($mat-blue-gray, 900), 0.87),
+  slider-off:        rgba(map_get($mat-blue-gray, 900), 0.26),
+  slider-off-active: rgba(map_get($mat-blue-gray, 900), 0.38),
+);
+
+@function create-custom-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+  @return (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+    is-dark: false,
+    foreground: $custom-light-theme-foreground,
+    background: $custom-light-theme-background
+  );
+}
+
+$brown-primary: mat-palette($custom-brown, 200, 50, 800);
+$brown-accent: mat-palette($mat-brown, 600, 300, 900);
+$brown-warn: mat-palette($mat-red, 500);
+
+$brown-theme: create-custom-theme($brown-primary, $brown-accent, $brown-warn);

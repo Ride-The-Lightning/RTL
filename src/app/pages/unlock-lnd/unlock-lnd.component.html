@@ -1,0 +1,21 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Unlock LND Wallet</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form fxLayout="row" fxFlex="70" fxLayoutAlign="space-between">
+          <mat-form-field fxFlex="65" fxLayoutAlign="start">
+            <input matInput type="password" placeholder="Password" name="walletPassword" [(ngModel)]="walletPassword" tabindex="1" required>
+            <mat-hint>Enter LND Wallet Password</mat-hint>
+          </mat-form-field>
+          <button mat-raised-button fxFlex="15" color="primary" [disabled]="walletPassword == ''" (click)="onOperateWallet('unlock')" tabindex="2">Unlock Wallet</button>
+          <button fxFlex="15" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+        </form>                              
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
