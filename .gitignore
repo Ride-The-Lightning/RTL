@@ -38,6 +38,5 @@ testem.log
 Thumbs.db
 
 RTL.conf
-/logs
-/cookies
-RTL.log
+/logs/*
+/cookies/*
