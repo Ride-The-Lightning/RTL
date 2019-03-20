@@ -32,34 +32,6 @@
           </div>
         </mat-toolbar>
       </div>
-    
-      <!-- <div fxLayout="column" class="top-bar">
-        <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" color="primary" class="padding-gap-x sticky top-toolbar">
-          <div fxLayoutAlign="center center">
-            <button *ngIf="settings.menu === 'Vertical'" mat-icon-button (click)="sideNavToggle(sideNavigation)">
-              <mat-icon>menu</mat-icon>
-            </button>
-          </div>
-          <div>
-            <h2>Ride The Lightning <span class="font-60-percent">(Beta)</span></h2>
-          </div>
-          <div>
-            <rtl-top-menu></rtl-top-menu>
-          </div>
-        </mat-toolbar>
-        <div fxLayout="row" fxLayoutAlign="space-between center" class="bg-primary pubkey-info-top sticky" rtlClipboard [payload]="information?.identity_pubkey" (copied)="copiedText($event)">
-          <mat-icon [ngClass]="{'icon-smaller': smallScreen}">vpn_key</mat-icon>
-          <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{information?.identity_pubkey}}
-            <mat-spinner [diameter]="20" *ngIf="flgLoading[0]" class="inline-spinner foreground"></mat-spinner>
-            <mat-icon [ngClass]="{'icon-smaller cursor-pointer copy-icon-smaller': smallScreen, 'icon-small cursor-pointer copy-icon': !smallScreen}">file_copy</mat-icon><span [hidden]="!flgCopied">Copied</span>
-          </div>
-        </div>
-        <mat-toolbar color="primary" *ngIf="settings.menu === 'Horizontal'" class="padding-gap-x horizontal-nav sticky">
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center" class="h-100">
-            <rtl-horizontal-navigation></rtl-horizontal-navigation>
-          </div>
-        </mat-toolbar>
-      </div> -->
       <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
         <router-outlet></router-outlet>
       </div>

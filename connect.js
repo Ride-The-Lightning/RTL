@@ -66,14 +66,14 @@ const setMacaroonPath = (clArgs, config) => {
 
 const validateConfigFile = (config) => {
   if(common.macaroon_path === '' || undefined === common.macaroon_path) {
-    errMsg = 'Please set macaroon path through environment/RTL.conf!';
+    errMsg = 'Please set macaroon path through environment or RTL.conf!';
   }
   
   if(undefined !== process.env.LND_SERVER_URL) {
     common.lnd_server_url = process.env.LND_SERVER_URL;
   } else {
     if((config.Authentication.lndServerUrl === '' ||  undefined === config.Authentication.lndServerUrl) && (config.Settings.lndServerUrl === '' ||  undefined === config.Settings.lndServerUrl)) {
-      errMsg = errMsg + '\nPlease set LND Server URL through environment/RTL.conf!';
+      errMsg = errMsg + '\nPlease set LND Server URL through environment or RTL.conf!';
     } else {
       if (config.Settings.lndServerUrl !== '' &&  undefined !== config.Settings.lndServerUrl) {
         common.lnd_server_url = config.Settings.lndServerUrl;
@@ -100,7 +100,7 @@ const validateConfigFile = (config) => {
       common.lnd_config_path = config.Authentication.lndConfigPath;
     } else {
       if(upperCase(common.node_auth_type) === 'DEFAULT') {
-        errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment/RTL.conf!';
+        errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment or RTL.conf!';
       }    
     }
   }
