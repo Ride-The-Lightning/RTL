@@ -160,4 +160,4 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
-You can also reach out to us via twitter DM on @Sauby_k or @RTL_App. Thanks for your interest.
+You can also reach out to us via twitter DM on [@Sauby_k](https://twitter.com/sauby_k) or [@RTL_App](https://twitter.com/RTL_App). Thanks for your interest.
