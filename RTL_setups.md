@@ -1,9 +1,9 @@
 ### Documenting the different RTL setups and the corresponding config tweaks
 
-#### RTL+LND running on the same device
+#### RTL Server+LND running on the same device
 For this type of setup, just follow the instructions on the [readme](README.md)
 
-#### RTL and LND running on different devices (Local LAN)
+#### RTL Server and LND running on different devices (Local LAN)
 If your running RTL and LND on different devices on your local LAN, certain config changes need to be made in LND and RTL conf files.
 1. A static IP address must be assigned to the device running LND
 2. `admin.macaroon` file must be transferred to the device on which you need to run RTL
@@ -19,6 +19,7 @@ rtlPass=<password in plain text>
 lndServerUrl=https://<ip-address-of-device-running-lnd>:8080/v1
 ```
 6. Restart RTL
+7. Access RTL by opening your browser at the following address: http://localhost:3000
 
 #### RTL and LND running on different devices (with LND running on an external network or a cloud service)
 *RTL is not recommended for this type of setup*
