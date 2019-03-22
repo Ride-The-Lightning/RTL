@@ -1,7 +1,7 @@
 ### Documenting the different RTL setups and the corresponding config tweaks
 
 #### RTL+LND running on the same device
-For this setup, just follow the instructions on the [readme](README.md)
+For this type of setup, just follow the instructions on the [readme](README.md)
 
 #### RTL and LND running on different devices (Local LAN)
 If your running RTL and LND on different devices on your local LAN, certain config changes need to be made in LND and RTL conf files.
@@ -19,3 +19,7 @@ rtlPass=<password in plain text>
 lndServerUrl=https://<ip-address-of-device-running-lnd>:8080/v1
 ```
 6. Restart RTL
+
+#### RTL and LND running on different devices (with LND running on an external network or a cloud service)
+RTL is not recommended for this type of setup. In case you need to run RTL with an external node, you need to ensure that RTL is served on https, by running it behind a webserver like nginx encrypted with your letsencrypt certificate.
+We have not provided a standardized guide for this setup. A documentation PR is welcome for this.
