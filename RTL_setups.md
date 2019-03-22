@@ -1,6 +1,7 @@
 ### Documenting the different RTL setups and the corresponding config tweaks
 
 #### RTL+LND running on the same device
+For this setup, just follow the instructions on the [readme](Readme.md)
 
 #### RTL and LND running on different devices (Local LAN)
 If your running RTL and LND on different devices on your local LAN, certain config changes need to be made in LND and RTL conf files.
