@@ -15,6 +15,6 @@ macaroonPath=<Path of the folder containing 'admin.macaroon' on the device runni
 nodeAuthType=CUSTOM
 rtlPass=<password in plain text>
 [Settings]
-lndServerUrl=https://ip-address-of-your-rpi:8080/v1
+lndServerUrl=https://<ip-address-of-your-rpi>:8080/v1
 ```
 6. Restart RTL
