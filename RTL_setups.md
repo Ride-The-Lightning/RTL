@@ -22,5 +22,7 @@ lndServerUrl=https://<ip-address-of-device-running-lnd>:8080/v1
 
 #### RTL and LND running on different devices (with LND running on an external network or a cloud service)
 *RTL is not recommended for this type of setup*
+
 In case you need to run RTL with an external node, you need to ensure that RTL is served on https, by running it behind a webserver like [nginx](https://nginx.org/en/download.html) encrypted with your [letsencrypt](https://letsencrypt.org) certificate.
+
 We have not provided a standardized guide for this setup. A documentation PR is welcome for this.
