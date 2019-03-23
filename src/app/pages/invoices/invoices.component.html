@@ -67,7 +67,7 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount Paid ({{(settings?.satsToBTC) ? information?.currency_unit : information?.smaller_currency_unit}})</th>
               <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{(settings?.satsToBTC) ? (invoice?.btc_amt_paid_sat | number:'1.0-3') : (invoice?.amt_paid_sat | number)}} </span></td>
             </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)"></tr>
           </table>
         </div>

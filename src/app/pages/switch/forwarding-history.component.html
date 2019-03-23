@@ -76,7 +76,7 @@
                 (Sats)</th>
               <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent.fee | number}}</span></td>
             </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"
               (click)="onForwardingEventClick(row, $event)"></tr>
           </table>

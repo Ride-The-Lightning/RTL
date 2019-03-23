@@ -36,11 +36,7 @@
   .lnd-info{
     border-bottom: 1px solid mat-color($foreground, divider);
   }
-  .horizontal-nav {
-    position: fixed;
-    top:74px;
-    z-index: 9999;
-  }
+
   a {
     color: mat-color($foreground, text);
   }

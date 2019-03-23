@@ -62,7 +62,7 @@ exports.authenticateUser = (req, res, next) => {
     } else {
       fs.readFile(common.lnd_config_path, 'utf8', function (err, data) {
         if (err) {
-          logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: RTL Config Reading Failed!');
+          logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: LND Config Reading Failed!');
           res.status(500).json({
             message: "LND Config Reading Failed!",
             error: err

@@ -71,7 +71,7 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Path</th>
               <td mat-cell *matCellDef="let payment">{{payment?.path?.length || 0}} Hops</td>
             </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment  && flgAnimate) ? 'added' : 'notAdded'" (click)="onPaymentClick(row, $event)"></tr>
           </table>
         </div>

@@ -33,6 +33,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   public invoices: any;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
+  public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
@@ -47,9 +48,11 @@ export class InvoicesComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
         break;
     }

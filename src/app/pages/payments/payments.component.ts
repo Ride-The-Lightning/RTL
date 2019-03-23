@@ -33,6 +33,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
+  public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
@@ -47,9 +48,11 @@ export class PaymentsComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'path'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
         break;
     }

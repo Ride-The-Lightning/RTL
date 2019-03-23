@@ -28,6 +28,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   public peers: any;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
+  public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
@@ -42,9 +43,11 @@ export class PeersComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
     }

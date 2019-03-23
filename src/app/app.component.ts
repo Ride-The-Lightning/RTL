@@ -75,7 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if (actionPayload.type === RTLActions.INIT_APP_DATA) {
         this.store.dispatch(new RTLActions.FetchInfo());
       } else if (actionPayload.type === RTLActions.SET_SETTINGS) {
-        if (this.settings.menu === 'Horizontal') {
+        if (this.settings.menu === 'Horizontal' || this.settings.menuType === 'Compact' || this.settings.menuType === 'Mini') {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }

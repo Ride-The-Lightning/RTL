@@ -31,12 +31,12 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public statusFilters = ['Active', 'Inactive'];
   public myChanPolicy: any = {};
   public selFilter = '';
-  public flgSticky = true;
   public transTypes = [{id: '0', name: 'Default Priority'}, {id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
   public selTransType = '0';
   public transTypeValue = {blocks: '', fees: ''};
   public spendUnconfirmed = false;
   public moreOptions = false;
+  public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
@@ -51,10 +51,12 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias', 'capacity', 'local_balance', 'remote_balance'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias', 'capacity', 'local_balance', 'remote_balance', 'total_satoshis_sent',
           'total_satoshis_received', 'commit_fee'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_pubkey', 'remote_alias', 'capacity', 'local_balance', 'remote_balance',
           'total_satoshis_sent', 'total_satoshis_received', 'commit_fee'];
         break;

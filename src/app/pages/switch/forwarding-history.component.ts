@@ -26,6 +26,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, this.today.getHours(), this.today.getMinutes(), this.today.getSeconds());
   public endDate = this.today;
   public startDate = this.yesterday;
+  public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {
@@ -40,9 +41,11 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_out', 'amt_in', 'fee'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_out', 'amt_in', 'fee'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_out', 'amt_in', 'fee'];
         break;
     }

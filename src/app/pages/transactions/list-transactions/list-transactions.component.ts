@@ -22,6 +22,7 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
+  public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
@@ -36,9 +37,11 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['dest_addresses', 'time_stamp', 'num_confirmations', 'total_fees', 'tx_hash', 'amount'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
         this.displayedColumns = ['dest_addresses', 'time_stamp', 'num_confirmations', 'total_fees', 'tx_hash', 'amount'];
         break;
       default:
+        this.flgSticky = true;
         this.displayedColumns = ['dest_addresses', 'time_stamp', 'num_confirmations', 'total_fees', 'block_hash', 'block_height', 'tx_hash', 'amount'];
         break;
     }
