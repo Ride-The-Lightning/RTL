@@ -55,7 +55,8 @@ html, body {
   height: 100vh;
 }
 
-.sidenav{
+.sidenav {
+  width: $regular-sidenav-width;
   height: 100%;
   overflow: hidden;
 }

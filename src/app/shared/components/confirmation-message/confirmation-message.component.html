@@ -30,9 +30,9 @@
       </div>
       <mat-divider class="pb-1"></mat-divider>
       <div fxLayoutAlign="center">
-        <button mat-raised-button color="accent" fxFlex="20" class="mb-1 mr-2" type="button" (click)="onClose(false)" default>{{noBtnText}}</button>
-        <button *ngIf="flgShowInput" mat-raised-button [color]="msgTypeForeground" fxFlex="20" class="mb-1 ml-2" type="button" (click)="onClose(getInputs)" [disabled]="!getInputs[0].inputValue">{{yesBtnText}}</button>
-        <button *ngIf="!flgShowInput" mat-raised-button [color]="msgTypeForeground" fxFlex="20" class="mb-1 ml-2" type="button" (click)="onClose(true)">{{yesBtnText}}</button>          
+        <button mat-raised-button color="accent" fxFlex="20" type="button" fxLayoutAlign="center center" class="mr-2" (click)="onClose(false)" default>{{noBtnText}}</button>
+        <button *ngIf="flgShowInput" mat-raised-button [color]="msgTypeForeground" fxLayoutAlign="center center" fxFlex="20" type="button" (click)="onClose(getInputs)" [disabled]="!getInputs[0].inputValue">{{yesBtnText}}</button>
+        <button *ngIf="!flgShowInput" mat-raised-button [color]="msgTypeForeground" fxLayoutAlign="center center" fxFlex="20" type="button" (click)="onClose(true)">{{yesBtnText}}</button>          
       </div>
     </mat-card-content>
   </div>

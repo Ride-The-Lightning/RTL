@@ -78,31 +78,35 @@
           <h2>Receive Funds</h2>
         </mat-card-subtitle>
       </mat-card-header>
-      <mat-card-content class="top-minus-25px">
-        <div fxLayout="column" fxLayout.gt-sm="row wrap">
-          <div fxFlex="26" fxLayoutAlign="start end">
-            <mat-form-field fxFlex="99">
-              <mat-select [(ngModel)]="selectedAddress" placeholder="Address Type" name="address_type" tabindex="1">
-                <mat-option *ngFor="let addressType of addressTypes" [value]="addressType">
-                  {{addressType.addressTp}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+      <mat-card-content>
+        <div fxLayout="column" fxFlex="100" fxLayout.lt-md="top-minus-25px">
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap">
+            <div fxFlex="15" fxLayoutAlign="start end">
+              <mat-form-field fxFlex="99">
+                <mat-select [(ngModel)]="selectedAddress" placeholder="Address Type" name="address_type" tabindex="1">
+                  <mat-option *ngFor="let addressType of addressTypes" [value]="addressType">
+                    {{addressType.addressTp}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div fxFlex="25" fxLayoutAlign="space-between end">
+              <div fxFlex.gt-md="65" fxFlex.lt-lg="49" fxLayoutAlign="start end">
+                <button fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="undefined === selectedAddress.addressId" (click)="onGenerateAddress()" tabindex="2" class="top-minus-15px">Generate Address</button>
+              </div>
+              <div fxFlex.gt-md="30" fxFlex.lt-lg="49" fxLayoutAlign="start end">
+                <button fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
+              </div>
+            </div>
+            <div fxFlex="42" fxLayoutAlign.lt-xl="start start" fxLayoutAlign.gt-md="start end">
+              <mat-form-field fxFlex="100">
+                <input matInput [value]="newAddress" placeholder="Generated Address" readonly>
+              </mat-form-field>
+            </div>
+            <div fxFlex.lt-lg="40" fxFlex.gt-md="14" fxLayoutAlign="center center">
+              <qrcode [qrdata]="newAddress" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (newAddress === '') ? 'hidden' : 'visible'}" class="top-minus-5px qr-border"></qrcode>
+            </div>  
           </div>
-          <div fxFlex="15" fxLayoutAlign="start end">
-            <button fxFlex="99" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="undefined === selectedAddress.addressId" (click)="onGenerateAddress()" tabindex="2" class="top-minus-15px">Generate Address</button>
-          </div>
-          <div fxFlex="7" fxLayoutAlign="start end">
-            <button fxFlex="99" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
-          </div>
-          <div fxFlex="34" fxLayoutAlign="start end">
-            <mat-form-field fxFlex="100">
-              <input matInput [value]="newAddress" readonly>
-            </mat-form-field>
-          </div>  
-          <div fxFlex="14" fxLayoutAlign="center center">
-            <qrcode [qrdata]="newAddress" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (newAddress === '') ? 'hidden' : 'visible'}" class="top-minus-5px qr-border"></qrcode>
-          </div>  
         </div>
       </mat-card-content>
     </mat-card>
@@ -121,7 +125,7 @@
               <input matInput [(ngModel)]="transaction.address" placeholder="{{information?.currency_unit}} Address" tabindex="4" name="address" #address="ngModel">
             </mat-form-field>
           </div>
-          <div fxFleax="38" fxLayoutAlign="start center">
+          <div fxFlex="38" fxLayoutAlign="start end">
             <mat-radio-group fxFlex="100" fxLayoutAlign="space-between center" (change)="onOptionChange($event)" [(ngModel)]="flgCustomAmount">
               <mat-radio-button fxFlex="35" value="0">Sweep All</mat-radio-button>
               <mat-radio-button fxFlex="60" value="1">
