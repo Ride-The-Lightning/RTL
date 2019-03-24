@@ -13,10 +13,10 @@
       @include angular-material-theme($teal-light-theme);
       @include change-theme($teal-light-theme);
   }
-    &.light-red{
-      @import "../skins/light-red";
-      @include angular-material-theme($red-light-theme);
-      @include change-theme($red-light-theme);
+    &.light-blue-gray{
+      @import "../skins/light-bluegray";
+      @include angular-material-theme($blue-gray-light-theme);
+      @include change-theme($blue-gray-light-theme);
   }
   &.dark-blue{
       @import "../skins/dark-blue";

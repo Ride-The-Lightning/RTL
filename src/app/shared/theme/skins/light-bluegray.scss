@@ -43,8 +43,8 @@ $custom-light-theme-foreground: (
   );
 }
 
-$red-light-primary: mat-palette($mat-red, 800, 300, 900);
-$red-light-accent: mat-palette($mat-green, 600, 300, 900);
-$red-light-warn: mat-palette($mat-deep-orange, A400);
+$blue-gray-light-primary: mat-palette($mat-blue-gray, 800, 200, 900);
+$blue-gray-light-accent: mat-palette($mat-green, 600, 300, 900);
+$blue-gray-light-warn: mat-palette($mat-deep-orange, A400);
 
-$red-light-theme: create-custom-theme($red-light-primary, $red-light-accent, $red-light-warn);
+$blue-gray-light-theme: create-custom-theme($blue-gray-light-primary, $blue-gray-light-accent, $blue-gray-light-warn);

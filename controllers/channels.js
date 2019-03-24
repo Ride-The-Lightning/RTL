@@ -56,7 +56,7 @@ exports.getChannels = (req, res, next) => {
       }
       if (req.params.channelType === 'closed') {
         body.channels.forEach(channel => {
-          channel.close_type = (undefined === channel.close_type) ? '' : channel.close_type;
+          channel.close_type = (undefined === channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
         });
         body.channels = common.sortDescByKey(body.channels, 'close_type');
       }
