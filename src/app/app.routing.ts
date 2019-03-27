@@ -18,6 +18,7 @@ import { InvoicesComponent } from './pages/invoices/invoices.component';
 import { LookupsComponent } from './pages/lookups/lookups.component';
 import { SigninComponent } from './pages/signin/signin.component';
 import { ForwardingHistoryComponent } from './pages/switch/forwarding-history.component';
+import { RoutingPeersComponent } from './pages/routing-peers/routing-peers.component';
 import { SsoFailedComponent } from './shared/components/sso-failed/sso-failed.component';
 
 import { AuthGuard, LNDUnlockedGuard } from './shared/services/auth.guard';
@@ -35,6 +36,7 @@ export const routes: Routes = [
   { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'switch', component: ForwardingHistoryComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'lookups', component: LookupsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
   { path: 'login', component: SigninComponent },

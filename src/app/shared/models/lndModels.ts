@@ -334,6 +334,13 @@ export interface ForwardingEvent {
   fee?: string;
 }
 
+export interface RoutingPeers {
+  chan_id?: string;
+  alias?: string;
+  events?: number;
+  total_amount?: number;
+}
+
 export interface SwitchRes {
   last_offset_index?: number;
   forwarding_events?: ForwardingEvent[];

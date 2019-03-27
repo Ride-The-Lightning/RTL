@@ -19,9 +19,10 @@ export const MENU_DATA: MenuNode = {
     {id: 5, parentId: 0, name: 'Payments', icon: 'payment', link: '/payments'},
     {id: 6, parentId: 0, name: 'Invoices', icon: 'receipt', link: '/invoices'},
     {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/switch'},
-    {id: 8, parentId: 0, name: 'Lookups', icon: 'search', link: '/lookups'},
-    {id: 9, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '/sconfig'},
-    {id: 10, parentId: 0, name: 'Help', icon: 'help', link: '/help'}
+    {id: 8, parentId: 0, name: 'Routing Peers', icon: 'group_work', link: '/routingpeers'},
+    {id: 9, parentId: 0, name: 'Lookups', icon: 'search', link: '/lookups'},
+    {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '/sconfig'},
+    {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '/help'}
   ]
 };
 

@@ -49,6 +49,7 @@ import { ChannelClosedComponent } from './pages/channels/channel-closed/channel-
 import { ListTransactionsComponent } from './pages/transactions/list-transactions/list-transactions.component';
 import { LookupsComponent } from './pages/lookups/lookups.component';
 import { ForwardingHistoryComponent } from './pages/switch/forwarding-history.component';
+import { RoutingPeersComponent } from './pages/routing-peers/routing-peers.component';
 import { ChannelLookupComponent } from './pages/lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.component';
 
@@ -88,6 +89,7 @@ import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.com
     ListTransactionsComponent,
     LookupsComponent,
     ForwardingHistoryComponent,
+    RoutingPeersComponent,
     ChannelLookupComponent,
     NodeLookupComponent
   ],
