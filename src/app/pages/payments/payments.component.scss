@@ -29,15 +29,3 @@
 table {
   width:100%;
 }
-
-.table-container {
-  height: 68vh;
-  overflow: auto;
-}
-
-@media screen and (max-width: 414px) {
-  .table-container {
-    max-height: 46vh;
-    overflow: auto;
-  }
-}

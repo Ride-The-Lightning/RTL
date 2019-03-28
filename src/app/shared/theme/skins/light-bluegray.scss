@@ -24,12 +24,12 @@ $custom-light-theme-foreground: (
   disabled-text:     $dark-disabled-text,
   hint-text:         $dark-disabled-text,
   secondary-text:    $dark-secondary-text,
-  icon:              rgba(black, 0.54),
-  icons:             rgba(black, 0.54),
-  text:              rgba(black, 0.87),
-  slider-min:        rgba(black, 0.87),
-  slider-off:        rgba(black, 0.26),
-  slider-off-active: rgba(black, 0.38),
+  icon:              rgba(black, 1),
+  icons:             rgba(black, 1),
+  text:              rgba(black, 1),
+  slider-min:        rgba(black, 1),
+  slider-off:        rgba(black, 0.5),
+  slider-off-active: rgba(black, 0.6),
 );
 
 @function create-custom-theme($primary, $accent, $warn: mat-palette($mat-red)) {

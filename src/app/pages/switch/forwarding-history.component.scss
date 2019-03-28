@@ -7,15 +7,3 @@
 table {
   width:100%;
 }
-
-.table-container {
-  height: 72vh;
-  overflow: auto;
-}
-
-@media screen and (max-width: 414px) {
-  .table-container {
-    height: 53vh;
-    overflow: auto;
-  }
-}

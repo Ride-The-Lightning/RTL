@@ -38,11 +38,12 @@
   }
 
   a {
-    color: mat-color($foreground, text);
+    color: white;
   }
 
   .active-link {
     background: mat-color($primary); 
+    color: white; // mat-color($foreground, text); for dark theme but for light theme the foreground text color is black
   }
 
   .h-active-link {

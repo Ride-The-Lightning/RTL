@@ -11,18 +11,19 @@
           <div *ngFor="let obj of messageObj" fxLayout="row" fxLayoutAlign="center flex-start">
             <div fxFlex="20">{{obj[0] | titlecase}}</div>
             <div fxFlex="2">:</div>
-            <div [fxFlex]="showCopyOption(obj[0]) ? 60 : 75" class="pr-2">
+            <div fxLayout="column" fxFlex="75">
               <div *ngIf="isNumber(obj[1], obj[0]);else notNumberTemplate">
                 <span>{{obj[1] | number:'1.0-3'}}</span>
               </div>
               <ng-template #notNumberTemplate>
-                <span>{{obj[1]}}</span>
+                <span fxFlex="100">{{obj[1]}}
+                  <mat-icon *ngIf="showCopyOption(obj[0])" class="icon-small cursor-pointer pl-1 top-5px" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)">file_copy</mat-icon><span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
+                </span>
+                <div *ngIf="showCopyOption(obj[0])" fxFlex="100" fxLayoutAlign.gt-sm="start center">
+                  <qrcode [qrdata]="obj[1]" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (obj[1] === '') ? 'hidden' : 'visible'}" class="qr-border"></qrcode>
+                </div>  
               </ng-template>
-              <mat-icon *ngIf="showCopyOption(obj[0])" class="icon-small cursor-pointer pl-1 top-5px" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)">file_copy</mat-icon><span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
             </div>
-            <div *ngIf="showCopyOption(obj[0])" fxFlex="15" fxLayoutAlign="center center">
-              <qrcode [qrdata]="obj[1]" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (obj[1] === '') ? 'hidden' : 'visible'}" class="mt-minus-40px qr-border"></qrcode>
-            </div>  
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { ForwardingEvent, RoutingPeers } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
+import { CommonService } from '../../shared/services/common.service';
 
 import * as RTLActions from '../../shared/store/rtl.actions';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
@@ -28,12 +28,13 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 30,
     this.today.getHours(), this.today.getMinutes(), this.today.getSeconds()
   );
+  public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, this.today.getHours(), this.today.getMinutes(), this.today.getSeconds());
   public endDate = this.today;
   public startDate = this.lastMonthDay;
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.State>) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['chan_id', 'events', 'total_amount'];
@@ -123,7 +124,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
         outgoing.total_amount = +outgoing.total_amount + +event.amt_out;
       }
     });
-    return [incomingResults, outgoingResults];
+    return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
   }
 
   onRoutingPeersFetch() {

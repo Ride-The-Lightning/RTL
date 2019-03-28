@@ -42,6 +42,7 @@ import { SigninComponent } from './pages/signin/signin.component';
 import { RTLRootReducer } from './shared/store/rtl.reducers';
 import { RTLEffects } from './shared/store/rtl.effects';
 
+import { CommonService } from './shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard, LNDUnlockedGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
@@ -98,7 +99,7 @@ import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.com
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    AuthGuard, LNDUnlockedGuard
+    AuthGuard, LNDUnlockedGuard, CommonService
   ],
   bootstrap: [AppComponent]
 })
