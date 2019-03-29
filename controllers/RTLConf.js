@@ -83,3 +83,23 @@ exports.getConfig = (req, res, next) => {
     }
   });
 };
+
+exports.getMultiNodeConfig = (req, res, next) => {
+  var RTLMultiNodeConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+  logger.info('\r\nRTLConf.js: 91: ' + JSON.stringify(Date.now()) + ': INFO: Getting Multi Node Config');
+  fs.readFile(RTLMultiNodeConfFile, 'utf8', function(err, data) {
+    if (err) {
+      logger.error('\r\nRTLConf.js: 94: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
+      res.status(500).json({
+        message: "Reading Multi Node Config Failed!",
+        error: err
+      });
+    } else {
+      const multiNodeConfig = require('../RTL-Multi-Node-Conf.json');
+        var nodeinfo = [];
+        for(var key in multiNodeConfig)
+          nodeinfo.push({"LNNode":multiNodeConfig[key].LNNode, "LNImpl":multiNodeConfig[key].LNImplementation});
+      res.status(200).json({nodes:nodeinfo});
+    }
+  });
+};

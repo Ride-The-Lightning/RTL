@@ -1,0 +1,56 @@
+[
+{
+    "LNNode": "LND Testnet # 1",
+    "LNImplementation": "LND",
+    "Authentication": {
+        "macaroonPath": "/Users/suheb/Downloads",
+        "nodeAuthType": "CUSTOM",
+        "lndConfigPath": "",
+        "rtlPass": "xxx"
+    },
+    "Settings": {
+        "flgSidenavOpened": "true",
+        "flgSidenavPinned": "true",
+        "menu": "Vertical",
+        "menuType": "Regular",
+        "theme": "dark-blue",
+        "satsToBTC": "false",
+        "bitcoindConfigPath": "",
+        "enableLogging": "true",
+        "port": "3000",
+        "lndServerUrl": "https://localhost:8080/v1"
+    },
+    "SSO":{
+        "rtlSSO": 0,
+        "rtlCookiePath": "",
+        "logoutRedirectLink": ""
+    }
+},
+{
+    "LNNode": "LND Mainnet # 1",
+    "LNImplementation": "LND",
+    "Authentication": {
+        "macaroonPath": "/Users/suheb/Downloads",
+        "nodeAuthType": "CUSTOM",
+        "lndConfigPath": "",
+        "rtlPass": "xxx"
+    },
+    "Settings": {
+        "flgSidenavOpened": "true",
+        "flgSidenavPinned": "true",
+        "menu": "Vertical",
+        "menuType": "Regular",
+        "theme": "dark-blue",
+        "satsToBTC": "false",
+        "bitcoindConfigPath": "",
+        "enableLogging": "true",
+        "port": "3000",
+        "lndServerUrl": "https://localhost:8080/v1"
+    },
+    "SSO":{
+        "rtlSSO": 0,
+        "rtlCookiePath": "",
+        "logoutRedirectLink": ""
+    }
+}
+]
