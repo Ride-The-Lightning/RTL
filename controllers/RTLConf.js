@@ -98,7 +98,7 @@ exports.getMultiNodeConfig = (req, res, next) => {
       const multiNodeConfig = require('../RTL-Multi-Node-Conf.json');
         var nodeinfo = [];
         for(var key in multiNodeConfig)
-          nodeinfo.push({"LNNode":multiNodeConfig[key].LNNode, "LNImpl":multiNodeConfig[key].LNImplementation});
+          nodeinfo.push({"Index":multiNodeConfig[key].Index, "LNNode":multiNodeConfig[key].LNNode, "LNImpl":multiNodeConfig[key].LNImplementation});
       res.status(200).json({nodes:nodeinfo});
     }
   });

@@ -1,5 +1,6 @@
 [
 {
+    "Index": "1",
     "LNNode": "LND Testnet # 1",
     "LNImplementation": "LND",
     "Authentication": {
@@ -27,6 +28,7 @@
     }
 },
 {
+    "Index": "2",
     "LNNode": "LND Mainnet # 1",
     "LNImplementation": "LND",
     "Authentication": {
