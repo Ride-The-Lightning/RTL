@@ -57,7 +57,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.GetForwardingHistory({}));
+    this.onRoutingPeersFetch();
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
@@ -68,6 +68,9 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       });
       if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
         this.loadRoutingPeersTable(rtlStore.forwardingHistory.forwarding_events);
+      } else {
+        // To reset table after other Forwarding history calls
+        this.loadRoutingPeersTable([]);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
@@ -96,13 +99,19 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {
-    const results = this.groupRoutingPeers(forwardingEvents);
-    this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
-    this.RoutingPeersIncoming.sort = this.sortIn;
-    this.logger.info(this.RoutingPeersIncoming);
-    this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
-    this.RoutingPeersOutgoing.sort = this.sortOut;
-    this.logger.info(this.RoutingPeersOutgoing);
+    if (forwardingEvents.length > 0) {
+      const results = this.groupRoutingPeers(forwardingEvents);
+      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
+      this.RoutingPeersIncoming.sort = this.sortIn;
+      this.logger.info(this.RoutingPeersIncoming);
+      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
+      this.RoutingPeersOutgoing.sort = this.sortOut;
+      this.logger.info(this.RoutingPeersOutgoing);
+    } else {
+       // To reset table after other Forwarding history calls
+      this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
+      this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
+    }
   }
 
   groupRoutingPeers(forwardingEvents: ForwardingEvent[]) {

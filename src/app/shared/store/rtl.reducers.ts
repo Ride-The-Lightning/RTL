@@ -253,6 +253,8 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
             }
           }
         });
+      } else {
+        action.payload = {};
       }
       return {
         ...state,
