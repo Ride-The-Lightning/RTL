@@ -52,7 +52,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.GetForwardingHistory({}));
+    this.onForwardingHistoryFetch();
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
@@ -64,6 +64,10 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
       if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
         this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
         this.loadForwardingEventsTable(rtlStore.forwardingHistory.forwarding_events);
+      } else {
+        // To reset table after other Forwarding history calls
+        this.lastOffsetIndex = 0;
+        this.loadForwardingEventsTable([]);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
