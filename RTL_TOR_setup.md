@@ -1,4 +1,4 @@
-### Conect to RTL remotely over Tor
+### Connect to RTL remotely over Tor
 
 This guide will allow you to remotely connect to RTL over Tor. This can work on any platform, the below example is for serving an android and windows client.
 
