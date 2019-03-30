@@ -2,6 +2,7 @@
 
 This guide will allow you to remotely connect to RTL over Tor. This can work on any platform, the below example is for serving an android client.
 
+#### Server Setup 
 Install Tor on the same local machine as RTL. see the tor project wiki [here](https://trac.torproject.org/projects/tor/wiki)
 
 Edit the `torrc` configuration file, and add the following lines:
@@ -16,9 +17,11 @@ Change `mydevice` to anything you want.
 
 Save the changes to the `torrc` file and restart tor.
 
-View the contents of the file `/var/db/tor/rtl/hostname`. It will show an onion address, an authentication password(cookie), and the accociated `mydevice` label.
+View the contents of the file `/var/db/tor/rtl/hostname`. It will show an onion address, an authentication password(cookie), and the associated `mydevice` label.
 
-Download Orbot for android (add their repos to F-Droid here: https://guardianproject.info/fdroid/)
+#### Client setup: Android
+
+Download Orbot for android (add their repos to F-Droid here: https://guardianproject.info/fdroid/
 
 Open orbot. Click the `⋮`, select `hidden services ˃`, select `Client cookies`.
 
@@ -32,3 +35,20 @@ Turn on `VPN Mode`. Start your connection to the tor network by clicking on the 
 Now open the tor enabled browser and type in the onion address (example `z1234567890abc.onion:3000`) 
 Only you have access to this website! All traffic in the brave browser will go over Tor (which is slower than clearnet). 
 To go back to clearnet browsing, turn off VPN mode in Orbot.
+
+#### Client setup: Windows Tor Browser
+
+Download and install Tor Browser for windows: https://www.torproject.org/download/
+
+In Windows, edit `"%HOMEDRIVE%%HOMEPATH%"\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\torrc`
+
+Add the following line. Replace the onion address, password(cookie), and mydevice with your credentials:
+```
+HidServAuth 1234567890abcdefg.onion abcdef01234567890+/K mydevice
+```
+
+Save and exit. 
+
+Now open Tor Browser, type in the `1234567890abcdefg.onion:3000` address!
+
+
