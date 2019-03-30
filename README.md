@@ -158,7 +158,7 @@ E.g. if the IP address of your node is 192.168.0.15 then open your browser at th
 
 3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](RTL_setups.md).
 
-4. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt to setup https access for RTL.** A sample SSL setup guide can be found [here](RTL_SSL_setup.md)
+4. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt to setup https access for RTL.** A sample SSL setup guide can be found [here](RTL_SSL_setup.md) You can also serve remote access over an encrypted Tor connection. A setup guide can be found [here](RTL_TOR_setup.md)
 
 ### <a name="trouble"></a>Troubleshooting
 In case you are running into issues with the application or if you have feedback, feel free to open issues on our github repo.
