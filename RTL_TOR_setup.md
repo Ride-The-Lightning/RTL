@@ -1,6 +1,8 @@
 ### Conect to RTL remotely over Tor
 
-Install Tor for your platform, on the same local machine as RTL. see the tor project wiki [here](https://trac.torproject.org/projects/tor/wiki)
+This guide will allow you to remotely connect to RTL over Tor. This can work on any platform, the below example is for serving an android client.
+
+Install Tor on the same local machine as RTL. see the tor project wiki [here](https://trac.torproject.org/projects/tor/wiki)
 
 Edit the `torrc` configuration file, and add the following lines:
 ```
