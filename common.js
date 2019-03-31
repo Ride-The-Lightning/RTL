@@ -4,6 +4,7 @@ var common = {};
 
 common.port = 3000;
 common.rtl_conf_file_path = '';
+common.rtl_multi_node_conf_file_path = '';
 common.lnd_server_url = '';
 common.lnd_config_path = '';
 common.node_auth_type = 'DEFAULT';

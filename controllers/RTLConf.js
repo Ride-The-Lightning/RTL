@@ -89,17 +89,23 @@ exports.getMultiNodeConfig = (req, res, next) => {
   logger.info('\r\nRTLConf.js: 91: ' + JSON.stringify(Date.now()) + ': INFO: Getting Multi Node Config');
   fs.readFile(RTLMultiNodeConfFile, 'utf8', function(err, data) {
     if (err) {
-      logger.error('\r\nRTLConf.js: 94: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
-      res.status(500).json({
-        message: "Reading Multi Node Config Failed!",
-        error: err
-      });
+      if (err.code === 'ENOENT') {
+        logger.error('\r\nRTLConf.js: 94: ' + JSON.stringify(Date.now()) + ': INFO: Multi Node Config does not exist!');
+        res.status(200).json({ nodes: [] });
+      } else {
+        logger.error('\r\nRTLConf.js: 94: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
+        res.status(500).json({
+          message: "Reading Multi Node Config Failed!",
+          error: err
+        });
+      }
     } else {
       const multiNodeConfig = require('../RTL-Multi-Node-Conf.json');
-        var nodeinfo = [];
-        for(var key in multiNodeConfig)
-          nodeinfo.push({"Index":multiNodeConfig[key].Index, "LNNode":multiNodeConfig[key].LNNode, "LNImpl":multiNodeConfig[key].LNImplementation});
-      res.status(200).json({nodes:nodeinfo});
+      var nodeInfos = [];
+      for(var key in multiNodeConfig) {
+        nodeInfos.push({"index":multiNodeConfig[key].index, "lnNode":multiNodeConfig[key].lnNode, "lnImpl":multiNodeConfig[key].lnImplementation});
+      }
+      res.status(200).json({ nodes: nodeInfos });
     }
   });
 };

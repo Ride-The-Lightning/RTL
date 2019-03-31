@@ -2,7 +2,7 @@ const app = require("./app");
 const common = require("./common");
 const debug = require("debug")("node-angular");
 const http = require("http");
-var connect = require('./connect'); //Do NOT Remove
+var connect = require('./connect').setSingleNodeConfiguration(); //Do NOT Remove
 
 const onError = error => {
   if (error.syscall !== "listen") {
@@ -31,7 +31,7 @@ const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
   debug("Listening on " + bind);
-  console.log('Server is up and running, please open the UI at http://localhost:' + common.port);
+  console.log('Server is up and running, please open the UI at http://localhost:' + common.port); 
 };
 
 const server = http.createServer(app);

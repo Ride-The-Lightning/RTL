@@ -9,6 +9,14 @@ export class Settings {
   ) { }
 }
 
+export class MultiNode {
+  constructor(
+    public index: string,
+    public lnNode: string,
+    public lnImplementation: string
+  ) { }
+}
+
 export class Authentication {
   constructor(
     public lndServerUrl?: string,

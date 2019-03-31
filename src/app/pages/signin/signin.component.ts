@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { MultiNode } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 import * as RTLActions from '../../shared/store/rtl.actions';
@@ -13,6 +14,8 @@ import * as RTLActions from '../../shared/store/rtl.actions';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
+  multiNodes: MultiNode[] = [];
+  selNode = '';
   password = '';
   nodeAuthType = '';
   rtlSSO = 0;
@@ -31,6 +34,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
+      this.multiNodes = rtlStore.multiNodes;
       this.nodeAuthType = rtlStore.authSettings.nodeAuthType;
       this.logger.info(rtlStore);
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
@@ -42,7 +46,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   }
 
   onSignin() {
-    this.store.dispatch(new RTLActions.Signin(window.btoa(this.password)));
+    this.store.dispatch(new RTLActions.Signin({ password: window.btoa(this.password), node: this.selNode }));
   }
 
   resetData() {

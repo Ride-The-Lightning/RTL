@@ -107,6 +107,27 @@ export class RTLEffects implements OnDestroy {
     })
   ));
 
+  @Effect()
+  multiNodeFetch = this.actions$.pipe(
+    ofType(RTLActions.FETCH_MULTI_NODE_SETTINGS),
+    mergeMap((action: RTLActions.FetchMultiNodeSettings) => {
+      this.store.dispatch(new RTLActions.ClearEffectError('FetchMultiNodeSettings'));
+      return this.httpClient.get(environment.CONF_API + '/multinode');
+    }),
+    map((multiNodes: any) => {
+      this.logger.info(multiNodes);
+      return {
+        type: RTLActions.SET_MULTI_NODE_SETTINGS,
+        payload: (undefined !== multiNodes && undefined !== multiNodes.nodes) ? multiNodes.nodes : []
+      };
+    },
+    catchError((err) => {
+      this.logger.error(err);
+      this.store.dispatch(new RTLActions.EffectError({ action: 'FetchMultiNodeSettings', code: err.status, message: err.error.error }));
+      return of();
+    })
+  ));
+
   @Effect({ dispatch: false })
   settingSave = this.actions$.pipe(
     ofType(RTLActions.SAVE_SETTINGS),
@@ -902,7 +923,7 @@ export class RTLEffects implements OnDestroy {
   withLatestFrom(this.store.select('rtlRoot')),
   mergeMap(([action, store]: [RTLActions.Signin, fromRTLReducer.State]) => {
     this.store.dispatch(new RTLActions.ClearEffectError('Signin'));
-    return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
+    return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload.password, node: action.payload.node })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);

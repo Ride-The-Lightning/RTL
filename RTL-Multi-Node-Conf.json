@@ -1,8 +1,7 @@
-[
-{
-    "Index": "1",
-    "LNNode": "LND Testnet # 1",
-    "LNImplementation": "LND",
+[{
+    "index": "1",
+    "lnNode": "LND Testnet # 1",
+    "lnImplementation": "LND",
     "Authentication": {
         "macaroonPath": "/Users/suheb/Downloads",
         "nodeAuthType": "CUSTOM",
@@ -19,7 +18,7 @@
         "bitcoindConfigPath": "",
         "enableLogging": "true",
         "port": "3000",
-        "lndServerUrl": "https://localhost:8080/v1"
+        "lndServerUrl": "https://192.168.1.8:8080/v1"
     },
     "SSO":{
         "rtlSSO": 0,
@@ -28,9 +27,9 @@
     }
 },
 {
-    "Index": "2",
-    "LNNode": "LND Mainnet # 1",
-    "LNImplementation": "LND",
+    "index": "2",
+    "lnNode": "LND Mainnet # 1",
+    "lnImplementation": "LND",
     "Authentication": {
         "macaroonPath": "/Users/suheb/Downloads",
         "nodeAuthType": "CUSTOM",
@@ -47,12 +46,11 @@
         "bitcoindConfigPath": "",
         "enableLogging": "true",
         "port": "3000",
-        "lndServerUrl": "https://localhost:8080/v1"
+        "lndServerUrl": "https://192.168.1.20:8080/v1"
     },
     "SSO":{
         "rtlSSO": 0,
         "rtlCookiePath": "",
         "logoutRedirectLink": ""
     }
-}
-]
+}]
