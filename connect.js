@@ -1,4 +1,6 @@
+var os = require('os');
 var fs = require('fs');
+var platform = require('os').platform();
 var crypto = require('crypto');
 var clArgs = require('optimist').argv;
 var ini = require('ini');
@@ -9,9 +11,27 @@ var logger = require('./controllers/logger');
 var connect = {};
 
 const setDefaultConfig = () => {
+  var homeDir = os.userInfo().homedir;
   var macaroonPath = '';
   var lndConfigPath = '';
-  var bitcoindConfigPath = '';
+  switch (platform) {
+    case 'win32':
+      macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\testnet';
+      lndConfigPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
+      break;
+    case 'darwin':
+      macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/testnet';
+      lndConfigPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
+      break;
+    case 'linux':
+      macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/testnet';
+      lndConfigPath = homeDir + '/.lnd/lnd.conf';
+      break;
+    default:
+      macaroonPath = '';
+      lndConfigPath = '';
+      break;
+  }  
   return {
     Authentication: {
       macaroonPath: macaroonPath,
@@ -27,7 +47,6 @@ const setDefaultConfig = () => {
       theme: 'dark-blue',
       satsToBTC: false,
       lndServerUrl: 'https://localhost:8080/v1',
-      bitcoindConfigPath: bitcoindConfigPath,
       enableLogging: false,
       port: 3000
     },
@@ -138,7 +157,7 @@ const validateConfigFile = (config) => {
 		let exists = fs.existsSync(common.log_file);
 		if (exists) {
 			fs.writeFile(common.log_file, '', () => { });
-		} else if (!exists && config.Authentication.enableLogging) {
+    } else if ((!exists && config.Authentication.enableLogging) || (!exists && config.Settings.enableLogging)) {
 			try {
 				var dirname = path.dirname(common.log_file);
 				createDirectory(dirname);
@@ -146,7 +165,7 @@ const validateConfigFile = (config) => {
 				createStream.end();
 			}
 			catch (err) {
-				console.error('Something went wrong: \n' + err);
+				console.error('Something went wrong while creating log file: \n' + err);
 			}
 		}
 	}
@@ -214,7 +233,7 @@ const readCookie = (cookieFile) => {
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     }
     catch(err) {
-      console.error('Something went wrong: \n' + err);
+      console.error('Something went wrong while reading cookie: \n' + err);
       throw new Error(err);
     }
   }
@@ -262,10 +281,11 @@ connect.configFileExists = () => {
       var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
-      logEnvVariables();
+      logEnvVariables();      
+      // throw new Error('Please change default settings of macaroonPath and lndConfigPath in RTL.conf and restart the server');
     }
     catch(err) {
-      console.error('Something went wrong: \n' + err);
+      console.error('Something went wrong while configuring the server: \n' + err);
       throw new Error(err);
     }
   }

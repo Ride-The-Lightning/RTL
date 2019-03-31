@@ -4,10 +4,10 @@
     "LNNode": "LND Testnet # 1",
     "LNImplementation": "LND",
     "Authentication": {
-        "macaroonPath": "/Users/suheb/Downloads",
+        "macaroonPath": "/Users/<user>/",
         "nodeAuthType": "CUSTOM",
         "lndConfigPath": "",
-        "rtlPass": "xxx"
+        "rtlPass": ""
     },
     "Settings": {
         "flgSidenavOpened": "true",
@@ -32,17 +32,17 @@
     "LNNode": "LND Mainnet # 1",
     "LNImplementation": "LND",
     "Authentication": {
-        "macaroonPath": "/Users/suheb/Downloads",
+        "macaroonPath": "/Users/<user>/",
         "nodeAuthType": "CUSTOM",
         "lndConfigPath": "",
-        "rtlPass": "xxx"
+        "rtlPass": ""
     },
     "Settings": {
         "flgSidenavOpened": "true",
         "flgSidenavPinned": "true",
         "menu": "Vertical",
         "menuType": "Regular",
-        "theme": "dark-blue",
+        "theme": "dark-green",
         "satsToBTC": "false",
         "bitcoindConfigPath": "",
         "enableLogging": "true",
