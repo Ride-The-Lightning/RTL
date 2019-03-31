@@ -282,7 +282,6 @@ connect.configFileExists = () => {
       setMacaroonPath(clArgs, config)
       validateConfigFile(config);
       logEnvVariables();      
-      // throw new Error('Please change default settings of macaroonPath and lndConfigPath in RTL.conf and restart the server');
     }
     catch(err) {
       console.error('Something went wrong while configuring the server: \n' + err);
