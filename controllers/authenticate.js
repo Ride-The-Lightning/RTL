@@ -72,9 +72,10 @@ exports.authenticateUser = (req, res, next) => {
           });
         } else {
           const jsonLNDConfig = ini.parse(data);
-          if (undefined !== jsonLNDConfig['bitcoind.rpcpass']) {
-            if (jsonLNDConfig['bitcoind.rpcpass'] === password) {
-              var rpcUser = (undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
+          if ((undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'])) {
+            if ((undefined !== jsonLNDConfig.Bitcoind && jsonLNDConfig.Bitcoind['bitcoind.rpcpass'] === password) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'] && jsonLNDConfig['bitcoind.rpcpass'] === password)) {
+              var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
+              rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
               const token = jwt.sign(
                 { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
                 common.secret_key
