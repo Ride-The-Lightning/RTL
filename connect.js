@@ -204,7 +204,7 @@ const setSSOParams = (config) => {
     } else {
       common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
     }
-    readCookie(common.rtl_cookie_path);
+    connect.readCookie(common.rtl_cookie_path);
   }
 };
 
@@ -221,7 +221,7 @@ const createDirectory = (dirname) => {
   }
 }
 
-const readCookie = (cookieFile) => {
+connect.readCookie = (cookieFile) => {
   let exists = fs.existsSync(cookieFile);
   if (exists) {
     common.cookie = fs.readFileSync(cookieFile, 'utf-8');
@@ -236,6 +236,17 @@ const readCookie = (cookieFile) => {
       console.error('Something went wrong while reading cookie: \n' + err);
       throw new Error(err);
     }
+  }
+}
+
+connect.refreshCookie = (cookieFile) => {
+  try {
+    fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
+    common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+  }
+  catch(err) {
+    console.error('Something went wrong while refreshing cookie: \n' + err);
+    throw new Error(err);
   }
 }
 
@@ -290,4 +301,4 @@ connect.configFileExists = () => {
   }
 }
 
-module.exports = connect.configFileExists();
+module.exports = connect;

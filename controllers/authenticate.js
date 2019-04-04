@@ -1,6 +1,7 @@
 var ini = require('ini');
 var fs = require('fs');
 var common = require('../common');
+var connect = require('../connect');
 const jwt = require("jsonwebtoken");
 var upperCase = require('upper-case');
 var atob = require('atob');
@@ -32,6 +33,7 @@ exports.authenticateUser = (req, res, next) => {
     // Replace access_key value from req.cookies['access-key'] to req.body.password to test SSO on http
     // const access_key = atob(req.body.password);
     if (common.cookie === access_key) {
+      connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
         common.secret_key
