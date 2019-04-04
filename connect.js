@@ -16,15 +16,15 @@ const setDefaultConfig = () => {
   var lndConfigPath = '';
   switch (platform) {
     case 'win32':
-      macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\testnet';
+      macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
       lndConfigPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
       break;
     case 'darwin':
-      macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/testnet';
+      macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/mainnet';
       lndConfigPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
       break;
     case 'linux':
-      macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/testnet';
+      macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/mainnet';
       lndConfigPath = homeDir + '/.lnd/lnd.conf';
       break;
     default:
