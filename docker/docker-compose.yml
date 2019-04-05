@@ -1,0 +1,86 @@
+version: "2.4"
+
+volumes:
+  bitcoin_data:
+  lightning_data:
+  lightning_shared:
+
+services:
+  bitcoind:
+    container_name: ${COMPOSE_PROJECT_NAME}_bitcoind
+    image: bitcoind:0.17.1
+    build: ./bitcoind
+    command: [
+      "bitcoind",
+      "-datadir=/bitcoin",
+      "-port=${BITCOIN_PORT}",
+      "-upnp=0",
+      "-dnsseed=0",
+      "-txindex=1",
+      "-listen=0",
+      "-onlynet=ipv4",
+      "-regtest=1",
+      "-regtest.rpcport=${BITCOIN_RPC_PORT}",
+      "-regtest.port=${BITCOIN_PORT}",
+      "-rpcport=${BITCOIN_RPC_PORT}",
+      "-rpcuser=${BITCOIN_RPC_USER}",
+      "-rpcpassword=${BITCOIN_RPC_PASSWORD}",
+      "-rpcallowip=0.0.0.0/0",
+      "-zmqpubrawtx=tcp://0.0.0.0:${BITCOIN_ZMQ_TX_PORT}",
+      "-zmqpubrawblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}",
+      "-zmqpubhashblock=tcp://0.0.0.0:${BITCOIN_ZMQ_BLOCK_PORT}"
+    ]
+    ports:
+      - "${BITCOIN_PORT}:${BITCOIN_PORT}"
+    volumes:
+      - bitcoin_data:/bitcoin
+
+  lnd:
+    container_name: ${COMPOSE_PROJECT_NAME}_lnd
+    image: lnd:0.5.2-beta
+    build: ./lnd
+    restart: unless-stopped
+    command: [
+      "lnd",
+      "--noseedbackup",
+      "--rpclisten=0.0.0.0:${LIGHTNING_RPC_PORT}",
+      "--restlisten=0.0.0.0:${LIGHTNING_REST_PORT}",
+      "--adminmacaroonpath=/shared/admin.macaroon",
+      "--tlsextradomain=${LIGHTNING_HOST}",
+      "--tlsextraip=0.0.0.0",
+      "--tlscertpath=/shared/tls.cert",
+      "--datadir=/lnd",
+      "--bitcoin.active",
+      "--bitcoin.regtest",
+      "--bitcoin.node=bitcoind",
+      "--bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}",
+      "--bitcoind.rpcuser=${BITCOIN_RPC_USER}",
+      "--bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}",
+      "--bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}",
+      "--bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}"
+    ]
+    depends_on:
+      - bitcoind
+    ports:
+      - "${LIGHTNING_REST_PORT}:${LIGHTNING_REST_PORT}"
+    volumes:
+      - lightning_data:/lnd
+      - lightning_shared:/shared
+
+  rtl:
+    container_name: ${COMPOSE_PROJECT_NAME}_rtl
+    image: shahanafarooqui/rtl:0.2.16
+    restart: unless-stopped
+    depends_on:
+      - lnd
+    volumes:
+      - lightning_shared:/shared:ro
+    ports:
+      - "${RTL_PORT}:${RTL_PORT}"
+    environment:
+      PORT: ${RTL_PORT}
+      MACAROON_PATH: /shared
+      LND_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}/v1
+      LND_CONFIG_PATH: ''
+      NODE_AUTH_TYPE: ${RTL_NODE_AUTH_TYPE}
+      RTL_PASS: ${RTL_PASS}

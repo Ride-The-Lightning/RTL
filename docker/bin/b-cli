@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+source .env
+
+docker-compose exec bitcoind bitcoin-cli \
+  -datadir=/bitcoin \
+  -rpcuser=$BITCOIN_RPC_USER \
+  -rpcpassword=$BITCOIN_RPC_PASSWORD \
+  -rpcport=$BITCOIN_RPC_PORT \
+  "$@"
