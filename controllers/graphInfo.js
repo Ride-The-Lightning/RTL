@@ -3,6 +3,7 @@ var options = require("../connect");
 var common = require('../common');
 
 exports.getGraphInfo = (req, res, next) => {
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/graph/info';
   request.get(options, (error, response, body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);

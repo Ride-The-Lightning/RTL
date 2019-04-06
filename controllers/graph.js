@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.getDescribeGraph = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/graph';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
@@ -28,7 +28,7 @@ exports.getDescribeGraph = (req, res, next) => {
 };
 
 exports.getGraphInfo = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/graph/info';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
@@ -57,7 +57,7 @@ exports.getGraphInfo = (req, res, next) => {
 };
 
 exports.getGraphNode = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
     logger.info('\r\nGraph: 59: ' + JSON.stringify(Date.now()) + ': INFO: Node Info Received: ' + JSON.stringify(body));
@@ -81,7 +81,7 @@ exports.getGraphNode = (req, res, next) => {
 };
 
 exports.getGraphEdge = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.info('\r\nGraph: 79: ' + JSON.stringify(Date.now()) + ': INFO: Edge Info Received: ' + JSON.stringify(body));

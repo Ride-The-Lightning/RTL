@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.getInvoice = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
     logger.info('\r\nInvoice: 8: ' + JSON.stringify(Date.now()) + ': INFO: Invoice Info Received: ' + JSON.stringify(body));
@@ -25,7 +25,7 @@ exports.getInvoice = (req, res, next) => {
 };
 
 exports.listInvoices = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/invoices';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
@@ -59,7 +59,7 @@ exports.listInvoices = (req, res, next) => {
 };
 
 exports.addInvoice = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/invoices';
   options.form = JSON.stringify({ 
     memo: req.body.memo,

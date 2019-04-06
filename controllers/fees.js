@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.getFees = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/fees';
   request(options).then((body) => {
     logger.info('\r\nFees: 8: ' + JSON.stringify(Date.now()) + ': INFO: Fee Received: ' + JSON.stringify(body));

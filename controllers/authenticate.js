@@ -1,6 +1,7 @@
 var ini = require('ini');
 var fs = require('fs');
 var common = require('../common');
+var connect = require('../connect');
 const jwt = require("jsonwebtoken");
 var upperCase = require('upper-case');
 var atob = require('atob');
@@ -32,6 +33,7 @@ exports.authenticateUser = (req, res, next) => {
     // Replace access_key value from req.cookies['access-key'] to req.body.password to test SSO on http
     // const access_key = atob(req.body.password);
     if (common.cookie === access_key) {
+      connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
         common.secret_key
@@ -44,9 +46,9 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
-    password = atob(req.body.password);
+    const password = atob(req.body.password);
     selNode = req.body.node;
-    if(selNode === '') {
+    if (undefined === selNode || selNode === '') {
       if(upperCase(common.node_auth_type) === 'CUSTOM') {
         if (common.rtl_pass === password) {
           var rpcUser = 'Custom_User';
@@ -65,15 +67,19 @@ exports.authenticateUser = (req, res, next) => {
         fs.readFile(common.lnd_config_path, 'utf8', function (err, data) {
           if (err) {
             logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: LND Config Reading Failed!');
+            err.description = 'You might be connecting RTL remotely to your LND node OR You might be missing rpcpass in your lnd.conf.';
+            err.description = err.description + ' If the former modify the RTL.conf for remote setting.';
+            err.description = err.description + ' If the later modify the lnd.conf to include rpcpass';
             res.status(500).json({
               message: "LND Config Reading Failed!",
               error: err
             });
           } else {
             const jsonLNDConfig = ini.parse(data);
-            if (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) {
-              if (jsonLNDConfig.Bitcoind['bitcoind.rpcpass'] === password) {
-                var rpcUser = (undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
+            if ((undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'])) {
+              if ((undefined !== jsonLNDConfig.Bitcoind && jsonLNDConfig.Bitcoind['bitcoind.rpcpass'] === password) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'] && jsonLNDConfig['bitcoind.rpcpass'] === password)) {
+                var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
+                rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
                 const token = jwt.sign(
                   { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
                   common.secret_key
@@ -95,7 +101,6 @@ exports.authenticateUser = (req, res, next) => {
         });
       }
     } else {
-      
     }
   }
 };

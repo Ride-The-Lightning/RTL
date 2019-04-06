@@ -1,56 +1,49 @@
-[{
-    "index": "1",
-    "lnNode": "LND Testnet # 1",
-    "lnImplementation": "LND",
-    "Authentication": {
-        "macaroonPath": "/Users/suheb/Downloads",
-        "nodeAuthType": "CUSTOM",
-        "lndConfigPath": "",
-        "rtlPass": "xxx"
-    },
-    "Settings": {
-        "flgSidenavOpened": "true",
-        "flgSidenavPinned": "true",
-        "menu": "Vertical",
-        "menuType": "Regular",
-        "theme": "dark-blue",
-        "satsToBTC": "false",
-        "bitcoindConfigPath": "",
-        "enableLogging": "true",
-        "port": "3000",
-        "lndServerUrl": "https://192.168.1.8:8080/v1"
-    },
-    "SSO":{
-        "rtlSSO": 0,
-        "rtlCookiePath": "",
-        "logoutRedirectLink": ""
-    }
-},
 {
-    "index": "2",
-    "lnNode": "LND Mainnet # 1",
-    "lnImplementation": "LND",
-    "Authentication": {
-        "macaroonPath": "/Users/suheb/Downloads",
-        "nodeAuthType": "CUSTOM",
-        "lndConfigPath": "",
-        "rtlPass": "xxx"
-    },
-    "Settings": {
-        "flgSidenavOpened": "true",
-        "flgSidenavPinned": "true",
-        "menu": "Vertical",
-        "menuType": "Regular",
-        "theme": "dark-blue",
-        "satsToBTC": "false",
-        "bitcoindConfigPath": "",
-        "enableLogging": "true",
-        "port": "3000",
-        "lndServerUrl": "https://192.168.1.20:8080/v1"
-    },
-    "SSO":{
+    "multiPass": "multi",
+    "SSO": {
         "rtlSSO": 0,
         "rtlCookiePath": "",
         "logoutRedirectLink": ""
-    }
-}]
+    },
+    "nodes": [{
+        "index": 1,
+        "lnNode": "LND Testnet # 1",
+        "lnImplementation": "LND",
+        "Authentication": {
+            "macaroonPath": "/Users/suheb/Downloads",
+            "lndConfigPath": "C:\\Users\\suheb\\AppData\\Local\\Lnd\\lnd.conf"
+        },
+        "Settings": {
+            "flgSidenavOpened": "true",
+            "flgSidenavPinned": "true",
+            "menu": "Vertical",
+            "menuType": "Regular",
+            "theme": "dark-blue",
+            "satsToBTC": "false",
+            "bitcoindConfigPath": "C:\\Bitcoind\\config\\path",
+            "enableLogging": "true",
+            "port": "3000",
+            "lndServerUrl": "https://192.168.1.20:8080/v1"
+        }
+    },
+    {
+        "index": 2,
+        "lnNode": "LND Mainnet # 1",
+        "lnImplementation": "LND",
+        "Authentication": {
+            "macaroonPath": "C:\\Users\\suheb\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\testnet"
+        },
+        "Settings": {
+            "flgSidenavOpened": "true",
+            "flgSidenavPinned": "true",
+            "menu": "Vertical",
+            "menuType": "Regular",
+            "theme": "dark-blue",
+            "satsToBTC": "false",
+            "bitcoindConfigPath": "",
+            "enableLogging": "true",
+            "port": "3000",
+            "lndServerUrl": "https://localhost:8080/v1"
+        }
+    }]
+}

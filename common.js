@@ -2,9 +2,9 @@ var fs = require('fs');
 var crypto = require('crypto');
 var common = {};
 
+common.multi_node_setup = false;
 common.port = 3000;
 common.rtl_conf_file_path = '';
-common.rtl_multi_node_conf_file_path = '';
 common.lnd_server_url = '';
 common.lnd_config_path = '';
 common.node_auth_type = 'DEFAULT';
@@ -19,21 +19,48 @@ common.logout_redirect_link = '/login';
 common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.options = {};
+common.nodes = [];
 
-common.setOptions = () => {
-	var macaroon = fs.readFileSync(common.macaroon_path + '/admin.macaroon').toString('hex');
-	common.options = {
-		url: '',
-		rejectUnauthorized: false,
-		json: true,
-		headers: {
-			'Grpc-Metadata-macaroon': macaroon,
-		},
-		form: ''
-	};
-	return common.options;
+common.getOptions = (selNodeIndex) => {
+	if(selNodeIndex === '') {
+		return common.options;
+	} else {
+		return common.findNode(selNodeIndex).options;
+	}
+};
+
+common.setOptions = (selNodeIndex) => {
+	if(selNodeIndex === '') {
+		const macaroon = fs.readFileSync(common.macaroon_path + '/admin.macaroon').toString('hex');
+		common.options = {
+			url: '',
+			rejectUnauthorized: false,
+			json: true,
+			headers: {
+				'Grpc-Metadata-macaroon': macaroon,
+			},
+			form: ''
+		};
+		return common.options;
+	} else {
+		const selNode = common.findNode(selNodeIndex);
+		const macaroon = fs.readFileSync(selNode.macaroon_path + '/admin.macaroon').toString('hex');
+		selNode.options = {
+			url: '',
+			rejectUnauthorized: false,
+			json: true,
+			headers: {
+				'Grpc-Metadata-macaroon': macaroon,
+			},
+			form: ''
+		};
+		return selNode.options;
+	}
 }
 
+common.findNode = (selNodeIndex) => {
+	return common.nodes.find(node => node.index == selNodeIndex);
+}
 
 common.convertToBTC = (num) => {
 	return (num / 100000000).toFixed(6);

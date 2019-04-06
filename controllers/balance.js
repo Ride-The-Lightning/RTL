@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.getBalance = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/balance/' + req.params.source;
   options.qs = req.query;
   request(options).then((body) => {

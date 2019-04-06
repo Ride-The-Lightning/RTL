@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.operateWallet = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   var requestBody = {
     wallet_password: Buffer.from(req.body.wallet_password).toString('base64')
   };

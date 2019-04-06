@@ -2,7 +2,7 @@ const app = require("./app");
 const common = require("./common");
 const debug = require("debug")("node-angular");
 const http = require("http");
-var connect = require('./connect').setSingleNodeConfiguration(); //Do NOT Remove
+var connect = require('./connect').setServerConfiguration(); //Do NOT Remove
 
 const onError = error => {
   if (error.syscall !== "listen") {

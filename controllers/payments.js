@@ -4,7 +4,7 @@ var logger = require('./logger');
 var options = {};
 
 exports.getPayments = (req, res, next) => {
-  options = common.options;
+  options = common.getOptions('');
   options.url = common.lnd_server_url + '/payments';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
