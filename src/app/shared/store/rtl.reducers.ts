@@ -1,14 +1,13 @@
 import * as RTLActions from './rtl.actions';
 
 import { ErrorPayload } from '../models/errorPayload';
-import { Settings, Authentication, MultiNode } from '../models/RTLconfig';
+import { Settings, Authentication } from '../models/RTLconfig';
 import {
   GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, Invoice, PendingChannels, ClosedChannel, Transaction, SwitchRes
 } from '../models/lndModels';
 
 export interface State {
   effectErrors: ErrorPayload[];
-  multiNodes: MultiNode[];
   settings: Settings;
   authSettings: Authentication;
   information: GetInfo;
@@ -34,7 +33,6 @@ export interface State {
 
 const initialState: State = {
   effectErrors: [],
-  multiNodes: [],
   settings: {flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false},
   authSettings: {nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '', rtlSSO: 0, logoutRedirectLink: '/login' },
   information: {},
@@ -84,11 +82,6 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
       return {
         ...state,
         settings: action.payload
-      };
-    case RTLActions.SET_MULTI_NODE_SETTINGS:
-      return {
-        ...state,
-        multiNodes: action.payload
       };
     case RTLActions.SET_AUTH_SETTINGS:
       return {

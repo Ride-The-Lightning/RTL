@@ -8,17 +8,8 @@
       </mat-card-header>
       <mat-card-content>
         <form (ngSubmit)="onSignin()" #signinForm="ngForm">
-          <div *ngIf="multiNodes.length > 0" fxFlex="30" tabindex="1" fxLayoutAlign="start start">
-            <mat-form-field fxFlex="99">
-              <mat-select [(value)]="selNode">
-                <mat-option *ngFor="let multiNode of multiNodes" [value]="multiNode.index">
-                  {{multiNode.lnNode}} ({{multiNode.lnImpl}})
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <mat-form-field [fxFlex]="multiNodes.length > 0 ? 30 : 50" fxLayoutAlign="start">
-            <input matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="2" required>
+          <mat-form-field fxFlex="50" fxLayoutAlign="start">
+            <input matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
             <mat-hint>{{hintStr}}</mat-hint>
           </mat-form-field>
           <button fxFlex="10" class="mr-2" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" [disabled]="!password">Login</button>
@@ -28,4 +19,3 @@
     </mat-card>
   </div>
 </div>
-  

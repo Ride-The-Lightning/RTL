@@ -34,7 +34,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private userIdle: UserIdleService, private router: Router) {}
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchMultiNodeSettings());
     this.store.dispatch(new RTLActions.FetchSettings());
     this.accessKey = this.readAccessKey();
     this.store.select('rtlRoot')
@@ -68,7 +67,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (actionPayload.type === RTLActions.SET_AUTH_SETTINGS) {
         if (!sessionStorage.getItem('token')) {
           if (+actionPayload.payload.rtlSSO) {
-            this.store.dispatch(new RTLActions.Signin({ password: window.btoa(this.accessKey), node: '' }));
+            this.store.dispatch(new RTLActions.Signin(window.btoa(this.accessKey)));
           } else {
             this.router.navigate([this.authSettings.logoutRedirectLink]);
           }

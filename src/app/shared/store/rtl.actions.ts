@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Settings, Authentication, MultiNode } from '../models/RTLconfig';
+import { Settings, Authentication } from '../models/RTLconfig';
 import { ErrorPayload } from '../models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, Payment, GraphNode, AddressType,
@@ -19,8 +19,6 @@ export const FETCH_STORE = 'FETCH_STORE';
 export const SET_STORE = 'SET_STORE';
 export const FETCH_SETTINGS = 'FETCH_SETTINGS';
 export const SET_SETTINGS = 'SET_SETTINGS';
-export const FETCH_MULTI_NODE_SETTINGS = 'FETCH_MULTI_NODE_SETTINGS';
-export const SET_MULTI_NODE_SETTINGS = 'SET_MULTI_NODE_SETTINGS';
 export const SET_AUTH_SETTINGS = 'SET_AUTH_SETTINGS';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const FETCH_INFO = 'FETCH_INFO';
@@ -121,15 +119,6 @@ export class FetchSettings implements Action {
 export class SetSettings implements Action {
   readonly type = SET_SETTINGS;
   constructor(public payload: Settings) {}
-}
-
-export class FetchMultiNodeSettings implements Action {
-  readonly type = FETCH_MULTI_NODE_SETTINGS;
-}
-
-export class SetMultiNodeSettings implements Action {
-  readonly type = SET_MULTI_NODE_SETTINGS;
-  constructor(public payload: MultiNode[]) {}
 }
 
 export class SetAuthSettings implements Action {
@@ -382,7 +371,7 @@ export class IsAuthorizedRes implements Action {
 
 export class Signin implements Action {
   readonly type = SIGNIN;
-  constructor(public payload: { password: string, node: string }) {}
+  constructor(public payload: string) {} // payload = password
 }
 
 export class Signout implements Action {
@@ -396,7 +385,7 @@ export class InitAppData implements Action {
 
 export type RTLActions =
   ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
-  FetchSettings | SetSettings | SaveSettings | SetAuthSettings | FetchMultiNodeSettings | SetMultiNodeSettings |
+  FetchSettings | SetSettings | SaveSettings | SetAuthSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
   FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
