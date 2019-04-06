@@ -1,15 +1,14 @@
 import * as RTLActions from './rtl.actions';
 
 import { ErrorPayload } from '../models/errorPayload';
-import { Settings, Authentication } from '../models/RTLconfig';
+import { RTLConfiguration } from '../models/RTLconfig';
 import {
   GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, Invoice, PendingChannels, ClosedChannel, Transaction, SwitchRes
 } from '../models/lndModels';
 
 export interface State {
   effectErrors: ErrorPayload[];
-  settings: Settings;
-  authSettings: Authentication;
+  appConfig: RTLConfiguration;
   information: GetInfo;
   peers: Peer[];
   fees: Fees;
@@ -33,8 +32,13 @@ export interface State {
 
 const initialState: State = {
   effectErrors: [],
-  settings: {flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false},
-  authSettings: {nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '', rtlSSO: 0, logoutRedirectLink: '/login' },
+  appConfig: {
+    sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
+    nodes: [{
+      settings: { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false },
+      authentication: { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' }
+    }]
+  },
   information: {},
   peers: [],
   fees: {},
@@ -78,15 +82,10 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
       };
-    case RTLActions.SET_SETTINGS:
+    case RTLActions.SET_RTL_CONFIG:
       return {
         ...state,
-        settings: action.payload
-      };
-    case RTLActions.SET_AUTH_SETTINGS:
-      return {
-        ...state,
-        authSettings: action.payload
+        appConfig: action.payload
       };
     case RTLActions.SET_INFO:
       if (undefined !== action.payload.chains) {

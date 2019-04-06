@@ -17,7 +17,7 @@
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="settings?.satsToBTC; else smallerUnit1">{{blockchainBalance?.btc_total_balance | number}} {{information?.currency_unit}}</h3>
+          <h3 *ngIf="appConfig.nodes[0].settings?.satsToBTC; else smallerUnit1">{{blockchainBalance?.btc_total_balance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit1><h3>{{blockchainBalance?.total_balance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
         </span>
       </mat-card-content>
@@ -40,7 +40,7 @@
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="settings?.satsToBTC; else smallerUnit2">{{blockchainBalance?.btc_confirmed_balance | number}} {{information?.currency_unit}}</h3>
+          <h3 *ngIf="appConfig.nodes[0].settings?.satsToBTC; else smallerUnit2">{{blockchainBalance?.btc_confirmed_balance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit2><h3>{{blockchainBalance?.confirmed_balance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
         </span>
       </mat-card-content>
@@ -63,7 +63,7 @@
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="settings?.satsToBTC; else smallerUnit3">{{blockchainBalance?.btc_unconfirmed_balance | number}} {{information?.currency_unit}}</h3>
+          <h3 *ngIf="appConfig.nodes[0].settings?.satsToBTC; else smallerUnit3">{{blockchainBalance?.btc_unconfirmed_balance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit3><h3>{{blockchainBalance?.unconfirmed_balance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
         </span>
       </mat-card-content>

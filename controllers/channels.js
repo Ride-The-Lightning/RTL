@@ -6,9 +6,9 @@ var options = {};
 getAliasForChannel = (channel, channelType) => {
   return new Promise(function(resolve, reject) {
     if (undefined === channelType || channelType === 'all') {
-      options.url = common.lnd_server_url + '/graph/node/' + channel.remote_pubkey;
+      options.url = common.findNode(1).lnd_server_url + '/graph/node/' + channel.remote_pubkey;
     } else {
-      options.url = common.lnd_server_url + '/graph/node/' + channel.channel.remote_node_pub;
+      options.url = common.findNode(1).lnd_server_url + '/graph/node/' + channel.channel.remote_node_pub;
     }
     request(options).then(function(aliasBody) {
       logger.info('\r\nChannels: 13: ' + JSON.stringify(Date.now()) + ': INFO: Alias: ' + JSON.stringify(aliasBody.node.alias));
@@ -25,11 +25,11 @@ getAliasForChannel = (channel, channelType) => {
 }
 
 exports.getChannels = (req, res, next) => {
-  options = common.getOptions('');
+  options = common.getOptions(1);
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
-    options.url = common.lnd_server_url + '/channels';
+    options.url = common.findNode(1).lnd_server_url + '/channels';
   } else {
-    options.url = common.lnd_server_url + '/channels/' + req.params.channelType;
+    options.url = common.findNode(1).lnd_server_url + '/channels/' + req.params.channelType;
   }
   options.qs = req.query;
   request(options).then(function (body) {
@@ -74,8 +74,8 @@ exports.getChannels = (req, res, next) => {
 };
 
 exports.postChannel = (req, res, next) => {
-  options = common.getOptions('');
-  options.url = common.lnd_server_url + '/channels';
+  options = common.getOptions(1);
+  options.url = common.findNode(1).lnd_server_url + '/channels';
   options.form = { 
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount,
@@ -108,8 +108,8 @@ exports.postChannel = (req, res, next) => {
 };
 
 exports.postTransactions = (req, res, next) => {
-  options = common.getOptions('');
-  options.url = common.lnd_server_url + '/channels/transactions';
+  options = common.getOptions(1);
+  options.url = common.findNode(1).lnd_server_url + '/channels/transactions';
   if(req.body.paymentReq) {
     options.form = JSON.stringify({ 
       payment_request: req.body.paymentReq
@@ -149,9 +149,9 @@ exports.postTransactions = (req, res, next) => {
 
 exports.closeChannel = (req, res, next) => {
   req.setTimeout(60000 * 10); // timeout 10 mins
-  options = common.getOptions('');
+  options = common.getOptions(1);
   let channelpoint = req.params.channelPoint.replace(':', '/');
-  options.url = common.lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
+  options.url = common.findNode(1).lnd_server_url + '/channels/' + channelpoint + '?force=' + req.query.force;
   logger.info('\r\nChannels: 144: ' + JSON.stringify(Date.now()) + ': INFO: Closing Channel: ' + options.url);
   request.delete(options).then((body) => {
     logger.info('\r\nChannels: 146: ' + JSON.stringify(Date.now()) + ': INFO: Close Channel Response: ' + JSON.stringify(body));
@@ -174,8 +174,8 @@ exports.closeChannel = (req, res, next) => {
 }
 
 exports.postChanPolicy = (req, res, next) => {
-  options = common.getOptions('');
-  options.url = common.lnd_server_url + '/chanpolicy';
+  options = common.getOptions(1);
+  options.url = common.findNode(1).lnd_server_url + '/chanpolicy';
   if(req.body.chanPoint === 'all') {
     options.form = JSON.stringify({
       global: true, 

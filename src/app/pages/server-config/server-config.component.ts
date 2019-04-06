@@ -19,6 +19,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   public showLND = false;
   public showBitcoind = false;
   public configData = '';
+  public fileFormat = 'INI';
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {}
@@ -32,7 +33,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
           this.resetData();
         }
       });
-      this.authSettings = rtlStore.authSettings;
+      this.authSettings = rtlStore.appConfig.nodes[0].authentication;
       if (undefined !== this.authSettings && this.authSettings.lndConfigPath !== '') {
         this.showLND = true;
       }
@@ -52,8 +53,16 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
     this.rtlEffects.showLNDConfig
     .pipe(takeUntil(this.unsubs[1]))
-    .subscribe((configFile: any) => {
-      this.configData = (configFile === '' || undefined === configFile) ? [] : configFile.split('\n');
+    .subscribe((config: any) => {
+      const configFile = config.data;
+      this.fileFormat = config.format;
+      if (configFile !== '' && undefined !== configFile && this.fileFormat === 'INI') {
+        this.configData = configFile.split('\n');
+      } else if (configFile !== '' && undefined !== configFile && this.fileFormat === 'JSON') {
+        this.configData = configFile;
+      } else {
+        this.configData = '';
+      }
     });
   }
 

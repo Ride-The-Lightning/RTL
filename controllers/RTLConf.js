@@ -1,5 +1,4 @@
 var ini = require('ini');
-var path = require('path');
 var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
@@ -17,14 +16,13 @@ exports.getRTLConfig = (req, res, next) => {
         });
       } else {
         const jsonConfig = ini.parse(data);
-        authSettings = {
+        const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
+        const authentication = {
           nodeAuthType: common.node_auth_type,
-          lndConfigPath: common.lnd_config_path,
-          bitcoindConfigPath: common.bitcoind_config_path,
-          rtlSSO: common.rtl_sso,
-          logoutRedirectLink: common.logout_redirect_link
+          lndConfigPath: common.nodes[0].lnd_config_path,
+          bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
-        res.status(200).json({ nodes: [{settings: jsonConfig.Settings, authSettings: authSettings}] });
+        res.status(200).json({ sso: sso, nodes: [{settings: jsonConfig.Settings, authentication: authentication}] });
       }
     });
   } else {
@@ -44,55 +42,74 @@ exports.getRTLConfig = (req, res, next) => {
         }
       } else {
         const multiNodeConfig = JSON.parse(data);
+        const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
         var nodesArr = [];
         multiNodeConfig.nodes.forEach(node => {
-          authSettings = {
-            nodeAuthType: 'CUSTOM',
-            lndConfigPath: node.lnd_config_path,
-            bitcoindConfigPath: node.bitcoind_config_path,
-            rtlSSO: common.rtl_sso,
-            logoutRedirectLink: common.logout_redirect_link
-          };
-          nodesArr.push({settings: node.Settings, authSettings: authSettings})
+          const authentication = {};
+          authentication.nodeAuthType = 'CUSTOM';
+          if(node.Authentication.lndConfigPath) {
+            authentication.lndConfigPath = node.Authentication.lndConfigPath;
+          }
+          if(node.Settings.bitcoindConfigPath) {
+            authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
+          }
+          nodesArr.push({settings: node.Settings, authentication: authentication})
         });
-        res.status(200).json({ nodes: nodesArr });
+        res.status(200).json({ sso: sso, nodes: nodesArr });
       }
     });
   }
 };
 
 exports.updateUISettings = (req, res, next) => {
-  var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
-  var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-  delete config.Settings;
-  fs.writeFileSync(RTLConfFile, ini.stringify(config));
-  fs.appendFile(RTLConfFile, ini.stringify(req.body.updatedSettings, { section: 'Settings' }), function(err) {
-    if (err) {
-      logger.error('\r\nConf: 71: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
-      res.status(500).json({
-        message: "Updating UI Settings Failed!",
-        error: 'Updating UI Settings Failed!'
-      });
-    } else {
-      logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
-      res.status(201).json({message: 'UI Settings Updated Successfully'});
-    }
-  });
+  var RTLConfFile = '';
+  if(common.multi_node_setup) {
+    RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+  } else {
+    RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
+    var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+    var settingsTemp = config.Settings;
+    settingsTemp.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
+    settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
+    settingsTemp.menu = req.body.updatedSettings.menu;
+    settingsTemp.menuType = req.body.updatedSettings.menuType;
+    settingsTemp.theme = req.body.updatedSettings.theme;
+    settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
+    delete config.Settings;
+    fs.writeFileSync(RTLConfFile, ini.stringify(config));
+    fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {
+      if (err) {
+        logger.error('\r\nConf: 71: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
+        res.status(500).json({
+          message: "Updating UI Settings Failed!",
+          error: 'Updating UI Settings Failed!'
+        });
+      } else {
+        logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
+        res.status(201).json({message: 'UI Settings Updated Successfully'});
+      }
+    });
+  }
 };
 
 exports.getConfig = (req, res, next) => {
   let confFile = '';
+  let JSONFormat = false;
   switch (req.params.nodeType) {
     case 'lnd':
-      confFile = common.lnd_config_path
+      JSONFormat = false;
+      confFile = common.nodes[0].lnd_config_path;
       break;
     case 'bitcoind':
-      confFile = common.bitcoind_config_path
+      JSONFormat = false;
+      confFile = common.nodes[0].bitcoind_config_path;
       break;
     case 'rtl':
-      confFile = common.rtl_conf_file_path + '/RTL.conf';
+      JSONFormat = (common.multi_node_setup) ? true : false;
+      confFile = (common.multi_node_setup) ? common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json' : common.rtl_conf_file_path + '/RTL.conf';
       break;
     default:
+      JSONFormat = false;
       confFile = '';
       break;
   }
@@ -105,14 +122,24 @@ exports.getConfig = (req, res, next) => {
         error: err
       });
     } else {
-      const jsonConfig = ini.parse(data);
+      const jsonConfig = (JSONFormat) ? JSON.parse(data) : ini.parse(data);
       if (undefined !== jsonConfig.Authentication && undefined !== jsonConfig.Authentication.rtlPass) {
         jsonConfig.Authentication.rtlPass = jsonConfig.Authentication.rtlPass.replace(/./g, '*');
       }
       if (undefined !== jsonConfig.Bitcoind && undefined !== jsonConfig.Bitcoind['bitcoind.rpcpass']) {
         jsonConfig.Bitcoind['bitcoind.rpcpass'] = jsonConfig.Bitcoind['bitcoind.rpcpass'].replace(/./g, '*');
       }
-      res.status(200).json(ini.stringify(jsonConfig));
+      if (undefined !== jsonConfig['bitcoind.rpcpass']) {
+        jsonConfig['bitcoind.rpcpass'] = jsonConfig['bitcoind.rpcpass'].replace(/./g, '*');
+      }
+      if (undefined !== jsonConfig['rpcpassword']) {
+        jsonConfig['rpcpassword'] = jsonConfig['rpcpassword'].replace(/./g, '*');
+      }
+      if (undefined !== jsonConfig.multiPass) {
+        jsonConfig.multiPass = jsonConfig.multiPass.replace(/./g, '*');
+      }
+      const responseJSON = (JSONFormat) ? jsonConfig : ini.stringify(jsonConfig);
+      res.status(200).json({format: (JSONFormat) ? 'JSON' : 'INI', data: responseJSON});
     }
   });
 };

@@ -85,24 +85,22 @@ export class RTLEffects implements OnDestroy {
   ));
 
   @Effect()
-  settingFetch = this.actions$.pipe(
-    ofType(RTLActions.FETCH_SETTINGS),
-    mergeMap((action: RTLActions.FetchSettings) => {
-      this.store.dispatch(new RTLActions.ClearEffectError('FetchSettings'));
+  appConfigFetch = this.actions$.pipe(
+    ofType(RTLActions.FETCH_RTL_CONFIG),
+    mergeMap((action: RTLActions.FetchRTLConfig) => {
+      this.store.dispatch(new RTLActions.ClearEffectError('FetchRTLConfig'));
       return this.httpClient.get(environment.CONF_API + '/rtlconf');
     }),
     map((rtlConfig: any) => {
       this.logger.info(rtlConfig);
-      this.store.dispatch(new RTLActions.SetAuthSettings(rtlConfig.authSettings));
       return {
-        type: RTLActions.SET_SETTINGS,
-        payload: (undefined !== rtlConfig && undefined !== rtlConfig.settings) ? rtlConfig.settings :
-          {'flgSidenavOpened': true, 'flgSidenavPinned': true, 'menu': 'Vertical', 'menuType': 'Regular', 'theme': 'dark-blue', 'satsToBTC': false}
+        type: RTLActions.SET_RTL_CONFIG,
+        payload: rtlConfig
       };
     },
     catchError((err) => {
       this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectError({ action: 'FetchSettings', code: err.status, message: err.error.error }));
+      this.store.dispatch(new RTLActions.EffectError({ action: 'FetchRTLConfig', code: err.status, message: err.error.error }));
       return of();
     })
   ));
@@ -141,12 +139,12 @@ export class RTLEffects implements OnDestroy {
         catchError((err) => {
           this.logger.error(err);
           this.store.dispatch(new RTLActions.EffectError({ action: 'FetchInfo', code: err.status, message: err.error.error }));
-          if (+store.authSettings.rtlSSO) {
+          if (+store.appConfig.sso.rtlSSO) {
             this.router.navigate(['/ssoerror']);
           } else {
             if (err.status === 401) {
               this.logger.info('Redirecting to Signin');
-              this.router.navigate([store.authSettings.logoutRedirectLink]);
+              this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
               return of();
             } else {
               this.logger.info('Redirecting to Unlock');
@@ -915,10 +913,10 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.EffectError({ action: 'Signin', code: err.status, message: err.error.message }));
         this.logger.error(err.error);
         this.logger.info('Redirecting to Signin Error Page');
-        if (+store.authSettings.rtlSSO) {
+        if (+store.appConfig.sso.rtlSSO) {
           this.router.navigate(['/ssoerror']);
         } else {
-          this.router.navigate([store.authSettings.logoutRedirectLink]);
+          this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
         }
         return of();
       })
@@ -930,10 +928,10 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.SIGNOUT),
   withLatestFrom(this.store.select('rtlRoot')),
   mergeMap(([action, store]: [RTLActions.Signout, fromRTLReducer.State]) => {
-    if (+store.authSettings.rtlSSO) {
-      window.location.href = store.authSettings.logoutRedirectLink;
+    if (+store.appConfig.sso.rtlSSO) {
+      window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
-      this.router.navigate([store.authSettings.logoutRedirectLink]);
+      this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
     }
     sessionStorage.removeItem('lndUnlocked');
     sessionStorage.removeItem('token');

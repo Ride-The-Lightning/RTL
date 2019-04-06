@@ -35,7 +35,7 @@ exports.authenticateUser = (req, res, next) => {
     if (common.cookie === access_key) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
-        { user: 'Custom_User', lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
+        { user: 'Custom_User', lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
       res.status(200).json({ token: token });
@@ -47,13 +47,29 @@ exports.authenticateUser = (req, res, next) => {
     }
   } else {
     const password = atob(req.body.password);
-    selNode = req.body.node;
-    if (undefined === selNode || selNode === '') {
+    if (common.multi_node_setup) {
+      console.log('\n\nHERE:\n');
+      console.log(common.nodes);
+      console.log(common.rtl_pass);
+      if (common.rtl_pass === password) {
+        var rpcUser = 'Multi_Node_User';
+        const token = jwt.sign(
+          { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+          common.secret_key
+        );
+        res.status(200).json({ token: token });
+      } else {
+        res.status(401).json({
+          message: "Authentication Failed!",
+          error: "Password Validation Failed!"
+        });
+      }
+    } else {
       if(upperCase(common.node_auth_type) === 'CUSTOM') {
         if (common.rtl_pass === password) {
-          var rpcUser = 'Custom_User';
+          var rpcUser = 'Single_Node_User';
           const token = jwt.sign(
-            { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
+            { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
             common.secret_key
           );
           res.status(200).json({ token: token });
@@ -64,7 +80,7 @@ exports.authenticateUser = (req, res, next) => {
           });
         }
       } else {
-        fs.readFile(common.lnd_config_path, 'utf8', function (err, data) {
+        fs.readFile(common.nodes[0].lnd_config_path, 'utf8', function (err, data) {
           if (err) {
             logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: LND Config Reading Failed!');
             err.description = 'You might be connecting RTL remotely to your LND node OR You might be missing rpcpass in your lnd.conf.';
@@ -81,7 +97,7 @@ exports.authenticateUser = (req, res, next) => {
                 var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
                 rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
                 const token = jwt.sign(
-                  { user: rpcUser, lndConfigPath: common.lnd_config_path, macaroonPath: common.macaroon_path },
+                  { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
                   common.secret_key
                 );
                 res.status(200).json({ token: token });
@@ -100,7 +116,6 @@ exports.authenticateUser = (req, res, next) => {
           }
         });
       }
-    } else {
     }
   }
 };

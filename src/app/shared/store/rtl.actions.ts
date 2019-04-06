@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Settings, Authentication } from '../models/RTLconfig';
+import { RTLConfiguration, Settings } from '../models/RTLconfig';
 import { ErrorPayload } from '../models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, Payment, GraphNode, AddressType,
@@ -17,9 +17,8 @@ export const OPEN_CONFIRMATION = 'OPEN_CONFIRMATION';
 export const CLOSE_CONFIRMATION = 'CLOSE_CONFIRMATION';
 export const FETCH_STORE = 'FETCH_STORE';
 export const SET_STORE = 'SET_STORE';
-export const FETCH_SETTINGS = 'FETCH_SETTINGS';
-export const SET_SETTINGS = 'SET_SETTINGS';
-export const SET_AUTH_SETTINGS = 'SET_AUTH_SETTINGS';
+export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
+export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const FETCH_INFO = 'FETCH_INFO';
 export const SET_INFO = 'SET_INFO';
@@ -112,18 +111,13 @@ export class CloseConfirmation implements Action {
   constructor(public payload: boolean) {}
 }
 
-export class FetchSettings implements Action {
-  readonly type = FETCH_SETTINGS;
+export class FetchRTLConfig implements Action {
+  readonly type = FETCH_RTL_CONFIG;
 }
 
-export class SetSettings implements Action {
-  readonly type = SET_SETTINGS;
-  constructor(public payload: Settings) {}
-}
-
-export class SetAuthSettings implements Action {
-  readonly type = SET_AUTH_SETTINGS;
-  constructor(public payload: Authentication) {}
+export class SetRTLConfig implements Action {
+  readonly type = SET_RTL_CONFIG;
+  constructor(public payload: RTLConfiguration) {}
 }
 
 export class SaveSettings implements Action {
@@ -385,7 +379,7 @@ export class InitAppData implements Action {
 
 export type RTLActions =
   ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
-  FetchSettings | SetSettings | SaveSettings | SetAuthSettings |
+  FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
   FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |

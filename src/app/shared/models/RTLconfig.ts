@@ -1,3 +1,10 @@
+export class SSO {
+  constructor(
+    public rtlSSO: number,
+    public logoutRedirectLink: string
+  ) { }
+}
+
 export class Settings {
   constructor(
     public flgSidenavOpened: boolean,
@@ -5,35 +12,32 @@ export class Settings {
     public menu: string,
     public menuType: string,
     public theme: string,
-    public satsToBTC: boolean
-  ) { }
-}
-
-export class MultiNode {
-  constructor(
-    public index: string,
-    public lnNode: string,
-    public lnImplementation: string
+    public satsToBTC: boolean,
+    public bitcoindConfigPath?: string
   ) { }
 }
 
 export class Authentication {
   constructor(
-    public lndServerUrl?: string,
-    public macaroonPath?: string,
     public nodeAuthType?: string,
     public lndConfigPath?: string,
-    public bitcoindConfigPath?: string,
-    public rtlPass?: string,
-    public enableLogging?: string,
-    public rtlSSO?: number,
-    public logoutRedirectLink?: string
+    public bitcoindConfigPath?: string
+  ) { }
+}
+
+export class Node {
+  constructor(
+    public settings: Settings,
+    public authentication: Authentication,
+    public index?: string,
+    public lnNode?: string,
+    public lnImplementation?: string
   ) { }
 }
 
 export class RTLConfiguration {
   constructor(
-    public settings: Settings,
-    public authentication: Authentication
+    public sso: SSO,
+    public nodes: Node[]
   ) { }
 }

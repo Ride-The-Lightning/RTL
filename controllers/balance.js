@@ -4,8 +4,8 @@ var logger = require('./logger');
 var options = {};
 
 exports.getBalance = (req, res, next) => {
-  options = common.getOptions('');
-  options.url = common.lnd_server_url + '/balance/' + req.params.source;
+  options = common.getOptions(1);
+  options.url = common.findNode(1).lnd_server_url + '/balance/' + req.params.source;
   options.qs = req.query;
   request(options).then((body) => {
     logger.info('\r\nBalance: 9: ' + JSON.stringify(Date.now()) + ': INFO: ' + 'Request params: ' + JSON.stringify(req.params) + 'Request Query: ' + JSON.stringify(req.query) + ' Balance Received: ' + JSON.stringify(body));

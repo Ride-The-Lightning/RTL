@@ -105,7 +105,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.settings = rtlStore.settings;
+      this.settings = rtlStore.appConfig.nodes[0].settings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
       if (undefined !== this.pendingChannels.total_limbo_balance) {

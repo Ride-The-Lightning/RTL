@@ -33,7 +33,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.settings = rtlStore.settings;
+      this.settings = rtlStore.appConfig.nodes[0].settings;
       this.selectedMenu = this.settings.menu;
       this.selectedMenuType = this.settings.menuType;
       if (window.innerWidth <= 768) {

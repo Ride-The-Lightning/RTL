@@ -31,7 +31,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
-      this.nodeAuthType = rtlStore.authSettings.nodeAuthType;
+      this.nodeAuthType = rtlStore.appConfig.nodes[0].authentication.nodeAuthType;
       this.logger.info(rtlStore);
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
         this.hintStr = 'Enter RPC password';

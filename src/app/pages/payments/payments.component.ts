@@ -67,7 +67,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.settings = rtlStore.settings;
+      this.settings = rtlStore.appConfig.nodes[0].settings;
       this.information = rtlStore.information;
       this.paymentJSONArr = (rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);

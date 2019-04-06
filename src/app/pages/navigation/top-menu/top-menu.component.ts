@@ -35,7 +35,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.settings = rtlStore.settings;
+      this.settings = rtlStore.appConfig.nodes[0].settings;
 
       this.information = rtlStore.information;
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;

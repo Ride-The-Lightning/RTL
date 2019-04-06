@@ -88,7 +88,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.flgLoading[6] = 'error';
         }
       });
-      this.settings = rtlStore.settings;
+      this.settings = rtlStore.appConfig.nodes[0].settings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;

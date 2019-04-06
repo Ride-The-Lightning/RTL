@@ -71,34 +71,36 @@ connect.normalizePort = val => {
 };
 
 connect.setMacaroonPath = (clArgs, config) => {
+  common.nodes[0] = {};
+  common.nodes[0].index = 1;
   if(undefined !== clArgs.lndir) {
-    common.macaroon_path = clArgs.lndir;
+    common.nodes[0].macaroon_path = clArgs.lndir;
   } else if (undefined !== process.env.MACAROON_PATH) {
-    common.macaroon_path = process.env.MACAROON_PATH;
+    common.nodes[0].macaroon_path = process.env.MACAROON_PATH;
   } else {
     if(undefined !== config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
-      common.macaroon_path = config.Authentication.macroonPath;
+      common.nodes[0].macaroon_path = config.Authentication.macroonPath;
     } else if(undefined !== config.Authentication.macaroonPath && config.Authentication.macaroonPath !== '') {
-      common.macaroon_path = config.Authentication.macaroonPath;
+      common.nodes[0].macaroon_path = config.Authentication.macaroonPath;
     }
   }
 }
 
 connect.validateSingleNodeConfig = (config) => {
-  if(common.macaroon_path === '' || undefined === common.macaroon_path) {
+  if(common.nodes[0].macaroon_path === '' || undefined === common.nodes[0].macaroon_path) {
     errMsg = 'Please set macaroon path through environment or RTL.conf!';
   }
   
   if(undefined !== process.env.LND_SERVER_URL) {
-    common.lnd_server_url = process.env.LND_SERVER_URL;
+    common.nodes[0].lnd_server_url = process.env.LND_SERVER_URL;
   } else {
     if((config.Authentication.lndServerUrl === '' ||  undefined === config.Authentication.lndServerUrl) && (config.Settings.lndServerUrl === '' ||  undefined === config.Settings.lndServerUrl)) {
       errMsg = errMsg + '\nPlease set LND Server URL through environment or RTL.conf!';
     } else {
       if (config.Settings.lndServerUrl !== '' &&  undefined !== config.Settings.lndServerUrl) {
-        common.lnd_server_url = config.Settings.lndServerUrl;
+        common.nodes[0].lnd_server_url = config.Settings.lndServerUrl;
       } else if (config.Authentication.lndServerUrl !== '' &&  undefined !== config.Authentication.lndServerUrl) {
-        common.lnd_server_url = config.Authentication.lndServerUrl;
+        common.nodes[0].lnd_server_url = config.Authentication.lndServerUrl;
       } 
     }
   }
@@ -107,17 +109,17 @@ connect.validateSingleNodeConfig = (config) => {
     common.node_auth_type = process.env.NODE_AUTH_TYPE;
   } else {
     if(config.Authentication.nodeAuthType === '' ||  undefined === config.Authentication.nodeAuthType) {
-      errMsg = errMsg + '\nPlease set Node Auth Type through environment/RTL.conf!';
+      errMsg = errMsg + '\nPlease set Node Auth Type through environment or RTL.conf!';
     } else {
       common.node_auth_type = config.Authentication.nodeAuthType;
     }
   }
 
   if(undefined !== process.env.LND_CONFIG_PATH) {
-    common.lnd_config_path = process.env.LND_CONFIG_PATH;
+    common.nodes[0].lnd_config_path = process.env.LND_CONFIG_PATH;
   } else {
     if(config.Authentication.lndConfigPath !== '' &&  undefined !== config.Authentication.lndConfigPath) {
-      common.lnd_config_path = config.Authentication.lndConfigPath;
+      common.nodes[0].lnd_config_path = config.Authentication.lndConfigPath;
     } else {
       if(upperCase(common.node_auth_type) === 'DEFAULT') {
         errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment or RTL.conf!';
@@ -126,42 +128,42 @@ connect.validateSingleNodeConfig = (config) => {
   }
 
   if(undefined !== process.env.BITCOIND_CONFIG_PATH) {
-    common.bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH;
+    common.nodes[0].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH;
   } else {
-    if(config.Settings.bitcoindConfigPath !== '' ||  undefined !== config.Settings.bitcoindConfigPath) {
-      common.bitcoind_config_path = config.Settings.bitcoindConfigPath;
-    } else if(config.Authentication.bitcoindConfigPath !== '' ||  undefined !== config.Authentication.bitcoindConfigPath) {
-      common.bitcoind_config_path = config.Authentication.bitcoindConfigPath;
+    if(config.Settings.bitcoindConfigPath !== '' &&  undefined !== config.Settings.bitcoindConfigPath) {
+      common.nodes[0].bitcoind_config_path = config.Settings.bitcoindConfigPath;
+    } else if(config.Authentication.bitcoindConfigPath !== '' &&  undefined !== config.Authentication.bitcoindConfigPath) {
+      common.nodes[0].bitcoind_config_path = config.Authentication.bitcoindConfigPath;
     }
   }
 
 	if (undefined !== process.env.RTL_PASS) {
 		common.rtl_pass = process.env.RTL_PASS;
-	} else if (config.Authentication.rtlPass !== '' || undefined !== config.Authentication.rtlPass) {
+	} else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
 		common.rtl_pass = config.Authentication.rtlPass;
 	}
 
 	if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
-		errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment/RTL.conf';
+		errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment or RTL.conf';
 	}
 
 	if (undefined !== process.env.ENABLE_LOGGING) {
-		common.enable_logging = process.env.ENABLE_LOGGING;
+		common.nodes[0].enable_logging = process.env.ENABLE_LOGGING;
 	} else if (undefined !== config.Settings.enableLogging) {
-		common.enable_logging = config.Settings.enableLogging;
+		common.nodes[0].enable_logging = config.Settings.enableLogging;
 	} else if (undefined !== config.Authentication.enableLogging) {
-		common.enable_logging = config.Authentication.enableLogging;
+		common.nodes[0].enable_logging = config.Authentication.enableLogging;
 	}
-	if (common.enable_logging) {
-		common.log_file = common.rtl_conf_file_path + '/logs/RTL.log';
-		let exists = fs.existsSync(common.log_file);
+	if (common.nodes[0].enable_logging) {
+		common.nodes[0].log_file = common.rtl_conf_file_path + '/logs/RTL.log';
+		let exists = fs.existsSync(common.nodes[0].log_file);
 		if (exists) {
-			fs.writeFile(common.log_file, '', () => { });
+			fs.writeFile(common.nodes[0].log_file, '', () => { });
     } else {
 			try {
-				var dirname = path.dirname(common.log_file);
+				var dirname = path.dirname(common.nodes[0].log_file);
 				connect.createDirectory(dirname);
-				var createStream = fs.createWriteStream(common.log_file);
+				var createStream = fs.createWriteStream(common.nodes[0].log_file);
 				createStream.end();
 			}
 			catch (err) {
@@ -179,12 +181,14 @@ connect.validateSingleNodeConfig = (config) => {
   connect.setSSOParams(config);
 	if (errMsg !== '') {
 		throw new Error(errMsg);
-	}
+  }
+  
 }
 
 connect.validateMultiNodeConfig = (config) => {
   common.node_auth_type = 'CUSTOM';
   common.rtl_pass = config.multiPass;
+  common.port = (undefined !== config.port) ? connect.normalizePort(config.port) : 3000;
 
   config.nodes.forEach((node, idx) => {
     common.nodes[idx] = {};
@@ -206,7 +210,6 @@ connect.validateMultiNodeConfig = (config) => {
     common.nodes[idx].lnd_config_path = (undefined !== node.Authentication.lndConfigPath) ? node.Authentication.lndConfigPath : '';
     common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
     common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
-    common.nodes[idx].port = (undefined !== node.Settings.port) ? connect.normalizePort(node.Settings.port) : 3000;
 
     if (common.nodes[idx].enable_logging) {
       common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
@@ -310,7 +313,7 @@ connect.logEnvVariables = () => {
       logger.info('\r\nConfig Setup Variable INDEX: ' + node.index, node);
       logger.info('\r\nConfig Setup Variable LN NODE: ' + node.ln_node, node);
       logger.info('\r\nConfig Setup Variable LN IMPLEMENTATION: ' + node.ln_implementation, node);
-      logger.info('\r\nConfig Setup Variable PORT: ' + node.port, node);
+      logger.info('\r\nConfig Setup Variable PORT: ' + common.port, node);
       logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + node.macaroon_path, node);
       logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + node.lnd_server_url, node);
       logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + node.rtl_conf_file_path, node);
@@ -318,15 +321,15 @@ connect.logEnvVariables = () => {
       logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + node.bitcoind_config_path, node);
     });  
   } else {
-    if (!common.enable_logging) { return; }
+    if (!common.nodes[0].enable_logging) { return; }
     logger.info('\r\nConfig Setup Variable NODE_SETUP: SINGLE');
     logger.info('\r\nConfig Setup Variable PORT: ' + common.port);
-    logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + common.lnd_server_url);
-    logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + common.macaroon_path);
+    logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + common.nodes[0].lnd_server_url);
+    logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + common.nodes[0].macaroon_path);
     logger.info('\r\nConfig Setup Variable NODE_AUTH_TYPE: ' + common.node_auth_type);
-    logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + common.lnd_config_path);
+    logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + common.nodes[0].lnd_config_path);
     logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + common.rtl_conf_file_path);
-    logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + common.bitcoind_config_path);
+    logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + common.nodes[0].bitcoind_config_path);
     logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso);
     logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path);
     logger.info('\r\nConfig Setup Variable LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link);

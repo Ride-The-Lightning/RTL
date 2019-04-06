@@ -1,5 +1,6 @@
 {
     "multiPass": "multi",
+    "port": "3000",
     "SSO": {
         "rtlSSO": 0,
         "rtlCookiePath": "",
@@ -10,7 +11,7 @@
         "lnNode": "LND Testnet # 1",
         "lnImplementation": "LND",
         "Authentication": {
-            "macaroonPath": "/Users/suheb/Downloads",
+            "macaroonPath": "C:\\Users\\suheb\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\testnet",
             "lndConfigPath": "C:\\Users\\suheb\\AppData\\Local\\Lnd\\lnd.conf"
         },
         "Settings": {
@@ -20,10 +21,9 @@
             "menuType": "Regular",
             "theme": "dark-blue",
             "satsToBTC": "false",
-            "bitcoindConfigPath": "C:\\Bitcoind\\config\\path",
+            "bitcoindConfigPath": "C:\\bitcoin\\bitcoin_mainnet\\bitcoin.conf",
             "enableLogging": "true",
-            "port": "3000",
-            "lndServerUrl": "https://192.168.1.20:8080/v1"
+            "lndServerUrl": "https://localhost:8080/v1"
         }
     },
     {
@@ -42,7 +42,6 @@
             "satsToBTC": "false",
             "bitcoindConfigPath": "",
             "enableLogging": "true",
-            "port": "3000",
             "lndServerUrl": "https://localhost:8080/v1"
         }
     }]

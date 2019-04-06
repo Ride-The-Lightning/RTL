@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { Settings } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
-import { Authentication } from '../../../shared/models/RTLconfig';
+import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../shared/store/rtl.effects';
@@ -18,13 +18,12 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./send-receive-trans.component.scss']
 })
 export class SendReceiveTransComponent implements OnInit, OnDestroy {
-  public settings: Settings;
+  public appConfig: RTLConfiguration;
   public addressTypes = [];
   public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress: AddressType = {};
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
-  public authSettings: Authentication = {};
   public newAddress = '';
   public transaction: ChannelsTransaction = {};
   public transTypes = [{id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
@@ -43,10 +42,9 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
           this.flgLoadingWallet = 'error';
         }
       });
-      this.settings = rtlStore.settings;
+      this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.information;
       this.addressTypes = rtlStore.addressTypes;
-      this.authSettings = rtlStore.authSettings;
 
       this.blockchainBalance = rtlStore.blockchainBalance;
       if (undefined === this.blockchainBalance.total_balance) {
@@ -103,7 +101,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unsub[2]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        if (this.transaction.sendAll && !+this.authSettings.rtlSSO) {
+        if (this.transaction.sendAll && !+this.appConfig.sso.rtlSSO) {
           this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
             {type: 'CONFIRM', titleMessage: 'Enter Login Password', noBtnText: 'Cancel', yesBtnText: 'Authorize', flgShowInput: true, getInputs: [
               {placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}
