@@ -7,7 +7,7 @@
     <h4>Currency Unit</h4>
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <span>{{currencyUnit}}</span>
-      <mat-slide-toggle [checked]="settings?.satsToBTC" (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
+      <mat-slide-toggle [checked]="selNode?.settings?.satsToBTC" (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
     </div>
     <mat-divider class="mt-2"></mat-divider>
     <div *ngIf="showSettingOption">
@@ -27,12 +27,12 @@
         <h4>Sidenav Options</h4>
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <span>Opened</span>
-          <mat-slide-toggle [checked]="settings.flgSidenavOpened" (change)="toggleSettings('flgSidenavOpened')"
+          <mat-slide-toggle [checked]="selNode?.settings?.flgSidenavOpened" (change)="toggleSettings('flgSidenavOpened')"
             labelPosition="before"></mat-slide-toggle>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <span>Pinned</span>
-          <mat-slide-toggle [checked]="settings.flgSidenavPinned" (change)="toggleSettings('flgSidenavPinned')"
+          <mat-slide-toggle [checked]="selNode?.settings?.flgSidenavPinned" (change)="toggleSettings('flgSidenavPinned')"
             labelPosition="before"></mat-slide-toggle>
         </div>
       </div>

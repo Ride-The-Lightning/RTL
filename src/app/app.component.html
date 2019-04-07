@@ -15,10 +15,10 @@
           <h2>Ride The Lightning <span class="font-60-percent">(Beta)</span></h2>
         </div>
         <div fxLayoutAlign="space-between center">
-          <div *ngIf="appConfig.nodes.length > 0" tabindex="1" fxLayoutAlign="start start" class="nodes-list">
+          <div *ngIf="appConfig.nodes.length > 1" tabindex="1" fxLayoutAlign="start start" class="nodes-list">
             <mat-form-field fxFlex="99">
-              <mat-select (selectionChange)="onSelectionChange($event.value)">
-                <mat-option *ngFor="let node of appConfig.nodes; index as idx" [value]="idx">
+              <mat-select (selectionChange)="onSelectionChange($event.value)" [value]="selNode">
+                <mat-option *ngFor="let node of appConfig.nodes; index as idx" [value]="node">
                   {{node.index}}: {{node.lnNode}} ({{node.lnImplementation}})
                 </mat-option>
               </mat-select>

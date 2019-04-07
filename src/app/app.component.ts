@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { UserIdleService } from 'angular-user-idle';
 
 import { LoggerService } from './shared/services/logger.service';
-import { RTLConfiguration, Settings } from './shared/models/RTLconfig';
+import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
 import { GetInfo } from './shared/models/lndModels';
 
 import * as RTLActions from './shared/store/rtl.actions';
@@ -21,7 +21,7 @@ import * as fromRTLReducer from './shared/store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation') sideNavigation: any;
   @ViewChild('settingSidenav') settingSidenav: any;
-  public selNodeIndex = 0;
+  public selNode: Node;
   public settings: Settings;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
@@ -40,20 +40,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
+      this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.information;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
-        this.appConfig.nodes[this.selNodeIndex].settings.menu = 'Vertical';
-        this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavOpened = false;
-        this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned = false;
+        this.settings.menu = 'Vertical';
+        this.settings.flgSidenavOpened = false;
+        this.settings.flgSidenavPinned = false;
       }
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      this.logger.info(this.appConfig.nodes[this.selNodeIndex].settings);
+      this.logger.info(this.settings);
       if (!sessionStorage.getItem('token')) {
         this.flgLoading[0] = false;
       }
@@ -75,9 +75,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
         if (
-          this.appConfig.nodes[this.selNodeIndex].settings.menu === 'Horizontal' ||
-          this.appConfig.nodes[this.selNodeIndex].settings.menuType === 'Compact' ||
-          this.appConfig.nodes[this.selNodeIndex].settings.menuType === 'Mini') {
+          this.settings.menu === 'Horizontal' ||
+          this.settings.menuType === 'Compact' ||
+          this.settings.menuType === 'Mini') {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
@@ -126,7 +126,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (!this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned) {
+    if (!this.settings.flgSidenavPinned) {
       this.sideNavigation.close();
       this.settingSidenav.toggle();
     }
@@ -139,9 +139,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize')
   public onWindowResize(): void {
     if (window.innerWidth <= 768) {
-      this.appConfig.nodes[this.selNodeIndex].settings.menu = 'Vertical';
-      this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavOpened = false;
-      this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned = false;
+      this.settings.menu = 'Vertical';
+      this.settings.flgSidenavOpened = false;
+      this.settings.flgSidenavPinned = false;
     }
   }
 
@@ -161,10 +161,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Copied Text: ' + payload);
   }
 
-  onSelectionChange(val: number) {
-    console.warn(val);
-    this.selNodeIndex = val;
-    this.store.dispatch(new RTLActions.SetSelNodeIndex(this.selNodeIndex));
+  onSelectionChange(selNodeValue: Node) {
+    this.selNode = selNodeValue;
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
+    this.store.dispatch(new RTLActions.SetSelelectedNode(selNodeValue));
   }
 
   ngOnDestroy() {

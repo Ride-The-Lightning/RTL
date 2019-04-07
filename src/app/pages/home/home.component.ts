@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
-import { Settings } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
@@ -15,8 +15,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
-  public settings: Settings;
+  public selNode: Node;
   public fees: Fees;
   public information: GetInfo = {};
   public remainder = 0;
@@ -89,8 +88,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.flgLoading[6] = 'error';
         }
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;

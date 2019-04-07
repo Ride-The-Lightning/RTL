@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { Node } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 import * as RTLActions from '../../shared/store/rtl.actions';
@@ -13,7 +14,7 @@ import * as RTLActions from '../../shared/store/rtl.actions';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
+  public selNode: Node;
   public password = '';
   public nodeAuthType = '';
   public rtlSSO = 0;
@@ -32,8 +33,8 @@ export class SigninComponent implements OnInit, OnDestroy {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.nodeAuthType = rtlStore.appConfig.nodes[this.selNodeIndex].authentication.nodeAuthType;
+      this.selNode = rtlStore.selNode;
+      this.nodeAuthType = this.selNode.authentication.nodeAuthType;
       this.logger.info(rtlStore);
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
         this.hintStr = 'Enter RPC password';

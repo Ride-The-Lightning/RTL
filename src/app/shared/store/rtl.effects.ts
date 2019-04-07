@@ -1041,6 +1041,44 @@ export class RTLEffects implements OnDestroy {
    })
  );
 
+ @Effect()
+ setSelectedNode = this.actions$.pipe(
+   ofType(RTLActions.SET_SELECTED_NODE),
+   mergeMap((action: RTLActions.SetSelelectedNode) => {
+    this.store.dispatch(new RTLActions.ClearEffectError('UpdateSelNode'));
+     return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.index })
+     .pipe(
+       map((postRes: any) => {
+        this.logger.info(postRes);
+        setTimeout(() => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+        }, 4000);
+        if (sessionStorage.getItem('token')) {
+          return { type: RTLActions.FETCH_INFO };
+        } else {
+          return {
+            type: RTLActions.OPEN_ALERT,
+            payload: { width: '70%', data: {type: 'WARN', titleMessage: 'Authorization required to get the data from the node!' }}
+          };
+        }
+       }),
+       catchError((err: any) => {
+         this.store.dispatch(new RTLActions.CloseSpinner());
+         this.store.dispatch(new RTLActions.EffectError({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
+         this.logger.error(err);
+         return of(
+           {
+             type: RTLActions.OPEN_ALERT,
+             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Update Selected Node Failed!',
+               message: JSON.stringify({code: err.status, Message: err.error.error})
+             }}
+           }
+         );
+       })
+     );
+   }
+ ));
+
   SetToken(token: string) {
     if (token) {
       sessionStorage.setItem('lndUnlocked', 'true');

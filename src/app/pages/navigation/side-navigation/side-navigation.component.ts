@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { Settings } from '../../../shared/models/RTLconfig';
+import { Node, Settings } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { GetInfo, GetInfoChain } from '../../../shared/models/lndModels';
 import { MenuNode, FlatMenuNode, MENU_DATA } from '../../../shared/models/navMenu';
@@ -25,9 +25,9 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
-  public selNodeIndex = 0;
-  public version = '';
+  public selNode: Node;
   public settings: Settings;
+  public version = '';
   public information: GetInfo = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
@@ -63,8 +63,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
+      this.settings = this.selNode.settings;
       this.information = rtlStore.information;
       this.numPendingChannels = rtlStore.numberOfPendingChannels;
 

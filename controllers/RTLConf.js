@@ -4,8 +4,9 @@ var logger = require('./logger');
 var common = require('../common');
 
 exports.updateSelectedNode = (req, res, next) => {
-  const selNodeIndex = req.body.selNodeIndex
+  const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
+  logger.info('\r\nConf: 9: ' + JSON.stringify(Date.now()) + ': INFO: Selected Node Updated!' + JSON.stringify(common.selectedNode));
   res.status(200).json({status: 'Selected Node Updated!'});
 };
 

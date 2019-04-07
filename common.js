@@ -15,10 +15,6 @@ common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
 
-common.getSelectedNode = () => {
-	return common.selectedNode;
-};
-
 common.getSelLNDServerUrl = () => {
 	return common.selectedNode.lnd_server_url;
 };
@@ -28,6 +24,7 @@ common.getOptions = () => {
 };
 
 common.setOptions = () => {
+	if(common.nodes[0].options) { return; }
 	common.nodes.forEach(node => {
 		node.options = {
 			url: '',
@@ -39,6 +36,16 @@ common.setOptions = () => {
 			form: ''
 		};
 	});
+	// Options cannot be set before selected node initializes. Updating selected node's options separatly
+	common.selectedNode.options = {
+		url: '',
+		rejectUnauthorized: false,
+		json: true,
+		headers: {
+			'Grpc-Metadata-macaroon': fs.readFileSync(common.selectedNode.macaroon_path + '/admin.macaroon').toString('hex'),
+		},
+		form: ''
+	};
 }
 
 common.findNode = (selNodeIndex) => {

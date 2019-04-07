@@ -4,12 +4,10 @@ var logger = require('./logger');
 var options = {};
 
 exports.getInfo = (req, res, next) => {
-  // Do Not Change the set options & selected Node code sequence
   common.setOptions();
-  common.selectedNode = common.findNode(common.nodes[0].index);
-
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/getinfo';
+  logger.info('\r\nSelected Node: ' + JSON.stringify(common.selectedNode));
   logger.info('\r\nCalling getinfo from lnd server url: INFO: ' + options.url);
   request(options).then((body) => {
     logger.info('\r\nGetInfo: 9: ' + JSON.stringify(Date.now()) + ': INFO: ' + JSON.stringify(body));

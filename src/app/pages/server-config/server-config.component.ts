@@ -3,10 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { Node } from '../../shared/models/RTLconfig';
 import { RTLEffects } from '../../shared/store/rtl.effects';
 import * as RTLActions from '../../shared/store/rtl.actions';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
-import { Authentication } from '../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-server-config',
@@ -14,9 +14,8 @@ import { Authentication } from '../../shared/models/RTLconfig';
   styleUrls: ['./server-config.component.scss']
 })
 export class ServerConfigComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
+  public selNode: Node;
   public selectedNodeType = 'lnd';
-  public authSettings: Authentication = {};
   public showLND = false;
   public showBitcoind = false;
   public configData = '';
@@ -34,12 +33,11 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
           this.resetData();
         }
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.authSettings = rtlStore.appConfig.nodes[this.selNodeIndex].authentication;
-      if (undefined !== this.authSettings && this.authSettings.lndConfigPath !== '') {
+      this.selNode = rtlStore.selNode;
+      if (undefined !== this.selNode.authentication && this.selNode.authentication.lndConfigPath !== '') {
         this.showLND = true;
       }
-      if (undefined !== this.authSettings && undefined !== this.authSettings.bitcoindConfigPath && this.authSettings.bitcoindConfigPath !== '') {
+      if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.bitcoindConfigPath && this.selNode.authentication.bitcoindConfigPath !== '') {
         this.showBitcoind = true;
       }
     });

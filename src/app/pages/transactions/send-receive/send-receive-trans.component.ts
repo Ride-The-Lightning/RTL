@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Settings } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -18,8 +18,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./send-receive-trans.component.scss']
 })
 export class SendReceiveTransComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
-  public settings: Settings;
+  public selNode: Node;
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public flgLoadingWallet: Boolean | 'error' = true;
@@ -44,8 +43,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
           this.flgLoadingWallet = 'error';
         }
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.information;
       this.addressTypes = rtlStore.addressTypes;

@@ -4,7 +4,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import { Settings } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { GetInfo, GetInfoChain } from '../../../shared/models/lndModels';
 import { environment } from '../../../../environments/environment';
@@ -19,8 +19,7 @@ import * as RTLActions from '../../../shared/store/rtl.actions';
   styleUrls: ['./top-menu.component.scss']
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
-  public settings: Settings;
+  public selNode: Node;
   public version = '';
   public information: GetInfo = {};
   public informationChain: GetInfoChain = {};
@@ -36,8 +35,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
 
       this.information = rtlStore.information;
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;

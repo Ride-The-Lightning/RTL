@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, GetInfo, PendingChannels } from '../../../shared/models/lndModels';
-import { Settings } from '../../../shared/models/RTLconfig';
+import { Node } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../shared/store/rtl.effects';
@@ -19,9 +19,8 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class ChannelPendingComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
-  public selNodeIndex = 0;
+  public selNode: Node;
   public selectedFilter = 0;
-  public settings: Settings;
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
   public displayedClosingColumns = [
@@ -106,8 +105,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
       if (undefined !== this.pendingChannels.total_limbo_balance) {

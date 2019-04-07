@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Settings } from '../../models/RTLconfig';
+import { Node } from '../../models/RTLconfig';
 import { GetInfo } from '../../models/lndModels';
 import { LoggerService } from '../../services/logger.service';
 
@@ -16,9 +16,8 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./settings-nav.component.scss']
 })
 export class SettingsNavComponent implements OnInit, OnDestroy {
-  public selNodeIndex = 0;
+  public selNode: Node;
   public information: GetInfo = {};
-  public settings: Settings;
   public menus = ['Vertical', 'Horizontal'];
   public menuTypes = ['Regular', 'Compact', 'Mini'];
   public selectedMenu: string;
@@ -35,14 +34,13 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
-      this.selectedMenu = this.settings.menu;
-      this.selectedMenuType = this.settings.menuType;
+      this.selNode = rtlStore.selNode;
+      this.selectedMenu = this.selNode.settings.menu;
+      this.selectedMenuType = this.selNode.settings.menuType;
       if (window.innerWidth <= 768) {
-        this.settings.menu = 'Vertical';
-        this.settings.flgSidenavOpened = false;
-        this.settings.flgSidenavPinned = false;
+        this.selNode.settings.menu = 'Vertical';
+        this.selNode.settings.flgSidenavOpened = false;
+        this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
       }
       this.information = rtlStore.information;
@@ -52,24 +50,24 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   }
 
   public chooseMenu() {
-    this.settings.menu = this.selectedMenu;
+    this.selNode.settings.menu = this.selectedMenu;
   }
 
   public chooseMenuType() {
-    this.settings.menuType = this.selectedMenuType;
+    this.selNode.settings.menuType = this.selectedMenuType;
   }
 
   toggleSettings(toggleField: string) {
-    this.settings[toggleField] = !this.settings[toggleField];
+    this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
   }
 
   changeTheme(newTheme: string) {
-    this.settings.theme = newTheme;
+    this.selNode.settings.theme = newTheme;
   }
 
   onClose() {
-    this.logger.info(this.settings);
-    this.store.dispatch(new RTLActions.SaveSettings(this.settings));
+    this.logger.info(this.selNode.settings);
+    this.store.dispatch(new RTLActions.SaveSettings(this.selNode.settings));
     this.done.emit();
   }
 

@@ -15,6 +15,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { SsoFailedComponent } from './components/sso-failed/sso-failed.component';
+import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
 
 @NgModule({
     imports: [
@@ -82,7 +83,8 @@ import { SsoFailedComponent } from './components/sso-failed/sso-failed.component
         NotFoundComponent,
         SettingsNavComponent,
         ClipboardDirective,
-        QRCodeModule
+        QRCodeModule,
+        RemoveLeadingZerosPipe
     ],
     declarations: [
         AlertMessageComponent,
@@ -91,7 +93,8 @@ import { SsoFailedComponent } from './components/sso-failed/sso-failed.component
         NotFoundComponent,
         SettingsNavComponent,
         ClipboardDirective,
-        SsoFailedComponent
+        SsoFailedComponent,
+        RemoveLeadingZerosPipe
     ],
     entryComponents: [
         AlertMessageComponent,

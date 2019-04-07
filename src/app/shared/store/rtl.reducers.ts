@@ -1,14 +1,14 @@
 import * as RTLActions from './rtl.actions';
 
 import { ErrorPayload } from '../models/errorPayload';
-import { RTLConfiguration } from '../models/RTLconfig';
+import { RTLConfiguration, Node } from '../models/RTLconfig';
 import {
   GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, Invoice, PendingChannels, ClosedChannel, Transaction, SwitchRes
 } from '../models/lndModels';
 
 export interface State {
   effectErrors: ErrorPayload[];
-  selNodeIndex: number;
+  selNode: Node;
   appConfig: RTLConfiguration;
   information: GetInfo;
   peers: Peer[];
@@ -31,15 +31,15 @@ export interface State {
   addressTypes: AddressType[];
 }
 
+const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
+const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
+
 const initialState: State = {
   effectErrors: [],
-  selNodeIndex: 0,
+  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
   appConfig: {
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
-    nodes: [{
-      settings: { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false },
-      authentication: { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' }
-    }]
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
   information: {},
   peers: [],
@@ -84,14 +84,15 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
       };
-    case RTLActions.SET_SEL_NODE_INDEX:
+    case RTLActions.SET_SELECTED_NODE:
       return {
         ...state,
-        selNodeIndex: action.payload
+        selNode: action.payload
       };
     case RTLActions.SET_RTL_CONFIG:
       return {
         ...state,
+        selNode: action.payload.nodes[0],
         appConfig: action.payload
       };
     case RTLActions.SET_INFO:

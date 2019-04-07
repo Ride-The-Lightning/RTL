@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Settings } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Payment, PayRequest } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -23,10 +23,9 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 export class PaymentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('sendPaymentForm') form;
-  public selNodeIndex = 0;
+  public selNode: Node;
   public newlyAddedPayment = '';
   public flgAnimate = true;
-  public settings: Settings;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public payments: any;
@@ -68,8 +67,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
       this.paymentJSONArr = (rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);

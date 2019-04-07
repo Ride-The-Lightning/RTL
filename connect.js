@@ -379,9 +379,11 @@ connect.setServerConfiguration = () => {
   if ((!multiNodeExists && singleNodeExists) || (!multiNodeExists && !singleNodeExists)) {
     common.multi_node_setup = false;
     connect.setSingleNodeConfiguration(singleNodeConfFile);
+    common.selectedNode = common.findNode(common.nodes[0].index);
   } else if ((multiNodeExists && singleNodeExists) || (multiNodeExists && !singleNodeExists)) {
     common.multi_node_setup = true;
     connect.setMultiNodeConfiguration(multiNodeConfFile);
+    common.selectedNode = common.findNode(common.nodes[0].index);
   }
 }
 

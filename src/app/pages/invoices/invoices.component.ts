@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Settings } from '../../shared/models/RTLconfig';
+import { Node } from '../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -22,11 +22,10 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
-  public selNodeIndex = 0;
+  public selNode: Node;
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
-  public settings: Settings;
   public memo = '';
   public invoiceValue: number;
   public displayedColumns = [];
@@ -68,8 +67,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.selNodeIndex = rtlStore.selNodeIndex;
-      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
+      this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
       this.logger.info(rtlStore);
       this.loadInvoicesTable(rtlStore.invoices);

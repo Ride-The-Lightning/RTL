@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { RTLConfiguration, Settings } from '../models/RTLconfig';
+import { RTLConfiguration, Settings, Node } from '../models/RTLconfig';
 import { ErrorPayload } from '../models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, Payment, GraphNode, AddressType,
@@ -20,7 +20,7 @@ export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
-export const SET_SEL_NODE_INDEX = 'SET_SEL_NODE_INDEX';
+export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const FETCH_INFO = 'FETCH_INFO';
 export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
@@ -126,9 +126,9 @@ export class SaveSettings implements Action {
   constructor(public payload: Settings) {}
 }
 
-export class SetSelNodeIndex implements Action {
-  readonly type = SET_SEL_NODE_INDEX;
-  constructor(public payload: number) {}
+export class SetSelelectedNode implements Action {
+  readonly type = SET_SELECTED_NODE;
+  constructor(public payload: Node) {}
 }
 
 export class FetchInfo implements Action {
@@ -387,7 +387,7 @@ export type RTLActions =
   ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
   FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
-  SetSelNodeIndex | FetchInfo | SetInfo |
+  SetSelelectedNode | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
