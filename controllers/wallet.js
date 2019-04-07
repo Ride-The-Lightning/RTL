@@ -4,16 +4,16 @@ var logger = require('./logger');
 var options = {};
 
 exports.operateWallet = (req, res, next) => {
-  options = common.getOptions(1);
+  options = common.getOptions();
   var requestBody = {
     wallet_password: Buffer.from(req.body.wallet_password).toString('base64')
   };
   if (undefined === req.params.operation || req.params.operation === 'unlock') {
-    options.url = common.findNode(1).lnd_server_url + '/unlockwallet';
+    options.url = common.getSelLNDServerUrl() + '/unlockwallet';
     options.form = JSON.stringify(requestBody);
     err_message = 'Unlocking wallet failed! Verify that lnd is running and the wallet is locked!';
   } else {
-    options.url = common.findNode(1).lnd_server_url + '/initwallet';
+    options.url = common.getSelLNDServerUrl() + '/initwallet';
     options.form = JSON.stringify(requestBody);
     err_message = 'Initializing wallet failed!';
   }

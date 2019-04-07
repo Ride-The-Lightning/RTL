@@ -4,8 +4,8 @@ var logger = require('./logger');
 var options = {};
 
 exports.getPayments = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/payments';
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/payments';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');

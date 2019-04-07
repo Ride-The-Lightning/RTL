@@ -3,6 +3,12 @@ var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
 
+exports.updateSelectedNode = (req, res, next) => {
+  const selNodeIndex = req.body.selNodeIndex
+  common.selectedNode = common.findNode(selNodeIndex);
+  res.status(200).json({status: 'Selected Node Updated!'});
+};
+
 exports.getRTLConfig = (req, res, next) => {
   if(!common.multi_node_setup) {
     var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
@@ -65,10 +71,33 @@ exports.updateUISettings = (req, res, next) => {
   var RTLConfFile = '';
   if(common.multi_node_setup) {
     RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+    var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+    config.nodes.find(node => {
+      if(node.index == common.selectedNode.index) {
+        node.Settings.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
+        node.Settings.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
+        node.Settings.menu = req.body.updatedSettings.menu;
+        node.Settings.menuType = req.body.updatedSettings.menuType;
+        node.Settings.theme = req.body.updatedSettings.theme;
+        node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
+      }
+    });
+    try {
+      fs.writeFileSync(RTLConfFile, JSON.stringify(config));
+      logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
+      res.status(201).json({message: 'UI Settings Updated Successfully'});
+    }
+    catch (err) {
+      logger.error('\r\nConf: 71: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
+      res.status(500).json({
+        message: "Updating UI Settings Failed!",
+        error: 'Updating UI Settings Failed!'
+      });
+    }
   } else {
     RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    var settingsTemp = config.Settings;
+    const settingsTemp = config.Settings;
     settingsTemp.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
     settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
     settingsTemp.menu = req.body.updatedSettings.menu;

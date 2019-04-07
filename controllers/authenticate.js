@@ -48,9 +48,6 @@ exports.authenticateUser = (req, res, next) => {
   } else {
     const password = atob(req.body.password);
     if (common.multi_node_setup) {
-      console.log('\n\nHERE:\n');
-      console.log(common.nodes);
-      console.log(common.rtl_pass);
       if (common.rtl_pass === password) {
         var rpcUser = 'Multi_Node_User';
         const token = jwt.sign(

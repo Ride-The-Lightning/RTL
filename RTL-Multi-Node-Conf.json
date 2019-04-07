@@ -1,0 +1,47 @@
+{
+    "multiPass":"aaa",
+    "port":"3000",
+    "SSO": {
+        "rtlSSO":0,
+        "rtlCookiePath":"",
+        "logoutRedirectLink":""
+    },
+    "nodes":[{
+        "index":1,
+        "lnNode":"LND Testnet # 1",
+        "lnImplementation":"LND",
+        "Authentication":{
+            "macaroonPath":"C:\\Users\\suheb\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\testnet",
+            "lndConfigPath":"C:\\Users\\suheb\\AppData\\Local\\Lnd\\lnd.conf"
+        },
+        "Settings":{
+            "flgSidenavOpened":"true",
+            "flgSidenavPinned":"true",
+            "menu":"Vertical",
+            "menuType":"Regular",
+            "theme":"light-blue-gray",
+            "satsToBTC":"false",
+            "bitcoindConfigPath":"C:\\bitcoin\\bitcoin_mainnet\\bitcoin.conf",
+            "enableLogging":"true",
+            "lndServerUrl":"https://localhost:8080/v1"
+        }
+    }, {
+        "index":2,
+        "lnNode":"LND Mainnet # 1",
+        "lnImplementation":"LND",
+        "Authentication":{
+            "macaroonPath":"C:\\Workspace"
+        },
+        "Settings":{
+            "flgSidenavOpened":"true",
+            "flgSidenavPinned":"true",
+            "menu":"Vertical",
+            "menuType":"Regular",
+            "theme":"dark-pink",
+            "satsToBTC":"false",
+            "bitcoindConfigPath":"",
+            "enableLogging":"true",
+            "lndServerUrl":"https://192.168.1.20:8080/v1"
+        }
+    }]
+}

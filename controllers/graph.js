@@ -4,8 +4,8 @@ var logger = require('./logger');
 var options = {};
 
 exports.getDescribeGraph = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/graph';
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/graph';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
@@ -28,8 +28,8 @@ exports.getDescribeGraph = (req, res, next) => {
 };
 
 exports.getGraphInfo = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/graph/info';
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/graph/info';
   request.get(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
@@ -57,8 +57,8 @@ exports.getGraphInfo = (req, res, next) => {
 };
 
 exports.getGraphNode = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/graph/node/' + req.params.pubKey;
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
     logger.info('\r\nGraph: 59: ' + JSON.stringify(Date.now()) + ': INFO: Node Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
@@ -81,8 +81,8 @@ exports.getGraphNode = (req, res, next) => {
 };
 
 exports.getGraphEdge = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/graph/edge/' + req.params.chanid;
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.info('\r\nGraph: 79: ' + JSON.stringify(Date.now()) + ': INFO: Edge Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {

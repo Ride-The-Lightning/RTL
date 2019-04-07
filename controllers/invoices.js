@@ -4,8 +4,8 @@ var logger = require('./logger');
 var options = {};
 
 exports.getInvoice = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/invoice/' + req.params.rHashStr;
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
     logger.info('\r\nInvoice: 8: ' + JSON.stringify(Date.now()) + ': INFO: Invoice Info Received: ' + JSON.stringify(body));
     if(undefined === body || body.error) {
@@ -25,8 +25,8 @@ exports.getInvoice = (req, res, next) => {
 };
 
 exports.listInvoices = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/invoices';
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/invoices';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
@@ -59,8 +59,8 @@ exports.listInvoices = (req, res, next) => {
 };
 
 exports.addInvoice = (req, res, next) => {
-  options = common.getOptions(1);
-  options.url = common.findNode(1).lnd_server_url + '/invoices';
+  options = common.getOptions();
+  options.url = common.getSelLNDServerUrl() + '/invoices';
   options.form = JSON.stringify({ 
     memo: req.body.memo,
     value: req.body.amount

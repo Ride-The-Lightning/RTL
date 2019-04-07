@@ -13,9 +13,18 @@ common.logout_redirect_link = '/login';
 common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
+common.selectedNode = {};
 
-common.getOptions = (selNodeIndex) => {
-	return common.findNode(selNodeIndex).options;
+common.getSelectedNode = () => {
+	return common.selectedNode;
+};
+
+common.getSelLNDServerUrl = () => {
+	return common.selectedNode.lnd_server_url;
+};
+
+common.getOptions = () => {
+	return common.selectedNode.options;
 };
 
 common.setOptions = () => {
