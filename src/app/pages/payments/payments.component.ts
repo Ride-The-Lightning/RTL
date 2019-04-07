@@ -23,6 +23,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 export class PaymentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('sendPaymentForm') form;
+  public selNodeIndex = 0;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public settings: Settings;
@@ -67,7 +68,8 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.information = rtlStore.information;
       this.paymentJSONArr = (rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);

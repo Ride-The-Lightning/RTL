@@ -8,6 +8,7 @@ import {
 
 export interface State {
   effectErrors: ErrorPayload[];
+  selNodeIndex: number;
   appConfig: RTLConfiguration;
   information: GetInfo;
   peers: Peer[];
@@ -32,6 +33,7 @@ export interface State {
 
 const initialState: State = {
   effectErrors: [],
+  selNodeIndex: 0,
   appConfig: {
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{
@@ -81,6 +83,11 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
       return {
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
+      };
+    case RTLActions.SET_SEL_NODE_INDEX:
+      return {
+        ...state,
+        selNodeIndex: action.payload
       };
     case RTLActions.SET_RTL_CONFIG:
       return {

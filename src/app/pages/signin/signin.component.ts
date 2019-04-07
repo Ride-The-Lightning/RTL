@@ -13,12 +13,13 @@ import * as RTLActions from '../../shared/store/rtl.actions';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
-  password = '';
-  nodeAuthType = '';
-  rtlSSO = 0;
-  rtlCookiePath = '';
-  hintStr = '';
-  accessKey = '';
+  public selNodeIndex = 0;
+  public password = '';
+  public nodeAuthType = '';
+  public rtlSSO = 0;
+  public rtlCookiePath = '';
+  public hintStr = '';
+  public accessKey = '';
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -31,7 +32,8 @@ export class SigninComponent implements OnInit, OnDestroy {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
-      this.nodeAuthType = rtlStore.appConfig.nodes[0].authentication.nodeAuthType;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.nodeAuthType = rtlStore.appConfig.nodes[this.selNodeIndex].authentication.nodeAuthType;
       this.logger.info(rtlStore);
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
         this.hintStr = 'Enter RPC password';

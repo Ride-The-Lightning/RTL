@@ -28,7 +28,12 @@ exports.getRTLConfig = (req, res, next) => {
           lndConfigPath: common.nodes[0].lnd_config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
-        res.status(200).json({ sso: sso, nodes: [{settings: jsonConfig.Settings, authentication: authentication}] });
+        res.status(200).json({ sso: sso, nodes: [{
+          index: common.nodes[0].index,
+          lnNode: 'SingleNode',
+          lnImplementation: '',
+          settings: jsonConfig.Settings,
+          authentication: authentication}] });
       }
     });
   } else {
@@ -38,7 +43,7 @@ exports.getRTLConfig = (req, res, next) => {
       if (err) {
         if (err.code === 'ENOENT') {
           logger.error('\r\nRTLConf.js: 36: ' + JSON.stringify(Date.now()) + ': INFO: Multi Node Config does not exist!');
-          res.status(200).json({ nodes: [] });
+          res.status(200).json({ sso: {}, nodes: [] });
         } else {
           logger.error('\r\nRTLConf.js: 39: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
           res.status(500).json({
@@ -59,7 +64,12 @@ exports.getRTLConfig = (req, res, next) => {
           if(node.Settings.bitcoindConfigPath) {
             authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
           }
-          nodesArr.push({settings: node.Settings, authentication: authentication})
+          nodesArr.push({
+            index: node.index,
+            lnNode: node.lnNode,
+            lnImplementation: node.lnImplementation,
+            settings: node.Settings,
+            authentication: authentication})
         });
         res.status(200).json({ sso: sso, nodes: nodesArr });
       }
@@ -83,7 +93,7 @@ exports.updateUISettings = (req, res, next) => {
       }
     });
     try {
-      fs.writeFileSync(RTLConfFile, JSON.stringify(config));
+      fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
       logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
       res.status(201).json({message: 'UI Settings Updated Successfully'});
     }

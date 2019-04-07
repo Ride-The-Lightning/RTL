@@ -19,6 +19,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class ChannelPendingComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
+  public selNodeIndex = 0;
   public selectedFilter = 0;
   public settings: Settings;
   public information: GetInfo = {};
@@ -105,7 +106,8 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
       if (undefined !== this.pendingChannels.total_limbo_balance) {

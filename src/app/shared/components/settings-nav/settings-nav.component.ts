@@ -16,6 +16,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./settings-nav.component.scss']
 })
 export class SettingsNavComponent implements OnInit, OnDestroy {
+  public selNodeIndex = 0;
   public information: GetInfo = {};
   public settings: Settings;
   public menus = ['Vertical', 'Horizontal'];
@@ -24,6 +25,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   public selectedMenuType: string;
   public currencyUnit = 'BTC';
   public showSettingOption = true;
+
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
 
@@ -33,7 +35,8 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.selectedMenu = this.settings.menu;
       this.selectedMenuType = this.settings.menuType;
       if (window.innerWidth <= 768) {

@@ -19,6 +19,7 @@ import * as RTLActions from '../../../shared/store/rtl.actions';
   styleUrls: ['./top-menu.component.scss']
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
+  public selNodeIndex = 0;
   public settings: Settings;
   public version = '';
   public information: GetInfo = {};
@@ -35,7 +36,8 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
 
       this.information = rtlStore.information;
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;

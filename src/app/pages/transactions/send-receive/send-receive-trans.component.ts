@@ -18,6 +18,8 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./send-receive-trans.component.scss']
 })
 export class SendReceiveTransComponent implements OnInit, OnDestroy {
+  public selNodeIndex = 0;
+  public settings: Settings;
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public flgLoadingWallet: Boolean | 'error' = true;
@@ -42,6 +44,8 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
           this.flgLoadingWallet = 'error';
         }
       });
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.information;
       this.addressTypes = rtlStore.addressTypes;

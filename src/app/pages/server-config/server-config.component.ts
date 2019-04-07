@@ -14,6 +14,7 @@ import { Authentication } from '../../shared/models/RTLconfig';
   styleUrls: ['./server-config.component.scss']
 })
 export class ServerConfigComponent implements OnInit, OnDestroy {
+  public selNodeIndex = 0;
   public selectedNodeType = 'lnd';
   public authSettings: Authentication = {};
   public showLND = false;
@@ -33,7 +34,8 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
           this.resetData();
         }
       });
-      this.authSettings = rtlStore.appConfig.nodes[0].authentication;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.authSettings = rtlStore.appConfig.nodes[this.selNodeIndex].authentication;
       if (undefined !== this.authSettings && this.authSettings.lndConfigPath !== '') {
         this.showLND = true;
       }

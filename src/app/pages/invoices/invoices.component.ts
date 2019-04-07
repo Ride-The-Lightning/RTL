@@ -22,6 +22,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
+  public selNodeIndex = 0;
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
@@ -67,7 +68,8 @@ export class InvoicesComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.information = rtlStore.information;
       this.logger.info(rtlStore);
       this.loadInvoicesTable(rtlStore.invoices);

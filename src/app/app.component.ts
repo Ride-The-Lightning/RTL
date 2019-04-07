@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { UserIdleService } from 'angular-user-idle';
 
 import { LoggerService } from './shared/services/logger.service';
-import { Settings, Authentication, SSO, RTLConfiguration } from './shared/models/RTLconfig';
+import { RTLConfiguration, Settings } from './shared/models/RTLconfig';
 import { GetInfo } from './shared/models/lndModels';
 
 import * as RTLActions from './shared/store/rtl.actions';
@@ -21,6 +21,8 @@ import * as fromRTLReducer from './shared/store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation') sideNavigation: any;
   @ViewChild('settingSidenav') settingSidenav: any;
+  public selNodeIndex = 0;
+  public settings: Settings;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
   public flgCopied = false;
@@ -38,18 +40,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.information;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
-        this.appConfig.nodes[0].settings.menu = 'Vertical';
-        this.appConfig.nodes[0].settings.flgSidenavOpened = false;
-        this.appConfig.nodes[0].settings.flgSidenavPinned = false;
+        this.appConfig.nodes[this.selNodeIndex].settings.menu = 'Vertical';
+        this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavOpened = false;
+        this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned = false;
       }
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      this.logger.info(this.appConfig.nodes[0].settings);
+      this.logger.info(this.appConfig.nodes[this.selNodeIndex].settings);
       if (!sessionStorage.getItem('token')) {
         this.flgLoading[0] = false;
       }
@@ -71,9 +75,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
         if (
-          this.appConfig.nodes[0].settings.menu === 'Horizontal' ||
-          this.appConfig.nodes[0].settings.menuType === 'Compact' ||
-          this.appConfig.nodes[0].settings.menuType === 'Mini') {
+          this.appConfig.nodes[this.selNodeIndex].settings.menu === 'Horizontal' ||
+          this.appConfig.nodes[this.selNodeIndex].settings.menuType === 'Compact' ||
+          this.appConfig.nodes[this.selNodeIndex].settings.menuType === 'Mini') {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
@@ -122,7 +126,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (!this.appConfig.nodes[0].settings.flgSidenavPinned) {
+    if (!this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned) {
       this.sideNavigation.close();
       this.settingSidenav.toggle();
     }
@@ -135,9 +139,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize')
   public onWindowResize(): void {
     if (window.innerWidth <= 768) {
-      this.appConfig.nodes[0].settings.menu = 'Vertical';
-      this.appConfig.nodes[0].settings.flgSidenavOpened = false;
-      this.appConfig.nodes[0].settings.flgSidenavPinned = false;
+      this.appConfig.nodes[this.selNodeIndex].settings.menu = 'Vertical';
+      this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavOpened = false;
+      this.appConfig.nodes[this.selNodeIndex].settings.flgSidenavPinned = false;
     }
   }
 
@@ -155,6 +159,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
+  }
+
+  onSelectionChange(val: number) {
+    console.warn(val);
+    this.selNodeIndex = val;
+    this.store.dispatch(new RTLActions.SetSelNodeIndex(this.selNodeIndex));
   }
 
   ngOnDestroy() {

@@ -25,6 +25,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
+  public selNodeIndex = 0;
   public version = '';
   public settings: Settings;
   public information: GetInfo = {};
@@ -62,7 +63,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.settings = rtlStore.appConfig.nodes[0].settings;
+      this.selNodeIndex = rtlStore.selNodeIndex;
+      this.settings = rtlStore.appConfig.nodes[this.selNodeIndex].settings;
       this.information = rtlStore.information;
       this.numPendingChannels = rtlStore.numberOfPendingChannels;
 
