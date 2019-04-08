@@ -1,58 +1,50 @@
-[
 {
-    "Index": "1",
-    "LNNode": "LND Testnet # 1",
-    "LNImplementation": "LND",
-    "Authentication": {
-        "macaroonPath": "/Users/<user>/",
-        "nodeAuthType": "CUSTOM",
-        "lndConfigPath": "",
-        "rtlPass": ""
-    },
-    "Settings": {
+  "multiPass": "multiPass",
+  "port": "3000",
+  "SSO": {
+    "rtlSSO": 0,
+    "rtlCookiePath": "",
+    "logoutRedirectLink": ""
+  },
+  "nodes": [
+    {
+      "index": 1,
+      "lnNode": "LND Testnet",
+      "lnImplementation": "LND",
+      "Authentication": {
+        "macaroonPath": "<macaroonPath1>",
+        "lndConfigPath": "<lndConfigPath1>"
+      },
+      "Settings": {
         "flgSidenavOpened": "true",
         "flgSidenavPinned": "true",
         "menu": "Vertical",
         "menuType": "Regular",
         "theme": "dark-blue",
         "satsToBTC": "false",
-        "bitcoindConfigPath": "",
+        "bitcoindConfigPath": "<bitcoindConfigPath1>",
         "enableLogging": "true",
-        "port": "3000",
-        "lndServerUrl": "https://localhost:8080/v1"
+        "lndServerUrl": "https://192.168.1.1:8080/v1"
+      }
     },
-    "SSO":{
-        "rtlSSO": 0,
-        "rtlCookiePath": "",
-        "logoutRedirectLink": ""
-    }
-},
-{
-    "Index": "2",
-    "LNNode": "LND Mainnet # 1",
-    "LNImplementation": "LND",
-    "Authentication": {
-        "macaroonPath": "/Users/<user>/",
-        "nodeAuthType": "CUSTOM",
-        "lndConfigPath": "",
-        "rtlPass": ""
-    },
-    "Settings": {
+    {
+      "index": 2,
+      "lnNode": "LND Mainnet",
+      "lnImplementation": "LND",
+      "Authentication": {
+        "macaroonPath": "<macaroonPath2>"
+      },
+      "Settings": {
         "flgSidenavOpened": "true",
         "flgSidenavPinned": "true",
         "menu": "Vertical",
         "menuType": "Regular",
-        "theme": "dark-green",
+        "theme": "light-teal",
         "satsToBTC": "false",
         "bitcoindConfigPath": "",
         "enableLogging": "true",
-        "port": "3000",
-        "lndServerUrl": "https://localhost:8080/v1"
-    },
-    "SSO":{
-        "rtlSSO": 0,
-        "rtlCookiePath": "",
-        "logoutRedirectLink": ""
+        "lndServerUrl": "https://192.168.1.2:8080/v1"
+      }
     }
+  ]
 }
-]
