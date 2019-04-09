@@ -10,7 +10,12 @@ Install certbot to acquire the ssl certificate:
 https://certbot.eff.org
 
 
+Add the following line at the very top of nginx.conf: 
+load_module /usr/lib/nginx/modules/ngx_stream_module.so;
+
+
 Sample configuration to be inserted in the nginx.conf (adjust the path and filename of your certificate and key):
+
 
 
     stream {
