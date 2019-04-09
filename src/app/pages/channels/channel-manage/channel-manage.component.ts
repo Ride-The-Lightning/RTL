@@ -81,7 +81,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       });
 
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if (undefined !== rtlStore.allChannels && rtlStore.allChannels.length > 0) {
+      if (undefined !== rtlStore.allChannels) {
         this.loadChannelsTable(rtlStore.allChannels);
       }
       if (this.flgLoading[0] !== 'error') {

@@ -7,6 +7,7 @@ import {
 } from '../models/lndModels';
 import { MatDialogConfig } from '@angular/material';
 
+export const RESET_STORE = 'RESET_STORE';
 export const CLEAR_EFFECT_ERROR = 'CLEAR_EFFECT_ERROR';
 export const EFFECT_ERROR = 'EFFECT_ERROR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
@@ -110,6 +111,11 @@ export class OpenConfirmation implements Action {
 export class CloseConfirmation implements Action {
   readonly type = CLOSE_CONFIRMATION;
   constructor(public payload: boolean) {}
+}
+
+export class ResetStore implements Action {
+  readonly type = RESET_STORE;
+  constructor(public payload: Node) {}
 }
 
 export class FetchRTLConfig implements Action {
@@ -387,7 +393,7 @@ export type RTLActions =
   ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
   FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
-  SetSelelectedNode | FetchInfo | SetInfo |
+  ResetStore | SetSelelectedNode | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |

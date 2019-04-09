@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { ForwardingEvent, RoutingPeers } from '../../shared/models/lndModels';
@@ -32,9 +33,9 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   public endDate = this.today;
   public startDate = this.lastMonthDay;
   public flgSticky = false;
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.State>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['chan_id', 'events', 'total_amount'];
@@ -58,6 +59,9 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onRoutingPeersFetch();
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+      this.onRoutingPeersFetch();
+    });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {

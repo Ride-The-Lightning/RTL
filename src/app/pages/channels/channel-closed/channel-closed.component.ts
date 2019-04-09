@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { ClosedChannel } from '../../../shared/models/lndModels';
@@ -23,9 +24,9 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   public selectedFilter = '';
   public flgSticky = false;
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close_type', 'chan_id', 'settled_balance'];
@@ -51,6 +52,9 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed', channelStatus: ''}));
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+      this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed', channelStatus: ''}));
+    });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
@@ -59,7 +63,7 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      if (undefined !== rtlStore.closedChannels && rtlStore.closedChannels.length > 0) {
+      if (undefined !== rtlStore.closedChannels) {
         this.loadClosedChannelsTable(rtlStore.closedChannels);
       }
       if (this.flgLoading[0] !== 'error') {

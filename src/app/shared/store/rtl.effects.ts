@@ -1050,10 +1050,9 @@ export class RTLEffects implements OnDestroy {
      .pipe(
        map((postRes: any) => {
         this.logger.info(postRes);
-        setTimeout(() => {
-          this.store.dispatch(new RTLActions.CloseSpinner());
-        }, 4000);
+        this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
+          this.store.dispatch(new RTLActions.ResetStore(action.payload));
           return { type: RTLActions.FETCH_INFO };
         } else {
           return {

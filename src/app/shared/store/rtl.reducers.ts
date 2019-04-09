@@ -84,6 +84,12 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
       };
+    case RTLActions.RESET_STORE:
+      return {
+        ...initialState,
+        appConfig: state.appConfig,
+        selNode: action.payload
+      };
     case RTLActions.SET_SELECTED_NODE:
       return {
         ...state,

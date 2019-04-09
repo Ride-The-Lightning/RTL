@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { ForwardingEvent } from '../../shared/models/lndModels';
@@ -29,7 +30,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['timestamp', 'amt_out', 'amt_in'];
@@ -53,6 +54,10 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onForwardingHistoryFetch();
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+      this.onForwardingHistoryFetch();
+    });
+
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
