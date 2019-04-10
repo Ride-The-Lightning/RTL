@@ -28,7 +28,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   public endDate = this.today;
   public startDate = this.yesterday;
   public flgSticky = false;
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {

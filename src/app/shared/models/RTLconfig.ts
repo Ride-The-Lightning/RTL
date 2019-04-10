@@ -37,6 +37,7 @@ export class Node {
 
 export class RTLConfiguration {
   constructor(
+    public selectedNodeIndex: number,
     public sso: SSO,
     public nodes: Node[]
   ) { }

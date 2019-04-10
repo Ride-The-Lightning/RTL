@@ -6,7 +6,7 @@ var common = require('../common');
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
-  logger.info('\r\nConf: 9: ' + JSON.stringify(Date.now()) + ': INFO: Selected Node Updated!' + JSON.stringify(common.selectedNode));
+  logger.info('\r\nConf: 9: ' + JSON.stringify(Date.now()) + ': INFO: Selected Node Updated!' + JSON.stringify(common.selectedNode.ln_node));
   res.status(200).json({status: 'Selected Node Updated!'});
 };
 
@@ -29,7 +29,7 @@ exports.getRTLConfig = (req, res, next) => {
           lndConfigPath: common.nodes[0].lnd_config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
-        res.status(200).json({ sso: sso, nodes: [{
+        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
           lnImplementation: '',
@@ -44,7 +44,7 @@ exports.getRTLConfig = (req, res, next) => {
       if (err) {
         if (err.code === 'ENOENT') {
           logger.error('\r\nRTLConf.js: 36: ' + JSON.stringify(Date.now()) + ': INFO: Multi Node Config does not exist!');
-          res.status(200).json({ sso: {}, nodes: [] });
+          res.status(200).json({ selectedNodeIndex: {}, sso: {}, nodes: [] });
         } else {
           logger.error('\r\nRTLConf.js: 39: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
           res.status(500).json({
@@ -72,7 +72,7 @@ exports.getRTLConfig = (req, res, next) => {
             settings: node.Settings,
             authentication: authentication})
         });
-        res.status(200).json({ sso: sso, nodes: nodesArr });
+        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
       }
     });
   }

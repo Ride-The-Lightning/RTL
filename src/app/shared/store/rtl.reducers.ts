@@ -38,6 +38,7 @@ const initialState: State = {
   effectErrors: [],
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
   appConfig: {
+    selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
@@ -98,7 +99,7 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
     case RTLActions.SET_RTL_CONFIG:
       return {
         ...state,
-        selNode: action.payload.nodes[0],
+        selNode: action.payload.nodes.find(node => +node.index === action.payload.selectedNodeIndex),
         appConfig: action.payload
       };
     case RTLActions.SET_INFO:
