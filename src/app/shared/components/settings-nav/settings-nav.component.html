@@ -4,6 +4,21 @@
 <div fxLayout="column" class="container">
   <button fxLayoutAlign="center center" mat-raised-button color="accent" class="mt-2" type="reset" (click)="onClose()">Close</button>
   <div fxLayout="column">
+    <div *ngIf="appConfig.nodes.length > 1">
+      <h4>Switch Node</h4>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div tabindex="1" fxFlex="100">
+          <mat-form-field fxFlex="100">
+            <mat-select (selectionChange)="onSelectionChange($event.value)" [value]="selNode">
+              <mat-option *ngFor="let node of appConfig.nodes" [value]="node">
+                {{node.lnNode}} ({{node.lnImplementation}})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <mat-divider class="mt-2"></mat-divider>
+    </div>
     <h4>Currency Unit</h4>
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <span>{{currencyUnit}}</span>

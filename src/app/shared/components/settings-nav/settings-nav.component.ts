@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Node } from '../../models/RTLconfig';
+import { Node, RTLConfiguration } from '../../models/RTLconfig';
 import { GetInfo } from '../../models/lndModels';
 import { LoggerService } from '../../services/logger.service';
 
@@ -24,6 +24,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   public selectedMenuType: string;
   public currencyUnit = 'BTC';
   public showSettingOption = true;
+  public appConfig: RTLConfiguration;
 
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
@@ -34,6 +35,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.selectedMenu = this.selNode.settings.menu;
       this.selectedMenuType = this.selNode.settings.menuType;
@@ -69,6 +71,12 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.SaveSettings(this.selNode.settings));
     this.done.emit();
+  }
+
+  onSelectionChange(selNodeValue: Node) {
+    this.selNode = selNodeValue;
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
+    this.store.dispatch(new RTLActions.SetSelelectedNode(selNodeValue));
   }
 
   ngOnDestroy() {

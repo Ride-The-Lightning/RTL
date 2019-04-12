@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 })
 export class ServerConfigComponent implements OnInit, OnDestroy {
   public selNode: Node;
-  public selectedNodeType = 'lnd';
+  public selectedNodeType = 'rtl';
   public showLND = false;
   public showBitcoind = false;
   public configData = '';
@@ -33,12 +33,21 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
           this.resetData();
         }
       });
+      this.configData = '';
+      this.showLND = false;
+      this.showBitcoind = false;
       this.selNode = rtlStore.selNode;
-      if (undefined !== this.selNode.authentication && this.selNode.authentication.lndConfigPath !== '') {
+      if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.lndConfigPath && this.selNode.authentication.lndConfigPath !== '') {
         this.showLND = true;
       }
       if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.bitcoindConfigPath && this.selNode.authentication.bitcoindConfigPath !== '') {
         this.showBitcoind = true;
+      }
+      if (this.selectedNodeType === 'lnd' && !this.showLND) {
+        this.selectedNodeType = 'rtl';
+      }
+      if (this.selectedNodeType === 'bitcoind' && !this.showBitcoind) {
+        this.selectedNodeType = 'rtl';
       }
     });
   }
@@ -68,7 +77,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.configData = '';
-    this.selectedNodeType = 'lnd';
+    this.selectedNodeType = 'rtl';
   }
 
   ngOnDestroy() {

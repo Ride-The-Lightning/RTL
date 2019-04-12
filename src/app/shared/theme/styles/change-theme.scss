@@ -56,5 +56,17 @@
       fill: mat-color($primary) !important;
       cursor: default;
     }
-  }  
+  }
+
+  .mat-primary .mat-select, .mat-primary .mat-select-trigger, .mat-primary .mat-select-value, .mat-primary .mat-select-arrow {
+    // color: white !important;    
+  }
+  
+  .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
+  .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+    background: none;
+    font-weight: 900;
+    font-size: 110%;
+  }
+  
 }

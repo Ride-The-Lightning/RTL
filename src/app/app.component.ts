@@ -161,12 +161,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Copied Text: ' + payload);
   }
 
-  onSelectionChange(selNodeValue: Node) {
-    this.selNode = selNodeValue;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode(selNodeValue));
-  }
-
   ngOnDestroy() {
     this.unsubs.forEach(unsub => {
       unsub.next();

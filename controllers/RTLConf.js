@@ -138,11 +138,11 @@ exports.getConfig = (req, res, next) => {
   switch (req.params.nodeType) {
     case 'lnd':
       JSONFormat = false;
-      confFile = common.nodes[0].lnd_config_path;
+      confFile = common.selectedNode.lnd_config_path;
       break;
     case 'bitcoind':
       JSONFormat = false;
-      confFile = common.nodes[0].bitcoind_config_path;
+      confFile = common.selectedNode.bitcoind_config_path;
       break;
     case 'rtl':
       JSONFormat = (common.multi_node_setup) ? true : false;

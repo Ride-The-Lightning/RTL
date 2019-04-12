@@ -758,7 +758,6 @@ export class RTLEffects implements OnDestroy {
   showLNDConfig = this.actions$.pipe(
     ofType(RTLActions.SHOW_CONFIG),
     map((action: RTLActions.ShowConfig) => {
-      this.logger.info(action.payload);
       return action.payload;
     })
   );
