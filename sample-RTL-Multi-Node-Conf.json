@@ -1,5 +1,5 @@
 {
-  "multiPass": "multiPass",
+  "multiPass": "password",
   "port": "3000",
   "SSO": {
     "rtlSSO": 0,
@@ -12,8 +12,8 @@
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
       "Authentication": {
-        "macaroonPath": "<macaroonPath1>",
-        "lndConfigPath": "<lndConfigPath1>"
+        "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 1>",
+        "lndConfigPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
       "Settings": {
         "flgSidenavOpened": "true",
@@ -22,9 +22,9 @@
         "menuType": "Regular",
         "theme": "dark-blue",
         "satsToBTC": "false",
-        "bitcoindConfigPath": "<bitcoindConfigPath1>",
+        "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "enableLogging": "true",
-        "lndServerUrl": "https://192.168.1.1:8080/v1"
+        "lndServerUrl": "<Service url for LND REST APIs for node # 1 e.g. https://192.168.0.1:8080/v1"
       }
     },
     {
@@ -32,7 +32,7 @@
       "lnNode": "LND Mainnet",
       "lnImplementation": "LND",
       "Authentication": {
-        "macaroonPath": "<macaroonPath2>"
+        "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 2>"
       },
       "Settings": {
         "flgSidenavOpened": "true",
@@ -43,7 +43,7 @@
         "satsToBTC": "false",
         "bitcoindConfigPath": "",
         "enableLogging": "true",
-        "lndServerUrl": "https://192.168.1.2:8080/v1"
+        "lndServerUrl": "<Service url for LND REST APIs for node # 2 e.g. https://192.168.0.6:8080/v1"
       }
     }
   ]
