@@ -156,7 +156,7 @@ Open your browser at the following address: http://localhost:3000 to access the 
 * Determine the IP address of your node to access the application.
 E.g. if the IP address of your node is 192.168.0.15 then open your browser at the following address: http://192.168.0.15:3000 to access RTL.
 
-3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](RTL_setups.md).
+3. Config tweaks for running RTL server and LND on separate devices on the same network can be found [here](docs/RTL_setups.md).
 
 4. Any Other setup: **Please be advised, if you are accessing your node remotely via RTL, its critical to encrypt the communication via use of https. You can use solutions like nginx and letsencrypt or TOR to setup secure access for RTL.** 
 - Sample SSL setup guide can be found [here](docs/RTL_SSL_setup.md)
