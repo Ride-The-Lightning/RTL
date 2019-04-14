@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+source .env
+
+docker-compose exec lnd lncli \
+  --macaroonpath /shared/admin.macaroon \
+  --tlscertpath /shared/tls.cert \
+  "$@"
