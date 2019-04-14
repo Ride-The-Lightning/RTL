@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
@@ -76,7 +76,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       this.payments.data.forEach(payment => {
         payment.creation_date_str = (payment.creation_date_str === '') ? '' : formatDate(payment.creation_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
       });
-      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.paymentJSONArr[0]) ? false : true;
       }
@@ -92,7 +92,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
       this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
       this.rtlEffects.setDecodedPayment
-      .pipe(takeUntil(this.unsub[1]))
+      .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (undefined !== this.paymentDecoded.timestamp_str) {
@@ -121,7 +121,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           ]
         }}));
         this.rtlEffects.closeConfirm
-        .pipe(takeUntil(this.unsub[2]))
+        .pipe(take(1))
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
@@ -135,7 +135,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
         type: 'CONFIRM', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unsub[3]))
+      .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
@@ -162,6 +162,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.form.reset();
+    this.paymentDecoded = {};
   }
 
   onPaymentClick(selRow: Payment, event: any) {

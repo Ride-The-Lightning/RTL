@@ -68,7 +68,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       if (undefined !== rtlStore.peers) {
         this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
-        setTimeout(() => { this.flgAnimate = false; }, 5000);
+        setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
       this.peers.sort = this.sort;
       if (this.flgLoading[0] !== 'error') {
