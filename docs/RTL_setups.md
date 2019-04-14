@@ -1,7 +1,7 @@
 ### Documenting the different RTL setups and the corresponding config tweaks
 
 #### RTL Server+LND running on the same device
-For this type of setup, just follow the instructions on the [readme](README.md)
+For this type of setup, just follow the instructions on the [readme](../README.md)
 
 #### RTL Server and LND running on different devices (Local LAN)
 If your running RTL and LND on different devices on your local LAN, certain config changes need to be made in LND and RTL conf files.
@@ -25,4 +25,4 @@ lndServerUrl=https://<ip-address-of-device-running-lnd>:8080/v1
 
 In case you need to run RTL with an external node, you need to ensure that RTL is served on https, by running it behind a webserver like [nginx](https://nginx.org/en/download.html) encrypted with your [letsencrypt](https://letsencrypt.org) certificate.
 
-A sample SSL setup guide can be found [here](https://github.com/ShahanaFarooqui/RTL/blob/master/RTL_SSL_setup.md)
+A sample SSL setup guide can be found [here](RTL_SSL_setup.md)
