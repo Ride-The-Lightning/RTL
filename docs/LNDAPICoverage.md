@@ -1,4 +1,4 @@
-[Intro](README.md) -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- **LND API Coverage** -- [Application Configurations](Application_configurations)
+[Intro](../README.md) -- [Application Features](Application_features.md) -- [Road Map](Roadmap.md) -- **LND API Coverage** -- [Application Configurations](Application_configurations)
 
 - [ ] GenSeed
 - [ ] InitWallet
