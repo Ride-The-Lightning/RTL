@@ -172,7 +172,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
 
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Disconnect'
+      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unsub[1]))
