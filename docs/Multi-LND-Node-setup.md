@@ -34,4 +34,4 @@ Upon opening up the settings menu, the list of available nodes can be found unde
 
 Thats all for now.
 The application is currently designed for a simple setup to access and manage multiple nodes.
-More features like an advanced multi-node dashboard can be developed in the future, depending on the interest from users.
+More features like an advanced multi-node dashboard can be developed in the future, depending on the interest from the community.
