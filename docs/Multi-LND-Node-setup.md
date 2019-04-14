@@ -21,7 +21,7 @@ This step is required to configure the nodes, which will be remotely connected w
 3. Set the `port` to the preferred port number over which to run RTL
 4. `SSO` section can be used for single-sign-on from applications like BTCPayserver. If using RTL as a stand-alone app to connect with the nodes, keep the `rtlSSO=0` and ignore the rest of `SSO` section.
 5. `nodes` section is a json array, with each element of the array representing the specific parameters for the LND node to connect with. `index` must be a number and start with 1. This number must be unique for each node in the array. For each element, two items need to be configured for each unique node on the network (`macaroonPath` and `lndServerUrl`).
-6. `macaroonPath` should be set to the local path of the folder containing `admin.macaroon` file for each node. The macaroon files for all the nodes, must be kept under different folders. Each node must have a different folder for macaroon on the RTL server.
+6. `macaroonPath` should be set to the local path of the folder containing `admin.macaroon` file for each node. Each node must have a different folder for the `admin.macaroon` on the RTL server.
 7. `lndServerUrl` must be set to the service url for LND REST APIs for each node, with the unique ip address of the node hosting lnd e.g. https://192.168.0.1:8080/v1. In this case the ip address of the node hosting lnd is '192.168.0.1'
 8. `lndConfigPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
 
