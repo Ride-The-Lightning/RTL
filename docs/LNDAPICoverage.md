@@ -7,7 +7,9 @@
 - [x] WalletBalance
 - [x] ChannelBalance
 - [x] GetTransactions
+- [ ] EstimateFee
 - [x] SendCoins
+- [ ] ListUnspent
 - [ ] SubscribeTransactions
 - [ ] SendMany
 - [x] NewAddress
@@ -19,6 +21,7 @@
 - [x] GetInfo
 - [x] PendingChannels
 - [x] ListChannels
+- [ ] SubscribeChannelEvents
 - [x] ClosedChannels
 - [ ] OpenChannelSync
 - [x] OpenChannel
@@ -46,3 +49,9 @@
 - [x] FeeReport
 - [x] UpdateChannelPolicy
 - [x] ForwardingHistory
+- [ ] ExportChannelBackup
+- [ ] ExportAllChannelBackups
+- [ ] VerifyChanBackup
+- [ ] RestoreChannelBackups
+- [ ] SubscribeChannelBackups
+- [ ] Messages
