@@ -16,8 +16,8 @@ Current UX for mobile users is less than optimal. We are attempting to provide a
 ### C-Lightning
 We want to extend the RTL UI framework to other lightning node implementations as well. The current architecture can support it without major re-engineering, as we have an api abstraction layer written in nodejs. Additionally, projects like [Lighter](https://gitlab.com/inbitcoin/lighter), offer a lot of promise to speed up the development process for this.
 
-### Globalization
-Multi-language support. We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support.
+### Multi-Language Support
+We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support.
 
 ### Ongoing UX improvement
 We believe UX improvement is a never-ending cycle. And, we must keep the UI/UX fresh and optimal with ongoing user feedback and inputs from UX subject-matter-experts. Contribution on UX suggestions is more than welcome and we have created a project to exclusively focus on UX issues and priorities. 
@@ -25,7 +25,7 @@ Automated Testing – As the functional complexity increases, we need to add aut
 
 ## Feature Backlog
 ### Channel re-balancing
-- Self routing to re-balance channels
+- Loop Out
 ### Invoice Management
 - Lookup Invoice
 ### Network
