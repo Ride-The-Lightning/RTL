@@ -1,6 +1,10 @@
-.mat-column-close, .mat-column-update, .mat-column-active {
+.mat-column-close, .mat-column-update, .mat-column-active, .mat-column-private {
   flex: 0 0 6%;
-  min-width: 50px;
+  min-width: 60px;
+}
+
+.mat-column-private {
+  padding-left: 10px;
 }
 
 .mat-cell.mat-column-close, .mat-column-update {

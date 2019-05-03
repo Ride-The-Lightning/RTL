@@ -38,6 +38,7 @@ exports.getChannels = (req, res, next) => {
       channels = (undefined === body.channels) ? [] : body.channels;
       Promise.all(
         channels.map(channel => {
+          channel.private = (channel.private) ? 'True' : 'False';
           return getAliasForChannel(channel, req.params.channelType);
         })
       )
@@ -79,6 +80,7 @@ exports.postChannel = (req, res, next) => {
   options.form = { 
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount,
+    private: req.body.private,
     spend_unconfirmed: req.body.spend_unconfirmed
   };
   if (req.body.trans_type === '1') {

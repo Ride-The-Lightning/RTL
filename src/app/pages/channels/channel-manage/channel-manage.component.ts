@@ -35,6 +35,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public selTransType = '0';
   public transTypeValue = {blocks: '', fees: ''};
   public spendUnconfirmed = false;
+  public isPrivate = false;
   public moreOptions = false;
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
@@ -53,12 +54,12 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias', 'capacity', 'local_balance', 'remote_balance', 'total_satoshis_sent',
-          'total_satoshis_received', 'commit_fee'];
+          'total_satoshis_received', 'commit_fee', 'private'];
         break;
       default:
         this.flgSticky = true;
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_pubkey', 'remote_alias', 'capacity', 'local_balance', 'remote_balance',
-          'total_satoshis_sent', 'total_satoshis_received', 'commit_fee'];
+          'total_satoshis_sent', 'total_satoshis_received', 'commit_fee', 'private'];
         break;
     }
   }
@@ -101,7 +102,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       transTypeValue = this.transTypeValue.fees;
     }
     this.store.dispatch(new RTLActions.SaveNewChannel({
-      selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount,
+      selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount, private: this.isPrivate,
       transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
     }));
   }
@@ -231,6 +232,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.fundingAmount = 0;
     this.moreOptions = false;
     this.spendUnconfirmed = false;
+    this.isPrivate = false;
     this.selTransType = '0';
     this.transTypeValue = {blocks: '', fees: ''};
   }
@@ -238,6 +240,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   onMoreOptionsChange(event: any) {
     if (!event.checked) {
       this.spendUnconfirmed = false;
+      this.isPrivate = false;
       this.selTransType = '0';
       this.transTypeValue = {blocks: '', fees: ''};
     }

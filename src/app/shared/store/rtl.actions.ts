@@ -240,7 +240,7 @@ export class SetClosedChannels implements Action {
 
 export class SaveNewChannel implements Action {
   readonly type = SAVE_NEW_CHANNEL;
-  constructor(public payload: {selectedPeerPubkey: string, fundingAmount: number, transType: string, transTypeValue: string, spendUnconfirmed: boolean}) {}
+  constructor(public payload: {selectedPeerPubkey: string, fundingAmount: number, private: boolean, transType: string, transTypeValue: string, spendUnconfirmed: boolean}) {}
 }
 
 export class CloseChannel implements Action {

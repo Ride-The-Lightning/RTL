@@ -84,8 +84,9 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   onForwardingEventClick(selRow: ForwardingEvent, event: any) {
     const selFEvent = this.forwardingHistoryEvents.data.filter(fhEvent => {
-      return fhEvent.chan_id_in === selRow.chan_id_in;
+      return (fhEvent.chan_id_in === selRow.chan_id_in && fhEvent.timestamp === selRow.timestamp);
     })[0];
+    console.warn(selFEvent);
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, ['timestamp_str', 'chan_id_in', 'alias_in', 'chan_id_out', 'alias_out', 'amt_out', 'amt_in', 'fee'] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
       type: 'INFO',

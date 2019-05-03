@@ -40,9 +40,9 @@ export interface Channel {
   total_satoshis_sent?: number;
   total_satoshis_received?: number;
   num_updates?: number;
+  private?: boolean;
   pending_htlcs?: HTLC[];
   csv_delay?: number;
-  private?: boolean;
 }
 
 export interface PendingChannels {

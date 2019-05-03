@@ -286,7 +286,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.SAVE_NEW_CHANNEL),
     mergeMap((action: RTLActions.SaveNewChannel) => {
       return this.httpClient.post(environment.CHANNELS_API, {
-        node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount,
+        node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
         trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed
       })
       .pipe(
