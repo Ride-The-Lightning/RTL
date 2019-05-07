@@ -46,7 +46,7 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
-    const password = atob(req.body.password);
+    const password = req.body.password;
     if (common.multi_node_setup) {
       if (common.rtl_pass === password) {
         var rpcUser = 'Multi_Node_User';

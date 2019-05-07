@@ -7,7 +7,11 @@ exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/getinfo';
-  logger.info('\r\nSelected Node: ' + JSON.stringify(common.selectedNode.ln_node));
+  if(common.multi_node_setup) {
+    logger.info('\r\nSelected Node: ' + JSON.stringify(common.selectedNode.ln_node));
+  } else {
+    logger.info('\r\nSingle Node Setup!');
+  }
   logger.info('\r\nCalling getinfo from lnd server url: INFO: ' + options.url);
   request(options).then((body) => {
     logger.info('\r\nGetInfo: 9: ' + JSON.stringify(Date.now()) + ': INFO: ' + JSON.stringify(body));

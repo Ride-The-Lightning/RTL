@@ -2,6 +2,7 @@ var os = require('os');
 var fs = require('fs');
 var platform = require('os').platform();
 var crypto = require('crypto');
+var hash = crypto.createHash('sha256');
 var clArgs = require('optimist').argv;
 var ini = require('ini');
 var common = require('./common');
@@ -86,6 +87,39 @@ connect.setMacaroonPath = (clArgs, config) => {
   }
 }
 
+connect.convertCustomToHash = (nodeSetupType) => {
+  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
+  if(nodeSetupType === 'SINGLE') {
+    try {
+      RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
+      var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+      const authTemp = config.Authentication;
+      authTemp.rtlPassHashed = hash.update(authTemp.rtlPass).digest('hex');
+      delete authTemp.rtlPass;
+      delete config.Authentication;
+      fs.writeFileSync(RTLConfFile, ini.stringify(config));
+      fs.appendFileSync(RTLConfFile, ini.stringify(authTemp, { section: 'Authentication' }));
+      console.log('Please note that RTL has encrypted the plaintext password into its corresponding hash.');
+      return authTemp.rtlPassHashed;
+    } catch (err) {
+      errMsg = errMsg + '\nrtlPass hash conversion failed!';
+    }
+  }
+  if(nodeSetupType === 'MULTI') {
+    try {
+      RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+      var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+      config.multiPassHashed = hash.update(config.multiPass).digest('hex');
+      delete config.multiPass;
+      fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+      console.log('Please note that RTL has encrypted the plaintext password into its corresponding hash.');
+      return config.multiPassHashed;
+    } catch (err) {
+      errMsg = errMsg + '\nmultiPass hash conversion failed!';
+    }
+  }
+}
+
 connect.validateSingleNodeConfig = (config) => {
   if(common.nodes[0].macaroon_path === '' || undefined === common.nodes[0].macaroon_path) {
     errMsg = 'Please set macaroon path through environment or RTL.conf!';
@@ -139,8 +173,10 @@ connect.validateSingleNodeConfig = (config) => {
 
 	if (undefined !== process.env.RTL_PASS) {
 		common.rtl_pass = process.env.RTL_PASS;
+	} else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
+		common.rtl_pass = config.Authentication.rtlPassHashed;
 	} else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
-		common.rtl_pass = config.Authentication.rtlPass;
+    common.rtl_pass = connect.convertCustomToHash('SINGLE');
 	}
 
 	if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
@@ -187,7 +223,14 @@ connect.validateSingleNodeConfig = (config) => {
 
 connect.validateMultiNodeConfig = (config) => {
   common.node_auth_type = 'CUSTOM';
-  common.rtl_pass = config.multiPass;
+  if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
+		common.rtl_pass = config.multiPassHashed;
+	} else if (config.multiPass !== '' && undefined !== config.multiPass) {
+    common.rtl_pass = connect.convertCustomToHash('MULTI');
+	} else {
+    errMsg = errMsg + '\nMulti Node Authentication can be set with multiPass only. Please set MultiPass in RTL-Multi-Node-Conf.json';
+  }
+
   common.port = (undefined !== config.port) ? connect.normalizePort(config.port) : 3000;
 
   config.nodes.forEach((node, idx) => {
@@ -247,8 +290,7 @@ connect.setSSOParams = (config) => {
     } else if (undefined !== config.SSO && undefined !== config.SSO.logoutRedirectLink) {
       common.logout_redirect_link = config.SSO.logoutRedirectLink;
     }
-  
-  
+    
     if (undefined !== process.env.RTL_COOKIE_PATH) {
       common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
     } else if (undefined !== config.SSO && undefined !== config.SSO.rtlCookiePath) {

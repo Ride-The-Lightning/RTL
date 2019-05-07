@@ -20,6 +20,7 @@ import { SigninComponent } from './pages/signin/signin.component';
 import { ForwardingHistoryComponent } from './pages/switch/forwarding-history.component';
 import { RoutingPeersComponent } from './pages/routing-peers/routing-peers.component';
 import { SsoFailedComponent } from './shared/components/sso-failed/sso-failed.component';
+// import { ChannelBackupComponent } from './pages/channels/channel-backup/channel-backup.component';
 
 import { AuthGuard, LNDUnlockedGuard } from './shared/services/auth.guard';
 
@@ -31,6 +32,7 @@ export const routes: Routes = [
   { path: 'chnlclosed', component: ChannelClosedComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'chnlmanage', component: ChannelManageComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'chnlpending', component: ChannelPendingComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  // { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'translist', component: ListTransactionsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },

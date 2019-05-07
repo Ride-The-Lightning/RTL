@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 
 import { Node } from '../../shared/models/RTLconfig';
@@ -45,7 +46,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   }
 
   onSignin() {
-    this.store.dispatch(new RTLActions.Signin(window.btoa(this.password)));
+    this.store.dispatch(new RTLActions.Signin(sha256(this.password)));
   }
 
   resetData() {
