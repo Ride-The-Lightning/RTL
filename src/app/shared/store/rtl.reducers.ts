@@ -3,7 +3,7 @@ import * as RTLActions from './rtl.actions';
 import { ErrorPayload } from '../models/errorPayload';
 import { RTLConfiguration, Node } from '../models/RTLconfig';
 import {
-  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, Invoice, PendingChannels, ClosedChannel, Transaction, SwitchRes
+  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes
 } from '../models/lndModels';
 
 export interface State {
@@ -24,9 +24,10 @@ export interface State {
   numberOfPendingChannels: number;
   totalLocalBalance: number;
   totalRemoteBalance: number;
+  totalInvoices: number;
   transactions: Transaction[];
   payments: Payment[];
-  invoices: Invoice[];
+  invoices: ListInvoices;
   forwardingHistory: SwitchRes;
   addressTypes: AddressType[];
 }
@@ -56,9 +57,10 @@ const initialState: State = {
   numberOfPendingChannels: -1,
   totalLocalBalance: -1,
   totalRemoteBalance: -1,
+  totalInvoices: -1,
   transactions: [],
   payments: [],
-  invoices: [],
+  invoices: {invoices: []},
   forwardingHistory: {},
   addressTypes: [
     { addressId: '0', addressTp: 'p2wkh', addressDetails: 'Pay to witness key hash'},
@@ -147,7 +149,7 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
     case RTLActions.ADD_INVOICE:
       return {
         ...state,
-        invoices: [action.payload, ...state.invoices]
+        invoices: action.payload
       };
     case RTLActions.SET_FEES:
       return {
@@ -239,6 +241,11 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
       return {
         ...state,
         invoices: action.payload
+      };
+    case RTLActions.SET_TOTAL_INVOICES:
+      return {
+        ...state,
+        totalInvoices: action.payload
       };
     case RTLActions.SET_TRANSACTIONS:
       return {

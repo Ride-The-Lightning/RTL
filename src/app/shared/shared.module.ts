@@ -5,7 +5,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import {
     MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
     MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
-    MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule
+    MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
+    MatPaginatorModule
 } from '@angular/material';
 import { QRCodeModule } from 'angularx-qrcode';
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
@@ -48,6 +49,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         MatToolbarModule,
         MatTooltipModule,
         MatBadgeModule,
+        MatPaginatorModule,
         QRCodeModule
     ],
     exports: [
@@ -77,6 +79,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         MatToolbarModule,
         MatTooltipModule,
         MatBadgeModule,
+        MatPaginatorModule,
         AlertMessageComponent,
         ConfirmationMessageComponent,
         SpinnerDialogComponent,

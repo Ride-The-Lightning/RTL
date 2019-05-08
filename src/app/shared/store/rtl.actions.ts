@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 import { RTLConfiguration, Settings, Node } from '../models/RTLconfig';
 import { ErrorPayload } from '../models/errorPayload';
 import {
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, Payment, GraphNode, AddressType,
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes
 } from '../models/lndModels';
 import { MatDialogConfig } from '@angular/material';
@@ -48,6 +48,7 @@ export const CLOSE_CHANNEL = 'CLOSE_CHANNEL';
 export const REMOVE_CHANNEL = 'REMOVE_CHANNEL';
 export const FETCH_INVOICES = 'FETCH_INVOICES';
 export const SET_INVOICES = 'SET_INVOICES';
+export const SET_TOTAL_INVOICES = 'SET_TOTAL_INVOICES';
 export const FETCH_TRANSACTIONS = 'FETCH_TRANSACTIONS';
 export const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
 export const FETCH_PAYMENTS = 'FETCH_PAYMENTS';
@@ -255,11 +256,17 @@ export class RemoveChannel implements Action {
 
 export class FetchInvoices implements Action {
   readonly type = FETCH_INVOICES;
+  constructor(public payload: {num_max_invoices?: number, index_offset?: number, reversed?: boolean}) {}
 }
 
 export class SetInvoices implements Action {
   readonly type = SET_INVOICES;
-  constructor(public payload: Invoice[]) {}
+  constructor(public payload: ListInvoices) {}
+}
+
+export class SetTotalInvoices implements Action {
+  readonly type = SET_TOTAL_INVOICES;
+  constructor(public payload: number) {}
 }
 
 export class FetchTransactions implements Action {
@@ -402,7 +409,7 @@ export type RTLActions =
   FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
   FetchTransactions | SetTransactions |
-  FetchInvoices | SetInvoices |
+  FetchInvoices | SetInvoices | SetTotalInvoices |
   FetchPayments | SetPayments | SendPayment |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode |

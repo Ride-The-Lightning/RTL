@@ -26,7 +26,8 @@ exports.getInvoice = (req, res, next) => {
 
 exports.listInvoices = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/invoices';
+  options.url = common.getSelLNDServerUrl() + '/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset + 
+  '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');

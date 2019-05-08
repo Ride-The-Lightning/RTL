@@ -70,6 +70,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)"></tr>
           </table>
+          <mat-paginator [length]="totalInvoices" [pageSize]="25" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
         </div>
       </mat-card-content>
     </mat-card>

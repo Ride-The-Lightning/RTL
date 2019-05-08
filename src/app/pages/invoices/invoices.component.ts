@@ -34,6 +34,10 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
+  public totalInvoices = 100;
+  public pageSizeOptions = [5, 10, 25, 100];
+  private firstOffset = -1;
+  private lastOffset = -1;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
@@ -69,10 +73,13 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
+      this.totalInvoices = rtlStore.totalInvoices;
+      this.firstOffset = +rtlStore.invoices.first_index_offset;
+      this.lastOffset = +rtlStore.invoices.last_index_offset;
       this.logger.info(rtlStore);
-      this.loadInvoicesTable(rtlStore.invoices);
+      this.loadInvoicesTable(rtlStore.invoices.invoices);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices[0]) ? false : true;
+        this.flgLoading[0] = (undefined !== rtlStore.invoices.invoices[0]) ? false : true;
       }
     });
 
@@ -132,6 +139,20 @@ export class InvoicesComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.invoices.filter = selFilter;
+  }
+
+  onPageChange(event: any) {
+    let reversed = true;
+    let index_offset = this.firstOffset;
+    if (event.pageIndex < event.previousPageIndex) {
+      reversed = false;
+      index_offset = this.lastOffset;
+    }
+    if (event.pageIndex === event.previousPageIndex) {
+      reversed = true;
+      index_offset = 0;
+    }
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
   }
 
   ngOnDestroy() {

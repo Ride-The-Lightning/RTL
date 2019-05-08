@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../services/logger.service';
 import { Settings } from '../models/RTLconfig';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, Invoice, GraphNode, Transaction, SwitchReq } from '../models/lndModels';
+import { GetInfo, Fees, Balance, NetworkInfo, Payment, Invoice, GraphNode, Transaction, SwitchReq, ListInvoices } from '../models/lndModels';
 
 import { SpinnerDialogComponent } from '../components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../components/alert-message/alert-message.component';
@@ -497,21 +497,27 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_INVOICES),
     mergeMap((action: RTLActions.FetchInvoices) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchInvoices'));
-      return this.httpClient.get<Invoice[]>(environment.INVOICES_API);
-    }),
-    map((res: any) => {
-      this.logger.info(res);
-      return {
-        type: RTLActions.SET_INVOICES,
-        payload: (undefined !== res && undefined !== res.invoices && res.invoices.length > 0) ? res.invoices : []
-      };
-    }),
-    catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectError({ action: 'FetchInvoices', code: err.status, message: err.error.error }));
-      return of();
-    }
-  ));
+      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
+      const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
+      const reversed = (action.payload.reversed) ? action.payload.reversed : false;
+      return this.httpClient.get<ListInvoices>(environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
+      .pipe(map((res: ListInvoices) => {
+        this.logger.info(res);
+        if (action.payload.reversed && !action.payload.index_offset) {
+          this.store.dispatch(new RTLActions.SetTotalInvoices(+res.last_index_offset));
+        }
+        return {
+          type: RTLActions.SET_INVOICES,
+          payload: res
+        };
+      }),
+      catchError((err: any) => {
+        this.logger.error(err);
+        this.store.dispatch(new RTLActions.EffectError({ action: 'FetchInvoices', code: err.status, message: err.error.error }));
+        return of();
+      }
+    ));
+  }));
 
   @Effect()
   transactionsFetch = this.actions$.pipe(
