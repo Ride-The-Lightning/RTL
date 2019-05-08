@@ -9,3 +9,7 @@
 table {
   width:100%;
 }
+
+.chkbox-private:focus {
+  outline: none !important;
+}

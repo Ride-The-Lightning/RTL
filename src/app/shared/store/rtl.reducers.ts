@@ -147,9 +147,11 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         peers: modifiedPeers
       };
     case RTLActions.ADD_INVOICE:
+      const newInvoices = state.invoices;
+      newInvoices.invoices.unshift(action.payload);
       return {
         ...state,
-        invoices: action.payload
+        invoices: newInvoices
       };
     case RTLActions.SET_FEES:
       return {

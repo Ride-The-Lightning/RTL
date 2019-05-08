@@ -246,7 +246,7 @@ export class RTLEffects implements OnDestroy {
   saveNewInvoice = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE),
     mergeMap((action: RTLActions.SaveNewInvoice) => {
-      return this.httpClient.post(environment.INVOICES_API, {memo: action.payload.memo, amount: action.payload.invoiceValue})
+      return this.httpClient.post(environment.INVOICES_API, {memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private})
       .pipe(
         map((postRes: any) => {
           postRes.memo = action.payload.memo;
@@ -261,8 +261,8 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.OpenAlert({ width: '70%',
           data: { type: 'SUCCESS', titleMessage: 'Invoice Added Successfully!', message: JSON.stringify(msg) }}));
           return {
-            type: RTLActions.ADD_INVOICE,
-            payload: postRes
+            type: RTLActions.FETCH_INVOICES,
+            payload: {num_max_invoices: action.payload.pageSize, reversed: true}
           };
         }),
         catchError((err: any) => {

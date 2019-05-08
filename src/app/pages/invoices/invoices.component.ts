@@ -34,7 +34,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
+  public private = false;
   public totalInvoices = 100;
+  public pageSize = 25;
   public pageSizeOptions = [5, 10, 25, 100];
   private firstOffset = -1;
   private lastOffset = -1;
@@ -90,16 +92,8 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoice({memo: this.memo, invoiceValue: this.invoiceValue}));
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.ADD_INVOICE)
-    ).subscribe((newInvoiceAction: RTLActions.AddInvoice) => {
-      this.logger.info(newInvoiceAction.payload);
-      this.invoicePaymentReq = newInvoiceAction.payload.payment_request;
-    });
-
+    this.store.dispatch(new RTLActions.SaveNewInvoice({memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, pageSize: this.pageSize}));
+    this.resetData();
   }
 
   onInvoiceClick(selRow: Invoice, event: any) {
@@ -135,6 +129,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   resetData() {
     this.memo = '';
     this.invoiceValue = 0;
+    this.private = false;
   }
 
   applyFilter(selFilter: string) {

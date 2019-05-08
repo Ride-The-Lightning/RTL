@@ -64,7 +64,8 @@ exports.addInvoice = (req, res, next) => {
   options.url = common.getSelLNDServerUrl() + '/invoices';
   options.form = JSON.stringify({ 
     memo: req.body.memo,
-    value: req.body.amount
+    value: req.body.amount,
+    private: req.body.private
   });
   request.post(options).then((body) => {
     logger.info('\r\nInvoice: 64: ' + JSON.stringify(Date.now()) + ': INFO: Add Invoice Responce: ' + JSON.stringify(body));

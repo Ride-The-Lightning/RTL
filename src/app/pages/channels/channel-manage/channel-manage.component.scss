@@ -40,3 +40,7 @@
 table {
   width:100%;
 }
+
+.chkbox-options:focus {
+  outline: none !important;
+}

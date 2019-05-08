@@ -8,17 +8,20 @@
       </mat-card-header>
       <mat-card-content>
         <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="addInvoiceForm.form.valid && onAddInvoice(addInvoiceForm)" #addInvoiceForm="ngForm">
-          <mat-form-field fxFlex="60" fxLayoutAlign="start end">
+          <mat-form-field fxFlex="50" fxLayoutAlign="start end">
             <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
           </mat-form-field>
-          <mat-form-field fxFlex="20" fxLayoutAlign="start end">
+          <mat-form-field fxFlex="15" fxLayoutAlign="start end">
             <input matInput [(ngModel)]="invoiceValue" placeholder="Invoice Value ({{information?.smaller_currency_unit}})" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
           </mat-form-field>
-          <div fxFlex="10" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="3">Add</button>
+          <div fxFlex="15" tabindex="3" fxLayoutAlign="start center" class="chkbox-private">
+            <mat-checkbox [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private</mat-checkbox>
           </div>
           <div fxFlex="10" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="4" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="4">Add</button>
+          </div>
+          <div fxFlex="10" fxLayoutAlign="start start">
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="5" type="reset" (click)="resetData()">Clear</button>
           </div>
         </form>
       </mat-card-content>
@@ -70,7 +73,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)"></tr>
           </table>
-          <mat-paginator [length]="totalInvoices" [pageSize]="25" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+          <mat-paginator [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
         </div>
       </mat-card-content>
     </mat-card>

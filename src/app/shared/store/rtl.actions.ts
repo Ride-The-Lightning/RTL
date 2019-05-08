@@ -178,7 +178,7 @@ export class RemovePeer implements Action {
 
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE;
-  constructor(public payload: {memo: string, invoiceValue: number}) {}
+  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, pageSize: number}) {}
 }
 
 export class AddInvoice implements Action {

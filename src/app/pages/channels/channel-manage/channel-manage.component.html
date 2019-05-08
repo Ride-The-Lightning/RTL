@@ -19,7 +19,7 @@
             <input matInput [(ngModel)]="fundingAmount" placeholder="Amount ({{information?.smaller_currency_unit}})" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel">
             <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
           </mat-form-field>
-          <div fxFlex="15" tabindex="3" fxLayoutAlign="start center">
+          <div fxFlex="15" tabindex="3" fxLayoutAlign="start center" class="chkbox-options">
             <mat-checkbox [(ngModel)]="moreOptions" name="moreOptions" (change)="onMoreOptionsChange($event)">Options</mat-checkbox>
           </div>
           <span *ngIf="moreOptions" fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="80" fxLayoutAlign.gt-sm="space-between center">
