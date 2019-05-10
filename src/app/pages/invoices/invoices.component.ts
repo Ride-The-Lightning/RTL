@@ -45,21 +45,21 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedColumns = ['creation_date', 'memo', 'value', 'settled'];
+        this.displayedColumns = ['settled', 'creation_date', 'memo', 'value'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat'];
+        this.displayedColumns = ['settled', 'creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat'];
+        this.displayedColumns = ['settled', 'creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
+        this.displayedColumns = ['settled', 'creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'settled', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
+        this.displayedColumns = ['settled', 'creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'expiry', 'cltv_expiry'];
         break;
     }
   }
@@ -101,7 +101,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       return invoice.payment_request === selRow.payment_request;
     })[0];
     const reorderedInvoice = JSON.parse(JSON.stringify(selInvoice, [
-      'creation_date_str', 'settle_date_str', 'memo', 'receipt', 'r_preimage', 'r_hash', 'value', 'settled', 'payment_request',
+      'settled', 'creation_date_str', 'settle_date_str', 'memo', 'receipt', 'r_preimage', 'r_hash', 'value', 'payment_request',
       'description_hash', 'expiry', 'fallback_addr', 'cltv_expiry', 'route_hints', 'private', 'add_index', 'settle_index',
       'amt_paid', 'amt_paid_sat', 'amt_paid_msat'
     ] , 2));

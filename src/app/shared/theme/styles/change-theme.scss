@@ -68,5 +68,9 @@
     font-weight: 900;
     font-size: 110%;
   }
-  
+
+  .material-icons.primary { color: mat-color($primary); }
+
+  .material-icons.accent { color: mat-color($accent); }
+
 }

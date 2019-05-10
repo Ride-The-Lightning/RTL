@@ -38,6 +38,13 @@
         <div perfectScrollbar class="table-container mat-elevation-z8">
           <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="invoices" matSort [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+            <ng-container matColumnDef="settled">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Settled </th>
+              <td mat-cell *matCellDef="let invoice">
+                <span *ngIf="invoice.settled"><i class="material-icons primary">done_all</i></span>
+                <span *ngIf="!invoice.settled"><i class="material-icons accent">done</i></span>
+              </td>
+            </ng-container>
             <ng-container matColumnDef="creation_date">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Creation Date </th>
               <td mat-cell *matCellDef="let invoice">{{invoice.creation_date_str}}</td>
@@ -54,10 +61,6 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Value ({{(selNode?.settings?.satsToBTC) ? information?.currency_unit : information?.smaller_currency_unit}}) </th>
               <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{(selNode?.settings?.satsToBTC) ? (invoice?.btc_value | number:'1.0-3') : (invoice?.value | number)}} </span></td>
             </ng-container>
-            <ng-container matColumnDef="settled">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Settled </th>
-              <td mat-cell *matCellDef="let invoice"> {{invoice.settled}} </td>
-            </ng-container>
             <ng-container matColumnDef="expiry">
               <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Expiry (Sec)</th>
               <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice.expiry | number}} </span></td>
@@ -71,7 +74,8 @@
               <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{(selNode?.settings?.satsToBTC) ? (invoice?.btc_amt_paid_sat | number:'1.0-3') : (invoice?.amt_paid_sat | number)}} </span></td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)" class="row-invoices"
+            [ngClass]="{'settled': row.settled, 'unsettled': !row.settled}"></tr>
           </table>
           <mat-paginator [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
         </div>

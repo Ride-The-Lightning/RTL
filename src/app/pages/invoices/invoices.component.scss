@@ -6,10 +6,11 @@
   padding-left: 1rem;
 }
 
-table {
-  width:100%;
-}
-
 .chkbox-private:focus {
   outline: none !important;
+}
+
+table {
+  width:100%;
+  border-collapse: collapse;
 }
