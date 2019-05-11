@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -31,7 +33,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['detach', 'pub_key', 'alias'];
@@ -40,15 +42,15 @@ export class PeersComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
+        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
     }
   }
@@ -131,6 +133,10 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.peerAddress = '';
+  }
+
+  onAddChannel(peerToAddChannel: Peer) {
+    this.router.navigate(['chnlmanage'], { state: { peer: peerToAddChannel.pub_key }});
   }
 
   onPeerDetach(peerToDetach: Peer) {

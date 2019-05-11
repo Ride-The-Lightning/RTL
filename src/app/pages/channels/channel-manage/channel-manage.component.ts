@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
+
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, map, subscribeOn } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
@@ -38,9 +40,11 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public isPrivate = false;
   public moreOptions = false;
   public flgSticky = false;
+  private state$: Observable<object>;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions,
+     private router: Router, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias'];
@@ -90,6 +94,9 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       }
 
       this.logger.info(rtlStore);
+    });
+    this.activatedRoute.paramMap.subscribe(() => {
+      this.selectedPeer = window.history.state.peer;
     });
   }
 
