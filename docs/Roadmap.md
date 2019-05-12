@@ -1,4 +1,4 @@
-[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations)
+[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
 
 # Product Roadmap for RTL Application
 
