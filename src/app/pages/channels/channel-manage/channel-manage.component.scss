@@ -44,3 +44,24 @@ table {
 .chkbox-options:focus {
   outline: none !important;
 }
+
+.flip {
+  position: relative;
+  backface-visibility: hidden;
+  animation: spin 1.5s cubic-bezier(.175, .885, .32, 1.275) 1;
+  transform-style: preserve-3d;
+  transform: rotateX(0deg);
+}
+
+@-moz-keyframes spin {
+  from { -moz-transform: rotateX(0deg); }
+  to { -moz-transform: rotateX(360deg); }
+}
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotateX(0deg); }
+  to { -webkit-transform: rotateX(360deg); }
+}
+@keyframes spin {
+  from { transform:rotateX(0deg); }
+  to { transform:rotateX(360deg); }
+}

@@ -4,7 +4,8 @@ var common = require('../common');
 var connect = require('../connect');
 const jwt = require("jsonwebtoken");
 var upperCase = require('upper-case');
-var atob = require('atob');
+var crypto = require('crypto');
+var hash = crypto.createHash('sha256');
 var logger = require('./logger');
 
 exports.authenticateUserWithCookie = (req, res, next) => {
@@ -89,25 +90,25 @@ exports.authenticateUser = (req, res, next) => {
             });
           } else {
             const jsonLNDConfig = ini.parse(data);
-            if ((undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'])) {
-              if ((undefined !== jsonLNDConfig.Bitcoind && jsonLNDConfig.Bitcoind['bitcoind.rpcpass'] === password) || (undefined !== jsonLNDConfig['bitcoind.rpcpass'] && jsonLNDConfig['bitcoind.rpcpass'] === password)) {
-                var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
-                rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
-                const token = jwt.sign(
-                  { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
-                  common.secret_key
-                );
-                res.status(200).json({ token: token });
-              } else {
-                res.status(401).json({
-                  message: "Authentication Failed!",
-                  error: "Password Validation Failed!"
-                });
-              }
+            var rpcPass = '';
+            if (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) {
+              rpcPass = jsonLNDConfig.Bitcoind['bitcoind.rpcpass'];
+            } else if (undefined !== jsonLNDConfig['bitcoind.rpcpass']) {
+              rpcPass = jsonLNDConfig['bitcoind.rpcpass'];
+            }
+            rpcPass = hash.update(rpcPass).digest('hex');
+            if (rpcPass === password) {
+              var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
+              rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
+              const token = jwt.sign(
+                { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+                common.secret_key
+              );
+              res.status(200).json({ token: token });
             } else {
               res.status(401).json({
                 message: "Authentication Failed!",
-                error: "Password Not Found In LND Config!"
+                error: "Password Validation Failed!"
               });
             }
           }

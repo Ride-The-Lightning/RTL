@@ -40,11 +40,10 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public isPrivate = false;
   public moreOptions = false;
   public flgSticky = false;
-  private state$: Observable<object>;
+  public redirectedWithPeer = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions,
-     private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias'];
@@ -97,6 +96,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     });
     this.activatedRoute.paramMap.subscribe(() => {
       this.selectedPeer = window.history.state.peer;
+      this.redirectedWithPeer = (window.history.state.peer) ? true : false;
     });
   }
 
@@ -242,6 +242,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.selTransType = '0';
     this.transTypeValue = {blocks: '', fees: ''};
+    this.redirectedWithPeer = false;
   }
 
   onMoreOptionsChange(event: any) {
