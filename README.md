@@ -97,7 +97,7 @@ bitcoindConfigPath=
 enableLogging=false
 port=3000
 ```
-For details on all the configuration options refer to [this page](https://github.com/ShahanaFarooqui/RTL/blob/master/Application_configurations).
+For details on all the configuration options refer to [this page](./docs/Application_configurations).
 
 #### User Authentication on RTL
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
