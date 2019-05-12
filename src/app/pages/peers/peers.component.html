@@ -3,18 +3,18 @@
     <mat-card>
       <mat-card-header>
         <mat-card-subtitle>
-          <h2>Add Peer</h2>
+          <h2>Connect Peer</h2>
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="addPeerForm.form.valid && onAddPeer(addPeerForm)" #addPeerForm="ngForm">
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="connectPeerForm.form.valid && onConnectPeer(connectPeerForm)" #connectPeerForm="ngForm">
           <mat-form-field fxFlex="70" fxLayoutAlign="start end">
             <input matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" name="peerAddress" [(ngModel)]="peerAddress" tabindex="1" required #peerAdd="ngModel">
           </mat-form-field>
           <div fxFlex="15" fxLayoutAlign="start start">
             <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="peerAdd.invalid" type="submit" tabindex="2">
-              <p *ngIf="peerAdd.invalid && (peerAdd.dirty || peerAdd.touched); else addText">Invalid Address</p>
-              <ng-template #addText><p>Add</p></ng-template>
+              <p *ngIf="peerAdd.invalid && (peerAdd.dirty || peerAdd.touched); else connectText">Invalid Address</p>
+              <ng-template #connectText><p>Connect</p></ng-template>
             </button>
           </div>
           <div fxFlex="15" fxLayoutAlign="start start">
@@ -24,7 +24,7 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div class="padding-gap">
+  <div class="pconnecting-gap">
     <mat-card>
       <mat-card-content class="table-card-content">
         <div fxLayout="row" fxLayoutAlign="start start">
@@ -39,9 +39,9 @@
               <th mat-header-cell *matHeaderCellDef>Detach</th>
               <td mat-cell *matCellDef="let peer"><mat-icon color="accent" (click)="onPeerDetach(peer)">link_off</mat-icon></td>
             </ng-container>
-            <ng-container matColumnDef="add_channel">
-              <th mat-header-cell *matHeaderCellDef>Add Channel</th>
-              <td mat-cell *matCellDef="let peer"><mat-icon color="accent" (click)="onAddChannel(peer)">playlist_add</mat-icon></td>
+            <ng-container matColumnDef="open_channel">
+              <th mat-header-cell *matHeaderCellDef>Open Channel</th>
+              <td mat-cell *matCellDef="let peer"><mat-icon color="accent" (click)="onOpenChannel(peer)">playlist_add</mat-icon></td>
             </ng-container>
             <ng-container matColumnDef="pub_key">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Pub Key </th>

@@ -42,15 +42,15 @@ export class PeersComponent implements OnInit, OnDestroy {
         this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
+        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'add_channel', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
         break;
     }
   }
@@ -87,7 +87,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     });
   }
 
-  onAddPeer(form: any) {
+  onConnectPeer(form: any) {
     this.flgAnimate = true;
     const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
     const deviderIndex = this.peerAddress.search('@');
@@ -97,7 +97,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     if (new RegExp(pattern).test(this.peerAddress)) {
       pubkey = this.peerAddress.substring(0, deviderIndex);
       host = this.peerAddress.substring(deviderIndex + 1);
-      this.addPeerWithParams(pubkey, host);
+      this.connectPeerWithParams(pubkey, host);
     } else {
       pubkey = (deviderIndex > -1) ? this.peerAddress.substring(0, deviderIndex) : this.peerAddress;
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
@@ -106,12 +106,12 @@ export class PeersComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(graphNode => {
         host = (undefined === graphNode.node.addresses || undefined === graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
-        this.addPeerWithParams(pubkey, host);
+        this.connectPeerWithParams(pubkey, host);
       });
     }
   }
 
-  addPeerWithParams(pubkey: string, host: string) {
+  connectPeerWithParams(pubkey: string, host: string) {
     this.newlyAddedPeer = pubkey;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
     this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
@@ -135,7 +135,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.peerAddress = '';
   }
 
-  onAddChannel(peerToAddChannel: Peer) {
+  onOpenChannel(peerToAddChannel: Peer) {
     this.router.navigate(['chnlmanage'], { state: { peer: peerToAddChannel.pub_key }});
   }
 
