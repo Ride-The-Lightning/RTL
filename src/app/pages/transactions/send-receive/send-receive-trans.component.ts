@@ -7,6 +7,7 @@ import { Node } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
+import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../shared/store/rtl.effects';
 import * as RTLActions from '../../../shared/store/rtl.actions';
@@ -114,7 +115,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
           .subscribe(pwdConfirmRes => {
             if (pwdConfirmRes) {
               const pwd = pwdConfirmRes[0].inputValue;
-              this.store.dispatch(new RTLActions.IsAuthorized(window.btoa(pwd)));
+              this.store.dispatch(new RTLActions.IsAuthorized(sha256(pwd)));
               this.rtlEffects.isAuthorizedRes
               .pipe(take(1))
               .subscribe(authRes => {
