@@ -3,18 +3,56 @@
     <mat-card>
       <mat-card-header>
         <mat-card-subtitle>
-          <h2>Unlock LND Wallet</h2>
+          <h2>Unlock/Initialize Wallet</h2>
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form fxLayout="row" fxFlex="70" fxLayoutAlign="space-between">
-          <mat-form-field fxFlex="65" fxLayoutAlign="start">
-            <input matInput type="password" placeholder="Password" name="walletPassword" [(ngModel)]="walletPassword" tabindex="1" required>
-            <mat-hint>Enter LND Wallet Password</mat-hint>
-          </mat-form-field>
-          <button mat-raised-button fxFlex="15" color="primary" [disabled]="walletPassword == ''" (click)="onOperateWallet('unlock')" tabindex="2">Unlock Wallet</button>
-          <button fxFlex="15" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" type="reset" (click)="resetData()">Clear</button>
-        </form>                              
+        <div fxLayout="column" fxFlex="100" fxLayoutAlign="start">
+          <div fxLayout="row" fxFlex.gt-sm="100"><div fxLayout="column" fxFlex="40" fxFlex.lt-sm="100">
+            <mat-radio-group [(ngModel)]="walletOperation" aria-label="Select an option" fxLayoutAlign="space-between">
+              <mat-radio-button value="unlock" tabindex="1">Unlock</mat-radio-button>
+              <mat-radio-button value="init" tabindex="2">Initialize</mat-radio-button>
+            </mat-radio-group>
+          </div></div>
+          <div *ngIf="walletOperation === 'unlock'; else initBlock">
+            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+              <mat-form-field fxFlex="65" fxLayoutAlign="start">
+                <input matInput type="password" placeholder="Password" name="walletPassword" [(ngModel)]="walletPassword" tabindex="3" required>
+                <mat-hint>Enter Wallet Password</mat-hint>
+              </mat-form-field>
+              <button mat-raised-button fxFlex="15" color="primary" [disabled]="walletPassword == ''" (click)="onOperateWallet()" tabindex="4">Unlock Wallet</button>
+              <button fxFlex="15" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="5" type="reset" (click)="resetData()">Clear</button>
+            </form>                              
+          </div>
+          <ng-template #initBlock>
+            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
+              <mat-form-field fxFlex="49" fxLayoutAlign="start">
+                <input matInput type="password" placeholder="Password" name="initWalletPassword" min="8" [(ngModel)]="initWalletPassword" tabindex="6" required>
+                <mat-hint>Enter Wallet Password</mat-hint>
+              </mat-form-field>
+              <mat-form-field fxFlex="49" fxLayoutAlign="start">
+                <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" min="8" [(ngModel)]="initWalletConfirmPassword" tabindex="7" required>
+                <mat-hint>Confirm Wallet Password</mat-hint>
+              </mat-form-field>
+              <div fxFlex="18" fxFlex.gt-lg="10" tabindex="8" fxLayoutAlign="start center" class="chkbox-wallet">
+                <mat-checkbox [(ngModel)]="existingCypher" name="existingCypher" (change)="onExistingCypherChange($event)">Existing Cypher</mat-checkbox>
+              </div>
+              <mat-form-field fxFlex="80" fxFlex.gt-lg="88" fxLayoutAlign="start">
+                <input matInput type="input" placeholder="Cypher seed" name="cypherSeed" [(ngModel)]="cypherSeed" tabindex="9" required>
+                <mat-hint>Cypher Seed</mat-hint>
+              </mat-form-field>
+              <div fxFlex="18" fxFlex.gt-lg="10" tabindex="10" fxLayoutAlign="start center" class="chkbox-wallet">
+                <mat-checkbox [(ngModel)]="enterPassphrase" name="enterPassphrase" (change)="onEnterPassphraseChange($event)">Enter Passphrase</mat-checkbox>
+              </div>
+              <mat-form-field fxFlex="80" fxFlex.gt-lg="88" fxLayoutAlign="start">
+                <input matInput type="input" placeholder="Passphrase" name="passphrase" [(ngModel)]="passphrase" tabindex="11" required>
+                <mat-hint>Enter Passphrase</mat-hint>
+              </mat-form-field>
+              <button mat-raised-button fxFlex="49" color="primary" [disabled]="initWalletPassword == ''" (click)="onInitWallet()" tabindex="12">Initialize Wallet</button>
+              <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="13" type="reset" (click)="resetData()">Clear</button>
+            </form>                              
+          </ng-template>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

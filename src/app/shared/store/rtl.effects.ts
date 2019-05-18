@@ -127,7 +127,10 @@ export class RTLEffects implements OnDestroy {
             sessionStorage.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
             this.router.navigate(['/unlocklnd']);
-            return of();
+            return {
+              type: RTLActions.SET_INFO,
+              payload: {}
+            };
           } else {
             sessionStorage.setItem('lndUnlocked', 'true');
             return {
