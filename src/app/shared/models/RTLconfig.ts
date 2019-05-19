@@ -13,7 +13,9 @@ export class Settings {
     public menuType: string,
     public theme: string,
     public satsToBTC: boolean,
-    public bitcoindConfigPath?: string
+    public bitcoindConfigPath?: string,
+    public enableLogging?: boolean,
+    public lndServerUrl?: string
   ) { }
 }
 

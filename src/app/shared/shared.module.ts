@@ -6,7 +6,7 @@ import {
     MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
     MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
     MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
-    MatPaginatorModule
+    MatPaginatorModule, MatStepperModule
 } from '@angular/material';
 import { QRCodeModule } from 'angularx-qrcode';
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
@@ -50,6 +50,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         MatTooltipModule,
         MatBadgeModule,
         MatPaginatorModule,
+        MatStepperModule,
         QRCodeModule
     ],
     exports: [
@@ -80,6 +81,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         MatTooltipModule,
         MatBadgeModule,
         MatPaginatorModule,
+        MatStepperModule,
         AlertMessageComponent,
         ConfirmationMessageComponent,
         SpinnerDialogComponent,

@@ -25,32 +25,67 @@
             </form>                              
           </div>
           <ng-template #initBlock>
-            <form fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between" class="mt-2">
-              <mat-form-field fxFlex="49" fxLayoutAlign="start">
-                <input matInput type="password" placeholder="Password" name="initWalletPassword" min="8" [(ngModel)]="initWalletPassword" tabindex="6" required>
-                <mat-hint>Enter Wallet Password</mat-hint>
-              </mat-form-field>
-              <mat-form-field fxFlex="49" fxLayoutAlign="start">
-                <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" min="8" [(ngModel)]="initWalletConfirmPassword" tabindex="7" required>
-                <mat-hint>Confirm Wallet Password</mat-hint>
-              </mat-form-field>
-              <div fxFlex="18" fxFlex.gt-lg="10" tabindex="8" fxLayoutAlign="start center" class="chkbox-wallet">
-                <mat-checkbox [(ngModel)]="existingCypher" name="existingCypher" (change)="onExistingCypherChange($event)">Existing Cypher</mat-checkbox>
-              </div>
-              <mat-form-field fxFlex="80" fxFlex.gt-lg="88" fxLayoutAlign="start">
-                <input matInput type="input" placeholder="Cypher seed" name="cypherSeed" [(ngModel)]="cypherSeed" tabindex="9" required>
-                <mat-hint>Cypher Seed</mat-hint>
-              </mat-form-field>
-              <div fxFlex="18" fxFlex.gt-lg="10" tabindex="10" fxLayoutAlign="start center" class="chkbox-wallet">
-                <mat-checkbox [(ngModel)]="enterPassphrase" name="enterPassphrase" (change)="onEnterPassphraseChange($event)">Enter Passphrase</mat-checkbox>
-              </div>
-              <mat-form-field fxFlex="80" fxFlex.gt-lg="88" fxLayoutAlign="start">
-                <input matInput type="input" placeholder="Passphrase" name="passphrase" [(ngModel)]="passphrase" tabindex="11" required>
-                <mat-hint>Enter Passphrase</mat-hint>
-              </mat-form-field>
-              <button mat-raised-button fxFlex="49" color="primary" [disabled]="initWalletPassword == ''" (click)="onInitWallet()" tabindex="12">Initialize Wallet</button>
-              <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="13" type="reset" (click)="resetData()">Clear</button>
-            </form>                              
+            <div *ngIf="insecureLND && !warnRes">
+              <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+                <div fxFlex="65" fxLayoutAlign="start" class="insecure-message">Warning: Your connection is unsecure, it's not safe to generate private keys over this connection.Are you sure you want to proceed?</div>
+                <button mat-raised-button fxFlex="15" color="primary" (click)="proceed=true;warnRes=true" tabindex="4">Proceed</button>
+                <button fxFlex="15" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="5" type="reset" (click)="proceed=false;warnRes=true">Cancel</button>
+              </form>                              
+            </div>
+            <div *ngIf="warnRes && !proceed" fxFlex="100" fxLayoutAlign="start" class="insecure-message mt-2">Please reconfig & restart RTL after securing your LND connction. You can close this window now.</div>
+            <mat-vertical-stepper *ngIf="warnRes && proceed" [linear]="true" #stepper>
+              <mat-step [stepControl]="passwordFormGroup" label="Wallet Password" state="password">
+                <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+                  <mat-form-field fxFlex="44" fxLayoutAlign="start">
+                    <input matInput type="password" placeholder="Password" name="initWalletPassword" formControlName="initWalletPassword" tabindex="6" required>
+                    <mat-hint>Enter Wallet Password</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field fxFlex="44" fxLayoutAlign="start">
+                    <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" formControlName="initWalletConfirmPassword" tabindex="7" required>
+                    <mat-hint>Confirm Wallet Password</mat-hint>
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" fxFlex="10" [disabled]="!passwordFormGroup.valid" matStepperNext>Next</button>
+                  <div *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.minlength && (passwordFormGroup.controls.initWalletPassword.touched || passwordFormGroup.controls.initWalletPassword.dirty)" class="validation-error-message">
+                    <mat-icon class="validation-error-icon red">cancel</mat-icon>Password must be at least 8 characters in length.
+                  </div>
+                  <div *ngIf="passwordFormGroup.errors?.unmatchedPasswords && (passwordFormGroup.controls.initWalletPassword.touched || passwordFormGroup.controls.initWalletPassword.dirty) && (passwordFormGroup.controls.initWalletConfirmPassword.touched || passwordFormGroup.controls.initWalletConfirmPassword.dirty)" class="validation-error-message">
+                    <mat-icon class="validation-error-icon red">cancel</mat-icon>Passwords do not match.
+                  </div>
+                </form>
+              </mat-step>
+              <mat-step [stepControl]="cipherFormGroup" label="Cipher" state="cipher">
+                <form [formGroup]="cipherFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+                  <mat-checkbox fxFlex="20" fxFlex.gt-lg="10" tabindex="8" fxLayoutAlign="start center" class="chkbox-wallet" formControlName="existingCipher" name="existingCipher">Existing Cipher</mat-checkbox>
+                  <mat-form-field fxFlex="58" fxFlex.gt-lg="58" fxLayoutAlign="start">
+                    <input matInput type="input" placeholder="Cipher seed" name="cipherSeed" formControlName="cipherSeed" tabindex="9" required>
+                    <mat-hint>Cipher Seed</mat-hint>
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" fxFlex="10" [disabled]="!cipherFormGroup.valid" matStepperNext>Next</button>
+                  <button mat-raised-button color="accent" fxFlex="10" matStepperPrevious>Back</button>
+                </form>
+              </mat-step>
+              <mat-step [stepControl]="passphraseFormGroup" label="Passphrase" state="passphrase">
+                <form [formGroup]="passphraseFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+                  <mat-checkbox fxFlex="20" fxFlex.gt-lg="10" tabindex="10" fxLayoutAlign="start center" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase">Enter Passphrase</mat-checkbox>
+                  <mat-form-field fxFlex="43" fxFlex.gt-lg="58" fxLayoutAlign="start">
+                    <input matInput type="input" placeholder="Passphrase" name="passphrase" formControlName="passphrase" tabindex="11" required>
+                    <mat-hint>Enter Passphrase</mat-hint>
+                  </mat-form-field>
+                  <button mat-raised-button fxFlex="15" color="primary" [disabled]="!passphraseFormGroup.valid" (click)="onInitWallet()" tabindex="12">Initialize Wallet</button>
+                  <button mat-raised-button fxFlex="10" color="accent" matStepperPrevious>Back</button>
+                  <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="13" type="reset" (click)="resetData()">Clear</button>
+                </form>
+              </mat-step>
+              <ng-template matStepperIcon="password">
+                <mat-icon>fingerprint</mat-icon>
+              </ng-template>
+              <ng-template matStepperIcon="cipher">
+                <mat-icon>swap_calls</mat-icon>
+              </ng-template>
+              <ng-template matStepperIcon="passphrase">
+                <mat-icon>waves</mat-icon>
+              </ng-template>
+            </mat-vertical-stepper>
           </ng-template>
         </div>
       </mat-card-content>

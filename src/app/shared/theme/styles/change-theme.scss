@@ -73,4 +73,27 @@
 
   .material-icons.accent { color: mat-color($accent); }
 
+  .validation-error-message {
+    position: relative;
+    margin-top: 0.5rem;
+    width:100%;
+    color: mat-color($accent);
+  }
+
+  .validation-error-icon {
+    font-size: 16px;
+    position: relative;
+    top: 2px;
+    left: 4px;
+  }
+
+  .insecure-message {
+    width:100%;
+    color: mat-color($accent);
+    font-size: 120%;
+  }
+
+  .mat-vertical-content {
+    padding: 0 4px 0 12px;
+  }
 }
