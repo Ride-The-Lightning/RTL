@@ -37,7 +37,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   public insecureLND = false;
   public genSeedResponse = [];
   public initWalletResponse = '';
-  walletOperation = 'init';
+  walletOperation = 'unlock';
   walletPassword = '';
   passwordFormGroup: FormGroup;
   cipherFormGroup: FormGroup;
@@ -147,7 +147,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.walletOperation = 'init';
+    this.walletOperation = 'unlock';
     this.walletPassword = '';
     this.genSeedResponse = [];
     this.initWalletResponse = '';

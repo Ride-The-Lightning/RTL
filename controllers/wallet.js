@@ -80,10 +80,14 @@ exports.operateWallet = (req, res, next) => {
       res.status(201).json('Successful');
     }
   }).catch(error => {
-    console.log(error.message);
-    res.status(500).json({
-      message: err_message,
-      error: error.message
-    });
+    logger.info('\r\nWallet: 83: ' + JSON.stringify(Date.now()) + ': INFO: Wallet Response: ' + JSON.stringify(error.error));
+    if((error.error.code === 1 && error.error.error === 'context canceled') || (error.error.code === 14 && error.error.error === 'transport is closing')) {
+      res.status(201).json('Successful');  
+    } else {
+      res.status(500).json({
+        message: err_message,
+        error: error.message
+      });
+    }
   });
 };
