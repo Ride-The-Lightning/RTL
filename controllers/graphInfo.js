@@ -1,11 +1,11 @@
-var request = require('request');
+var request = require('request-promise');
 var options = require("../connect");
 var common = require('../common');
 
 exports.getGraphInfo = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/graph/info';
-  request.get(options, (error, response, body) => {
+  request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     if(undefined === body || search_idx > -1 || body.error) {

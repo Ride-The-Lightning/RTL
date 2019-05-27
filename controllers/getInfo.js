@@ -23,6 +23,7 @@ exports.getInfo = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
+      // res.status(200).json({});
       res.status(200).json(body);
     }
   })

@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material';
 
+import { RTLEffects } from '../../shared/store/rtl.effects';
 import * as RTLActions from '../../shared/store/rtl.actions';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
@@ -13,6 +15,13 @@ export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErr
   const initWalletPassword = control.get('initWalletPassword');
   const initWalletConfirmPassword = control.get('initWalletConfirmPassword');
   return initWalletPassword && initWalletConfirmPassword && initWalletPassword.value !== initWalletConfirmPassword.value ? { 'unmatchedPasswords': true } : null;
+};
+
+export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+  const existingCipher = control.get('existingCipher');
+  const cipherSeed = control.get('cipherSeed');
+  const cipherArr = cipherSeed.value.toString().trim().split(',');
+  return existingCipher.value && cipherArr && cipherArr.length !== 24 ? { 'invalidCipher': true } : null;
 };
 
 @Component({
@@ -26,21 +35,19 @@ export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErr
 export class UnlockLNDComponent implements OnInit, OnDestroy {
   @ViewChild(MatStepper) stepper: MatStepper;
   public insecureLND = false;
+  public genSeedResponse = [];
+  public initWalletResponse = '';
   walletOperation = 'init';
   walletPassword = '';
   passwordFormGroup: FormGroup;
   cipherFormGroup: FormGroup;
   passphraseFormGroup: FormGroup;
-  private unsubs = [new Subject(), new Subject(), new Subject()];
+  private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private formBuilder: FormBuilder) {}
+  constructor(private store: Store<fromRTLReducer.State>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private router: Router) {}
 
   ngOnInit() {
     this.walletPassword = '';
-    // this.passwordFormGroup = this.formBuilder.group({
-    //   initWalletPassword: ['', [Validators.required, Validators.minLength(8)]],
-    //   initWalletConfirmPassword: ['', [Validators.required, Validators.minLength(8)]]
-    // }, {updateOn: 'blur', validators: matchedPasswords});
     this.passwordFormGroup = this.formBuilder.group({
       initWalletPassword: ['', [Validators.required, Validators.minLength(8)]],
       initWalletConfirmPassword: ['', [Validators.required, Validators.minLength(8)]]
@@ -48,7 +55,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
     this.cipherFormGroup = this.formBuilder.group({
       existingCipher: [false],
       cipherSeed: [{value: '', disabled: true}]
-    });
+    }, {validators: cipherSeedLength});
     this.passphraseFormGroup = this.formBuilder.group({
       enterPassphrase: [false],
       passphrase: [{value: '', disabled: true}]
@@ -74,11 +81,29 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.store.select('rtlRoot')
+    this.insecureLND = !window.location.protocol.includes('https://');
+
+    this.rtlEffects.initWalletRes
     .pipe(takeUntil(this.unsubs[2]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
-      if (rtlStore.selNode.settings.lndServerUrl) {
-        this.insecureLND = rtlStore.selNode.settings.lndServerUrl.includes('https://');
+    .subscribe(initWalletResponse => {
+      this.initWalletResponse = initWalletResponse;
+    });
+
+    this.rtlEffects.genSeedResponse
+    .pipe(takeUntil(this.unsubs[3]))
+    .subscribe(genSeedRes => {
+      this.genSeedResponse = genSeedRes;
+      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+        this.store.dispatch(new RTLActions.InitWallet({
+          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+          cipher: this.genSeedResponse,
+          passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+        }));
+      } else {
+        this.store.dispatch(new RTLActions.InitWallet({
+          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+          cipher: this.genSeedResponse
+        }));
       }
     });
 
@@ -86,18 +111,46 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
 
   onOperateWallet() {
     this.store.dispatch(new RTLActions.OpenSpinner('Unlocking...'));
-    this.store.dispatch(new RTLActions.OperateWallet({operation: 'unlock', pwd: this.walletPassword}));
+    this.store.dispatch(new RTLActions.UnlockWallet({pwd: window.btoa(this.walletPassword)}));
   }
 
   onInitWallet() {
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing...'));
-    // this.store.dispatch(new RTLActions.OperateWallet({operation: 'init', pwd: this.initWalletPassword}));
+    if (this.cipherFormGroup.controls.existingCipher.value) {
+      const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
+      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+        this.store.dispatch(new RTLActions.InitWallet({
+          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+          cipher: cipherArr,
+          passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+        }));
+      } else {
+        this.store.dispatch(new RTLActions.InitWallet({
+          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+          cipher: cipherArr
+        }));
+      }
+    } else {
+      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+        this.store.dispatch(new RTLActions.GenSeed(window.btoa(this.passphraseFormGroup.controls.passphrase.value)));
+      } else {
+        this.store.dispatch(new RTLActions.GenSeed(''));
+      }
+    }
+  }
+
+  onGoToHome() {
+    setTimeout(() => {
+      this.store.dispatch(new RTLActions.InitAppData());
+      this.router.navigate(['/']);
+    }, 1000 * 1);
   }
 
   resetData() {
     this.walletOperation = 'init';
     this.walletPassword = '';
-    this.stepper.reset();
+    this.genSeedResponse = [];
+    this.initWalletResponse = '';
   }
 
   ngOnDestroy() {

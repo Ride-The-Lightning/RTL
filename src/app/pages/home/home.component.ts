@@ -132,7 +132,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.flgLoading[6] = false;
       }
 
-      this.totalPeers = rtlStore.peers.length;
+      this.totalPeers = (rtlStore.peers !== null) ? rtlStore.peers.length : 0;
 
       this.logger.info(rtlStore);
     });

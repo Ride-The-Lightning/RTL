@@ -835,11 +835,79 @@ export class RTLEffects implements OnDestroy {
     })
   );
 
+  @Effect()
+  genSeed = this.actions$.pipe(
+    ofType(RTLActions.GEN_SEED),
+    mergeMap((action: RTLActions.GenSeed) => {
+      return this.httpClient.get(environment.WALLET_API + '/genseed/' + action.payload)
+      .pipe(
+        map((postRes: any) => {
+          this.logger.info('Generated GenSeed!');
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.GEN_SEED_RESPONSE,
+            payload: postRes.cipher_seed_mnemonic
+          };
+        }),
+        catchError((err) => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', titleMessage: err.error.message + ' ' + err.error.error.code}}));
+          this.logger.error(err.error.error);
+          return of();
+        })
+      );
+    }
+  ));
+
+  @Effect({ dispatch: false })
+  genSeedResponse = this.actions$.pipe(
+   ofType(RTLActions.GEN_SEED_RESPONSE),
+   map((action: RTLActions.GenSeedResponse) => {
+     return action.payload;
+   })
+  );
+
+  @Effect({ dispatch: false })
+  initWalletRes = this.actions$.pipe(
+   ofType(RTLActions.INIT_WALLET_RESPONSE),
+   map((action: RTLActions.InitWalletResponse) => {
+     return action.payload;
+   })
+  );
+
+  @Effect()
+  initWallet = this.actions$.pipe(
+    ofType(RTLActions.INIT_WALLET),
+    mergeMap((action: RTLActions.InitWallet) => {
+      return this.httpClient.post(environment.WALLET_API + '/initwallet',
+        { wallet_password: action.payload.pwd,
+          cipher_seed_mnemonic: action.payload.cipher ? action.payload.cipher : '',
+          aezeed_passphrase: action.payload.passphrase ? action.payload.passphrase : '' })
+      .pipe(
+        map((postRes) => {
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.INIT_WALLET_RESPONSE,
+            payload: postRes
+          };
+        }),
+        catchError((err) => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', titleMessage: err.error.error}}));
+          this.logger.error(err.error.error);
+          return of();
+        })
+      );
+    }
+  ));
+
   @Effect({ dispatch : false })
-  operateWallet = this.actions$.pipe(
-    ofType(RTLActions.OPERATE_WALLET),
-    mergeMap((action: RTLActions.OperateWallet) => {
-      return this.httpClient.post(environment.WALLET_API + '/' + action.payload.operation, { wallet_password: action.payload.pwd })
+  unlockWallet = this.actions$.pipe(
+    ofType(RTLActions.UNLOCK_WALLET),
+    mergeMap((action: RTLActions.UnlockWallet) => {
+      return this.httpClient.post(environment.WALLET_API + '/unlockwallet', { wallet_password: action.payload.pwd })
       .pipe(
         map((postRes) => {
           this.logger.info(postRes);

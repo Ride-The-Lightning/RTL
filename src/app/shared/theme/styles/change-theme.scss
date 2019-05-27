@@ -87,6 +87,12 @@
     left: 4px;
   }
 
+  .genseed-message {
+    width:10%;
+    color: mat-color($accent);
+    font-size: 120%;
+  }
+
   .insecure-message {
     width:100%;
     color: mat-color($accent);
@@ -96,4 +102,5 @@
   .mat-vertical-content {
     padding: 0 4px 0 12px;
   }
+
 }
