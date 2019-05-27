@@ -639,6 +639,7 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.OpenAlert({ width: '70%',
             data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }}));
           this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all', channelStatus: ''}));
+          this.store.dispatch(new RTLActions.FetchBalance('channels'));
           this.store.dispatch(new RTLActions.FetchPayments());
           return {
             type: RTLActions.SET_DECODED_PAYMENT,
