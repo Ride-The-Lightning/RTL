@@ -61,7 +61,11 @@ export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
 export const GET_NEW_ADDRESS = 'GET_NEW_ADDRESS';
 export const SET_NEW_ADDRESS = 'SET_NEW_ADDRESS';
 export const SET_CHANNEL_TRANSACTION = 'SET_CHANNEL_TRANSACTION';
-export const OPERATE_WALLET = 'OPERATE_WALLET';
+export const GEN_SEED = 'GEN_SEED';
+export const GEN_SEED_RESPONSE = 'GEN_SEED_RESPONSE';
+export const INIT_WALLET = 'INIT_WALLET';
+export const INIT_WALLET_RESPONSE = 'INIT_WALLET_RESPONSE';
+export const UNLOCK_WALLET = 'UNLOCK_WALLET';
 export const FETCH_CONFIG = 'FETCH_CONFIG';
 export const SHOW_CONFIG = 'SHOW_CONFIG';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
@@ -327,9 +331,29 @@ export class SetChannelTransaction implements Action {
   constructor(public payload: ChannelsTransaction) {}
 }
 
-export class OperateWallet implements Action {
-  readonly type = OPERATE_WALLET;
-  constructor(public payload: {operation: string, pwd: string}) {}
+export class GenSeed implements Action {
+  readonly type = GEN_SEED;
+  constructor(public payload: string) {}
+}
+
+export class GenSeedResponse implements Action {
+  readonly type = GEN_SEED_RESPONSE;
+  constructor(public payload: Array<string>) {}
+}
+
+export class InitWallet implements Action {
+  readonly type = INIT_WALLET;
+  constructor(public payload: {pwd: string, cipher?: Array<string>, passphrase?: string}) {}
+}
+
+export class InitWalletResponse implements Action {
+  readonly type = INIT_WALLET_RESPONSE;
+  constructor(public payload: string) {}
+}
+
+export class UnlockWallet implements Action {
+  readonly type = UNLOCK_WALLET;
+  constructor(public payload: {pwd: string}) {}
 }
 
 export class FetchConfig implements Action {
@@ -413,6 +437,6 @@ export type RTLActions =
   FetchPayments | SetPayments | SendPayment |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode |
-  GetNewAddress | SetNewAddress | SetChannelTransaction | OperateWallet |
+  GetNewAddress | SetNewAddress | SetChannelTransaction | GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData;

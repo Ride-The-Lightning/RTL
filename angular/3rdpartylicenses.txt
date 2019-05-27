@@ -125,6 +125,8 @@ THE SOFTWARE.
 
 @angular/material/sort
 
+@angular/material/stepper
+
 @angular/material/table
 
 @angular/material/toolbar
