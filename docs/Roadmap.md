@@ -14,7 +14,7 @@ Automate RTL setup so that installation process is simpler than the current meth
 Current UX for mobile users is less than optimal. We are attempting to provide a responsive UI, so that users can access the same app via browser on any device. This requires more UX optimization for mobile resolution.
 
 ### C-Lightning
-We want to extend the RTL UI framework to other lightning node implementations as well. The current architecture can support it without major re-engineering, as we have an api abstraction layer written in nodejs. Additionally, projects like [Lighter](https://gitlab.com/inbitcoin/lighter), offer a lot of promise to speed up the development process for this.
+We want to extend the RTL UI framework to other lightning node implementations as well. The current architecture can support it without major re-engineering, as we have an api abstraction layer written in nodejs.
 
 ### Multi-Language Support
 We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support.
@@ -30,5 +30,3 @@ Automated Testing – As the functional complexity increases, we need to add aut
 - Lookup Invoice
 ### Network
 - Network explorer
-### Start
-- Create Wallet
