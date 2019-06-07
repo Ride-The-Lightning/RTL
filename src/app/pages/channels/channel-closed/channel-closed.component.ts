@@ -51,9 +51,9 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed', channelStatus: ''}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
     this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
-      this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed', channelStatus: ''}));
+      this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))

@@ -298,7 +298,7 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner());
           this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'SUCCESS', titleMessage: 'Channel Added Successfully!'}}));
           this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
-          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all', channelStatus: ''}));
+          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
           return {
             type: RTLActions.FETCH_CHANNELS,
             payload: {routeParam: 'pending', channelStatus: ''}
@@ -364,11 +364,11 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'SUCCESS', titleMessage: 'Channel Closed Successfully!'}}));
           this.store.dispatch(new RTLActions.FetchBalance('channels'));
           this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
-          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all', channelStatus: ''}));
-          if (action.payload.channelStatus) {
-            this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed', channelStatus: ''}));
+          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
+          if (action.payload.forcibly) {
+            this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
           } else {
-            this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending', channelStatus: ''}));
+            this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
           }
           return {
             type: RTLActions.REMOVE_CHANNEL,
@@ -463,9 +463,7 @@ export class RTLEffects implements OnDestroy {
   channelsFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_CHANNELS),
     mergeMap((action: RTLActions.FetchChannels) => {
-      const options =
-        (undefined === action.payload.channelStatus || action.payload.channelStatus === '') ? {} : { params: new HttpParams().set(action.payload.channelStatus, 'true') };
-      return this.httpClient.get(environment.CHANNELS_API + '/' + action.payload.routeParam, options)
+      return this.httpClient.get(environment.CHANNELS_API + '/' + action.payload.routeParam)
       .pipe(
         map((channels: any) => {
           this.logger.info(channels);
@@ -638,7 +636,7 @@ export class RTLEffects implements OnDestroy {
           Object.assign(msg, confirmationMsg);
           this.store.dispatch(new RTLActions.OpenAlert({ width: '70%',
             data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }}));
-          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all', channelStatus: ''}));
+          this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
           this.store.dispatch(new RTLActions.FetchBalance('channels'));
           this.store.dispatch(new RTLActions.FetchPayments());
           return {

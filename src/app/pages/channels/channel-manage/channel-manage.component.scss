@@ -48,7 +48,7 @@ table {
 .flip {
   position: relative;
   backface-visibility: hidden;
-  animation: spin 1.5s cubic-bezier(.175, .885, .32, 1.275) 1;
+  animation: spin 1.5s cubic-bezier(.175, .885, .32, 1.275) 2;
   transform-style: preserve-3d;
   transform: rotateX(0deg);
 }

@@ -30,7 +30,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public selectedFilter = '';
-  public statusFilters = ['Active', 'Inactive'];
   public myChanPolicy: any = {};
   public selFilter = '';
   public transTypes = [{id: '0', name: 'Default Priority'}, {id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
@@ -187,7 +186,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new RTLActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: true, channelStatus: channelToClose.active}));
+        this.store.dispatch(new RTLActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: !channelToClose.active}));
       }
     });
   }
@@ -221,13 +220,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   loadChannelsTable(channels) {
     channels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
-    });
-    channels.forEach(channel => {
-      if (channel.active === true || channel.active === 'Active') {
-        channel.active = 'Active';
-      } else {
-        channel.active = 'Inactive';
-      }
     });
     this.channels = new MatTableDataSource<Channel>([...channels]);
     this.channels.sort = this.sort;

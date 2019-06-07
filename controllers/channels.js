@@ -29,7 +29,7 @@ exports.getChannels = (req, res, next) => {
   if (undefined === req.params.channelType || req.params.channelType === 'all') {
     options.url = common.getSelLNDServerUrl() + '/channels';
   } else {
-    options.url = common.getSelLNDServerUrl() + '/channels/' + req.params.channelType;
+    options.url = common.getSelLNDServerUrl() + '/channels/' + req.params.channelType; // active_only, inactive_only, public_only, private_only, Not Implemented in Frontend yet
   }
   options.qs = req.query;
   request(options).then(function (body) {

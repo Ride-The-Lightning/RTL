@@ -119,8 +119,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(new RTLActions.FetchBalance('channels'));
     this.store.dispatch(new RTLActions.FetchFees());
     this.store.dispatch(new RTLActions.FetchNetwork());
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all', channelStatus: ''}));
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending', channelStatus: ''}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
   }

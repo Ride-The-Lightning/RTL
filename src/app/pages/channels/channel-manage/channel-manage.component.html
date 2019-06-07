@@ -76,7 +76,7 @@
             </ng-container>
             <ng-container matColumnDef="active">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-              <td mat-cell *matCellDef="let channel"> {{channel.active}} </td>
+              <td mat-cell *matCellDef="let channel"> {{(channel.active) ? 'Active' : 'Inactive'}} </td>
             </ng-container>
             <ng-container matColumnDef="chan_id">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>

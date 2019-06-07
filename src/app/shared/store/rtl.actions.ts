@@ -220,7 +220,7 @@ export class SetNetwork implements Action {
 
 export class FetchChannels implements Action {
   readonly type = FETCH_CHANNELS;
-  constructor(public payload: {routeParam: string, channelStatus: string}) {}
+  constructor(public payload: {routeParam: string}) {}
 }
 
 export class SetChannels implements Action {
@@ -250,7 +250,7 @@ export class SaveNewChannel implements Action {
 
 export class CloseChannel implements Action {
   readonly type = CLOSE_CHANNEL;
-  constructor(public payload: {channelPoint: string, forcibly: boolean, channelStatus: boolean}) {}
+  constructor(public payload: {channelPoint: string, forcibly: boolean}) {}
 }
 
 export class RemoveChannel implements Action {
