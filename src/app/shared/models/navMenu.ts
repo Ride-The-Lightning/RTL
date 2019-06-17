@@ -15,7 +15,7 @@ export const MENU_DATA: MenuNode = {
       {id: 41, parentId: 4, name: 'Management', icon: 'subtitles', link: '/chnlmanage'},
       {id: 42, parentId: 4, name: 'Pending', icon: 'watch', link: '/chnlpending'},
       {id: 43, parentId: 4, name: 'Closed', icon: 'watch_later', link: '/chnlclosed'},
-      // {id: 44, parentId: 4, name: 'Backup', icon: 'backup', link: '/chnlbackup'}
+      {id: 44, parentId: 4, name: 'Backup', icon: 'cloud_circle', link: '/chnlbackup'}
     ]},
     {id: 5, parentId: 0, name: 'Payments', icon: 'payment', link: '/payments'},
     {id: 6, parentId: 0, name: 'Invoices', icon: 'receipt', link: '/invoices'},

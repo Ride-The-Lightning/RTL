@@ -7,22 +7,21 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="addInvoiceForm.form.valid && onAddInvoice(addInvoiceForm)" #addInvoiceForm="ngForm">
-          <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" (ngSubmit)="addInvoiceForm.form.valid && onAddInvoice(addInvoiceForm)" #addInvoiceForm="ngForm">
+          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
             <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
           </mat-form-field>
           <mat-form-field fxFlex="15" fxLayoutAlign="start end">
             <input matInput [(ngModel)]="invoiceValue" placeholder="Invoice Value ({{information?.smaller_currency_unit}})" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
           </mat-form-field>
-          <div fxFlex="15" tabindex="3" fxLayoutAlign="start center" class="chkbox-private">
+          <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="expiry" placeholder="Expiry (Sec)" type="number" step="100" min="1" tabindex="3" name="expiry">
+          </mat-form-field>
+          <div fxFlex="15" tabindex="4" fxLayoutAlign="start center" class="chkbox-private">
             <mat-checkbox [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private</mat-checkbox>
           </div>
-          <div fxFlex="10" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="4">Add</button>
-          </div>
-          <div fxFlex="10" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="5" type="reset" (click)="resetData()">Clear</button>
-          </div>
+          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="5">Add</button>
+          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="6" type="reset" (click)="resetData()">Clear</button>
         </form>
       </mat-card-content>
     </mat-card>
@@ -74,7 +73,7 @@
               <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{(selNode?.settings?.satsToBTC) ? (invoice?.btc_amt_paid_sat | number:'1.0-3') : (invoice?.amt_paid_sat | number)}} </span></td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)" class="row-invoices"
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" (click)="onInvoiceClick(row, $event)" class="row-invoices"
             [ngClass]="{'settled': row.settled, 'unsettled': !row.settled}"></tr>
           </table>
           <mat-paginator [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>

@@ -27,6 +27,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
   public memo = '';
+  public expiry: number;
   public invoiceValue: number;
   public displayedColumns = [];
   public invoicePaymentReq = '';
@@ -81,7 +82,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
       this.loadInvoicesTable(rtlStore.invoices.invoices);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices.invoices[0]) ? false : true;
+        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
       }
     });
 
@@ -92,7 +93,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoice({memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, pageSize: this.pageSize}));
+    this.store.dispatch(new RTLActions.SaveNewInvoice({
+      memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: (this.expiry ? this.expiry : 3600), pageSize: this.pageSize
+    }));
     this.resetData();
   }
 
@@ -122,7 +125,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
         invoice.settle_date_str = (invoice.settle_date_str === '') ? '' : formatDate(invoice.settle_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
       }
     });
-    setTimeout(() => { this.flgAnimate = false; }, 3000);
+    setTimeout(() => { this.flgAnimate = false; }, 30000);
     this.logger.info(this.invoices);
   }
 
@@ -130,6 +133,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.memo = '';
     this.invoiceValue = 0;
     this.private = false;
+    this.expiry = undefined;
   }
 
   applyFilter(selFilter: string) {

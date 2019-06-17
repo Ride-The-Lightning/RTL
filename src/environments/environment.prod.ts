@@ -10,6 +10,7 @@ export const environment = {
   FEES_API: API_URL + '/fees',
   PEERS_API: API_URL + '/peers',
   CHANNELS_API: API_URL + '/channels',
+  CHANNELS_BACKUP_API: API_URL + '/channels/backup',
   GETINFO_API: API_URL + '/getinfo',
   WALLET_API: API_URL + '/wallet',
   NETWORK_API: API_URL + '/network',

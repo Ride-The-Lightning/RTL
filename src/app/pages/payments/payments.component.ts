@@ -69,8 +69,8 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.selNode;
       this.information = rtlStore.information;
-      this.paymentJSONArr = (rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (undefined === rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
+      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.data.forEach(payment => {
@@ -78,7 +78,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       });
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.paymentJSONArr[0]) ? false : true;
+        this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });

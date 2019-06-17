@@ -90,7 +90,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.allChannels) ? false : true;
       }
-
       this.logger.info(rtlStore);
     });
     this.activatedRoute.paramMap.subscribe(() => {

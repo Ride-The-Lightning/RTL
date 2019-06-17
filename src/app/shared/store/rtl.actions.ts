@@ -46,6 +46,10 @@ export const SET_CLOSED_CHANNELS = 'SET_CLOSED_CHANNELS';
 export const SAVE_NEW_CHANNEL = 'SAVE_NEW_CHANNEL';
 export const CLOSE_CHANNEL = 'CLOSE_CHANNEL';
 export const REMOVE_CHANNEL = 'REMOVE_CHANNEL';
+export const BACKUP_CHANNELS = 'BACKUP_CHANNELS';
+export const VERIFY_CHANNELS = 'VERIFY_CHANNELS';
+export const BACKUP_CHANNELS_RES = 'BACKUP_CHANNELS_RES';
+export const VERIFY_CHANNELS_RES = 'VERIFY_CHANNELS_RES';
 export const FETCH_INVOICES = 'FETCH_INVOICES';
 export const SET_INVOICES = 'SET_INVOICES';
 export const SET_TOTAL_INVOICES = 'SET_TOTAL_INVOICES';
@@ -182,7 +186,7 @@ export class RemovePeer implements Action {
 
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE;
-  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, pageSize: number}) {}
+  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number}) {}
 }
 
 export class AddInvoice implements Action {
@@ -256,6 +260,26 @@ export class CloseChannel implements Action {
 export class RemoveChannel implements Action {
   readonly type = REMOVE_CHANNEL;
   constructor(public payload: {channelPoint: string}) {}
+}
+
+export class BackupChannels implements Action {
+  readonly type = BACKUP_CHANNELS;
+  constructor(public payload: {channelPoint: string, showMessage: string}) {}
+}
+
+export class VerifyChannels implements Action {
+  readonly type = VERIFY_CHANNELS;
+  constructor(public payload: {channelPoint: string}) {}
+}
+
+export class BackupChannelsRes implements Action {
+  readonly type = BACKUP_CHANNELS_RES;
+  constructor(public payload: string) {}
+}
+
+export class VerifyChannelsRes implements Action {
+  readonly type = VERIFY_CHANNELS_RES;
+  constructor(public payload: string) {}
 }
 
 export class FetchInvoices implements Action {
@@ -432,6 +456,7 @@ export type RTLActions =
   FetchNetwork | SetNetwork |
   FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
+  BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
   FetchTransactions | SetTransactions |
   FetchInvoices | SetInvoices | SetTotalInvoices |
   FetchPayments | SetPayments | SendPayment |

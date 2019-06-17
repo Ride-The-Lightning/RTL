@@ -9,6 +9,7 @@ const app = express();
 const authenticateRoutes = require("./routes/authenticate");
 const infoRoutes = require("./routes/getInfo");
 const channelsRoutes = require("./routes/channels");
+const channelsBackupRoutes = require("./routes/channelsBackup");
 const peersRoutes = require("./routes/peers");
 const feesRoutes = require("./routes/fees");
 const balanceRoutes = require("./routes/balance");
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 app.use(apiRoot + "authenticate", authenticateRoutes);
 app.use(apiRoot + "getinfo", infoRoutes);
 app.use(apiRoot + "channels", channelsRoutes);
+app.use(apiRoot + "channels/backup", channelsBackupRoutes);
 app.use(apiRoot + "peers", peersRoutes);
 app.use(apiRoot + "fees", feesRoutes);
 app.use(apiRoot + "balance", balanceRoutes);

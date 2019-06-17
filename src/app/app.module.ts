@@ -53,7 +53,7 @@ import { ForwardingHistoryComponent } from './pages/switch/forwarding-history.co
 import { RoutingPeersComponent } from './pages/routing-peers/routing-peers.component';
 import { ChannelLookupComponent } from './pages/lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.component';
-// import { ChannelBackupComponent } from './pages/channels/channel-backup/channel-backup.component';
+import { ChannelBackupComponent } from './pages/channels/channel-backup/channel-backup.component';
 
 @NgModule({
   imports: [
@@ -94,7 +94,7 @@ import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.com
     RoutingPeersComponent,
     ChannelLookupComponent,
     NodeLookupComponent,
-    // ChannelBackupComponent
+    ChannelBackupComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

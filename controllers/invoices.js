@@ -66,7 +66,7 @@ exports.addInvoice = (req, res, next) => {
     memo: req.body.memo,
     value: req.body.amount,
     private: req.body.private,
-    expiry: req.body.expiry ? req.body.expiry : 3600
+    expiry: req.body.expiry
   });
   request.post(options).then((body) => {
     logger.info('\r\nInvoice: 64: ' + JSON.stringify(Date.now()) + ': INFO: Add Invoice Responce: ' + JSON.stringify(body));

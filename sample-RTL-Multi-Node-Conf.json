@@ -22,6 +22,7 @@
         "menuType": "Regular",
         "theme": "dark-blue",
         "satsToBTC": "false",
+        "channelBackupPath": "C:\\RTL\\backup\\node-1",
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "enableLogging": "true",
         "lndServerUrl": "<Service url for LND REST APIs for node # 1 e.g. https://192.168.0.1:8080/v1"
@@ -41,6 +42,7 @@
         "menuType": "Regular",
         "theme": "light-teal",
         "satsToBTC": "false",
+        "channelBackupPath": "C:\\RTL\\backup\\node-2",
         "bitcoindConfigPath": "",
         "enableLogging": "true",
         "lndServerUrl": "<Service url for LND REST APIs for node # 2 e.g. https://192.168.0.6:8080/v1"

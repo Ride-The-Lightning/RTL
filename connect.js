@@ -11,6 +11,7 @@ var upperCase = require('upper-case');
 var logger = require('./controllers/logger');
 var connect = {};
 var errMsg = '';
+var request = require('request');
 
 connect.setDefaultConfig = () => {
   var homeDir = os.userInfo().homedir;
@@ -48,6 +49,7 @@ connect.setDefaultConfig = () => {
       menuType: 'Regular',
       theme: 'dark-blue',
       satsToBTC: false,
+      channelBackupPath: homeDir + '/backup/node-0',
       lndServerUrl: 'https://localhost:8080/v1',
       enableLogging: false,
       port: 3000
@@ -171,7 +173,31 @@ connect.validateSingleNodeConfig = (config) => {
     }
   }
 
-	if (undefined !== process.env.RTL_PASS) {
+  if(undefined !== process.env.CHANNEL_BACKUP_PATH) {
+    common.nodes[0].channel_backup_path = process.env.CHANNEL_BACKUP_PATH;
+  } else {
+    if(config.Settings.channelBackupPath !== '' &&  undefined !== config.Settings.channelBackupPath) {
+      common.nodes[0].channel_backup_path = config.Settings.channelBackupPath;
+    } else {
+      common.nodes[0].channel_backup_path = common.rtl_conf_file_path + '\\backup';
+    }
+    try {
+      connect.createDirectory(common.nodes[0].channel_backup_path);
+      let exists = fs.existsSync(common.nodes[0].channel_backup_path + '/all-channels.bak');
+      if (!exists) {
+        try {
+          var createStream = fs.createWriteStream(common.nodes[0].channel_backup_path + '/all-channels.bak');
+          createStream.end();
+        } catch (err) {
+          console.error('Something went wrong while creating backup file: \n' + err);
+        }
+      }    
+    } catch (err) {
+      console.error('Something went wrong while creating backup file: \n' + err);
+    }
+  }
+
+  if (undefined !== process.env.RTL_PASS) {
 		common.rtl_pass = process.env.RTL_PASS;
 	} else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
 		common.rtl_pass = config.Authentication.rtlPassHashed;
@@ -253,6 +279,21 @@ connect.validateMultiNodeConfig = (config) => {
     common.nodes[idx].lnd_config_path = (undefined !== node.Authentication.lndConfigPath) ? node.Authentication.lndConfigPath : '';
     common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
     common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
+    common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + '\\backup\\node-' + node.index;
+    try {
+      connect.createDirectory(common.nodes[idx].channel_backup_path);
+      let exists = fs.existsSync(common.nodes[idx].channel_backup_path + '/all-channels.bak');
+      if (!exists) {
+        try {
+          var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + '/all-channels.bak');
+          createStream.end();
+        } catch (err) {
+          console.error('Something went wrong while creating backup file: \n' + err);
+        }
+      }    
+    } catch (err) {
+      console.error('Something went wrong while creating backup file: \n' + err);
+    }
 
     if (common.nodes[idx].enable_logging) {
       common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
@@ -304,7 +345,15 @@ connect.setSSOParams = (config) => {
 
 connect.createDirectory = (dirname) => {
   try {
-    fs.mkdirSync(dirname);
+    const sep = path.sep;
+    const initDir = path.isAbsolute(dirname) ? sep : '';
+    dirname.split(sep).reduce((parentDir, childDir) => {
+      const curDir = path.resolve(parentDir, childDir);
+      if (!fs.existsSync(curDir)) {
+        fs.mkdirSync(curDir);
+      }
+      return curDir;
+    }, initDir);
   } catch (err) {
     if (err.code === 'EEXIST') {
       return dirname;
@@ -361,6 +410,7 @@ connect.logEnvVariables = () => {
       logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + node.rtl_conf_file_path, node);
       logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + node.lnd_config_path, node);
       logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + node.bitcoind_config_path, node);
+      logger.info('\r\nConfig Setup Variable CHANNEL_BACKUP_PATH: ' + node.channel_backup_path, node);
     });  
   } else {
     if (!common.nodes[0].enable_logging) { return; }
@@ -372,6 +422,7 @@ connect.logEnvVariables = () => {
     logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + common.nodes[0].lnd_config_path);
     logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + common.rtl_conf_file_path);
     logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + common.nodes[0].bitcoind_config_path);
+    logger.info('\r\nConfig Setup Variable CHANNEL_BACKUP_PATH: ' + common.nodes[0].channel_backup_path);
     logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso);
     logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path);
     logger.info('\r\nConfig Setup Variable LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link);
@@ -427,6 +478,38 @@ connect.setServerConfiguration = () => {
     connect.setMultiNodeConfiguration(multiNodeConfFile);
     common.selectedNode = common.findNode(common.nodes[0].index);
   }
+  common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
 }
+
+connect.getAllNodeAllChannelBackup = (node) => {
+  let channel_backup_file = node.channel_backup_path + '/all-channels.bak';
+  let options = { 
+    url: node.lnd_server_url + '/channels/backup',
+    rejectUnauthorized: false,
+    json: true,
+    headers: {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')}
+  };
+  request(options, function (err, res, body) {
+    if (err) {
+      logger.error('\r\nConnect: 496: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Response Failed: ' + JSON.stringify(err));
+    } else {
+      fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
+        if (err) {
+          if (node.ln_node) {
+            logger.error('\r\nConnect: 501: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err));
+          } else {
+            logger.error('\r\nConnect: 503: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed: ' + JSON.stringify(err));
+          }
+        } else {
+          if (node.ln_node) {
+            logger.info('\r\nConnect: 507: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful for Node: ' + node.ln_node);
+          } else {
+            logger.info('\r\nConnect: 509: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful');
+          }
+        }
+      });
+    }
+  })
+};
 
 module.exports = connect;

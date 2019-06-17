@@ -93,18 +93,18 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unsubs[3]))
     .subscribe(genSeedRes => {
       this.genSeedResponse = genSeedRes;
-      if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new RTLActions.InitWallet({
-          pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
-          cipher: this.genSeedResponse,
-          passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
-        }));
-      } else {
+      // if (this.passphraseFormGroup.controls.enterPassphrase.value) {
+      //   this.store.dispatch(new RTLActions.InitWallet({
+      //     pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
+      //     cipher: this.genSeedResponse,
+      //     passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
+      //   }));
+      // } else {
         this.store.dispatch(new RTLActions.InitWallet({
           pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
           cipher: this.genSeedResponse
         }));
-      }
+      // }
     });
 
   }
