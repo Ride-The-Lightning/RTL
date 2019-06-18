@@ -10,7 +10,7 @@ exports.getBackup = (req, res, next) => {
   let message = '';
   if (req.params.channelPoint === 'ALL') {
     message = 'All Channels Backup Successful!';
-    channel_backup_file = common.selectedNode.channel_backup_path + '/all-channels.bak';
+    channel_backup_file = common.selectedNode.channel_backup_path + '/channel-all.bak';
     options.url = common.getSelLNDServerUrl() + '/channels/backup';
   } else {
     message = 'Channel ' + req.params.channelPoint + ' Backup Successful!';
@@ -57,7 +57,7 @@ exports.postBackupVerify = (req, res, next) => {
   let verify_backup = '';
   if (req.params.channelPoint === 'ALL') {
     message = 'All Channels Verify Successful!';
-    channel_verify_file = common.selectedNode.channel_backup_path + '/all-channels.bak';
+    channel_verify_file = common.selectedNode.channel_backup_path + '/channel-all.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
       verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');

@@ -179,14 +179,14 @@ connect.validateSingleNodeConfig = (config) => {
     if(config.Settings.channelBackupPath !== '' &&  undefined !== config.Settings.channelBackupPath) {
       common.nodes[0].channel_backup_path = config.Settings.channelBackupPath;
     } else {
-      common.nodes[0].channel_backup_path = common.rtl_conf_file_path + '\\backup';
+      common.nodes[0].channel_backup_path = common.rtl_conf_file_path + '/backup';
     }
     try {
       connect.createDirectory(common.nodes[0].channel_backup_path);
-      let exists = fs.existsSync(common.nodes[0].channel_backup_path + '/all-channels.bak');
+      let exists = fs.existsSync(common.nodes[0].channel_backup_path + '/channel-all.bak');
       if (!exists) {
         try {
-          var createStream = fs.createWriteStream(common.nodes[0].channel_backup_path + '/all-channels.bak');
+          var createStream = fs.createWriteStream(common.nodes[0].channel_backup_path + '/channel-all.bak');
           createStream.end();
         } catch (err) {
           console.error('Something went wrong while creating backup file: \n' + err);
@@ -279,13 +279,13 @@ connect.validateMultiNodeConfig = (config) => {
     common.nodes[idx].lnd_config_path = (undefined !== node.Authentication.lndConfigPath) ? node.Authentication.lndConfigPath : '';
     common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
     common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
-    common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + '\\backup\\node-' + node.index;
+    common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + '/backup/node-' + node.index;
     try {
       connect.createDirectory(common.nodes[idx].channel_backup_path);
-      let exists = fs.existsSync(common.nodes[idx].channel_backup_path + '/all-channels.bak');
+      let exists = fs.existsSync(common.nodes[idx].channel_backup_path + '/channel-all.bak');
       if (!exists) {
         try {
-          var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + '/all-channels.bak');
+          var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + '/channel-all.bak');
           createStream.end();
         } catch (err) {
           console.error('Something went wrong while creating backup file: \n' + err);
@@ -482,7 +482,7 @@ connect.setServerConfiguration = () => {
 }
 
 connect.getAllNodeAllChannelBackup = (node) => {
-  let channel_backup_file = node.channel_backup_path + '/all-channels.bak';
+  let channel_backup_file = node.channel_backup_path + '/channel-all.bak';
   let options = { 
     url: node.lnd_server_url + '/channels/backup',
     rejectUnauthorized: false,
