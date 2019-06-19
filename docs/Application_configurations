@@ -33,7 +33,9 @@ enableLogging=<>
 port=3000
 ;<LND server URL for REST APIs.
 ;Default is 'https://localhost:8080/v1'
-lndServerUrl=https://localhost:8080/v1 
+lndServerUrl=https://localhost:8080/v1
+;Channel backup folder
+channelBackupPath=<>
 
 [SSO]
 ;Single Sign On control
@@ -63,3 +65,4 @@ BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file nam
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
+CHANNEL_BACKUP_PATH (folder location for saving the channel backup files)
