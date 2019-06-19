@@ -397,6 +397,7 @@ connect.logEnvVariables = () => {
   if (common.multi_node_setup) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
+      logger.info('\r\nConfig Setup Variable DEFAULT_NODE_INDEX: ' + common.selectedNode.index);
       logger.info('\r\nConfig Setup Variable NODE_SETUP: MULTI', node);
       logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso, node);
       logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path, node);
@@ -466,6 +467,7 @@ connect.setSingleNodeConfiguration = (singleNodeFilePath) => {
     var config = ini.parse(fs.readFileSync(singleNodeFilePath, 'utf-8'));
     connect.setMacaroonPath(clArgs, config);
     connect.validateSingleNodeConfig(config);
+    connect.setSelectedNode(config);
     connect.logEnvVariables();
   } else {
     try {
@@ -473,6 +475,7 @@ connect.setSingleNodeConfiguration = (singleNodeFilePath) => {
       var config = ini.parse(fs.readFileSync(singleNodeFilePath, 'utf-8'));
       connect.setMacaroonPath(clArgs, config);
       connect.validateSingleNodeConfig(config);
+      connect.setSelectedNode(config);
       connect.logEnvVariables();      
     }
     catch(err) {
@@ -486,12 +489,25 @@ connect.setMultiNodeConfiguration = (multiNodeFilePath) => {
   try {
     var config = JSON.parse(fs.readFileSync(multiNodeFilePath, 'utf-8'));
     connect.validateMultiNodeConfig(config);
+    connect.setSelectedNode(config);
     connect.logEnvVariables();
   }
   catch(err) {
     console.error('Something went wrong while configuring the multi node server: \n' + err);
     throw new Error(err);
   }
+}
+
+connect.setSelectedNode = (config) => {
+  if(undefined !== process.env.DEFAULT_NODE_INDEX) {
+    common.selectedNode = common.findNode(process.env.DEFAULT_NODE_INDEX);
+  } else {
+    if(undefined !== config.defaultNodeIndex) {
+      common.selectedNode = common.findNode(config.defaultNodeIndex);
+    } else {
+      common.selectedNode = common.findNode(common.nodes[0].index);
+    }
+  }    
 }
 
 connect.setServerConfiguration = () => {
@@ -503,11 +519,9 @@ connect.setServerConfiguration = () => {
   if ((!multiNodeExists && singleNodeExists) || (!multiNodeExists && !singleNodeExists)) {
     common.multi_node_setup = false;
     connect.setSingleNodeConfiguration(singleNodeConfFile);
-    common.selectedNode = common.findNode(common.nodes[0].index);
   } else if ((multiNodeExists && singleNodeExists) || (multiNodeExists && !singleNodeExists)) {
     common.multi_node_setup = true;
     connect.setMultiNodeConfiguration(multiNodeConfFile);
-    common.selectedNode = common.findNode(common.nodes[1].index);
   }
   common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
 }
