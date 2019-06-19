@@ -222,6 +222,15 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     });
     this.channels = new MatTableDataSource<Channel>([...channels]);
     this.channels.sort = this.sort;
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
+      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
+      (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
+      (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
+      (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
+      (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
+      (channel.private ? 'private' : 'public');
+      return newChannel.includes(fltr);
+    };
     this.logger.info(this.channels);
   }
 

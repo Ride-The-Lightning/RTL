@@ -429,6 +429,37 @@ connect.logEnvVariables = () => {
   }
 }
 
+connect.getAllNodeAllChannelBackup = (node) => {
+  let channel_backup_file = node.channel_backup_path + '/channel-all.bak';
+  let options = { 
+    url: node.lnd_server_url + '/channels/backup',
+    rejectUnauthorized: false,
+    json: true,
+    headers: {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')}
+  };
+  request(options, function (err, res, body) {
+    if (err) {
+      logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Response Failed: ' + JSON.stringify(err));
+    } else {
+      fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
+        if (err) {
+          if (node.ln_node) {
+            logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err));
+          } else {
+            logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed: ' + JSON.stringify(err));
+          }
+        } else {
+          if (node.ln_node) {
+            logger.info('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful for Node: ' + node.ln_node);
+          } else {
+            logger.info('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful');
+          }
+        }
+      });
+    }
+  })
+};
+
 connect.setSingleNodeConfiguration = (singleNodeFilePath) => {
   const exists = fs.existsSync(singleNodeFilePath);
   if (exists) {
@@ -476,40 +507,9 @@ connect.setServerConfiguration = () => {
   } else if ((multiNodeExists && singleNodeExists) || (multiNodeExists && !singleNodeExists)) {
     common.multi_node_setup = true;
     connect.setMultiNodeConfiguration(multiNodeConfFile);
-    common.selectedNode = common.findNode(common.nodes[0].index);
+    common.selectedNode = common.findNode(common.nodes[1].index);
   }
   common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
 }
-
-connect.getAllNodeAllChannelBackup = (node) => {
-  let channel_backup_file = node.channel_backup_path + '/channel-all.bak';
-  let options = { 
-    url: node.lnd_server_url + '/channels/backup',
-    rejectUnauthorized: false,
-    json: true,
-    headers: {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')}
-  };
-  request(options, function (err, res, body) {
-    if (err) {
-      logger.error('\r\nConnect: 496: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Response Failed: ' + JSON.stringify(err));
-    } else {
-      fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
-        if (err) {
-          if (node.ln_node) {
-            logger.error('\r\nConnect: 501: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err));
-          } else {
-            logger.error('\r\nConnect: 503: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed: ' + JSON.stringify(err));
-          }
-        } else {
-          if (node.ln_node) {
-            logger.info('\r\nConnect: 507: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful for Node: ' + node.ln_node);
-          } else {
-            logger.info('\r\nConnect: 509: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful');
-          }
-        }
-      });
-    }
-  })
-};
 
 module.exports = connect;

@@ -117,7 +117,7 @@
             </ng-container>
             <ng-container matColumnDef="private">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Private </th>
-              <td mat-cell *matCellDef="let channel"> {{channel.private}} </td>
+              <td mat-cell *matCellDef="let channel"> {{(channel.private ? 'Private' : 'Public')}} </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onChannelClick(row, $event)"></tr>

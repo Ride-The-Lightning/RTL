@@ -38,7 +38,6 @@ exports.getChannels = (req, res, next) => {
       channels = (undefined === body.channels) ? [] : body.channels;
       Promise.all(
         channels.map(channel => {
-          channel.private = (channel.private) ? 'True' : 'False';
           return getAliasForChannel(channel, req.params.channelType);
         })
       )
