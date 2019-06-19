@@ -6,6 +6,8 @@ Default location: If no folder location is specified in the RTL conf files (sing
 
 User defined: User can specify the folder where channel backups should be created, by setting a config variable `channelBackupPath` in the `RTL.conf` or `RTL-Multi-Node-Conf.json` files. Please ensure that RTL has the permission to write in the specified folder location in the conf files.
 
+Environment variable: Channel backup folder location can also be controlled via an environment variable `CHANNEL_BACKUP_PATH`
+
 #### Backup execution
 Channel backups will be taken at the following instances:
 
