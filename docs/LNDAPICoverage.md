@@ -49,9 +49,9 @@
 - [x] FeeReport
 - [x] UpdateChannelPolicy
 - [x] ForwardingHistory
-- [ ] ExportChannelBackup
-- [ ] ExportAllChannelBackups
-- [ ] VerifyChanBackup
+- [x] ExportChannelBackup
+- [x] ExportAllChannelBackups
+- [x] VerifyChanBackup
 - [ ] RestoreChannelBackups
 - [ ] SubscribeChannelBackups
 - [ ] Messages
