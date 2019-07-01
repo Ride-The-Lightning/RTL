@@ -25,7 +25,7 @@ menuType=Regular
 theme=dark-blue
 ;Set by RTL
 satsToBTC=false
-;Full path of the bitcoind.conf file including the file name
+;Full path of the bitcoin.conf file including the file name
 bitcoindConfigPath=<>
 ;parameter to turn RTL logging off/on. Allowed values - true, false
 enableLogging=<>
