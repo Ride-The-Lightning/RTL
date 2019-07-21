@@ -523,7 +523,6 @@ connect.setServerConfiguration = () => {
     common.multi_node_setup = true;
     connect.setMultiNodeConfiguration(multiNodeConfFile);
   }
-  common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
 }
 
 module.exports = connect;

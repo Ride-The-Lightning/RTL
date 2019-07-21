@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.4.2-beta",
+  "version": "0.4.3-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -33,7 +33,6 @@
     "@swimlane/ngx-charts": "^10.0.0",
     "angular-user-idle": "^2.0.0",
     "angularx-qrcode": "^1.5.3",
-    "atob": "^2.1.2",
     "cookie-parser": "^1.4.4",
     "core-js": "^2.5.4",
     "express": "^4.16.4",

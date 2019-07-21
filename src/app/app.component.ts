@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { UserIdleService } from 'angular-user-idle';
+import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
 import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
@@ -69,7 +70,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (actionPayload.type === RTLActions.SET_RTL_CONFIG) {
         if (!sessionStorage.getItem('token')) {
           if (+actionPayload.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Signin(window.btoa(this.accessKey)));
+            this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
           } else {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
@@ -111,7 +112,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readAccessKey() {
     const url = window.location.href;
-    return url.substring(url.lastIndexOf('/') + 1);
+    const ak = url.substring(url.lastIndexOf('access-key=') + 11).trim();
+    if (ak) {
+      this.store.dispatch(new RTLActions.Signout());
+    }
+    return ak;
   }
 
   initializeRemainingData() {

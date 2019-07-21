@@ -8,32 +8,9 @@ var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var logger = require('./logger');
 
-exports.authenticateUserWithCookie = (req, res, next) => {
-  if(+common.rtl_sso) {
-    res.cookie('access-key', req.query['access-key'], { httpOnly: true, sameSite: true, secure: true });
-    res.set(
-      {
-        'Cache-Control': 'private, no-cache'
-      }
-    );
-    res.redirect(301, '/rtl/');
-  }
-  else
-  {
-    res.status(404).json({
-      message: "Login Failure!",
-      error: "SSO not available"
-    });
-  }
-};
-
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
-    const access_key = req.cookies['access-key'];
-    res.clearCookie("access-key");
-    // Replace access_key value from req.cookies['access-key'] to req.body.password to test SSO on http
-    // const access_key = atob(req.body.password);
-    if (common.cookie === access_key) {
+    if (crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.password) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'Custom_User', lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
