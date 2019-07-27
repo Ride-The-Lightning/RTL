@@ -21,8 +21,8 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   animations: [newlyAddedRowAnimation]
 })
 export class PaymentsComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('sendPaymentForm') form;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild('sendPaymentForm', { static: true }) form;
   public selNode: Node;
   public newlyAddedPayment = '';
   public flgAnimate = true;

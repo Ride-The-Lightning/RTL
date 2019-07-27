@@ -7,7 +7,7 @@ exports.getInvoice = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
-    logger.info('\r\nInvoice: 8: ' + JSON.stringify(Date.now()) + ': INFO: Invoice Info Received: ' + JSON.stringify(body));
+    logger.info({fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info Failed!",
@@ -31,7 +31,7 @@ exports.listInvoices = (req, res, next) => {
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    logger.info('\r\nInvoice: 30: ' + JSON.stringify(Date.now()) + ': INFO: Invoices List Received: ' + body_str);
+    logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body_str});
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
@@ -47,7 +47,7 @@ exports.listInvoices = (req, res, next) => {
         });
         body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
       }
-      logger.info('\r\nInvoice: 45: ' + JSON.stringify(Date.now()) + ': INFO: Invoices List Received: ' + JSON.stringify(body));
+      logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
       res.status(200).json(body);
     }
   })
@@ -69,7 +69,7 @@ exports.addInvoice = (req, res, next) => {
     expiry: req.body.expiry
   });
   request.post(options).then((body) => {
-    logger.info('\r\nInvoice: 64: ' + JSON.stringify(Date.now()) + ': INFO: Add Invoice Responce: ' + JSON.stringify(body));
+    logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Add Invoice Failed!",

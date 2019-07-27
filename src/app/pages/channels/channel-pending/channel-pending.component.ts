@@ -18,7 +18,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./channel-pending.component.scss']
 })
 export class ChannelPendingComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public selNode: Node;
   public selectedFilter = 0;
   public information: GetInfo = {};

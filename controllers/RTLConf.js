@@ -6,17 +6,17 @@ var common = require('../common');
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
-  logger.info('\r\nConf: 9: ' + JSON.stringify(Date.now()) + ': INFO: Selected Node Updated!' + JSON.stringify(common.selectedNode.ln_node));
+  logger.info({fileName: 'RTLConf', msg: 'Selected Node Updated!' + JSON.stringify(common.selectedNode.ln_node)});
   res.status(200).json({status: 'Selected Node Updated!'});
 };
 
 exports.getRTLConfig = (req, res, next) => {
   if(!common.multi_node_setup) {
     var RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
-    logger.info('\r\nConf: 7: ' + JSON.stringify(Date.now()) + ': INFO: Getting RTL Config');
+    logger.info({fileName: 'RTLConf', msg: 'Getting RTL Config'});
     fs.readFile(RTLConfFile, 'utf8', function(err, data) {
       if (err) {
-        logger.error('\r\nConf: 10: ' + JSON.stringify(Date.now()) + ': ERROR: Getting RTL Config Failed!');
+        logger.error({fileName: 'RTLConf', lineNum: 19, msg: 'Getting RTL Config Failed!'});
         res.status(500).json({
           message: "Reading RTL Config Failed!",
           error: err
@@ -39,14 +39,14 @@ exports.getRTLConfig = (req, res, next) => {
     });
   } else {
     var RTLMultiNodeConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
-    logger.info('\r\nRTLConf.js: 32: ' + JSON.stringify(Date.now()) + ': INFO: Getting Multi Node Config');
+    logger.info({fileName: 'RTLConf', msg: 'Getting Multi Node Config'});
     fs.readFile(RTLMultiNodeConfFile, 'utf8', function(err, data) {
       if (err) {
         if (err.code === 'ENOENT') {
-          logger.error('\r\nRTLConf.js: 36: ' + JSON.stringify(Date.now()) + ': INFO: Multi Node Config does not exist!');
+          logger.error({fileName: 'RTLConf', lineNum: 46, msg: 'Multi Node Config does not exist!'});
           res.status(200).json({ selectedNodeIndex: {}, sso: {}, nodes: [] });
         } else {
-          logger.error('\r\nRTLConf.js: 39: ' + JSON.stringify(Date.now()) + ': ERROR: Getting Multi Node Config Failed!');
+          logger.error({fileName: 'RTLConf', lineNum: 49, msg: 'Getting Multi Node Config Failed!'});
           res.status(500).json({
             message: "Reading Multi Node Config Failed!",
             error: err
@@ -95,11 +95,11 @@ exports.updateUISettings = (req, res, next) => {
     });
     try {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-      logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
+      logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
       res.status(201).json({message: 'UI Settings Updated Successfully'});
     }
     catch (err) {
-      logger.error('\r\nConf: 71: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
+      logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating UI Settings Failed!'});
       res.status(500).json({
         message: "Updating UI Settings Failed!",
         error: 'Updating UI Settings Failed!'
@@ -119,13 +119,13 @@ exports.updateUISettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, ini.stringify(config));
     fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {
       if (err) {
-        logger.error('\r\nConf: 71: ' + JSON.stringify(Date.now()) + ': ERROR: Updating UI Settings Failed!');
+        logger.error({fileName: 'Conf', lineNum: 122, msg:'Updating UI Settings Failed!'});
         res.status(500).json({
           message: "Updating UI Settings Failed!",
           error: 'Updating UI Settings Failed!'
         });
       } else {
-        logger.info('\r\nConf: 77: ' + JSON.stringify(Date.now()) + ': INFO: Updating UI Settings Succesful!');
+        logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
         res.status(201).json({message: 'UI Settings Updated Successfully'});
       }
     });
@@ -153,10 +153,10 @@ exports.getConfig = (req, res, next) => {
       confFile = '';
       break;
   }
-  logger.info('\r\nConf: 99: ' + JSON.stringify(Date.now()) + ': INFO: Node Type: ' + req.params.nodeType + ', File Path: ' + confFile);
+  logger.info({fileName: 'RTLConf', msg: 'Node Type: ' + req.params.nodeType + ', File Path: ' + confFile});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
-      logger.error('\r\nConf: 102: ' + JSON.stringify(Date.now()) + ': ERROR: Reading Conf Failed!');
+      logger.error({fileName: 'Conf', lineNum: 159, msg: 'Reading Conf Failed!'});
       res.status(500).json({
         message: "Reading Config File Failed!",
         error: err

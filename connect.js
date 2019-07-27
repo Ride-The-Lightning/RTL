@@ -397,36 +397,36 @@ connect.logEnvVariables = () => {
   if (common.multi_node_setup) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
-      logger.info('\r\nConfig Setup Variable DEFAULT_NODE_INDEX: ' + common.selectedNode.index);
-      logger.info('\r\nConfig Setup Variable NODE_SETUP: MULTI', node);
-      logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso, node);
-      logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path, node);
-      logger.info('\r\nConfig Setup Variable LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link + '\r\n', node);
-      logger.info('\r\nConfig Setup Variable INDEX: ' + node.index, node);
-      logger.info('\r\nConfig Setup Variable LN NODE: ' + node.ln_node, node);
-      logger.info('\r\nConfig Setup Variable LN IMPLEMENTATION: ' + node.ln_implementation, node);
-      logger.info('\r\nConfig Setup Variable PORT: ' + common.port, node);
-      logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + node.macaroon_path, node);
-      logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + node.lnd_server_url, node);
-      logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + node.rtl_conf_file_path, node);
-      logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + node.lnd_config_path, node);
-      logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + node.bitcoind_config_path, node);
-      logger.info('\r\nConfig Setup Variable CHANNEL_BACKUP_PATH: ' + node.channel_backup_path, node);
+      logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT_NODE_INDEX: ' + common.selectedNode.index});
+      logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: MULTI', node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'RTL_SSO: ' + common.rtl_sso, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'RTL_COOKIE_PATH: ' + common.rtl_cookie_path, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link + '\r\n', node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'MACAROON_PATH: ' + node.macaroon_path, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + node.lnd_server_url, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'RTL_CONFIG_PATH: ' + node.rtl_conf_file_path, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LND_CONFIG_PATH: ' + node.lnd_config_path, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'BITCOIND_CONFIG_PATH: ' + node.bitcoind_config_path, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'CHANNEL_BACKUP_PATH: ' + node.channel_backup_path, node});
     });  
   } else {
     if (!common.nodes[0].enable_logging) { return; }
-    logger.info('\r\nConfig Setup Variable NODE_SETUP: SINGLE');
-    logger.info('\r\nConfig Setup Variable PORT: ' + common.port);
-    logger.info('\r\nConfig Setup Variable LND_SERVER_URL: ' + common.nodes[0].lnd_server_url);
-    logger.info('\r\nConfig Setup Variable MACAROON_PATH: ' + common.nodes[0].macaroon_path);
-    logger.info('\r\nConfig Setup Variable NODE_AUTH_TYPE: ' + common.node_auth_type);
-    logger.info('\r\nConfig Setup Variable LND_CONFIG_PATH: ' + common.nodes[0].lnd_config_path);
-    logger.info('\r\nConfig Setup Variable RTL_CONFIG_PATH: ' + common.rtl_conf_file_path);
-    logger.info('\r\nConfig Setup Variable BITCOIND_CONFIG_PATH: ' + common.nodes[0].bitcoind_config_path);
-    logger.info('\r\nConfig Setup Variable CHANNEL_BACKUP_PATH: ' + common.nodes[0].channel_backup_path);
-    logger.info('\r\nConfig Setup Variable RTL_SSO: ' + common.rtl_sso);
-    logger.info('\r\nConfig Setup Variable RTL_COOKIE_PATH: ' + common.rtl_cookie_path);
-    logger.info('\r\nConfig Setup Variable LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link);
+    logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: SINGLE'});
+    logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + common.nodes[0].lnd_server_url});
+    logger.info({fileName: 'Config Setup Variable', msg: 'MACAROON_PATH: ' + common.nodes[0].macaroon_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'NODE_AUTH_TYPE: ' + common.node_auth_type});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LND_CONFIG_PATH: ' + common.nodes[0].lnd_config_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'RTL_CONFIG_PATH: ' + common.rtl_conf_file_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'BITCOIND_CONFIG_PATH: ' + common.nodes[0].bitcoind_config_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'CHANNEL_BACKUP_PATH: ' + common.nodes[0].channel_backup_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'RTL_SSO: ' + common.rtl_sso});
+    logger.info({fileName: 'Config Setup Variable', msg: 'RTL_COOKIE_PATH: ' + common.rtl_cookie_path});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link});
   }
 }
 
@@ -440,20 +440,20 @@ connect.getAllNodeAllChannelBackup = (node) => {
   };
   request(options, function (err, res, body) {
     if (err) {
-      logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Response Failed: ' + JSON.stringify(err));
+      logger.error({fileName: 'Connect', lineNum: 443, msg: 'Channel Backup Response Failed: ' + JSON.stringify(err)});
     } else {
       fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
         if (err) {
           if (node.ln_node) {
-            logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err));
+            logger.error({fileName: 'Connect', lineNum: 448, msg: 'Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err)});
           } else {
-            logger.error('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Failed: ' + JSON.stringify(err));
+            logger.error({fileName: 'Connect', lineNum: 450, msg: 'Channel Backup Failed: ' + JSON.stringify(err)});
           }
         } else {
           if (node.ln_node) {
-            logger.info('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful for Node: ' + node.ln_node);
+            logger.info({fileName: 'Connect', msg: 'Channel Backup Successful for Node: ' + node.ln_node});
           } else {
-            logger.info('\r\nConnect: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Successful');
+            logger.info({fileName: 'Connect', msg: 'Channel Backup Successful'});
           }
         }
       });

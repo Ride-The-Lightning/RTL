@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   animations: [newlyAddedRowAnimation]
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public selNode: Node;
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;

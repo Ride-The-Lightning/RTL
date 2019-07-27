@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
+import { Node } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -20,7 +21,8 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./channel-backup.component.scss']
 })
 export class ChannelBackupComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  public selNode: Node;
   public displayedColumns = ['chan_id', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
@@ -34,6 +36,7 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.selNode = rtlStore.selNode;
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {
           this.flgLoading[0] = 'error';

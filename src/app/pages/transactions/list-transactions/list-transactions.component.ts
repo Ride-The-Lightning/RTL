@@ -19,7 +19,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./list-transactions.component.scss']
 })
 export class ListTransactionsComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public displayedColumns = [];
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];

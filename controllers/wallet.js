@@ -54,7 +54,7 @@ exports.operateWallet = (req, res, next) => {
     err_message = 'Initializing wallet failed!';
   }
   request(options).then((body) => {
-    logger.info('\r\nWallet: 20: ' + JSON.stringify(Date.now()) + ': INFO: Wallet Response: ' + JSON.stringify(body));
+    logger.info({fileName: 'Wallet', msg: 'Wallet Response: ' + JSON.stringify(body)});
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     if(undefined === body) {
@@ -80,7 +80,7 @@ exports.operateWallet = (req, res, next) => {
       res.status(201).json('Successful');
     }
   }).catch(error => {
-    logger.info('\r\nWallet: 83: ' + JSON.stringify(Date.now()) + ': INFO: Wallet Response: ' + JSON.stringify(error.error));
+    logger.error({fileName: 'Wallet', lineNum: 83, msg: 'Wallet Response: ' + JSON.stringify(error.error)});
     if((error.error.code === 1 && error.error.error === 'context canceled') || (error.error.code === 14 && error.error.error === 'transport is closing')) {
       res.status(201).json('Successful');  
     } else {

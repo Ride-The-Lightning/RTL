@@ -33,7 +33,7 @@ export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErr
   }]
 })
 export class UnlockLNDComponent implements OnInit, OnDestroy {
-  @ViewChild(MatStepper) stepper: MatStepper;
+  @ViewChild(MatStepper, { static: true }) stepper: MatStepper;
   public insecureLND = false;
   public genSeedResponse = [];
   public initWalletResponse = '';
@@ -42,6 +42,8 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   passwordFormGroup: FormGroup;
   cipherFormGroup: FormGroup;
   passphraseFormGroup: FormGroup;
+  proceed = true;
+  warnRes = true;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.State>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private router: Router) {}

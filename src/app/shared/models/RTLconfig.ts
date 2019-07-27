@@ -15,7 +15,8 @@ export class Settings {
     public satsToBTC: boolean,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
-    public lndServerUrl?: string
+    public lndServerUrl?: string,
+    public channelBackupPath?: string
   ) { }
 }
 

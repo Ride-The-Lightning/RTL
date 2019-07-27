@@ -9,7 +9,7 @@ exports.decodePayment = (req, res, next) => {
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    logger.info('\r\nPayReq: 10: ' + JSON.stringify(Date.now()) + ': INFO: Payment Decodd Received: ' + body_str);
+    logger.info({fileName: 'PayReq', msg: 'Payment Decodd Received: ' + body_str});
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Payment Request Decode Failed!",

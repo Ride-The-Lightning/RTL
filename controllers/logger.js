@@ -1,8 +1,9 @@
 var fs = require('fs');
 var common = require('../common');
 
-exports.info = (msgStr, selNode = common.selectedNode) => {
-  if (msgStr.indexOf('Config Setup Variable') === -1) {
+exports.info = (msgJSON, selNode = common.selectedNode) => {
+  const msgStr = '\r\nINFO: ' +  msgJSON.fileName + ' => ' + msgJSON.msg;
+  if (msgJSON.fileName !== 'Config Setup Variable') {
     console.log('Console: ' + msgStr);
   }
   if(selNode.enable_logging) {
@@ -16,7 +17,8 @@ exports.info = (msgStr, selNode = common.selectedNode) => {
   }
 }
 
-exports.error = (msgStr, selNode = common.selectedNode) => {
+exports.error = (msgJSON, selNode = common.selectedNode) => {
+  const msgStr = '\r\nERROR: ' +  msgJSON.fileName + '(' + msgJSON.lineNum + ') => ' + msgJSON.msg;
   console.error('Console: ' + msgStr);
   if(selNode.enable_logging) {
     fs.appendFile(selNode.log_file, msgStr, function(err) {

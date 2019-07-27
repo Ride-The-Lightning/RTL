@@ -18,6 +18,7 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
+      logger.error({fileName: 'Authenticate', lineNum: 21, msg: 'Password Validation Failed!'});
       res.status(401).json({
         message: "Login Failure!",
         error: "SSO Authentication Failed!"
@@ -34,6 +35,7 @@ exports.authenticateUser = (req, res, next) => {
         );
         res.status(200).json({ token: token });
       } else {
+        logger.error({fileName: 'Authenticate', lineNum: 38, msg: 'Password Validation Failed!'});
         res.status(401).json({
           message: "Authentication Failed!",
           error: "Password Validation Failed!"
@@ -49,6 +51,7 @@ exports.authenticateUser = (req, res, next) => {
           );
           res.status(200).json({ token: token });
         } else {
+          logger.error({fileName: 'Authenticate', lineNum: 54, msg: 'Password Validation Failed!'});
           res.status(401).json({
             message: "Authentication Failed!",
             error: "Password Validation Failed!"
@@ -57,7 +60,7 @@ exports.authenticateUser = (req, res, next) => {
       } else {
         fs.readFile(common.nodes[0].lnd_config_path, 'utf8', function (err, data) {
           if (err) {
-            logger.error('\r\nAuthenticate: 45: ' + JSON.stringify(Date.now()) + ': ERROR: LND Config Reading Failed!');
+            logger.error({fileName: 'Authenticate', lineNum: 60, msg: 'LND Config Reading Failed!'});
             err.description = 'You might be connecting RTL remotely to your LND node OR You might be missing rpcpass in your lnd.conf.';
             err.description = err.description + ' If the former modify the RTL.conf for remote setting.';
             err.description = err.description + ' If the later modify the lnd.conf to include rpcpass';
@@ -83,6 +86,7 @@ exports.authenticateUser = (req, res, next) => {
               );
               res.status(200).json({ token: token });
             } else {
+              logger.error({fileName: 'Authenticate', lineNum: 89, msg: 'Password Validation Failed!'});
               res.status(401).json({
                 message: "Authentication Failed!",
                 error: "Password Validation Failed!"

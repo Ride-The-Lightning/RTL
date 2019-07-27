@@ -93,6 +93,7 @@ export class RTLEffects implements OnDestroy {
     }),
     map((rtlConfig: any) => {
       this.logger.info(rtlConfig);
+      if (+rtlConfig.sso.rtlSSO) { this.store.dispatch(new RTLActions.Signout()); }
       return {
         type: RTLActions.SET_RTL_CONFIG,
         payload: rtlConfig

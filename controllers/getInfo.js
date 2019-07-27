@@ -9,14 +9,14 @@ exports.getInfo = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/getinfo';
   if(common.multi_node_setup) {
-    logger.info('\r\nSelected Node: ' + JSON.stringify(common.selectedNode.ln_node));
+    logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   } else {
-    logger.info('\r\nSingle Node Setup!');
+    logger.info({fileName:'GetInfo', msg: 'Single Node Setup!'});
   }
   common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
-  logger.info('\r\nCalling getinfo from lnd server url: INFO: ' + options.url);
+  logger.info({fileName: 'GetInfo', msg: 'Calling getinfo from lnd server url: ' + options.url});
   request(options).then((body) => {
-    logger.info('\r\nGetInfo: 9: ' + JSON.stringify(Date.now()) + ': INFO: ' + JSON.stringify(body));
+    logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
     if(undefined === body || search_idx > -1 || body.error) {

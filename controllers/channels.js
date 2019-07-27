@@ -11,7 +11,7 @@ getAliasForChannel = (channel, channelType) => {
       options.url = common.getSelLNDServerUrl() + '/graph/node/' + channel.channel.remote_node_pub;
     }
     request(options).then(function(aliasBody) {
-      logger.info('\r\nChannels: 13: ' + JSON.stringify(Date.now()) + ': INFO: Alias: ' + JSON.stringify(aliasBody.node.alias));
+      logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
       if (undefined === channelType || channelType === 'all') {
         channel.remote_alias = aliasBody.node.alias;
         resolve(aliasBody.node.alias);
@@ -42,7 +42,7 @@ exports.getChannels = (req, res, next) => {
         })
       )
       .then(function(values) {
-        logger.info('\r\nChannels: 43: ' + JSON.stringify(Date.now()) + ': INFO: Channels with Alias: ' + JSON.stringify(body));
+        logger.info({fileName: 'Channels', msg: 'Channels with Alias: ' + JSON.stringify(body)});
         res.status(200).json(body);
       }).catch(err => {
         console.error(err.error);
@@ -60,12 +60,12 @@ exports.getChannels = (req, res, next) => {
         });
         body.channels = common.sortDescByKey(body.channels, 'close_type');
       }
-      logger.info('\r\nChannels: 55: ' + JSON.stringify(Date.now()) + ': INFO: Pending/Closed Channels: ' + JSON.stringify(body));
+      logger.info({fileName: 'Channels', msg: 'Pending/Closed Channels: ' + JSON.stringify(body)});
       res.status(200).json(body);
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 61: ' + JSON.stringify(Date.now()) + ': ERROR: Get Channel: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Channel: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching Channels Failed!',
       error: err.error
@@ -89,7 +89,7 @@ exports.postChannel = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info('\r\nChannels: 74: ' + JSON.stringify(Date.now()) + ': INFO: Channel Open Response: ' + JSON.stringify(body));
+    logger.info({fileName: 'Channels', msg: 'Channel Open Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Open Channel Failed!',
@@ -100,7 +100,7 @@ exports.postChannel = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 86: ' + JSON.stringify(Date.now()) + ': ERROR: Open Channel: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels', lineNum: 103, msg: 'Open Channel: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Open Channel Failed!',
       error: err.error
@@ -124,7 +124,7 @@ exports.postTransactions = (req, res, next) => {
     });
   }
   request.post(options).then((body) => {
-    logger.info('\r\nChannels: 107: ' + JSON.stringify(Date.now()) + ': INFO: Send Payment Response: ' + JSON.stringify(body));
+    logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Send Payment Failed!',
@@ -140,7 +140,7 @@ exports.postTransactions = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 124: ' + JSON.stringify(Date.now()) + ': ERROR: Send Payment: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels', lineNum: 143, msg: 'Send Payment: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Send Payment Failed!',
       error: err.error
@@ -153,9 +153,9 @@ exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.getSelLNDServerUrl() + '/channels/' + channelpoint + '?force=' + req.query.force;
-  logger.info('\r\nChannels: 144: ' + JSON.stringify(Date.now()) + ': INFO: Closing Channel: ' + options.url);
+  logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
-    logger.info('\r\nChannels: 146: ' + JSON.stringify(Date.now()) + ': INFO: Close Channel Response: ' + JSON.stringify(body));
+    logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Close Channel Failed!',
@@ -166,7 +166,7 @@ exports.closeChannel = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 157: ' + JSON.stringify(Date.now()) + ': ERROR: Close Channel: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels', lineNum: 169, msg: 'Close Channel: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Close Channel Failed!',
       error: err.error
@@ -195,9 +195,9 @@ exports.postChanPolicy = (req, res, next) => {
       chan_point: {funding_txid_str: txid_str, output_index: parseInt(output_idx)}
     });
   }
-  logger.info('\r\nChannels: 185: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy Options: ' + JSON.stringify(options));
+  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options)});
   request.post(options).then((body) => {
-    logger.info('\r\nChannels: 187: ' + JSON.stringify(Date.now()) + ': INFO: Update Channel Policy: ' + JSON.stringify(body));
+    logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: 'Update Channel Failed!',
@@ -208,7 +208,7 @@ exports.postChanPolicy = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.info('\r\nChannels: 198: ' + JSON.stringify(Date.now()) + ': ERROR: Update Channel Policy: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels', lineNum: 211, msg: 'Update Channel Policy: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Update Channel Failed!',
       error: err.error

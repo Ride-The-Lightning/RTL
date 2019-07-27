@@ -20,8 +20,8 @@ import * as fromRTLReducer from './shared/store/rtl.reducers';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('sideNavigation') sideNavigation: any;
-  @ViewChild('settingSidenav') settingSidenav: any;
+  @ViewChild('sideNavigation', { static: true }) sideNavigation: any;
+  @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
   public selNode: Node;
   public settings: Settings;
   public information: GetInfo = {};
@@ -112,11 +112,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readAccessKey() {
     const url = window.location.href;
-    const ak = url.substring(url.lastIndexOf('access-key=') + 11).trim();
-    if (ak) {
-      this.store.dispatch(new RTLActions.Signout());
-    }
-    return ak;
+    return url.substring(url.lastIndexOf('access-key=') + 11).trim();
   }
 
   initializeRemainingData() {

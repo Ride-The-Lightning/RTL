@@ -18,7 +18,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./channel-closed.component.scss']
 })
 export class ChannelClosedComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public displayedColumns = [];
   public closedChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];

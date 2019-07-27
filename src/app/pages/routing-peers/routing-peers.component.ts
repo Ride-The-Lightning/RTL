@@ -18,8 +18,8 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   styleUrls: ['./routing-peers.component.scss']
 })
 export class RoutingPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sortIn: MatSort;
-  @ViewChild('tableOut', {read: MatSort}) sortOut: MatSort;
+  @ViewChild(MatSort, { static: true }) sortIn: MatSort;
+  @ViewChild('tableOut', {read: MatSort, static: true}) sortOut: MatSort;
   public displayedColumns = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;

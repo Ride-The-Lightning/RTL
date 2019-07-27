@@ -20,7 +20,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
   styleUrls: ['./channel-manage.component.scss']
 })
 export class ChannelManageComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public totalBalance = 0;
   public selectedPeer = '';
   public fundingAmount: number;

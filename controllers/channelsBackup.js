@@ -9,12 +9,12 @@ exports.getBackup = (req, res, next) => {
   let channel_backup_file = '';
   let message = '';
   if (req.params.channelPoint === 'ALL') {
-    message = 'All Channels Backup Successful!';
-    channel_backup_file = common.selectedNode.channel_backup_path + '/channel-all.bak';
+    channel_backup_file = common.selectedNode.channel_backup_path + '\\channel-all.bak';
+    message = 'All Channels Backup Successful at: ' + channel_backup_file + ' !';
     options.url = common.getSelLNDServerUrl() + '/channels/backup';
   } else {
-    message = 'Channel ' + req.params.channelPoint + ' Backup Successful!';
-    channel_backup_file = common.selectedNode.channel_backup_path + '/channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+    channel_backup_file = common.selectedNode.channel_backup_path + '\\channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+    message = 'Channel Backup Successful at: ' + channel_backup_file + ' !';
     let channelpoint = req.params.channelPoint.replace(':', '/');
     options.url = common.getSelLNDServerUrl() + '/channels/backup/' + channelpoint;
     let exists = fs.existsSync(channel_backup_file);
@@ -31,7 +31,7 @@ exports.getBackup = (req, res, next) => {
     }
   }
   request(options).then(function (body) {
-    logger.info('\r\nChannels Backup: 16: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup: ' + JSON.stringify(body));
+    logger.info({fileName: 'Channels Backup', msg: 'Channel Backup: ' + JSON.stringify(body)});
     fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
       if (err) {
         return res.status(500).json({ message: 'Channels Backup Failed!', error: err.error });
@@ -41,7 +41,7 @@ exports.getBackup = (req, res, next) => {
     });
   })
   .catch(function (err) {
-    logger.info('\r\nChannels Backup: 27: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup: ' + JSON.stringify(err));
+    logger.error({fileName: 'Channels Backup', lineNum: 44, msg: 'Channel Backup: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Channels Backup Failed!',
       error: err.error
@@ -86,11 +86,11 @@ exports.postBackupVerify = (req, res, next) => {
   }
   if (verify_backup !== '') {
     request.post(options).then(function (body) {
-      logger.info('\r\nChannels Backup Verify: 73: ' + new Date().toJSON().slice(0,19) + ': INFO: Channel Backup Verify: ' + JSON.stringify(body));
+      logger.info({fileName: 'Channels Backup Verify', msg: 'Channel Backup Verify: ' + JSON.stringify(body)});
       res.status(201).json({ message: message });
     })
     .catch(function (err) {
-      logger.info('\r\nChannels Backup Verify: 77: ' + new Date().toJSON().slice(0,19) + ': ERROR: Channel Backup Verify: ' + JSON.stringify(err));
+      logger.error({fileName: 'Channels Backup Verify', lineNum: 93, msg: 'Channel Backup Verify: ' + JSON.stringify(err)});
       return res.status(404).json({
         message: 'Channel backup to Verify failed!',
         error: err.error

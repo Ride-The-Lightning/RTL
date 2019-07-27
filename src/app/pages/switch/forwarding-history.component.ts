@@ -18,7 +18,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   styleUrls: ['./forwarding-history.component.scss']
 })
 export class ForwardingHistoryComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public lastOffsetIndex = 0;

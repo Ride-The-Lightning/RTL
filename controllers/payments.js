@@ -9,7 +9,7 @@ exports.getPayments = (req, res, next) => {
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    logger.info('\r\nPayments: 10: ' + JSON.stringify(Date.now()) + ': INFO: Payment Decoded Received: ' + body_str);
+    logger.info({fileName: 'Payments', msg: 'Payment Decoded Received: ' + body_str});
     if(undefined === body || search_idx > -1 || body.error) {
       res.status(500).json({
         message: "Payments List Failed!",

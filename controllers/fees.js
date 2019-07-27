@@ -7,7 +7,7 @@ exports.getFees = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNDServerUrl() + '/fees';
   request(options).then((body) => {
-    logger.info('\r\nFees: 8: ' + JSON.stringify(Date.now()) + ': INFO: Fee Received: ' + JSON.stringify(body));
+    logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching fee failed!",
