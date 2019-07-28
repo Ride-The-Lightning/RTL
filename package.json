@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --base-href /rtl/ --open --aot",
-    "build": "ng build --prod --base-href /rtl/ --aot",
+    "build": "ng analytics off && ng build --prod --base-href /rtl/ --aot",
     "serve": "ng serve",
     "prebuild": "node ./prebuild",
     "test": "ng test",

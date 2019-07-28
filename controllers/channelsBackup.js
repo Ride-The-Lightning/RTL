@@ -9,11 +9,11 @@ exports.getBackup = (req, res, next) => {
   let channel_backup_file = '';
   let message = '';
   if (req.params.channelPoint === 'ALL') {
-    channel_backup_file = common.selectedNode.channel_backup_path + '\\channel-all.bak';
+    channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
     message = 'All Channels Backup Successful at: ' + channel_backup_file + ' !';
     options.url = common.getSelLNDServerUrl() + '/channels/backup';
   } else {
-    channel_backup_file = common.selectedNode.channel_backup_path + '\\channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+    channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     message = 'Channel Backup Successful at: ' + channel_backup_file + ' !';
     let channelpoint = req.params.channelPoint.replace(':', '/');
     options.url = common.getSelLNDServerUrl() + '/channels/backup/' + channelpoint;
@@ -57,7 +57,7 @@ exports.postBackupVerify = (req, res, next) => {
   let verify_backup = '';
   if (req.params.channelPoint === 'ALL') {
     message = 'All Channels Verify Successful!';
-    channel_verify_file = common.selectedNode.channel_backup_path + '/channel-all.bak';
+    channel_verify_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
       verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');
@@ -74,7 +74,7 @@ exports.postBackupVerify = (req, res, next) => {
     }
   } else {
     message = 'Channel ' + req.params.channelPoint + ' Verify Successful!';
-    channel_verify_file = common.selectedNode.channel_backup_path + '/channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+    channel_verify_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
       verify_backup = fs.readFileSync(channel_verify_file, 'utf-8');

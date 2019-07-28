@@ -29,6 +29,7 @@ exports.getRTLConfig = (req, res, next) => {
           lndConfigPath: common.nodes[0].lnd_config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
+        jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
         res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
@@ -56,7 +57,7 @@ exports.getRTLConfig = (req, res, next) => {
         const multiNodeConfig = JSON.parse(data);
         const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
         var nodesArr = [];
-        multiNodeConfig.nodes.forEach(node => {
+        multiNodeConfig.nodes.forEach((node, i) => {
           const authentication = {};
           authentication.nodeAuthType = 'CUSTOM';
           if(node.Authentication.lndConfigPath) {
@@ -65,6 +66,7 @@ exports.getRTLConfig = (req, res, next) => {
           if(node.Settings.bitcoindConfigPath) {
             authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
           }
+          node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
           nodesArr.push({
             index: node.index,
             lnNode: node.lnNode,
