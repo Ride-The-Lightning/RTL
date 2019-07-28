@@ -68,6 +68,8 @@ $ npm install
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL.conf`, to start the server and provide user authentication on the app.
 
+*Advanced users can refer to [this page](docs/Multi-LND-Node-setup.md), for config settings required to manage multiple LND nodes*
+
 * Rename `sample-RTL.conf` file to `RTL.conf`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
 * Modify the `RTL.conf` file per the example file below
