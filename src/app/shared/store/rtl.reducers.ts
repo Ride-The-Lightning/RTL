@@ -3,7 +3,7 @@ import * as RTLActions from './rtl.actions';
 import { ErrorPayload } from '../models/errorPayload';
 import { RTLConfiguration, Node } from '../models/RTLconfig';
 import {
-  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes
+  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../models/lndModels';
 
 export interface State {

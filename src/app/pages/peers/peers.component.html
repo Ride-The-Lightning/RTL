@@ -7,7 +7,7 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="connectPeerForm.form.valid && onConnectPeer(connectPeerForm)" #connectPeerForm="ngForm">
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="connectPeerForm.form.valid && onConnectPeer()" #connectPeerForm="ngForm">
           <mat-form-field fxFlex="70" fxLayoutAlign="start end">
             <input matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" name="peerAddress" [(ngModel)]="peerAddress" tabindex="1" required #peerAdd="ngModel">
           </mat-form-field>

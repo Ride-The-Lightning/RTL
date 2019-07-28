@@ -280,6 +280,32 @@ export interface Peer {
   ping_time?: number;
 }
 
+export interface QueryRoutes {
+  routes?: Route[];
+}
+
+export interface Hop {
+  hop_sequence?: number;
+  pubkey_alias?: string;
+  chan_id?:	string;
+  chan_capacity?:	string;
+  amt_to_forward?:	string;
+  fee?:	string;
+  expiry?:	number;
+  amt_to_forward_msat?:	string;
+  fee_msat?: string;
+  pub_key?:	string;
+}
+
+export interface Route {
+  total_time_lock?:	number;
+  total_fees?: string;
+  total_amt?: string;
+  hops?: Hop[];
+  total_fees_msat?: string;
+  total_amt_msat?: string;
+}
+
 export interface RouteHint {
   hop_hints?: HopHint[];
 }

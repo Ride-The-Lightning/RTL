@@ -5,14 +5,14 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Node } from '../../shared/models/RTLconfig';
-import { GetInfo, Payment, PayRequest } from '../../shared/models/lndModels';
-import { LoggerService } from '../../shared/services/logger.service';
+import { Node } from '../../../shared/models/RTLconfig';
+import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
+import { LoggerService } from '../../../shared/services/logger.service';
 
-import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
-import { RTLEffects } from '../../shared/store/rtl.effects';
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-payments',

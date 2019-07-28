@@ -31,7 +31,7 @@ import { InvoicesComponent } from './pages/invoices/invoices.component';
 import { ServerConfigComponent } from './pages/server-config/server-config.component';
 import { HelpComponent } from './pages/help/help.component';
 import { UnlockLNDComponent } from './pages/unlock-lnd/unlock-lnd.component';
-import { PaymentsComponent } from './pages/payments/payments.component';
+import { PaymentsComponent } from './pages/payments/send-receive/payments.component';
 import { SideNavigationComponent } from './pages/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './pages/navigation/top-menu/top-menu.component';
 import { HorizontalNavigationComponent } from './pages/navigation/horizontal-navigation/horizontal-navigation.component';
@@ -54,6 +54,7 @@ import { RoutingPeersComponent } from './pages/routing-peers/routing-peers.compo
 import { ChannelLookupComponent } from './pages/lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './pages/lookups/node-lookup/node-lookup.component';
 import { ChannelBackupComponent } from './pages/channels/channel-backup/channel-backup.component';
+import { QueryRoutesComponent } from './pages/payments/query-routes/query-routes.component';
 
 @NgModule({
   imports: [
@@ -94,7 +95,8 @@ import { ChannelBackupComponent } from './pages/channels/channel-backup/channel-
     RoutingPeersComponent,
     ChannelLookupComponent,
     NodeLookupComponent,
-    ChannelBackupComponent
+    ChannelBackupComponent,
+    QueryRoutesComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

@@ -11,7 +11,8 @@ import { ChannelPendingComponent } from './pages/channels/channel-pending/channe
 import { PeersComponent } from './pages/peers/peers.component';
 import { SendReceiveTransComponent } from './pages/transactions/send-receive/send-receive-trans.component';
 import { ListTransactionsComponent } from './pages/transactions/list-transactions/list-transactions.component';
-import { PaymentsComponent } from './pages/payments/payments.component';
+import { PaymentsComponent } from './pages/payments/send-receive/payments.component';
+import { QueryRoutesComponent } from './pages/payments/query-routes/query-routes.component';
 import { ServerConfigComponent } from './pages/server-config/server-config.component';
 import { HelpComponent } from './pages/help/help.component';
 import { InvoicesComponent } from './pages/invoices/invoices.component';
@@ -35,7 +36,8 @@ export const routes: Routes = [
   { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'translist', component: ListTransactionsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: 'paymentsendreceive', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'switch', component: ForwardingHistoryComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },

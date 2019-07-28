@@ -13,7 +13,7 @@ exports.getInfo = (req, res, next) => {
   } else {
     logger.info({fileName:'GetInfo', msg: 'Single Node Setup!'});
   }
-  common.nodes.map(node => { connect.getAllNodeAllChannelBackup(node); });
+  common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
   logger.info({fileName: 'GetInfo', msg: 'Calling getinfo from lnd server url: ' + options.url});
   request(options).then((body) => {
     logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});

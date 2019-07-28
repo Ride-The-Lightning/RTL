@@ -3,7 +3,7 @@ import { RTLConfiguration, Settings, Node } from '../models/RTLconfig';
 import { ErrorPayload } from '../models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
 } from '../models/lndModels';
 import { MatDialogConfig } from '@angular/material';
 
@@ -83,6 +83,8 @@ export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
 export const SET_LOOKUP = 'SET_LOOKUP';
 export const GET_FORWARDING_HISTORY = 'GET_FORWARDING_HISTORY';
 export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
+export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
+export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR;
@@ -420,6 +422,16 @@ export class SetForwardingHistory implements Action {
   constructor(public payload: SwitchRes) {}
 }
 
+export class GetQueryRoutes implements Action {
+  readonly type = GET_QUERY_ROUTES;
+  constructor(public payload: {destPubkey: string, amount: number}) {}
+}
+
+export class SetQueryRoutes implements Action {
+  readonly type = SET_QUERY_ROUTES;
+  constructor(public payload: QueryRoutes) {}
+}
+
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
   constructor(public payload: string) {} // payload = password
@@ -461,7 +473,8 @@ export type RTLActions =
   FetchInvoices | SetInvoices | SetTotalInvoices |
   FetchPayments | SetPayments | SendPayment |
   DecodePayment | SetDecodedPayment |
-  FetchGraphNode | SetGraphNode |
-  GetNewAddress | SetNewAddress | SetChannelTransaction | GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
+  FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
+  GetNewAddress | SetNewAddress | SetChannelTransaction |
+  GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData;

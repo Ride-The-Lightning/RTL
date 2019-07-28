@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../services/logger.service';
 import { Settings } from '../models/RTLconfig';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, Invoice, GraphNode, Transaction, SwitchReq, ListInvoices } from '../models/lndModels';
+import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../models/lndModels';
 
 import { SpinnerDialogComponent } from '../components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../components/alert-message/alert-message.component';
@@ -898,6 +898,42 @@ export class RTLEffects implements OnDestroy {
           );
         })
       );
+    })
+  );
+
+  @Effect()
+  queryRoutesFetch = this.actions$.pipe(
+    ofType(RTLActions.GET_QUERY_ROUTES),
+    mergeMap((action: RTLActions.GetQueryRoutes) => {
+      return this.httpClient.get(environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount)
+      .pipe(
+        map((qrRes: any) => {
+          this.logger.info(qrRes);
+          return {
+            type: RTLActions.SET_QUERY_ROUTES,
+            payload: qrRes
+          };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(new RTLActions.SetQueryRoutes({}));
+          this.logger.error(err);
+          return of(
+            {
+              type: RTLActions.OPEN_ALERT,
+              payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Get Query Routes Failed',
+                message: JSON.stringify({code: err.status, Message: err.error.error.error, URL: environment.NETWORK_API})}}
+            }
+          );
+        })
+      );
+    }
+  ));
+
+  @Effect({ dispatch: false })
+  setQueryRoutes = this.actions$.pipe(
+    ofType(RTLActions.SET_QUERY_ROUTES),
+    map((action: RTLActions.SetQueryRoutes) => {
+      return action.payload;
     })
   );
 

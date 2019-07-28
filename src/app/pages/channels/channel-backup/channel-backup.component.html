@@ -8,7 +8,7 @@
       </mat-card-header>
       <mat-card-content>
         <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
-          <h3 fxFlex="100">Backup folder location: {{this.selNode.settings.channelBackupPath}}</h3>
+          <h4 fxFlex="100">Backup folder location: {{this.selNode.settings.channelBackupPath}}</h4>
           <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">Backup</button>
           <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="2" (click)="onVerifyChannels({})">Verify Backup</button>
         </div>
