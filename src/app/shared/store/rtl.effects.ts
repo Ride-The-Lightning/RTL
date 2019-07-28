@@ -849,6 +849,7 @@ export class RTLEffects implements OnDestroy {
       map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
         return {
           type: RTLActions.OPEN_ALERT,
           payload: { data: {type: 'SUCCESS', titleMessage: 'Fund Sent Successfully!'} }
