@@ -36,7 +36,7 @@ export const routes: Routes = [
   { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'translist', component: ListTransactionsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'paymentsendreceive', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: 'paymentsend', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
   { path: 'switch', component: ForwardingHistoryComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
