@@ -47,13 +47,18 @@
 - Waiting Close
 #### Closed
 - List of Closed Channels
+#### Backup
+- All channel backup and verify
+- Individual channel backup and verify
+- Folder location of the backup files
 
 ### Payments
-#### List Payments
-- List of payments made via node
-#### Send Payment
+#### Send
 - Verify and Send Payments
+- List of payments made via node
 - Pay empty invoice with custom amount
+#### Query Routes
+- Query the path to the node with the pubkey and amount to be sent
 
 ### Invoices
 - Add Invoice with Optional Memo and Amount and Generate payment request (with QR Code)
@@ -61,6 +66,9 @@
 
 ### Forwarding History
 - View all the forwarded HTLCs within a date range (default view is past 24 hours)
+
+### Routing Peers
+- Show routing events group by incoming and outgoing events group by peer alias, channel id and amount routed
 
 ### Lookups
 - Lookup a node details with pubkey
