@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {
     MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
@@ -9,6 +10,10 @@ import {
     MatPaginatorModule, MatStepperModule
 } from '@angular/material';
 import { QRCodeModule } from 'angularx-qrcode';
+
+import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
+import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
+import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
 import { SpinnerDialogComponent } from './components/spinner-dialog/spinner-dialog.component';
@@ -23,6 +28,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
+        RouterModule,
         FlexLayoutModule,
         MatButtonModule,
         MatButtonToggleModule,
@@ -54,6 +60,8 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         QRCodeModule
     ],
     exports: [
+        FormsModule,
+        ReactiveFormsModule,
         FlexLayoutModule,
         MatButtonModule,
         MatButtonToggleModule,
@@ -89,7 +97,10 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         SettingsNavComponent,
         ClipboardDirective,
         QRCodeModule,
-        RemoveLeadingZerosPipe
+        RemoveLeadingZerosPipe,
+        SideNavigationComponent,
+        TopMenuComponent,
+        HorizontalNavigationComponent
     ],
     declarations: [
         AlertMessageComponent,
@@ -99,7 +110,10 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         SettingsNavComponent,
         ClipboardDirective,
         SsoFailedComponent,
-        RemoveLeadingZerosPipe
+        RemoveLeadingZerosPipe,
+        SideNavigationComponent,
+        TopMenuComponent,
+        HorizontalNavigationComponent
     ],
     entryComponents: [
         AlertMessageComponent,

@@ -7,21 +7,20 @@ import { Actions } from '@ngrx/effects';
 import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
-import { LoggerService } from './shared/services/logger.service';
-import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
-import { GetInfo } from './shared/models/lndModels';
+import { LoggerService } from '../shared/services/logger.service';
+import { RTLConfiguration, Settings, Node } from '../shared/models/RTLconfig';
+import { GetInfo } from '../shared/models/lndModels';
 
-import * as LNDActions from './lnd/store/lnd.actions';
-import * as fromLNDReducer from './lnd/store/lnd.reducers';
-import * as RTLActions from './store/rtl.actions';
-import * as fromRTLReducer from './store/rtl.reducers';
+import * as LNDActions from './store/lnd.actions';
+import * as RTLActions from '../store/rtl.actions';
+import * as fromRTLReducer from '../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-app',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: 'rtl-lnd-root-app',
+  templateUrl: './lnd-root.component.html',
+  styleUrls: ['./lnd-root.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LndRootComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: true }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
   public selNode: Node;
@@ -32,27 +31,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public smallScreen = false;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>, private actions$: Actions,
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions,
     private userIdle: UserIdleService, private router: Router) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.lndStore.select('lnd')
-    .pipe(takeUntil(this.unsubs[3]))
-    .subscribe(lndStore => {
-      this.information = lndStore ? lndStore.information : {};
-      this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
-      this.logger.info(lndStore);
-    });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
+      this.information = rtlStore.information;
+      this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
         this.settings.menu = 'Vertical';
         this.settings.flgSidenavOpened = false;
@@ -67,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     if (sessionStorage.getItem('token')) {
-      this.lndStore.dispatch(new LNDActions.FetchInfo());
+      this.store.dispatch(new LNDActions.FetchInfo());
     }
     this.actions$
     .pipe(
@@ -90,7 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
       } else if (actionPayload.type === RTLActions.INIT_APP_DATA) {
-        this.lndStore.dispatch(new LNDActions.FetchInfo());
+        this.store.dispatch(new LNDActions.FetchInfo());
       }
     });
     this.actions$
@@ -123,14 +117,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   initializeRemainingData() {
-    this.lndStore.dispatch(new LNDActions.FetchPeers());
-    this.lndStore.dispatch(new LNDActions.FetchBalance('channels'));
-    this.lndStore.dispatch(new LNDActions.FetchFees());
-    this.lndStore.dispatch(new LNDActions.FetchNetwork());
-    this.lndStore.dispatch(new LNDActions.FetchChannels({routeParam: 'all'}));
-    this.lndStore.dispatch(new LNDActions.FetchChannels({routeParam: 'pending'}));
-    this.lndStore.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
-    this.lndStore.dispatch(new LNDActions.FetchPayments());
+    this.store.dispatch(new LNDActions.FetchPeers());
+    this.store.dispatch(new LNDActions.FetchBalance('channels'));
+    this.store.dispatch(new LNDActions.FetchFees());
+    this.store.dispatch(new LNDActions.FetchNetwork());
+    this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'all'}));
+    this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'pending'}));
+    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    this.store.dispatch(new LNDActions.FetchPayments());
   }
 
   ngAfterViewInit() {

@@ -5,8 +5,8 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AlertData, InputData } from '../../../shared/models/alertData';
 
-import * as RTLActions from '../../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-confirmation-message',

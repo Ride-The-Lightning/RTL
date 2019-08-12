@@ -7,8 +7,9 @@ import { Node, RTLConfiguration } from '../../models/RTLconfig';
 import { GetInfo } from '../../models/lndModels';
 import { LoggerService } from '../../services/logger.service';
 
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromLNDReducer from '../../../lnd/store/lnd.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-settings-nav',
@@ -26,12 +27,19 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
 
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
-  @Output('done') done: EventEmitter<void> = new EventEmitter();
+  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  @Output() done: EventEmitter<void> = new EventEmitter();
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>) {}
 
   ngOnInit() {
+    this.lndStore.select('lnd')
+    .pipe(takeUntil(this.unsubs[2]))
+    .subscribe(lndStore => {
+      this.information = lndStore ? lndStore.information : {};
+      this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
+      this.logger.info(lndStore);
+    });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
@@ -45,8 +53,6 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
         this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
       }
-      this.information = rtlStore.information;
-      this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.logger.info(rtlStore);
     });
   }
