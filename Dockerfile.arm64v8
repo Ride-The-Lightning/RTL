@@ -1,4 +1,4 @@
-FROM node:10-jessie-slim AS builder
+FROM node:10-stretch-slim AS builder
 
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel /tini
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel.asc /tini.asc
