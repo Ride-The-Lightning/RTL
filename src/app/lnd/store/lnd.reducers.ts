@@ -60,6 +60,10 @@ export const LNDInitialState: LNDState = {
 
 export function LNDReducer(state = LNDInitialState, action: LNDActions.LNDActions) {
   switch (action.type) {
+    case LNDActions.RESET_LND_STORE:
+      return {
+        ...LNDInitialState
+      };
     case LNDActions.SET_INFO:
       if (undefined !== action.payload.chains) {
         if (typeof action.payload.chains[0] === 'string') {

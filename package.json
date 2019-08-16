@@ -5,9 +5,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --base-href /rtl/ --open --aot",
+    "prebuild": "node ./prebuild",
     "build": "ng analytics off && ng build --prod --base-href /rtl/ --aot",
     "serve": "ng serve",
-    "prebuild": "node ./prebuild",
+    "server": "nodemon ./rtl.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

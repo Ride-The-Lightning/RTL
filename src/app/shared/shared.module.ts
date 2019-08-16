@@ -17,6 +17,9 @@ import { HorizontalNavigationComponent } from './components/navigation/horizonta
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
 import { SpinnerDialogComponent } from './components/spinner-dialog/spinner-dialog.component';
+import { ServerConfigComponent } from './components/server-config/server-config.component';
+import { HelpComponent } from './components/help/help.component';
+import { SigninComponent } from './components/signin/signin.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
@@ -94,6 +97,9 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         ConfirmationMessageComponent,
         SpinnerDialogComponent,
         NotFoundComponent,
+        ServerConfigComponent,
+        HelpComponent,
+        SigninComponent,
         SettingsNavComponent,
         ClipboardDirective,
         QRCodeModule,
@@ -107,6 +113,9 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         ConfirmationMessageComponent,
         SpinnerDialogComponent,
         NotFoundComponent,
+        ServerConfigComponent,
+        HelpComponent,
+        SigninComponent,
         SettingsNavComponent,
         ClipboardDirective,
         SsoFailedComponent,

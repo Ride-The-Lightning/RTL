@@ -262,12 +262,16 @@ connect.validateMultiNodeConfig = (config) => {
 
   config.nodes.forEach((node, idx) => {
     common.nodes[idx] = {};
-    if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
-      errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
+    if(node.lnImplementation === 'CLightning') {
+      common.nodes[idx].macaroon_path = '';
     } else {
-      common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
+      if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
+        errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
+      } else {
+        common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
+      }
     }
-    
+
     if((node.Settings.lndServerUrl === '' ||  undefined === node.Settings.lndServerUrl)) {
       errMsg = errMsg + '\nPlease set LND server URL for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
     } else {
@@ -277,7 +281,7 @@ connect.validateMultiNodeConfig = (config) => {
     common.nodes[idx].index = node.index;
     common.nodes[idx].ln_node = node.lnNode;
     common.nodes[idx].ln_implementation = node.lnImplementation;
-    common.nodes[idx].lnd_config_path = (undefined !== node.Authentication.lndConfigPath) ? node.Authentication.lndConfigPath : '';
+    common.nodes[idx].lnd_config_path = (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) ? node.Authentication.lndConfigPath : '';
     common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
     common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
     common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;

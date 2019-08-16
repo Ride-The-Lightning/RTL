@@ -3,13 +3,13 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Node } from '../../shared/models/RTLconfig';
+import { Node } from '../../models/RTLconfig';
 
-import { LNDEffects } from '../store/lnd.effects';
-import * as LNDActions from '../store/lnd.actions';
-import { RTLEffects } from '../../store/rtl.effects';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { LNDEffects } from '../../../lnd/store/lnd.effects';
+import * as LNDActions from '../../../lnd/store/lnd.actions';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-server-config',

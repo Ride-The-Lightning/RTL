@@ -1,10 +1,9 @@
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 
-import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
-import { SsoFailedComponent } from '../shared/components/sso-failed/sso-failed.component';
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 
+import { LndRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
 import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
 import { ChannelClosedComponent } from './channels/channel-closed/channel-closed.component';
@@ -15,37 +14,30 @@ import { SendReceiveTransComponent } from './transactions/send-receive/send-rece
 import { ListTransactionsComponent } from './transactions/list-transactions/list-transactions.component';
 import { PaymentsComponent } from './payments/send-receive/payments.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
-import { ServerConfigComponent } from './server-config/server-config.component';
-import { HelpComponent } from './help/help.component';
 import { InvoicesComponent } from './invoices/invoices.component';
 import { LookupsComponent } from './lookups/lookups.component';
-import { SigninComponent } from './signin/signin.component';
 import { ForwardingHistoryComponent } from './switch/forwarding-history.component';
 import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
 import { ChannelBackupComponent } from './channels/channel-backup/channel-backup.component';
 
 export const lndRoutes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full', canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'unlocklnd', component: UnlockLNDComponent, canActivate: [AuthGuard] },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'peers', component: PeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'chnlclosed', component: ChannelClosedComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'chnlmanage', component: ChannelManageComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'chnlpending', component: ChannelPendingComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'translist', component: ListTransactionsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'paymentsend', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'switch', component: ForwardingHistoryComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'lookups', component: LookupsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
-  { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: SigninComponent },
-  { path: 'help', component: HelpComponent },
-  { path: 'ssoerror', component: SsoFailedComponent },
-  { path: '**', component: NotFoundComponent }
+  { path: '', redirectTo: '.', pathMatch: 'full', canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: '.', component: LndRootComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './unlocklnd', component: UnlockLNDComponent, canActivate: [AuthGuard] },
+  { path: './home', component: HomeComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './peers', component: PeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './chnlclosed', component: ChannelClosedComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './chnlmanage', component: ChannelManageComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './chnlpending', component: ChannelPendingComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './chnlbackup', component: ChannelBackupComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './transsendreceive', component: SendReceiveTransComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './translist', component: ListTransactionsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './paymentsend', component: PaymentsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './queryroutes', component: QueryRoutesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './invoices', component: InvoicesComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './switch', component: ForwardingHistoryComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './routingpeers', component: RoutingPeersComponent, canActivate: [AuthGuard, LNDUnlockedGuard] },
+  { path: './lookups', component: LookupsComponent, canActivate: [AuthGuard, LNDUnlockedGuard] }
 ];
 
 export const lndRouting: ModuleWithProviders = RouterModule.forChild(lndRoutes);

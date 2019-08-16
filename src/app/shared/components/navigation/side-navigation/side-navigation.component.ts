@@ -9,9 +9,8 @@ import { environment } from '../../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { Node, Settings } from '../../../models/RTLconfig';
+import { Node, Settings, SelNodeInfo, SelNodeInfoChain } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { GetInfo, GetInfoChain } from '../../../models/lndModels';
 import { MenuNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
 import * as fromLNDReducer from '../../../../lnd/store/lnd.reducers';
@@ -29,8 +28,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public selNode: Node;
   public settings: Settings;
   public version = '';
-  public information: GetInfo = {};
-  public informationChain: GetInfoChain = {};
+  public selNodeInfo: SelNodeInfo = {};
+  public selNodeInfoChain: SelNodeInfoChain = {};
   public flgLoading = true;
   public logoutNode = [{id: 100, parentId: 0, name: 'Logout', icon: 'eject'}];
   public showLogout = false;
@@ -65,32 +64,32 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.lndStore.select('lnd')
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(lndStore => {
-      this.information = lndStore ? lndStore.information : {};
       this.numPendingChannels = lndStore ? lndStore.numberOfPendingChannels : -1;
-
-      if (undefined !== this.information.identity_pubkey) {
-        if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
-          this.informationChain.chain = this.information.chains[0].toString();
-          this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-        } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain>this.information.chains[0];
-          this.informationChain.chain = getInfoChain.chain;
-          this.informationChain.network = getInfoChain.network;
-        }
-      } else {
-        this.informationChain.chain = '';
-        this.informationChain.network = '';
-      }
-
-      this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
       this.logger.info(lndStore);
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.selNodeInfo = rtlStore.selNodeInfo;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.showLogout = (sessionStorage.getItem('token')) ? true : false;
+
+      if (undefined !== this.selNodeInfo.identity_pubkey) {
+        if (undefined !== this.selNodeInfo.chains && typeof this.selNodeInfo.chains[0] === 'string') {
+          this.selNodeInfoChain.chain = this.selNodeInfo.chains[0].toString();
+          this.selNodeInfoChain.network = (this.selNodeInfo.testnet) ? 'Testnet' : 'Mainnet';
+        } else if (typeof this.selNodeInfo.chains[0] === 'object' && this.selNodeInfo.chains[0].hasOwnProperty('chain')) {
+          const getInfoChain = <SelNodeInfoChain>this.selNodeInfo.chains[0];
+          this.selNodeInfoChain.chain = getInfoChain.chain;
+          this.selNodeInfoChain.network = getInfoChain.network;
+        }
+      } else {
+        this.selNodeInfoChain.chain = '';
+        this.selNodeInfoChain.network = '';
+      }
+      this.flgLoading = (undefined !== this.selNodeInfo.identity_pubkey) ? false : true;
+
       if (!sessionStorage.getItem('token')) {
         this.flgLoading = false;
       }

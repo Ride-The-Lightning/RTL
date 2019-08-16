@@ -4,10 +4,10 @@ import { takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 
-import { Node } from '../../shared/models/RTLconfig';
-import { LoggerService } from '../../shared/services/logger.service';
-import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as RTLActions from '../../store/rtl.actions';
+import { Node } from '../../models/RTLconfig';
+import { LoggerService } from '../../services/logger.service';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-signin',

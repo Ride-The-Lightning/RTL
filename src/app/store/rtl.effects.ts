@@ -15,6 +15,7 @@ import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spin
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from '../shared/components/confirmation-message/confirmation-message.component';
 
+import * as CLActions from '../c-lightning/store/cl.actions';
 import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
@@ -207,7 +208,17 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
           this.store.dispatch(new RTLActions.ResetStore(action.payload));
-          return { type: LNDActions.FETCH_INFO };
+          if (action.payload.lnImplementation === 'CLightning') {
+            this.router.navigate(['./cl']);
+            this.store.dispatch(new CLActions.ResetCLStore());
+            this.store.dispatch(new LNDActions.ResetLNDStore());
+            return { type: CLActions.FETCH_CL_INFO };
+          } else {
+            this.router.navigate(['./lnd']);
+            this.store.dispatch(new CLActions.ResetCLStore());
+            this.store.dispatch(new LNDActions.ResetLNDStore());
+            return { type: LNDActions.FETCH_INFO };
+          }
         } else {
           return {
             type: RTLActions.OPEN_ALERT,

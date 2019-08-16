@@ -18,10 +18,10 @@
           <rtl-top-menu></rtl-top-menu>
         </div>
       </mat-toolbar>
-      <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary flex-wrap pubkey-info-top" rtlClipboard [payload]="information?.identity_pubkey" (copied)="copiedText($event)">
+      <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary flex-wrap pubkey-info-top" rtlClipboard [payload]="selNodeInfo?.identity_pubkey" (copied)="copiedText($event)">
         <mat-icon [ngClass]="{'icon-smaller': smallScreen}">vpn_key</mat-icon>
-        <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{information?.identity_pubkey}}
-          <mat-spinner [diameter]="20" *ngIf="flgLoading[0]" class="inline-spinner foreground"></mat-spinner>
+        <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{selNodeInfo?.identity_pubkey}}
+          <mat-spinner [diameter]="20" *ngIf="!selNodeInfo?.identity_pubkey" class="inline-spinner foreground"></mat-spinner>
           <mat-icon [ngClass]="{'icon-smaller cursor-pointer copy-icon-smaller': smallScreen, 'icon-small cursor-pointer copy-icon': !smallScreen}">file_copy</mat-icon><span [hidden]="!flgCopied">Copied</span>
         </div>
       </div>

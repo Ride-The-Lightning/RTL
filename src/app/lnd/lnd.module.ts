@@ -16,13 +16,10 @@ import { HomeComponent } from './home/home.component';
 import { PeersComponent } from './peers/peers.component';
 import { SendReceiveTransComponent } from './transactions/send-receive/send-receive-trans.component';
 import { InvoicesComponent } from './invoices/invoices.component';
-import { ServerConfigComponent } from './server-config/server-config.component';
-import { HelpComponent } from './help/help.component';
 import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
 import { PaymentsComponent } from './payments/send-receive/payments.component';
 import { ChannelManageComponent } from './channels/channel-manage/channel-manage.component';
 import { ChannelPendingComponent } from './channels/channel-pending/channel-pending.component';
-import { SigninComponent } from './signin/signin.component';
 import { ChannelClosedComponent } from './channels/channel-closed/channel-closed.component';
 import { ListTransactionsComponent } from './transactions/list-transactions/list-transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
@@ -49,13 +46,10 @@ import { QueryRoutesComponent } from './payments/query-routes/query-routes.compo
     PeersComponent,
     SendReceiveTransComponent,
     InvoicesComponent,
-    ServerConfigComponent,
-    HelpComponent,
     UnlockLNDComponent,
     PaymentsComponent,
     ChannelManageComponent,
     ChannelPendingComponent,
-    SigninComponent,
     ChannelClosedComponent,
     ListTransactionsComponent,
     LookupsComponent,

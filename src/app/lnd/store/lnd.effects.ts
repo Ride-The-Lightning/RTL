@@ -43,12 +43,14 @@ export class LNDEffects implements OnDestroy {
           if (undefined === info.identity_pubkey) {
             sessionStorage.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
+            this.store.dispatch(new RTLActions.SetSelNodeInfo({}));
             this.router.navigate(['/unlocklnd']);
             return {
               type: LNDActions.SET_INFO,
               payload: {}
             };
           } else {
+            this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
             sessionStorage.setItem('lndUnlocked', 'true');
             return {
               type: LNDActions.SET_INFO,

@@ -60,7 +60,7 @@ exports.getRTLConfig = (req, res, next) => {
         multiNodeConfig.nodes.forEach((node, i) => {
           const authentication = {};
           authentication.nodeAuthType = 'CUSTOM';
-          if(node.Authentication.lndConfigPath) {
+          if(node.Authentication && node.Authentication.lndConfigPath) {
             authentication.lndConfigPath = node.Authentication.lndConfigPath;
           }
           if(node.Settings.bitcoindConfigPath) {

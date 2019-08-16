@@ -4,6 +4,7 @@ import {
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
 } from '../../shared/models/lndModels';
 
+export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const FETCH_INFO = 'FETCH_INFO';
 export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
@@ -62,6 +63,10 @@ export const GET_FORWARDING_HISTORY = 'GET_FORWARDING_HISTORY';
 export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
+
+export class ResetLNDStore implements Action {
+  readonly type = RESET_LND_STORE;
+}
 
 export class FetchInfo implements Action {
   readonly type = FETCH_INFO;
@@ -348,7 +353,7 @@ export class SetQueryRoutes implements Action {
 }
 
 export type LNDActions =
-  FetchInfo | SetInfo | FetchPeers | SetPeers | AddPeer |
+  ResetLNDStore | FetchInfo | SetInfo | FetchPeers | SetPeers | AddPeer |
   DetachPeer | SaveNewPeer | RemovePeer | AddInvoice | SaveNewInvoice |
   GetForwardingHistory | SetForwardingHistory | FetchFees | SetFees |
   FetchBalance | SetBalance | FetchNetwork | SetNetwork |
