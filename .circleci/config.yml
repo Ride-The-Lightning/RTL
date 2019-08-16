@@ -60,7 +60,7 @@ jobs:
             #
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             #
-            sudo docker manifest create --amend "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-amd64" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
+            sudo docker manifest create --amend "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-amd64" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7" "$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-amd64" --os linux --arch amd64
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm32v7" --os linux --arch arm --variant v7
             sudo docker manifest annotate "$DOCKERHUB_REPO:$LATEST_TAG" "$DOCKERHUB_REPO:$LATEST_TAG-arm64v8" --os linux --arch arm64 --variant v8
