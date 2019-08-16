@@ -20,7 +20,7 @@ import * as fromRTLReducer from './shared/store/rtl.reducers';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('sideNavigation', { static: true }) sideNavigation: any;
+  @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
   public selNode: Node;
   public settings: Settings;
