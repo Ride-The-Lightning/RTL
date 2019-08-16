@@ -19,7 +19,7 @@ RUN npm install
 
 COPY . /RTL
 
-FROM arm32v7/node:10-jessie-slim
+FROM arm64v8/node:10-jessie-slim
 
 WORKDIR /RTL
 
