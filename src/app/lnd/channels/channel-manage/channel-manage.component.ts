@@ -1,21 +1,19 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import { Subject, Observable } from 'rxjs';
-import { takeUntil, filter, map, subscribeOn } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, Peer, GetInfo } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as fromLNDReducer from '../../store/lnd.reducers';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-manage',
@@ -45,8 +43,8 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public redirectedWithPeer = false;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects,
-    private lndEffects: LNDEffects, private lndStore: Store<fromLNDReducer.LNDState>, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects,
+    private lndEffects: LNDEffects, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias'];
@@ -71,7 +69,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[5]))
     .subscribe(lndStore => {
       this.information = lndStore.information;
@@ -94,7 +92,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
 
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/all') {
           this.flgLoading[0] = 'error';

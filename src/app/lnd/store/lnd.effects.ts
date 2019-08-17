@@ -13,9 +13,9 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as LNDActions from './lnd.actions';
 import * as fromLNDReducer from './lnd.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
@@ -25,7 +25,7 @@ export class LNDEffects implements OnDestroy {
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
-    private store: Store<fromLNDReducer.LNDState>,
+    private store: Store<fromApp.AppState>,
     private logger: LoggerService,
     public dialog: MatDialog,
     private router: Router) { }
@@ -34,7 +34,7 @@ export class LNDEffects implements OnDestroy {
   infoFetch = this.actions$.pipe(
     ofType(LNDActions.FETCH_INFO),
     withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.State]) => {
+    mergeMap(([action, store]: [LNDActions.FetchInfo, fromApp.RootState]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(environment.GETINFO_API)
       .pipe(
@@ -43,14 +43,14 @@ export class LNDEffects implements OnDestroy {
           if (undefined === info.identity_pubkey) {
             sessionStorage.removeItem('lndUnlocked');
             this.logger.info('Redirecting to Unlock');
-            this.store.dispatch(new RTLActions.SetSelNodeInfo({}));
+            // this.store.dispatch(new RTLActions.SetSelNodeInfo({}));
             this.router.navigate(['/unlocklnd']);
             return {
               type: LNDActions.SET_INFO,
               payload: {}
             };
           } else {
-            this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
+            // this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
             sessionStorage.setItem('lndUnlocked', 'true');
             return {
               type: LNDActions.SET_INFO,
@@ -588,7 +588,7 @@ export class LNDEffects implements OnDestroy {
   @Effect()
   sendPayment = this.actions$.pipe(
     ofType(LNDActions.SEND_PAYMENT),
-    withLatestFrom(this.store.select('rtlRoot')),
+    withLatestFrom(this.store.select('lnd')),
     mergeMap(([action, store]: [LNDActions.SendPayment, fromLNDReducer.LNDState]) => {
     let queryHeaders = {};
     if (action.payload[2]) {

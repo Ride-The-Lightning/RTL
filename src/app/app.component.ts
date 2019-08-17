@@ -11,7 +11,7 @@ import { LoggerService } from './shared/services/logger.service';
 import { RTLConfiguration, Settings, Node, SelNodeInfo } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
-import * as fromRTLReducer from './store/rtl.reducers';
+import * as fromApp from './store/rtl.reducers';
 
 @Component({
   selector: 'rtl-app',
@@ -31,7 +31,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public smallScreen = false;
   unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private userIdle: UserIdleService, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private userIdle: UserIdleService, private router: Router) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
-      this.selNodeInfo = rtlStore.selNodeInfo;
+      // this.selNodeInfo = rtlStore.selNodeInfo;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;

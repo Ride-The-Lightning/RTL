@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 
 import * as CLActions from './store/cl.actions';
 import * as RTLActions from '../store/rtl.actions';
-import * as fromRTLReducer from '../store/rtl.reducers';
+import * as fromApp from '../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-cl-root-app',
@@ -17,11 +17,13 @@ import * as fromRTLReducer from '../store/rtl.reducers';
 export class ClRootComponent implements OnInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<fromApp.AppState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     console.warn('CL ROOT');
-    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
+    console.warn(this.activatedRoute.url);
+    // this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
+    this.store.dispatch(new CLActions.FetchCLInfo());
     this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.INIT_APP_DATA))
     .subscribe((actionPayload: RTLActions.InitAppData) => {
       this.store.dispatch(new CLActions.FetchCLInfo());

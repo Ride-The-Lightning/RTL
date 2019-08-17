@@ -7,9 +7,8 @@ import { Node, RTLConfiguration } from '../../models/RTLconfig';
 import { GetInfo } from '../../models/lndModels';
 import { LoggerService } from '../../services/logger.service';
 
-import * as fromLNDReducer from '../../../lnd/store/lnd.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-settings-nav',
@@ -30,10 +29,10 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
   @Output() done: EventEmitter<void> = new EventEmitter();
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>) {}
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[2]))
     .subscribe(lndStore => {
       this.information = lndStore ? lndStore.information : {};
@@ -42,7 +41,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.selectedMenu = this.selNode.settings.menu;

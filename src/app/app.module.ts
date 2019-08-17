@@ -21,14 +21,17 @@ import { environment } from '../environments/environment';
 import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { ThemeOverlay } from './shared/theme/overlay-container/theme-overlay';
-import { RTLRootReducer } from './store/rtl.reducers';
-import { RTLEffects } from './store/rtl.effects';
 
 import { AppComponent } from './app.component';
 import { CommonService } from './shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard, LNDUnlockedGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
+
+import * as fromApp from './store/rtl.reducers';
+import { RTLEffects } from './store/rtl.effects';
+import { LNDEffects } from './lnd/store/lnd.effects';
+import { CLEffects } from './c-lightning/store/cl.effects';
 
 @NgModule({
   imports: [
@@ -39,8 +42,8 @@ import { AuthInterceptor } from './shared/services/auth.interceptor';
     SharedModule,
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
-    StoreModule.forRoot({rtlRoot: RTLRootReducer}),
-    EffectsModule.forRoot([RTLEffects]),
+    StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [

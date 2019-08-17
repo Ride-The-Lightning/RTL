@@ -1,14 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { EffectsModule } from '@ngrx/effects';
 
 import { environment } from '../../environments/environment';
 import { SharedModule } from '../shared/shared.module';
-import { LNDReducer } from './store/lnd.reducers';
-import { LNDEffects } from './store/lnd.effects';
 
 import { lndRouting } from './lnd.routing';
 import { LndRootComponent } from './lnd-root.component';
@@ -36,8 +32,6 @@ import { QueryRoutesComponent } from './payments/query-routes/query-routes.compo
     SharedModule,
     lndRouting,
     NgxChartsModule,
-    EffectsModule.forFeature([LNDEffects]),
-    StoreModule.forFeature('lnd', LNDReducer),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [

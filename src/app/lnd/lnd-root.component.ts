@@ -3,10 +3,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
-import * as fromLNDReducer from './store/lnd.reducers';
 import * as LNDActions from './store/lnd.actions';
-import * as fromRTLReducer from '../store/rtl.reducers';
+import * as fromApp from '../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-lnd-root-app',
@@ -14,21 +14,30 @@ import * as fromRTLReducer from '../store/rtl.reducers';
   styleUrls: ['./lnd-root.component.scss']
 })
 export class LndRootComponent implements OnInit, OnDestroy {
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<fromApp.AppState>, private router: Router, private activatedRoute: ActivatedRoute, private actions$: Actions) {}
 
   ngOnInit() {
     console.warn('LND ROOT');
+    // this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
     this.store.dispatch(new LNDActions.FetchInfo());
-    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(lndStore => {
+      console.warn(lndStore);
       if (undefined !== lndStore.information.identity_pubkey) {
         this.initializeRemainingData();
       }
     });    
+    this.store.dispatch(new LNDActions.FetchInfo());
+    this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === LNDActions.SET_INFO))
+    .subscribe((infoData: LNDActions.SetInfo) => {
+      console.warn(infoData);
+      if (undefined !== infoData.payload.identity_pubkey) {
+        this.initializeRemainingData();
+      }
+    });
   }
 
   initializeRemainingData() {

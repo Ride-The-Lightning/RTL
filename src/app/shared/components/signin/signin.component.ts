@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { Node } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
@@ -25,12 +25,12 @@ export class SigninComponent implements OnInit, OnDestroy {
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) { }
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) { }
 
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });

@@ -3,15 +3,15 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material';
 
 import { LNDEffects } from '../store/lnd.effects';
-import * as LNDActions from '../store/lnd.actions';
 import { RTLEffects } from '../../store/rtl.effects';
+import * as LNDActions from '../store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const initWalletPassword = control.get('initWalletPassword');
@@ -48,7 +48,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   warnRes = true;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects,
+  constructor(private store: Store<fromApp.AppState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects,
     private lndEffects: LNDEffects, private router: Router) {}
 
   ngOnInit() {

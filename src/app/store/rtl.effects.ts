@@ -18,7 +18,7 @@ import { ConfirmationMessageComponent } from '../shared/components/confirmation-
 import * as CLActions from '../c-lightning/store/cl.actions';
 import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
-import * as fromRTLReducer from './rtl.reducers';
+import * as fromApp from './rtl.reducers';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
@@ -28,7 +28,7 @@ export class RTLEffects implements OnDestroy {
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
-    private store: Store<fromRTLReducer.State>,
+    private store: Store<fromApp.AppState>,
     private logger: LoggerService,
     public dialog: MatDialog,
     private router: Router) { }
@@ -118,7 +118,7 @@ export class RTLEffects implements OnDestroy {
   isAuthorized = this.actions$.pipe(
     ofType(RTLActions.IS_AUTHORIZED),
     withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [RTLActions.IsAuthorized, fromRTLReducer.State]) => {
+    mergeMap(([action, store]: [RTLActions.IsAuthorized, fromApp.RootState]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
     .pipe(
@@ -155,7 +155,7 @@ export class RTLEffects implements OnDestroy {
   authSignin = this.actions$.pipe(
   ofType(RTLActions.SIGNIN),
   withLatestFrom(this.store.select('rtlRoot')),
-  mergeMap(([action, store]: [RTLActions.Signin, fromRTLReducer.State]) => {
+  mergeMap(([action, store]: [RTLActions.Signin, fromApp.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectError('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
     .pipe(
@@ -184,7 +184,7 @@ export class RTLEffects implements OnDestroy {
   signOut = this.actions$.pipe(
   ofType(RTLActions.SIGNOUT),
   withLatestFrom(this.store.select('rtlRoot')),
-  mergeMap(([action, store]: [RTLActions.Signout, fromRTLReducer.State]) => {
+  mergeMap(([action, store]: [RTLActions.Signout, fromApp.RootState]) => {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
@@ -210,13 +210,9 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.ResetStore(action.payload));
           if (action.payload.lnImplementation === 'CLightning') {
             this.router.navigate(['./cl']);
-            this.store.dispatch(new CLActions.ResetCLStore());
-            this.store.dispatch(new LNDActions.ResetLNDStore());
             return { type: CLActions.FETCH_CL_INFO };
           } else {
             this.router.navigate(['./lnd']);
-            this.store.dispatch(new CLActions.ResetCLStore());
-            this.store.dispatch(new LNDActions.ResetLNDStore());
             return { type: LNDActions.FETCH_INFO };
           }
         } else {

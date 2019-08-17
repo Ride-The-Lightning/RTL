@@ -3,11 +3,6 @@ import {
   GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel,
   Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../../shared/models/lndModels';
-import * as fromApp from '../../store/rtl.reducers';
-
-export interface FeatureState extends fromApp.State {
-  lnd: LNDState;
-}
 
 export interface LNDState {
   information: GetInfo;
@@ -32,7 +27,7 @@ export interface LNDState {
   addressTypes: AddressType[];
 }
 
-export const LNDInitialState: LNDState = {
+const LNDInitialState: LNDState = {
   information: {},
   peers: [],
   fees: {},

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject, Observable, of } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -13,10 +13,9 @@ import { Node, Settings, SelNodeInfo, SelNodeInfoChain } from '../../../models/R
 import { LoggerService } from '../../../services/logger.service';
 import { MenuNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
-import * as fromLNDReducer from '../../../../lnd/store/lnd.reducers';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as fromApp from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -43,8 +42,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenus: MatTreeFlatDataSource<MenuNode, FlatMenuNode>;
   navMenusLogout: MatTreeFlatDataSource<MenuNode, FlatMenuNode>;
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private rtlEffects: RTLEffects,
-    private lndStore: Store<fromLNDReducer.LNDState>, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
     if (MENU_DATA.children[MENU_DATA.children.length - 1].id === 100) {
       MENU_DATA.children.pop();
@@ -61,7 +59,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(lndStore => {
       this.numPendingChannels = lndStore ? lndStore.numberOfPendingChannels : -1;
@@ -69,8 +67,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.selNodeInfo = rtlStore.selNodeInfo;
+    .subscribe((rtlStore: fromApp.RootState) => {
+      // this.selNodeInfo = rtlStore.selNodeInfo;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.showLogout = (sessionStorage.getItem('token')) ? true : false;
@@ -121,7 +119,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.treeControl.collapseAll();
     if (node.parentId === 0) {
       this.treeControl.expandDescendants(node);
-      this.router.navigate([node.link]);
+      console.warn(this.activatedRoute.firstChild);
+      if (this.activatedRoute.firstChild.children.length > 0) {
+        this.router.navigate([node.link], {relativeTo: this.activatedRoute.firstChild});
+      }
     } else {
       const parentNode = this.treeControl.dataNodes.filter(dataNode => {
         return dataNode.id === node.parentId;

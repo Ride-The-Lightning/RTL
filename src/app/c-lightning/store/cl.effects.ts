@@ -13,9 +13,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo } from '../../shared/models/clModels';
 
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as CLActions from './cl.actions';
-import * as fromCLReducer from './cl.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -25,7 +24,7 @@ export class CLEffects implements OnDestroy {
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
-    private store: Store<fromCLReducer.CLState>,
+    private store: Store<fromApp.AppState>,
     private logger: LoggerService,
     public dialog: MatDialog,
     private router: Router) { }
@@ -34,21 +33,21 @@ export class CLEffects implements OnDestroy {
   infoFetch = this.actions$.pipe(
     ofType(CLActions.FETCH_CL_INFO),
     withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [CLActions.FetchCLInfo, fromRTLReducer.State]) => {
+    mergeMap(([action, store]: [CLActions.FetchCLInfo, fromApp.RootState]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(environment.GETINFO_API)
       .pipe(
         map((info) => {
           this.logger.info(info);
           if (undefined === info.identity_pubkey) {
-            this.store.dispatch(new RTLActions.SetSelNodeInfo({}));            
+            // this.store.dispatch(new RTLActions.SetSelNodeInfo({}));            
             sessionStorage.removeItem('clUnlocked');
             return {
               type: CLActions.SET_CL_INFO,
               payload: {}
             };
           } else {
-            this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
+            // this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
             sessionStorage.setItem('clUnlocked', 'true');
             return {
               type: CLActions.SET_CL_INFO,

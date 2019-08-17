@@ -1,10 +1,5 @@
 import * as CLActions from './cl.actions';
 import { GetInfo, GetInfoChain } from '../../shared/models/clModels';
-import * as fromApp from '../../store/rtl.reducers';
-
-export interface FeatureState extends fromApp.State {
-  cl: CLState;
-}
 
 export interface CLState {
   information: GetInfo;

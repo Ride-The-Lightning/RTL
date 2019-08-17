@@ -7,9 +7,8 @@ import { Node } from '../../models/RTLconfig';
 
 import { LNDEffects } from '../../../lnd/store/lnd.effects';
 import * as LNDActions from '../../../lnd/store/lnd.actions';
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-server-config',
@@ -25,12 +24,12 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   public fileFormat = 'INI';
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private lndEffects: LNDEffects) {}
+  constructor(private store: Store<fromApp.AppState>, private lndEffects: LNDEffects) {}
 
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'fetchConfig') {
           this.resetData();

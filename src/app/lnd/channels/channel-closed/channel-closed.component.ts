@@ -9,9 +9,8 @@ import { ClosedChannel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromLNDReducer from '../../store/lnd.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-closed',
@@ -27,7 +26,7 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close_type', 'chan_id', 'settled_balance'];
@@ -56,7 +55,7 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
       this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'closed'}));
     });
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[3]))
     .subscribe(lndStore => {
       if (undefined !== lndStore.closedChannels) {
@@ -69,7 +68,7 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/closed') {
           this.flgLoading[0] = 'error';

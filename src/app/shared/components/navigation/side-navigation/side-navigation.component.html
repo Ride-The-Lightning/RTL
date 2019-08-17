@@ -16,7 +16,7 @@
 </div>
 
 <mat-tree [dataSource]="navMenus" [treeControl]="treeControl" *ngIf="settings.menuType !== 'Compact'">
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" routerLinkActive="active-link" routerLink="{{node.link}}">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" routerLinkActive="active-link" [routerLink]="[{}, node.link]">
     <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}<span *ngIf="node.name === 'Pending' && settings.menuType === 'Mini'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
     <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
   </mat-tree-node>
@@ -40,7 +40,7 @@
 </mat-tree>
 
 <mat-tree [dataSource]="navMenus" [treeControl]="treeControl" *ngIf="settings.menuType === 'Compact'">
-  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding matTreeNodePaddingIndent="60" routerLinkActive="active-link" routerLink="{{node.link}}">
+  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding matTreeNodePaddingIndent="60" routerLinkActive="active-link" [routerLink]="[{}, node.link]">
     <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
     <span>{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
   </mat-tree-node>

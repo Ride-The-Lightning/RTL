@@ -7,10 +7,9 @@ import { Actions } from '@ngrx/effects';
 import { LoggerService } from '../../../services/logger.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
-import * as fromLNDReducer from '../../../../lnd/store/lnd.reducers';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as fromApp from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-horizontal-navigation',
@@ -24,13 +23,12 @@ export class HorizontalNavigationComponent implements OnInit {
   public numPendingChannels = 0;
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions,
-    private lndStore: Store<fromLNDReducer.LNDState>, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private rtlEffects: RTLEffects) {
     this.menuNodes = MENU_DATA.children;
   }
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(lndStore => {
       this.numPendingChannels = lndStore.numberOfPendingChannels;

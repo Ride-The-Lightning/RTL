@@ -12,9 +12,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as fromLNDReducer from '../store/lnd.reducers';
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-invoices',
@@ -45,7 +44,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   private lastOffset = -1;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['settled', 'creation_date', 'memo', 'value'];
@@ -68,7 +67,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[5]))
     .subscribe(lndStore => {
       this.information = lndStore ? lndStore.information : {};
@@ -84,7 +83,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
 
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInvoices') {
           this.flgLoading[0] = 'error';

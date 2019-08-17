@@ -11,9 +11,8 @@ import { Channel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as fromLNDReducer from '../../store/lnd.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-backup',
@@ -30,11 +29,10 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>,
-    private lndStore: Store<fromLNDReducer.LNDState>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {}
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[4]))
     .subscribe(lndStore => {
       this.channels = new MatTableDataSource([]);
@@ -60,7 +58,7 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       this.selNode = rtlStore.selNode;
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {

@@ -2,17 +2,28 @@ import * as RTLActions from './rtl.actions';
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Node, SelNodeInfo } from '../shared/models/RTLconfig';
 
-export interface State {
+import { ActionReducerMap } from '@ngrx/store';
+
+import * as fromLND from '../lnd/store/lnd.reducers';
+import * as fromCL from '../c-lightning/store/cl.reducers';
+
+export interface AppState {
+  rtlRoot: RootState;
+  lnd: fromLND.LNDState;
+  cl: fromCL.CLState;
+}
+
+export interface RootState {
   effectErrors: ErrorPayload[];
   selNode: Node;
   appConfig: RTLConfiguration;
-  selNodeInfo: SelNodeInfo;
+  // selNodeInfo: SelNodeInfo;
 }
 
 const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
 
-const initialState: State = {
+const initialState: RootState = {
   effectErrors: [],
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
   appConfig: {
@@ -20,7 +31,7 @@ const initialState: State = {
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
-  selNodeInfo: {}
+  // selNodeInfo: {}
 };
 
 export function RTLRootReducer(state = initialState, action: RTLActions.RTLActions) {
@@ -59,13 +70,20 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         selNode: action.payload.nodes.find(node => +node.index === action.payload.selectedNodeIndex),
         appConfig: action.payload
       };
-    case RTLActions.SET_SELECTED_NODE_INFO:
-      return {
-        ...state,
-        selNodeInfo: action.payload
-      };
+    // case RTLActions.SET_SELECTED_NODE_INFO:
+    //   return {
+    //     ...state,
+    //     selNodeInfo: action.payload
+    //   };
     default:
       return state;
   }
 
 }
+
+export const appReducer: ActionReducerMap<AppState> = {
+  rtlRoot: RTLRootReducer,
+  lnd: fromLND.LNDReducer,
+  cl: fromCL.CLReducer
+};
+

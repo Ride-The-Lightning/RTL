@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo } from '../../shared/models/clModels';
 
-import * as fromCLReducer from '../store/cl.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-home',
@@ -17,11 +17,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private clStore: Store<fromCLReducer.CLState>) {}
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     console.warn('CL HOME');
-    this.clStore.select('cl')
+    this.store.select('cl')
     .pipe(takeUntil(this.unsubs[1]))
     .subscribe(clStore => {
       this.information = clStore.information;

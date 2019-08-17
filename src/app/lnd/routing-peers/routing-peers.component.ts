@@ -10,9 +10,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as fromLNDReducer from '../store/lnd.reducers';
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromApp from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -37,8 +36,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.State>,
-    private lndStore: Store<fromLNDReducer.LNDState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromApp.AppState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['chan_id', 'events', 'total_amount'];
@@ -65,7 +63,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
       this.onRoutingPeersFetch();
     });
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[3]))
     .subscribe(lndStore => {
       if (undefined !== lndStore.forwardingHistory && undefined !== lndStore.forwardingHistory.forwarding_events) {
@@ -81,7 +79,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';

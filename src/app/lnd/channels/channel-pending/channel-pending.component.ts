@@ -8,9 +8,8 @@ import { Channel, GetInfo, PendingChannels } from '../../../shared/models/lndMod
 import { Node } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as fromLNDReducer from '../../store/lnd.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as fromApp from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-pending',
@@ -50,7 +49,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private lndStore: Store<fromLNDReducer.LNDState>) {
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance'];
@@ -96,7 +95,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lndStore.select('lnd')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[2]))
     .subscribe(lndStore => {
       this.information = lndStore.information;
@@ -124,7 +123,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
 
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore: fromApp.RootState) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/pending') {
           this.flgLoading[0] = 'error';
