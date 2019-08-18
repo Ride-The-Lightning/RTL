@@ -7,9 +7,12 @@ import { SigninComponent } from './shared/components/signin/signin.component';
 import { SsoFailedComponent } from './shared/components/sso-failed/sso-failed.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { AuthGuard } from './shared/services/auth.guard';
+import { SuperUserDashboardComponent } from './super-user-dashboard/super-user-dashboard.component';
+
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/cl', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: SuperUserDashboardComponent },
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LndModule)},
   { path: 'cl', loadChildren: () => import('./c-lightning/cl.module').then(childModule => childModule.ClModule)},
   { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
@@ -19,4 +22,4 @@ export const routes: Routes = [
   { path: '**', component: NotFoundComponent } 
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+export const routing: ModuleWithProviders = RouterModule.forRoot(routes, { enableTracing: true });

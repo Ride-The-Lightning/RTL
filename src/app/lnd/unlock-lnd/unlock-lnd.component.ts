@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -49,7 +49,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromApp.AppState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects,
-    private lndEffects: LNDEffects, private router: Router) {}
+    private lndEffects: LNDEffects, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     this.walletPassword = '';
@@ -147,7 +147,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   onGoToHome() {
     setTimeout(() => {
       this.store.dispatch(new RTLActions.InitAppData());
-      this.router.navigate(['/']);
+      this.router.navigate(['../'], { relativeTo: this.activatedRoute });
     }, 1000 * 1);
   }
 

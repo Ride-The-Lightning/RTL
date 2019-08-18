@@ -43,7 +43,7 @@
 
   .active-link {
     background: mat-color($primary); 
-    color: white; // mat-color($foreground, text); for dark theme but for light theme the foreground text color is black
+    color: white;
   }
 
   .h-active-link {
@@ -58,10 +58,6 @@
     }
   }
 
-  .mat-primary .mat-select, .mat-primary .mat-select-trigger, .mat-primary .mat-select-value, .mat-primary .mat-select-arrow {
-    // color: white !important;    
-  }
-  
   .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     background: none;

@@ -1,6 +1,6 @@
 import * as RTLActions from './rtl.actions';
 import { ErrorPayload } from '../shared/models/errorPayload';
-import { RTLConfiguration, Node, SelNodeInfo } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Node } from '../shared/models/RTLconfig';
 
 import { ActionReducerMap } from '@ngrx/store';
 
@@ -17,7 +17,6 @@ export interface RootState {
   effectErrors: ErrorPayload[];
   selNode: Node;
   appConfig: RTLConfiguration;
-  // selNodeInfo: SelNodeInfo;
 }
 
 const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
@@ -30,8 +29,7 @@ const initialState: RootState = {
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
-  },
-  // selNodeInfo: {}
+  }
 };
 
 export function RTLRootReducer(state = initialState, action: RTLActions.RTLActions) {
@@ -70,11 +68,6 @@ export function RTLRootReducer(state = initialState, action: RTLActions.RTLActio
         selNode: action.payload.nodes.find(node => +node.index === action.payload.selectedNodeIndex),
         appConfig: action.payload
       };
-    // case RTLActions.SET_SELECTED_NODE_INFO:
-    //   return {
-    //     ...state,
-    //     selNodeInfo: action.payload
-    //   };
     default:
       return state;
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -8,7 +8,8 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
-import { RTLConfiguration, Settings, Node, SelNodeInfo } from './shared/models/RTLconfig';
+import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
+import { GetInfo } from './shared/models/lndModels';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromApp from './store/rtl.reducers';
@@ -21,27 +22,24 @@ import * as fromApp from './store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
-  public selNode: Node;
   public settings: Settings;
-  public selNodeInfo: SelNodeInfo;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
+  public information: GetInfo = {};
+  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgCopied = false;
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public smallScreen = false;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private userIdle: UserIdleService, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private userIdle: UserIdleService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
-      // this.selNodeInfo = rtlStore.selNodeInfo;
-      this.selNode = rtlStore.selNode;
-      this.settings = this.selNode.settings;
+      this.settings = rtlStore.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       if (window.innerWidth <= 768) {
         this.settings.menu = 'Vertical';
@@ -55,7 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.actions$
     .pipe(
-      takeUntil(this.unsubs[1]),
+      takeUntil(this.unSubs[3]),
       filter(action => action.type === RTLActions.SET_RTL_CONFIG)
     ).subscribe((actionPayload: RTLActions.SetRTLConfig) => {
       if (actionPayload.type === RTLActions.SET_RTL_CONFIG) {
@@ -63,14 +61,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (+actionPayload.payload.sso.rtlSSO) {
             this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
           } else {
-            this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
+            this.router.navigate([this.appConfig.sso.logoutRedirectLink], { relativeTo: this.activatedRoute });
           }
         }
         if (
           this.settings.menu === 'Horizontal' ||
           this.settings.menuType === 'Compact' ||
           this.settings.menuType === 'Mini') {
-          this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
+          this.settingSidenav.toggle();
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
       }
@@ -132,7 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(unsub => {
+    this.unSubs.forEach(unsub => {
       unsub.next();
       unsub.complete();
     });

@@ -3,10 +3,12 @@ import { GetInfo, GetInfoChain } from '../../shared/models/clModels';
 
 export interface CLState {
   information: GetInfo;
+  fees: {};
 }
 
 export const CLInitialState: CLState = {
-  information: {}
+  information: {},
+  fees: {}
 };
 
 export function CLReducer(state = CLInitialState, action: CLActions.CLActions) {
@@ -35,6 +37,11 @@ export function CLReducer(state = CLInitialState, action: CLActions.CLActions) {
         ...state,
         information: action.payload
       };
+    case CLActions.SET_CL_FEES:
+      return {
+        ...state,
+        fees: action.payload
+      };      
     default:
       return state;
   }

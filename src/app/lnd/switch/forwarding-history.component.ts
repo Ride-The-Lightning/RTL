@@ -65,7 +65,6 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
         this.lastOffsetIndex = lndStore.forwardingHistory.last_offset_index;
         this.loadForwardingEventsTable(lndStore.forwardingHistory.forwarding_events);
       } else {
-        // To reset table after other Forwarding history calls
         this.lastOffsetIndex = 0;
         this.loadForwardingEventsTable([]);
       }

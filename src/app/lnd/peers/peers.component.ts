@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
@@ -32,12 +32,12 @@ export class PeersComponent implements OnInit, OnDestroy {
   public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
+  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects,
-    private lndEffects: LNDEffects, private actions$: Actions, private router: Router) {
+    private lndEffects: LNDEffects, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['detach', 'pub_key', 'alias'];
@@ -146,7 +146,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.router.navigate(['chnlmanage'], { state: { peer: peerToAddChannel.pub_key }});
+    this.router.navigate(['chnlmanage'], { relativeTo: this.activatedRoute, state: { peer: peerToAddChannel.pub_key }});
   }
 
   onPeerDetach(peerToDetach: Peer) {

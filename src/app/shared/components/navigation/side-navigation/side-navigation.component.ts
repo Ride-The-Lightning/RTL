@@ -9,7 +9,8 @@ import { environment } from '../../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { Node, Settings, SelNodeInfo, SelNodeInfoChain } from '../../../models/RTLconfig';
+import { GetInfo, GetInfoChain } from '../../../models/lndModels';
+import { Node, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { MenuNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
@@ -27,14 +28,14 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public selNode: Node;
   public settings: Settings;
   public version = '';
-  public selNodeInfo: SelNodeInfo = {};
-  public selNodeInfoChain: SelNodeInfoChain = {};
+  public information: GetInfo = {};
+  public informationChain: GetInfoChain = {};  
   public flgLoading = true;
   public logoutNode = [{id: 100, parentId: 0, name: 'Logout', icon: 'eject'}];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;
-  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
   treeControl: FlatTreeControl<FlatMenuNode>;
   treeControlLogout: FlatTreeControl<FlatMenuNode>;
   treeFlattener: MatTreeFlattener<MenuNode, FlatMenuNode>;
@@ -68,26 +69,24 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromApp.RootState) => {
-      // this.selNodeInfo = rtlStore.selNodeInfo;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.showLogout = (sessionStorage.getItem('token')) ? true : false;
-
-      if (undefined !== this.selNodeInfo.identity_pubkey) {
-        if (undefined !== this.selNodeInfo.chains && typeof this.selNodeInfo.chains[0] === 'string') {
-          this.selNodeInfoChain.chain = this.selNodeInfo.chains[0].toString();
-          this.selNodeInfoChain.network = (this.selNodeInfo.testnet) ? 'Testnet' : 'Mainnet';
-        } else if (typeof this.selNodeInfo.chains[0] === 'object' && this.selNodeInfo.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <SelNodeInfoChain>this.selNodeInfo.chains[0];
-          this.selNodeInfoChain.chain = getInfoChain.chain;
-          this.selNodeInfoChain.network = getInfoChain.network;
-        }
+      if (this.selNode.lnImplementation.toLowerCase() === 'clightning') {
+        this.store.select('cl')
+        .pipe(takeUntil(this.unSubs[4]))
+        .subscribe((clStore) => {
+          this.information = clStore.information;
+          this.readInformation();
+        });
       } else {
-        this.selNodeInfoChain.chain = '';
-        this.selNodeInfoChain.network = '';
+        this.store.select('lnd')
+        .pipe(takeUntil(this.unSubs[5]))
+        .subscribe((lndStore) => {
+          this.information = lndStore.information;
+          this.readInformation();
+        });
       }
-      this.flgLoading = (undefined !== this.selNodeInfo.identity_pubkey) ? false : true;
-
       if (!sessionStorage.getItem('token')) {
         this.flgLoading = false;
       }
@@ -105,6 +104,23 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
+  private readInformation() {
+    if (undefined !== this.information.identity_pubkey) {
+      if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
+        this.informationChain.chain = this.information.chains[0].toString();
+        this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
+      } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+        const getInfoChain = <GetInfoChain>this.information.chains[0];
+        this.informationChain.chain = getInfoChain.chain;
+        this.informationChain.network = getInfoChain.network;
+      }
+    } else {
+      this.informationChain.chain = '';
+      this.informationChain.network = '';
+    }
+    this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
+  }
+
   private transformer(node: MenuNode, level: number) { return new FlatMenuNode(!!node.children, level, node.id, node.parentId, node.name, node.icon, node.link); }
 
   private getLevel(node: FlatMenuNode) { return node.level; }
@@ -119,10 +135,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.treeControl.collapseAll();
     if (node.parentId === 0) {
       this.treeControl.expandDescendants(node);
-      console.warn(this.activatedRoute.firstChild);
-      if (this.activatedRoute.firstChild.children.length > 0) {
-        this.router.navigate([node.link], {relativeTo: this.activatedRoute.firstChild});
-      }
+      this.router.navigate([node.link], {relativeTo: this.activatedRoute.firstChild});
     } else {
       const parentNode = this.treeControl.dataNodes.filter(dataNode => {
         return dataNode.id === node.parentId;

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
@@ -31,7 +31,8 @@ export class RTLEffects implements OnDestroy {
     private store: Store<fromApp.AppState>,
     private logger: LoggerService,
     public dialog: MatDialog,
-    private router: Router) { }
+    private router: Router,
+    private activatedRoute: ActivatedRoute) { }
 
   @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
@@ -163,7 +164,7 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
-        this.router.navigate(['/']);
+        this.router.navigate(['/'], { relativeTo: this.activatedRoute });
       }),
       catchError((err) => {
         this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', message: JSON.stringify(err.error)}}));
@@ -171,9 +172,9 @@ export class RTLEffects implements OnDestroy {
         this.logger.error(err.error);
         this.logger.info('Redirecting to Signin Error Page');
         if (+store.appConfig.sso.rtlSSO) {
-          this.router.navigate(['/ssoerror']);
+          this.router.navigate(['/ssoerror'], { relativeTo: this.activatedRoute });
         } else {
-          this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+          this.router.navigate([store.appConfig.sso.logoutRedirectLink], { relativeTo: this.activatedRoute });
         }
         return of();
       })
@@ -188,7 +189,7 @@ export class RTLEffects implements OnDestroy {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
-      this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+      this.router.navigate([store.appConfig.sso.logoutRedirectLink], { relativeTo: this.activatedRoute });
     }
     sessionStorage.removeItem('lndUnlocked');
     sessionStorage.removeItem('token');
@@ -208,11 +209,11 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
           this.store.dispatch(new RTLActions.ResetStore(action.payload));
-          if (action.payload.lnImplementation === 'CLightning') {
-            this.router.navigate(['./cl']);
+          if (action.payload.lnImplementation.toLowerCase() === 'clightning') {
+            this.router.navigate(['./cl'], { relativeTo: this.activatedRoute });
             return { type: CLActions.FETCH_CL_INFO };
           } else {
-            this.router.navigate(['./lnd']);
+            this.router.navigate(['./lnd'], { relativeTo: this.activatedRoute });
             return { type: LNDActions.FETCH_INFO };
           }
         } else {

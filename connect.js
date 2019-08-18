@@ -262,7 +262,7 @@ connect.validateMultiNodeConfig = (config) => {
 
   config.nodes.forEach((node, idx) => {
     common.nodes[idx] = {};
-    if(node.lnImplementation === 'CLightning') {
+    if(node.lnImplementation.toString().toLowerCase() === 'clightning') {
       common.nodes[idx].macaroon_path = '';
     } else {
       if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {

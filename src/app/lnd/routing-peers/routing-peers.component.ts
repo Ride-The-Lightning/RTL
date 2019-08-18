@@ -69,7 +69,6 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       if (undefined !== lndStore.forwardingHistory && undefined !== lndStore.forwardingHistory.forwarding_events) {
         this.loadRoutingPeersTable(lndStore.forwardingHistory.forwarding_events);
       } else {
-        // To reset table after other Forwarding history calls
         this.loadRoutingPeersTable([]);
       }
       if (this.flgLoading[0] !== 'error') {
@@ -118,7 +117,6 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       this.RoutingPeersOutgoing.sort = this.sortOut;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
-       // To reset table after other Forwarding history calls
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }

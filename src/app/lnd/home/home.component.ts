@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public BTCtotalBalance = '';
   public BTCchannelBalance = '';
   public networkInfo: NetworkInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
+  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true];
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   public channels: any;
   public position = 'below';

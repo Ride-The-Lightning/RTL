@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { RTLConfiguration, Settings, Node, SelNodeInfo } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Settings, Node } from '../shared/models/RTLconfig';
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { MatDialogConfig } from '@angular/material';
 
@@ -18,7 +18,6 @@ export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
-// export const SET_SELECTED_NODE_INFO = 'SET_SELECTED_NODE_INFO';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
 export const SIGNIN = 'SIGNIN';
@@ -87,11 +86,6 @@ export class SetSelelectedNode implements Action {
   constructor(public payload: Node) {}
 }
 
-// export class SetSelNodeInfo implements Action {
-//   readonly type = SET_SELECTED_NODE_INFO;
-//   constructor(public payload: SelNodeInfo) {}
-// }
-
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
   constructor(public payload: string) {} // payload = password
@@ -121,5 +115,4 @@ export type RTLActions =
   FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
   ResetStore | SetSelelectedNode | 
-  // SetSelNodeInfo |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData;

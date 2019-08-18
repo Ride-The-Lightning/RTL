@@ -26,7 +26,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns = [];
-  public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
+  public flgLoading: Array<Boolean | 'error'> = [false];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private lndEffects: LNDEffects, private actions$: Actions) {

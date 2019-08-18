@@ -45,16 +45,3 @@ export class RTLConfiguration {
     public nodes: Node[]
   ) { }
 }
-
-export interface SelNodeInfo {
-  identity_pubkey?: string;
-  alias?: string;
-  testnet?: boolean;
-  chains?: SelNodeInfoChain[] | string[];
-  version?: string;
-}
-
-export interface SelNodeInfoChain {
-  chain?: string;
-  network?: string;
-}

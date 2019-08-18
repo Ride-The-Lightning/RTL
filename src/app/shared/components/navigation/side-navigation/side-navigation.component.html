@@ -9,9 +9,9 @@
 </mat-toolbar>
 <div fxLayout="row" fxLayoutAlign="start center" class="lnd-info pl-2" *ngIf="settings.menuType !== 'Mini'">
   <div fxLayout="column">
-    <p class="name">Alias: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{selNodeInfo?.alias}}</p>
-    <p>Chain: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{selNodeInfoChain.chain | titlecase}}<span> [{{selNodeInfoChain.network | titlecase}}]</span></p>
-    <p class="name">LND Version: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{selNodeInfo?.version}}</p>
+    <p class="name">Alias: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{information?.alias}}</p>
+    <p>Chain: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{informationChain.chain | titlecase}}<span> [{{informationChain.network | titlecase}}]</span></p>
+    <p class="name">LND Version: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{information?.version}}</p>
   </div>
 </div>
 

@@ -21,22 +21,33 @@ export class ClRootComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     console.warn('CL ROOT');
-    console.warn(this.activatedRoute.url);
-    // this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.store.dispatch(new CLActions.FetchCLInfo());
-    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.INIT_APP_DATA))
-    .subscribe((actionPayload: RTLActions.InitAppData) => {
-      this.store.dispatch(new CLActions.FetchCLInfo());
-    });
-    this.actions$.pipe(takeUntil(this.unsubs[1]), filter((action) => action.type === CLActions.SET_CL_INFO))
-    .subscribe((infoData: CLActions.SetCLInfo) => {
-      if (undefined !== infoData.payload.identity_pubkey) {
-        this.initializeRemainingData();
-      }
-    });
+    // this.store.dispatch(new CLActions.FetchCLInfo());
+    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
+    // this.store.select('cl')
+    // .pipe(takeUntil(this.unsubs[0]))
+    // .subscribe(clStore => {
+    //   console.warn(clStore);
+    //   if (undefined !== clStore.information.identity_pubkey) {
+    //     this.initializeRemainingData();
+    //   }
+    // });
+    // this.actions$
+    // .pipe(
+    //   takeUntil(this.unSubs[3]),
+    //   filter(action => action.type === RTLActions.INIT_APP_DATA || action.type === LNDActions.SET_INFO || action.type === CLActions.SET_CL_INFO)
+    // ).subscribe((actionPayload: RTLActions.InitAppData | LNDActions.SetInfo | CLActions.SetCLInfo) => {
+    //   // if (actionPayload.type === RTLActions.INIT_APP_DATA) {
+    //     if(this.information.identity_pubkey) {
+    //       this.initializeRemainingData();
+    //     }
+    // });    
+
   }
 
   initializeRemainingData() {
+    console.warn('SOMETHING IS WRONG HERE');
+    // this.store.dispatch(new CLActions.FetchCLFees());
+
     // this.store.dispatch(new CLActions.FetchPeers());
     // this.store.dispatch(new CLActions.FetchBalance('channels'));
     // this.store.dispatch(new CLActions.FetchFees());

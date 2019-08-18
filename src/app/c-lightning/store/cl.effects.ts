@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
@@ -27,7 +27,8 @@ export class CLEffects implements OnDestroy {
     private store: Store<fromApp.AppState>,
     private logger: LoggerService,
     public dialog: MatDialog,
-    private router: Router) { }
+    private router: Router,
+    private activatedRoute: ActivatedRoute) { }
 
   @Effect()
   infoFetch = this.actions$.pipe(
@@ -40,14 +41,12 @@ export class CLEffects implements OnDestroy {
         map((info) => {
           this.logger.info(info);
           if (undefined === info.identity_pubkey) {
-            // this.store.dispatch(new RTLActions.SetSelNodeInfo({}));            
             sessionStorage.removeItem('clUnlocked');
             return {
               type: CLActions.SET_CL_INFO,
               payload: {}
             };
           } else {
-            // this.store.dispatch(new RTLActions.SetSelNodeInfo(info));
             sessionStorage.setItem('clUnlocked', 'true');
             return {
               type: CLActions.SET_CL_INFO,
@@ -59,16 +58,37 @@ export class CLEffects implements OnDestroy {
           this.logger.error(err);
           this.store.dispatch(new RTLActions.EffectError({ action: 'FetchInfo', code: err.status, message: err.error.error }));
           if (+store.appConfig.sso.rtlSSO) {
-            this.router.navigate(['/ssoerror']);
+            this.router.navigate(['../ssoerror'], {relativeTo: this.activatedRoute});
           } else {
             if (err.status === 401) {
               this.logger.info('Redirecting to Signin');
-              this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+              this.router.navigate([store.appConfig.sso.logoutRedirectLink], {relativeTo: this.activatedRoute});
               return of();
             }
           }
         })
       );
+    }
+  ));
+
+  @Effect()
+  fetchFees = this.actions$.pipe(
+    ofType(CLActions.FETCH_CL_FEES),
+    mergeMap((action: CLActions.FetchCLFees) => {
+      this.store.dispatch(new RTLActions.ClearEffectError('FetchCLFees'));
+      return this.httpClient.get(environment.FEES_API);
+    }),
+    map((fees) => {
+      this.logger.info(fees);
+      return {
+        type: CLActions.SET_CL_FEES,
+        payload: (undefined !== fees) ? fees : {}
+      };
+    }),
+    catchError((err: any) => {
+      this.logger.error(err);
+      this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
+      return of();
     }
   ));
 

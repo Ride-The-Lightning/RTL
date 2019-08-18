@@ -40,7 +40,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
         this.hintStr = 'Enter RPC password';
       } else {
-        this.hintStr = ''; // Do not remove, initial passowrd 'DEFAULT' is initilizing its value
+        this.hintStr = '';
       }
     });
   }

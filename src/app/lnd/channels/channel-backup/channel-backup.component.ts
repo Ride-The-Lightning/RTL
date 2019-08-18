@@ -25,7 +25,7 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
   public displayedColumns = ['chan_id', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
+  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 

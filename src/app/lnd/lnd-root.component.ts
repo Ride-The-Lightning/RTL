@@ -20,8 +20,8 @@ export class LndRootComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     console.warn('LND ROOT');
-    // this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.store.dispatch(new LNDActions.FetchInfo());
+    // this.store.dispatch(new LNDActions.FetchInfo());
+    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
     this.store.select('lnd')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(lndStore => {
@@ -30,7 +30,6 @@ export class LndRootComponent implements OnInit, OnDestroy {
         this.initializeRemainingData();
       }
     });    
-    this.store.dispatch(new LNDActions.FetchInfo());
     this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === LNDActions.SET_INFO))
     .subscribe((infoData: LNDActions.SetInfo) => {
       console.warn(infoData);
@@ -38,17 +37,29 @@ export class LndRootComponent implements OnInit, OnDestroy {
         this.initializeRemainingData();
       }
     });
+    // this.actions$
+    // .pipe(
+    //   takeUntil(this.unSubs[3]),
+    //   filter(action => action.type === RTLActions.INIT_APP_DATA || action.type === LNDActions.SET_INFO || action.type === CLActions.SET_CL_INFO)
+    // ).subscribe((actionPayload: RTLActions.InitAppData | LNDActions.SetInfo | CLActions.SetCLInfo) => {
+    //   // if (actionPayload.type === RTLActions.INIT_APP_DATA) {
+    //     if(this.information.identity_pubkey) {
+    //       this.initializeRemainingData();
+    //     }
+    // });    
+
   }
 
   initializeRemainingData() {
-    this.store.dispatch(new LNDActions.FetchPeers());
-    this.store.dispatch(new LNDActions.FetchBalance('channels'));
-    this.store.dispatch(new LNDActions.FetchFees());
-    this.store.dispatch(new LNDActions.FetchNetwork());
-    this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'all'}));
-    this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'pending'}));
-    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
-    this.store.dispatch(new LNDActions.FetchPayments());
+    console.warn('SOMETHING IS WRONG HERE');
+    // this.store.dispatch(new LNDActions.FetchPeers());
+    // this.store.dispatch(new LNDActions.FetchBalance('channels'));
+    // this.store.dispatch(new LNDActions.FetchFees());
+    // this.store.dispatch(new LNDActions.FetchNetwork());
+    // this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'all'}));
+    // this.store.dispatch(new LNDActions.FetchChannels({routeParam: 'pending'}));
+    // this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    // this.store.dispatch(new LNDActions.FetchPayments());
   }
 
   ngOnDestroy() {

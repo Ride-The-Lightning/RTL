@@ -23,6 +23,7 @@ import { SharedModule } from './shared/shared.module';
 import { ThemeOverlay } from './shared/theme/overlay-container/theme-overlay';
 
 import { AppComponent } from './app.component';
+import { SuperUserDashboardComponent } from './super-user-dashboard/super-user-dashboard.component';
 import { CommonService } from './shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard, LNDUnlockedGuard } from './shared/services/auth.guard';
@@ -47,7 +48,8 @@ import { CLEffects } from './c-lightning/store/cl.effects';
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [
-    AppComponent
+    AppComponent,
+    SuperUserDashboardComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
