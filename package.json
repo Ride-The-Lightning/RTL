@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.4.7-beta",
+  "version": "0.4.8-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -39,10 +39,12 @@
     "hammerjs": "^2.0.8",
     "ini": "^1.3.5",
     "jsonwebtoken": "^8.4.0",
+    "material-design-icons": "^3.0.1",
     "ngx-perfect-scrollbar": "^6.3.1",
     "node-sass": "^4.12.0",
     "optimist": "^0.6.1",
     "request-promise": "^4.2.2",
+    "roboto-fontface": "^0.10.0",
     "rxjs": "~6.5.2",
     "rxjs-compat": "^6.5.2",
     "sha256": "^0.2.0",
