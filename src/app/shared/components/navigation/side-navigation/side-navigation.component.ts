@@ -63,7 +63,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.information;
@@ -91,18 +91,16 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      if(+this.selNode.index === 1) {
-        this.navMenus.data = MENU_DATA.LNDChildren;
-      } else {
+      if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toLowerCase() === 'clightning') {
         this.navMenus.data = MENU_DATA.CLChildren;
+      } else {
+        this.navMenus.data = MENU_DATA.LNDChildren;
       }
       this.logger.info(rtlStore);
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[2]),
-      filter((action) => action.type === RTLActions.SIGNOUT)
-    ).subscribe(() => {
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    filter((action) => action.type === RTLActions.SIGNOUT))
+    .subscribe((action: RTLActions.Signout) => {
       this.showLogout = false;
     });
   }

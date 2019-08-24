@@ -34,9 +34,9 @@ export class LNDRootComponent implements OnInit, OnDestroy {
   }
 
   initializeRemainingData() {
+    this.store.dispatch(new RTLActions.FetchFees());
     this.store.dispatch(new RTLActions.FetchPeers());
     this.store.dispatch(new RTLActions.FetchBalance('channels'));
-    this.store.dispatch(new RTLActions.FetchFees());
     this.store.dispatch(new RTLActions.FetchNetwork());
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));

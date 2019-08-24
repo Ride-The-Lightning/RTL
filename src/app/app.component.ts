@@ -59,14 +59,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoading[0] = false;
       }
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unsubs[1]),
-      filter((action) => action.type === RTLActions.SET_RTL_CONFIG)
-    ).subscribe((actionPayload: (RTLActions.SetRTLConfig)) => {
-      if (actionPayload.type === RTLActions.SET_RTL_CONFIG) {
+    this.actions$.pipe(takeUntil(this.unsubs[1]),
+    filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
+    .subscribe((action: (RTLActions.SetRTLConfig)) => {
+      if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!sessionStorage.getItem('token')) {
-          if (+actionPayload.payload.sso.rtlSSO) {
+          if (+action.payload.sso.rtlSSO) {
             this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
           } else {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
@@ -79,7 +77,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
-      }
+      }     
     });
     this.userIdle.startWatching();
     this.userIdle.onTimerStart().subscribe(count => {});

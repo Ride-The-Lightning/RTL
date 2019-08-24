@@ -31,8 +31,8 @@ export class HorizontalNavigationComponent implements OnInit {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore: fromRTLReducer.State) => {
       this.numPendingChannels = rtlStore.numberOfPendingChannels;
-      if(+rtlStore.selNode.index === 1) {
-        this.menuNodes = MENU_DATA.LNDChildren;
+      if(rtlStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
+        this.menuNodes = MENU_DATA.CLChildren;
       } else {
         this.menuNodes = MENU_DATA.LNDChildren;
       }

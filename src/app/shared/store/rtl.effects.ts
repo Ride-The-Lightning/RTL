@@ -1231,10 +1231,10 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
-          if(+action.payload.index === 1) {
-            this.router.navigate(['/lnd/home']);
-          } else {
+          if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
+          } else {
+            this.router.navigate(['/lnd/home']);
           }
           this.store.dispatch(new RTLActions.ResetStore(action.payload));
           return { type: RTLActions.FETCH_INFO };
