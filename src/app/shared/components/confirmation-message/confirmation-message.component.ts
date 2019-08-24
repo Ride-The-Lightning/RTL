@@ -5,8 +5,8 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AlertData, InputData } from '../../../shared/models/alertData';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-confirmation-message',
@@ -24,7 +24,7 @@ export class ConfirmationMessageComponent implements OnInit {
   public getInputs: Array<InputData> = [{placeholder: '', inputType: 'text', inputValue: ''}];
 
   constructor(public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService,
-   private store: Store<fromApp.AppState>) { }
+   private store: Store<fromRTLReducer.State>) { }
 
   ngOnInit() {
     this.flgShowInput = this.data.flgShowInput;

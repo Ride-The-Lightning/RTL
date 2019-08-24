@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'rtl-lnd-root',
-  templateUrl: './lnd-root.component.html',
-  styleUrls: ['./lnd-root.component.scss']
+  selector: 'rtl-cl-root',
+  templateUrl: './cl-root.component.html',
+  styleUrls: ['./cl-root.component.scss']
 })
-export class LNDRootComponent implements OnInit {
+export class CLRootComponent implements OnInit {
   
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    console.warn('LND ROOT')
+    console.warn('CL ROOT');
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
   }
 

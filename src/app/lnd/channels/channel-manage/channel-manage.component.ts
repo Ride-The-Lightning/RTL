@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
 
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, map, subscribeOn } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, Peer, GetInfo } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { LNDEffects } from '../../store/lnd.effects';
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-manage',
@@ -41,10 +40,9 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public moreOptions = false;
   public flgSticky = false;
   public redirectedWithPeer = false;
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects,
-    private lndEffects: LNDEffects, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias'];
@@ -69,35 +67,29 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[5]))
-    .subscribe(lndStore => {
-      this.information = lndStore.information;
-      this.peers = lndStore.peers;
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchChannels/all') {
+          this.flgLoading[0] = 'error';
+        }
+      });
+      this.information = rtlStore.information;
+      this.peers = rtlStore.peers;
       this.peers.forEach(peer => {
         if (undefined === peer.alias || peer.alias === '') {
           peer.alias = peer.pub_key.substring(0, 15) + '...';
         }
       });
 
-      this.totalBalance = lndStore ? +lndStore.blockchainBalance.total_balance : -1;
-      if (undefined !== lndStore.allChannels) {
-        this.loadChannelsTable(lndStore.allChannels);
+      this.totalBalance = +rtlStore.blockchainBalance.total_balance;
+      if (undefined !== rtlStore.allChannels) {
+        this.loadChannelsTable(rtlStore.allChannels);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== lndStore.allChannels) ? false : true;
+        this.flgLoading[0] = (undefined !== rtlStore.allChannels) ? false : true;
       }
-      this.logger.info(lndStore);
-    });
-
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/all') {
-          this.flgLoading[0] = 'error';
-        }
-      });
       this.logger.info(rtlStore);
     });
     this.activatedRoute.paramMap.subscribe(() => {
@@ -114,7 +106,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     } else if (this.selTransType === '2') {
       transTypeValue = this.transTypeValue.fees;
     }
-    this.store.dispatch(new LNDActions.SaveNewChannel({
+    this.store.dispatch(new RTLActions.SaveNewChannel({
       selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount, private: this.isPrivate,
       transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
     }));
@@ -132,22 +124,22 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
         ]
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unsubs[2]))
+      .pipe(takeUntil(this.unsub[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
+          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new LNDActions.ChannelLookup(channelToUpdate.chan_id.toString()));
-      this.lndEffects.setLookup
-      .pipe(takeUntil(this.unsubs[3]))
+      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
+      this.rtlEffects.setLookup
+      .pipe(takeUntil(this.unsub[3]))
       .subscribe(resLookup => {
         this.logger.info(resLookup);
         if (resLookup.node1_pub === this.information.identity_pubkey) {
@@ -170,14 +162,14 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
         }}));
       });
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unsubs[4]))
+      .pipe(takeUntil(this.unsub[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
+          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
         }
       });
     }
@@ -189,11 +181,11 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unsubs[1]))
+    .pipe(takeUntil(this.unsub[1]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new LNDActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: !channelToClose.active}));
+        this.store.dispatch(new RTLActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: !channelToClose.active}));
       }
     });
   }
@@ -263,7 +255,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

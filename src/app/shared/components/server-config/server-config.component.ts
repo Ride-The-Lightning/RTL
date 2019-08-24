@@ -4,11 +4,9 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Node } from '../../models/RTLconfig';
-
-import { LNDEffects } from '../../../lnd/store/lnd.effects';
-import * as LNDActions from '../../../lnd/store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../store/rtl.effects';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-server-config',
@@ -24,12 +22,12 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   public fileFormat = 'INI';
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromApp.AppState>, private lndEffects: LNDEffects) {}
+  constructor(private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'fetchConfig') {
           this.resetData();
@@ -61,8 +59,8 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
 
   onShowConfig() {
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Config File...'));
-    this.store.dispatch(new LNDActions.FetchConfig(this.selectedNodeType));
-    this.lndEffects.showLNDConfig
+    this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
+    this.rtlEffects.showLNDConfig
     .pipe(takeUntil(this.unsubs[1]))
     .subscribe((config: any) => {
       const configFile = config.data;

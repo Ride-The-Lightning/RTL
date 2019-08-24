@@ -11,8 +11,8 @@ import { LoggerService } from './shared/services/logger.service';
 import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
 import { GetInfo } from './shared/models/lndModels';
 
-import * as RTLActions from './store/rtl.actions';
-import * as fromApp from './store/rtl.reducers';
+import * as RTLActions from './shared/store/rtl.actions';
+import * as fromRTLReducer from './shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-app',
@@ -22,25 +22,30 @@ import * as fromApp from './store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
+  public selNode: Node;
   public settings: Settings;
   public information: GetInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
+  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
   public flgCopied = false;
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public smallScreen = false;
-  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private userIdle: UserIdleService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions,
+    private userIdle: UserIdleService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
-      this.settings = rtlStore.selNode.settings;
+      this.selNode = rtlStore.selNode;
+      this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
+      this.information = rtlStore.information;
+      this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
         this.settings.menu = 'Vertical';
         this.settings.flgSidenavOpened = false;
@@ -50,27 +55,44 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.smallScreen = true;
       }
       this.logger.info(this.settings);
+      if (!sessionStorage.getItem('token')) {
+        this.flgLoading[0] = false;
+      }
     });
+    if (sessionStorage.getItem('token')) {
+      this.store.dispatch(new RTLActions.FetchInfo());
+    }
     this.actions$
     .pipe(
-      takeUntil(this.unSubs[3]),
-      filter(action => action.type === RTLActions.SET_RTL_CONFIG)
-    ).subscribe((actionPayload: RTLActions.SetRTLConfig) => {
+      takeUntil(this.unsubs[1]),
+      filter((action) => action.type === RTLActions.INIT_APP_DATA || action.type === RTLActions.SET_RTL_CONFIG)
+    ).subscribe((actionPayload: (RTLActions.InitAppData | RTLActions.SetRTLConfig)) => {
       if (actionPayload.type === RTLActions.SET_RTL_CONFIG) {
         if (!sessionStorage.getItem('token')) {
           if (+actionPayload.payload.sso.rtlSSO) {
             this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
           } else {
-            this.router.navigate([this.appConfig.sso.logoutRedirectLink], { relativeTo: this.activatedRoute });
+            this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
         }
         if (
           this.settings.menu === 'Horizontal' ||
           this.settings.menuType === 'Compact' ||
           this.settings.menuType === 'Mini') {
-          this.settingSidenav.toggle();
+          this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
+      } else if (actionPayload.type === RTLActions.INIT_APP_DATA) {
+        this.store.dispatch(new RTLActions.FetchInfo());
+      }
+    });
+    this.actions$
+    .pipe(
+      takeUntil(this.unsubs[1]),
+      filter((action) => action.type === RTLActions.SET_INFO)
+    ).subscribe((infoData: RTLActions.SetInfo) => {
+      if (undefined !== infoData.payload.identity_pubkey) {
+        this.initializeRemainingData();
       }
     });
     this.userIdle.startWatching();
@@ -91,6 +113,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readAccessKey() {
     const url = window.location.href;
     return url.substring(url.lastIndexOf('access-key=') + 11).trim();
+  }
+
+  initializeRemainingData() {
+    this.store.dispatch(new RTLActions.FetchPeers());
+    this.store.dispatch(new RTLActions.FetchBalance('channels'));
+    this.store.dispatch(new RTLActions.FetchFees());
+    this.store.dispatch(new RTLActions.FetchNetwork());
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    this.store.dispatch(new RTLActions.FetchPayments());
   }
 
   ngAfterViewInit() {
@@ -130,7 +163,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unSubs.forEach(unsub => {
+    this.unsubs.forEach(unsub => {
       unsub.next();
       unsub.complete();
     });

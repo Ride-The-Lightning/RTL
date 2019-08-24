@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
@@ -11,12 +11,9 @@ import { Peer, GetInfo } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
-
-import { LNDEffects } from '../store/lnd.effects';
-import { RTLEffects } from '../../store/rtl.effects';
-import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromApp from '../../store/rtl.reducers';
+import { RTLEffects } from '../../shared/store/rtl.effects';
+import * as RTLActions from '../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-peers',
@@ -32,12 +29,11 @@ export class PeersComponent implements OnInit, OnDestroy {
   public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
+  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects,
-    private lndEffects: LNDEffects, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['detach', 'pub_key', 'alias'];
@@ -60,39 +56,33 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[4]))
-    .subscribe(lndStore => {
-      this.information = lndStore.information;
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPeers') {
+          this.flgLoading[0] = 'error';
+        }
+      });
+      this.information = rtlStore.information;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if (undefined !== lndStore.peers) {
-        this.peers = new MatTableDataSource<Peer>([...lndStore.peers]);
-        this.peers.data = lndStore.peers;
+      if (undefined !== rtlStore.peers) {
+        this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
+        this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
       this.peers.sort = this.sort;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
-      this.logger.info(lndStore);
-    });
-
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPeers') {
-          this.flgLoading[0] = 'error';
-        }
-      });
       this.logger.info(rtlStore);
     });
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.SET_PEERS)
-    ).subscribe((setPeers: LNDActions.SetPeers) => {
+      filter((action) => action.type === RTLActions.SET_PEERS)
+    ).subscribe((setPeers: RTLActions.SetPeers) => {
       this.peerAddress = undefined;
     });
   }
@@ -111,8 +101,8 @@ export class PeersComponent implements OnInit, OnDestroy {
     } else {
       pubkey = (deviderIndex > -1) ? this.peerAddress.substring(0, deviderIndex) : this.peerAddress;
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-      this.store.dispatch(new LNDActions.FetchGraphNode(pubkey));
-      this.lndEffects.setGraphNode
+      this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
+      this.rtlEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
         host = (undefined === graphNode.node.addresses || undefined === graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
@@ -124,7 +114,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   connectPeerWithParams(pubkey: string, host: string) {
     this.newlyAddedPeer = pubkey;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new LNDActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
+    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
   }
 
   onPeerClick(selRow: Peer, event: any) {
@@ -146,7 +136,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.router.navigate(['chnlmanage'], { relativeTo: this.activatedRoute, state: { peer: peerToAddChannel.pub_key }});
+    this.router.navigate(['lnd/chnlmanage'], { state: { peer: peerToAddChannel.pub_key }});
   }
 
   onPeerDetach(peerToDetach: Peer) {
@@ -158,7 +148,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Detaching Peer...'));
-        this.store.dispatch(new LNDActions.DetachPeer({pubkey: peerToDetach.pub_key}));
+        this.store.dispatch(new RTLActions.DetachPeer({pubkey: peerToDetach.pub_key}));
       }
     });
   }

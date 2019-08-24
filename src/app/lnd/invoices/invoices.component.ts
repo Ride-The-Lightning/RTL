@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Node } from '../../shared/models/RTLconfig';
@@ -10,10 +11,8 @@ import { GetInfo, Invoice } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
-
-import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromApp from '../../store/rtl.reducers';
+import * as RTLActions from '../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-invoices',
@@ -42,9 +41,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   public pageSizeOptions = [5, 10, 25, 100];
   private firstOffset = -1;
   private lastOffset = -1;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['settled', 'creation_date', 'memo', 'value'];
@@ -67,29 +66,24 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[5]))
-    .subscribe(lndStore => {
-      this.information = lndStore ? lndStore.information : {};
-      this.totalInvoices = lndStore ? lndStore.totalInvoices : -1;
-      this.firstOffset = lndStore ? +lndStore.invoices.first_index_offset : -1;
-      this.lastOffset =  lndStore ? +lndStore.invoices.last_index_offset : -1;
-      this.loadInvoicesTable(lndStore.invoices.invoices);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== lndStore && undefined !== lndStore.invoices) ? false : true;
-      }
-      this.logger.info(lndStore);
-    });
-
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInvoices') {
           this.flgLoading[0] = 'error';
         }
       });
       this.selNode = rtlStore.selNode;
+      this.information = rtlStore.information;
+      this.totalInvoices = rtlStore.totalInvoices;
+      this.firstOffset = +rtlStore.invoices.first_index_offset;
+      this.lastOffset = +rtlStore.invoices.last_index_offset;
+      this.logger.info(rtlStore);
+      this.loadInvoicesTable(rtlStore.invoices.invoices);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
+      }
     });
 
   }
@@ -99,7 +93,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new LNDActions.SaveNewInvoice({
+    this.store.dispatch(new RTLActions.SaveNewInvoice({
       memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: (this.expiry ? this.expiry : 3600), pageSize: this.pageSize
     }));
     this.resetData();
@@ -157,7 +151,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       reversed = true;
       index_offset = 0;
     }
-    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
   }
 
   ngOnDestroy() {

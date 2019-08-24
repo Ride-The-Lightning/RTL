@@ -10,12 +10,9 @@ import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
-
-import { LNDEffects } from '../../store/lnd.effects';
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-payments',
@@ -37,9 +34,9 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public flgSticky = false;
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['creation_date', 'fee', 'value'];
@@ -62,13 +59,18 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[4]))
-    .subscribe(lndStore => {
-      this.information = lndStore.information;
-      this.paymentJSONArr = (null !== lndStore.payments && lndStore.payments.length > 0) ? lndStore.payments : [];
-      this.payments = (undefined === lndStore.payments || null == lndStore.payments) ?
-        new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPayments') {
+          this.flgLoading[0] = 'error';
+        }
+      });
+      this.selNode = rtlStore.selNode;
+      this.information = rtlStore.information;
+      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.data.forEach(payment => {
@@ -78,18 +80,6 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
       }
-      this.logger.info(lndStore);
-    });
-
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-        }
-      });
-      this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
 
@@ -100,8 +90,8 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment(this.paymentRequest));
-      this.lndEffects.setDecodedPayment
+      this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
+      this.rtlEffects.setDecodedPayment
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
@@ -136,7 +126,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new LNDActions.SendPayment([this.paymentRequest, this.paymentDecoded, true]));
+            this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, true]));
             this.resetData();
           }
         });
@@ -149,7 +139,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new LNDActions.SendPayment([this.paymentRequest, this.paymentDecoded, false]));
+          this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, false]));
           this.resetData();
         }
       });
@@ -158,8 +148,8 @@ export class PaymentsComponent implements OnInit, OnDestroy {
 
   onVerifyPayment() {
     this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-    this.store.dispatch(new LNDActions.DecodePayment(this.paymentRequest));
-    this.lndEffects.setDecodedPayment.subscribe(decodedPayment => {
+    this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
+    this.rtlEffects.setDecodedPayment.subscribe(decodedPayment => {
       this.paymentDecoded = decodedPayment;
       if (undefined !== this.paymentDecoded.timestamp_str) {
         this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
@@ -197,7 +187,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

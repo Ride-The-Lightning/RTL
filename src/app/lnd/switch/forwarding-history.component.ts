@@ -9,9 +9,8 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { ForwardingEvent } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromApp from '../../store/rtl.reducers';
+import * as RTLActions from '../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -29,9 +28,9 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   public endDate = this.today;
   public startDate = this.yesterday;
   public flgSticky = false;
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['timestamp', 'amt_out', 'amt_in'];
@@ -55,32 +54,29 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onForwardingHistoryFetch();
-    this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
       this.onForwardingHistoryFetch();
     });
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[3]))
-    .subscribe(lndStore => {
-      if (undefined !== lndStore.forwardingHistory && undefined !== lndStore.forwardingHistory.forwarding_events) {
-        this.lastOffsetIndex = lndStore.forwardingHistory.last_offset_index;
-        this.loadForwardingEventsTable(lndStore.forwardingHistory.forwarding_events);
-      } else {
-        this.lastOffsetIndex = 0;
-        this.loadForwardingEventsTable([]);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== lndStore.forwardingHistory) ? false : true;
-      }
-      this.logger.info(lndStore);
-    });
+
     this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';
         }
       });
+      if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
+        this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
+        this.loadForwardingEventsTable(rtlStore.forwardingHistory.forwarding_events);
+      } else {
+        // To reset table after other Forwarding history calls
+        this.lastOffsetIndex = 0;
+        this.loadForwardingEventsTable([]);
+      }
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
+      }
       this.logger.info(rtlStore);
     });
 
@@ -115,7 +111,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
     if (undefined === this.startDate || this.startDate == null) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 1);
     }
-    this.store.dispatch(new LNDActions.GetForwardingHistory({
+    this.store.dispatch(new RTLActions.GetForwardingHistory({
       end_time: Math.round(this.endDate.getTime() / 1000).toString(),
       start_time: Math.round(this.startDate.getTime() / 1000).toString()
     }));
@@ -131,7 +127,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

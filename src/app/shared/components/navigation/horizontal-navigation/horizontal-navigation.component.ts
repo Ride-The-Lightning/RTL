@@ -7,9 +7,9 @@ import { Actions } from '@ngrx/effects';
 import { LoggerService } from '../../../services/logger.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromApp from '../../../../store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-horizontal-navigation',
@@ -23,16 +23,19 @@ export class HorizontalNavigationComponent implements OnInit {
   public numPendingChannels = 0;
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private rtlEffects: RTLEffects) {
-    this.menuNodes = MENU_DATA.children;
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private rtlEffects: RTLEffects) {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
+    this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(lndStore => {
-      this.numPendingChannels = lndStore.numberOfPendingChannels;
-      this.logger.info(lndStore);
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.numPendingChannels = rtlStore.numberOfPendingChannels;
+      if(+rtlStore.selNode.index === 1) {
+        this.menuNodes = MENU_DATA.LNDChildren;
+      } else {
+        this.menuNodes = MENU_DATA.LNDChildren;
+      }
     });
     this.actions$
     .pipe(
@@ -41,14 +44,14 @@ export class HorizontalNavigationComponent implements OnInit {
     ).subscribe((action) => {
       this.logger.warn(action);
       if (action.type === RTLActions.SIGNIN) {
-        this.menuNodes.push({id: 100, parentId: 0, name: 'Logout', icon: 'eject'});
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
       }
       if (action.type === RTLActions.SIGNOUT) {
         this.menuNodes.pop();
       }
     });
     if (sessionStorage.getItem('token')) {
-      this.menuNodes.push({id: 100, parentId: 0, name: 'Logout', icon: 'eject'});
+      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
     }
   }
 

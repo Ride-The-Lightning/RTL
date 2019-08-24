@@ -9,14 +9,14 @@ import { environment } from '../../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { GetInfo, GetInfoChain } from '../../../models/lndModels';
 import { Node, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { MenuNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
+import { GetInfo, GetInfoChain } from '../../../models/lndModels';
+import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromApp from '../../../../store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -29,29 +29,30 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public settings: Settings;
   public version = '';
   public information: GetInfo = {};
-  public informationChain: GetInfoChain = {};  
+  public informationChain: GetInfoChain = {};
   public flgLoading = true;
-  public logoutNode = [{id: 100, parentId: 0, name: 'Logout', icon: 'eject'}];
+  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', icon: 'eject'}];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;
-  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  public childRootRoute = '';
+  private unSubs = [new Subject(), new Subject(), new Subject()];
   treeControl: FlatTreeControl<FlatMenuNode>;
   treeControlLogout: FlatTreeControl<FlatMenuNode>;
-  treeFlattener: MatTreeFlattener<MenuNode, FlatMenuNode>;
-  treeFlattenerLogout: MatTreeFlattener<MenuNode, FlatMenuNode>;
-  navMenus: MatTreeFlatDataSource<MenuNode, FlatMenuNode>;
-  navMenusLogout: MatTreeFlatDataSource<MenuNode, FlatMenuNode>;
+  treeFlattener: MatTreeFlattener<MenuChildNode, FlatMenuNode>;
+  treeFlattenerLogout: MatTreeFlattener<MenuChildNode, FlatMenuNode>;
+  navMenus: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
+  navMenusLogout: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
-    if (MENU_DATA.children[MENU_DATA.children.length - 1].id === 100) {
-      MENU_DATA.children.pop();
+    if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
+      MENU_DATA.LNDChildren.pop();
     }
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<FlatMenuNode>(this.getLevel, this.isExpandable);
     this.navMenus = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    this.navMenus.data = MENU_DATA.children;
+    this.navMenus.data = MENU_DATA.LNDChildren;
 
     this.treeFlattenerLogout = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControlLogout = new FlatTreeControl<FlatMenuNode>(this.getLevel, this.isExpandable);
@@ -60,38 +61,40 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(lndStore => {
-      this.numPendingChannels = lndStore ? lndStore.numberOfPendingChannels : -1;
-      this.logger.info(lndStore);
-    });
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
-      this.showLogout = (sessionStorage.getItem('token')) ? true : false;
-      if (this.selNode.lnImplementation.toLowerCase() === 'clightning') {
-        this.store.select('cl')
-        .pipe(takeUntil(this.unSubs[4]))
-        .subscribe((clStore) => {
-          this.information = clStore.information;
-          this.readInformation();
-        });
+      this.information = rtlStore.information;
+      this.numPendingChannels = rtlStore.numberOfPendingChannels;
+
+      if (undefined !== this.information.identity_pubkey) {
+        if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
+          this.informationChain.chain = this.information.chains[0].toString();
+          this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
+        } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
+          const getInfoChain = <GetInfoChain>this.information.chains[0];
+          this.informationChain.chain = getInfoChain.chain;
+          this.informationChain.network = getInfoChain.network;
+        }
       } else {
-        this.store.select('lnd')
-        .pipe(takeUntil(this.unSubs[5]))
-        .subscribe((lndStore) => {
-          this.information = lndStore.information;
-          this.readInformation();
-        });
+        this.informationChain.chain = '';
+        this.informationChain.network = '';
       }
+
+      this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
+      this.showLogout = (sessionStorage.getItem('token')) ? true : false;
       if (!sessionStorage.getItem('token')) {
         this.flgLoading = false;
       }
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
+      }
+      if(+this.selNode.index === 1) {
+        this.navMenus.data = MENU_DATA.LNDChildren;
+      } else {
+        this.navMenus.data = MENU_DATA.CLChildren;
       }
       this.logger.info(rtlStore);
     });
@@ -104,30 +107,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  private readInformation() {
-    if (undefined !== this.information.identity_pubkey) {
-      if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
-        this.informationChain.chain = this.information.chains[0].toString();
-        this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
-      } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
-        const getInfoChain = <GetInfoChain>this.information.chains[0];
-        this.informationChain.chain = getInfoChain.chain;
-        this.informationChain.network = getInfoChain.network;
-      }
-    } else {
-      this.informationChain.chain = '';
-      this.informationChain.network = '';
-    }
-    this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
-  }
-
-  private transformer(node: MenuNode, level: number) { return new FlatMenuNode(!!node.children, level, node.id, node.parentId, node.name, node.icon, node.link); }
+  private transformer(node: MenuChildNode, level: number) { return new FlatMenuNode(!!node.children, level, node.id, node.parentId, node.name, node.icon, node.link); }
 
   private getLevel(node: FlatMenuNode) { return node.level; }
 
   private isExpandable(node: FlatMenuNode) { return node.expandable; }
 
-  private getChildren(node: MenuNode): Observable<MenuNode[]> { return of(node.children); }
+  private getChildren(node: MenuChildNode): Observable<MenuChildNode[]> { return of(node.children); }
 
   hasChild(_: number, _nodeData: FlatMenuNode) { return _nodeData.expandable; }
 
@@ -144,7 +130,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     }
   }
 
-  onClick(node: MenuNode) {
+  onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
         width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'

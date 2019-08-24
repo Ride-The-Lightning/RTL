@@ -8,8 +8,9 @@ import { Channel, GetInfo, PendingChannels } from '../../../shared/models/lndMod
 import { Node } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-pending',
@@ -47,9 +48,9 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance'];
@@ -95,11 +96,18 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[2]))
-    .subscribe(lndStore => {
-      this.information = lndStore.information;
-      this.pendingChannels = lndStore.pendingChannels;
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchChannels/pending') {
+          this.flgLoading[0] = 'error';
+        }
+      });
+
+      this.selNode = rtlStore.selNode;
+      this.information = rtlStore.information;
+      this.pendingChannels = rtlStore.pendingChannels;
       if (undefined !== this.pendingChannels.total_limbo_balance) {
         this.flgLoading[1] = false;
         if (undefined !== this.pendingChannels.pending_closing_channels) {
@@ -118,19 +126,6 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       }
-      this.logger.info(lndStore);
-    });
-
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/pending') {
-          this.flgLoading[0] = 'error';
-        }
-      });
-
-      this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
 
@@ -237,7 +232,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

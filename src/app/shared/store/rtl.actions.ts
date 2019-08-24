@@ -1,10 +1,27 @@
 import { Action } from '@ngrx/store';
+import { RTLConfiguration, Settings, Node } from '../models/RTLconfig';
+import { ErrorPayload } from '../models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
-} from '../../shared/models/lndModels';
+} from '../models/lndModels';
+import { MatDialogConfig } from '@angular/material';
 
-export const RESET_LND_STORE = 'RESET_LND_STORE';
+export const RESET_STORE = 'RESET_STORE';
+export const CLEAR_EFFECT_ERROR = 'CLEAR_EFFECT_ERROR';
+export const EFFECT_ERROR = 'EFFECT_ERROR';
+export const OPEN_SPINNER = 'OPEN_SPINNER';
+export const CLOSE_SPINNER = 'CLOSE_SPINNER';
+export const OPEN_ALERT = 'OPEN_ALERT';
+export const CLOSE_ALERT = 'CLOSE_ALERT';
+export const OPEN_CONFIRMATION = 'OPEN_CONFIRMATION';
+export const CLOSE_CONFIRMATION = 'CLOSE_CONFIRMATION';
+export const FETCH_STORE = 'FETCH_STORE';
+export const SET_STORE = 'SET_STORE';
+export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
+export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
+export const SAVE_SETTINGS = 'SAVE_SETTINGS';
+export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const FETCH_INFO = 'FETCH_INFO';
 export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
@@ -55,6 +72,11 @@ export const INIT_WALLET_RESPONSE = 'INIT_WALLET_RESPONSE';
 export const UNLOCK_WALLET = 'UNLOCK_WALLET';
 export const FETCH_CONFIG = 'FETCH_CONFIG';
 export const SHOW_CONFIG = 'SHOW_CONFIG';
+export const IS_AUTHORIZED = 'IS_AUTHORIZED';
+export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
+export const SIGNIN = 'SIGNIN';
+export const SIGNOUT = 'SIGNOUT';
+export const INIT_APP_DATA = 'INIT_APP_DATA';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -64,8 +86,66 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
-export class ResetLNDStore implements Action {
-  readonly type = RESET_LND_STORE;
+export class ClearEffectError implements Action {
+  readonly type = CLEAR_EFFECT_ERROR;
+  constructor(public payload: string) {} // payload = errorAction
+}
+
+export class EffectError implements Action {
+  readonly type = EFFECT_ERROR;
+  constructor(public payload: ErrorPayload) {}
+}
+
+export class OpenSpinner implements Action {
+  readonly type = OPEN_SPINNER;
+  constructor(public payload: string) {} // payload = titleMessage
+}
+
+export class CloseSpinner implements Action {
+  readonly type = CLOSE_SPINNER;
+}
+
+export class OpenAlert implements Action {
+  readonly type = OPEN_ALERT;
+  constructor(public payload: MatDialogConfig) {}
+}
+
+export class CloseAlert implements Action {
+  readonly type = CLOSE_ALERT;
+}
+
+export class OpenConfirmation implements Action {
+  readonly type = OPEN_CONFIRMATION;
+  constructor(public payload: MatDialogConfig) {}
+}
+
+export class CloseConfirmation implements Action {
+  readonly type = CLOSE_CONFIRMATION;
+  constructor(public payload: boolean) {}
+}
+
+export class ResetStore implements Action {
+  readonly type = RESET_STORE;
+  constructor(public payload: Node) {}
+}
+
+export class FetchRTLConfig implements Action {
+  readonly type = FETCH_RTL_CONFIG;
+}
+
+export class SetRTLConfig implements Action {
+  readonly type = SET_RTL_CONFIG;
+  constructor(public payload: RTLConfiguration) {}
+}
+
+export class SaveSettings implements Action {
+  readonly type = SAVE_SETTINGS;
+  constructor(public payload: Settings) {}
+}
+
+export class SetSelelectedNode implements Action {
+  readonly type = SET_SELECTED_NODE;
+  constructor(public payload: Node) {}
 }
 
 export class FetchInfo implements Action {
@@ -352,11 +432,40 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
-export type LNDActions =
-  ResetLNDStore | FetchInfo | SetInfo | FetchPeers | SetPeers | AddPeer |
-  DetachPeer | SaveNewPeer | RemovePeer | AddInvoice | SaveNewInvoice |
-  GetForwardingHistory | SetForwardingHistory | FetchFees | SetFees |
-  FetchBalance | SetBalance | FetchNetwork | SetNetwork |
+export class IsAuthorized implements Action {
+  readonly type = IS_AUTHORIZED;
+  constructor(public payload: string) {} // payload = password
+}
+
+export class IsAuthorizedRes implements Action {
+  readonly type = IS_AUTHORIZED_RES;
+  constructor(public payload: any) {} // payload = token/error
+}
+
+export class Signin implements Action {
+  readonly type = SIGNIN;
+  constructor(public payload: string) {} // payload = password
+}
+
+export class Signout implements Action {
+  readonly type = SIGNOUT;
+  constructor() {}
+}
+
+export class InitAppData implements Action {
+  readonly type = INIT_APP_DATA;
+}
+
+export type RTLActions =
+  ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
+  FetchRTLConfig | SetRTLConfig | SaveSettings |
+  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
+  ResetStore | SetSelelectedNode | FetchInfo | SetInfo |
+  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
+  AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
+  FetchFees | SetFees |
+  FetchBalance | SetBalance |
+  FetchNetwork | SetNetwork |
   FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
   BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
@@ -367,4 +476,5 @@ export type LNDActions =
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
-  FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup;
+  FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
+  IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData;

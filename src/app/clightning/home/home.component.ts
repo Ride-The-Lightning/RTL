@@ -10,11 +10,11 @@ import { Node } from '../../shared/models/RTLconfig';
 import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-home',
+  selector: 'rtl-cl-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class CLHomeComponent implements OnInit, OnDestroy {
   public selNode: Node;
   public fees: Fees;
   public information: GetInfo = {};

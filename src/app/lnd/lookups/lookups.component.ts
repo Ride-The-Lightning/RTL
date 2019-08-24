@@ -6,9 +6,8 @@ import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromApp from '../../store/rtl.reducers';
+import * as RTLActions from '../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-lookups',
@@ -29,14 +28,14 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {}
 
   ngOnInit() {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === LNDActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR))
-    ).subscribe((resLookup: LNDActions.SetLookup) => {
+      filter((action) => (action.type === RTLActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR))
+    ).subscribe((resLookup: RTLActions.SetLookup) => {
       if (resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       } else {
@@ -54,10 +53,10 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.selectedField.name + '...'));
     switch (this.selectedField.id) {
       case '0':
-        this.store.dispatch(new LNDActions.PeerLookup(this.lookupKey.trim()));
+        this.store.dispatch(new RTLActions.PeerLookup(this.lookupKey.trim()));
         break;
       case '1':
-        this.store.dispatch(new LNDActions.ChannelLookup(this.lookupKey.trim()));
+        this.store.dispatch(new RTLActions.ChannelLookup(this.lookupKey.trim()));
         break;
       default:
         break;

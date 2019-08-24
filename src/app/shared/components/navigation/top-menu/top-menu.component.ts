@@ -9,9 +9,9 @@ import { LoggerService } from '../../../services/logger.service';
 import { GetInfo, GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
 
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as fromApp from '../../../../store/rtl.reducers';
-import * as RTLActions from '../../../../store/rtl.actions';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -25,17 +25,19 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
   public showLogout = false;
-  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
     this.version = environment.VERSION;
   }
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[3]))
-    .subscribe(lndStore => {
-      this.information = lndStore ? lndStore.information : {};
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.selNode = rtlStore.selNode;
+
+      this.information = rtlStore.information;
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
 
       if (undefined !== this.information.identity_pubkey) {
@@ -51,13 +53,8 @@ export class TopMenuComponent implements OnInit, OnDestroy {
         this.informationChain.chain = '';
         this.informationChain.network = '';
       }
-      this.logger.info(lndStore);
-    });
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      this.selNode = rtlStore.selNode;
       this.showLogout = (sessionStorage.getItem('token')) ? true : false;
+
       this.logger.info(rtlStore);
       if (!sessionStorage.getItem('token')) {
         this.flgLoading = false;

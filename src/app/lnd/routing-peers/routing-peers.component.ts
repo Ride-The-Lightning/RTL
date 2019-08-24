@@ -9,9 +9,8 @@ import { ForwardingEvent, RoutingPeers } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
-import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromApp from '../../store/rtl.reducers';
+import * as RTLActions from '../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -34,9 +33,9 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   public endDate = this.today;
   public startDate = this.lastMonthDay;
   public flgSticky = false;
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromApp.AppState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['chan_id', 'events', 'total_amount'];
@@ -60,30 +59,26 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onRoutingPeersFetch();
-    this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
       this.onRoutingPeersFetch();
     });
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[3]))
-    .subscribe(lndStore => {
-      if (undefined !== lndStore.forwardingHistory && undefined !== lndStore.forwardingHistory.forwarding_events) {
-        this.loadRoutingPeersTable(lndStore.forwardingHistory.forwarding_events);
-      } else {
-        this.loadRoutingPeersTable([]);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== lndStore.forwardingHistory) ? false : true;
-      }
-      this.logger.info(lndStore);
-    });
     this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';
         }
       });
+      if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
+        this.loadRoutingPeersTable(rtlStore.forwardingHistory.forwarding_events);
+      } else {
+        // To reset table after other Forwarding history calls
+        this.loadRoutingPeersTable([]);
+      }
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
+      }
       this.logger.info(rtlStore);
     });
 
@@ -117,6 +112,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       this.RoutingPeersOutgoing.sort = this.sortOut;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
+       // To reset table after other Forwarding history calls
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>([]);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>([]);
     }
@@ -151,7 +147,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     if (undefined === this.startDate || this.startDate == null) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
-    this.store.dispatch(new LNDActions.GetForwardingHistory({
+    this.store.dispatch(new RTLActions.GetForwardingHistory({
       end_time: Math.round(this.endDate.getTime() / 1000).toString(),
       start_time: Math.round(this.startDate.getTime() / 1000).toString()
     }));
@@ -170,7 +166,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

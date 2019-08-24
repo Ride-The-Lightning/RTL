@@ -9,10 +9,9 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Hop } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
- import { LNDEffects } from '../../store/lnd.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -26,10 +25,10 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public qrHops: any;
   public flgSticky = false;
   public displayedColumns = [];
-  public flgLoading: Array<Boolean | 'error'> = [false];
+  public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private lndEffects: LNDEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat'];
@@ -54,10 +53,10 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       this.logger.info(rtlStore);
     });
-    this.lndEffects.setQueryRoutes
+    this.rtlEffects.setQueryRoutes
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {
       this.qrHops = new MatTableDataSource([]);
@@ -75,7 +74,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
 
   onQueryRoutes() {
     this.flgLoading[0] = true;
-    this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
+    this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
   }
 
   resetData() {

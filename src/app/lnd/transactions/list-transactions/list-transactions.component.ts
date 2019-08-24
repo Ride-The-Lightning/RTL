@@ -9,9 +9,9 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-list-transactions',
@@ -24,9 +24,9 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['dest_addresses', 'total_fees', 'amount'];
@@ -49,29 +49,25 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new LNDActions.FetchTransactions());
-    this.actions$.pipe(takeUntil(this.unsubs[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
-      this.store.dispatch(new LNDActions.FetchTransactions());
+    this.store.dispatch(new RTLActions.FetchTransactions());
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+      this.store.dispatch(new RTLActions.FetchTransactions());
     });
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[3]))
-    .subscribe(lndStore => {
-      if (undefined !== lndStore.transactions) {
-        this.loadTransactionsTable(lndStore.transactions);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== lndStore.transactions) ? false : true;
-      }
-      this.logger.info(lndStore);
-    });
+
     this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchTransactions') {
           this.flgLoading[0] = 'error';
         }
       });
+      if (undefined !== rtlStore.transactions) {
+        this.loadTransactionsTable(rtlStore.transactions);
+      }
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== rtlStore.transactions) ? false : true;
+      }
       this.logger.info(rtlStore);
     });
 
@@ -113,7 +109,7 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

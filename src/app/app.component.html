@@ -31,7 +31,7 @@
         </div>
       </mat-toolbar>
       <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
-        <rtl-super-user-dashboard></rtl-super-user-dashboard>
+        <router-outlet></router-outlet>
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary settings-icon" (click)="settingSidenav.toggle()">
         <mat-icon class="animate-settings">settings</mat-icon>

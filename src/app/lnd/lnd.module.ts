@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
-import { environment } from '../../environments/environment';
+import { LNDRouting } from './lnd.routing';
 import { SharedModule } from '../shared/shared.module';
 
-import { lndRouting } from './lnd.routing';
-import { LndRootComponent } from './lnd-root.component';
+import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
 import { PeersComponent } from './peers/peers.component';
 import { SendReceiveTransComponent } from './transactions/send-receive/send-receive-trans.component';
@@ -26,16 +23,18 @@ import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component
 import { ChannelBackupComponent } from './channels/channel-backup/channel-backup.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 
+import { CommonService } from '../shared/services/common.service';
+import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { LNDUnlockedGuard } from '../shared/services/auth.guard';
+
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
-    lndRouting,
-    NgxChartsModule,
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    LNDRouting
   ],
   declarations: [
-    LndRootComponent,
+    LNDRootComponent,
     HomeComponent,
     PeersComponent,
     SendReceiveTransComponent,
@@ -54,7 +53,11 @@ import { QueryRoutesComponent } from './payments/query-routes/query-routes.compo
     ChannelBackupComponent,
     QueryRoutesComponent
   ],
-  providers: [],
-  bootstrap: [LndRootComponent]
+  providers: [
+    { provide: LoggerService, useClass: ConsoleLoggerService },
+    LNDUnlockedGuard,
+    CommonService
+  ],
+  bootstrap: [LNDRootComponent]
 })
-export class LndModule {}
+export class LNDModule {}

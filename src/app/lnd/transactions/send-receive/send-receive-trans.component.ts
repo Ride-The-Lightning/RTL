@@ -9,11 +9,9 @@ import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
-import { LNDEffects } from '../../store/lnd.effects';
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-send-receive-trans',
@@ -33,18 +31,25 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
   public transTypes = [{id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
   public selTransType = '1';
   public flgCustomAmount = '1';
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unsubs[5]))
-    .subscribe(lndStore => {
-      this.information = lndStore.information;
-      this.addressTypes = lndStore.addressTypes;
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchBalance/blockchain') {
+          this.flgLoadingWallet = 'error';
+        }
+      });
+      this.selNode = rtlStore.selNode;
+      this.appConfig = rtlStore.appConfig;
+      this.information = rtlStore.information;
+      this.addressTypes = rtlStore.addressTypes;
 
-      this.blockchainBalance = lndStore.blockchainBalance;
+      this.blockchainBalance = rtlStore.blockchainBalance;
       if (undefined === this.blockchainBalance.total_balance) {
         this.blockchainBalance.total_balance = '0';
       }
@@ -57,19 +62,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
       if (this.flgLoadingWallet !== 'error') {
         this.flgLoadingWallet = false;
       }
-      this.logger.info(lndStore);
-    });
 
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchBalance/blockchain') {
-          this.flgLoadingWallet = 'error';
-        }
-      });
-      this.selNode = rtlStore.selNode;
-      this.appConfig = rtlStore.appConfig;
       this.logger.info(rtlStore);
     });
 
@@ -77,9 +70,9 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
 
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
-    this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddress));
-    this.lndEffects.setNewAddress
-    .pipe(takeUntil(this.unsubs[1]))
+    this.store.dispatch(new RTLActions.GetNewAddress(this.selectedAddress));
+    this.rtlEffects.setNewAddress
+    .pipe(takeUntil(this.unsub[1]))
     .subscribe(newAddress => {
       this.newAddress = newAddress;
     });
@@ -108,7 +101,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
     }));
 
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unsubs[2]))
+    .pipe(takeUntil(this.unsub[2]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         if (this.transaction.sendAll && !+this.appConfig.sso.rtlSSO) {
@@ -118,7 +111,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
             ]}
           }));
           this.rtlEffects.closeConfirm
-          .pipe(takeUntil(this.unsubs[3]))
+          .pipe(takeUntil(this.unsub[3]))
           .subscribe(pwdConfirmRes => {
             if (pwdConfirmRes) {
               const pwd = pwdConfirmRes[0].inputValue;
@@ -141,7 +134,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
 
   dispatchToSendFunds() {
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
-    this.store.dispatch(new LNDActions.SetChannelTransaction(this.transaction));
+    this.store.dispatch(new RTLActions.SetChannelTransaction(this.transaction));
     this.transaction = {address: '', amount: 0, blocks: 0, fees: 0};
   }
 
@@ -175,7 +168,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

@@ -6,8 +6,8 @@ import { Store } from '@ngrx/store';
 
 import { Node } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
-import * as fromApp from '../../../store/rtl.reducers';
-import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-signin',
@@ -25,12 +25,12 @@ export class SigninComponent implements OnInit, OnDestroy {
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>) { }
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) { }
 
   ngOnInit() {
     this.store.select('rtlRoot')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
+    .subscribe((rtlStore: fromRTLReducer.State) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
@@ -40,7 +40,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
         this.hintStr = 'Enter RPC password';
       } else {
-        this.hintStr = '';
+        this.hintStr = ''; // Do not remove, initial passowrd 'DEFAULT' is initilizing its value
       }
     });
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -10,9 +11,9 @@ import { Node } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromApp from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../shared/store/rtl.effects';
+import * as RTLActions from '../../../shared/store/rtl.actions';
+import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-backup',
@@ -25,21 +26,27 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
   public displayedColumns = ['chan_id', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true];
+  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromApp.AppState>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}
 
   ngOnInit() {
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[4]))
-    .subscribe(lndStore => {
+    this.store.select('rtlRoot')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore: fromRTLReducer.State) => {
+      this.selNode = rtlStore.selNode;
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'Fetchchannels') {
+          this.flgLoading[0] = 'error';
+        }
+      });
       this.channels = new MatTableDataSource([]);
       this.channels.data = [];
-      if (undefined !== lndStore.allChannels) {
-        this.channels = new MatTableDataSource<Channel>([...lndStore.allChannels]);
-        this.channels.data = lndStore.allChannels;
+      if (undefined !== rtlStore.allChannels) {
+        this.channels = new MatTableDataSource<Channel>([...rtlStore.allChannels]);
+        this.channels.data = rtlStore.allChannels;
       }
       this.channels.sort = this.sort;
       this.channels.filterPredicate = (channel: Channel, fltr: string) => {
@@ -54,36 +61,25 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
-      this.logger.info(lndStore);
-    });
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromApp.RootState) => {
-      this.selNode = rtlStore.selNode;
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'Fetchchannels') {
-          this.flgLoading[0] = 'error';
-        }
-      });
       this.logger.info(rtlStore);
     });
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.SET_CHANNELS)
-    ).subscribe((setchannels: LNDActions.SetChannels) => {
+      filter((action) => action.type === RTLActions.SET_CHANNELS)
+    ).subscribe((setchannels: RTLActions.SetChannels) => {
       this.selChannel = undefined;
     });
   }
 
   onBackupChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
-    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new RTLActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
-    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new RTLActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
 
   onChannelClick(selRow: Channel, event: any) {
