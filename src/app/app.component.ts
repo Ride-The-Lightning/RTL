@@ -59,14 +59,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoading[0] = false;
       }
     });
-    if (sessionStorage.getItem('token')) {
-      this.store.dispatch(new RTLActions.FetchInfo());
-    }
     this.actions$
     .pipe(
       takeUntil(this.unsubs[1]),
-      filter((action) => action.type === RTLActions.INIT_APP_DATA || action.type === RTLActions.SET_RTL_CONFIG)
-    ).subscribe((actionPayload: (RTLActions.InitAppData | RTLActions.SetRTLConfig)) => {
+      filter((action) => action.type === RTLActions.SET_RTL_CONFIG)
+    ).subscribe((actionPayload: (RTLActions.SetRTLConfig)) => {
       if (actionPayload.type === RTLActions.SET_RTL_CONFIG) {
         if (!sessionStorage.getItem('token')) {
           if (+actionPayload.payload.sso.rtlSSO) {
@@ -82,17 +79,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
-      } else if (actionPayload.type === RTLActions.INIT_APP_DATA) {
-        this.store.dispatch(new RTLActions.FetchInfo());
-      }
-    });
-    this.actions$
-    .pipe(
-      takeUntil(this.unsubs[1]),
-      filter((action) => action.type === RTLActions.SET_INFO)
-    ).subscribe((infoData: RTLActions.SetInfo) => {
-      if (undefined !== infoData.payload.identity_pubkey) {
-        this.initializeRemainingData();
       }
     });
     this.userIdle.startWatching();
@@ -113,17 +99,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readAccessKey() {
     const url = window.location.href;
     return url.substring(url.lastIndexOf('access-key=') + 11).trim();
-  }
-
-  initializeRemainingData() {
-    this.store.dispatch(new RTLActions.FetchPeers());
-    this.store.dispatch(new RTLActions.FetchBalance('channels'));
-    this.store.dispatch(new RTLActions.FetchFees());
-    this.store.dispatch(new RTLActions.FetchNetwork());
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
-    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
-    this.store.dispatch(new RTLActions.FetchPayments());
   }
 
   ngAfterViewInit() {
