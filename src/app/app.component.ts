@@ -8,11 +8,11 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
-import { RTLConfiguration, Settings, Node } from './shared/models/RTLconfig';
+import { RTLConfiguration, Settings, LightningNode } from './shared/models/RTLconfig';
 import { GetInfo } from './shared/models/lndModels';
 
-import * as RTLActions from './shared/store/rtl.actions';
-import * as fromRTLReducer from './shared/store/rtl.reducers';
+import * as RTLActions from './store/rtl.actions';
+import * as fromRTLReducer from './store/rtl.reducers';
 
 @Component({
   selector: 'rtl-app',
@@ -22,7 +22,7 @@ import * as fromRTLReducer from './shared/store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
-  public selNode: Node;
+  public selNode: LightningNode;
   public settings: Settings;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
@@ -32,13 +32,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public smallScreen = false;
   unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions,
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
     private userIdle: UserIdleService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;

@@ -3,10 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Node } from '../../models/RTLconfig';
-import { RTLEffects } from '../../store/rtl.effects';
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import { LightningNode } from '../../models/RTLconfig';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-server-config',
@@ -14,7 +14,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./server-config.component.scss']
 })
 export class ServerConfigComponent implements OnInit, OnDestroy {
-  public selNode: Node;
+  public selNode: LightningNode;
   public selectedNodeType = 'rtl';
   public showLND = false;
   public showBitcoind = false;
@@ -22,12 +22,12 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   public fileFormat = 'INI';
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'fetchConfig') {
           this.resetData();

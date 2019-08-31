@@ -5,8 +5,8 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import * as RTLActions from '../shared/store/rtl.actions';
-import * as fromRTLReducer from '../shared/store/rtl.reducers';
+import * as RTLActions from '../store/rtl.actions';
+import * as fromRTLReducer from '../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-cl-root',
@@ -17,25 +17,26 @@ export class CLRootComponent implements OnInit, OnDestroy {
   
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     console.warn('CL ROOT')
-    this.store.dispatch(new RTLActions.FetchInfo());
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_INFO || action.type === RTLActions.INIT_APP_DATA))
-    .subscribe((infoData: RTLActions.SetInfo | RTLActions.InitAppData) => {
-      if(infoData.type === RTLActions.SET_INFO && undefined !== infoData.payload.identity_pubkey) {
-        this.initializeRemainingData();
-      }
-      if(infoData.type === RTLActions.INIT_APP_DATA) {
-        this.store.dispatch(new RTLActions.FetchInfo());
-      }
-    });
+    this.initializeRemainingData();
+    // this.store.dispatch(new RTLActions.FetchCLInfo());
+    // this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO || action.type === RTLActions.INIT_APP_DATA))
+    // .subscribe((infoData: RTLActions.SetCLInfo | RTLActions.InitAppData) => {
+    //   if(infoData.type === RTLActions.SET_CL_INFO && undefined !== infoData.payload.identity_pubkey) {
+    //     this.initializeRemainingData();
+    //   }
+    //   if(infoData.type === RTLActions.INIT_APP_DATA) {
+    //     this.store.dispatch(new RTLActions.FetchCLInfo());
+    //   }
+    // });
   }
 
   initializeRemainingData() {
-    this.store.dispatch(new RTLActions.FetchFees());
+    this.store.dispatch(new RTLActions.FetchCLFees());
     // this.store.dispatch(new RTLActions.FetchPeers());
     // this.store.dispatch(new RTLActions.FetchBalance('channels'));
     // this.store.dispatch(new RTLActions.FetchNetwork());

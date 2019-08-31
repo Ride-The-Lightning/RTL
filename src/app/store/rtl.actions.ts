@@ -1,11 +1,14 @@
+import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
-import { RTLConfiguration, Settings, Node } from '../models/RTLconfig';
-import { ErrorPayload } from '../models/errorPayload';
+
+import { GetInfoCL } from '../shared/models/clModels';
+
+import { RTLConfiguration, Settings, LightningNode } from '../shared/models/RTLconfig';
+import { ErrorPayload } from '../shared/models/errorPayload';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
-} from '../models/lndModels';
-import { MatDialogConfig } from '@angular/material';
+} from '../shared/models/lndModels';
 
 export const RESET_STORE = 'RESET_STORE';
 export const CLEAR_EFFECT_ERROR = 'CLEAR_EFFECT_ERROR';
@@ -86,6 +89,11 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
+export const FETCH_CL_INFO = 'FETCH_CL_INFO';
+export const SET_CL_INFO = 'SET_CL_INFO';
+export const FETCH_CL_FEES = 'FETCH_CL_FEES';
+export const SET_CL_FEES = 'SET_CL_FEES';
+
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR;
   constructor(public payload: string) {} // payload = errorAction
@@ -126,7 +134,7 @@ export class CloseConfirmation implements Action {
 
 export class ResetStore implements Action {
   readonly type = RESET_STORE;
-  constructor(public payload: Node) {}
+  constructor(public payload: LightningNode) {}
 }
 
 export class FetchRTLConfig implements Action {
@@ -145,7 +153,7 @@ export class SaveSettings implements Action {
 
 export class SetSelelectedNode implements Action {
   readonly type = SET_SELECTED_NODE;
-  constructor(public payload: Node) {}
+  constructor(public payload: LightningNode) {}
 }
 
 export class FetchInfo implements Action {
@@ -456,6 +464,24 @@ export class InitAppData implements Action {
   readonly type = INIT_APP_DATA;
 }
 
+export class FetchCLInfo implements Action {
+  readonly type = FETCH_CL_INFO;
+}
+
+export class SetCLInfo implements Action {
+  readonly type = SET_CL_INFO;
+  constructor(public payload: GetInfoCL) {}
+}
+
+export class FetchCLFees implements Action {
+  readonly type = FETCH_CL_FEES;
+}
+
+export class SetCLFees implements Action {
+  readonly type = SET_CL_FEES;
+  constructor(public payload: {}) {}
+}
+
 export type RTLActions =
   ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
   FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -477,4 +503,5 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData;
+  IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
+  FetchCLInfo | SetCLInfo | FetchCLFees | SetCLFees;

@@ -7,9 +7,9 @@ import { Actions } from '@ngrx/effects';
 import { LoggerService } from '../../../services/logger.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../../store/rtl.effects';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-horizontal-navigation',
@@ -23,13 +23,13 @@ export class HorizontalNavigationComponent implements OnInit {
   public numPendingChannels = 0;
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       this.numPendingChannels = rtlStore.numberOfPendingChannels;
       if(rtlStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
         this.menuNodes = MENU_DATA.CLChildren;

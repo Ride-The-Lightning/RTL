@@ -5,9 +5,9 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, Fees } from '../../shared/models/lndModels';
-import { Node } from '../../shared/models/RTLconfig';
+import { LightningNode } from '../../shared/models/RTLconfig';
 
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-cl-home',
@@ -15,18 +15,18 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class CLHomeComponent implements OnInit, OnDestroy {
-  public selNode: Node;
+  public selNode: LightningNode;
   public fees: Fees;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';

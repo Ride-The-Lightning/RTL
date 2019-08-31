@@ -5,14 +5,14 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Node } from '../../../shared/models/RTLconfig';
+import { LightningNode } from '../../../shared/models/RTLconfig';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
-import { RTLEffects } from '../../../shared/store/rtl.effects';
-import * as RTLActions from '../../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-payments',
@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 export class PaymentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild('sendPaymentForm', { static: true }) form;
-  public selNode: Node;
+  public selNode: LightningNode;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -36,7 +36,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['creation_date', 'fee', 'value'];
@@ -59,9 +59,9 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPayments') {
           this.flgLoading[0] = 'error';

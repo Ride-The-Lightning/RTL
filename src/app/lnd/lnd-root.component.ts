@@ -5,8 +5,8 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import * as RTLActions from '../shared/store/rtl.actions';
-import * as fromRTLReducer from '../shared/store/rtl.reducers';
+import * as RTLActions from '../store/rtl.actions';
+import * as fromRTLReducer from '../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-lnd-root',
@@ -16,7 +16,7 @@ import * as fromRTLReducer from '../shared/store/rtl.reducers';
 export class LNDRootComponent implements OnInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     console.warn('LND ROOT')

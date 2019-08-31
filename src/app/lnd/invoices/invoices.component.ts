@@ -6,13 +6,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Node } from '../../shared/models/RTLconfig';
+import { LightningNode } from '../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-invoices',
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: Node;
+  public selNode: LightningNode;
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
@@ -43,7 +43,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   private lastOffset = -1;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['settled', 'creation_date', 'memo', 'value'];
@@ -66,9 +66,9 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInvoices') {
           this.flgLoading[0] = 'error';

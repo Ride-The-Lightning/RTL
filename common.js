@@ -34,8 +34,10 @@ common.setOptions = () => {
 				json: true,
 				form: ''
       };
-      if(node.ln_implementation !== 'CLightning') {
+      if(node.ln_implementation.toLowerCase() !== 'clightning') {
         node.options.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')};
+      } else {
+        node.options.headers = {'macaroon': fs.readFileSync(node.macaroon_path + '/access.macaroon').toString('hex')};
       }
 		});
 		// Options cannot be set before selected node initializes. Updating selected node's options separatly
@@ -45,7 +47,7 @@ common.setOptions = () => {
 			json: true,
 			form: ''
     };
-    if(common.selectedNode.ln_implementation !== 'CLightning') {
+    if(common.selectedNode.ln_implementation.toLowerCase() !== 'clightning') {
 			common.selectedNode.options.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(common.selectedNode.macaroon_path + '/admin.macaroon').toString('hex')};
     }
 	} catch(err) {

@@ -9,14 +9,14 @@ import { environment } from '../../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { Node, Settings } from '../../../models/RTLconfig';
+import { LightningNode, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { GetInfo, GetInfoChain } from '../../../models/lndModels';
 import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { RTLEffects } from '../../../../store/rtl.effects';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -25,7 +25,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
-  public selNode: Node;
+  public selNode: LightningNode;
   public settings: Settings;
   public version = '';
   public information: GetInfo = {};
@@ -44,7 +44,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenus: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
   navMenusLogout: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -61,7 +61,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;

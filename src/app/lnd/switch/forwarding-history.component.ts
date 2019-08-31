@@ -9,8 +9,8 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { ForwardingEvent } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -30,7 +30,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['timestamp', 'amt_out', 'amt_in'];
@@ -58,9 +58,9 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
       this.onForwardingHistoryFetch();
     });
 
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';

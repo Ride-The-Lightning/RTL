@@ -28,7 +28,7 @@ export class Authentication {
   ) { }
 }
 
-export class Node {
+export class LightningNode {
   constructor(
     public settings: Settings,
     public authentication: Authentication,
@@ -42,6 +42,6 @@ export class RTLConfiguration {
   constructor(
     public selectedNodeIndex: number,
     public sso: SSO,
-    public nodes: Node[]
+    public nodes: LightningNode[]
   ) { }
 }

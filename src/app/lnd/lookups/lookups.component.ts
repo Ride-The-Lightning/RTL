@@ -6,8 +6,8 @@ import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-lookups',
@@ -28,7 +28,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
     this.actions$

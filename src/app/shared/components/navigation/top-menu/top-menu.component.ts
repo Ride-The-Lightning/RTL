@@ -4,14 +4,14 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import { Node } from '../../../models/RTLconfig';
+import { LightningNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { GetInfo, GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
 
-import { RTLEffects } from '../../../store/rtl.effects';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as RTLActions from '../../../store/rtl.actions';
+import { RTLEffects } from '../../../../store/rtl.effects';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as RTLActions from '../../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -19,7 +19,7 @@ import * as RTLActions from '../../../store/rtl.actions';
   styleUrls: ['./top-menu.component.scss']
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
-  public selNode: Node;
+  public selNode: LightningNode;
   public version = '';
   public information: GetInfo = {};
   public informationChain: GetInfoChain = {};
@@ -27,14 +27,14 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public showLogout = false;
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
     this.version = environment.VERSION;
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       this.selNode = rtlStore.selNode;
 
       this.information = rtlStore.information;

@@ -5,12 +5,12 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, GetInfo, PendingChannels } from '../../../shared/models/lndModels';
-import { Node } from '../../../shared/models/RTLconfig';
+import { LightningNode } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../shared/store/rtl.effects';
-import * as RTLActions from '../../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-pending',
@@ -19,7 +19,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class ChannelPendingComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: Node;
+  public selNode: LightningNode;
   public selectedFilter = 0;
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
@@ -50,7 +50,7 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   private unsub: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance'];
@@ -96,9 +96,9 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/pending') {
           this.flgLoading[0] = 'error';

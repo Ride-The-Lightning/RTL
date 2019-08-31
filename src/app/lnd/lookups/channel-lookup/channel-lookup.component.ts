@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ChannelEdge } from '../../../shared/models/lndModels';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-lookup',
@@ -18,16 +18,16 @@ export class ChannelLookupComponent implements OnInit {
   public node2_match = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>) { }
+  constructor(private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
     if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_update_str) {
       this.lookupResult.last_update_str = (this.lookupResult.last_update_str === '') ?
         '' : formatDate(this.lookupResult.last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
     }
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {
         this.node1_match = true;
       }

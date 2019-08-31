@@ -7,13 +7,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { Node } from '../../../shared/models/RTLconfig';
+import { LightningNode } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../shared/store/rtl.effects';
-import * as RTLActions from '../../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-backup',
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
 })
 export class ChannelBackupComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: Node;
+  public selNode: LightningNode;
   public displayedColumns = ['chan_id', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
@@ -30,12 +30,12 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       this.selNode = rtlStore.selNode;
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {

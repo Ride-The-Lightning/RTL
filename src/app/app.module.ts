@@ -23,12 +23,13 @@ import { ThemeOverlay } from './shared/theme/overlay-container/theme-overlay';
 import { AppComponent } from './app.component';
 
 import { environment } from '../environments/environment';
-import { RTLRootReducer } from './shared/store/rtl.reducers';
-import { RTLEffects } from './shared/store/rtl.effects';
 import { CommonService } from './shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
+
+import { RTLReducer } from './store/rtl.reducers';
+import { RTLEffects } from './store/rtl.effects';
 
 @NgModule({
   imports: [
@@ -38,7 +39,7 @@ import { AuthInterceptor } from './shared/services/auth.interceptor';
     PerfectScrollbarModule,
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
-    StoreModule.forRoot({rtlRoot: RTLRootReducer}),
+    StoreModule.forRoot({rtl: RTLReducer}),
     EffectsModule.forRoot([RTLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []    
   ],

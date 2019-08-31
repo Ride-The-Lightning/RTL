@@ -5,16 +5,16 @@ export interface AddressType {
 }
 
 export interface Balance {
-  btc_balance?: string; // For Channels Balance
-  balance?: string; // For Channels Balance
-  btc_pending_open_balance?: string; // For Channels Balance
-  pending_open_balance?: string; // For Channels Balance
-  btc_total_balance?: string; // For Blockchain Balance
-  total_balance?: string; // For Blockchain Balance
-  btc_confirmed_balance?: string; // For Blockchain Balance
-  confirmed_balance?: string; // For Blockchain Balance
-  btc_unconfirmed_balance?: string; // For Blockchain Balance
-  unconfirmed_balance?: string; // For Blockchain Balance
+  btc_balance?: string;
+  balance?: string;
+  btc_pending_open_balance?: string;
+  pending_open_balance?: string;
+  btc_total_balance?: string;
+  total_balance?: string;
+  btc_confirmed_balance?: string;
+  confirmed_balance?: string;
+  btc_unconfirmed_balance?: string;
+  unconfirmed_balance?: string;
 }
 
 export interface ChannelFeeReport {
@@ -271,7 +271,7 @@ export interface PayRequest {
 export interface Peer {
   pub_key?:	string;
   alias?: string;
-  address?: string; // host
+  address?: string;
   bytes_sent?: number;
   bytes_recv?: number;
   sat_sent?: string;

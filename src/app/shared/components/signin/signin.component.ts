@@ -4,10 +4,10 @@ import { takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 
-import { Node } from '../../models/RTLconfig';
+import { LightningNode } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
-import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-signin',
@@ -15,7 +15,7 @@ import * as RTLActions from '../../store/rtl.actions';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
-  public selNode: Node;
+  public selNode: LightningNode;
   public password = '';
   public nodeAuthType = '';
   public rtlSSO = 0;
@@ -25,12 +25,12 @@ export class SigninComponent implements OnInit, OnDestroy {
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) { }
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });

@@ -11,9 +11,9 @@ import { Peer, GetInfo } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
-import { RTLEffects } from '../../shared/store/rtl.effects';
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../store/rtl.effects';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-peers',
@@ -33,7 +33,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['detach', 'pub_key', 'alias'];
@@ -56,9 +56,9 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPeers') {
           this.flgLoading[0] = 'error';

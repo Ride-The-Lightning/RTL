@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -8,14 +8,14 @@ import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material';
 
-import { environment } from '../../../environments/environment';
-import { LoggerService } from '../services/logger.service';
-import { Settings } from '../models/RTLconfig';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../models/lndModels';
+import { environment } from '../../environments/environment';
+import { LoggerService } from '../shared/services/logger.service';
+import { Settings } from '../shared/models/RTLconfig';
+import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../shared/models/lndModels';
 
-import { SpinnerDialogComponent } from '../components/spinner-dialog/spinner-dialog.component';
-import { AlertMessageComponent } from '../components/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from '../components/confirmation-message/confirmation-message.component';
+import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from '../shared/components/confirmation-message/confirmation-message.component';
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
@@ -28,7 +28,7 @@ export class RTLEffects implements OnDestroy {
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
-    private store: Store<fromRTLReducer.State>,
+    private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
     public dialog: MatDialog,
     private router: Router) { }
@@ -117,8 +117,8 @@ export class RTLEffects implements OnDestroy {
   @Effect()
   infoFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_INFO),
-    withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [RTLActions.FetchInfo, fromRTLReducer.State]) => {
+    withLatestFrom(this.store.select('rtl')),
+    mergeMap(([action, store]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(environment.GETINFO_API)
       .pipe(
@@ -670,8 +670,8 @@ export class RTLEffects implements OnDestroy {
   @Effect()
   sendPayment = this.actions$.pipe(
     ofType(RTLActions.SEND_PAYMENT),
-    withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [RTLActions.SendPayment, fromRTLReducer.State]) => {
+    withLatestFrom(this.store.select('rtl')),
+    mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
     let queryHeaders = {};
     if (action.payload[2]) {
       queryHeaders = {paymentDecoded: action.payload[1]};
@@ -1039,8 +1039,8 @@ export class RTLEffects implements OnDestroy {
   @Effect()
   isAuthorized = this.actions$.pipe(
     ofType(RTLActions.IS_AUTHORIZED),
-    withLatestFrom(this.store.select('rtlRoot')),
-    mergeMap(([action, store]: [RTLActions.IsAuthorized, fromRTLReducer.State]) => {
+    withLatestFrom(this.store.select('rtl')),
+    mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
     .pipe(
@@ -1076,8 +1076,8 @@ export class RTLEffects implements OnDestroy {
   @Effect({ dispatch: false })
   authSignin = this.actions$.pipe(
   ofType(RTLActions.SIGNIN),
-  withLatestFrom(this.store.select('rtlRoot')),
-  mergeMap(([action, store]: [RTLActions.Signin, fromRTLReducer.State]) => {
+  withLatestFrom(this.store.select('rtl')),
+  mergeMap(([action, store]: [RTLActions.Signin, any]) => {
     this.store.dispatch(new RTLActions.ClearEffectError('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
     .pipe(
@@ -1105,8 +1105,8 @@ export class RTLEffects implements OnDestroy {
   @Effect({ dispatch: false })
   signOut = this.actions$.pipe(
   ofType(RTLActions.SIGNOUT),
-  withLatestFrom(this.store.select('rtlRoot')),
-  mergeMap(([action, store]: [RTLActions.Signout, fromRTLReducer.State]) => {
+  withLatestFrom(this.store.select('rtl')),
+  mergeMap(([action, store]) => {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
@@ -1231,13 +1231,14 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
+          this.store.dispatch(new RTLActions.ResetStore(action.payload));
           if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
+            return { type: RTLActions.FETCH_CL_INFO };
           } else {
             this.router.navigate(['/lnd/home']);
+            return { type: RTLActions.FETCH_INFO };
           }
-          this.store.dispatch(new RTLActions.ResetStore(action.payload));
-          return { type: RTLActions.FETCH_INFO };
         } else {
           return {
             type: RTLActions.OPEN_ALERT,
@@ -1259,6 +1260,52 @@ export class RTLEffects implements OnDestroy {
          );
        })
      );
+   }
+ ));
+
+ @Effect()
+ infoFetchCL = this.actions$.pipe(
+   ofType(RTLActions.FETCH_CL_INFO),
+   withLatestFrom(this.store.select('rtl')),
+   mergeMap(([action, store]) => {
+     this.store.dispatch(new RTLActions.ClearEffectError('FetchCLInfo'));
+     return this.httpClient.get<GetInfo>(environment.GETINFO_API)
+     .pipe(
+       map((info) => {
+        this.logger.info(info);
+        sessionStorage.setItem('clUnlocked', 'true');
+        return {
+          type: RTLActions.SET_CL_INFO,
+          payload: (undefined !== info) ? info : {}
+        };
+       }),
+       catchError((err) => {
+         this.logger.error(err);
+         this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLInfo', code: err.status, message: err.error.error }));
+         return of();
+       })
+     );
+   }
+ ));
+
+ @Effect()
+ fetchFeesCL = this.actions$.pipe(
+   ofType(RTLActions.FETCH_CL_FEES),
+   mergeMap((action: RTLActions.FetchCLFees) => {
+     this.store.dispatch(new RTLActions.ClearEffectError('FetchCLFees'));
+     return this.httpClient.get<Fees>(environment.FEES_API);
+   }),
+   map((fees) => {
+     this.logger.info(fees);
+     return {
+       type: RTLActions.SET_CL_FEES,
+       payload: (undefined !== fees) ? fees : {}
+     };
+   }),
+   catchError((err: any) => {
+     this.logger.error(err);
+     this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
+     return of();
    }
  ));
 

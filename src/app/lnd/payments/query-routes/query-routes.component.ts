@@ -9,9 +9,9 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Hop } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../shared/store/rtl.effects';
-import * as RTLActions from '../../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -28,7 +28,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat'];
@@ -51,11 +51,6 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtlRoot')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
-      this.logger.info(rtlStore);
-    });
     this.rtlEffects.setQueryRoutes
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {

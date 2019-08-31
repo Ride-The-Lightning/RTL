@@ -5,9 +5,9 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
-import { Node } from '../../shared/models/RTLconfig';
+import { LightningNode } from '../../shared/models/RTLconfig';
 
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-home',
@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../shared/store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  public selNode: Node;
+  public selNode: LightningNode;
   public fees: Fees;
   public information: GetInfo = {};
   public remainder = 0;
@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   yAxisLabel = 'Balance';
   colorScheme = {domain: ['#FFFFFF']};
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
     switch (true) {
       case (window.innerWidth <= 730):
         this.view = [250, 352];
@@ -64,9 +64,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.flgTotalCalculated = false;
-    this.store.select('rtlRoot')
+    this.store.select('rtl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';

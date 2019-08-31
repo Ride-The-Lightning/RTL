@@ -7,9 +7,9 @@ import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, Valid
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material';
 
-import { RTLEffects } from '../../shared/store/rtl.effects';
-import * as RTLActions from '../../shared/store/rtl.actions';
-import * as fromRTLReducer from '../../shared/store/rtl.reducers';
+import { RTLEffects } from '../../store/rtl.effects';
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const initWalletPassword = control.get('initWalletPassword');
@@ -46,7 +46,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   warnRes = true;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.State>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private router: Router) {}
 
   ngOnInit() {
     this.walletPassword = '';
