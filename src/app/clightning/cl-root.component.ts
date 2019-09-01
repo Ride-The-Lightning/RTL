@@ -14,7 +14,6 @@ import * as fromRTLReducer from '../store/rtl.reducers';
   styleUrls: ['./cl-root.component.scss']
 })
 export class CLRootComponent implements OnInit, OnDestroy {
-  
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
@@ -22,17 +21,12 @@ export class CLRootComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.warn('CL ROOT')
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.initializeRemainingData();
-    // this.store.dispatch(new RTLActions.FetchCLInfo());
-    // this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO || action.type === RTLActions.INIT_APP_DATA))
-    // .subscribe((infoData: RTLActions.SetCLInfo | RTLActions.InitAppData) => {
-    //   if(infoData.type === RTLActions.SET_CL_INFO && undefined !== infoData.payload.identity_pubkey) {
-    //     this.initializeRemainingData();
-    //   }
-    //   if(infoData.type === RTLActions.INIT_APP_DATA) {
-    //     this.store.dispatch(new RTLActions.FetchCLInfo());
-    //   }
-    // });
+    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO))
+    .subscribe((infoData: RTLActions.SetCLInfo) => {
+      if(undefined !== infoData.payload.id) {
+        this.initializeRemainingData();
+      }
+    });
   }
 
   initializeRemainingData() {

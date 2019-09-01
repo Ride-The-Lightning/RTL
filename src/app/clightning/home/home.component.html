@@ -10,18 +10,8 @@
         <mat-card-content>
           <div fxLayout="column" class="pl-4">
             <mat-list fxFlex="100" fxLayoutAlign="start start">
-              <mat-list-item fxFlex="65" fxLayoutAlign="start start">Daily ({{information?.smaller_currency_unit}})</mat-list-item>
-              <mat-list-item fxFlex="25" fxLayoutAlign="end start">{{fees?.day_fee_sum}}</mat-list-item>
-              <mat-divider></mat-divider>
-            </mat-list>
-            <mat-list fxFlex="100" fxLayoutAlign="start start">
-              <mat-list-item fxFlex="65" fxLayoutAlign="start start">Weekly ({{information?.smaller_currency_unit}})</mat-list-item>
-              <mat-list-item fxFlex="25" fxLayoutAlign="end start">{{fees?.week_fee_sum}}</mat-list-item>
-              <mat-divider></mat-divider>
-            </mat-list>
-            <mat-list fxFlex="100" fxLayoutAlign="start start">
-              <mat-list-item fxFlex="65" fxLayoutAlign="start start">Monthly ({{information?.smaller_currency_unit}})</mat-list-item>
-              <mat-list-item fxFlex="25" fxLayoutAlign="end start">{{fees?.month_fee_sum}}</mat-list-item>
+              <mat-list-item fxFlex="65" fxLayoutAlign="start start"> Fee Collected </mat-list-item>
+              <mat-list-item fxFlex="25" fxLayoutAlign="end start">{{fees?.feeCollected}}</mat-list-item>
               <mat-divider></mat-divider>
             </mat-list>
           </div>

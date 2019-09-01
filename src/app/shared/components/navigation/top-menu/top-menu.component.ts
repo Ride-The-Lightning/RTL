@@ -6,7 +6,7 @@ import { Actions } from '@ngrx/effects';
 
 import { LightningNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { GetInfo, GetInfoChain } from '../../../models/lndModels';
+import { GetInfoRoot, GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
@@ -21,7 +21,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
 export class TopMenuComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
   public version = '';
-  public information: GetInfo = {};
+  public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
   public showLogout = false;
@@ -32,12 +32,12 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.selNode;
 
-      this.information = rtlStore.information;
+      this.information = rtlStore.nodeData;
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
 
       if (undefined !== this.information.identity_pubkey) {

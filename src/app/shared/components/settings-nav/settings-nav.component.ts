@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { LightningNode, RTLConfiguration } from '../../models/RTLconfig';
-import { GetInfo } from '../../models/lndModels';
+import { GetInfoRoot } from '../../models/lndModels';
 import { LoggerService } from '../../services/logger.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
@@ -17,7 +17,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class SettingsNavComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
-  public information: GetInfo = {};
+  public information: GetInfoRoot = {};
   public menus = ['Vertical', 'Horizontal'];
   public menuTypes = ['Regular', 'Compact', 'Mini'];
   public selectedMenu: string;
@@ -32,7 +32,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
@@ -45,7 +45,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
         this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
       }
-      this.information = rtlStore.information;
+      this.information = rtlStore.nodeData;
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.logger.info(rtlStore);
     });

@@ -8,7 +8,7 @@ import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material';
 
-import { environment } from '../../environments/environment';
+import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { Settings } from '../shared/models/RTLconfig';
 import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../shared/models/lndModels';
@@ -23,6 +23,7 @@ import * as fromRTLReducer from './rtl.reducers';
 @Injectable()
 export class RTLEffects implements OnDestroy {
   dialogRef: any;
+  CHILD_API_URL = API_URL + '/lnd';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -120,7 +121,7 @@ export class RTLEffects implements OnDestroy {
     withLatestFrom(this.store.select('rtl')),
     mergeMap(([action, store]) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchInfo'));
-      return this.httpClient.get<GetInfo>(environment.GETINFO_API)
+      return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
       .pipe(
         map((info) => {
           this.logger.info(info);
@@ -166,7 +167,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_PEERS),
     mergeMap((action: RTLActions.FetchPeers) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchPeers'));
-      return this.httpClient.get(environment.PEERS_API)
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
       .pipe(
         map((peers: any) => {
           this.logger.info(peers);
@@ -188,7 +189,7 @@ export class RTLEffects implements OnDestroy {
   saveNewPeer = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_PEER),
     mergeMap((action: RTLActions.SaveNewPeer) => {
-      return this.httpClient.post(environment.PEERS_API, {pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm})
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, {pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm})
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
@@ -219,7 +220,7 @@ export class RTLEffects implements OnDestroy {
   detachPeer = this.actions$.pipe(
     ofType(RTLActions.DETACH_PEER),
     mergeMap((action: RTLActions.DetachPeer) => {
-      return this.httpClient.delete(environment.PEERS_API + '/' + action.payload.pubkey)
+      return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey)
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
@@ -250,7 +251,7 @@ export class RTLEffects implements OnDestroy {
   saveNewInvoice = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE),
     mergeMap((action: RTLActions.SaveNewInvoice) => {
-      return this.httpClient.post(environment.INVOICES_API, {
+      return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
       })
       .pipe(
@@ -291,7 +292,7 @@ export class RTLEffects implements OnDestroy {
   openNewChannel = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_CHANNEL),
     mergeMap((action: RTLActions.SaveNewChannel) => {
-      return this.httpClient.post(environment.CHANNELS_API, {
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
         node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
         trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed
       })
@@ -327,7 +328,7 @@ export class RTLEffects implements OnDestroy {
   updateChannel = this.actions$.pipe(
     ofType(RTLActions.UPDATE_CHANNELS),
     mergeMap((action: RTLActions.UpdateChannels) => {
-      return this.httpClient.post(environment.CHANNELS_API + '/chanPolicy',
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/chanPolicy',
         { baseFeeMsat: action.payload.baseFeeMsat, feeRate: action.payload.feeRate, timeLockDelta: action.payload.timeLockDelta, chanPoint: action.payload.chanPoint })
       .pipe(
         map((postRes: any) => {
@@ -359,7 +360,7 @@ export class RTLEffects implements OnDestroy {
   closeChannel = this.actions$.pipe(
     ofType(RTLActions.CLOSE_CHANNEL),
     mergeMap((action: RTLActions.CloseChannel) => {
-      return this.httpClient.delete(environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly)
+      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly)
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
@@ -398,7 +399,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.BACKUP_CHANNELS),
     mergeMap((action: RTLActions.BackupChannels) => {
       this.store.dispatch(new RTLActions.ClearEffectError('BackupChannels'));
-      return this.httpClient.get(environment.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint)
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint)
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
@@ -430,7 +431,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.VERIFY_CHANNELS),
     mergeMap((action: RTLActions.VerifyChannels) => {
       this.store.dispatch(new RTLActions.ClearEffectError('VerifyChannels'));
-      return this.httpClient.post(environment.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, {})
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, {})
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
@@ -462,7 +463,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_FEES),
     mergeMap((action: RTLActions.FetchFees) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchFees'));
-      return this.httpClient.get<Fees>(environment.FEES_API);
+      return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
     }),
     map((fees) => {
       this.logger.info(fees);
@@ -483,7 +484,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_BALANCE),
     mergeMap((action: RTLActions.FetchBalance) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchBalance/' + action.payload));
-      return this.httpClient.get<Balance>(environment.BALANCE_API + '/' + action.payload)
+      return this.httpClient.get<Balance>(this.CHILD_API_URL + environment.BALANCE_API + '/' + action.payload)
       .pipe(
         map((res: any) => {
           if (action.payload === 'channels') {
@@ -510,7 +511,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_NETWORK),
     mergeMap((action: RTLActions.FetchNetwork) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchNetwork'));
-      return this.httpClient.get<NetworkInfo>(environment.NETWORK_API + '/info');
+      return this.httpClient.get<NetworkInfo>(this.CHILD_API_URL + environment.NETWORK_API + '/info');
     }),
     map((networkInfo) => {
       this.logger.info(networkInfo);
@@ -530,7 +531,7 @@ export class RTLEffects implements OnDestroy {
   channelsFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_CHANNELS),
     mergeMap((action: RTLActions.FetchChannels) => {
-      return this.httpClient.get(environment.CHANNELS_API + '/' + action.payload.routeParam)
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.routeParam)
       .pipe(
         map((channels: any) => {
           this.logger.info(channels);
@@ -568,7 +569,7 @@ export class RTLEffects implements OnDestroy {
       const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
       const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
       const reversed = (action.payload.reversed) ? action.payload.reversed : false;
-      return this.httpClient.get<ListInvoices>(environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
+      return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
       .pipe(map((res: ListInvoices) => {
         this.logger.info(res);
         if (action.payload.reversed && !action.payload.index_offset) {
@@ -592,7 +593,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_TRANSACTIONS),
     mergeMap((action: RTLActions.FetchTransactions) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchTransactions'));
-      return this.httpClient.get<Transaction[]>(environment.TRANSACTIONS_API);
+      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + environment.TRANSACTIONS_API);
     }),
     map((transactions) => {
       this.logger.info(transactions);
@@ -613,7 +614,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.FETCH_PAYMENTS),
     mergeMap((action: RTLActions.FetchPayments) => {
       this.store.dispatch(new RTLActions.ClearEffectError('FetchPayments'));
-      return this.httpClient.get<Payment[]>(environment.PAYMENTS_API);
+      return this.httpClient.get<Payment[]>(this.CHILD_API_URL + environment.PAYMENTS_API);
     }),
     map((payments) => {
       this.logger.info(payments);
@@ -633,7 +634,7 @@ export class RTLEffects implements OnDestroy {
    decodePayment = this.actions$.pipe(
     ofType(RTLActions.DECODE_PAYMENT),
     mergeMap((action: RTLActions.DecodePayment) => {
-      return this.httpClient.get(environment.PAYREQUEST_API + '/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload)
       .pipe(
         map((decodedPayment) => {
           this.logger.info(decodedPayment);
@@ -650,7 +651,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Decode Payment Failed',
-              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: environment.PAYREQUEST_API + '/' + action.payload})}}
+              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload})}}
             }
           );
         })
@@ -678,7 +679,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       queryHeaders = {paymentReq: action.payload[0]};
     }
-    return this.httpClient.post(environment.CHANNELS_API + '/transactions', queryHeaders)
+    return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders)
     .pipe(
       map((sendRes: any) => {
         this.logger.info(sendRes);
@@ -689,7 +690,7 @@ export class RTLEffects implements OnDestroy {
             type: RTLActions.OPEN_ALERT,
             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Send Payment Failed',
             message: JSON.stringify(
-              {code: sendRes.payment_error.status, Message: sendRes.payment_error.error.message, URL: environment.CHANNELS_API + '/transactions/' + action.payload[0]}
+              {code: sendRes.payment_error.status, Message: sendRes.payment_error.error.message, URL: this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload[0]}
             )
           }}
           });
@@ -719,7 +720,7 @@ export class RTLEffects implements OnDestroy {
           {
             type: RTLActions.OPEN_ALERT,
             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Send Payment Failed',
-              message: JSON.stringify({code: err.status, Message: err.error.error, URL: environment.CHANNELS_API + '/transactions/' + action.payload[0]})}}
+              message: JSON.stringify({code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload[0]})}}
           }
         );
       })
@@ -731,7 +732,7 @@ export class RTLEffects implements OnDestroy {
   graphNodeFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_GRAPH_NODE),
     mergeMap((action: RTLActions.FetchGraphNode) => {
-      return this.httpClient.get<GraphNode>(environment.NETWORK_API + '/node/' + action.payload)
+      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload)
       .pipe(map((graphNode: any) => {
         this.logger.info(graphNode);
         this.store.dispatch(new RTLActions.CloseSpinner());
@@ -767,7 +768,7 @@ export class RTLEffects implements OnDestroy {
   getNewAddress = this.actions$.pipe(
     ofType(RTLActions.GET_NEW_ADDRESS),
     mergeMap((action: RTLActions.GetNewAddress) => {
-    return this.httpClient.get(environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId)
+    return this.httpClient.get(this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId)
       .pipe(map((newAddress: any) => {
         this.logger.info(newAddress);
         this.store.dispatch(new RTLActions.CloseSpinner());
@@ -783,7 +784,7 @@ export class RTLEffects implements OnDestroy {
           {
             type: RTLActions.OPEN_ALERT,
             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Generate New Address Failed',
-              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId})}}
+              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId})}}
           }
         );
       }));
@@ -842,7 +843,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.SET_CHANNEL_TRANSACTION),
     mergeMap((action: RTLActions.SetChannelTransaction) => {
     this.store.dispatch(new RTLActions.ClearEffectError('SetChannelTransaction'));
-    return this.httpClient.post(environment.TRANSACTIONS_API,
+    return this.httpClient.post(this.CHILD_API_URL + environment.TRANSACTIONS_API,
       { amount: action.payload.amount, address: action.payload.address, sendAll: action.payload.sendAll, fees: action.payload.fees, blocks: action.payload.blocks }
     )
     .pipe(
@@ -878,7 +879,7 @@ export class RTLEffects implements OnDestroy {
       const queryHeaders: SwitchReq = {
         num_max_events: action.payload.num_max_events, index_offset: action.payload.index_offset, end_time: action.payload.end_time , start_time: action.payload.start_time
       };
-      return this.httpClient.post(environment.SWITCH_API, queryHeaders)
+      return this.httpClient.post(this.CHILD_API_URL + environment.SWITCH_API, queryHeaders)
       .pipe(
         map((fhRes: any) => {
           this.logger.info(fhRes);
@@ -894,7 +895,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Get Forwarding History Failed',
-                message: JSON.stringify({code: err.status, Message: err.error.error, URL: environment.SWITCH_API})}}
+                message: JSON.stringify({code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.SWITCH_API})}}
             }
           );
         })
@@ -906,7 +907,7 @@ export class RTLEffects implements OnDestroy {
   queryRoutesFetch = this.actions$.pipe(
     ofType(RTLActions.GET_QUERY_ROUTES),
     mergeMap((action: RTLActions.GetQueryRoutes) => {
-      return this.httpClient.get(environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount)
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount)
       .pipe(
         map((qrRes: any) => {
           this.logger.info(qrRes);
@@ -922,7 +923,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Get Query Routes Failed',
-                message: JSON.stringify({code: err.status, Message: err.error.error.error, URL: environment.NETWORK_API})}}
+                message: JSON.stringify({code: err.status, Message: err.error.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API})}}
             }
           );
         })
@@ -942,7 +943,7 @@ export class RTLEffects implements OnDestroy {
   genSeed = this.actions$.pipe(
     ofType(RTLActions.GEN_SEED),
     mergeMap((action: RTLActions.GenSeed) => {
-      return this.httpClient.get(environment.WALLET_API + '/genseed/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload)
       .pipe(
         map((postRes: any) => {
           this.logger.info('Generated GenSeed!');
@@ -983,7 +984,7 @@ export class RTLEffects implements OnDestroy {
   initWallet = this.actions$.pipe(
     ofType(RTLActions.INIT_WALLET),
     mergeMap((action: RTLActions.InitWallet) => {
-      return this.httpClient.post(environment.WALLET_API + '/initwallet',
+      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/initwallet',
         { wallet_password: action.payload.pwd,
           cipher_seed_mnemonic: action.payload.cipher ? action.payload.cipher : '',
           aezeed_passphrase: action.payload.passphrase ? action.payload.passphrase : '' })
@@ -1010,7 +1011,7 @@ export class RTLEffects implements OnDestroy {
   unlockWallet = this.actions$.pipe(
     ofType(RTLActions.UNLOCK_WALLET),
     mergeMap((action: RTLActions.UnlockWallet) => {
-      return this.httpClient.post(environment.WALLET_API + '/unlockwallet', { wallet_password: action.payload.pwd })
+      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', { wallet_password: action.payload.pwd })
       .pipe(
         map((postRes) => {
           this.logger.info(postRes);
@@ -1123,7 +1124,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.PEER_LOOKUP),
     mergeMap((action: RTLActions.PeerLookup) => {
       this.store.dispatch(new RTLActions.ClearEffectError('Lookup'));
-      return this.httpClient.get(environment.NETWORK_API + '/node/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload)
       .pipe(
         map((resPeer) => {
           this.logger.info(resPeer);
@@ -1141,7 +1142,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Peer Lookup Failed',
-              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: environment.NETWORK_API + '/node/' + action.payload})}}
+              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload})}}
             }
           );
         })
@@ -1154,7 +1155,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CHANNEL_LOOKUP),
     mergeMap((action: RTLActions.ChannelLookup) => {
       this.store.dispatch(new RTLActions.ClearEffectError('Lookup'));
-      return this.httpClient.get(environment.NETWORK_API + '/edge/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload)
       .pipe(
         map((resChannel) => {
           this.logger.info(resChannel);
@@ -1172,7 +1173,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Channel Lookup Failed',
-              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: environment.NETWORK_API + '/edge/' + action.payload})}}
+              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload})}}
             }
           );
         })
@@ -1185,7 +1186,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.INVOICE_LOOKUP),
     mergeMap((action: RTLActions.InvoiceLookup) => {
       this.store.dispatch(new RTLActions.ClearEffectError('Lookup'));
-      return this.httpClient.get(environment.INVOICES_API + '/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload)
       .pipe(
         map((resInvoice) => {
           this.logger.info(resInvoice);
@@ -1203,7 +1204,7 @@ export class RTLEffects implements OnDestroy {
             {
               type: RTLActions.OPEN_ALERT,
               payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Invoice Lookup Failed',
-              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: environment.INVOICES_API + '/' + action.payload})}}
+              message: JSON.stringify({Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload})}}
             }
           );
         })
@@ -1234,9 +1235,11 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.ResetStore(action.payload));
           if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
+            this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.FETCH_CL_INFO };
           } else {
             this.router.navigate(['/lnd/home']);
+            this.CHILD_API_URL = API_URL + '/lnd';
             return { type: RTLActions.FETCH_INFO };
           }
         } else {
@@ -1260,52 +1263,6 @@ export class RTLEffects implements OnDestroy {
          );
        })
      );
-   }
- ));
-
- @Effect()
- infoFetchCL = this.actions$.pipe(
-   ofType(RTLActions.FETCH_CL_INFO),
-   withLatestFrom(this.store.select('rtl')),
-   mergeMap(([action, store]) => {
-     this.store.dispatch(new RTLActions.ClearEffectError('FetchCLInfo'));
-     return this.httpClient.get<GetInfo>(environment.GETINFO_API)
-     .pipe(
-       map((info) => {
-        this.logger.info(info);
-        sessionStorage.setItem('clUnlocked', 'true');
-        return {
-          type: RTLActions.SET_CL_INFO,
-          payload: (undefined !== info) ? info : {}
-        };
-       }),
-       catchError((err) => {
-         this.logger.error(err);
-         this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLInfo', code: err.status, message: err.error.error }));
-         return of();
-       })
-     );
-   }
- ));
-
- @Effect()
- fetchFeesCL = this.actions$.pipe(
-   ofType(RTLActions.FETCH_CL_FEES),
-   mergeMap((action: RTLActions.FetchCLFees) => {
-     this.store.dispatch(new RTLActions.ClearEffectError('FetchCLFees'));
-     return this.httpClient.get<Fees>(environment.FEES_API);
-   }),
-   map((fees) => {
-     this.logger.info(fees);
-     return {
-       type: RTLActions.SET_CL_FEES,
-       payload: (undefined !== fees) ? fees : {}
-     };
-   }),
-   catchError((err: any) => {
-     this.logger.error(err);
-     this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
-     return of();
    }
  ));
 

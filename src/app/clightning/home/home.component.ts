@@ -4,10 +4,11 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfo, Fees } from '../../shared/models/lndModels';
+import { GetInfoCL, FeesCL } from '../../shared/models/clModels';
 import { LightningNode } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromCLReducer from '../store/cl.reducers';
 
 @Component({
   selector: 'rtl-cl-home',
@@ -16,38 +17,43 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 })
 export class CLHomeComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
-  public fees: Fees;
-  public information: GetInfo = {};
+  public fees: FeesCL;
+  public information: GetInfoCL = {};
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
+    .subscribe((rootStore: fromRTLReducer.RootState) => {
+      rootStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchCLInfo') {
           this.flgLoading[0] = 'error';
         }
-        if (effectsErr.action === 'FetchFees') {
+        if (effectsErr.action === 'FetchCLFees') {
           this.flgLoading[1] = 'error';
         }
       });
-      this.selNode = rtlStore.selNode;
-      this.information = rtlStore.information;
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
-      }
-
-      this.fees = rtlStore.fees;
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (undefined !== this.fees.day_fee_sum) ? false : true;
-      }
-
-      this.logger.info(rtlStore);
+      this.selNode = rootStore.selNode;
+      this.logger.warn(rootStore);
     });
+
+    this.store.select('cl')
+    .pipe(takeUntil(this.unsub[1]))
+    .subscribe((clStore: fromCLReducer.CLState) => {
+      this.information = clStore.information;
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== this.information.id) ? false : true;
+      }
+      this.fees = clStore.fees;
+      if (this.flgLoading[1] !== 'error') {
+        this.flgLoading[1] = (undefined !== this.fees.feeCollected) ? false : true;
+      }
+      this.logger.warn(clStore);
+    });
+
   }
 
   ngOnDestroy() {

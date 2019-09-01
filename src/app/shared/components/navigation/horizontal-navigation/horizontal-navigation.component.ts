@@ -27,10 +27,10 @@ export class HorizontalNavigationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      this.numPendingChannels = rtlStore.numberOfPendingChannels;
+      this.numPendingChannels = rtlStore.nodeData.numberOfPendingChannels;
       if(rtlStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
         this.menuNodes = MENU_DATA.CLChildren;
       } else {

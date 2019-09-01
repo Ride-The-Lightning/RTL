@@ -30,6 +30,7 @@ import { AuthInterceptor } from './shared/services/auth.interceptor';
 
 import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
+import { CLEffects } from './clightning/store/cl.effects';
 
 @NgModule({
   imports: [
@@ -39,8 +40,8 @@ import { RTLEffects } from './store/rtl.effects';
     PerfectScrollbarModule,
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
-    StoreModule.forRoot({rtl: RTLReducer}),
-    EffectsModule.forRoot([RTLEffects]),
+    StoreModule.forRoot(RTLReducer),
+    EffectsModule.forRoot([RTLEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []    
   ],
   declarations: [

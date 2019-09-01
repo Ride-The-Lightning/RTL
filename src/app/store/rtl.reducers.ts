@@ -2,56 +2,13 @@ import { ActionReducerMap } from '@ngrx/store';
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, LightningNode } from '../shared/models/RTLconfig';
 import {
-  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
+  GetInfoRoot, GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../shared/models/lndModels';
-import { GetInfoCL, FeesCL } from '../shared/models/clModels';
 
+import * as fromCL from '../clightning/store/cl.reducers';
 import * as RTLActions from './rtl.actions';
 
-// export interface RTLState {
-//   root: RootState,
-//   lnd: LNDState,
-//   cl: CLState
-// }
-
-// export interface CLState {
-//   information: GetInfoCL;
-//   fees: FeesCL;
-// }
-
-// export interface LNDState {
-//   information: GetInfo;
-//   peers: Peer[];
-//   fees: Fees;
-//   networkInfo: NetworkInfo;
-//   channelBalance: Balance;
-//   blockchainBalance: Balance;
-//   allChannels: Channel[];
-//   closedChannels: ClosedChannel[];
-//   pendingChannels: PendingChannels;
-//   numberOfActiveChannels: number;
-//   numberOfInactiveChannels: number;
-//   numberOfPendingChannels: number;
-//   totalLocalBalance: number;
-//   totalRemoteBalance: number;
-//   totalInvoices: number;
-//   transactions: Transaction[];
-//   payments: Payment[];
-//   invoices: ListInvoices;
-//   forwardingHistory: SwitchRes;
-//   addressTypes: AddressType[];
-// }
-
-// export interface RootState {
-//   effectErrors: ErrorPayload[];
-//   selNode: LightningNode;
-//   appConfig: RTLConfiguration;
-// }
-
-export interface RTLState {
-  effectErrors: ErrorPayload[];
-  selNode: LightningNode;
-  appConfig: RTLConfiguration;
+export interface LNDState {
   information: GetInfo;
   peers: Peer[];
   fees: Fees;
@@ -72,21 +29,16 @@ export interface RTLState {
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
   addressTypes: AddressType[];
-  CLinformation: GetInfoCL;
-  CLfees: FeesCL;
 }
 
-const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
-const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
+export interface RootState {
+  effectErrors: ErrorPayload[];
+  selNode: LightningNode;
+  appConfig: RTLConfiguration;
+  nodeData: GetInfoRoot
+}
 
-const initialState: RTLState = {
-  effectErrors: [],
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
-  appConfig: {
-    selectedNodeIndex: -1,
-    sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
-  }, // ROOT ENDS
+const initLNDState: LNDState = {
   information: {},
   peers: [],
   fees: {},
@@ -109,12 +61,24 @@ const initialState: RTLState = {
   addressTypes: [
     { addressId: '0', addressTp: 'p2wkh', addressDetails: 'Pay to witness key hash'},
     { addressId: '1', addressTp: 'np2wkh', addressDetails: 'Pay to nested witness key hash (default)'}
-  ], //LND ENDS
-  CLinformation: {},
-  CLfees: {}
+  ]
+}
+
+const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
+const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
+
+const initRootState: RootState = {
+  effectErrors: [],
+  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
+  appConfig: {
+    selectedNodeIndex: -1,
+    sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
+  },
+  nodeData: { identity_pubkey: 'abc', alias: 'xyz', testnet: true, chains: [{chain: "bitcoin", network: "testnet"}], version: 'v0', currency_unit: 'BTC', smaller_currency_unit: 'SATS', numberOfPendingChannels: -1 }
 };
 
-export function RTLReducer(state = initialState, action: RTLActions.RTLActions) {
+export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
   switch (action.type) {
     case RTLActions.CLEAR_EFFECT_ERROR:
       const clearedEffectErrors = [...state.effectErrors];
@@ -135,9 +99,10 @@ export function RTLReducer(state = initialState, action: RTLActions.RTLActions) 
       };
     case RTLActions.RESET_STORE:
       return {
-        ...initialState,
+        ...initRootState,
         appConfig: state.appConfig,
-        selNode: action.payload
+        selNode: action.payload,
+        // cl: initCLState
       };
     case RTLActions.SET_SELECTED_NODE:
       return {
@@ -150,6 +115,14 @@ export function RTLReducer(state = initialState, action: RTLActions.RTLActions) 
         selNode: action.payload.nodes.find(node => +node.index === action.payload.selectedNodeIndex),
         appConfig: action.payload
       };
+    default:
+      return state;
+  }
+
+}
+
+export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) {
+  switch (action.type) {
     case RTLActions.SET_INFO:
       if (undefined !== action.payload.chains) {
         if (typeof action.payload.chains[0] === 'string') {
@@ -329,18 +302,20 @@ export function RTLReducer(state = initialState, action: RTLActions.RTLActions) 
         ...state,
         forwardingHistory: action.payload
       };
-    case RTLActions.SET_CL_INFO:
-      return {
-        ...state,
-        CLinformation: action.payload
-      };
-    case RTLActions.SET_CL_FEES:
-      return {
-        ...state,
-        CLfees: action.payload
-      };
     default:
       return state;
   }
 
 }
+
+export interface RTLState {
+  root: RootState;
+  lnd: LNDState;
+  cl: fromCL.CLState;
+}
+
+export const RTLReducer: ActionReducerMap<RTLState> = {
+  root: RootReducer,
+  lnd: LNDReducer,
+  cl: fromCL.CLReducer
+};

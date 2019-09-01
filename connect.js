@@ -262,14 +262,10 @@ connect.validateMultiNodeConfig = (config) => {
 
   config.nodes.forEach((node, idx) => {
     common.nodes[idx] = {};
-    if(node.lnImplementation.toString().toLowerCase() === 'clightning') {
-      common.nodes[idx].macaroon_path = '';
+    if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
+      errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
     } else {
-      if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
-        errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
-      } else {
-        common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
-      }
+      common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
     }
 
     if((node.Settings.lndServerUrl === '' ||  undefined === node.Settings.lndServerUrl)) {

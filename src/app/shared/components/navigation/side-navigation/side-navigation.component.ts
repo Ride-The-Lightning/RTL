@@ -11,7 +11,7 @@ import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 
 import { LightningNode, Settings } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { GetInfo, GetInfoChain } from '../../../models/lndModels';
+import { GetInfoRoot, GetInfoChain } from '../../../models/lndModels';
 import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
@@ -28,7 +28,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
   public settings: Settings;
   public version = '';
-  public information: GetInfo = {};
+  public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
   public logoutNode = [{id: 200, parentId: 0, name: 'Logout', icon: 'eject'}];
@@ -61,13 +61,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
-      this.information = rtlStore.information;
-      this.numPendingChannels = rtlStore.numberOfPendingChannels;
+      this.information = rtlStore.nodeData;
+      this.numPendingChannels = rtlStore.nodeData.numberOfPendingChannels;
 
       if (undefined !== this.information.identity_pubkey) {
         if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {

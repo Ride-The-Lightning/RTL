@@ -28,7 +28,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {

@@ -9,7 +9,7 @@ import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
 import { RTLConfiguration, Settings, LightningNode } from './shared/models/RTLconfig';
-import { GetInfo } from './shared/models/lndModels';
+import { GetInfoRoot } from './shared/models/lndModels';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
   public selNode: LightningNode;
   public settings: Settings;
-  public information: GetInfo = {};
+  public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
   public flgCopied = false;
   public appConfig: RTLConfiguration;
@@ -38,13 +38,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
-      this.information = rtlStore.information;
+      this.information = rtlStore.nodeData;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
         this.settings.menu = 'Vertical';

@@ -27,7 +27,6 @@ common.setOptions = () => {
 	if(undefined !== common.nodes[0].options && undefined !== common.nodes[0].options.headers) { return; }
 	try {
 		common.nodes.forEach(node => {
-      console.log(node);
 			node.options = {
 				url: '',
 				rejectUnauthorized: false,
@@ -37,7 +36,7 @@ common.setOptions = () => {
       if(node.ln_implementation.toLowerCase() !== 'clightning') {
         node.options.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')};
       } else {
-        node.options.headers = {'macaroon': fs.readFileSync(node.macaroon_path + '/access.macaroon').toString('hex')};
+        node.options.headers = {'macaroon': Buffer.from(fs.readFileSync(node.macaroon_path + '/access.macaroon')).toString("base64")};
       }
 		});
 		// Options cannot be set before selected node initializes. Updating selected node's options separatly
@@ -47,9 +46,11 @@ common.setOptions = () => {
 			json: true,
 			form: ''
     };
-    if(common.selectedNode.ln_implementation.toLowerCase() !== 'clightning') {
+    if (common.selectedNode.ln_implementation.toLowerCase() !== 'clightning') {
 			common.selectedNode.options.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(common.selectedNode.macaroon_path + '/admin.macaroon').toString('hex')};
-    }
+    } else {
+	  	node.selectedNode.options.headers = {'macaroon': Buffer.from(fs.readFileSync(node.macaroon_path + '/access.macaroon')).toString("base64")};
+  	}
 	} catch(err) {
 		console.error('Common Set Options Error:' + JSON.stringify(err));
 		common.nodes.forEach(node => {
