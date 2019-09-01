@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
+import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -32,7 +32,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   infoFetch = this.actions$.pipe(
-    ofType(RTLActions.FETCH_LND_INFO),
+    ofType(RTLActions.FETCH_INFO),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
@@ -45,13 +45,39 @@ export class LNDEffects implements OnDestroy {
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/unlocklnd']);
               return {
-                type: RTLActions.SET_LND_INFO,
+                type: RTLActions.SET_INFO,
                 payload: {}
               };
             } else {
               sessionStorage.setItem('lndUnlocked', 'true');
+              if (undefined !== info.chains) {
+                if (typeof info.chains[0] === 'string') {
+                  info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
+                  info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+                } else if (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain')) {
+                  const getInfoChain = <GetInfoChain>info.chains[0];
+                  info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
+                  info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+                }
+                info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+              } else {
+                info.smaller_currency_unit = 'Sats';
+                info.currency_unit = 'BTC';
+                info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+              }
+              const node_data = {
+                identity_pubkey: info.identity_pubkey,
+                alias: info.alias, 
+                testnet: info.testnet, 
+                chains: info.chains, 
+                version: info.version, 
+                currency_unit: info.currency_unit, 
+                smaller_currency_unit: info.smaller_currency_unit, 
+                numberOfPendingChannels: info.num_pending_channels
+              };
+              this.store.dispatch(new RTLActions.SetNodeData(node_data));
               return {
-                type: RTLActions.SET_LND_INFO,
+                type: RTLActions.SET_INFO,
                 payload: (undefined !== info) ? info : {}
               };
             }
@@ -480,9 +506,26 @@ export class LNDEffects implements OnDestroy {
           map((channels: any) => {
             this.logger.info(channels);
             if (action.payload.routeParam === 'pending') {
+              let pendingChannels = -1;
+              if (channels) {
+                pendingChannels = 0;
+                if (channels.pending_closing_channels) {
+                  pendingChannels = pendingChannels + channels.pending_closing_channels.length;
+                }
+                if (channels.pending_force_closing_channels) {
+                  pendingChannels = pendingChannels + channels.pending_force_closing_channels.length;
+                }
+                if (channels.pending_open_channels) {
+                  pendingChannels = pendingChannels + channels.pending_open_channels.length;
+                }
+                if (channels.waiting_close_channels) {
+                  pendingChannels = pendingChannels + channels.waiting_close_channels.length;
+                }
+              }
+              this.store.dispatch(new RTLActions.SetNodePendingChannelsData(pendingChannels));
               return {
                 type: RTLActions.SET_PENDING_CHANNELS,
-                payload: (undefined !== channels) ? channels : {}
+                payload: (undefined !== channels) ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
               };
             } else if (action.payload.routeParam === 'closed') {
               return {

@@ -1,7 +1,7 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
-  GetInfo, GetInfoChain, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
+  GetInfo, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -79,24 +79,10 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       };
     case RTLActions.RESET_LND_STORE:
       return {
-        ...initLNDState
+        ...initLNDState,
+        nodeSettings: action.payload,
       };
-    case RTLActions.SET_LND_INFO:
-      if (undefined !== action.payload.chains) {
-        if (typeof action.payload.chains[0] === 'string') {
-          action.payload.smaller_currency_unit = (action.payload.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-          action.payload.currency_unit = (action.payload.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
-        } else if (typeof action.payload.chains[0] === 'object' && action.payload.chains[0].hasOwnProperty('chain')) {
-          const getInfoChain = <GetInfoChain>action.payload.chains[0];
-          action.payload.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-          action.payload.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
-        }
-        action.payload.version = (undefined === action.payload.version) ? '' : action.payload.version.split(' ')[0];
-      } else {
-        action.payload.smaller_currency_unit = 'Sats';
-        action.payload.currency_unit = 'BTC';
-        action.payload.version = (undefined === action.payload.version) ? '' : action.payload.version.split(' ')[0];
-      }
+    case RTLActions.SET_INFO:
       return {
         ...state,
         information: action.payload
@@ -141,26 +127,10 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         closedChannels: action.payload,
       };
     case RTLActions.SET_PENDING_CHANNELS:
-      let pendingChannels = -1;
-      if (action.payload) {
-        pendingChannels = 0;
-        if (action.payload.pending_closing_channels) {
-          pendingChannels = pendingChannels + action.payload.pending_closing_channels.length;
-        }
-        if (action.payload.pending_force_closing_channels) {
-          pendingChannels = pendingChannels + action.payload.pending_force_closing_channels.length;
-        }
-        if (action.payload.pending_open_channels) {
-          pendingChannels = pendingChannels + action.payload.pending_open_channels.length;
-        }
-        if (action.payload.waiting_close_channels) {
-          pendingChannels = pendingChannels + action.payload.waiting_close_channels.length;
-        }
-      }
       return {
         ...state,
-        pendingChannels: action.payload,
-        numberOfPendingChannels: pendingChannels,
+        pendingChannels: action.payload.channels,
+        numberOfPendingChannels: action.payload.pendingChannels,
       };
     case RTLActions.SET_CHANNELS:
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0;

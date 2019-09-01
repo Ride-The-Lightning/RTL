@@ -13,7 +13,7 @@ export interface RootState {
   nodeData: GetInfoRoot
 }
 
-const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false };
+const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false, channelBackupPath: '' };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {
@@ -24,7 +24,7 @@ const initRootState: RootState = {
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
-  nodeData: { identity_pubkey: 'abc', alias: 'xyz', testnet: true, chains: [{chain: "bitcoin", network: "testnet"}], version: 'v0', currency_unit: 'BTC', smaller_currency_unit: 'SATS', numberOfPendingChannels: -1 }
+  nodeData: {}
 };
 
 export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
@@ -57,10 +57,21 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
         ...state,
         selNode: action.payload
       };
+    case RTLActions.SET_NODE_DATA:
+      return {
+        ...state,
+        nodeData: action.payload
+      };
+    case RTLActions.SET_NODE_PENDING_CHANNELS_DATA:
+      const newNodeData = state.nodeData;
+      newNodeData.numberOfPendingChannels = action.payload;
+      return {
+        ...state,
+        nodeData: newNodeData
+      };
     case RTLActions.SET_RTL_CONFIG:
       return {
         ...state,
-        selNode: action.payload.nodes.find(node => +node.index === action.payload.selectedNodeIndex),
         appConfig: action.payload
       };
     default:

@@ -38,7 +38,8 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
       };
     case RTLActions.RESET_CL_STORE:
       return {
-        ...initCLState
+        ...initCLState,
+        nodeSettings: action.payload,
       };
     case RTLActions.SET_CL_INFO:
       return {

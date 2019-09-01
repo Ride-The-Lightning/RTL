@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
-import { Settings } from '../shared/models/RTLconfig';
+import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
 import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../shared/models/lndModels';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
@@ -92,9 +92,10 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('FetchRTLConfig'));
       return this.httpClient.get(environment.CONF_API + '/rtlconf');
     }),
-    map((rtlConfig: any) => {
+    map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
       if (+rtlConfig.sso.rtlSSO) { this.store.dispatch(new RTLActions.Signout()); }
+      this.store.dispatch(new RTLActions.SetSelelectedNode(rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex)))
       return {
         type: RTLActions.SET_RTL_CONFIG,
         payload: rtlConfig
@@ -246,18 +247,19 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
+          let selNode = { channelBackupPath: action.payload.settings.channelBackupPath, satsToBTC: action.payload.settings.satsToBTC };
           this.store.dispatch(new RTLActions.ResetRootStore(action.payload));
-          this.store.dispatch(new RTLActions.ResetLNDStore());
-          this.store.dispatch(new RTLActions.ResetCLStore());
-          if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
+          this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
+          this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+        if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
             this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.FETCH_CL_INFO };
           } else {
             this.router.navigate(['/lnd/home']);
             this.CHILD_API_URL = API_URL + '/lnd';
-            this.store.dispatch(new RTLActions.FetchLndInfo());
-            return { type: RTLActions.FETCH_LND_INFO };
+            this.store.dispatch(new RTLActions.FetchInfo());
+            return { type: RTLActions.FETCH_INFO };
           }
         } else {
           return {
