@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, Valid
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { MatStepper } from '@angular/material';
 
-import { RTLEffects } from '../../store/rtl.effects';
+import { LNDEffects } from '../store/lnd.effects';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -46,7 +46,7 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
   warnRes = true;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects, private router: Router) {}
 
   ngOnInit() {
     this.walletPassword = '';
@@ -85,13 +85,13 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
 
     this.insecureLND = !window.location.protocol.includes('https://');
 
-    this.rtlEffects.initWalletRes
+    this.lndEffects.initWalletRes
     .pipe(takeUntil(this.unsubs[2]))
     .subscribe(initWalletResponse => {
       this.initWalletResponse = initWalletResponse;
     });
 
-    this.rtlEffects.genSeedResponse
+    this.lndEffects.genSeedResponse
     .pipe(takeUntil(this.unsubs[3]))
     .subscribe(genSeedRes => {
       this.genSeedResponse = genSeedRes;

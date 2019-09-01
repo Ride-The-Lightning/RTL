@@ -25,10 +25,10 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
     .pipe(takeUntil(this.unsubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsRoot.forEach(effectsErr => {
         if (effectsErr.action === 'fetchConfig') {
           this.resetData();
         }

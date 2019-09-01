@@ -25,7 +25,7 @@ export class ChannelLookupComponent implements OnInit {
       this.lookupResult.last_update_str = (this.lookupResult.last_update_str === '') ?
         '' : formatDate(this.lookupResult.last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
     }
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       if (this.lookupResult.node1_pub === rtlStore.information.identity_pubkey) {

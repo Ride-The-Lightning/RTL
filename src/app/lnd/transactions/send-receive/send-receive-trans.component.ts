@@ -3,12 +3,13 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { LightningNode } from '../../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
+import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -19,7 +20,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./send-receive-trans.component.scss']
 })
 export class SendReceiveTransComponent implements OnInit, OnDestroy {
-  public selNode: LightningNode;
+  public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public addressTypes = [];
   public flgLoadingWallet: Boolean | 'error' = true;
@@ -33,19 +34,25 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
   public flgCustomAmount = '1';
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {}
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('root')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rootStore) => {
+      this.appConfig = rootStore.appConfig;
+      this.logger.info(rootStore);
+    });
+
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchBalance/blockchain') {
           this.flgLoadingWallet = 'error';
         }
       });
-      this.selNode = rtlStore.selNode;
-      this.appConfig = rtlStore.appConfig;
+      this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.addressTypes = rtlStore.addressTypes;
 
@@ -71,7 +78,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new RTLActions.GetNewAddress(this.selectedAddress));
-    this.rtlEffects.setNewAddress
+    this.lndEffects.setNewAddress
     .pipe(takeUntil(this.unsub[1]))
     .subscribe(newAddress => {
       this.newAddress = newAddress;

@@ -54,14 +54,14 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onForwardingHistoryFetch();
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
       this.onForwardingHistoryFetch();
     });
 
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';
         }
@@ -86,7 +86,6 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
     const selFEvent = this.forwardingHistoryEvents.data.filter(fhEvent => {
       return (fhEvent.chan_id_in === selRow.chan_id_in && fhEvent.timestamp === selRow.timestamp);
     })[0];
-    console.warn(selFEvent);
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, ['timestamp_str', 'chan_id_in', 'alias_in', 'chan_id_out', 'alias_out', 'amt_out', 'amt_in', 'fee'] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
       type: 'INFO',

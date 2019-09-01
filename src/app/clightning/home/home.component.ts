@@ -16,7 +16,6 @@ import * as fromCLReducer from '../store/cl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class CLHomeComponent implements OnInit, OnDestroy {
-  public selNode: LightningNode;
   public fees: FeesCL;
   public information: GetInfoCL = {};
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
@@ -25,10 +24,10 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('root')
+    this.store.select('cl')
     .pipe(takeUntil(this.unsub[0]))
-    .subscribe((rootStore: fromRTLReducer.RootState) => {
-      rootStore.effectErrors.forEach(effectsErr => {
+    .subscribe((clStore: fromCLReducer.CLState) => {
+      clStore.effectErrorsCl.forEach(effectsErr => {
         if (effectsErr.action === 'FetchCLInfo') {
           this.flgLoading[0] = 'error';
         }
@@ -36,13 +35,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
           this.flgLoading[1] = 'error';
         }
       });
-      this.selNode = rootStore.selNode;
-      this.logger.warn(rootStore);
-    });
-
-    this.store.select('cl')
-    .pipe(takeUntil(this.unsub[1]))
-    .subscribe((clStore: fromCLReducer.CLState) => {
       this.information = clStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.id) ? false : true;
@@ -51,7 +43,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = (undefined !== this.fees.feeCollected) ? false : true;
       }
-      this.logger.warn(clStore);
+      this.logger.info(clStore);
     });
 
   }

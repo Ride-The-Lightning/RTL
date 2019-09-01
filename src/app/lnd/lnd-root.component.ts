@@ -19,16 +19,15 @@ export class LNDRootComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    console.warn('LND ROOT')
-    this.store.dispatch(new RTLActions.FetchInfo());
+    this.store.dispatch(new RTLActions.FetchLndInfo());
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_INFO || action.type === RTLActions.INIT_APP_DATA))
-    .subscribe((infoData: RTLActions.SetInfo | RTLActions.InitAppData) => {
-      if(infoData.type === RTLActions.SET_INFO && undefined !== infoData.payload.identity_pubkey) {
+    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_LND_INFO || action.type === RTLActions.INIT_APP_DATA))
+    .subscribe((infoData: RTLActions.SetLndInfo | RTLActions.InitAppData) => {
+      if(infoData.type === RTLActions.SET_LND_INFO && undefined !== infoData.payload.identity_pubkey) {
         this.initializeRemainingData();
       }
       if(infoData.type === RTLActions.INIT_APP_DATA) {
-        this.store.dispatch(new RTLActions.FetchInfo());
+        this.store.dispatch(new RTLActions.FetchLndInfo());
       }
     });
   }

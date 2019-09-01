@@ -11,7 +11,7 @@
           <mat-icon class="icon-large">account_balance_wallet</mat-icon>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.settings?.satsToBTC; else smallerUnit1">{{BTCtotalBalance | number}} {{information?.currency_unit}}</h3>
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit1">{{BTCtotalBalance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit1><h3>{{totalBalance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
         </span>
       </mat-card-content>
@@ -51,7 +51,7 @@
           <mat-icon class="icon-large">linear_scale</mat-icon>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.settings?.satsToBTC; else smallerUnit2">{{BTCchannelBalance | number}} {{information?.currency_unit}}</h3>
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit2">{{BTCchannelBalance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit2><h3>{{channelBalance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
         </span>
       </mat-card-content>
@@ -180,8 +180,8 @@
       <mat-card-content>
         <div fxLayout="column" class="pl-4 network-info-list">
           <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.settings?.satsToBTC; else smallerUnit6">Network Capacity ({{information?.currency_unit}})</mat-list-item>
-            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.settings?.satsToBTC; else smallerData6">{{networkInfo?.btc_total_network_capacity | number}}</mat-list-item>
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.satsToBTC; else smallerUnit6">Network Capacity ({{information?.currency_unit}})</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.satsToBTC; else smallerData6">{{networkInfo?.btc_total_network_capacity | number}}</mat-list-item>
             <ng-template #smallerUnit6><mat-list-item fxFlex="65" fxLayoutAlign="start start">Network Capacity ({{information?.smaller_currency_unit}})</mat-list-item></ng-template>
             <ng-template #smallerData6><mat-list-item fxFlex="25" fxLayoutAlign="end start">{{networkInfo?.total_network_capacity | number}}</mat-list-item></ng-template>
             <mat-divider></mat-divider>
@@ -207,23 +207,23 @@
             <mat-divider></mat-divider>
           </mat-list>
           <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.settings?.satsToBTC; else smallerUnit7">Max Channel Size ({{information?.currency_unit}})</mat-list-item>
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.satsToBTC; else smallerUnit7">Max Channel Size ({{information?.currency_unit}})</mat-list-item>
             <ng-template #smallerUnit7><mat-list-item fxFlex="65" fxLayoutAlign="start start">Max Channel Size ({{information?.smaller_currency_unit}})</mat-list-item></ng-template>
-            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.settings?.satsToBTC; else smallerData7">{{networkInfo?.btc_max_channel_size | number}}</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.satsToBTC; else smallerData7">{{networkInfo?.btc_max_channel_size | number}}</mat-list-item>
             <ng-template #smallerData7><mat-list-item fxFlex="25" fxLayoutAlign="end start">{{networkInfo?.max_channel_size | number}}</mat-list-item></ng-template>
             <mat-divider></mat-divider>
           </mat-list>
           <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.settings?.satsToBTC; else smallerUnit8">Avg Channel Size ({{information?.currency_unit}})</mat-list-item>
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.satsToBTC; else smallerUnit8">Avg Channel Size ({{information?.currency_unit}})</mat-list-item>
             <ng-template #smallerUnit8><mat-list-item fxFlex="65" fxLayoutAlign="start start">Avg Channel Size ({{information?.smaller_currency_unit}})</mat-list-item></ng-template>
-            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.settings?.satsToBTC; else smallerData8">{{networkInfo?.btc_avg_channel_size | number}}</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.satsToBTC; else smallerData8">{{networkInfo?.btc_avg_channel_size | number}}</mat-list-item>
             <ng-template #smallerData8><mat-list-item fxFlex="25" fxLayoutAlign="end start">{{networkInfo?.avg_channel_size | number:'1.0-2'}}</mat-list-item></ng-template>
             <mat-divider></mat-divider>
           </mat-list>
           <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.settings?.satsToBTC; else smallerUnit9">Min Channel Size ({{information?.currency_unit}})</mat-list-item>
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start" *ngIf="selNode?.satsToBTC; else smallerUnit9">Min Channel Size ({{information?.currency_unit}})</mat-list-item>
             <ng-template #smallerUnit9><mat-list-item fxFlex="65" fxLayoutAlign="start start">Min Channel Size ({{information?.smaller_currency_unit}})</mat-list-item></ng-template>
-            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.settings?.satsToBTC; else smallerData9">{{networkInfo?.btc_min_channel_size | number}}</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="end start" *ngIf="selNode?.satsToBTC; else smallerData9">{{networkInfo?.btc_min_channel_size | number}}</mat-list-item>
             <ng-template #smallerData9><mat-list-item fxFlex="25" fxLayoutAlign="end start">{{networkInfo?.min_channel_size | number}}</mat-list-item></ng-template>
             <mat-divider></mat-divider>
           </mat-list>

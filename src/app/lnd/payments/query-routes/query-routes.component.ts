@@ -9,7 +9,7 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Hop } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../store/rtl.effects';
+import { LNDEffects } from '../../store/lnd.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -28,7 +28,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat'];
@@ -51,7 +51,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.rtlEffects.setQueryRoutes
+    this.lndEffects.setQueryRoutes
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {
       this.qrHops = new MatTableDataSource([]);

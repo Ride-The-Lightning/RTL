@@ -8,8 +8,7 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
-import { RTLConfiguration, Settings, LightningNode } from './shared/models/RTLconfig';
-import { GetInfoRoot } from './shared/models/lndModels';
+import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';

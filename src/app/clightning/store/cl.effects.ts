@@ -28,7 +28,7 @@ export class CLEffects implements OnDestroy {
 	 ofType(RTLActions.FETCH_CL_INFO),
 	 withLatestFrom(this.store.select('root')),
 	 mergeMap(([action, store]) => {
-		 this.store.dispatch(new RTLActions.ClearEffectError('FetchCLInfo'));
+		 this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLInfo'));
 		 return this.httpClient.get<GetInfoCL>(this.CHILD_API_URL + environment.GETINFO_API)
 		 .pipe(
 			 map((info) => {
@@ -41,7 +41,7 @@ export class CLEffects implements OnDestroy {
 			 }),
 			 catchError((err) => {
 				 this.logger.error(err);
-				 this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLInfo', code: err.status, message: err.error.error }));
+				 this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLInfo', code: err.status, message: err.error.error }));
 				 return of();
 			 })
 		 );
@@ -52,8 +52,7 @@ export class CLEffects implements OnDestroy {
  fetchFeesCL = this.actions$.pipe(
 	 ofType(RTLActions.FETCH_CL_FEES),
 	 mergeMap((action: RTLActions.FetchCLFees) => {
-		 this.logger.warn('I AM HERE');
-		 this.store.dispatch(new RTLActions.ClearEffectError('FetchCLFees'));
+		 this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLFees'));
 		 return this.httpClient.get<FeesCL>(this.CHILD_API_URL + environment.FEES_API);
 	 }),
 	 map((fees) => {
@@ -65,7 +64,7 @@ export class CLEffects implements OnDestroy {
 	 }),
 	 catchError((err: any) => {
 			this.logger.error(err);
-			this.store.dispatch(new RTLActions.EffectError({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
+			this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
 			return of();
 		}
 	));

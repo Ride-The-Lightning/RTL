@@ -3,8 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { LightningNode, RTLConfiguration } from '../../models/RTLconfig';
-import { GetInfoRoot } from '../../models/lndModels';
+import { LightningNode, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 
 import * as RTLActions from '../../../store/rtl.actions';

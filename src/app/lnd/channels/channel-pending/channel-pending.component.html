@@ -9,7 +9,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="padding-gap">
-          <h3 *ngIf="selNode?.settings?.satsToBTC; else smallerUnit">Total Limbo Balance:
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit">Total Limbo Balance:
             {{pendingChannels.btc_total_limbo_balance | number}} {{information?.currency_unit}}</h3>
           <ng-template #smallerUnit>
             <h3>Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}}

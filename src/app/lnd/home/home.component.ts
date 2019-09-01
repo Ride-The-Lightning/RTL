@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
-import { LightningNode } from '../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  public selNode: LightningNode;
+  public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
   public remainder = 0;
@@ -64,10 +64,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.flgTotalCalculated = false;
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
@@ -88,7 +88,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.flgLoading[6] = 'error';
         }
       });
-      this.selNode = rtlStore.selNode;
+      this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;

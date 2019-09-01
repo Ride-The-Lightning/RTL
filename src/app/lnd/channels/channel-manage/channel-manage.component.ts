@@ -10,6 +10,7 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, Peer, GetInfo } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
+import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -42,7 +43,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public redirectedWithPeer = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private activatedRoute: ActivatedRoute) {
     switch (true) {
       case (window.innerWidth <= 415):
         this.displayedColumns = ['close', 'update', 'active', 'chan_id', 'remote_alias'];
@@ -67,10 +68,10 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/all') {
           this.flgLoading[0] = 'error';
         }
@@ -138,7 +139,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
       this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
-      this.rtlEffects.setLookup
+      this.lndEffects.setLookup
       .pipe(takeUntil(this.unsub[3]))
       .subscribe(resLookup => {
         this.logger.info(resLookup);

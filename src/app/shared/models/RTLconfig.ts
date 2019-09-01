@@ -1,3 +1,5 @@
+import { GetInfoChain } from './lndModels';
+
 export class SSO {
   constructor(
     public rtlSSO: number,
@@ -44,4 +46,20 @@ export class RTLConfiguration {
     public sso: SSO,
     public nodes: LightningNode[]
   ) { }
+}
+
+export interface GetInfoRoot {
+  identity_pubkey?: string;
+  alias?: string;
+  testnet?: boolean;
+  chains?: GetInfoChain[] | string[];
+  version?: string;
+  currency_unit?: string;
+  smaller_currency_unit?: string;  
+  numberOfPendingChannels?: number;
+}
+
+export interface SelNodeChild {
+  channelBackupPath?: string;
+  satsToBTC?: boolean;
 }

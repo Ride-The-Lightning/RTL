@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, GetInfo, PendingChannels } from '../../../shared/models/lndModels';
-import { LightningNode } from '../../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -19,7 +19,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ChannelPendingComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: LightningNode;
+  public selNode: SelNodeChild = {};
   public selectedFilter = 0;
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
@@ -96,16 +96,16 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/pending') {
           this.flgLoading[0] = 'error';
         }
       });
 
-      this.selNode = rtlStore.selNode;
+      this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
       if (undefined !== this.pendingChannels.total_limbo_balance) {

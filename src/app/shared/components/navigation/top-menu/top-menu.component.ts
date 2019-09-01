@@ -4,9 +4,9 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import { LightningNode } from '../../../models/RTLconfig';
+import { GetInfoRoot, LightningNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { GetInfoRoot, GetInfoChain } from '../../../models/lndModels';
+import { GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
 
 import { RTLEffects } from '../../../../store/rtl.effects';

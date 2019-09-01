@@ -19,7 +19,6 @@ export class CLRootComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    console.warn('CL ROOT')
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
     this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO))
     .subscribe((infoData: RTLActions.SetCLInfo) => {

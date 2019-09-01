@@ -31,7 +31,7 @@ export class SigninComponent implements OnInit, OnDestroy {
     this.store.select('root')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsRoot.forEach(effectsErr => {
         this.logger.error(effectsErr);
       });
       this.selNode = rtlStore.selNode;

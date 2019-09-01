@@ -59,13 +59,13 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onRoutingPeersFetch();
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_STORE)).subscribe((resetStore: RTLActions.ResetStore) => {
+    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
       this.onRoutingPeersFetch();
     });
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';
         }

@@ -42,7 +42,6 @@ export class HorizontalNavigationComponent implements OnInit {
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === RTLActions.SIGNOUT ||  action.type === RTLActions.SIGNIN)
     ).subscribe((action) => {
-      this.logger.warn(action);
       if (action.type === RTLActions.SIGNIN) {
         this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
       }

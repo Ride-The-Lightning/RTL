@@ -34,7 +34,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === RTLActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR))
+      filter((action) => (action.type === RTLActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR_LND))
     ).subscribe((resLookup: RTLActions.SetLookup) => {
       if (resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';

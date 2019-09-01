@@ -9,9 +9,9 @@ import { environment } from '../../../../../environments/environment';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-import { LightningNode, Settings } from '../../../models/RTLconfig';
+import { LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
-import { GetInfoRoot, GetInfoChain } from '../../../models/lndModels';
+import { GetInfoChain } from '../../../models/lndModels';
 import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';

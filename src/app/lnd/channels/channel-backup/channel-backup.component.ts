@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { LightningNode } from '../../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ChannelBackupComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: LightningNode;
+  public selNode: SelNodeChild = {};
   public displayedColumns = ['chan_id', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
@@ -33,11 +33,11 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      this.selNode = rtlStore.selNode;
-      rtlStore.effectErrors.forEach(effectsErr => {
+      this.selNode = rtlStore.nodeSettings;
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {
           this.flgLoading[0] = 'error';
         }

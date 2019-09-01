@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { LightningNode } from '../../shared/models/RTLconfig';
+import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../shared/models/lndModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 })
 export class InvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public selNode: LightningNode;
+  public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
@@ -66,15 +66,15 @@ export class InvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('rtl')
+    this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
+      rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInvoices') {
           this.flgLoading[0] = 'error';
         }
       });
-      this.selNode = rtlStore.selNode;
+      this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.totalInvoices = rtlStore.totalInvoices;
       this.firstOffset = +rtlStore.invoices.first_index_offset;

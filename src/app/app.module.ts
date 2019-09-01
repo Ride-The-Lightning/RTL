@@ -30,6 +30,7 @@ import { AuthInterceptor } from './shared/services/auth.interceptor';
 
 import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
+import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
 
 @NgModule({
@@ -41,7 +42,7 @@ import { CLEffects } from './clightning/store/cl.effects';
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
     StoreModule.forRoot(RTLReducer),
-    EffectsModule.forRoot([RTLEffects, CLEffects]),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []    
   ],
   declarations: [

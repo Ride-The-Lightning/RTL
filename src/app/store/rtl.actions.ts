@@ -10,9 +10,15 @@ import {
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
 } from '../shared/models/lndModels';
 
-export const RESET_STORE = 'RESET_STORE';
-export const CLEAR_EFFECT_ERROR = 'CLEAR_EFFECT_ERROR';
-export const EFFECT_ERROR = 'EFFECT_ERROR';
+export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
+export const RESET_LND_STORE = 'RESET_LND_STORE';
+export const RESET_CL_STORE = 'RESET_CL_STORE';
+export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
+export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
+export const EFFECT_ERROR_LND = 'EFFECT_ERROR_LND';
+export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
+export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
 export const OPEN_ALERT = 'OPEN_ALERT';
@@ -25,8 +31,8 @@ export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
-export const FETCH_INFO = 'FETCH_INFO';
-export const SET_INFO = 'SET_INFO';
+export const FETCH_LND_INFO = 'FETCH_LND_INFO';
+export const SET_LND_INFO = 'SET_LND_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
 export const SET_PEERS = 'SET_PEERS';
 export const SAVE_NEW_PEER = 'SAVE_NEW_PEER';
@@ -94,13 +100,33 @@ export const SET_CL_INFO = 'SET_CL_INFO';
 export const FETCH_CL_FEES = 'FETCH_CL_FEES';
 export const SET_CL_FEES = 'SET_CL_FEES';
 
-export class ClearEffectError implements Action {
-  readonly type = CLEAR_EFFECT_ERROR;
+export class ClearEffectErrorRoot implements Action {
+  readonly type = CLEAR_EFFECT_ERROR_ROOT;
   constructor(public payload: string) {} // payload = errorAction
 }
 
-export class EffectError implements Action {
-  readonly type = EFFECT_ERROR;
+export class EffectErrorRoot implements Action {
+  readonly type = EFFECT_ERROR_ROOT;
+  constructor(public payload: ErrorPayload) {}
+}
+
+export class ClearEffectErrorLnd implements Action {
+  readonly type = CLEAR_EFFECT_ERROR_LND;
+  constructor(public payload: string) {} // payload = errorAction
+}
+
+export class EffectErrorLnd implements Action {
+  readonly type = EFFECT_ERROR_LND;
+  constructor(public payload: ErrorPayload) {}
+}
+
+export class ClearEffectErrorCl implements Action {
+  readonly type = CLEAR_EFFECT_ERROR_CL;
+  constructor(public payload: string) {} // payload = errorAction
+}
+
+export class EffectErrorCl implements Action {
+  readonly type = EFFECT_ERROR_CL;
   constructor(public payload: ErrorPayload) {}
 }
 
@@ -132,9 +158,17 @@ export class CloseConfirmation implements Action {
   constructor(public payload: boolean) {}
 }
 
-export class ResetStore implements Action {
-  readonly type = RESET_STORE;
+export class ResetRootStore implements Action {
+  readonly type = RESET_ROOT_STORE;
   constructor(public payload: LightningNode) {}
+}
+
+export class ResetLNDStore implements Action {
+  readonly type = RESET_LND_STORE;
+}
+
+export class ResetCLStore implements Action {
+  readonly type = RESET_CL_STORE;
 }
 
 export class FetchRTLConfig implements Action {
@@ -156,12 +190,12 @@ export class SetSelelectedNode implements Action {
   constructor(public payload: LightningNode) {}
 }
 
-export class FetchInfo implements Action {
-  readonly type = FETCH_INFO;
+export class FetchLndInfo implements Action {
+  readonly type = FETCH_LND_INFO;
 }
 
-export class SetInfo implements Action {
-  readonly type = SET_INFO;
+export class SetLndInfo implements Action {
+  readonly type = SET_LND_INFO;
   constructor(public payload: GetInfo) {}
 }
 
@@ -483,10 +517,11 @@ export class SetCLFees implements Action {
 }
 
 export type RTLActions =
-  ClearEffectError | EffectError | OpenSpinner | CloseSpinner |
-  FetchRTLConfig | SetRTLConfig | SaveSettings |
+  ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
+  OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
-  ResetStore | SetSelelectedNode | FetchInfo | SetInfo |
+  ResetRootStore | ResetLNDStore | ResetCLStore |
+  SetSelelectedNode | FetchLndInfo | SetLndInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
