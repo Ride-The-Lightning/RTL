@@ -195,7 +195,7 @@ export class RTLEffects implements OnDestroy {
   authSignin = this.actions$.pipe(
   ofType(RTLActions.SIGNIN),
   withLatestFrom(this.store.select('root')),
-  mergeMap(([action, store]: [RTLActions.Signin, any]) => {
+  mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
     .pipe(
@@ -203,17 +203,21 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
-        this.router.navigate(['/lnd/']);
+        if(rootStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
+          this.router.navigate(['/cl/']);
+        } else {
+          this.router.navigate(['/lnd/']);
+        }
       }),
       catchError((err) => {
         this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', message: JSON.stringify(err.error)}}));
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Signin', code: err.status, message: err.error.message }));
         this.logger.error(err.error);
         this.logger.info('Redirecting to Signin Error Page');
-        if (+store.appConfig.sso.rtlSSO) {
+        if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/ssoerror']);
         } else {
-          this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+          this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
         }
         return of();
       })
@@ -251,7 +255,7 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.ResetRootStore(action.payload));
           this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
           this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-        if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
+          if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
             this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.FETCH_CL_INFO };
