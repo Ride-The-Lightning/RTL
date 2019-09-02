@@ -14,7 +14,7 @@ export interface RootState {
 }
 
 const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false, channelBackupPath: '' };
-const initNodeAuthentication = { nodeAuthType: 'CUSTOM', lndConfigPath: '', bitcoindConfigPath: '' };
+const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {
   effectErrorsRoot: [],

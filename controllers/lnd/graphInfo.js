@@ -4,7 +4,7 @@ var common = require('../../common');
 
 exports.getGraphInfo = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/graph/info';
+  options.url = common.getSelLNServerUrl() + '/graph/info';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');

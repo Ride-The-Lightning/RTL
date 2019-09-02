@@ -1,25 +1,150 @@
 <div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="25" class="padding-gap">
-    <div fxLayout="column">
-      <mat-card fxFlex="100" [ngClass]="{'custom-card error-border': flgLoading[1]==='error','custom-card': true}">
-        <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-          <mat-card-title class="m-0 pt-2">
-            <h5>Fee Report</h5>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div fxLayout="column" class="pl-4">
-            <mat-list fxFlex="100" fxLayoutAlign="start start">
-              <mat-list-item fxFlex="65" fxLayoutAlign="start start"> Fee Collected </mat-list-item>
-              <mat-list-item fxFlex="25" fxLayoutAlign="end start">{{fees?.feeCollected}}</mat-list-item>
-              <mat-divider></mat-divider>
-            </mat-list>
-          </div>
-          <mat-progress-bar *ngIf="flgLoading[1]===true" mode="indeterminate"></mat-progress-bar>
-          <mat-divider></mat-divider>  
+  <div fxFlex="20" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[2]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center end">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Wallet Balance</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+        <mat-card-content class="mt-1">
+          <mat-icon class="icon-large">account_balance_wallet</mat-icon>
         </mat-card-content>
-      </mat-card>
-    </div>
+        <span *ngIf="information?.currency_unit; else withoutData">
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit1">{{totalBalance.btc_confBalance | number}}
+            {{information?.currency_unit}}</h3>
+          <ng-template #smallerUnit1>
+            <h3>{{totalBalance.confBalance | number}} {{information?.smaller_currency_unit}}</h3>
+          </ng-template>
+        </span>
+      </mat-card-content>
+      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[2]===true" mode="indeterminate"></mat-progress-bar>
+      <mat-divider></mat-divider>
+    </mat-card>
+  </div>
+  <div fxFlex="20" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[0]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Peers</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+        <mat-card-content class="mt-1">
+          <mat-icon class="icon-large">group</mat-icon>
+        </mat-card-content>
+        <h3 *ngIf="information.num_peers; else zeroPeers">{{information?.num_peers | number}}</h3>
+        <ng-template #zeroPeers>
+          <h3>0</h3>
+        </ng-template>
+      </mat-card-content>
+      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+      <mat-divider></mat-divider>
+    </mat-card>
+  </div>
+  <div fxFlex="20" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Channel Balance</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+        <mat-card-content class="mt-1">
+          <mat-icon class="icon-large">linear_scale</mat-icon>
+        </mat-card-content>
+        <span *ngIf="information?.currency_unit; else withoutData">
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit2">{{lrBalance.btc_localBalance | number}}
+            {{information?.currency_unit}}</h3>
+          <ng-template #smallerUnit2>
+            <h3>{{lrBalance.localBalance | number}} {{information?.smaller_currency_unit}}</h3>
+          </ng-template>
+        </span>
+      </mat-card-content>
+      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[3]===true || flgLoading[0]===true" mode="indeterminate">
+      </mat-progress-bar>
+      <mat-divider></mat-divider>
+    </mat-card>
+  </div>
+  <div fxFlex="20" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[1]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Fee Report</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+        <mat-card-content class="mt-1">
+          <mat-icon class="icon-large">redeem</mat-icon>
+        </mat-card-content>
+        <h3>{{fees?.feeCollected | number}} (mSats)</h3>
+      </mat-card-content>
+      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[1]===true || flgLoading[0]===true" mode="indeterminate">
+      </mat-progress-bar>
+      <mat-divider></mat-divider>
+    </mat-card>
+  </div>
+  <div fxFlex="20" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[0]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Channel Status</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div fxLayout="column" class="pl-4">
+          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Active</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
+              <p class="mat-button-text">{{information?.num_active_channels}}</p>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Inactive</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
+              <p class="mat-button-text">{{information?.num_inactive_channels}}</p>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
+            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Pending</mat-list-item>
+            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
+              <p class="mat-button-text">{{information?.num_pending_channels}}</p>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+        </div>
+        <mat-progress-bar *ngIf="flgLoading[6]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
+        <mat-divider></mat-divider>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>
-<ng-template #withoutData><h3>Sats</h3></ng-template>
+<div fxLayout="column" fxLayout.gt-sm="row wrap">
+  <div fxFlex="25" class="padding-gap"></div>
+  <div fxFlex="50" class="padding-gap">
+    <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5>Local-Remote Channel Capacity</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div fxLayout="row" class="card-chnl-balances">
+          <div fxFlex="100" fxLayoutAlign="center center">
+            <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="lrBalances"
+              [yAxisLabel]="yAxisLabel" [yScaleMax]="maxBalanceValue" xAxis="false" yAxis="true" showYAxis="true"
+              showDataLabel="true" tooltipDisabled="true">
+            </ngx-charts-bar-vertical>
+          </div>
+        </div>
+        <mat-progress-bar *ngIf="flgLoading[5]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
+        <mat-divider></mat-divider>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<ng-template #withoutData>
+  <h3>Sats</h3>
+</ng-template>

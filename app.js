@@ -28,6 +28,8 @@ const switchRoutes = require("./routes/lnd/switch");
 
 const infoCLRoutes = require("./routes/c-lightning/getInfo");
 const feesCLRoutes = require("./routes/c-lightning/fees");
+const balanceCLRoutes = require("./routes/c-lightning/balance");
+const channelsCLRoutes = require("./routes/c-lightning/channels");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -68,6 +70,8 @@ app.use(apiLNDRoot + "switch", switchRoutes);
 
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);
+app.use(apiCLRoot + "balance", balanceCLRoutes);
+app.use(apiCLRoot + "channels", channelsCLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

@@ -26,7 +26,7 @@ exports.getRTLConfig = (req, res, next) => {
         const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
         const authentication = {
           nodeAuthType: common.node_auth_type,
-          lndConfigPath: common.nodes[0].lnd_config_path,
+          configPath: common.nodes[0].config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
         jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
@@ -61,8 +61,13 @@ exports.getRTLConfig = (req, res, next) => {
           const authentication = {};
           authentication.nodeAuthType = 'CUSTOM';
           if(node.Authentication && node.Authentication.lndConfigPath) {
-            authentication.lndConfigPath = node.Authentication.lndConfigPath;
+            authentication.configPath = node.Authentication.lndConfigPath;
+          } else if(node.Authentication && node.Authentication.configPath) {
+            authentication.configPath = node.Authentication.configPath;
+          } else {
+            authentication.configPath = '';
           }
+
           if(node.Settings.bitcoindConfigPath) {
             authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
           }
@@ -138,9 +143,9 @@ exports.getConfig = (req, res, next) => {
   let confFile = '';
   let JSONFormat = false;
   switch (req.params.nodeType) {
-    case 'lnd':
+    case 'ln':
       JSONFormat = false;
-      confFile = common.selectedNode.lnd_config_path;
+      confFile = common.selectedNode.config_path;
       break;
     case 'bitcoind':
       JSONFormat = false;

@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -8,13 +8,17 @@ export interface CLState {
   nodeSettings: SelNodeChild;
   information: GetInfoCL;
   fees: FeesCL;
+  balance: BalanceCL;
+  localRemoteBalance: LocalRemoteBalanceCL;
 }
 
 export const initCLState: CLState = {
   effectErrorsCl: [],
-  nodeSettings: { channelBackupPath: 'my dummy path', satsToBTC: false },
+  nodeSettings: { channelBackupPath: '', satsToBTC: false },
   information: {},
-  fees: {}
+  fees: {},
+  balance: {},
+  localRemoteBalance: {}
 }
 
 export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
@@ -50,6 +54,16 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
       return {
         ...state,
         fees: action.payload
+      };
+    case RTLActions.SET_CL_BALANCE:
+      return {
+        ...state,
+        balance: action.payload
+      };
+    case RTLActions.SET_CL_LOCAL_REMOTE_BALANCE:
+      return {
+        ...state,
+        localRemoteBalance: action.payload
       };
     default:
       return state;

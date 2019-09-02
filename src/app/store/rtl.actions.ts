@@ -1,7 +1,7 @@
 import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
 
-import { GetInfoCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL } from '../shared/models/clModels';
 
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { ErrorPayload } from '../shared/models/errorPayload';
@@ -95,13 +95,17 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
+export const RESET_CL_STORE = 'RESET_CL_STORE';
+export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
+export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
 export const FETCH_CL_INFO = 'FETCH_CL_INFO';
 export const SET_CL_INFO = 'SET_CL_INFO';
 export const FETCH_CL_FEES = 'FETCH_CL_FEES';
 export const SET_CL_FEES = 'SET_CL_FEES';
-export const RESET_CL_STORE = 'RESET_CL_STORE';
-export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
-export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
+export const FETCH_CL_BALANCE = 'FETCH_CL_BALANCE';
+export const SET_CL_BALANCE = 'SET_CL_BALANCE';
+export const FETCH_CL_LOCAL_REMOTE_BALANCE = 'FETCH_CL_LOCAL_REMOTE_BALANCE';
+export const SET_CL_LOCAL_REMOTE_BALANCE = 'SET_CL_LOCAL_REMOTE_BALANCE';
 
 export class ClearEffectErrorRoot implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ROOT;
@@ -528,6 +532,24 @@ export class FetchCLFees implements Action {
 
 export class SetCLFees implements Action {
   readonly type = SET_CL_FEES;
+  constructor(public payload: FeesCL) {}
+}
+
+export class FetchCLBalance implements Action {
+  readonly type = FETCH_CL_BALANCE;
+}
+
+export class SetCLBalance implements Action {
+  readonly type = SET_CL_BALANCE;
+  constructor(public payload: {}) {}
+}
+
+export class FetchCLLocalRemoteBalance implements Action {
+  readonly type = FETCH_CL_LOCAL_REMOTE_BALANCE;
+}
+
+export class SetCLLocalRemoteBalance implements Action {
+  readonly type = SET_CL_LOCAL_REMOTE_BALANCE;
   constructor(public payload: {}) {}
 }
 
@@ -554,4 +576,5 @@ export type RTLActions =
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
-  FetchCLInfo | SetCLInfo | FetchCLFees | SetCLFees;
+  FetchCLInfo | SetCLInfo | FetchCLFees | SetCLFees |
+  FetchCLBalance | SetCLBalance | FetchCLLocalRemoteBalance | SetCLLocalRemoteBalance;

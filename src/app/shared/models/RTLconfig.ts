@@ -17,7 +17,7 @@ export class Settings {
     public satsToBTC: boolean,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
-    public lndServerUrl?: string,
+    public lnServerUrl?: string,
     public channelBackupPath?: string
   ) { }
 }
@@ -25,7 +25,7 @@ export class Settings {
 export class Authentication {
   constructor(
     public nodeAuthType?: string,
-    public lndConfigPath?: string,
+    public configPath?: string,
     public bitcoindConfigPath?: string
   ) { }
 }

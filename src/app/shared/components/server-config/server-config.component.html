@@ -10,7 +10,7 @@
         <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" class="mb-2">
           <mat-radio-group fxFlex="20" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
             <mat-radio-button class="pr-5" value="rtl" [checked]="selectedNodeType=='rtl'">RTL</mat-radio-button>
-            <mat-radio-button class="pr-5" value="lnd" *ngIf="showLND" [checked]="selectedNodeType=='lnd'">LND</mat-radio-button>
+            <mat-radio-button class="pr-5" value="ln" *ngIf="showLnConfig" [checked]="selectedNodeType=='ln'">{{lnImplementationStr}}</mat-radio-button>
             <mat-radio-button class="pr-5" value="bitcoind" *ngIf="showBitcoind" [checked]="selectedNodeType=='bitcoind'">BITCOIND</mat-radio-button>
           </mat-radio-group>
           <div fxFlex="30" fxLayoutAlign="space-between stretch">

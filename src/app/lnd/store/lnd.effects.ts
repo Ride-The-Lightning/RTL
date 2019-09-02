@@ -808,14 +808,6 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  @Effect({ dispatch: false })
-  showLNDConfig = this.actions$.pipe(
-    ofType(RTLActions.SHOW_CONFIG),
-    map((action: RTLActions.ShowConfig) => {
-      return action.payload;
-    })
-  );
-
   @Effect()
   SetChannelTransaction = this.actions$.pipe(
     ofType(RTLActions.SET_CHANNEL_TRANSACTION),

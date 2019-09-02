@@ -147,7 +147,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   @Effect({ dispatch: false })
-  showLNDConfig = this.actions$.pipe(
+  showLnConfig = this.actions$.pipe(
     ofType(RTLActions.SHOW_CONFIG),
     map((action: RTLActions.ShowConfig) => {
       return action.payload;
@@ -204,9 +204,11 @@ export class RTLEffects implements OnDestroy {
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
         if(rootStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
-          this.router.navigate(['/cl/']);
+          this.store.dispatch(new RTLActions.FetchCLInfo());
+          this.router.navigate(['/cl/home']);
         } else {
-          this.router.navigate(['/lnd/']);
+          this.store.dispatch(new RTLActions.FetchInfo());
+          this.router.navigate(['/lnd/home']);
         }
       }),
       catchError((err) => {
@@ -258,12 +260,15 @@ export class RTLEffects implements OnDestroy {
           if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
             this.CHILD_API_URL = API_URL + '/cl';
-            return { type: RTLActions.FETCH_CL_INFO };
+            return {
+              type: RTLActions.FETCH_CL_INFO
+            }
           } else {
             this.router.navigate(['/lnd/home']);
             this.CHILD_API_URL = API_URL + '/lnd';
-            this.store.dispatch(new RTLActions.FetchInfo());
-            return { type: RTLActions.FETCH_INFO };
+            return {
+              type: RTLActions.FETCH_INFO
+            }
           }
         } else {
           return {

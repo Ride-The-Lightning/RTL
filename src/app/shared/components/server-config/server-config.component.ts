@@ -16,7 +16,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class ServerConfigComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
   public selectedNodeType = 'rtl';
-  public showLND = false;
+  public showLnConfig = false;
+  public lnImplementationStr = '';
   public showBitcoind = false;
   public configData = '';
   public fileFormat = 'INI';
@@ -34,16 +35,17 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
         }
       });
       this.configData = '';
-      this.showLND = false;
+      this.showLnConfig = false;
       this.showBitcoind = false;
       this.selNode = rtlStore.selNode;
-      if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.lndConfigPath && this.selNode.authentication.lndConfigPath !== '') {
-        this.showLND = true;
+      this.lnImplementationStr = this.selNode.lnImplementation.toLowerCase() === 'clightning' ? 'C-Lightning' : 'LND';
+      if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.configPath && this.selNode.authentication.configPath !== '') {
+        this.showLnConfig = true;
       }
       if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.bitcoindConfigPath && this.selNode.authentication.bitcoindConfigPath !== '') {
         this.showBitcoind = true;
       }
-      if (this.selectedNodeType === 'lnd' && !this.showLND) {
+      if (this.selectedNodeType === 'ln' && !this.showLnConfig) {
         this.selectedNodeType = 'rtl';
       }
       if (this.selectedNodeType === 'bitcoind' && !this.showBitcoind) {
@@ -60,7 +62,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   onShowConfig() {
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Config File...'));
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
-    this.rtlEffects.showLNDConfig
+    this.rtlEffects.showLnConfig
     .pipe(takeUntil(this.unsubs[1]))
     .subscribe((config: any) => {
       const configFile = config.data;

@@ -5,7 +5,7 @@ var options = {};
 
 getAliasForPeers = (peer) => {
   return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNDServerUrl() + '/graph/node/' + peer.pub_key;
+    options.url = common.getSelLNServerUrl() + '/graph/node/' + peer.pub_key;
     request(options)
     .then(function(aliasBody) {
       logger.info({fileName: 'Peers', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
@@ -18,7 +18,7 @@ getAliasForPeers = (peer) => {
 
 exports.getPeers = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/peers';
+  options.url = common.getSelLNServerUrl() + '/peers';
   request(options).then(function (body) {
     let peers = (undefined === body.peers) ? [] : body.peers;
     Promise.all(
@@ -43,7 +43,7 @@ exports.getPeers = (req, res, next) => {
 
 exports.postPeer = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/peers';
+  options.url = common.getSelLNServerUrl() + '/peers';
   options.form = JSON.stringify({ 
     addr: { host: req.body.host, pubkey: req.body.pubkey },
     perm: req.body.perm
@@ -56,7 +56,7 @@ exports.postPeer = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      options.url = common.getSelLNDServerUrl() + '/peers';
+      options.url = common.getSelLNServerUrl() + '/peers';
       request(options).then(function (body) {
         let peers = (undefined === body.peers) ? [] : body.peers;
         Promise.all(
@@ -86,7 +86,7 @@ exports.postPeer = (req, res, next) => {
 
 exports.deletePeer = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/peers/' + req.params.peerPubKey;
+  options.url = common.getSelLNServerUrl() + '/peers/' + req.params.peerPubKey;
   request.delete(options).then((body) => {
     logger.info({fileName: 'Peers', msg: 'Detach Peer Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

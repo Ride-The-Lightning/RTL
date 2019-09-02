@@ -6,7 +6,7 @@ var options = {};
 
 exports.genSeed = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/genseed';
+  options.url = common.getSelLNServerUrl() + '/genseed';
   if (undefined !== req.params.passphrase) {
     options.form = JSON.stringify({aezeed_passphrase: atob(req.params.passphrase)});
   }
@@ -32,13 +32,13 @@ exports.operateWallet = (req, res, next) => {
   options = common.getOptions();
   options.method = 'POST';
   if (undefined === req.params.operation || req.params.operation === 'unlockwallet') {
-    options.url = common.getSelLNDServerUrl() + '/unlockwallet';
+    options.url = common.getSelLNServerUrl() + '/unlockwallet';
     options.form = JSON.stringify({
       wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64')
     });
     err_message = 'Unlocking wallet failed! Verify that lnd is running and the wallet is locked!';
   } else {
-    options.url = common.getSelLNDServerUrl() + '/initwallet';
+    options.url = common.getSelLNServerUrl() + '/initwallet';
     if (undefined !== req.body.aezeed_passphrase && req.body.aezeed_passphrase !== '') {
       options.form = JSON.stringify({
         wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64'),

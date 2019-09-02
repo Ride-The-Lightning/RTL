@@ -65,8 +65,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         QRCodeModule,
         NgxChartsModule,
         RouterModule,
-        HttpClientModule,
-        NgxChartsModule
+        HttpClientModule
     ],
     exports: [
         FormsModule,

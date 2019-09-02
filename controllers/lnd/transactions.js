@@ -5,7 +5,7 @@ var options = {};
 
 exports.getTransactions = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/transactions';
+  options.url = common.getSelLNServerUrl() + '/transactions';
   request(options).then((body) => {
     const body_str = (undefined === body) ? '' : JSON.stringify(body);
     const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
@@ -35,7 +35,7 @@ exports.getTransactions = (req, res, next) => {
 
 exports.postTransactions = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/transactions';
+  options.url = common.getSelLNServerUrl() + '/transactions';
   options.form = { 
     amount: req.body.amount,
     addr: req.body.address,

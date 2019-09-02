@@ -13,7 +13,7 @@ exports.authenticateUser = (req, res, next) => {
     if (crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.password) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
-        { user: 'Custom_User', lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+        { user: 'Custom_User', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
       res.status(200).json({ token: token });
@@ -30,7 +30,7 @@ exports.authenticateUser = (req, res, next) => {
       if (common.rtl_pass === password) {
         var rpcUser = 'Multi_Node_User';
         const token = jwt.sign(
-          { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+          { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
           common.secret_key
         );
         res.status(200).json({ token: token });
@@ -46,7 +46,7 @@ exports.authenticateUser = (req, res, next) => {
         if (common.rtl_pass === password) {
           var rpcUser = 'Single_Node_User';
           const token = jwt.sign(
-            { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+            { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
             common.secret_key
           );
           res.status(200).json({ token: token });
@@ -58,7 +58,7 @@ exports.authenticateUser = (req, res, next) => {
           });
         }
       } else {
-        fs.readFile(common.nodes[0].lnd_config_path, 'utf8', function (err, data) {
+        fs.readFile(common.nodes[0].config_path, 'utf8', function (err, data) {
           if (err) {
             logger.error({fileName: 'Authenticate', lineNum: 60, msg: 'LND Config Reading Failed!'});
             err.description = 'You might be connecting RTL remotely to your LND node OR You might be missing rpcpass in your lnd.conf.';
@@ -81,7 +81,7 @@ exports.authenticateUser = (req, res, next) => {
               var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
               rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
               const token = jwt.sign(
-                { user: rpcUser, lndConfigPath: common.nodes[0].lnd_config_path, macaroonPath: common.nodes[0].macaroon_path },
+                { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
                 common.secret_key
               );
               res.status(200).json({ token: token });

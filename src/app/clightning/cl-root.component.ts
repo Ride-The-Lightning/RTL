@@ -19,28 +19,19 @@ export class CLRootComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchCLInfo());
     this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
-    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO || action.type === RTLActions.INIT_APP_DATA))
+    this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_CL_INFO))
     .subscribe((infoData: RTLActions.SetCLInfo | RTLActions.InitAppData) => {
       if(infoData.type === RTLActions.SET_CL_INFO && undefined !== infoData.payload.id) {
         this.initializeRemainingData();
-      }
-      if(infoData.type === RTLActions.INIT_APP_DATA) {
-        this.store.dispatch(new RTLActions.FetchCLInfo());
       }
     });
   }
 
   initializeRemainingData() {
     this.store.dispatch(new RTLActions.FetchCLFees());
-    // this.store.dispatch(new RTLActions.FetchPeers());
-    // this.store.dispatch(new RTLActions.FetchBalance('channels'));
-    // this.store.dispatch(new RTLActions.FetchNetwork());
-    // this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
-    // this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
-    // this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
-    // this.store.dispatch(new RTLActions.FetchPayments());
+    this.store.dispatch(new RTLActions.FetchCLBalance());
+    this.store.dispatch(new RTLActions.FetchCLLocalRemoteBalance());
   }
 
   ngOnDestroy() {

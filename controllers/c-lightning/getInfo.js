@@ -7,7 +7,7 @@ var options = {};
 exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/getinfo';
+  options.url = common.getSelLNServerUrl() + '/getinfo';
   if(common.multi_node_setup) {
     logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   } else {
@@ -25,6 +25,8 @@ exports.getInfo = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
+      body.currency_unit = 'BTC';
+      body.smaller_currency_unit = 'Sats';
       res.status(200).json(body);
     }
   })

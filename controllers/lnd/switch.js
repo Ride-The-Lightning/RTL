@@ -5,7 +5,7 @@ var options = {};
 
 exports.forwardingHistory = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNDServerUrl() + '/switch';
+  options.url = common.getSelLNServerUrl() + '/switch';
   options.form = {};
   if (undefined !== req.body.num_max_events) {
     options.form.num_max_events = req.body.num_max_events;
