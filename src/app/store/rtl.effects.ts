@@ -11,7 +11,6 @@ import { MatDialog } from '@angular/material';
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../shared/models/lndModels';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
@@ -95,7 +94,7 @@ export class RTLEffects implements OnDestroy {
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
       if (+rtlConfig.sso.rtlSSO) { this.store.dispatch(new RTLActions.Signout()); }
-      this.store.dispatch(new RTLActions.SetSelelectedNode(rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex)))
+      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex), isInitialSetup: true}))
       return {
         type: RTLActions.SET_RTL_CONFIG,
         payload: rtlConfig
@@ -204,10 +203,8 @@ export class RTLEffects implements OnDestroy {
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
         if(rootStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
-          this.store.dispatch(new RTLActions.FetchCLInfo());
           this.router.navigate(['/cl/home']);
         } else {
-          this.store.dispatch(new RTLActions.FetchInfo());
           this.router.navigate(['/lnd/home']);
         }
       }),
@@ -247,34 +244,34 @@ export class RTLEffects implements OnDestroy {
    ofType(RTLActions.SET_SELECTED_NODE),
    mergeMap((action: RTLActions.SetSelelectedNode) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
-     return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.index })
+     return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.lnNode.index })
      .pipe(
        map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         if (sessionStorage.getItem('token')) {
-          let selNode = { channelBackupPath: action.payload.settings.channelBackupPath, satsToBTC: action.payload.settings.satsToBTC };
-          this.store.dispatch(new RTLActions.ResetRootStore(action.payload));
+          let selNode = { channelBackupPath: action.payload.lnNode.settings.channelBackupPath, satsToBTC: action.payload.lnNode.settings.satsToBTC };
+          this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
           this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
           this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-          if(action.payload.lnImplementation.toLowerCase() === 'clightning') {
+          if(action.payload.lnNode.lnImplementation.toLowerCase() === 'clightning') {
             this.router.navigate(['/cl/home']);
             this.CHILD_API_URL = API_URL + '/cl';
-            return {
-              type: RTLActions.FETCH_CL_INFO
-            }
+            return { type: RTLActions.VOID };
           } else {
             this.router.navigate(['/lnd/home']);
             this.CHILD_API_URL = API_URL + '/lnd';
-            return {
-              type: RTLActions.FETCH_INFO
-            }
+            return { type: RTLActions.VOID };
           }
         } else {
-          return {
-            type: RTLActions.OPEN_ALERT,
-            payload: { width: '70%', data: {type: 'WARN', titleMessage: 'Authorization required to get the data from the node!' }}
-          };
+          if (!action.payload.isInitialSetup) {
+            return {
+              type: RTLActions.OPEN_ALERT,
+              payload: { width: '70%', data: {type: 'WARN', titleMessage: 'Authorization required to get the data from the node!' }}
+            };
+          } else {
+            return { type: RTLActions.VOID };
+          }
         }
        }),
        catchError((err: any) => {

@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -14,8 +14,8 @@ import * as RTLActions from '../../store/rtl.actions';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
-  dialogRef: any;
   CHILD_API_URL = API_URL + '/cl';
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
     private actions$: Actions,
@@ -25,10 +25,10 @@ export class CLEffects implements OnDestroy {
 
   @Effect()
   infoFetchCL = this.actions$.pipe(
-    ofType(RTLActions.FETCH_CL_INFO),
+    ofType(RTLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLInfo'));
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));
       return this.httpClient.get<GetInfoCL>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           map((info) => {
@@ -60,14 +60,12 @@ export class CLEffects implements OnDestroy {
             };
             this.store.dispatch(new RTLActions.SetNodeData(node_data));
             return {
-              type: RTLActions.SET_CL_INFO,
+              type: RTLActions.SET_INFO_CL,
               payload: (undefined !== info) ? info : {}
             };
           }),
           catchError((err) => {
-            this.logger.error(err);
-            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLInfo', code: err.status, message: err.error.error }));
-            return of();
+            return this.handleErrorWithAlert('ERROR', 'Get Info Failed', this.CHILD_API_URL + environment.GETINFO_API, err);
           })
         );
     }
@@ -75,67 +73,193 @@ export class CLEffects implements OnDestroy {
 
   @Effect()
   fetchFeesCL = this.actions$.pipe(
-    ofType(RTLActions.FETCH_CL_FEES),
-    mergeMap((action: RTLActions.FetchCLFees) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLFees'));
+    ofType(RTLActions.FETCH_FEES_CL),
+    mergeMap((action: RTLActions.FetchFeesCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchFeesCL'));
       return this.httpClient.get<FeesCL>(this.CHILD_API_URL + environment.FEES_API);
     }),
     map((fees) => {
       this.logger.info(fees);
       return {
-        type: RTLActions.SET_CL_FEES,
+        type: RTLActions.SET_FEES_CL,
         payload: (undefined !== fees) ? fees : {}
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLFees', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchFeesCL', err);
     }
   ));
 
   @Effect()
   fetchBalanceCL = this.actions$.pipe(
-    ofType(RTLActions.FETCH_CL_BALANCE),
-    mergeMap((action: RTLActions.FetchCLBalance) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLBalance'));
+    ofType(RTLActions.FETCH_BALANCE_CL),
+    mergeMap((action: RTLActions.FetchBalanceCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchBalanceCL'));
       return this.httpClient.get<BalanceCL>(this.CHILD_API_URL + environment.BALANCE_API);
     }),
     map((balance) => {
       this.logger.info(balance);
       return {
-        type: RTLActions.SET_CL_BALANCE,
+        type: RTLActions.SET_BALANCE_CL,
         payload: (undefined !== balance) ? balance : {}
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLBalance', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchBalanceCL', err);
     }
   ));
 
   @Effect()
   fetchLocalRemoteBalanceCL = this.actions$.pipe(
-    ofType(RTLActions.FETCH_CL_LOCAL_REMOTE_BALANCE),
-    mergeMap((action: RTLActions.FetchCLLocalRemoteBalance) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchCLLocalRemoteBalance'));
+    ofType(RTLActions.FETCH_LOCAL_REMOTE_BALANCE_CL),
+    mergeMap((action: RTLActions.FetchLocalRemoteBalanceCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchLocalRemoteBalanceCL'));
       return this.httpClient.get<LocalRemoteBalanceCL>(this.CHILD_API_URL + environment.CHANNELS_API + '/localremotebalance');
     }),
     map((lrBalance) => {
       this.logger.info(lrBalance);
       return {
-        type: RTLActions.SET_CL_LOCAL_REMOTE_BALANCE,
+        type: RTLActions.SET_LOCAL_REMOTE_BALANCE_CL,
         payload: (undefined !== lrBalance) ? lrBalance : {}
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'FetchCLLocalRemoteBalance', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchLocalRemoteBalanceCL', err);
     }
   ));
 
-  ngOnDestroy() { }
+  @Effect()
+  getNewAddressCL = this.actions$.pipe(
+    ofType(RTLActions.GET_NEW_ADDRESS_CL),
+    mergeMap((action: RTLActions.GetNewAddressCL) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId)
+        .pipe(map((newAddress: any) => {
+          this.logger.info(newAddress);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.SET_NEW_ADDRESS_CL,
+            payload: (undefined !== newAddress && undefined !== newAddress.address) ? newAddress.address : {}
+          };
+        }),
+        catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId, err);
+        }));
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setNewAddressCL = this.actions$.pipe(
+    ofType(RTLActions.SET_NEW_ADDRESS_CL),
+    map((action: RTLActions.SetNewAddressCL) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  peersFetchCL = this.actions$.pipe(
+    ofType(RTLActions.FETCH_PEERS_CL),
+    mergeMap((action: RTLActions.FetchPeersCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchPeersCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
+        .pipe(
+          map((peers: any) => {
+            this.logger.info(peers);
+            return {
+              type: RTLActions.SET_PEERS_CL,
+              payload: (undefined !== peers) ? peers : []
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithoutAlert('FetchPeersCL', err);
+          })
+        );
+    }
+    ));
+
+  @Effect()
+  saveNewPeerCL = this.actions$.pipe(
+    ofType(RTLActions.SAVE_NEW_PEER_CL),
+    mergeMap((action: RTLActions.SaveNewPeerCL) => {
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id })
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' } }));
+            return {
+              type: RTLActions.SET_PEERS_CL,
+              payload: (undefined !== postRes && postRes.length > 0) ? postRes : []
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
+          })
+        );
+      }
+  ));
+
+  @Effect()
+  detachPeerCL = this.actions$.pipe(
+    ofType(RTLActions.DETACH_PEER_CL),
+    mergeMap((action: RTLActions.DetachPeerCL) => {
+      return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.id + '?force=' + action.payload.force)
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' } }));
+            return {
+              type: RTLActions.REMOVE_PEER_CL,
+              payload: { id: action.payload.id }
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.id, err);
+          })
+        );
+    }
+  ));
+
+  handleErrorWithoutAlert(actionName: string, err: {status: number, error: any}) {
+    this.logger.error(err);
+    if(err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      return of({ type: RTLActions.SIGNOUT });  
+    } else {
+      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      this.logger.error(err);
+      return of({type:RTLActions.VOID});
+    }
+  }
+
+  handleErrorWithAlert(alerType: string, alertTitle: string, errURL: string, err: {status: number, error: any}) {
+    this.logger.error(err);
+    if(err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      return of({ type: RTLActions.SIGNOUT });  
+    } else {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.error(err);
+      return of(
+        {
+          type: RTLActions.OPEN_ALERT,
+          payload: {
+            width: '70%', data: {
+              type: alerType, titleMessage: alertTitle,
+              message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
+            }
+          }
+        }
+      );
+    }
+  }
+
+  ngOnDestroy() { 
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });    
+  }
 
 }

@@ -39,12 +39,12 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
       }
       return {
         ...state,
-        effectErrors: clearedEffectErrors
+        effectErrorsRoot: clearedEffectErrors
       };
     case RTLActions.EFFECT_ERROR_ROOT:
       return {
         ...state,
-        effectErrors: [...state.effectErrorsRoot, action.payload]
+        effectErrorsRoot: [...state.effectErrorsRoot, action.payload]
       };
     case RTLActions.RESET_ROOT_STORE:
       return {
@@ -55,7 +55,7 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
     case RTLActions.SET_SELECTED_NODE:
       return {
         ...state,
-        selNode: action.payload
+        selNode: action.payload.lnNode
       };
     case RTLActions.SET_NODE_DATA:
       return {

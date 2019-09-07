@@ -58,16 +58,16 @@ export class CLHomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchCLInfo') {
+        if (effectsErr.action === 'FetchInfoCL') {
           this.flgLoading[0] = 'error';
         }
-        if (effectsErr.action === 'FetchCLFees') {
+        if (effectsErr.action === 'FetchFeesCL') {
           this.flgLoading[1] = 'error';
         }
-        if (effectsErr.action === 'FetchCLBalance') {
+        if (effectsErr.action === 'FetchBalanceCL') {
           this.flgLoading[2] = 'error';
         }
-        if (effectsErr.action === 'FetchCLLocalRemoteBalance') {
+        if (effectsErr.action === 'FetchLocalRemoteBalanceCL') {
           this.flgLoading[3] = 'error';
         }
       });

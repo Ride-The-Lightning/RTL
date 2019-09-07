@@ -70,12 +70,12 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       }
       return {
         ...state,
-        effectErrors: clearedEffectErrors
+        effectErrorsLnd: clearedEffectErrors
       };
     case RTLActions.EFFECT_ERROR_LND:
       return {
         ...state,
-        effectErrors: [...state.effectErrorsLnd, action.payload]
+        effectErrorsLnd: [...state.effectErrorsLnd, action.payload]
       };
     case RTLActions.RESET_LND_STORE:
       return {

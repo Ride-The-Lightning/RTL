@@ -75,7 +75,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   onSelectionChange(selNodeValue: LightningNode) {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode(selNodeValue));
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
   }
 
   ngOnDestroy() {

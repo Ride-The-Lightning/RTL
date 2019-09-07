@@ -1,7 +1,7 @@
 import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
 
-import { GetInfoCL, FeesCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL } from '../shared/models/clModels';
 
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { ErrorPayload } from '../shared/models/errorPayload';
@@ -10,6 +10,7 @@ import {
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
 } from '../shared/models/lndModels';
 
+export const VOID = 'VOID';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
@@ -95,17 +96,29 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
-export const RESET_CL_STORE = 'RESET_CL_STORE';
+export const RESET_STORE_CL = 'RESET_STORE_CL';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
 export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
-export const FETCH_CL_INFO = 'FETCH_CL_INFO';
-export const SET_CL_INFO = 'SET_CL_INFO';
-export const FETCH_CL_FEES = 'FETCH_CL_FEES';
-export const SET_CL_FEES = 'SET_CL_FEES';
-export const FETCH_CL_BALANCE = 'FETCH_CL_BALANCE';
-export const SET_CL_BALANCE = 'SET_CL_BALANCE';
-export const FETCH_CL_LOCAL_REMOTE_BALANCE = 'FETCH_CL_LOCAL_REMOTE_BALANCE';
-export const SET_CL_LOCAL_REMOTE_BALANCE = 'SET_CL_LOCAL_REMOTE_BALANCE';
+export const FETCH_INFO_CL = 'FETCH_INFO_CL';
+export const SET_INFO_CL = 'SET_INFO_CL';
+export const FETCH_FEES_CL = 'FETCH_FEES_CL';
+export const SET_FEES_CL = 'SET_FEES_CL';
+export const FETCH_BALANCE_CL = 'FETCH_BALANCE_CL';
+export const SET_BALANCE_CL = 'SET_BALANCE_CL';
+export const FETCH_LOCAL_REMOTE_BALANCE_CL = 'FETCH_LOCAL_REMOTE_BALANCE_CL';
+export const SET_LOCAL_REMOTE_BALANCE_CL = 'SET_LOCAL_REMOTE_BALANCE_CL';
+export const GET_NEW_ADDRESS_CL = 'GET_NEW_ADDRESS_CL';
+export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
+export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
+export const SET_PEERS_CL = 'SET_PEERS_CL';
+export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
+export const ADD_PEER_CL = 'ADD_PEER_CL';
+export const DETACH_PEER_CL = 'DETACH_PEER_CL';
+export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
+
+export class VoidAction implements Action {
+  readonly type = VOID;
+}
 
 export class ClearEffectErrorRoot implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ROOT;
@@ -176,7 +189,7 @@ export class ResetLNDStore implements Action {
 }
 
 export class ResetCLStore implements Action {
-  readonly type = RESET_CL_STORE;
+  readonly type = RESET_STORE_CL;
   constructor(public payload: SelNodeChild) {}
 }
 
@@ -196,7 +209,7 @@ export class SaveSettings implements Action {
 
 export class SetSelelectedNode implements Action {
   readonly type = SET_SELECTED_NODE;
-  constructor(public payload: LightningNode) {}
+  constructor(public payload: { lnNode: LightningNode, isInitialSetup: boolean }) {}
 }
 
 export class SetNodeData implements Action {
@@ -517,45 +530,84 @@ export class InitAppData implements Action {
   readonly type = INIT_APP_DATA;
 }
 
-export class FetchCLInfo implements Action {
-  readonly type = FETCH_CL_INFO;
+export class FetchInfoCL implements Action {
+  readonly type = FETCH_INFO_CL;
 }
 
-export class SetCLInfo implements Action {
-  readonly type = SET_CL_INFO;
+export class SetInfoCL implements Action {
+  readonly type = SET_INFO_CL;
   constructor(public payload: GetInfoCL) {}
 }
 
-export class FetchCLFees implements Action {
-  readonly type = FETCH_CL_FEES;
+export class FetchFeesCL implements Action {
+  readonly type = FETCH_FEES_CL;
 }
 
-export class SetCLFees implements Action {
-  readonly type = SET_CL_FEES;
+export class SetFeesCL implements Action {
+  readonly type = SET_FEES_CL;
   constructor(public payload: FeesCL) {}
 }
 
-export class FetchCLBalance implements Action {
-  readonly type = FETCH_CL_BALANCE;
+export class FetchBalanceCL implements Action {
+  readonly type = FETCH_BALANCE_CL;
 }
 
-export class SetCLBalance implements Action {
-  readonly type = SET_CL_BALANCE;
+export class SetBalanceCL implements Action {
+  readonly type = SET_BALANCE_CL;
   constructor(public payload: {}) {}
 }
 
-export class FetchCLLocalRemoteBalance implements Action {
-  readonly type = FETCH_CL_LOCAL_REMOTE_BALANCE;
+export class FetchLocalRemoteBalanceCL implements Action {
+  readonly type = FETCH_LOCAL_REMOTE_BALANCE_CL;
 }
 
-export class SetCLLocalRemoteBalance implements Action {
-  readonly type = SET_CL_LOCAL_REMOTE_BALANCE;
+export class SetLocalRemoteBalanceCL implements Action {
+  readonly type = SET_LOCAL_REMOTE_BALANCE_CL;
   constructor(public payload: {}) {}
+}
+
+export class GetNewAddressCL implements Action {
+  readonly type = GET_NEW_ADDRESS_CL;
+  constructor(public payload: AddressTypeCL) {}
+}
+
+export class SetNewAddressCL implements Action {
+  readonly type = SET_NEW_ADDRESS_CL;
+  constructor(public payload: string) {} // payload = newAddress
+}
+
+export class FetchPeersCL implements Action {
+  readonly type = FETCH_PEERS_CL;
+}
+
+export class SetPeersCL implements Action {
+  readonly type = SET_PEERS_CL;
+  constructor(public payload: PeerCL[]) {}
+}
+
+export class SaveNewPeerCL implements Action {
+  readonly type = SAVE_NEW_PEER_CL;
+  constructor(public payload: {id: string}) {}
+}
+
+export class AddPeerCL implements Action {
+  readonly type = ADD_PEER_CL;
+  constructor(public payload: PeerCL) {}
+}
+
+export class DetachPeerCL implements Action {
+  readonly type = DETACH_PEER_CL;
+  constructor(public payload: {id: string, force: boolean}) {}
+}
+
+export class RemovePeerCL implements Action {
+  readonly type = REMOVE_PEER_CL;
+  constructor(public payload: {id: string}) {}
 }
 
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
   ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | FetchInfo | SetInfo |
@@ -576,5 +628,7 @@ export type RTLActions =
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
-  FetchCLInfo | SetCLInfo | FetchCLFees | SetCLFees |
-  FetchCLBalance | SetCLBalance | FetchCLLocalRemoteBalance | SetCLLocalRemoteBalance;
+  FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL |
+  FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
+  GetNewAddressCL | SetNewAddressCL |
+  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL;

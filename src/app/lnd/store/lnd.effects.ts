@@ -84,19 +84,13 @@ export class LNDEffects implements OnDestroy {
           }),
           catchError((err) => {
             this.logger.error(err);
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchInfo', code: err.status, message: err.error.error }));
-            if (+store.appConfig.sso.rtlSSO) {
-              this.router.navigate(['/ssoerror']);
+            if (err.status === 401) {
+              this.logger.info('Redirecting to Signin');
+              return of({ type: RTLActions.SIGNOUT });  
             } else {
-              if (err.status === 401) {
-                this.logger.info('Redirecting to Signin');
-                this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
-                return of();
-              } else {
-                this.logger.info('Redirecting to Unlock');
-                this.router.navigate(['/lnd/unlocklnd']);
-                return of();
-              }
+              this.logger.info('Redirecting to Unlock');
+              this.router.navigate(['/lnd/unlocklnd']);
+              return of();
             }
           })
         );

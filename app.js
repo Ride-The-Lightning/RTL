@@ -30,6 +30,14 @@ const infoCLRoutes = require("./routes/c-lightning/getInfo");
 const feesCLRoutes = require("./routes/c-lightning/fees");
 const balanceCLRoutes = require("./routes/c-lightning/balance");
 const channelsCLRoutes = require("./routes/c-lightning/channels");
+const invoicesCLRoutes = require("./routes/c-lightning/invoices");
+const newAddressCLRoutes = require("./routes/c-lightning/newAddress");
+const paymentsCLRoutes = require("./routes/c-lightning/payments");
+const payReqCLRoutes = require("./routes/c-lightning/payReq");
+const peersCLRoutes = require("./routes/c-lightning/peers");
+const switchCLRoutes = require("./routes/c-lightning/switch");
+const transactionsCLRoutes = require("./routes/c-lightning/transactions");
+const walletCLRoutes = require("./routes/c-lightning/wallet");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -72,6 +80,14 @@ app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);
 app.use(apiCLRoot + "balance", balanceCLRoutes);
 app.use(apiCLRoot + "channels", channelsCLRoutes);
+app.use(apiCLRoot + "invoices", invoicesCLRoutes);
+app.use(apiCLRoot + "newaddress", newAddressCLRoutes);
+app.use(apiCLRoot + "payments", paymentsCLRoutes);
+app.use(apiCLRoot + "payreq", payReqCLRoutes);
+app.use(apiCLRoot + "peers", peersCLRoutes);
+app.use(apiCLRoot + "switch", switchCLRoutes);
+app.use(apiCLRoot + "transactions", transactionsCLRoutes);
+app.use(apiCLRoot + "wallet", walletCLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

@@ -25,6 +25,16 @@ export const MENU_DATA: MenuRootNode = {
   ],
   CLChildren: [
     {id: 1, parentId: 0, name: 'Home', icon: 'home', link: '/cl/home'},
+    {id: 2, parentId: 0, name: 'On Chain', icon: 'account_balance_wallet', link:  '/cl/onchain'},
+    {id: 3, parentId: 0, name: 'Peers', icon: 'group', link: '/cl/peers'},
+    {id: 4, parentId: 0, name: 'Channels', icon: 'settings_ethernet', link: '/cl/chnlmanage'},
+    {id: 5, parentId: 0, name: 'Payments', icon: 'payment', link: '/cl/paymentsend', children: [
+      {id: 51, parentId: 5, name: 'Send', icon: 'send', link: '/cl/paymentsend'},
+      {id: 52, parentId: 5, name: 'Query Routes', icon: 'explore', link: '/cl/queryroutes'}
+    ]},
+    {id: 6, parentId: 0, name: 'Invoices', icon: 'receipt', link: '/cl/invoices'},
+    {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/cl/switch'},
+    {id: 9, parentId: 0, name: 'Lookups', icon: 'search', link: '/cl/lookups'},    
     {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '../sconfig'},
     {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '../help'}
   ]
