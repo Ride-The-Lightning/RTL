@@ -34,79 +34,80 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
   public paymentRequest = '';
   public flgSticky = false;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
-  ngOnInit() {}
-  // constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects) {
-  //   switch (true) {
-  //     case (window.innerWidth <= 415):
-  //       this.displayedColumns = ['creation_date', 'fee', 'value'];
-  //       break;
-  //     case (window.innerWidth > 415 && window.innerWidth <= 730):
-  //       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage'];
-  //       break;
-  //     case (window.innerWidth > 730 && window.innerWidth <= 1024):
-  //       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'path'];
-  //       break;
-  //     case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-  //       this.flgSticky = true;
-  //       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
-  //       break;
-  //     default:
-  //       this.flgSticky = true;
-  //       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
-  //       break;
-  //   }
-  // }
 
-  // ngOnInit() {
-  //   this.store.select('cl')
-  //   .pipe(takeUntil(this.unsub[0]))
-  //   .subscribe((rtlStore) => {
-  //     rtlStore.effectErrorsCl.forEach(effectsErr => {
-  //       if (effectsErr.action === 'FetchPayments') {
-  //         this.flgLoading[0] = 'error';
-  //       }
-  //     });
-  //     this.information = rtlStore.information;
-  //     this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-  //     this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
-  //     this.payments.data = this.paymentJSONArr;
-  //     this.payments.sort = this.sort;
-  //     this.payments.data.forEach(payment => {
-  //       payment.creation_date_str = (payment.creation_date_str === '') ? '' : formatDate(payment.creation_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-  //     });
-  //     setTimeout(() => { this.flgAnimate = false; }, 3000);
-  //     if (this.flgLoading[0] !== 'error') {
-  //       this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
-  //     }
-  //     this.logger.info(rtlStore);
-  //   });
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects) {
+    switch (true) {
+      case (window.innerWidth <= 415):
+        this.displayedColumns = ['created_at', 'status', 'msatoshi', 'msatoshi_sent'];
+        break;
+      case (window.innerWidth > 415 && window.innerWidth <= 730):
+        this.displayedColumns = ['bolt11', 'created_at', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash'];
+        break;
+      case (window.innerWidth > 730 && window.innerWidth <= 1024):
+        this.displayedColumns = ['bolt11', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash'];
+        break;
+      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
+        this.displayedColumns = ['id', 'bolt11', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'];
+        break;
+      default:
+        this.flgSticky = true;
+        this.displayedColumns = ['id', 'bolt11', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'];
+        break;
+    }
+  }
 
-  // }
+  ngOnInit() {
+    this.store.dispatch(new RTLActions.FetchPaymentsCL());
+    this.store.select('cl')
+    .pipe(takeUntil(this.unsub[0]))
+    .subscribe((rtlStore) => {
+      rtlStore.effectErrorsCl.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPaymentsCL') {
+          this.flgLoading[0] = 'error';
+        }
+      });
+      this.information = rtlStore.information;
+      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
+      this.payments.data = this.paymentJSONArr;
+      this.payments.sort = this.sort;
+      this.payments.data.forEach(payment => {
+        payment.created_at_str = (payment.created_at_str === '') ? '' : formatDate(payment.created_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+      });
+      setTimeout(() => { this.flgAnimate = false; }, 3000);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
+      }
+      this.logger.info(rtlStore);
+    });
 
-  // onSendPayment() {
-  //   if (undefined !== this.paymentDecoded.timestamp_str) {
-  //     this.sendPayment();
-  //   } else {
-  //     this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-  //     this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
-  //     this.clEffects.setDecodedPayment
-  //     .pipe(take(1))
-  //     .subscribe(decodedPayment => {
-  //       this.paymentDecoded = decodedPayment;
-  //       if (undefined !== this.paymentDecoded.timestamp_str) {
-  //         this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-  //         formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-  //         if (undefined === this.paymentDecoded.num_satoshis) {
-  //           this.paymentDecoded.num_satoshis = '0';
-  //         }
-  //         this.sendPayment();
-  //       } else {
-  //         this.resetData();
-  //       }
-  //     });
-  //   }
+  }
 
-  // }
+  onSendPayment() {
+    // if (undefined !== this.paymentDecoded.timestamp_str) {
+    //   this.sendPayment();
+    // } else {
+    //   this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+    //   this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
+    //   this.clEffects.setDecodedPayment
+    //   .pipe(take(1))
+    //   .subscribe(decodedPayment => {
+    //     this.paymentDecoded = decodedPayment;
+    //     if (undefined !== this.paymentDecoded.timestamp_str) {
+    //       this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
+    //       formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+    //       if (undefined === this.paymentDecoded.num_satoshis) {
+    //         this.paymentDecoded.num_satoshis = '0';
+    //       }
+    //       this.sendPayment();
+    //     } else {
+    //       this.resetData();
+    //     }
+    //   });
+    // }
+
+  }
 
   // sendPayment() {
   //   this.flgAnimate = true;
@@ -158,31 +159,27 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
   //   });
   // }
 
-  // resetData() {
-  //   this.form.reset();
-  //   this.paymentDecoded = {};
-  // }
+  resetData() {
+    this.form.reset();
+    this.paymentDecoded = {};
+  }
 
-  // onPaymentClick(selRow: Payment, event: any) {
-  //   const flgExpansionClicked = event.target.className.includes('mat-expansion-panel-header') || event.target.className.includes('mat-expansion-indicator');
-  //   if (flgExpansionClicked) {
-  //     return;
-  //   }
-  //   const selPayment = this.payments.data.filter(payment => {
-  //     return payment.payment_hash === selRow.payment_hash;
-  //   })[0];
-  //   const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
-  //     'creation_date_str', 'payment_hash', 'fee', 'value_msat', 'value_sat', 'value', 'payment_preimage', 'path'
-  //   ] , 2));
-  //   this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
-  //     type: 'INFO',
-  //     message: JSON.stringify(reorderedPayment)
-  //   }}));
-  // }
+  onPaymentClick(selRow: PaymentCL, event: any) {
+    const selPayment = this.payments.data.filter(payment => {
+      return payment.payment_hash === selRow.payment_hash;
+    })[0];
+    const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
+      'id', 'bolt11', 'created_at_str', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'
+    ] , 2));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: 'INFO',
+      message: JSON.stringify(reorderedPayment)
+    }}));
+  }
 
-  // applyFilter(selFilter: string) {
-  //   this.payments.filter = selFilter;
-  // }
+  applyFilter(selFilter: string) {
+    this.payments.filter = selFilter;
+  }
 
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {

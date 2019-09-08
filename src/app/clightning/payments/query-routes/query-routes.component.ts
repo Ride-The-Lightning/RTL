@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { HopCL } from '../../../shared/models/clModels';
+import { RoutesCL } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLEffects } from '../../store/cl.effects';
@@ -22,71 +22,71 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public destinationPubkey = '';
   public amount = null;
-  public qrHops: any;
+  public qRoutes: any;
   public flgSticky = false;
   public displayedColumns = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
-  ngOnInit() {}
-  // constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private actions$: Actions) {
-  //   switch (true) {
-  //     case (window.innerWidth <= 415):
-  //       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat'];
-  //       break;
-  //     case (window.innerWidth > 415 && window.innerWidth <= 730):
-  //       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'fee_msat'];
-  //       break;
-  //     case (window.innerWidth > 730 && window.innerWidth <= 1024):
-  //       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
-  //       break;
-  //     case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-  //       this.flgSticky = true;
-  //       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
-  //       break;
-  //     default:
-  //       this.flgSticky = true;
-  //       this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
-  //       break;
-  //   }
-  // }
 
-  // ngOnInit() {
-  //   this.clEffects.setQueryRoutes
-  //   .pipe(takeUntil(this.unSubs[1]))
-  //   .subscribe(queryRoute => {
-  //     this.qrHops = new MatTableDataSource([]);
-  //     this.qrHops.data = [];
-  //     if (undefined !== queryRoute.routes && undefined !== queryRoute.routes[0].hops) {
-  //       this.flgLoading[0] = false;
-  //       this.qrHops = new MatTableDataSource<HopCL>([...queryRoute.routes[0].hops]);
-  //       this.qrHops.data = queryRoute.routes[0].hops;
-  //     } else {
-  //       this.flgLoading[0] = 'error';
-  //     }
-  //     this.qrHops.sort = this.sort;
-  //   });
-  // }
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private actions$: Actions) {
+    switch (true) {
+      case (window.innerWidth <= 415):
+        this.displayedColumns = ['alias', 'direction', 'msatoshi', 'delay'];
+        break;
+      case (window.innerWidth > 415 && window.innerWidth <= 730):
+        this.displayedColumns = ['alias', 'channel', 'direction', 'msatoshi', 'delay'];
+        break;
+      case (window.innerWidth > 730 && window.innerWidth <= 1024):
+        this.displayedColumns = ['id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'];
+        break;
+      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
+        this.flgSticky = true;
+        this.displayedColumns = ['id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'];
+        break;
+      default:
+        this.flgSticky = true;
+        this.displayedColumns = ['id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'];
+        break;
+    }
+  }
 
-  // onQueryRoutes() {
-  //   this.flgLoading[0] = true;
-  //   this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
-  // }
+  ngOnInit() {
+    this.clEffects.setQueryRoutesCL
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(queryRoute => {
+      this.qRoutes = new MatTableDataSource([]);
+      this.qRoutes.data = [];
+      if (undefined !== queryRoute && undefined !== queryRoute.routes) {
+        this.flgLoading[0] = false;
+        this.qRoutes = new MatTableDataSource<RoutesCL>([...queryRoute.routes]);
+        this.qRoutes.data = queryRoute.routes;
+      } else {
+        this.flgLoading[0] = 'error';
+      }
+      this.qRoutes.sort = this.sort;
+    });
+  }
 
-  // resetData() {
-  //   this.destinationPubkey = '';
-  //   this.amount = null;
-  //   this.flgLoading[0] = false;
-  // }
+  onQueryRoutes() {
+    this.flgLoading[0] = true;
+    this.store.dispatch(new RTLActions.GetQueryRoutesCL({destPubkey: this.destinationPubkey, amount: this.amount}));
+  }
 
-  // onHopClick(selRow: HopCL, event: any) {
-  //   const selHop = this.qrHops.data.filter(hop => {
-  //     return hop.hop_sequence === selRow.hop_sequence;
-  //   })[0];
-  //   const reorderedHop = JSON.parse(JSON.stringify(selHop, [
-  //     'hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'chan_capacity', 'expiry', 'amt_to_forward', 'amt_to_forward_msat', 'fee_msat'
-  //   ] , 2));
-  //   this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedHop)}}));
-  // }
+  resetData() {
+    this.destinationPubkey = '';
+    this.amount = null;
+    this.flgLoading[0] = false;
+  }
+
+  onRouteClick(selRow: RoutesCL, event: any) {
+    const selRoute = this.qRoutes.data.filter(route => {
+      return route.id === route.id;
+    })[0];
+    const reorderedRoute = JSON.parse(JSON.stringify(selRoute, [
+      'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
+    ] , 2));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedRoute)}}));
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

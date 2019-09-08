@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -11,6 +11,7 @@ export interface CLState {
   balance: BalanceCL;
   localRemoteBalance: LocalRemoteBalanceCL;
   peers: PeerCL[];
+  payments: PaymentCL[];
   addressTypes: AddressTypeCL[];
 }
 
@@ -22,9 +23,10 @@ export const initCLState: CLState = {
   balance: {},
   localRemoteBalance: {},
   peers: [],
+  payments: [],
   addressTypes: [
-    { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32'},
-    { addressId: '1', addressTp: 'p2sh-segwit', addressDetails: 'p2sh-segwit (default)'}
+    { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32' },
+    { addressId: '1', addressTp: 'p2sh-segwit', addressDetails: 'p2sh-segwit (default)' }
   ]
 }
 
@@ -72,28 +74,33 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         localRemoteBalance: action.payload
       };
-      case RTLActions.SET_PEERS_CL:
-        return {
-          ...state,
-          peers: action.payload
-        };
-      case RTLActions.ADD_PEER_CL:
-        return {
-          ...state,
-          peers: [...state.peers, action.payload]
-        };
-      case RTLActions.REMOVE_PEER_CL:
-        const modifiedPeers = [...state.peers];
-        const removePeerIdx = state.peers.findIndex(peer => {
-          return peer.id === action.payload.id;
-        });
-        if (removePeerIdx > -1) {
-          modifiedPeers.splice(removePeerIdx, 1);
-        }
-        return {
-          ...state,
-          peers: modifiedPeers
-        };
+    case RTLActions.SET_PEERS_CL:
+      return {
+        ...state,
+        peers: action.payload
+      };
+    case RTLActions.ADD_PEER_CL:
+      return {
+        ...state,
+        peers: [...state.peers, action.payload]
+      };
+    case RTLActions.REMOVE_PEER_CL:
+      const modifiedPeers = [...state.peers];
+      const removePeerIdx = state.peers.findIndex(peer => {
+        return peer.id === action.payload.id;
+      });
+      if (removePeerIdx > -1) {
+        modifiedPeers.splice(removePeerIdx, 1);
+      }
+      return {
+        ...state,
+        peers: modifiedPeers
+      };
+    case RTLActions.SET_PAYMENTS_CL:
+      return {
+        ...state,
+        payments: action.payload
+      };
     default:
       return state;
   }

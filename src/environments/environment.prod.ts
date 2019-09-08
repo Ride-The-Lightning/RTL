@@ -21,5 +21,6 @@ export const environment = {
   PAYMENTS_API: '/payments',
   INVOICES_API: '/invoices',
   SWITCH_API: '/switch',
+  ON_CHAIN_API: '/onchain',
   VERSION: VERSION
 };

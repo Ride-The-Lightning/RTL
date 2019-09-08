@@ -1,10 +1,9 @@
 import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
 
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL } from '../shared/models/clModels';
-
-import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { ErrorPayload } from '../shared/models/errorPayload';
+import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -115,6 +114,13 @@ export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
 export const ADD_PEER_CL = 'ADD_PEER_CL';
 export const DETACH_PEER_CL = 'DETACH_PEER_CL';
 export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
+export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
+export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
+export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
+export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
+export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
+export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
+export const SET_QUERY_ROUTES_CL = 'SET_QUERY_ROUTES_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -605,6 +611,40 @@ export class RemovePeerCL implements Action {
   constructor(public payload: {id: string}) {}
 }
 
+export class FetchPaymentsCL implements Action {
+  readonly type = FETCH_PAYMENTS_CL;
+}
+
+export class SetPaymentsCL implements Action {
+  readonly type = SET_PAYMENTS_CL;
+  constructor(public payload: PaymentCL[]) {}
+}
+
+export class DecodePaymentCL implements Action {
+  readonly type = DECODE_PAYMENT_CL;
+  constructor(public payload: string) {} // payload = routeParam
+}
+
+export class SetDecodedPaymentCL implements Action {
+  readonly type = SET_DECODED_PAYMENT_CL;
+  constructor(public payload: PayRequestCL) {}
+}
+
+export class SendPaymentCL implements Action {
+  readonly type = SEND_PAYMENT_CL;
+  constructor(public payload: [string, PayRequest, boolean]) {} // payload = [paymentReqStr, paymentDecoded, EmptyAmtInvoice]
+}
+
+export class GetQueryRoutesCL implements Action {
+  readonly type = GET_QUERY_ROUTES_CL;
+  constructor(public payload: {destPubkey: string, amount: number}) {}
+}
+
+export class SetQueryRoutesCL implements Action {
+  readonly type = SET_QUERY_ROUTES_CL;
+  constructor(public payload: QueryRoutesCL) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -631,4 +671,6 @@ export type RTLActions =
   FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
-  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL;
+  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |
+  FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
+  GetQueryRoutesCL | SetQueryRoutesCL;

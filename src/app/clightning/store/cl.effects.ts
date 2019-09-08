@@ -7,7 +7,7 @@ import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -132,7 +132,7 @@ export class CLEffects implements OnDestroy {
   getNewAddressCL = this.actions$.pipe(
     ofType(RTLActions.GET_NEW_ADDRESS_CL),
     mergeMap((action: RTLActions.GetNewAddressCL) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId)
+      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressId)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
           this.store.dispatch(new RTLActions.CloseSpinner());
@@ -142,7 +142,7 @@ export class CLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-            return this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId, err);
+            return this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressId, err);
         }));
     })
   );
@@ -220,6 +220,129 @@ export class CLEffects implements OnDestroy {
         );
     }
   ));
+
+  @Effect()
+  paymentsFetchCL = this.actions$.pipe(
+    ofType(RTLActions.FETCH_PAYMENTS_CL),
+    mergeMap((action: RTLActions.FetchPaymentsCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchPaymentsCL'));
+      return this.httpClient.get<PaymentCL[]>(this.CHILD_API_URL + environment.PAYMENTS_API);
+    }),
+    map((payments) => {
+      this.logger.info(payments);
+      return {
+        type: RTLActions.SET_PAYMENTS_CL,
+        payload: (undefined !== payments && null != payments) ? payments : []
+      };
+    }),
+    catchError((err: any) => {
+      return this.handleErrorWithoutAlert('FetchPaymentsCL', err);
+    }
+  ));
+
+  @Effect()
+  decodePaymentCL = this.actions$.pipe(
+    ofType(RTLActions.DECODE_PAYMENT_CL),
+    mergeMap((action: RTLActions.DecodePaymentCL) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload)
+        .pipe(
+          map((decodedPayment) => {
+            this.logger.info(decodedPayment);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_DECODED_PAYMENT_CL,
+              payload: (undefined !== decodedPayment) ? decodedPayment : {}
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);            
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setDecodedPaymentCL = this.actions$.pipe(
+    ofType(RTLActions.SET_DECODED_PAYMENT_CL),
+    map((action: RTLActions.SetDecodedPaymentCL) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  sendPaymentCL = this.actions$.pipe(
+    ofType(RTLActions.SEND_PAYMENT_CL),
+    withLatestFrom(this.store.select('root')),
+    mergeMap(([action, store]: [RTLActions.SendPaymentCL, any]) => {
+      let queryHeaders = {};
+      if (action.payload[2]) {
+        queryHeaders = { paymentDecoded: action.payload[1] };
+      } else {
+        queryHeaders = { paymentReq: action.payload[0] };
+      }
+      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, queryHeaders)
+        .pipe(
+          map((sendRes: any) => {
+            this.logger.info(sendRes);
+            if (sendRes.payment_error) {
+              return this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.payment_error.status, error: sendRes.payment_error.error.message });
+            } else {
+              const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
+              confirmationMsg['Amount (' + ((undefined === store.information.smaller_currency_unit) ?
+                'Sats' : store.information.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
+              const msg = {};
+              msg['Total Fee (' + ((undefined === store.information.smaller_currency_unit) ? 'Sats' : store.information.smaller_currency_unit) + ')'] =
+                (sendRes.payment_route.total_fees_msat / 1000);
+              Object.assign(msg, confirmationMsg);
+              this.store.dispatch(new RTLActions.OpenAlert({
+                width: '70%',
+                data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }
+              }));
+              // this.store.dispatch(new RTLActions.FetchChannelsCL({ routeParam: 'all' }));
+              this.store.dispatch(new RTLActions.FetchBalanceCL());
+              this.store.dispatch(new RTLActions.FetchPaymentsCL());
+              return {
+                type: RTLActions.SET_DECODED_PAYMENT_CL,
+                payload: {}
+              };
+            }
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
+          })
+        );
+    })
+  );
+
+  @Effect()
+  queryRoutesFetchCL = this.actions$.pipe(
+    ofType(RTLActions.GET_QUERY_ROUTES_CL),
+    mergeMap((action: RTLActions.GetQueryRoutesCL) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount)
+        .pipe(
+          map((qrRes: any) => {
+            this.logger.info(qrRes);
+            return {
+              type: RTLActions.SET_QUERY_ROUTES_CL,
+              payload: qrRes
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.SetQueryRoutesCL({routes: []}));
+            return this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount, err);            
+          })
+        );
+    }
+    ));
+
+  @Effect({ dispatch: false })
+  setQueryRoutesCL = this.actions$.pipe(
+    ofType(RTLActions.SET_QUERY_ROUTES_CL),
+    map((action: RTLActions.SetQueryRoutesCL) => {
+      return action.payload;
+    })
+  );
 
   handleErrorWithoutAlert(actionName: string, err: {status: number, error: any}) {
     this.logger.error(err);

@@ -147,15 +147,18 @@ export interface HopCL {
 }
 
 export interface PaymentCL {
-  creation_date?: number;
-  creation_date_str?: string;
+  amount_msat?: string;
+  amount_sent_msat?: string;
+  bolt11?: string;
+  created_at?: number;
+  created_at_str?: string;
+  destination?: string;
+  id?: number;
+  msatoshi?: number;
+  msatoshi_sent?: number;
   payment_hash?: string;
-  path?: string[];
-  fee?: number;
-  value_msat?: number;
-  value_sat?: number;
-  value?: number;
   payment_preimage?: string;
+  status?: string;
 }
 
 export interface PayRequestCL {
@@ -183,4 +186,18 @@ export interface ForwardingEventCL {
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;
+}
+
+export interface QueryRoutesCL {
+  routes: RoutesCL[];
+}
+
+export interface RoutesCL {
+  id?: string;
+  channel?: string;
+  direction?: number;
+  msatoshi?: number;
+  amount_msat?: string;
+  delay?: number;
+  alias?: string;
 }
