@@ -20,10 +20,10 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   public flgSetLookupValue = false;
   public temp: any;
   public messageObj = [];
-  public selectedField = { id: '0', name: 'Node', placeholder: 'Pubkey'};
+  public selectedField = { id: '0', name: 'Node', placeholder: 'ID'};
   public lookupFields = [
-    { id: '0', name: 'Node', placeholder: 'Pubkey'},
-    { id: '1', name: 'Channel', placeholder: 'Channel ID'}
+    { id: '0', name: 'Node', placeholder: 'ID'},
+    { id: '1', name: 'Channel', placeholder: 'Short Channel ID'}
   ];
   public flgLoading: Array<Boolean | 'error'> = [true];
   private unSubs: Array<Subject<void>> = [new Subject()];
@@ -34,9 +34,9 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === RTLActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR_CL))
-    ).subscribe((resLookup: RTLActions.SetLookup) => {
-      if (resLookup.payload.action === 'Lookup') {
+      filter((action) => (action.type === RTLActions.SET_LOOKUP_CL || action.type === RTLActions.EFFECT_ERROR_CL))
+    ).subscribe((resLookup: RTLActions.SetLookupCL) => {
+      if (resLookup.payload.action === 'LookupCL') {
         this.flgLoading[0] = 'error';
       } else {
         this.flgLoading[0] = true;
@@ -53,10 +53,10 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.selectedField.name + '...'));
     switch (this.selectedField.id) {
       case '0':
-        this.store.dispatch(new RTLActions.PeerLookup(this.lookupKey.trim()));
+        this.store.dispatch(new RTLActions.PeerLookupCL(this.lookupKey.trim()));
         break;
       case '1':
-        this.store.dispatch(new RTLActions.ChannelLookup(this.lookupKey.trim()));
+        this.store.dispatch(new RTLActions.ChannelLookupCL(this.lookupKey.trim()));
         break;
       default:
         break;
@@ -72,7 +72,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   resetData() {
     this.flgSetLookupValue = false;
     this.lookupKey = '';
-    this.selectedField = { id: '0', name: 'Node', placeholder: 'Pubkey'};
+    this.selectedField = { id: '0', name: 'Node', placeholder: 'ID'};
     this.lookupValue = {};
     this.flgLoading.forEach((flg, i) => {
       this.flgLoading[i] = true;

@@ -3,7 +3,12 @@ const express = require("express");
 const router = express.Router();
 const authCheck = require("../authCheck");
 
+router.get("/listChannels", authCheck, ChannelsController.listChannels);
+router.post("/", authCheck, ChannelsController.openChannel);
+router.post("/setChannelFee", authCheck, ChannelsController.setChannelFee);
+router.delete("/:channelId", authCheck, ChannelsController.closeChannel);
+
 router.get("/localremotebalance", authCheck, ChannelsController.getLocalRemoteBalance);
-router.post("/", authCheck, ChannelsController.forwardingHistory);
+router.get("/listForwards", authCheck, ChannelsController.listForwards);
 
 module.exports = router;

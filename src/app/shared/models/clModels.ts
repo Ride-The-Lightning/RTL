@@ -1,4 +1,4 @@
-export interface GetInfoAddress {
+export interface Address {
   type?: string;
   address?: string;
   port?: number;
@@ -12,8 +12,8 @@ export interface GetInfoCL {
   num_pending_channels?: number;
   num_active_channels?: number;
   num_inactive_channels?: number;
-  address?: GetInfoAddress[];
-  binding?: GetInfoAddress[];
+  address?: Address[];
+  binding?: Address[];
   version?: string;
   blockheight?: number;
   network?: string;
@@ -42,27 +42,6 @@ export interface LocalRemoteBalanceCL {
   remoteBalance?: number;
   btc_localBalance?: number;
   btc_remoteBalance?: number;
-}
-
-export interface ChannelCL {
-  active?: boolean;
-  remote_pubkey?: string;
-  remote_alias?: string;
-  channel_point?: string;
-  chan_id?: number;
-  capacity?: number;
-  local_balance?: number;
-  remote_balance?: number;
-  commit_fee?: number;
-  commit_weight?: number;
-  fee_per_kw?: number;
-  unsettled_balance?: number;
-  total_satoshis_sent?: number;
-  total_satoshis_received?: number;
-  num_updates?: number;
-  private?: boolean;
-  pending_htlcs?: any[];
-  csv_delay?: number;
 }
 
 export interface PeerCL {
@@ -99,24 +78,6 @@ export interface InvoiceCL {
   amt_paid_sat?: string;
   btc_amt_paid_sat?: string;
   amt_paid_msat?: string;
-}
-
-export interface ChannelEdgeCL {
-  channel_id?: string;
-  chan_point?: string;
-  last_update?: number;
-  last_update_str?: string;
-  node1_pub?: string;
-  node2_pub?: string;
-  capacity?: string;
-  node1_policy?: any;
-  node2_policy?: any;
-}
-
-export interface GraphNodeCL {
-  node?: any;
-  num_channels?: number;
-  total_capacity?: string;
 }
 
 export interface OnChainCL {
@@ -200,4 +161,50 @@ export interface RoutesCL {
   amount_msat?: string;
   delay?: number;
   alias?: string;
+}
+
+export interface ChannelCL {
+  peer_id?: string;
+  peer_alias?: string;
+  connected?: boolean;
+  state?: string;
+  short_channel_id?: string;
+  channel_id?: string;
+  funding_txid?: string;
+  private?: boolean;
+  msatoshi_to_us?: string;
+  msatoshi_total?: string;
+  their_channel_reserve_satoshis?: string;
+  our_channel_reserve_satoshis?: string;
+  spendable_msatoshi?: string;
+}
+
+export interface ChannelEdgeCL {
+  active?: boolean;
+  amount_msat?: string;
+  base_fee_millisatoshi?: number;
+  channel_flags?: number;
+  delay?: number;
+  destination?: string;
+  fee_per_millionth?: number;
+  htlc_maximum_msat?: string;
+  htlc_minimum_msat?: string;
+  last_update?: number;
+  last_update_str?: string;
+  message_flags?: number;
+  public?: boolean;
+  satoshis?: number;
+  short_channel_id?: string;
+  source?: string;
+}
+
+export interface LookupNodeCL {
+  nodeid?: string;
+  alias?: string;
+  color?: string;
+  last_timestamp?: number;
+  last_timestamp_str?: string;
+  globalfeatures?: string;
+  global_features?: string;
+  addresses?: Address[];
 }

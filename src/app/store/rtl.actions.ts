@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -114,6 +114,12 @@ export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
 export const ADD_PEER_CL = 'ADD_PEER_CL';
 export const DETACH_PEER_CL = 'DETACH_PEER_CL';
 export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
+export const FETCH_CHANNELS_CL = 'FETCH_CHANNELS_CL';
+export const SET_CHANNELS_CL = 'SET_CHANNELS_CL';
+export const UPDATE_CHANNELS_CL = 'UPDATE_CHANNELS_CL';
+export const SAVE_NEW_CHANNEL_CL = 'SAVE_NEW_CHANNEL_CL';
+export const CLOSE_CHANNEL_CL = 'CLOSE_CHANNEL_CL';
+export const REMOVE_CHANNEL_CL = 'REMOVE_CHANNEL_CL';
 export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
 export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
 export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
@@ -121,6 +127,10 @@ export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
 export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
 export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
 export const SET_QUERY_ROUTES_CL = 'SET_QUERY_ROUTES_CL';
+export const PEER_LOOKUP_CL = 'PEER_LOOKUP_CL';
+export const CHANNEL_LOOKUP_CL = 'CHANNEL_LOOKUP_CL';
+export const INVOICE_LOOKUP_CL = 'INVOICE_LOOKUP_CL';
+export const SET_LOOKUP_CL = 'SET_LOOKUP_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -645,6 +655,55 @@ export class SetQueryRoutesCL implements Action {
   constructor(public payload: QueryRoutesCL) {}
 }
 
+export class FetchChannelsCL implements Action {
+  readonly type = FETCH_CHANNELS_CL;
+}
+
+export class SetChannelsCL implements Action {
+  readonly type = SET_CHANNELS_CL;
+  constructor(public payload: ChannelCL[]) {}
+}
+
+export class UpdateChannelsCL implements Action {
+  readonly type = UPDATE_CHANNELS_CL;
+  constructor(public payload: {channelId: string, baseFeeMsat: number, feeRate: number}) {}
+}
+
+export class SaveNewChannelCL implements Action {
+  readonly type = SAVE_NEW_CHANNEL_CL;
+  constructor(public payload: {channelId: string, satoshis: number, feeRate: string, private: boolean, minconf?: number}) {}
+}
+
+export class CloseChannelCL implements Action {
+  readonly type = CLOSE_CHANNEL_CL;
+  constructor(public payload: {channelId: string, timeoutSec?: number}) {}
+}
+
+export class RemoveChannelCL implements Action {
+  readonly type = REMOVE_CHANNEL_CL;
+  constructor(public payload: {channelId: string}) {}
+}
+
+export class PeerLookupCL implements Action {
+  readonly type = PEER_LOOKUP_CL;
+  constructor(public payload: string) {} // payload = id
+}
+
+export class ChannelLookupCL implements Action {
+  readonly type = CHANNEL_LOOKUP_CL;
+  constructor(public payload: string) {} // payload = channel_short_id
+}
+
+export class InvoiceLookupCL implements Action {
+  readonly type = INVOICE_LOOKUP_CL;
+  constructor(public payload: string) {} // payload = rHashStr
+}
+
+export class SetLookupCL implements Action {
+  readonly type = SET_LOOKUP_CL;
+  constructor(public payload: any) {} // payload = lookup Response (Peer/Channel/Invoice)
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -672,5 +731,7 @@ export type RTLActions =
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |
+  FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
-  GetQueryRoutesCL | SetQueryRoutesCL;
+  GetQueryRoutesCL | SetQueryRoutesCL |
+  PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL;

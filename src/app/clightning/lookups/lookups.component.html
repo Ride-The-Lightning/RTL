@@ -1,4 +1,4 @@
-<!-- <div fxLayout="column">
+<div fxLayout="column">
   <div class="padding-gap">
     <mat-card>
       <mat-card-header>
@@ -37,12 +37,11 @@
       </mat-card-header>
       <mat-card-content>
         <div [ngSwitch]="selectedField.id">
-          <span *ngSwitchCase="0"><rtl-node-lookup [lookupResult]="lookupValue"></rtl-node-lookup></span>
-          <span *ngSwitchCase="1"><rtl-channel-lookup [lookupResult]="lookupValue"></rtl-channel-lookup></span>
+          <span *ngSwitchCase="0"><rtl-cl-node-lookup [lookupResult]="lookupValue[0]"></rtl-cl-node-lookup></span>
+          <span *ngSwitchCase="1"><rtl-cl-channel-lookup [lookupResult]="lookupValue"></rtl-cl-channel-lookup></span>
           <span *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
         </div>
       </mat-card-content>
     </mat-card>
   </div>
-</div> -->
-<h3>LOOKUP</h3>
+</div>

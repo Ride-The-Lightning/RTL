@@ -222,6 +222,94 @@ export class CLEffects implements OnDestroy {
   ));
 
   @Effect()
+  channelsFetchCL = this.actions$.pipe(
+    ofType(RTLActions.FETCH_CHANNELS_CL),
+    mergeMap((action: RTLActions.FetchChannelsCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchChannelsCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels')
+        .pipe(
+          map((channels: any) => {
+            this.logger.info(channels);
+              return {
+                type: RTLActions.SET_CHANNELS_CL,
+                payload: (undefined !== channels && channels.length > 0) ? channels : []
+              };
+          },
+            catchError((err: any) => {
+              return this.handleErrorWithoutAlert('FetchChannelsCL', err);
+            })
+          ));
+    }
+    ));
+
+  @Effect()
+  openNewChannelCL = this.actions$.pipe(
+    ofType(RTLActions.SAVE_NEW_CHANNEL_CL),
+    mergeMap((action: RTLActions.SaveNewChannelCL) => {
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
+        channelId: action.payload.channelId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, private: action.payload.private, minconf: (action.payload.minconf) ? action.payload.minconf : ''
+      })
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.FETCH_CHANNELS_CL
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Open Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);            
+          })
+        );
+    }
+    ));
+
+  @Effect()
+  updateChannelCL = this.actions$.pipe(
+    ofType(RTLActions.UPDATE_CHANNELS_CL),
+    mergeMap((action: RTLActions.UpdateChannelsCL) => {
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/setChannelFee',
+        { id: action.payload.channelId, base: action.payload.baseFeeMsat, ppm: action.payload.feeRate })
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' } }));
+            return {
+              type: RTLActions.FETCH_CHANNELS_CL
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+          })
+        );
+    }
+    ));
+
+  @Effect()
+  closeChannelCL = this.actions$.pipe(
+    ofType(RTLActions.CLOSE_CHANNEL_CL),
+    mergeMap((action: RTLActions.CloseChannelCL) => {
+      const queryParam = action.payload.timeoutSec ? '?unilateralTimeout =' + action.payload.timeoutSec : '';
+      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelId + queryParam)
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.FetchChannelsCL());
+            return {
+              type: RTLActions.REMOVE_CHANNEL_CL,
+              payload: { channelId: action.payload.channelId }
+            };
+          }),
+          catchError((err: any) => {
+            return this.handleErrorWithAlert('ERROR', 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
+          })
+        );
+    }
+    ));
+
+  @Effect()
   paymentsFetchCL = this.actions$.pipe(
     ofType(RTLActions.FETCH_PAYMENTS_CL),
     mergeMap((action: RTLActions.FetchPaymentsCL) => {
@@ -340,6 +428,84 @@ export class CLEffects implements OnDestroy {
   setQueryRoutesCL = this.actions$.pipe(
     ofType(RTLActions.SET_QUERY_ROUTES_CL),
     map((action: RTLActions.SetQueryRoutesCL) => {
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  peerLookupCL = this.actions$.pipe(
+    ofType(RTLActions.PEER_LOOKUP_CL),
+    mergeMap((action: RTLActions.PeerLookupCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('LookupCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload)
+        .pipe(
+          map((resPeer) => {
+            this.logger.info(resPeer);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_LOOKUP_CL,
+              payload: resPeer
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'LookupCL', code: err.status, message: err.error.message }));
+            return this.handleErrorWithAlert('ERROR', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload, err);
+          })
+        );
+    })
+  );
+
+  @Effect()
+  channelLookupCL = this.actions$.pipe(
+    ofType(RTLActions.CHANNEL_LOOKUP_CL),
+    mergeMap((action: RTLActions.ChannelLookupCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('LookupCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload)
+        .pipe(
+          map((resChannel) => {
+            this.logger.info(resChannel);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_LOOKUP_CL,
+              payload: resChannel
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'LookupCL', code: err.status, message: err.error.message }));
+            return this.handleErrorWithAlert('ERROR', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload, err);
+          })
+        );
+    })
+  );
+
+  @Effect()
+  invoiceLookupCL = this.actions$.pipe(
+    ofType(RTLActions.INVOICE_LOOKUP_CL),
+    mergeMap((action: RTLActions.InvoiceLookupCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('LookupCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/listInvoice?label=' + action.payload)
+        .pipe(
+          map((resInvoice) => {
+            this.logger.info(resInvoice);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_LOOKUP_CL,
+              payload: resInvoice
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'LookupCL', code: err.status, message: err.error.message }));
+            return this.handleErrorWithAlert('ERROR', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listInvoice?label=' + action.payload, err);
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setLookupCL = this.actions$.pipe(
+    ofType(RTLActions.SET_LOOKUP_CL),
+    map((action: RTLActions.SetLookupCL) => {
+      this.logger.info(action.payload);
       return action.payload;
     })
   );

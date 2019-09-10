@@ -3,6 +3,74 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
+exports.listChannels = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channel/listChannels';
+  request(options).then(function (body) {
+    logger.info({fileName: 'Channels', msg: 'List Channels: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 14, msg: 'List Channels: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Fetching List Channels Failed!',
+      error: err.error
+    });
+  });
+}
+
+exports.openChannel = (req, res, next) => {}
+
+exports.setChannelFee = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channel/setChannelFee';
+  options.body = req.body;
+  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options)});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: 'Update Channel Policy Failed!',
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(201).json(body);
+    }
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 211, msg: 'Update Channel Policy: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Update Channel Policy Failed!',
+      error: err.error
+    });
+  });
+}
+
+exports.closeChannel = (req, res, next) => {
+  options = common.getOptions();
+  const unilateralTimeoutQuery = req.query.unilateralTimeout ? '?unilateralTimeout=' + req.query.unilateralTimeout : '';
+  options.url = common.getSelLNServerUrl() + '/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;
+  logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
+  request.delete(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: 'Close Channel Failed!',
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(204).json(body);
+    }
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 41, msg: 'Close Channel: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Close Channel Failed!',
+      error: err.error
+    });
+  });  
+}
+
 exports.getLocalRemoteBalance = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channel/localremotebal';
@@ -32,7 +100,7 @@ exports.getLocalRemoteBalance = (req, res, next) => {
   });
 };
 
-exports.forwardingHistory = (req, res, next) => {
+exports.listForwards = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/switch';
   options.form = {};

@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -11,6 +11,7 @@ export interface CLState {
   balance: BalanceCL;
   localRemoteBalance: LocalRemoteBalanceCL;
   peers: PeerCL[];
+  allChannels: ChannelCL[];
   payments: PaymentCL[];
   addressTypes: AddressTypeCL[];
 }
@@ -23,6 +24,7 @@ export const initCLState: CLState = {
   balance: {},
   localRemoteBalance: {},
   peers: [],
+  allChannels: [],
   payments: [],
   addressTypes: [
     { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32' },
@@ -96,7 +98,24 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         peers: modifiedPeers
       };
-    case RTLActions.SET_PAYMENTS_CL:
+      case RTLActions.SET_CHANNELS_CL:
+        return {
+          ...state,
+          allChannels: action.payload,
+        };
+      case RTLActions.REMOVE_CHANNEL_CL:
+        const modifiedChannels = [...state.allChannels];
+        const removeChannelIdx = state.allChannels.findIndex(channel => {
+          return channel.channel_id === action.payload.channelId;
+        });
+        if (removeChannelIdx > -1) {
+          modifiedChannels.splice(removeChannelIdx, 1);
+        }
+        return {
+          ...state,
+          allChannels: modifiedChannels
+        };
+      case RTLActions.SET_PAYMENTS_CL:
       return {
         ...state,
         payments: action.payload

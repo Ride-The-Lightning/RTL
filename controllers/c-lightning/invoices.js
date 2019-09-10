@@ -26,26 +26,22 @@ exports.getInvoice = (req, res, next) => {
 
 exports.listInvoices = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset + 
-  '&reversed=' + req.query.reversed;
+  const labelQuery = req.query.label ? '?label=' + req.query.label : '';
+  options.url = common.getSelLNServerUrl() + '/invoice/listInvoices' + labelQuery;
   request(options).then((body) => {
-    const body_str = (undefined === body) ? '' : JSON.stringify(body);
-    const search_idx = (undefined === body) ? -1 : body_str.search('Not Found');
-    logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body_str});
-    if(undefined === body || search_idx > -1 || body.error) {
+    logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body});
+    if(undefined === body || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
-        error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
+        error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
       if (undefined !== body.invoices) {
         body.invoices.forEach(invoice => {
-          invoice.creation_date_str =  (undefined === invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
-          invoice.settle_date_str =  (undefined === invoice.settle_date) ? '' : common.convertTimestampToDate(invoice.settle_date);
-          invoice.btc_value = (undefined === invoice.value) ? 0 : common.convertToBTC(invoice.value);
-          invoice.btc_amt_paid_sat =  (undefined === invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
+          invoice.paid_at_str =  (undefined === invoice.paid_at) ? '' : common.convertTimestampToDate(invoice.paid_at);
+          invoice.expires_at_str =  (undefined === invoice.expires_at) ? '' : common.convertTimestampToDate(invoice.expires_at);
         });
-        body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
+        body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
       }
       logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
       res.status(200).json(body);

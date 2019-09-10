@@ -495,6 +495,7 @@ export class LNDEffects implements OnDestroy {
   channelsFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_CHANNELS),
     mergeMap((action: RTLActions.FetchChannels) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchChannels/' + action.payload.routeParam));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.routeParam)
         .pipe(
           map((channels: any) => {
