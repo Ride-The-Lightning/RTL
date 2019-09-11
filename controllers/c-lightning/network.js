@@ -59,15 +59,13 @@ exports.listChannel = (req, res, next) => {
 
 exports.feeRates = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/peer/listPeers';
+  options.url = common.getSelLNServerUrl() + '/network/feeRates/' + req.params.feeRateStyle;
   request(options).then(function (body) {
-    let peers = (undefined !== body) ? common.sortDescByKey(body, 'alias') : [];
-    logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(peers)});
-    res.status(200).json(peers);
+    res.status(200).json(body);
   })
   .catch((err) => {
     return res.status(500).json({
-      message: "Peers Fetch Failed!",
+      message: "Fee Rates Failed!",
       error: err.error
     });
   });

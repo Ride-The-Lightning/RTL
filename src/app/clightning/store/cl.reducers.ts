@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -8,6 +8,8 @@ export interface CLState {
   nodeSettings: SelNodeChild;
   information: GetInfoCL;
   fees: FeesCL;
+  feeRatesPerKB: FeeRatesCL;
+  feeRatesPerKW: FeeRatesCL;
   balance: BalanceCL;
   localRemoteBalance: LocalRemoteBalanceCL;
   peers: PeerCL[];
@@ -21,6 +23,8 @@ export const initCLState: CLState = {
   nodeSettings: { channelBackupPath: '', satsToBTC: false },
   information: {},
   fees: {},
+  feeRatesPerKB: {},
+  feeRatesPerKW: {},
   balance: {},
   localRemoteBalance: {},
   peers: [],
@@ -66,6 +70,22 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         fees: action.payload
       };
+    case RTLActions.SET_FEE_RATES_CL:
+      if(action.payload.perkb) {
+        return {
+          ...state,
+          feeRatesPerKB: action.payload
+        };
+      } else if (action.payload.perkw) {
+        return {
+          ...state,
+          feeRatesPerKW: action.payload
+        };
+      } else {
+        return {
+          ...state
+        }
+      }
     case RTLActions.SET_BALANCE_CL:
       return {
         ...state,

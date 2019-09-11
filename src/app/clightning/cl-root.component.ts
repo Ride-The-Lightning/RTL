@@ -33,6 +33,8 @@ export class CLRootComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.FetchFeesCL());
     this.store.dispatch(new RTLActions.FetchBalanceCL());
     this.store.dispatch(new RTLActions.FetchLocalRemoteBalanceCL());
+    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));
+    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
   }
 
   ngOnDestroy() {

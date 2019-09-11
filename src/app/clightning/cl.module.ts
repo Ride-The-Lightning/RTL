@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { CLRootComponent } from './cl-root.component';
 import { CLHomeComponent } from './home/home.component';
+import { CLFeeRatesComponent } from './home/fee-rates/fee-rates.component';
 import { CLChannelsComponent } from './channels/channels.component';
 import { CLInvoicesComponent } from './invoices/invoices.component';
 import { CLLookupsComponent } from './lookups/lookups.component';
@@ -39,7 +40,8 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLQueryRoutesComponent,
     CLPaymentsComponent,
     CLPeersComponent,
-    CLForwardingHistoryComponent
+    CLForwardingHistoryComponent,
+    CLFeeRatesComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

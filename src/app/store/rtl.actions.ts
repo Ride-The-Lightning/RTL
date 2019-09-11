@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -102,6 +102,8 @@ export const FETCH_INFO_CL = 'FETCH_INFO_CL';
 export const SET_INFO_CL = 'SET_INFO_CL';
 export const FETCH_FEES_CL = 'FETCH_FEES_CL';
 export const SET_FEES_CL = 'SET_FEES_CL';
+export const FETCH_FEE_RATES_CL = 'FETCH_FEE_RATES_CL';
+export const SET_FEE_RATES_CL = 'SET_FEE_RATES_CL';
 export const FETCH_BALANCE_CL = 'FETCH_BALANCE_CL';
 export const SET_BALANCE_CL = 'SET_BALANCE_CL';
 export const FETCH_LOCAL_REMOTE_BALANCE_CL = 'FETCH_LOCAL_REMOTE_BALANCE_CL';
@@ -564,6 +566,16 @@ export class SetFeesCL implements Action {
   constructor(public payload: FeesCL) {}
 }
 
+export class FetchFeeRatesCL implements Action {
+  readonly type = FETCH_FEE_RATES_CL;
+  constructor(public payload: string) {} //feeRateStyle
+}
+
+export class SetFeeRatesCL implements Action {
+  readonly type = SET_FEE_RATES_CL;
+  constructor(public payload: FeeRatesCL) {}
+}
+
 export class FetchBalanceCL implements Action {
   readonly type = FETCH_BALANCE_CL;
 }
@@ -727,7 +739,7 @@ export type RTLActions =
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
-  FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL |
+  FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |

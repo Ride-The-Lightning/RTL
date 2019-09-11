@@ -1,3 +1,8 @@
+export enum feeRateStyle {
+  KB = 'KB',
+  KW = 'KW'
+}
+
 export interface Address {
   type?: string;
   address?: string;
@@ -207,4 +212,22 @@ export interface LookupNodeCL {
   globalfeatures?: string;
   global_features?: string;
   addresses?: Address[];
+}
+
+export interface FeeRatesCL {
+  perkb?: FeeRatePerObj,
+  perkw?: FeeRatePerObj,
+  onchain_fee_estimates?: {
+      opening_channel_satoshis?: number;
+      mutual_close_satoshis?: number;
+      unilateral_close_satoshis?: number;
+  }
+}
+
+export interface FeeRatePerObj {
+  urgent?: number;
+  normal?: number;
+  slow?: number;
+  min_acceptable?: number;
+  max_acceptable?: number;
 }

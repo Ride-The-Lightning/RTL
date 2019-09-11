@@ -115,15 +115,20 @@
             <mat-divider></mat-divider>
           </mat-list>
         </div>
-        <mat-progress-bar *ngIf="flgLoading[6]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
+        <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
         <mat-divider></mat-divider>
       </mat-card-content>
     </mat-card>
   </div>
 </div>
 <div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="25" class="padding-gap"></div>
-  <div fxFlex="50" class="padding-gap">
+  <div fxFlex="20" class="padding-gap">
+    <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'"></rtl-cl-fee-rates>
+  </div>
+  <div fxFlex="20" class="padding-gap">
+    <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'"></rtl-cl-fee-rates>
+  </div>
+  <div fxFlex="60" class="padding-gap">
     <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
       <mat-card-header class="bg-primary" fxLayoutAlign="center center">
         <mat-card-title class="m-0 pt-2">

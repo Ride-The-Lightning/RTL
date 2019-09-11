@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, FeeRatesCL } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -20,7 +20,8 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public information: GetInfoCL = {};
   public totalBalance: BalanceCL = {};
   public lrBalance: LocalRemoteBalanceCL = {};
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true];
+  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true];
+
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
   public position = 'below';
   barPadding = 0;
@@ -30,6 +31,8 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   view = [];
   yAxisLabel = 'Balance';
   colorScheme = {domain: ['#FF0000']};
+  feeRatesPerKB: FeeRatesCL = {};
+  feeRatesPerKW: FeeRatesCL = {};
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
     switch (true) {
@@ -70,9 +73,13 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         if (effectsErr.action === 'FetchLocalRemoteBalanceCL') {
           this.flgLoading[3] = 'error';
         }
+        if (effectsErr.action === 'FetchFeeRatesCL') {
+          this.flgLoading[4] = 'error';
+        }
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information
+
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.id) ? false : true;
       }
@@ -92,6 +99,12 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.lrBalances = [...[{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}]];
       if (this.flgLoading[3] !== 'error') {
         this.flgLoading[3] = ('' !== this.lrBalance) ? false : true;
+      }
+
+      this.feeRatesPerKB = rtlStore.feeRatesPerKB;
+      this.feeRatesPerKW = rtlStore.feeRatesPerKW;
+      if (this.flgLoading[4] !== 'error') {
+        this.flgLoading[4] = (undefined !== this.feeRatesPerKB && undefined !== this.feeRatesPerKW) ? false : true;
       }
 
       this.logger.info(rtlStore);

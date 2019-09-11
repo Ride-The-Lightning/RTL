@@ -7,7 +7,7 @@ import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -87,6 +87,25 @@ export class CLEffects implements OnDestroy {
     }),
     catchError((err: any) => {
       return this.handleErrorWithoutAlert('FetchFeesCL', err);
+    }
+  ));
+
+  @Effect()
+  fetchFeeRatesCL = this.actions$.pipe(
+    ofType(RTLActions.FETCH_FEE_RATES_CL),
+    mergeMap((action: RTLActions.FetchFeeRatesCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchFeeRatesCL'));
+      return this.httpClient.get<FeeRatesCL>(this.CHILD_API_URL + environment.NETWORK_API + '/feeRates/' + action.payload);
+    }),
+    map((feeRates) => {
+      this.logger.info(feeRates);
+      return {
+        type: RTLActions.SET_FEE_RATES_CL,
+        payload: (undefined !== feeRates) ? feeRates : {}
+      };
+    }),
+    catchError((err: any) => {
+      return this.handleErrorWithoutAlert('FetchFeeRatesCL', err);
     }
   ));
 
