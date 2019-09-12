@@ -529,6 +529,32 @@ export class CLEffects implements OnDestroy {
     })
   );
 
+  @Effect()
+  fetchForwardingHistoryCL = this.actions$.pipe(
+    ofType(RTLActions.GET_FORWARDING_HISTORY_CL),
+    mergeMap((action: RTLActions.GetForwardingHistoryCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('GetForwardingHistoryCL'));
+      // const queryHeaders: SwitchReq = {
+      //   num_max_events: action.payload.num_max_events, index_offset: action.payload.index_offset, end_time: action.payload.end_time, start_time: action.payload.start_time
+      // };
+      // return this.httpClient.post(this.CHILD_API_URL + environment.SWITCH_API, queryHeaders)
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards')
+        .pipe(
+          map((fhRes: any) => {
+            this.logger.info(fhRes);
+            return {
+              type: RTLActions.SET_FORWARDING_HISTORY_CL,
+              payload: fhRes
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'GetForwardingHistory', code: err.status, message: err.error.error }));
+            return this.handleErrorWithAlert('ERROR', 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards', err);            
+          })
+        );
+    })
+  );
+
   handleErrorWithoutAlert(actionName: string, err: {status: number, error: any}) {
     this.logger.error(err);
     if(err.status === 401) {

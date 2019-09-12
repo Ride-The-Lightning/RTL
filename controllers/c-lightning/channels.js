@@ -102,47 +102,32 @@ exports.getLocalRemoteBalance = (req, res, next) => {
 
 exports.listForwards = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/switch';
-  options.form = {};
-  if (undefined !== req.body.num_max_events) {
-    options.form.num_max_events = req.body.num_max_events;
-  }
-  if (undefined !== req.body.index_offset) {
-    options.form.index_offset = req.body.index_offset;
-  }
-  if (undefined !== req.body.end_time) {
-    options.form.end_time = req.body.end_time;
-  }
-  if (undefined !== req.body.start_time) {
-    options.form.start_time = req.body.start_time;
-  }
-  options.form = JSON.stringify(options.form);
-  logger.info({fileName: 'Switch', msg: 'Switch Post Options: ' + JSON.stringify(options)});
-  request.post(options).then((body) => {
-    logger.info({fileName: 'Switch', msg: 'Switch Post Response: ' + JSON.stringify(body)});
+  options.url = common.getSelLNServerUrl() + '/channel/listForwards/';
+  request.get(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Forwarding History Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
-      logger.error({fileName: 'Switch', lineNum: 27, msg: 'Switch Post Erroe: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
+      logger.error({fileName: 'Channels', lineNum: 27, msg: 'Forwarding History Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
       res.status(500).json({
-        message: "Switch post failed!",
+        message: "Forwarding History Failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body.forwarding_events) {
-        body.forwarding_events.forEach(event => {
-          event.timestamp_str =  (undefined === event.timestamp) ? '' : common.convertTimestampToDate(event.timestamp);
+      if (body.length > 0) {
+        body.forEach(event => {
+          event.received_time_str =  (undefined === event.received_time) ? '' : common.convertTimestampToDate(event.received_time);
+          event.resolved_time_str =  (undefined === event.resolved_time) ? '' : common.convertTimestampToDate(event.resolved_time);
         });
-        body.forwarding_events = common.sortDescByKey(body.forwarding_events, 'timestamp');
+        body = common.sortDescByKey(body, 'received_time');
       }
-      logger.info({fileName: 'Switch', msg: 'Forwarding History Received: ' + JSON.stringify(body)});
-      res.status(201).json(body);
+      logger.info({fileName: 'Channels', msg: 'Forwarding History Received: ' + JSON.stringify(body)});
+      res.status(200).json({ last_offset_index: 0, forwarding_events: body });
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Switch', lineNum: 44, msg: 'Switch Post Error: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 44, msg: 'Forwarding History Error: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: "Switch post failed!",
+      message: "Forwarding History Failed!",
       error: err.error
     });
   });
 };
-

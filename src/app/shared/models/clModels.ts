@@ -143,15 +143,25 @@ export interface PayRequestCL {
 }
 
 export interface ForwardingEventCL {
-  timestamp?: string;
-  timestamp_str?: string;
-  chan_id_out?: string;
-  alias_out?: string;
-  amt_out?: string;
-  amt_in?: string;
-  chan_id_in?: string;
-  alias_in?: string;
-  fee?: string;
+  payment_hash?: string;
+  in_channel?: string;
+  out_channel?: string;
+  in_msatoshi?: number;
+  in_msat?: string;
+  out_msatoshi?: number;
+  out_msat?: string;
+  fee?: number;
+  fee_msat?: string;
+  status?: string;
+  received_time?: number;
+  received_time_str?: string;
+  resolved_time?: number;
+  resolved_time_str?: string;
+}
+
+export interface ForwardingHistoryResCL {
+  last_offset_index?: number;
+  forwarding_events?: ForwardingEventCL[];
 }
 
 export interface QueryRoutesCL {

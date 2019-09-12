@@ -33,7 +33,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 52, parentId: 5, name: 'Query Routes', icon: 'explore', link: '/cl/queryroutes'}
     ]},
     {id: 6, parentId: 0, name: 'Invoices', icon: 'receipt', link: '/cl/invoices'},
-    {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/cl/switch'},
+    {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/cl/forwardinghistory'},
     {id: 9, parentId: 0, name: 'Lookups', icon: 'search', link: '/cl/lookups'},    
     {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '../sconfig'},
     {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '../help'}

@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -15,6 +15,7 @@ export interface CLState {
   peers: PeerCL[];
   allChannels: ChannelCL[];
   payments: PaymentCL[];
+  forwardingHistory: ForwardingHistoryResCL;
   addressTypes: AddressTypeCL[];
 }
 
@@ -30,6 +31,7 @@ export const initCLState: CLState = {
   peers: [],
   allChannels: [],
   payments: [],
+  forwardingHistory: {},
   addressTypes: [
     { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32' },
     { addressId: '1', addressTp: 'p2sh-segwit', addressDetails: 'p2sh-segwit (default)' }
@@ -55,7 +57,7 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         effectErrorsCl: [...state.effectErrorsCl, action.payload]
       };
-    case RTLActions.RESET_STORE_CL:
+    case RTLActions.RESET_CL_STORE:
       return {
         ...initCLState,
         nodeSettings: action.payload,
@@ -140,7 +142,12 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         payments: action.payload
       };
-    default:
+      case RTLActions.SET_FORWARDING_HISTORY_CL:
+        return {
+          ...state,
+          forwardingHistory: action.payload
+        };
+      default:
       return state;
   }
 

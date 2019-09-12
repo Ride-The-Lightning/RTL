@@ -16,7 +16,7 @@ import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLQueryRoutesComponent } from './payments/query-routes/query-routes.component';
 import { CLPaymentsComponent } from './payments/send-receive/payments.component';
 import { CLPeersComponent } from './peers/peers.component';
-import { CLForwardingHistoryComponent } from './switch/forwarding-history.component';
+import { CLForwardingHistoryComponent } from './forwarding-history/forwarding-history.component';
 
 import { CommonService } from '../shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';

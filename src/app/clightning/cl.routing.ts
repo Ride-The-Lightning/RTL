@@ -6,13 +6,11 @@ import { CLHomeComponent } from './home/home.component';
 import { CLChannelsComponent } from './channels/channels.component';
 import { CLInvoicesComponent } from './invoices/invoices.component';
 import { CLLookupsComponent } from './lookups/lookups.component';
-import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
-import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLQueryRoutesComponent } from './payments/query-routes/query-routes.component';
 import { CLPaymentsComponent } from './payments/send-receive/payments.component';
 import { CLPeersComponent } from './peers/peers.component';
-import { CLForwardingHistoryComponent } from './switch/forwarding-history.component';
+import { CLForwardingHistoryComponent } from './forwarding-history/forwarding-history.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -27,7 +25,7 @@ export const ClRoutes: Routes = [
     { path: 'paymentsend', component: CLPaymentsComponent, canActivate: [CLUnlockedGuard] },
     { path: 'queryroutes', component: CLQueryRoutesComponent, canActivate: [CLUnlockedGuard] },
     { path: 'invoices', component: CLInvoicesComponent, canActivate: [CLUnlockedGuard] },
-    { path: 'switch', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
+    { path: 'forwardinghistory', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
     { path: 'lookups', component: CLLookupsComponent, canActivate: [CLUnlockedGuard] },
     { path: '**', component: NotFoundComponent }
   ]}

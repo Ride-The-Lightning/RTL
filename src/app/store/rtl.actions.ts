@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -95,7 +95,7 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
-export const RESET_STORE_CL = 'RESET_STORE_CL';
+export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
 export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
 export const FETCH_INFO_CL = 'FETCH_INFO_CL';
@@ -133,6 +133,8 @@ export const PEER_LOOKUP_CL = 'PEER_LOOKUP_CL';
 export const CHANNEL_LOOKUP_CL = 'CHANNEL_LOOKUP_CL';
 export const INVOICE_LOOKUP_CL = 'INVOICE_LOOKUP_CL';
 export const SET_LOOKUP_CL = 'SET_LOOKUP_CL';
+export const GET_FORWARDING_HISTORY_CL = 'GET_FORWARDING_HISTORY_CL';
+export const SET_FORWARDING_HISTORY_CL = 'SET_FORWARDING_HISTORY_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -207,7 +209,7 @@ export class ResetLNDStore implements Action {
 }
 
 export class ResetCLStore implements Action {
-  readonly type = RESET_STORE_CL;
+  readonly type = RESET_CL_STORE;
   constructor(public payload: SelNodeChild) {}
 }
 
@@ -716,6 +718,16 @@ export class SetLookupCL implements Action {
   constructor(public payload: any) {} // payload = lookup Response (Peer/Channel/Invoice)
 }
 
+export class GetForwardingHistoryCL implements Action {
+  readonly type = GET_FORWARDING_HISTORY_CL;
+  // constructor(public payload: SwitchReq) {}
+}
+
+export class SetForwardingHistoryCL implements Action {
+  readonly type = SET_FORWARDING_HISTORY_CL;
+  constructor(public payload: ForwardingHistoryResCL) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -746,4 +758,5 @@ export type RTLActions =
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
   GetQueryRoutesCL | SetQueryRoutesCL |
-  PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL;
+  PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
+  GetForwardingHistoryCL | SetForwardingHistoryCL;
