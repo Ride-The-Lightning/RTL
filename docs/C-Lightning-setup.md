@@ -1,4 +1,6 @@
-RTL C-lightning setup
+![](../screenshots/RTL-CLT-Home.png)
+
+## RTL C-lightning setup
 
 * [Introduction](#intro)
 * [Pre-requisite](#prereq)
