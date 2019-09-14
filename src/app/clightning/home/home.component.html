@@ -122,7 +122,7 @@
   </div>
 </div>
 <div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="60" class="padding-gap">
+  <div fxFlex="40" class="padding-gap">
     <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
       <mat-card-header class="bg-primary" fxLayoutAlign="center center">
         <mat-card-title class="m-0 pt-2">
@@ -143,10 +143,10 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div fxFlex="20" class="padding-gap">
+  <div fxFlex="30" class="padding-gap">
     <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'"></rtl-cl-fee-rates>
   </div>
-  <div fxFlex="20" class="padding-gap">
+  <div fxFlex="30" class="padding-gap">
     <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'"></rtl-cl-fee-rates>
   </div>
 </div>
