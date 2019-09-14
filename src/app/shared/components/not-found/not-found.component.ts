@@ -9,8 +9,8 @@ export class NotFoundComponent {
 
   constructor(public router: Router) {}
 
-  goHome(): void {
-    this.router.navigate(['/']);
+  goToHelp(): void {
+    this.router.navigate(['/help']);
   }
 
 }

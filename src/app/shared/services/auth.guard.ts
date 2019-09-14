@@ -27,3 +27,17 @@ export class LNDUnlockedGuard implements CanActivate {
     }
   }
 }
+
+@Injectable()
+export class CLUnlockedGuard implements CanActivate {
+  constructor() {}
+
+  canActivate(): boolean | Observable<boolean> | Promise<boolean> {
+    return true;
+    if (!sessionStorage.getItem('clUnlocked')) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}

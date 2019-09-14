@@ -23,7 +23,8 @@
               <ng-template #notNumberTemplate>
                 <span>{{obj[1]}}</span>
               </ng-template>
-              <mat-icon *ngIf="showCopyOption(obj[0])" class="icon-small cursor-pointer pl-1 top-5px" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)">file_copy</mat-icon><span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
+              <fa-icon *ngIf="showCopyOption(obj[0])" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)" [icon]="faCopy"></fa-icon>
+              <span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
             </div>
           </div>
         </div>

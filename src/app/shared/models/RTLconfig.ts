@@ -1,3 +1,5 @@
+import { GetInfoChain } from './lndModels';
+
 export class SSO {
   constructor(
     public rtlSSO: number,
@@ -15,7 +17,7 @@ export class Settings {
     public satsToBTC: boolean,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
-    public lndServerUrl?: string,
+    public lnServerUrl?: string,
     public channelBackupPath?: string
   ) { }
 }
@@ -23,12 +25,12 @@ export class Settings {
 export class Authentication {
   constructor(
     public nodeAuthType?: string,
-    public lndConfigPath?: string,
+    public configPath?: string,
     public bitcoindConfigPath?: string
   ) { }
 }
 
-export class Node {
+export class LightningNode {
   constructor(
     public settings: Settings,
     public authentication: Authentication,
@@ -42,6 +44,22 @@ export class RTLConfiguration {
   constructor(
     public selectedNodeIndex: number,
     public sso: SSO,
-    public nodes: Node[]
+    public nodes: LightningNode[]
   ) { }
+}
+
+export interface GetInfoRoot {
+  identity_pubkey?: string;
+  alias?: string;
+  testnet?: boolean;
+  chains?: GetInfoChain[] | string[];
+  version?: string;
+  currency_unit?: string;
+  smaller_currency_unit?: string;  
+  numberOfPendingChannels?: number;
+}
+
+export interface SelNodeChild {
+  channelBackupPath?: string;
+  satsToBTC?: boolean;
 }

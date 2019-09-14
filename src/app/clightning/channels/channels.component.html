@@ -1,0 +1,136 @@
+<div fxLayout="column">
+  <div class="padding-gap">
+    <mat-card [ngClass]="{'flip': redirectedWithPeer}">
+      <mat-card-header>
+        <mat-card-subtitle>
+          <h2>Open Channel</h2>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form fxLayout="column" fxLayout.gt-sm="row wrap"
+          (ngSubmit)="openChannelForm.form.valid && onOpenChannel(openChannelForm)" #openChannelForm="ngForm">
+          <mat-form-field fxFlex="40" fxLayoutAlign="start end">
+            <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required
+              name="selPeer" #selPeer="ngModel">
+              <mat-option *ngFor="let peer of peers" [value]="peer.id">
+                {{peer.alias}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="25" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="fundingAmount" placeholder="Amount (mSats)" type="number" step="1000" min="1"
+              tabindex="2" required name="amount" #amount="ngModel">
+            <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal:
+              {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
+          </mat-form-field>
+          <div fxFlex="15" tabindex="3" fxLayoutAlign="start center" class="chkbox-options">
+            <mat-checkbox [(ngModel)]="moreOptions" name="moreOptions" (change)="onMoreOptionsChange($event)">Options
+            </mat-checkbox>
+          </div>
+          <span *ngIf="moreOptions" fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="80"
+            fxLayoutAlign.gt-sm="start center">
+            <mat-form-field fxFlex="25" fxLayoutAlign="start end">
+              <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate">
+                <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+                  {{feeRateType.feeRateType}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox fxFlex="25" fxFlex.lt-lg="35" tabindex="5" [(ngModel)]="flgMinConf" name="flgMinConf">
+              <mat-form-field fxFlex="100">
+                <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number"
+                  name="blocks" step="1" min="0" tabindex="6" #blocks="ngModel" [required]="flgMinConf"
+                  [disabled]="!flgMinConf">
+              </mat-form-field>
+            </mat-checkbox>
+          </span>
+          <div fxFlex="10" fxLayoutAlign="end start">
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary"
+              [disabled]="selectedPeer === '' || fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0) || !openChannelForm.valid"
+              type="submit" tabindex="7">
+              <p
+                *ngIf="(selectedPeer === '' || fundingAmount == null) && (selPeer.touched || selPeer.dirty) && (amount.touched || amount.dirty); else openText">
+                Invalid Values</p>
+              <ng-template #openText>
+                <p>Open</p>
+              </ng-template>
+            </button>
+          </div>
+          <div fxFlex="10" fxLayoutAlign="end start">
+            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="9" type="reset"
+              (click)="resetData()">Clear</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="padding-gap">
+    <mat-card>
+      <mat-card-content fxFlex="100" fxLayout="column">
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <mat-form-field fxFlex="30">
+            <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
+          </mat-form-field>
+        </div>
+        <div perfectScrollbar class="table-container mat-elevation-z8">
+          <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+          <table mat-table #table [dataSource]="channels" matSort
+            [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+            <ng-container matColumnDef="close">
+              <th mat-header-cell *matHeaderCellDef> Close Channel </th>
+              <td mat-cell *matCellDef="let channel">
+                <mat-icon color="accent" (click)="onChannelClose(channel)">link_off</mat-icon>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="update">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-icon color="accent" (click)="onChannelUpdate('all')">edit</mat-icon>
+              </th>
+              <td mat-cell *matCellDef="let channel">
+                <mat-icon color="accent" (click)="onChannelUpdate(channel)">edit</mat-icon>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="short_channel_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
+              <td mat-cell *matCellDef="let channel"> {{channel?.short_channel_id}}</td>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+              <td mat-cell *matCellDef="let channel">{{channel?.alias}}</td>
+            </ng-container>
+            <ng-container matColumnDef="connected">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Connected </th>
+              <td mat-cell *matCellDef="let channel"> {{(channel?.connected) ? 'Connected' : 'Disconnected'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="private">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Private </th>
+              <td mat-cell *matCellDef="let channel"> {{(channel?.private ? 'Private' : 'Public')}} </td>
+            </ng-container>
+            <ng-container matColumnDef="state">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
+              <td mat-cell *matCellDef="let channel"> {{channel?.state}}</td>
+            </ng-container>
+            <ng-container matColumnDef="msatoshi_to_us">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> mSatoshi To Us </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+                  {{channel?.msatoshi_to_us | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="msatoshi_total">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> mSatoshi Total </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+                  {{channel?.msatoshi_total | number}} </span></td>
+            </ng-container>
+            <ng-container matColumnDef="spendable_msatoshi">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Spendable Satoshi </th>
+              <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+                  {{channel?.spendable_msatoshi | number}} </span></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onChannelClick(row, $event)"
+              [ngClass]="{'row-disabled': row.state === 'ONCHAIN'}"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

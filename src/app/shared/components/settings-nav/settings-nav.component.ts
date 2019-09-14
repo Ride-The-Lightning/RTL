@@ -3,12 +3,11 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Node, RTLConfiguration } from '../../models/RTLconfig';
-import { GetInfo } from '../../models/lndModels';
+import { LightningNode, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-settings-nav',
@@ -16,8 +15,8 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./settings-nav.component.scss']
 })
 export class SettingsNavComponent implements OnInit, OnDestroy {
-  public selNode: Node;
-  public information: GetInfo = {};
+  public selNode: LightningNode;
+  public information: GetInfoRoot = {};
   public menus = ['Vertical', 'Horizontal'];
   public menuTypes = ['Regular', 'Compact', 'Mini'];
   public selectedMenu: string;
@@ -29,12 +28,12 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.State>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('rtlRoot')
+    this.store.select('root')
     .pipe(takeUntil(this.unsubs[0]))
-    .subscribe((rtlStore: fromRTLReducer.State) => {
+    .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.selectedMenu = this.selNode.settings.menu;
@@ -45,7 +44,7 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
         this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
       }
-      this.information = rtlStore.information;
+      this.information = rtlStore.nodeData;
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.logger.info(rtlStore);
     });
@@ -73,10 +72,10 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
     this.done.emit();
   }
 
-  onSelectionChange(selNodeValue: Node) {
+  onSelectionChange(selNodeValue: LightningNode) {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode(selNodeValue));
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
   }
 
   ngOnDestroy() {

@@ -4,26 +4,37 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const common = require("./common");
 const app = express();
-
-//Declare all Routes here
-const authenticateRoutes = require("./routes/authenticate");
-const infoRoutes = require("./routes/getInfo");
-const channelsRoutes = require("./routes/channels");
-const channelsBackupRoutes = require("./routes/channelsBackup");
-const peersRoutes = require("./routes/peers");
-const feesRoutes = require("./routes/fees");
-const balanceRoutes = require("./routes/balance");
-const walletRoutes = require("./routes/wallet");
-const graphRoutes = require("./routes/graph");
-const newAddressRoutes = require("./routes/newAddress");
-const transactionsRoutes = require("./routes/transactions");
-const payReqRoutes = require("./routes/payReq");
-const paymentsRoutes = require("./routes/payments");
-const RTLConfRoutes = require("./routes/RTLConf");
-const invoiceRoutes = require("./routes/invoices");
-const switchRoutes = require("./routes/switch");
 const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
+const apiLNDRoot = baseHref + "api/lnd/";
+const apiCLRoot = baseHref + "api/cl/";
+
+const authenticateRoutes = require("./routes/authenticate");
+const RTLConfRoutes = require("./routes/RTLConf");
+const infoRoutes = require("./routes/lnd/getInfo");
+const channelsRoutes = require("./routes/lnd/channels");
+const channelsBackupRoutes = require("./routes/lnd/channelsBackup");
+const peersRoutes = require("./routes/lnd/peers");
+const feesRoutes = require("./routes/lnd/fees");
+const balanceRoutes = require("./routes/lnd/balance");
+const walletRoutes = require("./routes/lnd/wallet");
+const graphRoutes = require("./routes/lnd/graph");
+const newAddressRoutes = require("./routes/lnd/newAddress");
+const transactionsRoutes = require("./routes/lnd/transactions");
+const payReqRoutes = require("./routes/lnd/payReq");
+const paymentsRoutes = require("./routes/lnd/payments");
+const invoiceRoutes = require("./routes/lnd/invoices");
+const switchRoutes = require("./routes/lnd/switch");
+
+const infoCLRoutes = require("./routes/c-lightning/getInfo");
+const feesCLRoutes = require("./routes/c-lightning/fees");
+const balanceCLRoutes = require("./routes/c-lightning/balance");
+const channelsCLRoutes = require("./routes/c-lightning/channels");
+const invoicesCLRoutes = require("./routes/c-lightning/invoices");
+const onChainCLRoutes = require("./routes/c-lightning/onchain");
+const paymentsCLRoutes = require("./routes/c-lightning/payments");
+const peersCLRoutes = require("./routes/c-lightning/peers");
+const networkCLRoutes = require("./routes/c-lightning/network");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -45,25 +56,33 @@ app.use((req, res, next) => {
 });
 // CORS fix, Only required for developement due to separate backend and frontend servers
 
-// Use declared routes here
 app.use(apiRoot + "authenticate", authenticateRoutes);
-app.use(apiRoot + "getinfo", infoRoutes);
-app.use(apiRoot + "channels", channelsRoutes);
-app.use(apiRoot + "channels/backup", channelsBackupRoutes);
-app.use(apiRoot + "peers", peersRoutes);
-app.use(apiRoot + "fees", feesRoutes);
-app.use(apiRoot + "balance", balanceRoutes);
-app.use(apiRoot + "wallet", walletRoutes);
-app.use(apiRoot + "network", graphRoutes);
-app.use(apiRoot + "newaddress", newAddressRoutes);
-app.use(apiRoot + "transactions", transactionsRoutes);
-app.use(apiRoot + "payreq", payReqRoutes);
-app.use(apiRoot + "payments", paymentsRoutes);
 app.use(apiRoot + "conf", RTLConfRoutes);
-app.use(apiRoot + "invoices", invoiceRoutes);
-app.use(apiRoot + "switch", switchRoutes);
+app.use(apiLNDRoot + "getinfo", infoRoutes);
+app.use(apiLNDRoot + "channels", channelsRoutes);
+app.use(apiLNDRoot + "channels/backup", channelsBackupRoutes);
+app.use(apiLNDRoot + "peers", peersRoutes);
+app.use(apiLNDRoot + "fees", feesRoutes);
+app.use(apiLNDRoot + "balance", balanceRoutes);
+app.use(apiLNDRoot + "wallet", walletRoutes);
+app.use(apiLNDRoot + "network", graphRoutes);
+app.use(apiLNDRoot + "newaddress", newAddressRoutes);
+app.use(apiLNDRoot + "transactions", transactionsRoutes);
+app.use(apiLNDRoot + "payreq", payReqRoutes);
+app.use(apiLNDRoot + "payments", paymentsRoutes);
+app.use(apiLNDRoot + "invoices", invoiceRoutes);
+app.use(apiLNDRoot + "switch", switchRoutes);
 
-// sending angular application when route doesn't match
+app.use(apiCLRoot + "getinfo", infoCLRoutes);
+app.use(apiCLRoot + "fees", feesCLRoutes);
+app.use(apiCLRoot + "balance", balanceCLRoutes);
+app.use(apiCLRoot + "channels", channelsCLRoutes);
+app.use(apiCLRoot + "invoices", invoicesCLRoutes);
+app.use(apiCLRoot + "onchain", onChainCLRoutes);
+app.use(apiCLRoot + "payments", paymentsCLRoutes);
+app.use(apiCLRoot + "peers", peersCLRoutes);
+app.use(apiCLRoot + "network", networkCLRoutes);
+
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));
 });

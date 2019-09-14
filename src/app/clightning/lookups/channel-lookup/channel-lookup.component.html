@@ -1,0 +1,187 @@
+<div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-sm="row wrap" class="mt-2">
+  <div fxFlex="48">
+    <mat-card class="custom-card mat-elevation-z12">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5 *ngIf="!node1_match">Node 1</h5>
+          <h5 *ngIf="node1_match">Node 1 (Your Node)</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="px-2" *ngIf="lookupResult.length > 0">
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Short Channel Id</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].short_channel_id}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Active</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break">{{lookupResult[0].active}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Last Update</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].last_update_str}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Amount mSats</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].amount_msat}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Base Fee mSats</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].base_fee_millisatoshi | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Channel Flags</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].channel_flags | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Delay</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].delay | number}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start" class="list-tall">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">Destination</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">{{lookupResult[0].destination}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Per Millionth</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].fee_per_millionth | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Htlc Max mSat</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].htlc_maximum_msat}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Htlc Min mSat</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].htlc_minimum_msat}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Message Flags</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].message_flags | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Public</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].public}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Satoshis</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[0].satoshis | number}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start" class="list-tall">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">Source</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">{{lookupResult[0].source}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div fxFlex="48">
+    <mat-card class="custom-card mat-elevation-z12">
+      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+        <mat-card-title class="m-0 pt-2">
+          <h5 *ngIf="!node2_match">Node 2</h5>
+          <h5 *ngIf="node2_match">Node 2 (Your Node)</h5>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="px-2" *ngIf="lookupResult.length > 1">
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Short Channel Id</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].short_channel_id}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Active</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break">{{lookupResult[1].active}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Last Update</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].last_update_str}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Amount mSats</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].amount_msat}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Base Fee mSats</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].base_fee_millisatoshi | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Channel Flags</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].channel_flags | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Delay</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].delay | number}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start" class="list-tall">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">Destination</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">{{lookupResult[1].destination}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Per Millionth</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].fee_per_millionth | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Htlc Max mSat</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].htlc_maximum_msat}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Htlc Min mSat</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].htlc_minimum_msat}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Message Flags</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].message_flags | number}}
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Public</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].public}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Satoshis</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult[1].satoshis | number}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-list fxLayoutAlign="start start" class="list-tall">
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">Source</mat-list-item>
+          <mat-list-item fxFlex="50" fxLayoutAlign="start start" class="word-break-all">{{lookupResult[1].source}}</mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>

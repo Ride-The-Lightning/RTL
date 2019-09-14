@@ -1,0 +1,69 @@
+<mat-card [ngClass]="{'custom-card error-border': flgLoading==='error','custom-card': true}">
+  <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+    <mat-card-title class="m-0 pt-2">
+      <h5>Fee Rates - per{{feeRateStyle}}</h5>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div fxLayout="column" class="pl-2">
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Urgent</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{perkbw?.urgent | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Normal</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{perkbw?.normal | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Slow</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{perkbw?.slow | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Min Acceptable</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{perkbw?.min_acceptable | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Max Acceptable</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{perkbw?.max_acceptable | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Opening Channel</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{feeRates?.onchain_fee_estimates?.opening_channel_satoshis | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Mutual Close</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{feeRates?.onchain_fee_estimates?.mutual_close_satoshis | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+      <mat-list class="fee-rate-list" fxFlex="100" fxLayoutAlign="start start">
+        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Unilateral Close</mat-list-item>
+        <mat-list-item fxFlex="45" fxLayoutAlign="start start">
+          <p class="mat-button-text">{{feeRates?.onchain_fee_estimates?.unilateral_close_satoshis | number}}</p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+      </mat-list>
+    </div>
+    <mat-progress-bar *ngIf="flgLoading===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+</mat-card>

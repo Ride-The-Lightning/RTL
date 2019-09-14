@@ -22,7 +22,8 @@
         <mat-icon [ngClass]="{'icon-smaller': smallScreen}">vpn_key</mat-icon>
         <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{information?.identity_pubkey}}
           <mat-spinner [diameter]="20" *ngIf="flgLoading[0]" class="inline-spinner foreground"></mat-spinner>
-          <mat-icon [ngClass]="{'icon-smaller cursor-pointer copy-icon-smaller': smallScreen, 'icon-small cursor-pointer copy-icon': !smallScreen}">file_copy</mat-icon><span [hidden]="!flgCopied">Copied</span>
+          <fa-icon [icon]="faCopy"></fa-icon>
+          <span [hidden]="!flgCopied">Copied</span>
         </div>
       </div>
       <mat-toolbar color="primary" *ngIf="settings.menu === 'Horizontal'" class="padding-gap-x horizontal-nav">
