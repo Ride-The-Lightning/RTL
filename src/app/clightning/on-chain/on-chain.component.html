@@ -13,12 +13,16 @@
       <mat-card-content fxLayout="column" fxLayoutAlign="center center">
         <mat-card-content class="mt-1">
           <svg style="width:70px;height:70px" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2M14,6V4H10V6H14Z" />
+            <path fill="currentColor"
+              d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2M14,6V4H10V6H14Z" />
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit1">{{balance?.btc_totalBalance | number}} {{information?.currency_unit}}</h3>
-          <ng-template #smallerUnit1><h3>{{balance?.totalBalance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit1">{{balance?.btc_totalBalance | number}}
+            {{information?.currency_unit}}</h3>
+          <ng-template #smallerUnit1>
+            <h3>{{balance?.totalBalance | number}} {{information?.smaller_currency_unit}}</h3>
+          </ng-template>
         </span>
       </mat-card-content>
       <mat-progress-bar class="mt-minus-5" *ngIf="flgLoadingWallet===true" mode="indeterminate"></mat-progress-bar>
@@ -36,12 +40,16 @@
       <mat-card-content fxLayout="column" fxLayoutAlign="center center">
         <mat-card-content class="mt-1">
           <svg style="width:70px;height:70px" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V8A2,2 0 0,1 4,6H8V4A2,2 0 0,1 10,2M14,6V4H10V6H14M10.5,17.5L17.09,10.91L15.68,9.5L10.5,14.67L8.41,12.59L7,14L10.5,17.5Z" />
+            <path fill="currentColor"
+              d="M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V8A2,2 0 0,1 4,6H8V4A2,2 0 0,1 10,2M14,6V4H10V6H14M10.5,17.5L17.09,10.91L15.68,9.5L10.5,14.67L8.41,12.59L7,14L10.5,17.5Z" />
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit2">{{balance?.btc_confBalance | number}} {{information?.currency_unit}}</h3>
-          <ng-template #smallerUnit2><h3>{{balance?.confBalance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit2">{{balance?.btc_confBalance | number}}
+            {{information?.currency_unit}}</h3>
+          <ng-template #smallerUnit2>
+            <h3>{{balance?.confBalance | number}} {{information?.smaller_currency_unit}}</h3>
+          </ng-template>
         </span>
       </mat-card-content>
       <mat-progress-bar class="mt-minus-5" *ngIf="flgLoadingWallet===true" mode="indeterminate"></mat-progress-bar>
@@ -59,12 +67,16 @@
       <mat-card-content fxLayout="column" fxLayoutAlign="center center">
         <mat-card-content class="mt-1">
           <svg style="width:70px;height:70px" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M14,2A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8L10.85,19C10.85,20.1 10.85,19.5 10.85,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2H14M14,6V4H10V6H14M21.04,12.13C20.9,12.13 20.76,12.19 20.65,12.3L19.65,13.3L21.7,15.35L22.7,14.35C22.92,14.14 22.92,13.79 22.7,13.58L21.42,12.3C21.31,12.19 21.18,12.13 21.04,12.13M19.07,13.88L13,19.94V22H15.06L21.12,15.93L19.07,13.88Z" />
+            <path fill="currentColor"
+              d="M14,2A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8L10.85,19C10.85,20.1 10.85,19.5 10.85,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2H14M14,6V4H10V6H14M21.04,12.13C20.9,12.13 20.76,12.19 20.65,12.3L19.65,13.3L21.7,15.35L22.7,14.35C22.92,14.14 22.92,13.79 22.7,13.58L21.42,12.3C21.31,12.19 21.18,12.13 21.04,12.13M19.07,13.88L13,19.94V22H15.06L21.12,15.93L19.07,13.88Z" />
           </svg>
         </mat-card-content>
         <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit3">{{balance?.btc_unconfBalance | number}} {{information?.currency_unit}}</h3>
-          <ng-template #smallerUnit3><h3>{{balance?.unconfBalance | number}} {{information?.smaller_currency_unit}}</h3></ng-template>
+          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit3">{{balance?.btc_unconfBalance | number}}
+            {{information?.currency_unit}}</h3>
+          <ng-template #smallerUnit3>
+            <h3>{{balance?.unconfBalance | number}} {{information?.smaller_currency_unit}}</h3>
+          </ng-template>
         </span>
       </mat-card-content>
       <mat-progress-bar class="mt-minus-5" *ngIf="flgLoadingWallet===true" mode="indeterminate"></mat-progress-bar>
@@ -92,10 +104,13 @@
             </div>
             <div fxFlex="25" fxLayoutAlign="space-between end">
               <div fxFlex.gt-md="65" fxFlex.lt-lg="49" fxLayoutAlign="start end">
-                <button fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="undefined === selectedAddress.addressId" (click)="onGenerateAddress()" tabindex="2" class="top-minus-15px">Generate Address</button>
+                <button fxLayoutAlign="center center" mat-raised-button color="primary"
+                  [disabled]="undefined === selectedAddress.addressId" (click)="onGenerateAddress()" tabindex="2"
+                  class="top-minus-15px">Generate Address</button>
               </div>
               <div fxFlex.gt-md="30" fxFlex.lt-lg="49" fxLayoutAlign="start end">
-                <button fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
+                <button fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3"
+                  (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
               </div>
             </div>
             <div fxFlex="42" fxLayoutAlign="start end">
@@ -104,8 +119,10 @@
               </mat-form-field>
             </div>
             <div fxFlex.lt-lg="40" fxFlex.gt-md="14" fxLayoutAlign="center center">
-              <qrcode [qrdata]="newAddress" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (newAddress === '') ? 'hidden' : 'visible'}" class="top-minus-5px qr-border"></qrcode>
-            </div>  
+              <qrcode [qrdata]="newAddress" [size]="120" [level]="'L'" [allowEmptyString]="true"
+                [ngStyle]="{'visibility': (newAddress === '') ? 'hidden' : 'visible'}" class="top-minus-5px qr-border">
+              </qrcode>
+            </div>
           </div>
         </div>
       </mat-card-content>
@@ -119,49 +136,50 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div fxLayout="column" fxLayout.gt-sm="row wrap">
-          <div fxFlex="62" fxLayoutAlign="start end">
-            <mat-form-field fxFlex="99">
-              <input matInput [(ngModel)]="transaction.address" placeholder="{{information?.currency_unit}} Address" tabindex="4" name="address" #address="ngModel">
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between start"
+          (ngSubmit)="sendFundForm.form.valid && onSendFunds()" #sendFundForm="ngForm">
+          <mat-form-field fxFlex="35" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="transaction.address" placeholder="Address" name="address" tabindex="4" required
+              name="address" #address="ngModel">
+          </mat-form-field>
+          <mat-form-field fxFlex="10" fxLayoutAlign="start end">
+            <input matInput [(ngModel)]="transaction.satoshis" placeholder="Amount (mSats)" type="number" step="1000" min="1"
+              tabindex="5" required name="amount" #amount="ngModel">
+          </mat-form-field>
+          <mat-form-field fxFlex="10" fxLayoutAlign="start end">
+            <mat-select tabindex="6" placeholder="Fee Rate" [(value)]="transaction.feeRate">
+              <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+                {{feeRateType.feeRateType}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox fxFlex="20" fxFlex.lt-lg="35" tabindex="7" [(ngModel)]="flgMinConf" name="flgMinConf">
+            <mat-form-field fxFlex="100">
+              <input matInput [(ngModel)]="transaction.minconf" placeholder="Min Confirmation Blocks" type="number"
+                name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf"
+                [disabled]="!flgMinConf">
             </mat-form-field>
-          </div>
-          <div fxFlex="38" fxLayoutAlign="start end">
-            <mat-radio-group fxFlex="100" fxLayoutAlign="space-between center" (change)="onOptionChange($event)" [(ngModel)]="flgCustomAmount">
-              <mat-radio-button fxFlex="35" value="0">Sweep All</mat-radio-button>
-              <mat-radio-button fxFlex="60" value="1">
-                <mat-form-field fxFlex="70"><input matInput [(ngModel)]="transaction.amount" (click)="onCustomClicked()" placeholder="Amount ({{information?.smaller_currency_unit}})" name="amount" type="number" step="100" min="0" tabindex="5" #amount="ngModel"></mat-form-field>
-              </mat-radio-button>
-            </mat-radio-group>
-          </div>          
-        </div>
-        <div fxLayout="column" fxLayout.gt-sm="row wrap">
-          <div fxFlex="30" fxLayoutAlign="start start">
-            <mat-form-field fxFlex="99">
-              <mat-select [(value)]="selTransType">
-                <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
-                  {{transType.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div fxFlex="30" fxLayoutAlign="start start">
-            <mat-form-field fxFlex="99" *ngIf="selTransType=='1'">
-              <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="6" #blocks="ngModel">
-            </mat-form-field>
-            <mat-form-field fxFlex="99" *ngIf="selTransType=='2'">
-              <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="7" #fees="ngModel">
-            </mat-form-field>
-          </div>
-          <div fxFlex="40" fxLayoutAlign="space-between start">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
-              <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">Invalid Values</p>
-              <ng-template #sendText><p>Send</p></ng-template>
-            </button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="9" type="reset" (click)="resetData()">Clear</button>
-          </div>
-        </div>
+          </mat-checkbox>
+          <div fxFlex="10" fxLayoutAlign="end start">
+              <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="invalidValues" type="submit" tabindex="8">
+                <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">Invalid Values</p>
+                <ng-template #sendText><p>Send</p></ng-template>
+              </button>
+            </div>
+            <div fxFlex="10" fxLayoutAlign="end start">
+              <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="9" type="reset"
+                (click)="resetData()">Clear</button>
+            </div>
+          </form>
+
+        
+
+
+
       </mat-card-content>
     </mat-card>
   </div>
 </div>
-<ng-template #withoutData><h3>Sats</h3></ng-template>
+<ng-template #withoutData>
+  <h3>Sats</h3>
+</ng-template>

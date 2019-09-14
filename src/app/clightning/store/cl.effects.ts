@@ -267,7 +267,7 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: RTLActions.SaveNewChannelCL) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
-        channelId: action.payload.channelId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, private: action.payload.private, minconf: (action.payload.minconf) ? action.payload.minconf : ''
+        id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null
       })
         .pipe(
           map((postRes: any) => {
@@ -383,31 +383,19 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPaymentCL, any]) => {
-      let queryHeaders = {};
-      if (action.payload[2]) {
-        queryHeaders = { paymentDecoded: action.payload[1] };
-      } else {
-        queryHeaders = { paymentReq: action.payload[0] };
-      }
-      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, queryHeaders)
+      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
-            if (sendRes.payment_error) {
-              return this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.payment_error.status, error: sendRes.payment_error.error.message });
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            if (sendRes.error) {
+              return this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.status, error: sendRes.error.message });
             } else {
-              const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
-              confirmationMsg['Amount (' + ((undefined === store.information.smaller_currency_unit) ?
-                'Sats' : store.information.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
-              const msg = {};
-              msg['Total Fee (' + ((undefined === store.information.smaller_currency_unit) ? 'Sats' : store.information.smaller_currency_unit) + ')'] =
-                (sendRes.payment_route.total_fees_msat / 1000);
-              Object.assign(msg, confirmationMsg);
               this.store.dispatch(new RTLActions.OpenAlert({
                 width: '70%',
-                data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }
+                data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(sendRes) }
               }));
-              // this.store.dispatch(new RTLActions.FetchChannelsCL({ routeParam: 'all' }));
+              this.store.dispatch(new RTLActions.FetchChannelsCL());
               this.store.dispatch(new RTLActions.FetchBalanceCL());
               this.store.dispatch(new RTLActions.FetchPaymentsCL());
               return {
@@ -637,6 +625,29 @@ export class CLEffects implements OnDestroy {
           ));
     }));
 
+    @Effect()
+    SetChannelTransactionCL = this.actions$.pipe(
+      ofType(RTLActions.SET_CHANNEL_TRANSACTION_CL),
+      mergeMap((action: RTLActions.SetChannelTransactionCL) => {
+        this.store.dispatch(new RTLActions.ClearEffectErrorCl('SetChannelTransactionCL'));
+        return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
+          .pipe(
+            map((postRes: any) => {
+              this.logger.info(postRes);
+              this.store.dispatch(new RTLActions.CloseSpinner());
+              this.store.dispatch(new RTLActions.FetchBalanceCL());
+              return {
+                type: RTLActions.OPEN_ALERT,
+                payload: { data: { type: 'SUCCESS', titleMessage: 'Fund Sent Successfully!' } }
+              };
+            }),
+            catchError((err: any) => {
+              this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'SetChannelTransactionCL', code: err.status, message: err.error.error }));
+              return this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+            }));
+      })
+    );
+  
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {

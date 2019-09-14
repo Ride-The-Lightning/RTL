@@ -33,11 +33,11 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
   public selectedFilter = '';
   public myChanPolicy: any = {};
   public selFilter = '';
-  public transTypes = [{id: '0', name: 'Default Priority'}, {id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
-  public selTransType = '0';
-  public transTypeValue = {blocks: '', fees: ''};
-  public spendUnconfirmed = false;
+  public feeRateTypes = [];
+  public selFeeRate = '';
   public isPrivate = false;
+  public flgMinConf = false;
+  public minConfValue = null;
   public moreOptions = false;
   public flgSticky = false;
   public redirectedWithPeer = false;
@@ -82,6 +82,7 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      this.feeRateTypes = rtlStore.feeRateTypes;
       this.peers = rtlStore.peers;
       this.peers.forEach(peer => {
         if (undefined === peer.alias || peer.alias === '') {
@@ -105,20 +106,16 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(form: any) {
-  //   this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-  //   let transTypeValue = '0';
-  //   if (this.selTransType === '1') {
-  //     transTypeValue = this.transTypeValue.blocks;
-  //   } else if (this.selTransType === '2') {
-  //     transTypeValue = this.transTypeValue.fees;
-  //   }
-  //   this.store.dispatch(new RTLActions.SaveNewChannel({
-  //     selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount, private: this.isPrivate,
-  //     transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
-  //   }));
+    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
+    this.store.dispatch(new RTLActions.SaveNewChannelCL({
+      peerId: this.selectedPeer, satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
+    }));
   }
 
   onChannelUpdate(channelToUpdate: ChannelCL | 'all') {
+    if(channelToUpdate !== 'all' && channelToUpdate.state === 'ONCHAIN') {
+      return;
+    }
     if (channelToUpdate === 'all') {
       const titleMsg = 'Updated Values for ALL Channels';
       const confirmationMsg = {};
@@ -179,10 +176,13 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: ChannelCL) {
-    if (channelToClose.state === 'AWAITING_UNILATERAL' || channelToClose.state === 'ONCHAIN') {
+    if(channelToClose.state === 'ONCHAIN') {
+      return;
+    }
+    if (channelToClose.state === 'AWAITING_UNILATERAL') {
       this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
         type: 'WARN',
-        titleMessage: 'Channel can not be closed when it is in AWAITING UNILATERAL/ONCHAIN state.'
+        titleMessage: 'Channel can not be closed when it is in AWAITING UNILATERAL state.'
       }}));
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({
@@ -246,20 +246,20 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
     this.selectedPeer = '';
     this.fundingAmount = 0;
     this.moreOptions = false;
-    this.spendUnconfirmed = false;
+    this.flgMinConf = false;
     this.isPrivate = false;
-    this.selTransType = '0';
-    this.transTypeValue = {blocks: '', fees: ''};
+    this.selFeeRate = '';
+    this.minConfValue = null;
     this.redirectedWithPeer = false;
   }
 
   onMoreOptionsChange(event: any) {
-  //   if (!event.checked) {
-  //     this.spendUnconfirmed = false;
-  //     this.isPrivate = false;
-  //     this.selTransType = '0';
-  //     this.transTypeValue = {blocks: '', fees: ''};
-  //   }
+    if (!event.checked) {
+      this.flgMinConf = false;
+      this.isPrivate = false;
+      this.selFeeRate = '';
+      this.minConfValue = null;
+    }
   }
 
   ngOnDestroy() {

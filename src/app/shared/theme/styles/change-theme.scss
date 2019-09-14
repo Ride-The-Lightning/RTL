@@ -103,4 +103,10 @@
     padding: 0 4px 0 12px;
   }
 
+  .row-disabled {
+    background-color: gray;
+    .mat-icon {
+      cursor: not-allowed;
+    }
+  }
 }

@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -141,6 +141,7 @@ export const SET_TOTAL_INVOICES_CL = 'SET_TOTAL_INVOICES_CL';
 export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
 export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
 export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
+export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -662,7 +663,7 @@ export class SetDecodedPaymentCL implements Action {
 
 export class SendPaymentCL implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: [string, PayRequest, boolean]) {} // payload = [paymentReqStr, paymentDecoded, EmptyAmtInvoice]
+  constructor(public payload: { invoice: string, amount?: number }) {}
 }
 
 export class GetQueryRoutesCL implements Action {
@@ -691,7 +692,7 @@ export class UpdateChannelsCL implements Action {
 
 export class SaveNewChannelCL implements Action {
   readonly type = SAVE_NEW_CHANNEL_CL;
-  constructor(public payload: {channelId: string, satoshis: number, feeRate: string, private: boolean, minconf?: number}) {}
+  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number}) {}
 }
 
 export class CloseChannelCL implements Action {
@@ -764,6 +765,11 @@ export class DeleteExpiredInvoiceCL implements Action {
   constructor(public payload?: number) {} // maxexpiry
 }
 
+export class SetChannelTransactionCL implements Action {
+  readonly type = SET_CHANNEL_TRANSACTION_CL;
+  constructor(public payload: OnChainCL) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -793,7 +799,7 @@ export type RTLActions =
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
-  GetQueryRoutesCL | SetQueryRoutesCL |
+  GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
   GetForwardingHistoryCL | SetForwardingHistoryCL |
   FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL;

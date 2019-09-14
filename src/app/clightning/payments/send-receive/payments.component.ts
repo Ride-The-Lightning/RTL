@@ -85,65 +85,66 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onSendPayment() {
-    // if (undefined !== this.paymentDecoded.timestamp_str) {
-    //   this.sendPayment();
-    // } else {
-    //   this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-    //   this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
-    //   this.clEffects.setDecodedPayment
-    //   .pipe(take(1))
-    //   .subscribe(decodedPayment => {
-    //     this.paymentDecoded = decodedPayment;
-    //     if (undefined !== this.paymentDecoded.timestamp_str) {
-    //       this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-    //       formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-    //       if (undefined === this.paymentDecoded.num_satoshis) {
-    //         this.paymentDecoded.num_satoshis = '0';
-    //       }
-    //       this.sendPayment();
-    //     } else {
-    //       this.resetData();
-    //     }
-    //   });
-    // }
-
+    if (undefined !== this.paymentDecoded.created_at_str) {
+      this.sendPayment();
+    } else {
+      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new RTLActions.DecodePaymentCL(this.paymentRequest));
+      this.clEffects.setDecodedPaymentCL
+      .pipe(take(1))
+      .subscribe(decodedPayment => {
+        this.paymentDecoded = decodedPayment;
+        if (undefined !== this.paymentDecoded.created_at_str) {
+          this.paymentDecoded.created_at_str = (this.paymentDecoded.created_at_str === '') ? '' :
+          formatDate(this.paymentDecoded.created_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+          this.paymentDecoded.expire_at_str = (this.paymentDecoded.expire_at_str === '') ? '' :
+          formatDate(this.paymentDecoded.expire_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+          if (undefined === this.paymentDecoded.msatoshi) {
+            this.paymentDecoded.msatoshi = 0;
+          }
+          this.sendPayment();
+        } else {
+          this.resetData();
+        }
+      });
+    }
   }
 
-  // sendPayment() {
-  //   this.flgAnimate = true;
-  //   this.newlyAddedPayment = this.paymentDecoded.payment_hash;
-  //   if (undefined === this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
-  //       const titleMsg = 'This is an empty invoice. Enter the amount (Sats) to pay.';
-  //       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-  //         type: 'CONFIRM', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
-  //           {placeholder: 'Amount (Sats)', inputType: 'number', inputValue: ''}
-  //         ]
-  //       }}));
-  //       this.rtlEffects.closeConfirm
-  //       .pipe(take(1))
-  //       .subscribe(confirmRes => {
-  //         if (confirmRes) {
-  //           this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-  //           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-  //           this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, true]));
-  //           this.resetData();
-  //         }
-  //       });
-  //   } else {
-  //     this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-  //       type: 'CONFIRM', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
-  //     }}));
-  //     this.rtlEffects.closeConfirm
-  //     .pipe(take(1))
-  //     .subscribe(confirmRes => {
-  //       if (confirmRes) {
-  //         this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-  //         this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, false]));
-  //         this.resetData();
-  //       }
-  //     });
-  //   }
-  // }
+  sendPayment() {
+    this.flgAnimate = true;
+    this.newlyAddedPayment = this.paymentDecoded.payment_hash;
+    if (undefined === this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
+        const titleMsg = 'This is an empty invoice. Enter the amount (Sats) to pay.';
+        this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+          type: 'CONFIRM', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
+            {placeholder: 'Amount (mSats)', inputType: 'number', inputValue: ''}
+          ]
+        }}));
+        this.rtlEffects.closeConfirm
+        .pipe(take(1))
+        .subscribe(confirmRes => {
+          if (confirmRes) {
+            this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
+            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue}));
+            this.resetData();
+          }
+        });
+    } else {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+        type: 'CONFIRM', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
+      }}));
+      this.rtlEffects.closeConfirm
+      .pipe(take(1))
+      .subscribe(confirmRes => {
+        if (confirmRes) {
+          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+          this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest}));
+          this.resetData();
+        }
+      });
+    }
+  }
 
   // onVerifyPayment() {
   //   this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));

@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL, FeeRateTypeCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -19,6 +19,7 @@ export interface CLState {
   invoices: ListInvoicesCL;
   totalInvoices: number;
   addressTypes: AddressTypeCL[];
+  feeRateTypes: FeeRateTypeCL[];
 }
 
 export const initCLState: CLState = {
@@ -39,6 +40,11 @@ export const initCLState: CLState = {
   addressTypes: [
     { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32' },
     { addressId: '1', addressTp: 'p2sh-segwit', addressDetails: 'p2sh-segwit (default)' }
+  ],
+  feeRateTypes: [
+    { feeRateId: 'urgent', feeRateType: 'Urgent'},
+    { feeRateId: 'normal', feeRateType: 'Normal'},
+    { feeRateId: 'slow', feeRateType: 'Slow'},
   ]
 }
 

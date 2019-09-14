@@ -19,7 +19,30 @@ exports.listChannels = (req, res, next) => {
   });
 }
 
-exports.openChannel = (req, res, next) => {}
+exports.openChannel = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channel/openChannel';
+  options.body = req.body;
+  logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options)});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: 'Open Channel Failed!',
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(201).json(body);
+    }
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 39, msg: 'Open Channel Failed: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Open Channel Failed!',
+      error: err.error
+    });
+  });
+}
 
 exports.setChannelFee = (req, res, next) => {
   options = common.getOptions();

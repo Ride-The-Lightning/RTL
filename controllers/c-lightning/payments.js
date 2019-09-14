@@ -42,8 +42,8 @@ exports.decodePayment = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      // body.btc_num_satoshis = (undefined === body.num_satoshis) ? 0 : common.convertToBTC(body.num_satoshis);
-      // body.timestamp_str =  (undefined === body.timestamp) ? '' : common.convertTimestampToDate(body.timestamp);
+      body.created_at_str =  (undefined === body.created_at) ? '' : common.convertTimestampToDate(body.created_at);
+      body.expire_at_str =  (undefined === body.created_at || undefined === body.expiry) ? '' : common.convertTimestampToDate(body.created_at + body.expiry);
       res.status(200).json(body);
     }
   })
@@ -59,21 +59,11 @@ exports.postPayment = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/pay';
   options.body = req.body;
-  // options.body = { 
-  //   amount: req.body.amount,
-  //   addr: req.body.address,
-  //   sat_per_byte: req.body.fees,
-  //   target_conf: req.body.blocks
-  // };
-  // if (req.body.sendAll) {
-  //   options.form.send_all = req.body.sendAll;
-  // }
-  // options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.info({fileName: 'Payments', msg: 'Payment Post Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
-        message: "Payment post failed!",
+        message: "Payment Post Failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
@@ -82,7 +72,7 @@ exports.postPayment = (req, res, next) => {
   })
   .catch(function (err) {
     return res.status(500).json({
-      message: "Payment post failed!",
+      message: "Payment Post Failed!",
       error: err.error
     });
   });

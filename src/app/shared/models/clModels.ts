@@ -83,16 +83,20 @@ export interface ListInvoicesCL {
 
 export interface OnChainCL {
   address?:	string;
-  amount?: number;
-  sendAll?: boolean;
-  blocks?: number;
-  fees?: number;
+  satoshis?: number;
+  feeRate?: string;
+  minconf?: number;
 }
 
 export interface AddressTypeCL {
   addressId?: string;
   addressTp?: string;
   addressDetails?: string;
+}
+
+export interface FeeRateTypeCL {
+  feeRateId?: string;
+  feeRateType?: string;
 }
 
 export interface HopCL {
@@ -124,18 +128,18 @@ export interface PaymentCL {
 }
 
 export interface PayRequestCL {
-  payment_hash?: string;
-  route_hints?: any[];
-  timestamp?: number;
-  timestamp_str?: string;
-  fallback_addr?: string;
-  cltv_expiry?: number;
-  description_hash?: string;
-  destination?: string;
+  currency?: string;
+  created_at?: number;
   expiry?: number;
+  payee?: string;
+  msatoshi?: number;
+  amount_msat?: string;
   description?: string;
-  num_satoshis?: string;
-  btc_num_satoshis?: string;
+  min_final_cltv_expiry?: number;
+  payment_hash?: string;
+  signature?: string;
+  created_at_str?: string;
+  expire_at_str?: string;
 }
 
 export interface ForwardingEventCL {
