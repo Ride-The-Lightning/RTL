@@ -2,6 +2,7 @@ RTL C-lightning setup
 
 * [Introduction](#intro)
 * [Pre-requisite](#prereq)
+* [Architecture](#arch)
 * [Installation](#install)
 * [Prep for execution](#prep)
 * [Start the server and access the app](#start)
@@ -17,6 +18,9 @@ Follow the below steps to install and setup RTL to run on c-lightning.
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 3. Cl-Rest - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/saubyk/c-lightning-REST/blob/master/README.md)
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
+
+### <a name="arch"></a>Architecture
+![](screenshots/RTL-C-lightning-Arch.png)
 
 ### <a name="install"></a>Installation:
 #### First time setup
