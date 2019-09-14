@@ -20,7 +20,7 @@ Follow the below steps to install and setup RTL to run on c-lightning.
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
 
 ### <a name="arch"></a>Architecture
-![](screenshots/RTL-C-lightning-Arch.png)
+![](../screenshots/RTL-C-lightning-Arch.png)
 
 ### <a name="install"></a>Installation:
 #### First time setup
