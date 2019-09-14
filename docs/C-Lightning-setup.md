@@ -95,5 +95,5 @@ If the server started successfully, you should get the below output on the conso
 
 Open your browser at the following address: http://localhost:3000 to access the RTL app.
 
-### Redirect to main page for detailed instructions
+### Detailed config and instructions
 For detailed config and access options and other information, view the main readme page.
