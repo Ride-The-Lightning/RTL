@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AlertData } from '../../../shared/models/alertData';
@@ -14,7 +15,8 @@ export class AlertMessageComponent implements OnInit {
   public msgTypeForeground = 'primary';
   public messageObj = [];
   public flgCopied = false;
-
+  faCopy = faCopy;
+  
   constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService) { }
 
   ngOnInit() {
@@ -69,7 +71,7 @@ export class AlertMessageComponent implements OnInit {
 
   showCopyOption(key): boolean {
     let flgFoundKey = false;
-    const showCopyOnKeys = ['payment request'];
+    const showCopyOnKeys = ['payment request', 'bolt11'];
     showCopyOnKeys.filter((arrKey) => {
       if (arrKey === key) {
         flgFoundKey = true;

@@ -101,9 +101,9 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
               <td mat-cell *matCellDef="let channel"> {{channel?.short_channel_id}}</td>
             </ng-container>
-            <ng-container matColumnDef="peer_id">
+            <ng-container matColumnDef="alias">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-              <td mat-cell *matCellDef="let channel">{{channel?.peer_id | slice:0:10}}...</td>
+              <td mat-cell *matCellDef="let channel">{{channel?.alias}}</td>
             </ng-container>
             <ng-container matColumnDef="connected">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Connected </th>

@@ -59,30 +59,26 @@ export interface PeerCL {
 }
 
 export interface InvoiceCL {
-  memo?: string;
-  receipt?: string;
-  r_preimage?: string;
-  r_hash?: string;
-  value?: string;
-  btc_value?: string;
-  settled?: boolean;
-  creation_date?: string;
-  creation_date_str?: string;
-  settle_date?: string;
-  settle_date_str?: string;
-  payment_request?: string;
-  description_hash?: string;
-  expiry?: string;
-  fallback_addr?: string;
-  cltv_expiry?: string;
-  route_hints?: any[];
-  private?: boolean;
-  add_index?: string;
-  settle_index?: string;
-  amt_paid?: string;
-  amt_paid_sat?: string;
-  btc_amt_paid_sat?: string;
-  amt_paid_msat?: string;
+  label?: string;
+  bolt11?: string;
+  payment_hash?: string;
+  msatoshi?: number;
+  amount_msat?: string;
+  status?: string;
+  pay_index?: number;
+  msatoshi_received?: number;
+  amount_received_msat?: string;
+  paid_at?: number;
+  description?: string;
+  expires_at?: number;
+  paid_at_str?: string;
+  expires_at_str?: string;
+}
+
+export interface ListInvoicesCL {
+  invoices?: InvoiceCL[];
+  last_index_offset?: string;
+  first_index_offset?: string;
 }
 
 export interface OnChainCL {
@@ -179,8 +175,8 @@ export interface RoutesCL {
 }
 
 export interface ChannelCL {
-  peer_id?: string;
-  peer_alias?: string;
+  id?: string;
+  alias?: string;
   connected?: boolean;
   state?: string;
   short_channel_id?: string;

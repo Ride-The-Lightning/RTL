@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
@@ -135,6 +135,12 @@ export const INVOICE_LOOKUP_CL = 'INVOICE_LOOKUP_CL';
 export const SET_LOOKUP_CL = 'SET_LOOKUP_CL';
 export const GET_FORWARDING_HISTORY_CL = 'GET_FORWARDING_HISTORY_CL';
 export const SET_FORWARDING_HISTORY_CL = 'SET_FORWARDING_HISTORY_CL';
+export const FETCH_INVOICES_CL = 'FETCH_INVOICES_CL';
+export const SET_INVOICES_CL = 'SET_INVOICES_CL';
+export const SET_TOTAL_INVOICES_CL = 'SET_TOTAL_INVOICES_CL';
+export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
+export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
+export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -728,6 +734,36 @@ export class SetForwardingHistoryCL implements Action {
   constructor(public payload: ForwardingHistoryResCL) {}
 }
 
+export class FetchInvoicesCL implements Action {
+  readonly type = FETCH_INVOICES_CL;
+  constructor(public payload: {num_max_invoices?: number, index_offset?: number, reversed?: boolean}) {}
+}
+
+export class SetInvoicesCL implements Action {
+  readonly type = SET_INVOICES_CL;
+  constructor(public payload: ListInvoicesCL) {}
+}
+
+export class SetTotalInvoicesCL implements Action {
+  readonly type = SET_TOTAL_INVOICES_CL;
+  constructor(public payload: number) {}
+}
+
+export class SaveNewInvoiceCL implements Action {
+  readonly type = SAVE_NEW_INVOICE_CL;
+  constructor(public payload: {amount: number, label: string, description: string, expiry: number, private: boolean}) {}
+}
+
+export class AddInvoiceCL implements Action {
+  readonly type = ADD_INVOICE_CL;
+  constructor(public payload: InvoiceCL) {}
+}
+
+export class DeleteExpiredInvoiceCL implements Action {
+  readonly type = DELETE_EXPIRED_INVOICE_CL;
+  constructor(public payload?: number) {} // maxexpiry
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -759,4 +795,5 @@ export type RTLActions =
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
   GetQueryRoutesCL | SetQueryRoutesCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
-  GetForwardingHistoryCL | SetForwardingHistoryCL;
+  GetForwardingHistoryCL | SetForwardingHistoryCL |
+  FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL;

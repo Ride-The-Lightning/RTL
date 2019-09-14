@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {
     MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
@@ -34,6 +35,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
+        FontAwesomeModule,
         FlexLayoutModule,
         MatButtonModule,
         MatButtonToggleModule,
@@ -70,6 +72,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
     exports: [
         FormsModule,
         ReactiveFormsModule,
+        FontAwesomeModule,
         FlexLayoutModule,
         MatButtonModule,
         MatButtonToggleModule,

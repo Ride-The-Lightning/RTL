@@ -43,7 +43,7 @@ import { CLEffects } from './clightning/store/cl.effects';
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
     StoreModule.forRoot(RTLReducer),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : []    
+    !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [
     AppComponent

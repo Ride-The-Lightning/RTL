@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Store } from '@ngrx/store';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AlertData, InputData } from '../../../shared/models/alertData';
@@ -21,6 +22,7 @@ export class ConfirmationMessageComponent implements OnInit {
   public messageObj = [];
   public flgCopied = false;
   public flgShowInput = false;
+  faCopy = faCopy;
   public getInputs: Array<InputData> = [{placeholder: '', inputType: 'text', inputValue: ''}];
 
   constructor(public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService,
@@ -70,7 +72,7 @@ export class ConfirmationMessageComponent implements OnInit {
 
   showCopyOption(key): boolean {
     let flgFoundKey = false;
-    const showCopyOnKeys = ['payment request'];
+    const showCopyOnKeys = ['payment request', 'bolt11'];
     showCopyOnKeys.filter((arrKey) => {
       if (arrKey === key) {
         flgFoundKey = true;

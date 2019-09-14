@@ -53,19 +53,19 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
         this.displayedColumns = [
-          'close', 'update', 'short_channel_id', 'peer_id', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
+          'close', 'update', 'short_channel_id', 'alias', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
         ];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
         this.displayedColumns = [
-          'close', 'update', 'short_channel_id', 'peer_id', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
+          'close', 'update', 'short_channel_id', 'alias', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
         ];
         break;
       default:
         this.flgSticky = true;
         this.displayedColumns = [
-          'close', 'update', 'short_channel_id', 'peer_id', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
+          'close', 'update', 'short_channel_id', 'alias', 'connected', 'private', 'state', 'msatoshi_to_us', 'msatoshi_total', 'spendable_msatoshi'
         ];
         break;
     }
@@ -216,7 +216,7 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
       return channel.channel_id === selRow.channel_id;
     })[0];
     const reorderedChannel = JSON.parse(JSON.stringify(selChannel, [
-      'channel_id', 'short_channel_id', 'peer_id', 'connected', 'private', 'state', 'funding_txid', 'msatoshi_to_us', 'msatoshi_total', 'their_channel_reserve_satoshis', 'our_channel_reserve_satoshis', 'spendable_msatoshi'
+      'channel_id', 'short_channel_id', 'id', 'alias', 'connected', 'private', 'state', 'funding_txid', 'msatoshi_to_us', 'msatoshi_total', 'their_channel_reserve_satoshis', 'our_channel_reserve_satoshis', 'spendable_msatoshi'
     ] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
       type: 'INFO',
@@ -226,13 +226,13 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
 
   loadChannelsTable(channels) {
     channels.sort(function(a, b) {
-      return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
+      return (a && a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<ChannelCL>([...channels]);
     this.channels.sort = this.sort;
     this.channels.filterPredicate = (channel: ChannelCL, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id : '') +
-      (channel.short_channel_id ? channel.short_channel_id : '') + (channel.peer_id ? channel.peer_id : '') + (channel.peer_alias ? channel.peer_alias : '') +
+      (channel.short_channel_id ? channel.short_channel_id : '') + (channel.id ? channel.id : '') + (channel.alias ? channel.alias : '') +
       (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
       (channel.funding_txid ? channel.funding_txid : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
       (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +

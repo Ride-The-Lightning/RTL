@@ -125,7 +125,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
         invoice.settle_date_str = (invoice.settle_date_str === '') ? '' : formatDate(invoice.settle_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
       }
     });
-    setTimeout(() => { this.flgAnimate = false; }, 30000);
+    setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }
 

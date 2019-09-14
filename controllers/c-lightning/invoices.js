@@ -3,22 +3,23 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
-exports.getInvoice = (req, res, next) => {
+exports.deleteExpiredInvoice = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoice/' + req.params.rHashStr;
-  request(options).then((body) => {
-    logger.info({fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
+  const queryStr = req.query.maxExpiry ? '?maxexpiry=' + req.query.maxExpiry : '';
+  options.url = common.getSelLNServerUrl() + '/invoice/delExpiredInvoice' + queryStr;
+  request.delete(options).then((body) => {
+    logger.info({fileName: 'Invoice', msg: 'Invoices Deleted: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
       res.status(500).json({
-        message: "Fetching Invoice Info Failed!",
+        message: "Deleting Invoice Failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     }
-    res.status(200).json(body);
+    res.status(204).json({status: 'Invoice Deleted Successfully'});
   })
   .catch((err) => {
     return res.status(500).json({
-      message: "Fetching Invoice Info Failed!",
+      message: "Deleting Invoice Failed!",
       error: err.error
     });
   });  
@@ -57,13 +58,8 @@ exports.listInvoices = (req, res, next) => {
 
 exports.addInvoice = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoices';
-  options.form = JSON.stringify({ 
-    memo: req.body.memo,
-    value: req.body.amount,
-    private: req.body.private,
-    expiry: req.body.expiry
-  });
+  options.url = common.getSelLNServerUrl() + '/invoice/genInvoice';
+  options.body = req.body;
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

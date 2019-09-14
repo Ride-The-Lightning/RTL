@@ -4,7 +4,7 @@ const router = express.Router();
 const authCheck = require("../authCheck");
 
 router.get("/", authCheck, invoicesController.listInvoices);
-router.get("/:rHashStr", authCheck, invoicesController.getInvoice);
 router.post("/", authCheck, invoicesController.addInvoice);
+router.delete("/", authCheck, invoicesController.deleteExpiredInvoice);
 
 module.exports = router;

@@ -2,6 +2,8 @@ import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { UserIdleService } from 'angular-user-idle';
@@ -21,6 +23,7 @@ import * as fromRTLReducer from './store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
+  faCopy = faCopy;
   public selNode: LightningNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
