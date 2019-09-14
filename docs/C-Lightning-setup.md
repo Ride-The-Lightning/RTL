@@ -78,7 +78,7 @@ Ensure that the follow values are correct per your config:
         "menu": "Vertical",
         "menuType": "Regular",
         "theme": "dark-pink",
-        "satsToBTC": true,
+        "satsToBTC": false,
         "bitcoindConfigPath": "",
         "enableLogging": "true",
         "lnServerUrl": "https://<cl-rest api server ip address>:3001/v1"
