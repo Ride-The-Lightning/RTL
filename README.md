@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 ### Stable Release: v0.4.6
 
-**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations)
+**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
@@ -47,7 +47,7 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
 ### <a name="install"></a>Installation
 #### First time setup
-* Fetch sources from the RTL git repository, by executing the below on the command prompt:
+* Fetch sources from RTL git repository, by executing the below on the command prompt:
 
 `$ git clone https://github.com/ShahanaFarooqui/RTL.git`
 * Change directory to RTL folder:
