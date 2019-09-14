@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { formatDate } from '@angular/common';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { LookupNodeCL } from '../../../shared/models/clModels';
 
@@ -12,10 +13,10 @@ export class CLNodeLookupComponent implements OnInit {
   @Input() lookupResult: LookupNodeCL;
   public displayedColumns = ['type', 'address', 'port'];
 
-  constructor() { }
+  constructor(private logger: LoggerService) { }
 
   ngOnInit() {
-    console.warn(this.lookupResult);
+    this.logger.info(this.lookupResult);
     if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_timestamp_str) {
       this.lookupResult.last_timestamp_str = (this.lookupResult.last_timestamp_str === '') ?
         '' : formatDate(this.lookupResult.last_timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');

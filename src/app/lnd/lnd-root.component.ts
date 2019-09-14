@@ -20,7 +20,6 @@ export class LNDRootComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchInfo());
-    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
     this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_INFO))
     .subscribe((infoData: RTLActions.SetInfo) => {
       if(infoData.type === RTLActions.SET_INFO && undefined !== infoData.payload.identity_pubkey) {

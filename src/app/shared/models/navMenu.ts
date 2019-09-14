@@ -20,8 +20,8 @@ export const MENU_DATA: MenuRootNode = {
     {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/lnd/switch'},
     {id: 8, parentId: 0, name: 'Routing Peers', icon: 'group_work', link: '/lnd/routingpeers'},
     {id: 9, parentId: 0, name: 'Lookups', icon: 'search', link: '/lnd/lookups'},
-    {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '../sconfig'},
-    {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '../help'}
+    {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '/sconfig'},
+    {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '/help'}
   ],
   CLChildren: [
     {id: 1, parentId: 0, name: 'Home', icon: 'home', link: '/cl/home'},
@@ -35,8 +35,8 @@ export const MENU_DATA: MenuRootNode = {
     {id: 6, parentId: 0, name: 'Invoices', icon: 'receipt', link: '/cl/invoices'},
     {id: 7, parentId: 0, name: 'Forwarding History', icon: 'timeline', link: '/cl/forwardinghistory'},
     {id: 9, parentId: 0, name: 'Lookups', icon: 'search', link: '/cl/lookups'},    
-    {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '../sconfig'},
-    {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '../help'}
+    {id: 10, parentId: 0, name: 'Node Config', icon: 'perm_data_setting', link: '/sconfig'},
+    {id: 11, parentId: 0, name: 'Help', icon: 'help', link: '/help'}
   ]
 };
 

@@ -20,7 +20,6 @@ export class CLRootComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchInfoCL());
-    this.router.navigate(['./home'], {relativeTo: this.activatedRoute});
     this.actions$.pipe(takeUntil(this.unsubs[0]), filter((action) => action.type === RTLActions.SET_INFO_CL))
     .subscribe((infoData: RTLActions.SetInfoCL) => {
       if(infoData.type === RTLActions.SET_INFO_CL && undefined !== infoData.payload.id) {

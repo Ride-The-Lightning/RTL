@@ -12,8 +12,8 @@ export const routes: Routes = [
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LNDModule), canActivate: [AuthGuard] },
   { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
   { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: SigninComponent },
   { path: 'help', component: HelpComponent },
+  { path: 'login', component: SigninComponent },
   { path: 'ssoerror', component: SsoFailedComponent },
   { path: '**', component: NotFoundComponent } 
 ];

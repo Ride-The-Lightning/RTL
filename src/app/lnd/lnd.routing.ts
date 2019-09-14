@@ -39,6 +39,8 @@ export const LndRoutes: Routes = [
     { path: 'switch', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'onchain', redirectTo: 'transsendreceive' },
+    { path: 'forwardinghistory', redirectTo: 'switch' },
     { path: '**', component: NotFoundComponent }
   ]}
 ];

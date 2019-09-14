@@ -17,14 +17,16 @@
           </mat-form-field>
         </div>
       </div>
+      <mat-divider></mat-divider>
+    </div>
+    <div *ngIf="selNode.lnImplementation !== 'CLT'">
+      <h4>Currency Unit</h4>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <span>{{currencyUnit}}</span>
+        <mat-slide-toggle [checked]="selNode?.settings?.satsToBTC" (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
+      </div>
       <mat-divider class="mt-2"></mat-divider>
     </div>
-    <h4>Currency Unit</h4>
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-      <span>{{currencyUnit}}</span>
-      <mat-slide-toggle [checked]="selNode?.settings?.satsToBTC" (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
-    </div>
-    <mat-divider class="mt-2"></mat-divider>
     <div *ngIf="showSettingOption">
       <h4>Menu</h4>
       <mat-radio-group [(ngModel)]="selectedMenu" (change)="chooseMenu()">
@@ -64,26 +66,5 @@
       <div class="skin light-teal m-1px" (click)="changeTheme('light-teal')"></div>
       <div class="skin light-blue-gray m-1px" (click)="changeTheme('light-blue-gray')"></div>
     </div>
-    <!-- <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
-      <div class="skin bluegray-amber m-1px" (click)="changeTheme('bluegray-amber')"></div>
-      <div class="skin bluegray-deeppurple m-1px" (click)="changeTheme('bluegray-deeppurple')"></div>
-      <div class="skin bluegray-lightgreen m-1px" (click)="changeTheme('bluegray-lightgreen')"></div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
-      <div class="skin gray-blue m-1px" (click)="changeTheme('gray-blue')"></div>
-      <div class="skin gray-lime m-1px" (click)="changeTheme('gray-lime')"></div>
-      <div class="skin gray-purple m-1px" (click)="changeTheme('gray-purple')"></div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
-      <div class="skin self-gray m-1px" (click)="changeTheme('self-gray')"></div>
-      <div class="skin self-blue m-1px" (click)="changeTheme('self-blue')"></div>
-      <div class="skin self-brown m-1px" (click)="changeTheme('self-brown')"></div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
-      <div class="skin self-yellow m-1px" (click)="changeTheme('self-yellow')"></div>
-      <div class="skin self-green m-1px" (click)="changeTheme('self-green')"></div>
-      <div class="skin self-pink m-1px" (click)="changeTheme('self-pink')"></div>
-    </div> -->
-    <mat-divider class="mt-2"></mat-divider>
   </div>
 </div>

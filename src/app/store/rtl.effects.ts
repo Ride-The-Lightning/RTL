@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
+import { Location } from '@angular/common';
 
 import { MatDialog } from '@angular/material';
 
@@ -31,7 +32,8 @@ export class RTLEffects implements OnDestroy {
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
     public dialog: MatDialog,
-    private router: Router) { }
+    private router: Router,
+    private location: Location) { }
 
   @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
@@ -254,12 +256,27 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
           this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
           this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+          let newRoute = this.location.path();
           if(action.payload.lnNode.lnImplementation.toUpperCase() === 'CLT') {
-            this.router.navigate(['/cl/home']);
+            if(newRoute.includes('/lnd/')) {
+              newRoute = newRoute.replace('/lnd/', '/cl/');
+            } else if(newRoute === '/') {
+              newRoute = '/cl/home';
+            }
+            this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+            this.router.onSameUrlNavigation = 'reload';              
+            this.router.navigate([newRoute]);
             this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.VOID };
           } else {
-            this.router.navigate(['/lnd/home']);
+            if(newRoute.includes('/cl/')) {
+              newRoute = newRoute.replace('/cl/', '/lnd/');
+            } else if(newRoute === '/') {
+              newRoute = '/lnd/home';
+            }
+            this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+            this.router.onSameUrlNavigation = 'reload';              
+            this.router.navigate([newRoute]);
             this.CHILD_API_URL = API_URL + '/lnd';
             return { type: RTLActions.VOID };
           }
