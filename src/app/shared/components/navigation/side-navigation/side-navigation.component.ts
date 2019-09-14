@@ -91,7 +91,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toLowerCase() === 'clightning') {
+      if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toUpperCase() === 'CLT') {
         this.navMenus.data = MENU_DATA.CLChildren;
       } else {
         this.navMenus.data = MENU_DATA.LNDChildren;

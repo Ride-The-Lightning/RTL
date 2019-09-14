@@ -33,7 +33,7 @@ common.setOptions = () => {
         json: true,
         form: ''
       };
-      if (node.ln_implementation.toLowerCase() !== 'clightning') {
+      if (node.ln_implementation.toUpperCase() !== 'CLT') {
         node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') };
       } else {
         node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(node.macaroon_path + '/access.macaroon')).toString("base64") };
@@ -46,7 +46,7 @@ common.setOptions = () => {
       json: true,
       form: ''
     };
-    if (common.selectedNode.ln_implementation.toLowerCase() !== 'clightning') {
+    if (common.selectedNode.ln_implementation.toUpperCase() !== 'CLT') {
       common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(common.selectedNode.macaroon_path + '/admin.macaroon').toString('hex') };
     } else {
       common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(common.selectedNode.macaroon_path + '/access.macaroon')).toString("base64") };

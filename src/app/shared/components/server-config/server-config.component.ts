@@ -38,7 +38,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
       this.showLnConfig = false;
       this.showBitcoind = false;
       this.selNode = rtlStore.selNode;
-      this.lnImplementationStr = this.selNode.lnImplementation.toLowerCase() === 'clightning' ? 'C-Lightning' : 'LND';
+      this.lnImplementationStr = this.selNode.lnImplementation.toUpperCase() === 'CLT' ? 'CLT' : 'LND';
       if (undefined !== this.selNode.authentication && undefined !== this.selNode.authentication.configPath && this.selNode.authentication.configPath !== '') {
         this.showLnConfig = true;
       }

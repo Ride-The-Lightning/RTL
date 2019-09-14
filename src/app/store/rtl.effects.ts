@@ -202,7 +202,7 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
-        if(rootStore.selNode.lnImplementation.toLowerCase() === 'clightning') {
+        if(rootStore.selNode.lnImplementation.toUpperCase() === 'CLT') {
           this.router.navigate(['/cl/home']);
         } else {
           this.router.navigate(['/lnd/home']);
@@ -254,7 +254,7 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
           this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
           this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-          if(action.payload.lnNode.lnImplementation.toLowerCase() === 'clightning') {
+          if(action.payload.lnNode.lnImplementation.toUpperCase() === 'CLT') {
             this.router.navigate(['/cl/home']);
             this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.VOID };
