@@ -60,6 +60,10 @@ export class SettingsNavComponent implements OnInit, OnDestroy {
 
   toggleSettings(toggleField: string) {
     this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
+    if (toggleField === 'satsToBTC') {
+      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
+    }
   }
 
   changeTheme(newTheme: string) {

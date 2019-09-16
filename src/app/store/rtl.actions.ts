@@ -31,6 +31,7 @@ export const SET_NODE_PENDING_CHANNELS_DATA = 'SET_NODE_PENDING_CHANNELS_DATA';
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
 export const EFFECT_ERROR_LND = 'EFFECT_ERROR_LND';
+export const SET_CHILD_NODE_SETTINGS = 'SET_CHILD_NODE_SETTINGS';
 export const FETCH_INFO = 'FETCH_INFO';
 export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
@@ -98,6 +99,7 @@ export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
 export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
+export const SET_CHILD_NODE_SETTINGS_CL = 'SET_CHILD_NODE_SETTINGS_CL';
 export const FETCH_INFO_CL = 'FETCH_INFO_CL';
 export const SET_INFO_CL = 'SET_INFO_CL';
 export const FETCH_FEES_CL = 'FETCH_FEES_CL';
@@ -247,6 +249,11 @@ export class SetNodeData implements Action {
 export class SetNodePendingChannelsData implements Action {
   readonly type = SET_NODE_PENDING_CHANNELS_DATA;
   constructor(public payload: number) {}
+}
+
+export class SetChildNodeSettings implements Action {
+  readonly type = SET_CHILD_NODE_SETTINGS;
+  constructor(public payload: SelNodeChild) {}
 }
 
 export class FetchInfo implements Action {
@@ -557,6 +564,11 @@ export class InitAppData implements Action {
   readonly type = INIT_APP_DATA;
 }
 
+export class SetChildNodeSettingsCL implements Action {
+  readonly type = SET_CHILD_NODE_SETTINGS_CL;
+  constructor(public payload: SelNodeChild) {}
+}
+
 export class FetchInfoCL implements Action {
   readonly type = FETCH_INFO_CL;
 }
@@ -775,7 +787,7 @@ export type RTLActions =
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
   ResetRootStore | ResetLNDStore | ResetCLStore |
-  SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | FetchInfo | SetInfo |
+  SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
@@ -793,7 +805,7 @@ export type RTLActions =
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
-  FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
+  SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |

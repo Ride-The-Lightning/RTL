@@ -77,6 +77,11 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         effectErrorsLnd: [...state.effectErrorsLnd, action.payload]
       };
+    case RTLActions.SET_CHILD_NODE_SETTINGS:
+      return {
+        ...state,
+        nodeSettings: action.payload
+      }
     case RTLActions.RESET_LND_STORE:
       return {
         ...initLNDState,

@@ -11,7 +11,7 @@
   <div fxLayout="column">
     <p class="name">Alias: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{information?.alias}}</p>
     <p>Chain: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{informationChain.chain | titlecase}}<span> [{{informationChain.network | titlecase}}]</span></p>
-    <p class="name">LND Version: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{information?.version}}</p>
+    <p class="name">LN Version: <mat-spinner [diameter]="20" *ngIf="flgLoading" class="inline-spinner"></mat-spinner>{{information?.version}}</p>
   </div>
 </div>
 
