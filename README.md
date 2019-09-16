@@ -39,7 +39,7 @@ RTL is available on the below platforms/services:
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
 ### <a name="arch"></a>Architecture
-![](screenshots/RTL_Arch.png)
+![](screenshots/RTL-LND-Arch.png)
 
 ### <a name="prereq"></a>Prerequisites
 * Functioning and synced LND lightning node.
