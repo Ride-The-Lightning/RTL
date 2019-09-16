@@ -28,10 +28,13 @@ RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/R
 
 For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
-RTL is already available on:
+RTL is available on the below platforms/services:
 * [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
 * [Nodl](https://www.nodl.it/)
 * [BTCPayserver](https://github.com/btcpayserver/btcpayserver-docker)
+* [Blockdaemon](https://blockdaemon.com/bitcoin-lightning-protocol-details)
+* [myNode](http://mynodebtc.com)
+* [Lux Node](https://luxnode.io/product/lux-node/)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
