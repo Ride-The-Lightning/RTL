@@ -119,7 +119,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.treeControl.collapseAll();
     if (node.parentId === 0) {
       this.treeControl.expandDescendants(node);
-      this.router.navigate([node.link], {relativeTo: this.activatedRoute.firstChild});
+      this.router.navigate([node.link]);
     } else {
       const parentNode = this.treeControl.dataNodes.filter(dataNode => {
         return dataNode.id === node.parentId;
