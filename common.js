@@ -1,5 +1,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
+var path = require('path');
 var common = {};
 
 common.multi_node_setup = false;
@@ -33,10 +34,10 @@ common.setOptions = () => {
         json: true,
         form: ''
       };
-      if (node.ln_implementation.toUpperCase() !== 'CLT') {
-        node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex') };
+      if (node.ln_implementation && node.ln_implementation.toUpperCase() === 'CLT') {
+        node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
       } else {
-        node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(node.macaroon_path + '/access.macaroon')).toString("base64") };
+        node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
       }
     });
     // Options cannot be set before selected node initializes. Updating selected node's options separatly
@@ -46,10 +47,10 @@ common.setOptions = () => {
       json: true,
       form: ''
     };
-    if (common.selectedNode.ln_implementation.toUpperCase() !== 'CLT') {
-      common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(common.selectedNode.macaroon_path + '/admin.macaroon').toString('hex') };
+    if (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() === 'CLT') {
+      common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
     } else {
-      common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(common.selectedNode.macaroon_path + '/access.macaroon')).toString("base64") };
+      common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
     }
   } catch (err) {
     console.error('Common Set Options Error:' + JSON.stringify(err));

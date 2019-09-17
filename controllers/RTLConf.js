@@ -6,8 +6,9 @@ var common = require('../common');
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
-  logger.info({fileName: 'RTLConf', msg: 'Selected Node Updated To: ' + JSON.stringify(common.selectedNode.ln_node)});
-  res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(common.selectedNode.ln_node) + '!'});
+  const responseVal = common.selectedNode.ln_node ? common.selectedNode.ln_node : common.selectedNode.ln_server_url;
+  logger.info({fileName: 'RTLConf', msg: 'Selected Node Updated To: ' + JSON.stringify(responseVal)});
+  res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
 
 exports.getRTLConfig = (req, res, next) => {
