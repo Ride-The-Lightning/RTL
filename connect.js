@@ -210,6 +210,14 @@ connect.validateSingleNodeConfig = (config) => {
     }
   }
 
+  if(undefined !== process.env.LN_IMPLEMENTATION) {
+    common.ln_implementation = process.env.LN_IMPLEMENTATION;
+  } else if (config.lnImplementation && config.lnImplementation !== '') {
+    common.ln_implementation = config.lnImplementation;
+  } else {
+    common.ln_implementation = 'LND';
+  }
+
   if (undefined !== process.env.RTL_PASS) {
 		common.rtl_pass = process.env.RTL_PASS;
 	} else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
