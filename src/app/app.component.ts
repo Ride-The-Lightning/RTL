@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readAccessKey() {
     const url = window.location.href;
-    return url.substring(url.lastIndexOf('access-key=') + 11).trim();
+    return url.includes('access-key=') ? url.substring(url.lastIndexOf('access-key=') + 11).trim() : '';
   }
 
   ngAfterViewInit() {

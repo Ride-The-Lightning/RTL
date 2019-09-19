@@ -1,5 +1,10 @@
 import { GetInfoChain } from './lndModels';
 
+export enum AuthenticateWith {
+  TOKEN = 'TOKEN',
+  PASSWORD = 'PASSWORD'
+}
+
 export class SSO {
   constructor(
     public rtlSSO: number,

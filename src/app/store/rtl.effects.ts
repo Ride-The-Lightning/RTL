@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
-import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
+import { Settings, RTLConfiguration, AuthenticateWith } from '../shared/models/RTLconfig';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
@@ -95,7 +95,6 @@ export class RTLEffects implements OnDestroy {
     }),
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
-      if (+rtlConfig.sso.rtlSSO) { this.store.dispatch(new RTLActions.Signout()); }
       this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex), isInitialSetup: true}))
       return {
         type: RTLActions.SET_RTL_CONFIG,
@@ -198,7 +197,10 @@ export class RTLEffects implements OnDestroy {
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
-    return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
+    return this.httpClient.post(environment.AUTHENTICATE_API, { 
+      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '') : action.payload 
+    })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);

@@ -7,12 +7,15 @@ var upperCase = require('upper-case');
 var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var logger = require('./logger');
+var token = '';
 
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
-    if (crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.password) {
+    if(req.body.authenticateWith === 'TOKEN' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
+      res.status(200).json({ token: token });
+    } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
       connect.refreshCookie(common.rtl_cookie_path);
-      const token = jwt.sign(
+      token = jwt.sign(
         { user: 'Custom_User', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
@@ -25,7 +28,7 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
-    const password = req.body.password;
+    const password = req.body.authenticationValue;
     if (common.multi_node_setup) {
       if (common.rtl_pass === password) {
         var rpcUser = 'Multi_Node_User';
