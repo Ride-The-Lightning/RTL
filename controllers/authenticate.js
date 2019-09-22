@@ -7,7 +7,6 @@ var upperCase = require('upper-case');
 var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var logger = require('./logger');
-var token = '';
 
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
@@ -15,7 +14,7 @@ exports.authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
       connect.refreshCookie(common.rtl_cookie_path);
-      token = jwt.sign(
+      const token = jwt.sign(
         { user: 'Custom_User', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );

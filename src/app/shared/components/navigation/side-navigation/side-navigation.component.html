@@ -16,17 +16,19 @@
 </div>
 
 <mat-tree [dataSource]="navMenus" [treeControl]="treeControl" *ngIf="settings.menuType !== 'Compact'">
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" routerLinkActive="active-link" routerLink="{{node.link}}">
-    <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}<span *ngIf="node.name === 'Pending' && settings.menuType === 'Mini'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
-    <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
+  <mat-tree-node *matTreeNodeDef="let node" (click)="onChildNavClicked(node);" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" routerLinkActive="active-link" routerLink="{{node.link}}">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+      <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}<span *ngIf="node.name === 'Pending' && settings.menuType === 'Mini'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
+      <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
+    </div>
   </mat-tree-node>
 
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" matTreeNodeToggle (click)="toggleTree(node)">
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
       <div fxFlex="89" fxLayoutAlign="start center">
         <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}</mat-icon><span *ngIf="settings.menuType !== 'Mini'">{{node.name}}</span>
       </div>
-      <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
+      <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
           <mat-icon class="mat-icon-rtl-mirror"> {{treeControl.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
       </button>
     </div>
@@ -46,11 +48,11 @@
   </mat-tree-node>
 
   <mat-tree-node fxLayout="row" *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-    <div class="ml-8" fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle (click)="toggleTree(node)">
+    <div class="ml-8" fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle>
       <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
       <span>{{node.name}}</span>
     </div>
-    <div fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle (click)="toggleTree(node)">
+    <div fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle>
       <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" matTreeNodeToggle>
         <mat-icon class="mat-icon-rtl-mirror"> {{treeControl.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
       </button>

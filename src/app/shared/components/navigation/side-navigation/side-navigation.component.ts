@@ -115,19 +115,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   hasChild(_: number, _nodeData: FlatMenuNode) { return _nodeData.expandable; }
 
-  toggleTree(node: FlatMenuNode) {
-    this.treeControl.collapseAll();
-    if (node.parentId === 0) {
-      this.treeControl.expandDescendants(node);
-      this.router.navigate([node.link]);
-    } else {
-      const parentNode = this.treeControl.dataNodes.filter(dataNode => {
-        return dataNode.id === node.parentId;
-      })[0];
-      this.treeControl.expandDescendants(parentNode);
-    }
-  }
-
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
@@ -148,7 +135,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onChildNavClicked(node) {
     this.ChildNavClicked.emit(node);
   }
-
+  
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

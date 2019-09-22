@@ -237,6 +237,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
     }
+    sessionStorage.removeItem('clUnlocked');
     sessionStorage.removeItem('lndUnlocked');
     sessionStorage.removeItem('token');
     this.logger.warn('LOGGED OUT');
