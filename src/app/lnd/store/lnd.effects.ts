@@ -685,10 +685,10 @@ export class LNDEffects implements OnDestroy {
               });
             } else {
               const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
-              confirmationMsg['Amount (' + ((undefined === store.information.smaller_currency_unit) ?
-                'Sats' : store.information.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
+              confirmationMsg['Amount (' + ((undefined === store.nodeData.smaller_currency_unit) ?
+                'Sats' : store.nodeData.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
               const msg = {};
-              msg['Total Fee (' + ((undefined === store.information.smaller_currency_unit) ? 'Sats' : store.information.smaller_currency_unit) + ')'] =
+              msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? 'Sats' : store.nodeData.smaller_currency_unit) + ')'] =
                 (sendRes.payment_route.total_fees_msat / 1000);
               Object.assign(msg, confirmationMsg);
               this.store.dispatch(new RTLActions.OpenAlert({
