@@ -98,3 +98,53 @@ exports.postBackupVerify = (req, res, next) => {
     });
   }
 };
+
+exports.postRestore = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channels/backup/restore';
+  let channel_restore_file = '';
+  let message = '';
+  let restore_backup = '';
+  if (req.params.channelPoint === 'ALL') {
+    message = 'All Channels Restore Successful!';
+    channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
+    let exists = fs.existsSync(channel_restore_file);
+    if (exists) {
+      restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
+      if (restore_backup !== '') {
+        restore_backup = JSON.parse(restore_backup);
+        // options.form = JSON.stringify({chan_backups: restore_backup.single_chan_backups});
+        options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
+      } else {
+        res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
+      }
+    } else {
+      restore_backup = '';
+      res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
+    }
+  } else {
+    message = 'Channel ' + req.params.channelPoint + ' Restore Successful!';
+    channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
+    let exists = fs.existsSync(channel_restore_file);
+    if (exists) {
+      restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
+      options.form = JSON.stringify({ chan_backups: { chan_backups: [JSON.parse(restore_backup)] } });
+    } else {
+      restore_backup = '';
+      res.status(404).json({ message: 'Channel backup to restore does not Exist!' });
+    }
+  }
+  if (restore_backup !== '') {
+    request.post(options).then(function (body) {
+      logger.info({fileName: 'Channels Backup Restore', msg: 'Channel Backup Restore: ' + JSON.stringify(body)});
+      res.status(201).json({ message: message });
+    })
+    .catch(function (err) {
+      logger.error({fileName: 'Channels Backup Restore', lineNum: 143, msg: 'Channel Backup Restore: ' + JSON.stringify(err)});
+      return res.status(404).json({
+        message: 'Channel restore failed!',
+        error: err.error
+      });
+    });
+  }
+};

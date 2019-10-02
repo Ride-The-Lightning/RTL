@@ -60,6 +60,8 @@ export const BACKUP_CHANNELS = 'BACKUP_CHANNELS';
 export const VERIFY_CHANNELS = 'VERIFY_CHANNELS';
 export const BACKUP_CHANNELS_RES = 'BACKUP_CHANNELS_RES';
 export const VERIFY_CHANNELS_RES = 'VERIFY_CHANNELS_RES';
+export const RESTORE_CHANNELS = 'RESTORE_CHANNELS';
+export const RESTORE_CHANNELS_RES = 'RESTORE_CHANNELS_RES';
 export const FETCH_INVOICES = 'FETCH_INVOICES';
 export const SET_INVOICES = 'SET_INVOICES';
 export const SET_TOTAL_INVOICES = 'SET_TOTAL_INVOICES';
@@ -389,6 +391,16 @@ export class BackupChannelsRes implements Action {
 
 export class VerifyChannelsRes implements Action {
   readonly type = VERIFY_CHANNELS_RES;
+  constructor(public payload: string) {}
+}
+
+export class RestoreChannels implements Action {
+  readonly type = RESTORE_CHANNELS;
+  constructor(public payload: {channelPoint: string}) {}
+}
+
+export class RestoreChannelsRes implements Action {
+  readonly type = RESTORE_CHANNELS_RES;
   constructor(public payload: string) {}
 }
 
@@ -795,7 +807,7 @@ export type RTLActions =
   FetchNetwork | SetNetwork |
   FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
-  BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
+  BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes | RestoreChannels | RestoreChannelsRes |
   FetchTransactions | SetTransactions |
   FetchInvoices | SetInvoices | SetTotalInvoices |
   FetchPayments | SetPayments | SendPayment |

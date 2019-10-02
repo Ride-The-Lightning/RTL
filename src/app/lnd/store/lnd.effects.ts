@@ -422,6 +422,42 @@ export class LNDEffects implements OnDestroy {
     }
     ));
 
+    @Effect()
+    restoreChannels = this.actions$.pipe(
+      ofType(RTLActions.RESTORE_CHANNELS),
+      mergeMap((action: RTLActions.RestoreChannels) => {
+        this.store.dispatch(new RTLActions.ClearEffectErrorLnd('RestoreChannels'));
+        return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/' + action.payload.channelPoint, {})
+          .pipe(
+            map((postRes: any) => {
+              this.logger.info(postRes);
+              this.store.dispatch(new RTLActions.CloseSpinner());
+              this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message } }));
+              return {
+                type: RTLActions.RESTORE_CHANNELS_RES,
+                payload: postRes.message
+              };
+            }),
+            catchError((err: any) => {
+              this.store.dispatch(new RTLActions.CloseSpinner());
+              this.logger.error(err);
+              this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'RestoreChannels', code: err.status, message: err.error.error }));
+              return of(
+                {
+                  type: RTLActions.OPEN_ALERT,
+                  payload: {
+                    width: '70%', data: {
+                      type: 'ERROR', titleMessage: 'Unable to Restore Channel. Try again later.',
+                      message: JSON.stringify({ code: err.status, Message: err.error.message })
+                    }
+                  }
+                }
+              );
+          })
+        );
+      }
+  ));
+  
   @Effect()
   fetchFees = this.actions$.pipe(
     ofType(RTLActions.FETCH_FEES),

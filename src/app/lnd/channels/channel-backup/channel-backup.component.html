@@ -9,8 +9,9 @@
       <mat-card-content>
         <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
           <h4 fxFlex="100">Backup folder location: {{selNode.channelBackupPath}}</h4>
-          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">Backup</button>
-          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="2" (click)="onVerifyChannels({})">Verify Backup</button>
+          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">Backup</button>
+          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onVerifyChannels({})">Verify Backup</button>
+          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="onRestoreChannels({})">Restore</button>
         </div>
       </mat-card-content>
     </mat-card>
@@ -36,7 +37,11 @@
             </ng-container>
             <ng-container matColumnDef="verify">
               <th mat-header-cell *matHeaderCellDef>Verify</th>
-              <td mat-cell *matCellDef="let channel"><mat-icon color="accent" (click)="onVerifyChannels(channel)">verified_user</mat-icon></td>
+              <td mat-cell *matCellDef="let channel"><mat-icon color="primary" (click)="onVerifyChannels(channel)">verified_user</mat-icon></td>
+            </ng-container>
+            <ng-container matColumnDef="restore">
+              <th mat-header-cell *matHeaderCellDef>Restore</th>
+              <td mat-cell *matCellDef="let channel"><mat-icon color="accent" (click)="onRestoreChannels(channel)">restore</mat-icon></td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onChannelClick(row, $event)"></tr>
