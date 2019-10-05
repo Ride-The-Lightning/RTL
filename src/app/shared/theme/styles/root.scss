@@ -21,6 +21,9 @@ html, body {
     padding-top: 0;
     padding-bottom: 0;
   }
+  .mat-nested-tree-node-child>.mat-tree-node {
+    padding-left: 40px;
+  }
   &.horizontal {
     .horizontal-nav {
       margin-top: 1px;
@@ -33,20 +36,26 @@ html, body {
     .sidenav{
       width: $compact-sidenav-width;
     }
-    .mat-tree-node {
+    .mat-tree-node, .mat-nested-tree-node-parent {
       height: 76px;
       padding: 0;
+    }
+    .mat-nested-tree-node-child>.mat-tree-node {
+      padding-left: 60px;
     }
   }
   &.mini {
     .sidenav {
       width: $mini-sidenav-width;
     }
-    .mat-tree-node {
+    .mat-tree-node, .mat-nested-tree-node-parent {
       padding: 0 8px 12px 8px;
       .mat-icon {
         font-size: $icon-size;
       }
+    }
+    .mat-nested-tree-node-child>.mat-tree-node {
+      padding: 0 8px 12px 28px;
     }
   }      
 }
@@ -720,14 +729,17 @@ a {
   width: 100%;
 }
 
-.mat-tree-node {
+.mat-tree-node, .mat-nested-tree-node-parent {
   min-height: 38px !important;
   padding: 0 12px 0 12px; 
   cursor: pointer;
 }
 
-.mat-tree-node:focus, .mat-tree-node:active {
-  outline: none;
+.mat-tree-node:focus, .mat-tree-node:active, .mat-nested-tree-node:focus, .mat-nested-tree-node:active, .mat-nested-tree-node-parent:focus, .mat-nested-tree-node-parent:active,
+.mat-tree-node span:focus, .mat-tree-node span:active, .mat-nested-tree-node-parent span:focus, .mat-nested-tree-node-parent span:active,
+.mat-tree-node div:focus, .mat-tree-node div:active, .mat-nested-tree-node-parent div:focus, .mat-nested-tree-node-parent div:active,
+.mat-tree-node .mat-icon:focus, .mat-tree-node .mat-icon:active, .mat-nested-tree-node-parent .mat-icon:focus, .mat-nested-tree-node-parent .mat-icon:active {
+      outline: none;
 }  
 
 .lnd-info {
@@ -765,7 +777,7 @@ a {
   align-content: center;
 }
 
-tr.mat-row:hover, .mat-tree-node:hover {
+tr.mat-row:hover, .mat-tree-node:hover, .mat-nested-tree-node-parent:hover {
   box-shadow: inset 0.1em 0.1em 0.1em 0 rgba(255,255,255,0.5), inset -0.1em -0.1em 0.1em 0 rgba(0,0,0,0.5);
   cursor: pointer;
 }

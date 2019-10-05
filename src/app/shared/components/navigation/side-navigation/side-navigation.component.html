@@ -15,52 +15,59 @@
   </div>
 </div>
 
-<mat-tree [dataSource]="navMenus" [treeControl]="treeControl" *ngIf="settings.menuType !== 'Compact'">
-  <mat-tree-node *matTreeNodeDef="let node" (click)="onChildNavClicked(node);" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" routerLinkActive="active-link" routerLink="{{node.link}}">
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-      <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}<span *ngIf="node.name === 'Pending' && settings.menuType === 'Mini'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
-      <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
+<mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="example-tree" *ngIf="settings.menuType !== 'Compact'">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
+    <div (click)="onChildNavClicked(node)">
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+        <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}<span *ngIf="node.name === 'Pending' && settings.menuType === 'Mini'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></mat-icon>
+        <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
+      </div>
     </div>
   </mat-tree-node>
-
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle routerLink="{{node.link}}">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mat-nested-tree-node-parent" (click)="onParentNodeClicked()">
       <div fxFlex="89" fxLayoutAlign="start center">
         <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}</mat-icon><span *ngIf="settings.menuType !== 'Mini'">{{node.name}}</span>
       </div>
       <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
-          <mat-icon class="mat-icon-rtl-mirror"> {{treeControl.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+          <mat-icon class="mat-icon-rtl-mirror"> {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
       </button>
     </div>
-  </mat-tree-node>
+    <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
+      <ng-container matTreeNodeOutlet></ng-container>
+    </div>
+  </mat-nested-tree-node>
 </mat-tree>
 <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType !== 'Compact' && showLogout" class="mt-minus-1">
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [matTreeNodePaddingIndent]="settings.menuType === 'Mini' ? 28 : 40" (click)="onClick(node)">
+  <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
     <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}</mat-icon>
     <span *ngIf="settings.menuType !== 'Mini'">{{node.name}}</span>
   </mat-tree-node>
 </mat-tree>
 
-<mat-tree [dataSource]="navMenus" [treeControl]="treeControl" *ngIf="settings.menuType === 'Compact'">
-  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" matTreeNodePadding matTreeNodePaddingIndent="60" routerLinkActive="active-link" routerLink="{{node.link}}">
+<mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="example-tree" *ngIf="settings.menuType === 'Compact'">
+  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
     <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
     <span>{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
   </mat-tree-node>
 
-  <mat-tree-node fxLayout="row" *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-    <div class="ml-8" fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle>
+  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle routerLink="{{node.link}}">
+    <div class="ml-8" fxLayout="column" fxLayoutAlign="center center" class="mat-nested-tree-node-parent">
       <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
       <span>{{node.name}}</span>
     </div>
-    <div fxLayout="column" fxLayoutAlign="center center" matTreeNodeToggle>
-      <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" matTreeNodeToggle>
-        <mat-icon class="mat-icon-rtl-mirror"> {{treeControl.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <button mat-icon-button [attr.aria-label]="'toggle ' + node.name">
+        <mat-icon class="mat-icon-rtl-mirror"> {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
       </button>
     </div>
-  </mat-tree-node>
+    <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
+      <ng-container matTreeNodeOutlet></ng-container>
+    </div>
+  </mat-nested-tree-node>
 </mat-tree>
 <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType === 'Compact' && showLogout" class="mt-minus-1">
-  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="60" (click)="onClick(node)">
+  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" (click)="onClick(node)">
     <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
     <span>{{node.name}}</span>
   </mat-tree-node>

@@ -54,10 +54,6 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onForwardingHistoryFetchCL();
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_CL_STORE)).subscribe((resetClStore: RTLActions.ResetCLStore) => {
-      this.onForwardingHistoryFetchCL();
-    });
-
     this.store.select('cl')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {

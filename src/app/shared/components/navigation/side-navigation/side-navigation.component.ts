@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { environment } from '../../../../../environments/environment';
 
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { NestedTreeControl } from '@angular/cdk/tree';
+import { MatTreeNestedDataSource } from '@angular/material/tree';
 
 import { LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
@@ -37,26 +37,17 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public smallScreen = false;
   public childRootRoute = '';
   private unSubs = [new Subject(), new Subject(), new Subject()];
-  treeControl: FlatTreeControl<FlatMenuNode>;
-  treeControlLogout: FlatTreeControl<FlatMenuNode>;
-  treeFlattener: MatTreeFlattener<MenuChildNode, FlatMenuNode>;
-  treeFlattenerLogout: MatTreeFlattener<MenuChildNode, FlatMenuNode>;
-  navMenus: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
-  navMenusLogout: MatTreeFlatDataSource<MenuChildNode, FlatMenuNode>;
+  treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
+  treeControlNested = new NestedTreeControl<MenuChildNode>(node => node.children);
+  navMenus = new MatTreeNestedDataSource<MenuChildNode>();
+  navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
     }
-    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
-    this.treeControl = new FlatTreeControl<FlatMenuNode>(this.getLevel, this.isExpandable);
-    this.navMenus = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
     this.navMenus.data = MENU_DATA.LNDChildren;
-
-    this.treeFlattenerLogout = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
-    this.treeControlLogout = new FlatTreeControl<FlatMenuNode>(this.getLevel, this.isExpandable);
-    this.navMenusLogout = new MatTreeFlatDataSource(this.treeControlLogout, this.treeFlattenerLogout);
     this.navMenusLogout.data = this.logoutNode;
   }
 
@@ -105,15 +96,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  private transformer(node: MenuChildNode, level: number) { return new FlatMenuNode(!!node.children, level, node.id, node.parentId, node.name, node.icon, node.link); }
-
-  private getLevel(node: FlatMenuNode) { return node.level; }
-
-  private isExpandable(node: FlatMenuNode) { return node.expandable; }
-
-  private getChildren(node: MenuChildNode): Observable<MenuChildNode[]> { return of(node.children); }
-
-  hasChild(_: number, _nodeData: FlatMenuNode) { return _nodeData.expandable; }
+  hasChild = (_: number, node: MenuChildNode) => !!node.children && node.children.length > 0;  
 
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
@@ -130,12 +113,18 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       });
     }
     this.ChildNavClicked.emit(node);
+    this.treeControlNested.collapseAll();
   }
 
   onChildNavClicked(node) {
     this.ChildNavClicked.emit(node);
+    this.treeControlNested.collapseAll();
   }
   
+  onParentNodeClicked() {
+    this.treeControlNested.collapseAll();
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

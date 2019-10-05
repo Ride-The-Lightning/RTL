@@ -54,10 +54,6 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onForwardingHistoryFetch();
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.onForwardingHistoryFetch();
-    });
-
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
@@ -126,6 +122,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
+    this.store.dispatch(new RTLActions.SetForwardingHistory({}));
     this.unsub.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
