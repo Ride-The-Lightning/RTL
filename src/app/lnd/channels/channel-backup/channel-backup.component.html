@@ -3,15 +3,14 @@
     <mat-card>
       <mat-card-header>
         <mat-card-subtitle>
-          <h2>All Channels Backup</h2>
+          <h2>Channels Backup</h2>
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
           <h4 fxFlex="100">Backup folder location: {{selNode.channelBackupPath}}</h4>
-          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">Backup</button>
-          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onVerifyChannels({})">Verify Backup</button>
-          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="onRestoreChannels({})">Restore</button>
+          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">All Channels Backup</button>
+          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onVerifyChannels({})">All Channels Verify Backup</button>
         </div>
       </mat-card-content>
     </mat-card>
@@ -27,9 +26,9 @@
         <div perfectScrollbar class="table-container mat-elevation-z8">
           <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'mat-elevation-z8 overflow-x-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-x-auto': true}">
-            <ng-container matColumnDef="chan_id">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel ID </th>
-              <td mat-cell *matCellDef="let channel">{{channel?.chan_id}}</td>
+            <ng-container matColumnDef="chan_point">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+              <td mat-cell *matCellDef="let channel">{{channel?.channel_point}}</td>
             </ng-container>
             <ng-container matColumnDef="backup">
               <th mat-header-cell *matHeaderCellDef>Backup</th>
@@ -38,10 +37,6 @@
             <ng-container matColumnDef="verify">
               <th mat-header-cell *matHeaderCellDef>Verify</th>
               <td mat-cell *matCellDef="let channel"><mat-icon color="primary" (click)="onVerifyChannels(channel)">verified_user</mat-icon></td>
-            </ng-container>
-            <ng-container matColumnDef="restore">
-              <th mat-header-cell *matHeaderCellDef>Restore</th>
-              <td mat-cell *matCellDef="let channel"><mat-icon color="accent" (click)="onRestoreChannels(channel)">restore</mat-icon></td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onChannelClick(row, $event)"></tr>

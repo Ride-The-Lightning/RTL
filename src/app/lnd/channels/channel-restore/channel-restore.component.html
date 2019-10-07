@@ -1,0 +1,51 @@
+<div fxLayout="column">
+	<div class="padding-gap" *ngIf="allRestoreExists">
+	  <mat-card>
+		<mat-card-header>
+		  <mat-card-subtitle>
+			<h2>Channels Restore</h2>
+		  </mat-card-subtitle>
+		</mat-card-header>
+		<mat-card-content>
+		  <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
+			<h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+			<button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onRestoreChannels({})">All Channels Restore</button>
+		  </div>
+		</mat-card-content>
+	  </mat-card>
+	</div>
+	<div class="padding-gap">
+	  <mat-card>
+    <mat-card-header *ngIf="!allRestoreExists">
+      <mat-card-subtitle>
+      <h2>Channels Restore</h2>
+      <h4 fxLayout="row" fxLayoutAlign="start start" class="pt-2">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="table-card-content" *ngIf="!channels || channels.data.length<=0">Backup file/s not found!<br>To perform channel restoration, channel backup file/s must be placed at the above location.</mat-card-content>
+    <mat-card-content class="table-card-content" *ngIf="channels && channels.data.length>0">
+		  <div fxLayout="row" fxLayoutAlign="start start">
+        <mat-form-field fxFlex="30">
+	  		  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  			</mat-form-field>
+		  </div>
+		  <div perfectScrollbar class="table-container mat-elevation-z8">
+			<mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+			<table mat-table #table [dataSource]="channels" matSort [ngClass]="{'mat-elevation-z8 overflow-x-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-x-auto': true}">
+			  <ng-container matColumnDef="chan_point">
+				<th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+				<td mat-cell *matCellDef="let channel">{{channel?.channel_point}}</td>
+			  </ng-container>
+			  <ng-container matColumnDef="restore">
+				<th mat-header-cell *matHeaderCellDef>Restore</th>
+				<td mat-cell *matCellDef="let channel"><mat-icon color="primary" (click)="onRestoreChannels(channel)">restore</mat-icon></td>
+			  </ng-container>
+			  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+			  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+			</table>
+		  </div>
+		</mat-card-content>
+	  </mat-card>
+	</div>
+</div>
+  

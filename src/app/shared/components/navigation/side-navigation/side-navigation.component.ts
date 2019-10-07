@@ -113,18 +113,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       });
     }
     this.ChildNavClicked.emit(node);
-    this.treeControlNested.collapseAll();
   }
 
   onChildNavClicked(node) {
     this.ChildNavClicked.emit(node);
-    this.treeControlNested.collapseAll();
   }
   
-  onParentNodeClicked() {
-    this.treeControlNested.collapseAll();
-  }
-
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

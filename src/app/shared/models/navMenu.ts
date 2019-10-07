@@ -10,7 +10,8 @@ export const MENU_DATA: MenuRootNode = {
       {id: 41, parentId: 4, name: 'Management', icon: 'subtitles', link: '/lnd/chnlmanage'},
       {id: 42, parentId: 4, name: 'Pending', icon: 'watch', link: '/lnd/chnlpending'},
       {id: 43, parentId: 4, name: 'Closed', icon: 'watch_later', link: '/lnd/chnlclosed'},
-      {id: 44, parentId: 4, name: 'Backup', icon: 'cloud_circle', link: '/lnd/chnlbackup'}
+      {id: 44, parentId: 4, name: 'Backup', icon: 'cloud_circle', link: '/lnd/chnlbackup'},
+      {id: 45, parentId: 4, name: 'Restore', icon: 'restore', link: '/lnd/chnlrestore'}
     ]},
     {id: 5, parentId: 0, name: 'Payments', icon: 'payment', link: '/lnd/paymentsend', children: [
       {id: 51, parentId: 5, name: 'Send', icon: 'send', link: '/lnd/paymentsend'},

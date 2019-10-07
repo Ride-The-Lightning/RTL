@@ -21,6 +21,7 @@ import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
 import { ChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { ChannelBackupComponent } from './channels/channel-backup/channel-backup.component';
+import { ChannelRestoreComponent } from './channels/channel-restore/channel-restore.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 
 import { CommonService } from '../shared/services/common.service';
@@ -51,7 +52,8 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelLookupComponent,
     NodeLookupComponent,
     ChannelBackupComponent,
-    QueryRoutesComponent
+    QueryRoutesComponent,
+    ChannelRestoreComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

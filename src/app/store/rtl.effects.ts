@@ -254,11 +254,11 @@ export class RTLEffects implements OnDestroy {
        map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
+        let selNode = { channelBackupPath: action.payload.lnNode.settings.channelBackupPath, satsToBTC: action.payload.lnNode.settings.satsToBTC };
+        this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
+        this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
+        this.store.dispatch(new RTLActions.ResetCLStore(selNode));
         if (sessionStorage.getItem('token')) {
-          let selNode = { channelBackupPath: action.payload.lnNode.settings.channelBackupPath, satsToBTC: action.payload.lnNode.settings.satsToBTC };
-          this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
-          this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
-          this.store.dispatch(new RTLActions.ResetCLStore(selNode));
           let newRoute = this.location.path();
           if(action.payload.lnNode.lnImplementation.toUpperCase() === 'CLT') {
             if(newRoute.includes('/lnd/')) {

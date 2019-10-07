@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class ChannelBackupComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public selNode: SelNodeChild = {};
-  public displayedColumns = ['chan_id', 'backup', 'verify', 'restore'];
+  public displayedColumns = ['chan_point', 'backup', 'verify'];
   public selChannel: Channel;
   public channels: any;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
@@ -81,11 +81,6 @@ export class ChannelBackupComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
     this.store.dispatch(new RTLActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
-
-  onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Restoring Channels...'));
-    this.store.dispatch(new RTLActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
-  }  
 
   onChannelClick(selRow: Channel, event: any) {
     const flgButtonsClicked = event.target.className.includes('mat-icon')

@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
-import { Subject, Observable } from 'rxjs';
-import { takeUntil, filter, map, subscribeOn } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { ChannelCL, PeerCL, GetInfoCL, ChannelEdgeCL } from '../../shared/models/clModels';

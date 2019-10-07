@@ -24,8 +24,8 @@
       </div>
     </div>
   </mat-tree-node>
-  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle routerLink="{{node.link}}">
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mat-nested-tree-node-parent" (click)="onParentNodeClicked()">
+  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
       <div fxFlex="89" fxLayoutAlign="start center">
         <mat-icon class="mr-1" matTooltip="{{node.name}}" matTooltipPosition="right" [matTooltipDisabled]="settings.menuType !== 'Mini'">{{node.icon}}</mat-icon><span *ngIf="settings.menuType !== 'Mini'">{{node.name}}</span>
       </div>
@@ -46,12 +46,12 @@
 </mat-tree>
 
 <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="example-tree" *ngIf="settings.menuType === 'Compact'">
-  <mat-tree-node fxLayout="column" fxLayoutAlign="center center" *matTreeNodeDef="let node" matTreeNodeToggle (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
+  <mat-tree-node fxLayout="column" matTreeNodeToggle fxLayoutAlign="center center" *matTreeNodeDef="let node" (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
     <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
     <span>{{node.name}}<span *ngIf="node.name === 'Pending'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span></span>
   </mat-tree-node>
 
-  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle routerLink="{{node.link}}">
+  <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
     <div class="ml-8" fxLayout="column" fxLayoutAlign="center center" class="mat-nested-tree-node-parent">
       <mat-icon class="mat-icon-36">{{node.icon}}</mat-icon>
       <span>{{node.name}}</span>

@@ -448,7 +448,7 @@ export class LNDEffects implements OnDestroy {
                   payload: {
                     width: '70%', data: {
                       type: 'ERROR', titleMessage: 'Unable to Restore Channel. Try again later.',
-                      message: JSON.stringify({ code: err.status, Message: err.error.message })
+                      message: JSON.stringify({ code: err.status, Message: err.error.error })
                     }
                   }
                 }
@@ -1161,6 +1161,51 @@ export class LNDEffects implements OnDestroy {
   setLookup = this.actions$.pipe(
     ofType(RTLActions.SET_LOOKUP),
     map((action: RTLActions.SetLookup) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+
+  @Effect()
+  getRestoreChannelList = this.actions$.pipe(
+    ofType(RTLActions.RESTORE_CHANNELS_LIST),
+    mergeMap((action: RTLActions.RestoreChannelsList) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('RestoreChannelsList'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/list')
+        .pipe(
+          map((resRestoreList) => {
+            this.logger.info(resRestoreList);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_RESTORE_CHANNELS_LIST,
+              payload: (resRestoreList) ? resRestoreList : {all_restore_exists: false, files: []}
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'RestoreChannelsList', code: err.status, message: err.error.message }));
+            this.logger.error(err);
+            return of(
+              {
+                type: RTLActions.OPEN_ALERT,
+                payload: {
+                  width: '70%', data: {
+                    type: 'ERROR', titleMessage: 'Restore Channels List Failed',
+                    message: JSON.stringify({ Code: err.status, Message: err.error, URL: this.CHILD_API_URL + environment.CHANNELS_BACKUP_API })
+                  }
+                }
+              }
+            );
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setRestoreChannelList = this.actions$.pipe(
+    ofType(RTLActions.SET_RESTORE_CHANNELS_LIST),
+    map((action: RTLActions.SetRestoreChannelsList) => {
       this.logger.info(action.payload);
       return action.payload;
     })
