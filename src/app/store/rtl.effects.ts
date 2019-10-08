@@ -159,8 +159,11 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.IS_AUTHORIZED),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
-    return this.httpClient.post(environment.AUTHENTICATE_API, { password: action.payload })
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
+    return this.httpClient.post(environment.AUTHENTICATE_API, { 
+      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '') : action.payload 
+    })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);

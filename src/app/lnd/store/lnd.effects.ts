@@ -433,6 +433,7 @@ export class LNDEffects implements OnDestroy {
               this.logger.info(postRes);
               this.store.dispatch(new RTLActions.CloseSpinner());
               this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message } }));
+              this.store.dispatch(new RTLActions.SetRestoreChannelsList(postRes.list));
               return {
                 type: RTLActions.RESTORE_CHANNELS_RES,
                 payload: postRes.message

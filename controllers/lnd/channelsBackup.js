@@ -4,6 +4,26 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
+function getFilesList(callback) {
+  let files_list = [];
+  let all_restore_exists = false;
+  let response = {all_restore_exists: false, files: []};
+  fs.readdir(common.selectedNode.channel_backup_path + common.path_separator + 'restore', function (err, files) {
+    if (err && err.code !== 'ENOENT' && err.errno !== -4058) { response = { message: 'Channels Restore List Failed!', error: err } }
+    files.forEach(file => {
+      if (!file.includes('.restored')) {
+        if (file === 'channel-all.bak') {
+          all_restore_exists = true;
+        } else {
+          files_list.push({channel_point: file.substring(8, file.length - 4).replace('-', ':')});
+        }
+      }
+    });
+    response =  {all_restore_exists: all_restore_exists, files: files_list};
+    callback(response);
+  });
+}
+
 exports.getBackup = (req, res, next) => {
   options = common.getOptions();
   let channel_backup_file = '';
@@ -113,7 +133,6 @@ exports.postRestore = (req, res, next) => {
       restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
       if (restore_backup !== '') {
         restore_backup = JSON.parse(restore_backup);
-        // options.form = JSON.stringify({chan_backups: restore_backup.single_chan_backups});
         options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
       } else {
         res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
@@ -137,7 +156,15 @@ exports.postRestore = (req, res, next) => {
   if (restore_backup !== '') {
     request.post(options).then(function (body) {
       logger.info({fileName: 'Channels Backup Restore', msg: 'Channel Backup Restore: ' + JSON.stringify(body)});
-      res.status(201).json({ message: message });
+      fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {
+        getFilesList(getFilesListRes => {
+          if (getFilesListRes.error) {
+            return res.status(500).json({ message: 'Channel restore failed!', list: getFilesListRes });
+          } else {
+            return res.status(201).json({ message: 'Channel restore failed!', list: getFilesListRes });
+          }
+        });      
+      });
     })
     .catch(function (err) {
       logger.error({fileName: 'Channels Backup Restore', lineNum: 143, msg: 'Channel Backup Restore: ' + JSON.stringify(err)});
@@ -150,23 +177,11 @@ exports.postRestore = (req, res, next) => {
 };
 
 exports.getRestoreList = (req, res, next) => {
-  let files_list = [];
-  let all_restore_exists = false;
-  fs.readdir(common.selectedNode.channel_backup_path + common.path_separator + 'restore', function (err, files) {
-    if (err) {
-      if (err.code === 'ENOENT' && err.errno === -4058) {
-        return res.status(200).json({all_restore_exists: false, files: []});
-      } else {
-        return res.status(500).json({ message: 'Channels Restore List Failed!', error: err });
-      }
+  getFilesList(getFilesListRes => {
+    if (getFilesListRes.error) {
+      return res.status(500).json(getFilesListRes);
+    } else {
+      return res.status(200).json(getFilesListRes);
     }
-    files.forEach(file => {
-      if (file === 'channel-all.bak') {
-        all_restore_exists = true;
-      } else {
-        files_list.push({channel_point: file.substring(8, file.length - 4).replace('-', ':')});
-      }
-    });
-    return res.status(200).json({all_restore_exists: all_restore_exists, files: files_list});
-  });  
+  });
 };
