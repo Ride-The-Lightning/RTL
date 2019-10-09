@@ -161,7 +161,7 @@ exports.postRestore = (req, res, next) => {
           if (getFilesListRes.error) {
             return res.status(500).json({ message: 'Channel restore failed!', list: getFilesListRes });
           } else {
-            return res.status(201).json({ message: 'Channel restore failed!', list: getFilesListRes });
+            return res.status(201).json({ message: message, list: getFilesListRes });
           }
         });      
       });

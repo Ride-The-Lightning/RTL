@@ -33,7 +33,7 @@
             </ng-container>
             <ng-container matColumnDef="block_hash">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Block Hash </th>
-              <td mat-cell *matCellDef="let trans" class="ellipsis-parent"><span class="ellipsis-child">{{trans.block_hash | removeleadingzeros}}</span></td>
+              <td mat-cell *matCellDef="let trans">{{trans.block_hash | removeleadingzeros}}</td>
             </ng-container>
             <ng-container matColumnDef="block_height">
               <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Block Height </th>
@@ -41,7 +41,7 @@
             </ng-container>
             <ng-container matColumnDef="tx_hash">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Txn Hash </th>
-              <td mat-cell *matCellDef="let trans" class="ellipsis-parent"><span class="ellipsis-child">{{trans.tx_hash}}</span></td>
+              <td mat-cell *matCellDef="let trans">{{trans.tx_hash}}</td>
             </ng-container>
             <ng-container matColumnDef="amount">
               <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount </th>
