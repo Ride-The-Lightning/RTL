@@ -1,12 +1,15 @@
 @import "constants";
 
-@mixin change-theme($theme) {
+@mixin change-theme($theme, $alternate-theme) {
   $primary: map-get($theme, primary);
+  $primary-darker: mat-color(mat-palette($primary, darker));
+  $primary-node-toolbar : mat-color(mat-palette($primary, A700));
   $accent: map-get($theme, accent);
+  $accent-color: mat-color(mat-palette($accent));
   $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
-  $testColor: mat-palette($mat-red, A200);
+  $alternate-primary: map-get($alternate-theme, primary);
 
   .bg-primary {
     @include _mat-toolbar-color($primary);
@@ -20,16 +23,26 @@
     @include _mat-toolbar-color($warn);
   }
 
-  .bg-test {
-    @include _mat-toolbar-color($testColor);
+  .btn-primary-darker {
+    background-color: $primary-darker;
+    color: $accent-color;
+    border-radius: 16px;
+    text-transform: capitalize;
+  }
+
+  .bg-alternate-primary {
+    @include _mat-toolbar-color($alternate-primary);
+  }
+
+  .toolbar-dropdown-menu {
+    @include _mat-toolbar-color($alternate-primary);
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
     stroke: mat-color($foreground, text);
   }
 
-  .mat-toolbar-row, 
-  .mat-toolbar-single-row {
+  .mat-toolbar-row, .mat-toolbar-single-row {
     height: $toolbar-height;
   }
 

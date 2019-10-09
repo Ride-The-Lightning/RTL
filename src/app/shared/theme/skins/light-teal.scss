@@ -1,3 +1,9 @@
+@import './color-swatches/purple-primary.swatch.scss';
+@import './color-swatches/white-accent.swatch.scss';
+@import './color-swatches/blue-primary.swatch.scss';
+@import '~@angular/material/theming';
+@include mat-core();
+
 $custom-light-theme-background: (
   status-bar: map_get($mat-grey, 300),
   app-bar:    map_get($mat-grey, 100),
@@ -46,5 +52,9 @@ $custom-light-theme-foreground: (
 $teal-light-primary: mat-palette($mat-teal, 800, 300, 900);
 $teal-light-accent: mat-palette($mat-amber, A200, A100, A700);
 $teal-light-warn: mat-palette($mat-red, A200);
-
 $teal-light-theme: create-custom-theme($teal-light-primary, $teal-light-accent, $teal-light-warn);
+
+$alternate-teal-light-primary: mat-palette($blue-primary, 500, 300, 900);
+$alternate-teal-light-accent:  mat-palette($white-accent, 800, 600, 900);
+$alternate-teal-light-warn:    mat-palette($mat-deep-orange);
+$alternate-teal-light-theme:   mat-dark-theme($alternate-teal-light-primary, $alternate-teal-light-accent, $alternate-teal-light-warn);

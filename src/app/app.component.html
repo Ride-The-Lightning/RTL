@@ -5,7 +5,7 @@
       <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)"></rtl-side-navigation>
     </mat-sidenav>
     <mat-sidenav-content perfectScrollbar class="overflow-auto">
-      <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" color="primary" class="padding-gap-x">
+      <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary">
         <div fxLayoutAlign="center center">
           <button *ngIf="settings.menu === 'Vertical'" mat-icon-button (click)="sideNavToggle()">
             <mat-icon>menu</mat-icon>
@@ -47,3 +47,26 @@
     <h4>Loading RTL...</h4>
   </div>
 </div>
+<!-- <div perfectScrollbar id="rtl-container" class="rtl-container purple-white-light-theme">
+  <mat-toolbar class="bg-alternate-primary toolbar-nodes">
+    <div class="toolbar-node-info">Node 1</div>
+    <div class="toolbar-node-info">Node 2</div>
+    <span class="spacer"></span>
+    <div fxLayoutAlign="space-between center">
+      <rtl-top-menu></rtl-top-menu>
+    </div>
+  </mat-toolbar>
+  <mat-sidenav-container class="container">
+    <mat-sidenav #sidenav class="bg-primary mat-elevation-z24" mode="side">
+      <p><button mat-raised-button class="bg-accent" (click)="sidenav.toggle()">Toggle</button></p>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <mat-toolbar class="bg-primary toolbar">
+        <span>Lightning Menu</span>
+        <span class="spacer"></span>
+        <p><button mat-raised-button class="btn-primary-darker" (click)="sidenav.toggle()">show public key</button></p>
+      </mat-toolbar>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div> -->

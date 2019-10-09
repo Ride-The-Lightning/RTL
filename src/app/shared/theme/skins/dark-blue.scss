@@ -1,5 +1,15 @@
+@import './color-swatches/purple-primary.swatch.scss';
+@import './color-swatches/white-accent.swatch.scss';
+@import './color-swatches/blue-primary.swatch.scss';
+@import '~@angular/material/theming';
+@include mat-core();
+
 $blue-dark-primary: mat-palette($mat-light-blue, 700, 300, 900);
 $blue-dark-accent: mat-palette($mat-amber, A100, 900, A700);
 $blue-dark-warn: mat-palette($mat-red, A200);
-
 $blue-dark-theme: mat-dark-theme($blue-dark-primary, $blue-dark-accent, $blue-dark-warn);
+
+$alternate-blue-dark-primary: mat-palette($blue-primary, 500, 300, 900);
+$alternate-blue-dark-accent:  mat-palette($white-accent, 800, 600, 900);
+$alternate-blue-dark-warn:    mat-palette($mat-deep-orange);
+$alternate-blue-dark-theme:   mat-dark-theme($alternate-blue-dark-primary, $alternate-blue-dark-accent, $alternate-blue-dark-warn);
