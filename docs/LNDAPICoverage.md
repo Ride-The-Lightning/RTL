@@ -41,7 +41,7 @@
 - [ ] DescribeGraph
 - [x] GetChanInfo
 - [x] GetNodeInfo
-- [ ] QueryRoutes
+- [x] QueryRoutes
 - [x] GetNetworkInfo
 - [ ] StopDaemon
 - [ ] SubscribeChannelGraph
@@ -52,6 +52,6 @@
 - [x] ExportChannelBackup
 - [x] ExportAllChannelBackups
 - [x] VerifyChanBackup
-- [ ] RestoreChannelBackups
+- [x] RestoreChannelBackups
 - [ ] SubscribeChannelBackups
 - [ ] Messages
