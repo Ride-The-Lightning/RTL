@@ -7,6 +7,7 @@ var upperCase = require('upper-case');
 var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var logger = require('./logger');
+var rpcPass = '';
 
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
@@ -72,13 +73,14 @@ exports.authenticateUser = (req, res, next) => {
             });
           } else {
             const jsonLNDConfig = ini.parse(data);
-            var rpcPass = '';
-            if (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) {
-              rpcPass = jsonLNDConfig.Bitcoind['bitcoind.rpcpass'];
-            } else if (undefined !== jsonLNDConfig['bitcoind.rpcpass']) {
-              rpcPass = jsonLNDConfig['bitcoind.rpcpass'];
+            if (rpcPass === '') {
+              if (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcpass']) {
+                rpcPass = jsonLNDConfig.Bitcoind['bitcoind.rpcpass'];
+              } else if (undefined !== jsonLNDConfig['bitcoind.rpcpass']) {
+                rpcPass = jsonLNDConfig['bitcoind.rpcpass'];
+              }
+              rpcPass = hash.update(rpcPass).digest('hex');
             }
-            rpcPass = hash.update(rpcPass).digest('hex');
             if (rpcPass === password) {
               var rpcUser = (undefined !== jsonLNDConfig.Bitcoind && undefined !== jsonLNDConfig.Bitcoind['bitcoind.rpcuser']) ? jsonLNDConfig.Bitcoind['bitcoind.rpcuser'] : '';
               rpcUser = (rpcUser === '' && undefined !== jsonLNDConfig['bitcoind.rpcuser']) ? jsonLNDConfig['bitcoind.rpcuser'] : '';
