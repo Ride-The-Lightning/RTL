@@ -2,7 +2,6 @@ import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
@@ -23,7 +22,6 @@ import * as fromRTLReducer from './store/rtl.reducers';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
   @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
-  faCopy = faCopy;
   public selNode: LightningNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
@@ -135,6 +133,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
+  }
+
+  onSelectionChange(selNodeValue: LightningNode) {
+    this.selNode = selNodeValue;
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
   }
 
   ngOnDestroy() {

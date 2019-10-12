@@ -72,7 +72,7 @@
         </mat-card-content>
         <mat-icon *ngIf="information?.synced_to_chain; else notSynced" class="size-30 green sync-to-chain">check_circle</mat-icon>
         <ng-template #notSynced>
-          <mat-icon class="size-30 red">cancel</mat-icon>
+          <mat-icon class="size-triple red">cancel</mat-icon>
         </ng-template>
       </mat-card-content>
       <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>

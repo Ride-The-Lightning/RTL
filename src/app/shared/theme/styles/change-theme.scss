@@ -26,7 +26,7 @@
   .btn-primary-darker {
     background-color: $primary-darker;
     color: $accent-color;
-    border-radius: 16px;
+    border-radius: 1.6rem;
     text-transform: capitalize;
   }
 
@@ -55,12 +55,32 @@
   }
 
   .active-link {
-    background: mat-color($primary); 
-    color: white; // mat-color($foreground, text); for dark theme but for light theme the foreground text color is black
+    color: mat-color($primary); 
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-menu-item:hover {
+    color: mat-color($primary); 
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .mat-button.app-config-nodes {
+    border-radius: 0;
+    border-bottom: 2px solid mat-color($primary);
+  }
+
+  .mat-button.app-config-nodes:hover, .top-toolbar-icon:hover {
+    background: mat-color($primary, darker);
+  }
+
+  .mat-button.app-config-nodes.selected-node {
+    border-bottom: 2px solid mat-color($accent);
   }
 
   .h-active-link {
-    background: mat-color($primary, lighter) !important;
+    border-bottom: 2px solid mat-color($accent);
   }
   
   .ngx-charts {
@@ -79,7 +99,7 @@
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     background: none;
     font-weight: 900;
-    font-size: 110%;
+    font-size: $font-size * 1.1;
   }
 
   .material-icons.primary { color: mat-color($primary); }
@@ -94,26 +114,26 @@
   }
 
   .validation-error-icon {
-    font-size: 16px;
+    font-size: $font-size * 1.2;
     position: relative;
     top: 2px;
-    left: 4px;
+    left: 0.4rem;
   }
 
   .genseed-message {
     width:10%;
     color: mat-color($accent);
-    font-size: 120%;
+    font-size: $font-size * 1.2;
   }
 
   .insecure-message {
     width:100%;
     color: mat-color($accent);
-    font-size: 120%;
+    font-size: $font-size * 1.2;
   }
 
   .mat-vertical-content {
-    padding: 0 4px 0 12px;
+    padding: 0 0.4rem 0 1.2rem;
   }
 
   .row-disabled {
@@ -122,4 +142,34 @@
       cursor: not-allowed;
     }
   }
+
+  .mat-menu-panel {
+    min-width: 6.4rem;
+  }
+  
+  .horizontal-button {
+    height: $toolbar-height;
+    border-radius: 0;
+    &:hover {
+      background: mat-color($primary, darker);
+      color: mat-color($accent);
+    }
+  }
+
+  .horizontal-button-show {
+    color: mat-color($accent);
+    background: mat-color($primary, lighter);
+    border-radius: 12rem;
+    &:hover {
+      // background: mat-color($primary, darker);
+      background: mat-color($accent);
+      color: mat-color($primary, darker);
+    }
+  }
+
+  .page-title {
+    font-size: $font-size * 1.1;
+    color: mat-color($foreground);
+  }
+  
 }

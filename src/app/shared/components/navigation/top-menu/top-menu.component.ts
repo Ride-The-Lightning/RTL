@@ -12,6 +12,7 @@ import { environment } from '../../../../../environments/environment';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
+import { faCodeBranch, faCog, faLifeRing, faEject } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -20,6 +21,10 @@ import * as RTLActions from '../../../../store/rtl.actions';
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
   public selNode: LightningNode;
+  public faCodeBranch = faCodeBranch;
+  public faCog = faCog;
+  public faLifeRing = faLifeRing;
+  public faEject = faEject;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};

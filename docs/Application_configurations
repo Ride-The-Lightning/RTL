@@ -22,6 +22,8 @@ menu=Vertical
 ;Set by RTL
 menuType=Regular
 ;Set by RTL
+fontSize=Regular
+;Set by RTL
 theme=dark-blue
 ;Set by RTL
 satsToBTC=false

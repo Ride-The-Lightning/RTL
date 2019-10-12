@@ -1,6 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 
+import { AppSettingsComponent } from './shared/components/app-settings/app-settings.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { ServerConfigComponent } from './shared/components/server-config/server-config.component';
 import { HelpComponent } from './shared/components/help/help.component';
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LNDModule), canActivate: [AuthGuard] },
   { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
   { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
+  { path: 'settings', component: AppSettingsComponent, canActivate: [AuthGuard] },
   { path: 'help', component: HelpComponent },
   { path: 'login', component: SigninComponent },
   { path: 'ssoerror', component: SsoFailedComponent },

@@ -8,11 +8,12 @@ import { environment } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { faEject } from '@fortawesome/free-solid-svg-icons';
 
 import { LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
+import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -25,13 +26,14 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
+  faEject = faEject;
   public selNode: LightningNode;
   public settings: Settings;
   public version = '';
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
-  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', icon: 'eject'}];
+  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', icon: faEject}];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;

@@ -97,6 +97,7 @@ exports.updateUISettings = (req, res, next) => {
         node.Settings.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
         node.Settings.menu = req.body.updatedSettings.menu;
         node.Settings.menuType = req.body.updatedSettings.menuType;
+        node.Settings.fontSize = req.body.updatedSettings.fontSize;
         node.Settings.theme = req.body.updatedSettings.theme;
         node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
       }
@@ -121,6 +122,7 @@ exports.updateUISettings = (req, res, next) => {
     settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
     settingsTemp.menu = req.body.updatedSettings.menu;
     settingsTemp.menuType = req.body.updatedSettings.menuType;
+    settingsTemp.fontSize = req.body.updatedSettings.fontSize;
     settingsTemp.theme = req.body.updatedSettings.theme;
     settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
     delete config.Settings;

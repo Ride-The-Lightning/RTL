@@ -4,6 +4,8 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
+import { faEject } from '@fortawesome/free-solid-svg-icons';
+
 import { LoggerService } from '../../../services/logger.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
@@ -43,14 +45,14 @@ export class HorizontalNavigationComponent implements OnInit {
       filter((action) => action.type === RTLActions.SIGNOUT ||  action.type === RTLActions.SIGNIN)
     ).subscribe((action) => {
       if (action.type === RTLActions.SIGNIN) {
-        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: faEject});
       }
       if (action.type === RTLActions.SIGNOUT) {
         this.menuNodes.pop();
       }
     });
     if (sessionStorage.getItem('token')) {
-      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
+      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: faEject});
     }
   }
 

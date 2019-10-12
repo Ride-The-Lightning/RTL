@@ -12,10 +12,10 @@
 	&.purple-white-dark-theme {
 		@debug "PURPLE DARK THEME";
         @import "../skins/dark-purple";
-		@include angular-material-theme($purple-white-dark-theme);
-		@include change-theme($purple-white-dark-theme, $alternate-purple-white-dark-theme);
+		@include angular-material-theme($purple-white-dark-small-theme);
+		@include change-theme($purple-white-dark-small-theme, $alternate-purple-white-dark-theme);
 	}
-  &.light-blue{
+    &.light-blue{
       @import "../skins/light-blue";
       @include angular-material-theme($blue-light-theme);
       @include change-theme($blue-light-theme, $alternate-blue-light-theme);

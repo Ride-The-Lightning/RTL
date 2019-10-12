@@ -4,7 +4,7 @@
 @import '~@angular/material/theming';
 @include mat-core();
 
-$purple-white-light-primary: mat-palette($purple-primary, 500, 300, 900);
+$purple-white-light-primary: mat-palette($purple-primary, 500, 400, 700);
 $purple-white-light-accent:  mat-palette($white-accent, 800, 600, 900);
 $purple-white-light-warn:    mat-palette($mat-deep-orange);
 $purple-white-light-theme:   mat-light-theme($purple-white-light-primary, $purple-white-light-accent, $purple-white-light-warn);

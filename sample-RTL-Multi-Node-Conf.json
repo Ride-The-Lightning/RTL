@@ -22,6 +22,7 @@
         "menu": "Vertical",
         "menuType": "Regular",
         "theme": "dark-blue",
+        "fontSize":"Regular",
         "satsToBTC": "false",
         "channelBackupPath": "C:\\RTL\\backup\\node-1",
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",

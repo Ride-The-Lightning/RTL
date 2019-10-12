@@ -15,6 +15,7 @@ import {
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
+import { AppSettingsComponent } from './components/app-settings/app-settings.component';
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
 import { SpinnerDialogComponent } from './components/spinner-dialog/spinner-dialog.component';
@@ -101,6 +102,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         MatBadgeModule,
         MatPaginatorModule,
         MatStepperModule,
+        AppSettingsComponent,
         AlertMessageComponent,
         ConfirmationMessageComponent,
         SpinnerDialogComponent,
@@ -118,6 +120,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         RemoveLeadingZerosPipe
     ],
     declarations: [
+        AppSettingsComponent,
         AlertMessageComponent,
         ConfirmationMessageComponent,
         SpinnerDialogComponent,

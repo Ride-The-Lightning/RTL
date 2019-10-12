@@ -95,6 +95,7 @@ flgSidenavOpened=true
 flgSidenavPinned=true
 menu=Vertical
 menuType=Regular
+fontSize=Regular
 theme=dark-blue
 satsToBTC=false
 lndServerUrl=https://192.168.0.0:8080/v1

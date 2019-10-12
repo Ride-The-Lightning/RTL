@@ -1,12 +1,29 @@
 @import "constants";
+@import "mixins";
 
-html, body {
+html {
   width: 100%;
   height: 99%;
-  font-family: $font-family !important;
-  font-size: $font-size !important;
   line-height: 1.5;
   overflow-x: hidden;
+  font-family: $font-family !important;
+  font-size: 62.5%; //1 rem = 10px; 10px/16px = 62.5%
+  @include respond(tab-land) { // width < 1200?
+    font-size: 56.25%; //1 rem = 9px, 9/16 = 50%
+  }
+  @include respond(tab-port) { // width < 900?
+    font-size: 50%; //1 rem = 8px, 8/16 = 50%
+  }
+  @include respond(big-desktop) {
+    font-size: 75%; //1rem = 12, 12/16
+  }  
+}
+
+body {
+  box-sizing: border-box;
+  @include respond(tab-port) {
+      padding: 0;
+  }
 }
 
 .rtl-container{
@@ -23,11 +40,12 @@ html, body {
     padding-bottom: 0;
   }
   .mat-nested-tree-node-child>.mat-tree-node {
-    padding-left: 40px;
+    padding-left: 4rem;
   }
   &.horizontal {
     .horizontal-nav {
-      margin-top: 1px;
+      margin-top: 1px !important;
+      height: $horizontal-toolbar-height !important;
     }
     .inner-sidenav-content {
       top: $gap;
@@ -38,11 +56,12 @@ html, body {
       width: $compact-sidenav-width;
     }
     .mat-tree-node, .mat-nested-tree-node-parent {
-      height: 76px;
-      padding: 0;
+      min-height: 4rem;
+      height: 4rem;
+      padding: 0 1.6rem 0 1.6rem;
     }
     .mat-nested-tree-node-child>.mat-tree-node {
-      padding-left: 60px;
+      padding-left: 3.2rem;
     }
   }
   &.mini {
@@ -50,13 +69,12 @@ html, body {
       width: $mini-sidenav-width;
     }
     .mat-tree-node, .mat-nested-tree-node-parent {
-      padding: 0 8px 12px 8px;
-      .mat-icon {
-        font-size: $icon-size;
-      }
+      min-height: 5.4rem;
+      height: 5.4rem;
+      padding: 0 2.4rem 0 2.4rem;
     }
     .mat-nested-tree-node-child>.mat-tree-node {
-      padding: 0 8px 12px 28px;
+      padding: 0 0.8rem 1.2rem 2.8rem;
     }
   }      
 }
@@ -75,7 +93,7 @@ html, body {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  font-size: $font-size * 1.75;
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -87,10 +105,6 @@ html, body {
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
-}
-
-.font-9px {
-  font-size: 9px !important;
 }
 
 .sticky {
@@ -110,17 +124,17 @@ html, body {
 
 .inner-sidenav-content {
   position: relative;
-  top:10px;
+  top:1rem;
   bottom:0;
   left:0;
   right:0;  
-  padding: 4px;
+  padding: 0.8rem 1.6rem;
   min-height: calc(100% - (#{$toolbar-height} + #{$gap}*4));
   max-height: 90vh;
 }
 
 .top-50 {
-  top: 50px;
+  top: 5rem;
 }
 
 *{
@@ -141,7 +155,7 @@ html, body {
   visibility: visible;
   opacity: 1;
   h4{
-    margin-top: 10px;
+    margin-top: 1rem;
   }
 }
 
@@ -159,8 +173,8 @@ html, body {
 
 .mat-raised-button {
   width: 100%;
-  margin-top: 5px;
-  max-height: 36px;
+  margin-top: 0.5rem;
+  max-height: 3.6rem;
 }
 
 .logo {
@@ -170,21 +184,21 @@ html, body {
 }
 
 .mat-card {
-  padding: 12px 24px !important;
+  padding: 1.2rem 2.4rem !important;
   overflow: hidden;
   border-radius: 2px !important;
 }
 
 .mat-card-actions{
   display: block;
-  margin-bottom: 16px;
-  padding-left: 6px;
-  padding-right: 6px;
+  margin-bottom: 1.6rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
 }
 
 .mat-card-content, .mat-card-subtitle, .mat-card-title {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 1.6rem;
 }
 
 .mat-card-header-text {
@@ -194,11 +208,11 @@ html, body {
 
 .mat-form-field-wrapper {
   width: 100%;
-  margin: 0 15px 0 0;
+  margin: 0 1.5rem 0 0;
 }
 
 .mat-select {
-  margin: 0 15px 0 0;
+  margin: 0 1.5rem 0 0;
 }
 
 .green {
@@ -222,95 +236,95 @@ html, body {
 }
 
 .mt-1 {
-  margin-top: 0.55rem !important;
+  margin-top: 0.9rem !important;
 }
 
 .mb-1 {
-  margin-bottom: 0.55rem !important;
+  margin-bottom: 0.9rem !important;
 }
 
 .ml-1 {
-  margin-left: 0.55rem !important;
+  margin-left: 0.9rem !important;
 }
 
 .mr-1 {
-  margin-right: 0.55rem !important;
+  margin-right: 0.9rem !important;
 }
 
 .mx-1 {
-  margin: 0 0.55rem !important;
+  margin: 0 0.9rem !important;
 }
 
 .my-1 {
-  margin: 0.55rem 0 !important;
+  margin: 0.9rem 0 !important;
 }
 
 .m-1 {
-  margin: 0.55rem !important;
+  margin: 0.9rem !important;
 }
 
 .mt-2 {
-  margin-top: 1rem !important;
+  margin-top: 1.6rem !important;
 }
 
 .mt-minus-1 {
-  margin-top: -0.5rem !important;
+  margin-top: -0.8rem !important;
 }
 
 .mb-2 {
-  margin-bottom: 1rem !important;
+  margin-bottom: 1.6rem !important;
 }
 
 .ml-2 {
-  margin-left: 1rem !important;
+  margin-left: 1.6rem !important;
 }
 
 .mr-2 {
-  margin-right: 1rem !important;
+  margin-right: 1.6rem !important;
 }
 
 .ml-4 {
-  margin-left: 2rem !important;
+  margin-left: 3.2rem !important;
 }
 
 .ml-8 {
-  margin-left: 4rem !important;
+  margin-left: 6.4rem !important;
 }
 
 .mr-4 {
-  margin-right: 2rem !important;
+  margin-right: 3.2rem !important;
 }
 
 .mx-2 {
-  margin: 0 1rem !important;
+  margin: 0 1.6rem !important;
 }
 
 .my-2 {
-  margin: 1rem 0 !important;
+  margin: 1.6rem 0 !important;
 }
 
 .m-2 {
-  margin: 1rem !important;
+  margin: 1.6rem !important;
 }
 
 .pt-1 {
-  padding-top: 0.55rem !important;
+  padding-top: 0.9rem !important;
 }
 
 .pb-1 {
-  padding-bottom: 0.55rem !important;
+  padding-bottom: 0.9rem !important;
 }
 
 .pl-1 {
-  padding-left: 0.55rem !important;
+  padding-left: 0.9rem !important;
 }
 
 .pr-1 {
-  padding-right: 0.55rem !important;
+  padding-right: 0.9rem !important;
 }
 
 .pr-4px {
-  padding-right: 4px !important;
+  padding-right: 0.4rem !important;
 }
 
 .p-0 {
@@ -322,59 +336,59 @@ html, body {
 }
 
 .px-1 {
-  padding: 0 0.55rem !important;
+  padding: 0 0.9rem !important;
 }
 
 .py-1 {
-  padding: 0.55rem 0 !important;
+  padding: 0.9rem 0 !important;
 }
 
 .p-1 {
-  padding: 0.55rem !important;
+  padding: 0.9rem !important;
 }
 
 .pt-2 {
-  padding-top: 1rem !important;
+  padding-top: 1.6rem !important;
 }
 
 .pb-2 {
-  padding-bottom: 1rem !important;
+  padding-bottom: 1.6rem !important;
 }
 
 .pl-2 {
-  padding-left: 1rem !important;
+  padding-left: 1.6rem !important;
 }
 
 .pt-4 {
-  padding-top: 2rem !important;
+  padding-top: 3.2rem !important;
 }
 
 .pl-4 {
-  padding-left: 2rem !important;
+  padding-left: 3.2rem !important;
 }
 
 .pr-2 {
-  padding-right: 1rem !important;
+  padding-right: 1.6rem !important;
 }
 
 .pr-5 {
-  padding-right: 2.5rem !important;
+  padding-right: 4rem !important;
 }
 
 .px-2 {
-  padding: 0 1rem !important;
+  padding: 0 1.6rem !important;
 }
 
 .px-4 {
-  padding: 0 2rem !important;
+  padding: 0 3.2rem !important;
 }
 
 .py-2 {
-  padding: 1rem 0 !important;
+  padding: 1.6rem 0 !important;
 }
 
 .p-2 {
-  padding: 1rem !important;
+  padding: 1.6rem !important;
 }
 
 .m-1px {
@@ -394,7 +408,7 @@ html, body {
 }
 
 .mat-footer-row, .mat-header-row, .mat-row {
-  border-bottom-width: 0px;
+  border-bottom-width: 0;
 }
 
 .mat-cell, .mat-header-cell, .mat-footer-cell {
@@ -404,7 +418,7 @@ html, body {
 }
 
 .flex-ellipsis {
-  padding-right: 30px;
+  padding-right: 3rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -416,28 +430,28 @@ html, body {
 
 .inline-spinner {
   display: inline-flex !important;
-  top: 5px !important;
+  top: 0.5rem !important;
 }
 
 .top-minus-5px {
   position: relative;
-  top:-5px;
+  top:-0.5rem;
 }
 
 .top-minus-15px {
   position: relative;
-  top:-15px;
+  top:-1.5rem;
 }
 
 .top-minus-25px {
   position: relative;
-  top:-25px;
-  margin-bottom: -25px !important;
+  top:-2.5rem;
+  margin-bottom: -2.5rem !important;
 }
 
 .top-minus-30px {
   position: relative;
-  top:-30px;
+  top:-3rem;
 }
 
 .cursor-pointer {
@@ -453,7 +467,7 @@ html, body {
 }
 
 .font-60-percent {
-  font-size: 60%;
+  font-size: $font-size * 0.6;
 }
 
 .inline-flex {
@@ -469,18 +483,18 @@ html, body {
   position: fixed;
   width: $settings-nav-width;
   .container{
-    padding: 6px 14px;
+    padding: 0.6rem 1.4rem;
     h4{
       border-bottom: 1px solid #ccc;
-      margin: 12px 0 6px 0;
+      margin: 1.2rem 0 0.6rem 0;
     }
     .skin{
-      width:32px;
-      height: 0px;
+      width:3.2rem;
+      height: 0;
       padding: 0;
       overflow: hidden;
       cursor: pointer;  
-      border: 16px solid;
+      border: 1.6rem solid;
 			&.light-purple{
 				border-left-color: #ffffff;
 				border-right-color: #ffffff;
@@ -541,7 +555,7 @@ html, body {
   }
   
   .mat-slide-toggle{
-    padding: 0px 14px;
+    padding: 0px 1.4rem;
   }  
 
 }
@@ -558,8 +572,8 @@ html, body {
   position: fixed;
   top: 30%;
   right: 0;
-  width: 42px;
-  height: 42px;
+  width: 4.2rem;
+  height: 4.2rem;
   opacity: 0.6;
   cursor: pointer;
   z-index: 999999;
@@ -572,26 +586,39 @@ html, body {
   border-radius: 2px;
 }
 
+.fa-icon-small {
+  min-width: $fa-icon-small-size;
+  width: $fa-icon-small-size;
+  max-width: $fa-icon-small-size;
+}
+
+.fa-icon-regular {
+  min-width: $fa-icon-regular-size;
+  width: $fa-icon-regular-size;
+  max-width: $fa-icon-regular-size;
+  font-size: $font-size * 1.75;
+}
+
 .icon-large {
-  font-size: 70px;
+  font-size: $font-size * 5;
   margin-left: -100%;
 }
 
 .icon-small {
-  height: 20px !important;
-  width: 20px !important;
-  font-size: 20px !important;
+  height: 2rem !important;
+  width: 2rem !important;
+  font-size: $font-size * 1.5 !important;
 }
 
 .icon-smaller {
-  height: 10px !important;
-  width: 10px !important;
-  font-size: 10px !important;
+  height: 1rem !important;
+  width: 1rem !important;
+  font-size: $font-size * 0.75 !important;
 }
 
 .copy-icon {
   position: relative;
-  top: 5px;
+  top: 0.5rem;
 }
 
 .copy-icon-smaller {
@@ -601,7 +628,7 @@ html, body {
 
 .top-5px {
   position: relative;
-  top: 5px;
+  top: 0.5rem;
 }
 
 .animate-settings {
@@ -619,21 +646,17 @@ html, body {
   100% {-webkit-transform: rotate(360deg)} 
 }
 
-.size-30 {
-  font-size: 30px;
-}
-
-.size-16 {
-  font-size: 16px;
+.size-triple {
+  font-size: $font-size * 3;
 }
 
 .mt-minus-5 {
   position: relative;
-  margin-top: -5px; 
+  margin-top: -0.5rem; 
 }
 
 .custom-card {
-  padding: 0px 0px 8px 0px !important;
+  padding: 0px 0px 0.8rem 0px !important;
 }
 
 .not-found-box {
@@ -662,8 +685,8 @@ a {
 }
 
 .mat-tree-node, .mat-nested-tree-node-parent {
-  min-height: 38px !important;
-  padding: 0 12px 0 12px; 
+  height: 4.8rem;
+  padding: 0 1.2rem 0 1.2rem; 
   cursor: pointer;
 }
 
@@ -671,15 +694,11 @@ a {
 .mat-tree-node span:focus, .mat-tree-node span:active, .mat-nested-tree-node-parent span:focus, .mat-nested-tree-node-parent span:active,
 .mat-tree-node div:focus, .mat-tree-node div:active, .mat-nested-tree-node-parent div:focus, .mat-nested-tree-node-parent div:active,
 .mat-tree-node .mat-icon:focus, .mat-tree-node .mat-icon:active, .mat-nested-tree-node-parent .mat-icon:focus, .mat-nested-tree-node-parent .mat-icon:active {
-      outline: none;
+  outline: none;
 }  
 
 .lnd-info {
   height: $sidenav-info-height;
-}
-
-.horizontal-button {
-  height: $toolbar-height;
 }
 
 .mat-icon-36 {
@@ -709,13 +728,8 @@ a {
   align-content: center;
 }
 
-tr.mat-row:hover, .mat-tree-node:hover, .mat-nested-tree-node-parent:hover {
+tr.mat-row:hover {
   box-shadow: inset 0.1em 0.1em 0.1em 0 rgba(255,255,255,0.5), inset -0.1em -0.1em 0.1em 0 rgba(0,0,0,0.5);
-  cursor: pointer;
-}
-
-.mat-tree-node.active-link {
-  box-shadow: inset 0.1em 0.1em 0.1em 0 rgba(0,0,0,0.5), inset -0.1em -0.1em 0.1em 0 rgba(255,255,255,0.5);
   cursor: pointer;
 }
 

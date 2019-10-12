@@ -48,6 +48,7 @@ connect.setDefaultConfig = () => {
       flgSidenavPinned: true,
       menu: 'Vertical',
       menuType: 'Regular',
+      fontSize: 'Regular',
       theme: 'dark-blue',
       satsToBTC: false,
       channelBackupPath: homeDir + common.path_separator + 'backup' + common.path_separator + 'node-0',

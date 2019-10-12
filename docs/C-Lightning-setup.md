@@ -79,6 +79,7 @@ Ensure that the follow values are correct per your config:
         "flgSidenavPinned": true,
         "menu": "Vertical",
         "menuType": "Regular",
+        "fontSize": "Regular",
         "theme": "dark-pink",
         "satsToBTC": false,
         "bitcoindConfigPath": "",

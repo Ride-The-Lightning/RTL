@@ -1,0 +1,66 @@
+<div fxLayout="row" class="padding-gap page-title">
+  <fa-icon [icon]="faTools" class="fa-icon-small mr-1"></fa-icon>
+  <span>Application Settings</span>
+</div>
+<div fxLayout="column" class="padding-gap">
+  <mat-card>
+    <mat-card-content>
+      <div fxLayout="column">
+        <div *ngIf="selNode.lnImplementation !== 'CLT'">
+          <h4>Currency Unit</h4>
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+            <span>{{currencyUnit}}</span>
+            <mat-slide-toggle [checked]="selNode?.settings?.satsToBTC" (change)="toggleSettings('satsToBTC')"
+              labelPosition="before"></mat-slide-toggle>
+          </div>
+          <mat-divider class="mt-2"></mat-divider>
+        </div>
+        <div *ngIf="showSettingOption">
+          <h4>Menu</h4>
+          <mat-radio-group [(ngModel)]="selectedMenu" (change)="chooseMenu()">
+            <mat-radio-button *ngFor="let menu of menus" [value]="menu">{{menu}}</mat-radio-button>
+          </mat-radio-group>
+          <mat-divider class="mt-2"></mat-divider>
+        </div>
+        <h4>Menu Type</h4>
+        <mat-radio-group [(ngModel)]="selectedMenuType" (change)="chooseMenuType()">
+          <mat-radio-button *ngFor="let menuType of menuTypes" [value]="menuType">{{menuType}}</mat-radio-button>
+        </mat-radio-group>
+        <mat-divider class="mt-2"></mat-divider>
+        <div *ngIf="showSettingOption">
+          <div fxLayout="column">
+            <h4>Sidenav Options</h4>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <span>Opened</span>
+              <mat-slide-toggle [checked]="selNode?.settings?.flgSidenavOpened"
+                (change)="toggleSettings('flgSidenavOpened')" labelPosition="before"></mat-slide-toggle>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <span>Pinned</span>
+              <mat-slide-toggle [checked]="selNode?.settings?.flgSidenavPinned"
+                (change)="toggleSettings('flgSidenavPinned')" labelPosition="before"></mat-slide-toggle>
+            </div>
+          </div>
+          <mat-divider class="mt-2"></mat-divider>
+        </div>
+        <h4>Skins</h4>
+        <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+          <div class="skin dark-purple m-1px" (click)="changeTheme('purple-white-dark-theme')"></div>
+          <div class="skin dark-blue m-1px" (click)="changeTheme('dark-blue')"></div>
+          <div class="skin dark-green m-1px" (click)="changeTheme('dark-green')"></div>
+          <div class="skin dark-pink m-1px" (click)="changeTheme('dark-pink')"></div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start start" class="p-0">
+          <div class="skin light-purple m-1px" (click)="changeTheme('purple-white-light-theme')"></div>
+          <div class="skin light-blue m-1px" (click)="changeTheme('light-blue')"></div>
+          <div class="skin light-teal m-1px" (click)="changeTheme('light-teal')"></div>
+          <div class="skin light-blue-gray m-1px" (click)="changeTheme('light-blue-gray')"></div>
+        </div>
+      </div>
+      <div fxFlex="15" fxLayoutAlign="start start">
+        <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onClose()"
+          tabindex="12">Update</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

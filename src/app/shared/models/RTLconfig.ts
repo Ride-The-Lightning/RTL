@@ -18,6 +18,7 @@ export class Settings {
     public flgSidenavPinned: boolean,
     public menu: string,
     public menuType: string,
+    public fontSize: string,
     public theme: string,
     public satsToBTC: boolean,
     public bitcoindConfigPath?: string,
