@@ -7,23 +7,11 @@ html {
   line-height: 1.5;
   overflow-x: hidden;
   font-family: $font-family !important;
-  font-size: 62.5%; //1 rem = 10px; 10px/16px = 62.5%
-  @include respond(tab-land) { // width < 1200?
-    font-size: 56.25%; //1 rem = 9px, 9/16 = 50%
-  }
-  @include respond(tab-port) { // width < 900?
-    font-size: 50%; //1 rem = 8px, 8/16 = 50%
-  }
-  @include respond(big-desktop) {
-    font-size: 75%; //1rem = 12, 12/16
-  }  
+  font-size: 62.5%;
 }
 
 body {
   box-sizing: border-box;
-  @include respond(tab-port) {
-      padding: 0;
-  }
 }
 
 .rtl-container{
@@ -41,6 +29,102 @@ body {
   }
   .mat-nested-tree-node-child>.mat-tree-node {
     padding-left: 4rem;
+  }
+  &.small-font {
+    .material-icons {
+      font-size: 1.8rem;
+    }
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+      font-size: 1.2rem !important;
+    }
+    .logo {
+      font-size: 1.2rem * 2;
+    }
+    .font-60-percent {
+      font-size: 1.2rem * 0.6;
+    }
+    .fa-icon-regular {
+      font-size: 1.2rem * 1.75;
+    }
+    .icon-large {
+      font-size: 1.2rem * 5;
+    }
+    .icon-small {
+      font-size: 1.2rem * 1.5 !important;
+    }
+    .icon-smaller {
+      font-size: 1.2rem * 0.75 !important;
+    }
+    .size-triple {
+      font-size: 1.2rem * 3;
+    }
+    .mat-icon-36 {
+      font-size: 1.2rem;
+    }
+  }
+  &.regular-font {
+    .material-icons {
+      font-size: 2.8rem;
+    }
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+      font-size: 1.4rem !important;
+    }
+    .logo {
+      font-size: 1.4rem * 2;
+    }
+    .font-60-percent {
+      font-size: 1.4rem * 0.6;
+    }
+    .fa-icon-regular {
+      font-size: 1.4rem * 1.75;
+    }
+    .icon-large {
+      font-size: 1.4rem * 5;
+    }
+    .icon-small {
+      font-size: 1.4rem * 1.5 !important;
+    }
+    .icon-smaller {
+      font-size: 1.4rem * 0.75 !important;
+    }
+    .size-triple {
+      font-size: 1.4rem * 3;
+    }
+    .mat-icon-36 {
+      font-size: 1.4rem;
+    }
+  }
+  &.large-font {
+    .material-icons {
+      font-size: 3.8rem;
+    }
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+      font-size: 1.6rem !important;
+    }
+    .logo {
+      font-size: 1.6rem * 2;
+    }
+    .font-60-percent {
+      font-size: 1.6rem * 0.6;
+    }
+    .fa-icon-regular {
+      font-size: 1.6rem * 1.75;
+    }
+    .icon-large {
+      font-size: 1.6rem * 5;
+    }
+    .icon-small {
+      font-size: 1.6rem * 1.5 !important;
+    }
+    .icon-smaller {
+      font-size: 1.6rem * 0.75 !important;
+    }
+    .size-triple {
+      font-size: 1.6rem * 3;
+    }
+    .mat-icon-36 {
+      font-size: 1.6rem;
+    }
   }
   &.horizontal {
     .horizontal-nav {
@@ -93,7 +177,6 @@ body {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
-  font-size: $font-size * 1.75;
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -124,7 +207,7 @@ body {
 
 .inner-sidenav-content {
   position: relative;
-  top:1rem;
+  top:0;
   bottom:0;
   left:0;
   right:0;  
@@ -159,10 +242,6 @@ body {
   }
 }
 
-.mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
-  font-size: $font-size !important;
-}
-
 .padding-gap {
   padding: $gap !important;
 }
@@ -175,12 +254,6 @@ body {
   width: 100%;
   margin-top: 0.5rem;
   max-height: 3.6rem;
-}
-
-.logo {
-  font-size: $font-size * 2;
-  font-weight: 700;
-  letter-spacing: 1px;
 }
 
 .mat-card {
@@ -235,8 +308,12 @@ body {
   margin-top: 1px !important;
 }
 
+.mt-2px {
+  margin-top: 2px !important;
+}
+
 .mt-1 {
-  margin-top: 0.9rem !important;
+  margin-top: 0.5rem !important;
 }
 
 .mb-1 {
@@ -264,7 +341,7 @@ body {
 }
 
 .mt-2 {
-  margin-top: 1.6rem !important;
+  margin-top: 1rem !important;
 }
 
 .mt-minus-1 {
@@ -323,6 +400,10 @@ body {
   padding-right: 0.9rem !important;
 }
 
+.pr-4 {
+  padding-right: 4rem !important;
+}
+
 .pr-4px {
   padding-right: 0.4rem !important;
 }
@@ -368,7 +449,7 @@ body {
 }
 
 .pr-2 {
-  padding-right: 1.6rem !important;
+  padding-right: 2rem !important;
 }
 
 .pr-5 {
@@ -464,10 +545,6 @@ body {
 
 .cursor-not-allowed {
   cursor: not-allowed !important;
-}
-
-.font-60-percent {
-  font-size: $font-size * 0.6;
 }
 
 .inline-flex {
@@ -592,30 +669,6 @@ body {
   max-width: $fa-icon-small-size;
 }
 
-.fa-icon-regular {
-  min-width: $fa-icon-regular-size;
-  width: $fa-icon-regular-size;
-  max-width: $fa-icon-regular-size;
-  font-size: $font-size * 1.75;
-}
-
-.icon-large {
-  font-size: $font-size * 5;
-  margin-left: -100%;
-}
-
-.icon-small {
-  height: 2rem !important;
-  width: 2rem !important;
-  font-size: $font-size * 1.5 !important;
-}
-
-.icon-smaller {
-  height: 1rem !important;
-  width: 1rem !important;
-  font-size: $font-size * 0.75 !important;
-}
-
 .copy-icon {
   position: relative;
   top: 0.5rem;
@@ -646,8 +699,9 @@ body {
   100% {-webkit-transform: rotate(360deg)} 
 }
 
-.size-triple {
-  font-size: $font-size * 3;
+.top-toolbar-icon .top-toolbar-img {
+  padding-right: 0.7rem;
+  cursor:pointer;
 }
 
 .mt-minus-5 {
@@ -685,7 +739,6 @@ a {
 }
 
 .mat-tree-node, .mat-nested-tree-node-parent {
-  height: 4.8rem;
   padding: 0 1.2rem 0 1.2rem; 
   cursor: pointer;
 }
@@ -699,12 +752,6 @@ a {
 
 .lnd-info {
   height: $sidenav-info-height;
-}
-
-.mat-icon-36 {
-  width: $icon-size !important;
-  height: $icon-size !important;
-  font-size: $icon-size;
 }
 
 .flex-wrap {
@@ -735,4 +782,41 @@ tr.mat-row:hover {
 
 .settings.mat-sidenav .mat-drawer-inner-container {
   overflow: hidden;
+}
+
+.top-toolbar-icon.icon-pinned {
+  width: 3rem; 
+  height: 3rem;
+  padding: 0.4rem 0 0 1.5rem;
+  cursor:pointer;
+}
+
+.logo {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.fa-icon-regular {
+  min-width: $fa-icon-regular-size;
+  width: $fa-icon-regular-size;
+  max-width: $fa-icon-regular-size;
+}
+
+.icon-large {
+  margin-left: -100%;
+}
+
+.icon-small {
+  height: 2rem !important;
+  width: 2rem !important;
+}
+
+.icon-smaller {
+  height: 1rem !important;
+  width: 1rem !important;
+}
+
+.mat-icon-36 {
+  width: $icon-size !important;
+  height: $icon-size !important;
 }

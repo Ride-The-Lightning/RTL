@@ -38,6 +38,111 @@
     @include _mat-toolbar-color($alternate-primary);
   }
 
+  &.small-font {
+    .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
+      min-height: $tree-node-height * 0.7;
+      height: $tree-node-height * 0.7;
+    }
+    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
+    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+      font-size: 1.2rem * 1.1;
+    }
+    .validation-error-icon {
+      font-size: 1.2rem * 1.2;
+    }
+    .genseed-message {
+      font-size: 1.2rem * 1.2;
+    }
+    .insecure-message {
+      font-size: 1.2rem * 1.2;
+    }
+    .page-title {
+      font-size: 1.2rem * 1.1;
+    }
+    .mat-icon-button .top-toolbar-icon.icon-pinned, .mat-icon-button .top-toolbar-icon .top-toolbar-img {
+      font-size: 1.2rem;
+    }
+    .fa-icon-small {
+      font-size: 1.4rem;
+    }
+    .mat-icon-button .mat-button-wrapper .top-toolbar-icon.icon-pinned {
+      font-size: 0.8rem;
+    }
+    .top-toolbar-icon .top-toolbar-img {
+      width: 2rem; 
+      height: 2rem;
+      font-size: 1.5rem;
+    }
+  }
+  &.regular-font {
+    .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
+      height: $tree-node-height;
+    }
+    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
+    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+      font-size: 1.4rem * 1.1;
+    }
+    .validation-error-icon {
+      font-size: 1.4rem * 1.2;
+    }
+    .genseed-message {
+      font-size: 1.4rem * 1.2;
+    }
+    .insecure-message {
+      font-size: 1.4rem * 1.2;
+    }
+    .page-title {
+      font-size: 1.4rem * 1.1;
+    }
+    .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned, .mat-icon-button .top-toolbar-icon .top-toolbar-img {
+      font-size: 1.4rem;
+    }
+    .fa-icon-small {
+      font-size: 1.8rem;
+    }
+    .top-toolbar-icon.icon-pinned {
+      font-size: 1.8rem;
+    }
+    .top-toolbar-icon .top-toolbar-img {
+      width: 2.5rem; 
+      height: 2.5rem;
+      font-size: 1.8rem;
+    }
+  }
+  &.large-font {
+    .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
+      height: $tree-node-height;
+    }
+    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
+    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+      font-size: 1.6rem * 1.1;
+    }
+    .validation-error-icon {
+      font-size: 1.6rem * 1.2;
+    }
+    .genseed-message {
+      font-size: 1.6rem * 1.2;
+    }
+    .insecure-message {
+      font-size: 1.6rem * 1.2;
+    }
+    .page-title {
+      margin-top: 0.5rem;
+      font-size: 1.6rem * 1.1;
+    }
+    .fa-icon-small {
+      font-size: 2.2rem;
+    }
+    .top-toolbar-icon.icon-pinned {
+      font-size: 2rem;
+    }
+    .top-toolbar-icon .top-toolbar-img {
+      width: 3rem; 
+      height: 3rem;
+      font-size: 2rem;
+    }
+  }
+
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
     stroke: mat-color($foreground, text);
   }
@@ -71,10 +176,6 @@
     border-bottom: 2px solid mat-color($primary);
   }
 
-  .mat-button.app-config-nodes:hover, .top-toolbar-icon:hover {
-    background: mat-color($primary, darker);
-  }
-
   .mat-button.app-config-nodes.selected-node {
     border-bottom: 2px solid mat-color($accent);
   }
@@ -99,7 +200,26 @@
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     background: none;
     font-weight: 900;
-    font-size: $font-size * 1.1;
+  }
+
+  .validation-error-icon {
+    position: relative;
+    top: 2px;
+    left: 0.4rem;
+  }
+
+  .genseed-message {
+    width:10%;
+    color: mat-color($accent);
+  }
+
+  .insecure-message {
+    width:100%;
+    color: mat-color($accent);
+  }
+
+  .page-title {
+    color: mat-color($foreground);
   }
 
   .material-icons.primary { color: mat-color($primary); }
@@ -111,25 +231,6 @@
     margin-top: 0.5rem;
     width:100%;
     color: mat-color($accent);
-  }
-
-  .validation-error-icon {
-    font-size: $font-size * 1.2;
-    position: relative;
-    top: 2px;
-    left: 0.4rem;
-  }
-
-  .genseed-message {
-    width:10%;
-    color: mat-color($accent);
-    font-size: $font-size * 1.2;
-  }
-
-  .insecure-message {
-    width:100%;
-    color: mat-color($accent);
-    font-size: $font-size * 1.2;
   }
 
   .mat-vertical-content {
@@ -167,9 +268,4 @@
     }
   }
 
-  .page-title {
-    font-size: $font-size * 1.1;
-    color: mat-color($foreground);
-  }
-  
 }

@@ -4,12 +4,13 @@
       <button *ngIf="settings.menu === 'Vertical'" class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
         <mat-icon>menu</mat-icon>
       </button>
-      <svg *ngIf="settings.menu === 'Vertical' && settings.menuType !== 'Mini' && !smallScreen" class="top-toolbar-icon icon-pinned mr-1" viewBox="0 0 24 24"
-        (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
-        <path fill="currentColor" *ngIf="!settings.flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
-        <path fill="currentColor" *ngIf="settings.flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
-      </svg>
-      <div *ngIf="appConfig.nodes.length > 1" fxLayout="row" fxLayoutAlign="space-between center">
+      <button *ngIf="settings.menu === 'Vertical' && settings.menuType !== 'Mini' && !smallScreen" mat-icon-button (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
+        <svg class="top-toolbar-icon icon-pinned">
+          <path fill="currentColor" *ngIf="!settings.flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+          <path fill="currentColor" *ngIf="settings.flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+        </svg>
+      </button>
+      <div *ngIf="appConfig.nodes.length > 1" fxLayout="row" fxLayoutAlign="space-between center" class="ml-1">
         <div *ngFor="let node of appConfig.nodes" tabindex="1" fxFlex="100">
           <button [ngClass]="{'selected-node':node.index === selNode.index, 'app-config-nodes': true}" (click)="onSelectionChange(node)" fxLayoutAlign="center center" mat-button type="button">{{node.lnNode}} ({{node.lnImplementation}})</button>
         </div>

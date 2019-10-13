@@ -1,48 +1,73 @@
 @import '~@angular/material/theming';
 @include mat-core();
 @import 'change-theme';
+@import 'typography';
 
 .rtl-container{
-	&.purple-white-light-theme {
-		@debug "PURPLE LIGHT THEME";
-        @import "../skins/light-purple";
-		@include angular-material-theme($purple-white-light-theme);
-		@include change-theme($purple-white-light-theme, $alternate-purple-white-light-theme);
-	}
-	&.purple-white-dark-theme {
-		@debug "PURPLE DARK THEME";
-        @import "../skins/dark-purple";
-		@include angular-material-theme($purple-white-dark-small-theme);
-		@include change-theme($purple-white-dark-small-theme, $alternate-purple-white-dark-theme);
-	}
-    &.light-blue{
-      @import "../skins/light-blue";
-      @include angular-material-theme($blue-light-theme);
-      @include change-theme($blue-light-theme, $alternate-blue-light-theme);
+  &.purple-white-light-theme {
+      @debug "PURPLE LIGHT THEME";
+      @import "../skins/light-purple";
+      @include angular-material-theme($purple-white-light-theme);
+      @include change-theme($purple-white-light-theme, $alternate-purple-white-light-theme);
+      &.small-font {@include mat-core($small-typography);}
+      &.regular-font {@include mat-core($regular-typography);}
+      &.large-font {@include mat-core($large-typography);}
+  }
+  &.purple-white-dark-theme {
+      @debug "PURPLE DARK THEME";
+      @import "../skins/dark-purple";
+      @include angular-material-theme($purple-white-dark-theme);
+      @include change-theme($purple-white-dark-theme, $alternate-purple-white-dark-theme);
+      &.small-font {@include mat-core($small-typography);}
+      &.regular-font {@include mat-core($regular-typography);}
+      &.large-font {@include mat-core($large-typography);}
+  }
+  &.light-blue{
+    @import "../skins/light-blue";
+    @include angular-material-theme($blue-light-theme);
+    @include change-theme($blue-light-theme, $alternate-blue-light-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
   &.light-teal{
-      @import "../skins/light-teal";
-      @include angular-material-theme($teal-light-theme);
-      @include change-theme($teal-light-theme, $alternate-teal-light-theme);
+    @import "../skins/light-teal";
+    @include angular-material-theme($teal-light-theme);
+    @include change-theme($teal-light-theme, $alternate-teal-light-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
   &.light-blue-gray{
-      @import "../skins/light-bluegray";
-      @include angular-material-theme($blue-gray-light-theme);
-      @include change-theme($blue-gray-light-theme, $alternate-blue-gray-light-theme);
+    @import "../skins/light-bluegray";
+    @include angular-material-theme($blue-gray-light-theme);
+    @include change-theme($blue-gray-light-theme, $alternate-blue-gray-light-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
   &.dark-blue{
-      @import "../skins/dark-blue";
-      @include angular-material-theme($blue-dark-theme);
-      @include change-theme($blue-dark-theme, $alternate-blue-dark-theme);
+    @import "../skins/dark-blue";
+    @include angular-material-theme($blue-dark-theme);
+    @include change-theme($blue-dark-theme, $alternate-blue-dark-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
   &.dark-green{
-      @import "../skins/dark-green";
-      @include angular-material-theme($green-dark-theme);
-      @include change-theme($green-dark-theme, $alternate-green-dark-theme);
+    @import "../skins/dark-green";
+    @include angular-material-theme($green-dark-theme);
+    @include change-theme($green-dark-theme, $alternate-green-dark-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
   &.dark-pink{
-      @import "../skins/dark-pink";
-      @include angular-material-theme($pink-dark-theme);
-      @include change-theme($pink-dark-theme, $alternate-pink-dark-theme);
+    @import "../skins/dark-pink";
+    @include angular-material-theme($pink-dark-theme);
+    @include change-theme($pink-dark-theme, $alternate-pink-dark-theme);
+    &.small-font {@include mat-core($small-typography);}
+    &.regular-font {@include mat-core($regular-typography);}
+    &.large-font {@include mat-core($large-typography);}
   }
 }
