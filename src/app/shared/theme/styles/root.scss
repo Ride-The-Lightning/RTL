@@ -33,6 +33,7 @@ body {
   &.small-font {
     .material-icons {
       font-size: 1.8rem;
+      line-height: 2rem;
     }
     .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
       font-size: 1.2rem !important;
@@ -211,7 +212,7 @@ body {
   bottom:0;
   left:0;
   right:0;  
-  padding: 0.8rem 1.6rem;
+  padding: 1rem;
   min-height: calc(100% - (#{$toolbar-height} + #{$gap}*4));
   max-height: 90vh;
 }

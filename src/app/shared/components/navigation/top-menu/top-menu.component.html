@@ -1,17 +1,17 @@
 <mat-menu #topMenu="matMenu" [overlapTrigger]="false" class="top-menu">
-  <p mat-menu-item>
+  <p mat-menu-item fxLayout="row" fxLayoutAlign="start center">
     <fa-icon [icon]="faCodeBranch" class="fa-icon-small mr-4"></fa-icon>
     <span>Version: {{version}}</span>
   </p>
-  <a mat-menu-item routerLink="/sconfig">
+  <a mat-menu-item routerLink="/sconfig" fxLayout="row" fxLayoutAlign="start center">
     <fa-icon [icon]="faCog" class="fa-icon-small mr-4"></fa-icon>
     <span routerLink="/sconfig">Node Config</span>
   </a>
-  <a mat-menu-item routerLink="/help">
+  <a mat-menu-item routerLink="/help" fxLayout="row" fxLayoutAlign="start center">
     <fa-icon [icon]="faLifeRing" class="fa-icon-small mr-4"></fa-icon>
     <span routerLink="/help">Help</span>
   </a>
-  <a *ngIf="showLogout" mat-menu-item (click)="onClick()">
+  <a *ngIf="showLogout" mat-menu-item (click)="onClick()" fxLayout="row" fxLayoutAlign="start center">
     <fa-icon [icon]="faEject" class="fa-icon-small mr-4"></fa-icon>
     <span>Logout</span>
   </a>
