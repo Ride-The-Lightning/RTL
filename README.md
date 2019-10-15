@@ -17,8 +17,12 @@
 * [Troubleshooting](#trouble)
 
 ### <a name="intro"></a>Introduction
-RTL is a full function, device agnostic web user interface for Lightning Network Daemon, to help manage lightning node operations.
-Lightning Network Daemon is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
+RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
+RTL is available on LND and C-Lightning implementations.
+
+This page covers instructions for LND. For C-lightning, refer to [this](docs/C-Lightning-setup.md) page.
+
+Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
 Pre-requisite for running RTL is a functioning and synced LND node. You can setup your own node, by following the below guides:
 * Windows/Mac users can follow Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
