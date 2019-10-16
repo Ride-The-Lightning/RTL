@@ -220,8 +220,8 @@ connect.validateSingleNodeConfig = (config) => {
   }
 
   if (undefined !== process.env.RTL_PASS) {
-		common.rtl_pass = process.env.RTL_PASS;
-	} else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
+		common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
+  } else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
 		common.rtl_pass = config.Authentication.rtlPassHashed;
 	} else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
     common.rtl_pass = connect.convertCustomToHash('SINGLE');
@@ -271,7 +271,9 @@ connect.validateSingleNodeConfig = (config) => {
 
 connect.validateMultiNodeConfig = (config) => {
   common.node_auth_type = 'CUSTOM';
-  if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
+  if (undefined !== process.env.RTL_PASS) {
+		common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
+  } else if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
 		common.rtl_pass = config.multiPassHashed;
 	} else if (config.multiPass !== '' && undefined !== config.multiPass) {
     common.rtl_pass = connect.convertCustomToHash('MULTI');
