@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.5.3
+### Stable Release: v0.5.3 (Docker build pending)
 
 **Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
 
