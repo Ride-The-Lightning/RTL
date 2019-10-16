@@ -4,7 +4,7 @@ jobs:
   # Publish jobs require those variables
   publish_docker_linuxamd64:
     machine:
-      docker_layer_caching: true
+      docker_layer_caching: false
     steps:
       - checkout  
       - run:
@@ -18,7 +18,7 @@ jobs:
 
   publish_docker_linuxarm32v7:
     machine:
-      docker_layer_caching: true
+      docker_layer_caching: false
     steps:
       - checkout  
       - run:
@@ -33,7 +33,7 @@ jobs:
 
   publish_docker_linuxarm64v8:
     machine:
-      docker_layer_caching: true
+      docker_layer_caching: false
     steps:
       - checkout  
       - run:
