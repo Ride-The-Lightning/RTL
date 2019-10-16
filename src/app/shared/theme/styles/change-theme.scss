@@ -8,6 +8,7 @@
   $accent-color: mat-color(mat-palette($accent));
   $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
+  $foreground-color: mat-color($foreground, text);
   $background: map-get($theme, background);
   $alternate-primary: map-get($alternate-theme, primary);
 
@@ -61,23 +62,33 @@
     }
     .page-title {
       font-size: 1.2rem * 1.1;
+      & .page-title-img {
+        width: 2rem; 
+        height: 2rem; 
+        font-size: 1.6rem * 1.1;
+      }
     }
-    .mat-icon-button .top-toolbar-icon .top-toolbar-img {
-      font-size: 1.2rem;
-    }
-    .fa-icon-small {
+    .fa-icon-small, .top-icon-small {
       font-size: 1.4rem;
     }
     .mat-icon-button .top-toolbar-icon.icon-pinned {
       padding-top: 1rem;
     }
-    .top-toolbar-icon .top-toolbar-img {
+    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
       width: 2rem; 
       height: 2rem;
       font-size: 1.5rem;
     }
+    .horizontal-button .sidenav-img svg {
+      width: 2.5rem; 
+      height: 2.5rem;
+      font-size: 2.2rem;
+    }
   }
   &.regular-font {
+    .inner-sidenav-content {
+      padding-top: 1.5rem;
+    }
     .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
       height: $tree-node-height;
     }
@@ -96,20 +107,30 @@
     }
     .page-title {
       font-size: 1.4rem * 1.1;
+      & .page-title-img {
+        width: 2rem; 
+        height: 2rem; 
+        font-size: 1.6rem * 1.1;
+      }
     }
-    .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned, .mat-icon-button .top-toolbar-icon .top-toolbar-img {
+    .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned {
       font-size: 1.4rem;
     }
-    .fa-icon-small {
+    .fa-icon-small, .top-icon-small {
       font-size: 1.8rem;
     }
     .top-toolbar-icon.icon-pinned {
       font-size: 1.8rem;
     }
-    .top-toolbar-icon .top-toolbar-img {
+    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
       width: 2.5rem; 
       height: 2.5rem;
       font-size: 1.8rem;
+    }
+    .horizontal-button .sidenav-img svg {
+      width: 3rem; 
+      height: 3rem;
+      font-size: 2.5rem;
     }
   }
   &.large-font {
@@ -132,17 +153,27 @@
     .page-title {
       margin-top: 0.5rem;
       font-size: 1.6rem * 1.1;
+      & .page-title-img {
+        width: 3rem; 
+        height: 3rem; 
+        font-size: 2.5rem * 1.1;
+      }
     }
-    .fa-icon-small {
+    .fa-icon-small, .top-icon-small {
       font-size: 2.2rem;
     }
     .top-toolbar-icon.icon-pinned {
       font-size: 2rem;
     }
-    .top-toolbar-icon .top-toolbar-img {
+    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
       width: 3rem; 
       height: 3rem;
       font-size: 2rem;
+    }
+    .horizontal-button .sidenav-img svg {
+      width: 3.5rem; 
+      height: 3.5rem;
+      font-size: 3rem;
     }
   }
 
@@ -159,20 +190,33 @@
   }
 
   a {
-    color: white;
+    color: mat-color($primary);
   }
 
-  .active-link {
+  .active-link, .active-link .sidenav-img svg {
     color: mat-color($primary); 
     font-weight: 500;
     cursor: pointer;
+    fill: mat-color($primary); 
   }
 
-  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-menu-item:hover {
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
     color: mat-color($primary); 
     cursor: pointer;
     background: rgba(0, 0, 0, 0.04);
+    & .sidenav-img svg {
+      fill: mat-color($primary);
+    }
   }
+
+  .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
+  .page-title .page-title-img, .horizontal-button .sidenav-img svg, svg.top-icon-small {
+    fill:  $foreground-color;
+  }
+
+  // .mat-menu-panel {
+  //   background-color: mat-color($primary);
+  // }
 
   .mat-button.app-config-nodes {
     border-radius: 0;

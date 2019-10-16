@@ -6,10 +6,10 @@
 
 $purple-white-light-primary: mat-palette($purple-primary, 500, 400, 700);
 $purple-white-light-accent:  mat-palette($white-accent, 800, 600, 900);
-$purple-white-light-warn:    mat-palette($mat-deep-orange);
+$purple-white-light-warn:    mat-palette($mat-red);
 $purple-white-light-theme:   mat-light-theme($purple-white-light-primary, $purple-white-light-accent, $purple-white-light-warn);
 
 $alternate-purple-white-light-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-purple-white-light-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-purple-white-light-warn:    mat-palette($mat-deep-orange);
+$alternate-purple-white-light-warn:    mat-palette($mat-red);
 $alternate-purple-white-light-theme:   mat-light-theme($alternate-purple-white-light-primary, $alternate-purple-white-light-accent, $alternate-purple-white-light-warn);

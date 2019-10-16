@@ -33,7 +33,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public information: GetInfoRoot = {};
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
-  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', icon: faEject}];
+  public logoutNode = [{id: 200, parentId: 0, name: 'Logout', iconType: 'SVG', icon: 'logout'}];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;

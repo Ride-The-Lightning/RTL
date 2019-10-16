@@ -11,6 +11,6 @@ $green-dark-theme: mat-dark-theme($green-dark-primary, $green-dark-accent, $gree
 
 $alternate-green-dark-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-green-dark-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-green-dark-warn:    mat-palette($mat-deep-orange);
+$alternate-green-dark-warn:    mat-palette($mat-red);
 $alternate-green-dark-theme:   mat-dark-theme($alternate-green-dark-primary, $alternate-green-dark-accent, $alternate-green-dark-warn);
 

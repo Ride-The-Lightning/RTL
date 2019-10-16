@@ -11,5 +11,5 @@ $blue-dark-theme: mat-dark-theme($blue-dark-primary, $blue-dark-accent, $blue-da
 
 $alternate-blue-dark-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-blue-dark-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-blue-dark-warn:    mat-palette($mat-deep-orange);
+$alternate-blue-dark-warn:    mat-palette($mat-red);
 $alternate-blue-dark-theme:   mat-dark-theme($alternate-blue-dark-primary, $alternate-blue-dark-accent, $alternate-blue-dark-warn);

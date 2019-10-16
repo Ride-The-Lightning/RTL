@@ -11,5 +11,5 @@ $pink-dark-theme: mat-dark-theme($pink-dark-primary, $pink-dark-accent, $pink-da
 
 $alternate-pink-dark-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-pink-dark-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-pink-dark-warn:    mat-palette($mat-deep-orange);
+$alternate-pink-dark-warn:    mat-palette($mat-red);
 $alternate-pink-dark-theme:   mat-dark-theme($alternate-pink-dark-primary, $alternate-pink-dark-accent, $alternate-pink-dark-warn);

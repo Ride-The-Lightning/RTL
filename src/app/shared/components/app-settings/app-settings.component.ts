@@ -22,9 +22,14 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public information: GetInfoRoot = {};
   public menus = ['Vertical', 'Horizontal'];
   public menuTypes = ['Regular', 'Compact', 'Mini'];
+  public themeModes = ['Day', 'Night'];
+  public fontSizes = [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}];
   public selectedMenu: string;
   public selectedMenuType: string;
+  public selectedFontSize: any;
+  public selectedThemeMode = 'Day';
   public currencyUnit = 'BTC';
+  public smallerCurrencyUnit = 'SATS';
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
 
@@ -41,6 +46,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.selectedMenu = this.selNode.settings.menu;
       this.selectedMenuType = this.selNode.settings.menuType;
+      this.selectedFontSize = this.fontSizes.filter(fontSize => fontSize.class === this.selNode.settings.fontSize)[0];
       if (window.innerWidth <= 768) {
         this.selNode.settings.menu = 'Vertical';
         this.selNode.settings.flgSidenavOpened = false;
@@ -48,24 +54,32 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
         this.showSettingOption = false;
       }
       this.information = rtlStore.nodeData;
+      this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'SATS';
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.logger.info(rtlStore);
     });
-  }
-
-  public chooseMenu() {
-    this.selNode.settings.menu = this.selectedMenu;
   }
 
   public chooseMenuType() {
     this.selNode.settings.menuType = this.selectedMenuType;
   }
 
-  toggleSettings(toggleField: string) {
-    this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
+  public chooseFontSize() {
+    this.selNode.settings.fontSize = (this.fontSizes.filter(fontSize => fontSize.id === this.selectedFontSize.id)[0]).class;
+  }
+
+  toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
       this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
       this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
+    }
+    if(toggleField === 'menu') {
+      this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
+      setTimeout(() => {
+        this.selNode.settings.menu = (!event.checked) ? 'Horizontal' : 'Vertical';
+      }, 10);
+    } else {
+      this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
     }
   }
 
@@ -73,7 +87,11 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.theme = newTheme;
   }
 
-  onClose() {
+  choosethemeMode() {
+
+  }
+
+  onUpdateSettings() {
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.SaveSettings(this.selNode.settings));
     this.done.emit();
@@ -84,6 +102,10 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
   }
+
+  onResetSettings() {
+
+  }  
 
   ngOnDestroy() {
     this.unsubs.forEach(unsub => {

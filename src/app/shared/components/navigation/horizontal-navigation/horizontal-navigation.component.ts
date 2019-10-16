@@ -45,14 +45,14 @@ export class HorizontalNavigationComponent implements OnInit {
       filter((action) => action.type === RTLActions.SIGNOUT ||  action.type === RTLActions.SIGNIN)
     ).subscribe((action) => {
       if (action.type === RTLActions.SIGNIN) {
-        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: faEject});
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'SVG', icon: 'logout'});
       }
       if (action.type === RTLActions.SIGNOUT) {
         this.menuNodes.pop();
       }
     });
     if (sessionStorage.getItem('token')) {
-      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: faEject});
+      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'SVG', icon: 'logout'});
     }
   }
 

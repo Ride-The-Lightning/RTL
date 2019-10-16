@@ -56,5 +56,5 @@ $blue-light-theme: create-custom-theme($blue-light-primary, $blue-light-accent, 
 
 $alternate-blue-light-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-blue-light-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-blue-light-warn:    mat-palette($mat-deep-orange);
+$alternate-blue-light-warn:    mat-palette($mat-red);
 $alternate-blue-light-theme:   mat-dark-theme($alternate-blue-light-primary, $alternate-blue-light-accent, $alternate-blue-light-warn);

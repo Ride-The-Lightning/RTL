@@ -56,5 +56,5 @@ $teal-light-theme: create-custom-theme($teal-light-primary, $teal-light-accent, 
 
 $alternate-teal-light-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-teal-light-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-teal-light-warn:    mat-palette($mat-deep-orange);
+$alternate-teal-light-warn:    mat-palette($mat-red);
 $alternate-teal-light-theme:   mat-dark-theme($alternate-teal-light-primary, $alternate-teal-light-accent, $alternate-teal-light-warn);

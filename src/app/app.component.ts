@@ -120,6 +120,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sideNavToggle() {
+    this.settings.flgSidenavOpened = !this.settings.flgSidenavOpened;
     this.sideNavigation.toggle();
   }
 

@@ -13,7 +13,7 @@ export interface RootState {
   nodeData: GetInfoRoot
 }
 
-const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', fontSize: 'Regular', theme: 'dark-blue', satsToBTC: false, channelBackupPath: '' };
+const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', fontSize: 'regular-font', theme: 'dark-blue', satsToBTC: false, channelBackupPath: '' };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {

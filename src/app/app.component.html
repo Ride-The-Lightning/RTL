@@ -38,14 +38,11 @@
   <mat-sidenav-container>
       <mat-sidenav perfectScrollbar *ngIf="settings.menu === 'Vertical'" [opened]="settings.flgSidenavOpened" [mode]="(settings.flgSidenavPinned) ? 'side' : 'over'"
       #sideNavigation class="sidenav mat-elevation-z6 overflow-auto">
-      <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)"></rtl-side-navigation>
+      <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
     <mat-sidenav-content perfectScrollbar class="overflow-auto">
       <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
         <router-outlet></router-outlet>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary settings-icon" (click)="settingSidenav.toggle()">
-        <mat-icon class="animate-settings">settings</mat-icon>
       </div>
     </mat-sidenav-content>
     <mat-sidenav #settingSidenav position="end" class="settings mat-elevation-z6" mode="side">

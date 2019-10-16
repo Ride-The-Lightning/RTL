@@ -51,10 +51,10 @@ $custom-light-theme-foreground: (
 
 $blue-gray-light-primary: mat-palette($mat-blue-gray, 800, 200, 900);
 $blue-gray-light-accent: mat-palette($mat-green, 600, 300, 900);
-$blue-gray-light-warn: mat-palette($mat-deep-orange, A400);
+$blue-gray-light-warn: mat-palette($mat-red, A400);
 $blue-gray-light-theme: create-custom-theme($blue-gray-light-primary, $blue-gray-light-accent, $blue-gray-light-warn);
 
 $alternate-blue-gray-light-primary: mat-palette($blue-primary, 500, 300, 900);
 $alternate-blue-gray-light-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-blue-gray-light-warn:    mat-palette($mat-deep-orange);
+$alternate-blue-gray-light-warn:    mat-palette($mat-red);
 $alternate-blue-gray-light-theme:   mat-dark-theme($alternate-blue-gray-light-primary, $alternate-blue-gray-light-accent, $alternate-blue-gray-light-warn);

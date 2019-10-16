@@ -129,7 +129,6 @@ body {
   }
   &.horizontal {
     .horizontal-nav {
-      margin-top: 1px !important;
       height: $horizontal-toolbar-height !important;
     }
     .inner-sidenav-content {
@@ -159,7 +158,7 @@ body {
       padding: 0 2.4rem 0 2.4rem;
     }
     .mat-nested-tree-node-child>.mat-tree-node {
-      padding: 0 0.8rem 1.2rem 2.8rem;
+      padding: 0 0.8rem 1.2rem 4rem;
     }
   }      
 }
@@ -171,7 +170,7 @@ body {
 .sidenav {
   width: $regular-sidenav-width;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .material-icons {
@@ -343,6 +342,14 @@ body {
 
 .mt-2 {
   margin-top: 1rem !important;
+}
+
+.mt-3 {
+  margin-top: 1.7rem !important;
+}
+
+.mt-4 {
+  margin-top: 2rem !important;
 }
 
 .mt-minus-1 {
@@ -557,83 +564,43 @@ body {
   box-shadow: 0 3px 1px -2px rgba(255,0,0,.2), 0 2px 2px 0 rgba(255,0,0,.14), 0 1px 5px 0 rgba(255,0,0,.12) !important;
 }
 
-.settings{
-  position: fixed;
-  width: $settings-nav-width;
-  .container{
-    padding: 0.6rem 1.4rem;
-    h4{
-      border-bottom: 1px solid #ccc;
-      margin: 1.2rem 0 0.6rem 0;
+.settings-container {
+  h4{
+    margin: 1.2rem 0 0.6rem 0;
+  }
+  .skin{
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+    cursor: pointer;  
+    &.purple{
+      background-color: #5e4ea5;
     }
-    .skin{
-      width:3.2rem;
-      height: 0;
-      padding: 0;
-      overflow: hidden;
-      cursor: pointer;  
-      border: 1.6rem solid;
-			&.light-purple{
-				border-left-color: #ffffff;
-				border-right-color: #ffffff;
-				border-top-color: #5e4ea5;
-				border-bottom-color: #5e4ea5;
-			}
-			&.light-blue{
-        border-top-color: #3F51B5;
-        border-bottom-color: #3F51B5;
-				border-left-color: #ffffff;
-				border-right-color: #ffffff;
-			}
-			&.light-teal{
-				border-left-color: #ffffff;
-				border-right-color: #ffffff;
-				border-top-color: #009688;
-				border-bottom-color: #009688;
-			}
-			&.light-blue-gray{
-				border-left-color: #ffffff;
-				border-right-color: #ffffff;
-				border-top-color: #37474F;
-				border-bottom-color: #37474F;
-			}
-			&.dark-purple{
-				border-left-color: #262626;
-				border-right-color: #262626;
-				border-top-color: #5e4ea5;
-				border-bottom-color: #5e4ea5;
-			}
-			&.dark-blue{
-				border-left-color: #262626;
-				border-right-color: #262626;
-				border-top-color: #0277bd;
-				border-bottom-color: #0277bd;
-			}
-			&.dark-green{
-				border-left-color: #262626;
-				border-right-color: #262626;
-				border-top-color: #009688;
-				border-bottom-color: #009688;
-			}
-			&.dark-pink{
-				border-left-color: #262626;
-				border-right-color: #262626;
-				border-top-color: #D81B60;
-				border-bottom-color: #D81B60;
-			}
+    &.blue{
+      background-color: #0277bd;
+    }
+    &.green{
+      background-color: #009688;
+    }
+    &.pink{
+      background-color: #D81B60;
     }
   }
   
   .mat-radio-group{
-    display: inline-flex;
-    flex-direction: column;
-    .mat-radio-button{
-      margin: 2px 0;
+    flex-direction: row;
+    place-content: flex-start space-between;
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    .mat-radio-button {
+      margin: 2px 0 2px 0;
     }
   }
   
   .mat-slide-toggle{
-    padding: 0px 1.4rem;
+    padding: 0 1.4rem 0 0.4rem;
   }  
 
 }
@@ -664,7 +631,7 @@ body {
   border-radius: 2px;
 }
 
-.fa-icon-small {
+.fa-icon-small, .top-icon-small {
   min-width: $fa-icon-small-size;
   width: $fa-icon-small-size;
   max-width: $fa-icon-small-size;
@@ -711,7 +678,7 @@ body {
 }
 
 .custom-card {
-  padding: 0px 0px 0.8rem 0px !important;
+  padding: 0 0 0.8rem 0 !important;
 }
 
 .not-found-box {
