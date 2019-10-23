@@ -25,7 +25,11 @@ exports.getInfo = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      res.status(200).json(body);
+      if(common.selectedNode.ln_node === 'LND Testnet Remote') {
+        res.status(200).json({}); // URGENT TO CHECK
+      } else {
+        res.status(200).json(body);
+      }
     }
   })
   .catch(function (err) {

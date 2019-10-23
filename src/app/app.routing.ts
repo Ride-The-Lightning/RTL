@@ -9,6 +9,7 @@ import { SsoFailedComponent } from './shared/components/sso-failed/sso-failed.co
 import { AuthGuard } from './shared/services/auth.guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LNDModule), canActivate: [AuthGuard] },
   { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
   { path: 'sconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },

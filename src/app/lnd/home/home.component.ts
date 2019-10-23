@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { takeUntil, filter } from 'rxjs/operators';
+import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
+import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
@@ -41,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   yAxisLabel = 'Balance';
   colorScheme = {domain: ['#FFFFFF']};
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 730):
         this.view = [250, 352];
@@ -63,9 +65,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.store.dispatch(new RTLActions.FetchInfo());
+    this.actions$.pipe(takeUntil(this.unsub[0]), filter((action) => action.type === RTLActions.SET_INFO))
+    .subscribe((infoData: RTLActions.SetInfo) => {
+      if(infoData.type === RTLActions.SET_INFO && undefined !== infoData.payload.identity_pubkey) {
+        this.initializeRemainingData();
+      }
+    });
+
     this.flgTotalCalculated = false;
     this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unsub[1]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
@@ -136,6 +146,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       this.logger.info(rtlStore);
     });
+  }
+
+  initializeRemainingData() {
+    this.store.dispatch(new RTLActions.FetchFees());
+    this.store.dispatch(new RTLActions.FetchPeers());
+    this.store.dispatch(new RTLActions.FetchBalance('channels'));
+    this.store.dispatch(new RTLActions.FetchNetwork());
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    this.store.dispatch(new RTLActions.FetchPayments());
   }
 
   ngOnDestroy() {

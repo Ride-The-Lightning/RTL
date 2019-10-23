@@ -251,6 +251,7 @@ export class RTLEffects implements OnDestroy {
  setSelectedNode = this.actions$.pipe(
    ofType(RTLActions.SET_SELECTED_NODE),
    mergeMap((action: RTLActions.SetSelelectedNode) => {
+    sessionStorage.setItem('lndUnlocked', 'true');     
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
      return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.lnNode.index })
      .pipe(
@@ -264,22 +265,14 @@ export class RTLEffects implements OnDestroy {
         if (sessionStorage.getItem('token')) {
           let newRoute = this.location.path();
           if(action.payload.lnNode.lnImplementation.toUpperCase() === 'CLT') {
-            if(newRoute.includes('/lnd/')) {
-              newRoute = newRoute.replace('/lnd/', '/cl/');
-            } else if(newRoute === '/') {
-              newRoute = '/cl/home';
-            }
+            newRoute = '/cl/home';
             this.router.routeReuseStrategy.shouldReuseRoute = () => false;
             this.router.onSameUrlNavigation = 'reload';              
             this.router.navigate([newRoute]);
             this.CHILD_API_URL = API_URL + '/cl';
             return { type: RTLActions.VOID };
           } else {
-            if(newRoute.includes('/cl/')) {
-              newRoute = newRoute.replace('/cl/', '/lnd/');
-            } else if(newRoute === '/') {
-              newRoute = '/lnd/home';
-            }
+            newRoute = '/lnd/home';
             this.router.routeReuseStrategy.shouldReuseRoute = () => false;
             this.router.onSameUrlNavigation = 'reload';              
             this.router.navigate([newRoute]);
