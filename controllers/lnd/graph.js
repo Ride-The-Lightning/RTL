@@ -128,7 +128,7 @@ exports.getQueryRoutes = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     }
-    if (undefined !== body.routes) {
+    if (undefined !== body.routes && body.routes.length > 0) {
       body.routes.forEach(route => {
         if (undefined !== route.hops) {
           Promise.all(

@@ -16,7 +16,7 @@ exports.getTransactions = (req, res, next) => {
         error: (undefined === body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body.transactions) {
+      if (undefined !== body.transactions && body.transactions.length > 0) {
         body.transactions.forEach(transaction => {
           transaction.time_stamp_str =  (undefined === transaction.time_stamp) ? '' : common.convertTimestampToDate(transaction.time_stamp);
         });

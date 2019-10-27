@@ -40,11 +40,6 @@ export class ChannelRestoreComponent implements OnInit {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
-      // rtlStore.effectErrorsLnd.forEach(effectsErr => {
-      //   if (effectsErr.action === 'RestoreChannelsList') {
-      //     this.flgLoading[0] = 'error';
-      //   }
-      // });
       this.logger.info(rtlStore);
     });    
     this.lndEffects.setRestoreChannelList

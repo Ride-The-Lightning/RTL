@@ -58,28 +58,30 @@ exports.getRTLConfig = (req, res, next) => {
         const multiNodeConfig = JSON.parse(data);
         const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
         var nodesArr = [];
-        multiNodeConfig.nodes.forEach((node, i) => {
-          const authentication = {};
-          authentication.nodeAuthType = 'CUSTOM';
-          if(node.Authentication && node.Authentication.lndConfigPath) {
-            authentication.configPath = node.Authentication.lndConfigPath;
-          } else if(node.Authentication && node.Authentication.configPath) {
-            authentication.configPath = node.Authentication.configPath;
-          } else {
-            authentication.configPath = '';
-          }
-
-          if(node.Settings.bitcoindConfigPath) {
-            authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
-          }
-          node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
-          nodesArr.push({
-            index: node.index,
-            lnNode: node.lnNode,
-            lnImplementation: node.lnImplementation,
-            settings: node.Settings,
-            authentication: authentication})
-        });
+        if (multiNodeConfig.nodes && multiNodeConfig.nodes.length > 0) {
+          multiNodeConfig.nodes.forEach((node, i) => {
+            const authentication = {};
+            authentication.nodeAuthType = 'CUSTOM';
+            if(node.Authentication && node.Authentication.lndConfigPath) {
+              authentication.configPath = node.Authentication.lndConfigPath;
+            } else if(node.Authentication && node.Authentication.configPath) {
+              authentication.configPath = node.Authentication.configPath;
+            } else {
+              authentication.configPath = '';
+            }
+  
+            if(node.Settings.bitcoindConfigPath) {
+              authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
+            }
+            node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
+            nodesArr.push({
+              index: node.index,
+              lnNode: node.lnNode,
+              lnImplementation: node.lnImplementation,
+              settings: node.Settings,
+              authentication: authentication})
+          });
+        }
         res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
       }
     });

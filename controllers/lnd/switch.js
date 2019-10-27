@@ -30,7 +30,7 @@ exports.forwardingHistory = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body.forwarding_events) {
+      if (undefined !== body.forwarding_events && body.forwarding_events.length > 0) {
         body.forwarding_events.forEach(event => {
           event.timestamp_str =  (undefined === event.timestamp) ? '' : common.convertTimestampToDate(event.timestamp);
         });

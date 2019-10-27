@@ -37,7 +37,7 @@ exports.listInvoices = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body.invoices) {
+      if (undefined !== body.invoices && body.invoices.length > 0) {
         body.invoices.forEach(invoice => {
           invoice.paid_at_str =  (undefined === invoice.paid_at) ? '' : common.convertTimestampToDate(invoice.paid_at);
           invoice.expires_at_str =  (undefined === invoice.expires_at) ? '' : common.convertTimestampToDate(invoice.expires_at);

@@ -54,7 +54,7 @@ exports.getChannels = (req, res, next) => {
       } else {
         body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
       }
-      if (req.params.channelType === 'closed') {
+      if (req.params.channelType === 'closed' && body.channels && body.channels.length > 0) {
         body.channels.forEach(channel => {
           channel.close_type = (undefined === channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
         });

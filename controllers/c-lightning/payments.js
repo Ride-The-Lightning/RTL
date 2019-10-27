@@ -14,7 +14,7 @@ exports.listPayments = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body && undefined !== body.payments) {
+      if (undefined !== body && undefined !== body.payments && body.payments.length > 0) {
         body.payments.forEach(payment => {
           payment.created_at_str =  (undefined === payment.created_at) ? '' : common.convertTimestampToDate(payment.created_at);
         });

@@ -27,19 +27,21 @@ common.getOptions = () => {
 common.setOptions = () => {
   if (undefined !== common.nodes[0].options && undefined !== common.nodes[0].options.headers) { return; }
   try {
-    common.nodes.forEach(node => {
-      node.options = {
-        url: '',
-        rejectUnauthorized: false,
-        json: true,
-        form: ''
-      };
-      if (node.ln_implementation && node.ln_implementation.toUpperCase() === 'CLT') {
-        node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
-      } else {
-        node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
-      }
-    });
+    if (common.nodes && common.nodes.length > 0) {
+      common.nodes.forEach(node => {
+        node.options = {
+          url: '',
+          rejectUnauthorized: false,
+          json: true,
+          form: ''
+        };
+        if (node.ln_implementation && node.ln_implementation.toUpperCase() === 'CLT') {
+          node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
+        } else {
+          node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+        }
+      });
+    }
     // Options cannot be set before selected node initializes. Updating selected node's options separatly
     common.selectedNode.options = {
       url: '',
@@ -54,14 +56,16 @@ common.setOptions = () => {
     }
   } catch (err) {
     console.error('Common Set Options Error:' + JSON.stringify(err));
-    common.nodes.forEach(node => {
-      node.options = {
-        url: '',
-        rejectUnauthorized: false,
-        json: true,
-        form: ''
-      };
-    });
+    if (common.nodes && common.nodes.length > 0) {
+      common.nodes.forEach(node => {
+        node.options = {
+          url: '',
+          rejectUnauthorized: false,
+          json: true,
+          form: ''
+        };
+      });
+    }
     // Options cannot be set before selected node initializes. Updating selected node's options separatly
     common.selectedNode.options = {
       url: '',

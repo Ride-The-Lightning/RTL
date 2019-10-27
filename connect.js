@@ -281,70 +281,71 @@ connect.validateMultiNodeConfig = (config) => {
   }
 
   common.port = (undefined !== config.port) ? connect.normalizePort(config.port) : 3000;
-
-  config.nodes.forEach((node, idx) => {
-    common.nodes[idx] = {};
-    if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
-      errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
-    } else {
-      common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
-    }
-
-    if(
-      (node.Settings.lndServerUrl === '' ||  undefined === node.Settings.lndServerUrl)
-      && (node.Settings.lnServerUrl === '' ||  undefined === node.Settings.lnServerUrl)
-    ) {
-      errMsg = errMsg + '\nPlease set server URL for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
-    } else {
-      common.nodes[idx].ln_server_url = node.Settings.lndServerUrl ? node.Settings.lndServerUrl : node.Settings.lnServerUrl;
-    }
-
-    common.nodes[idx].index = node.index;
-    common.nodes[idx].ln_node = node.lnNode;
-    common.nodes[idx].ln_implementation = node.lnImplementation;
-    if (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) {
-      common.nodes[idx].config_path = node.Authentication.lndConfigPath;
-    } else if (undefined !== node.Authentication && undefined !== node.Authentication.configPath) {
-      common.nodes[idx].config_path = node.Authentication.configPath;
-    } else {
-      common.nodes[idx].config_path = '';
-    }
-    common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-    common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
-    common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
-    try {
-      connect.createDirectory(common.nodes[idx].channel_backup_path);
-      let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
-      if (!exists) {
-        try {
-          var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
-          createStream.end();
-        } catch (err) {
-          console.error('Something went wrong while creating backup file: \n' + err);
-        }
-      }    
-    } catch (err) {
-      console.error('Something went wrong while creating backup file: \n' + err);
-    }
-
-    if (common.nodes[idx].enable_logging) {
-      common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
-      const log_file = common.nodes[idx].log_file;
-      if (fs.existsSync(log_file)) {
-        fs.writeFile(log_file, '', () => { });
+  if (config.nodes && config.nodes.length > 0) {
+    config.nodes.forEach((node, idx) => {
+      common.nodes[idx] = {};
+      if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
+        errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
       } else {
-        try {
-          var dirname = path.dirname(log_file);
-          connect.createDirectory(dirname);
-          var createStream = fs.createWriteStream(log_file);
-          createStream.end();
-        }
-        catch (err) {
-          console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
+        common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
+      }
+
+      if(
+        (node.Settings.lndServerUrl === '' ||  undefined === node.Settings.lndServerUrl)
+        && (node.Settings.lnServerUrl === '' ||  undefined === node.Settings.lnServerUrl)
+      ) {
+        errMsg = errMsg + '\nPlease set server URL for node index ' + node.index + ' in RTL-Multi-Node-Conf.json!';
+      } else {
+        common.nodes[idx].ln_server_url = node.Settings.lndServerUrl ? node.Settings.lndServerUrl : node.Settings.lnServerUrl;
+      }
+
+      common.nodes[idx].index = node.index;
+      common.nodes[idx].ln_node = node.lnNode;
+      common.nodes[idx].ln_implementation = node.lnImplementation;
+      if (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) {
+        common.nodes[idx].config_path = node.Authentication.lndConfigPath;
+      } else if (undefined !== node.Authentication && undefined !== node.Authentication.configPath) {
+        common.nodes[idx].config_path = node.Authentication.configPath;
+      } else {
+        common.nodes[idx].config_path = '';
+      }
+      common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
+      common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
+      common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
+      try {
+        connect.createDirectory(common.nodes[idx].channel_backup_path);
+        let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
+        if (!exists) {
+          try {
+            var createStream = fs.createWriteStream(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
+            createStream.end();
+          } catch (err) {
+            console.error('Something went wrong while creating backup file: \n' + err);
+          }
+        }    
+      } catch (err) {
+        console.error('Something went wrong while creating backup file: \n' + err);
+      }
+
+      if (common.nodes[idx].enable_logging) {
+        common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
+        const log_file = common.nodes[idx].log_file;
+        if (fs.existsSync(log_file)) {
+          fs.writeFile(log_file, '', () => { });
+        } else {
+          try {
+            var dirname = path.dirname(log_file);
+            connect.createDirectory(dirname);
+            var createStream = fs.createWriteStream(log_file);
+            createStream.end();
+          }
+          catch (err) {
+            console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
+          }
         }
       }
-    }
-  });
+    });
+  }
 
   connect.setSSOParams(config);
 	if (errMsg !== '') { throw new Error(errMsg); }
@@ -426,7 +427,7 @@ connect.refreshCookie = (cookieFile) => {
 }
 
 connect.logEnvVariables = () => {
-  if (common.multi_node_setup) {
+  if (common.multi_node_setup && common.nodes && common.nodes.length > 0) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
       logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT_NODE_INDEX: ' + common.selectedNode.index});
