@@ -18,6 +18,9 @@ LND's Loop-Out and Loop-In are important tools for channel re-balancing and will
 ### Multi-Language Support
 We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support
 
+### Advanced Node Monitoring
+Active node monitoring may be required to ensure reliability of routing nodes. Monitoring can include generating alerts for out-of-balance channels, inactive channels, disconnected peers, low activity channels etc. This feature will be required for professional node operaters running commercial routing nodes with a need to react to signals, requiring specific action to be taken.
+
 ### Advanced Multi-node Management
 RTL currently allows managing multiple nodes (LND or C-Lightning), via single UI. More sophistication can be built on multi-node management, with advanced top level dashboards, which summarize node level summary in a single dashboard. This feature may be required for professional node operators, who are running commercial routing nodes.
 
