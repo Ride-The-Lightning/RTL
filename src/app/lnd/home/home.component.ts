@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Store } from '@ngrx/store';
 import { takeUntil, filter } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
@@ -22,10 +22,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public remainder = 0;
   public totalPeers = -1;
-  public totalBalance = '';
-  public channelBalance = '';
-  public BTCtotalBalance = '';
-  public BTCchannelBalance = '';
+  public totalBalance = 0;
+  public channelBalance = 0;
+  public BTCtotalBalance = 0;
+  public BTCchannelBalance = 0;
   public networkInfo: NetworkInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public peers: Peer[] = [];
   barPadding = 0;
   maxBalanceValue = 0;
-  totalBalances = [...[{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}]];
+  totalBalances = [{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}];
   flgTotalCalculated = false;
   view = [];
   yAxisLabel = 'Balance';
@@ -65,15 +65,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchInfo());
-    this.actions$.pipe(takeUntil(this.unsub[0]), filter((action) => action.type === RTLActions.SET_INFO))
-    .subscribe((infoData: RTLActions.SetInfo) => {
-      if(infoData.type === RTLActions.SET_INFO && undefined !== infoData.payload.identity_pubkey) {
-        this.initializeRemainingData();
-      }
+    this.actions$.pipe(takeUntil(this.unsub[0]),
+    filter(action => action.type === RTLActions.SET_SELECTED_NODE))
+    .subscribe((data) => {
+      this.flgTotalCalculated = false;
     });
-
-    this.flgTotalCalculated = false;
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[1]))
     .subscribe((rtlStore) => {
@@ -112,13 +108,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.totalBalance = rtlStore.blockchainBalance.total_balance;
       this.BTCtotalBalance = rtlStore.blockchainBalance.btc_total_balance;
       if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = ('' !== this.totalBalance) ? false : true;
+        this.flgLoading[2] = (this.totalBalance >= 0) ? false : true;
       }
 
       this.channelBalance = rtlStore.channelBalance.balance;
       this.BTCchannelBalance = rtlStore.channelBalance.btc_balance;
       if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = ('' !== this.channelBalance) ? false : true;
+        this.flgLoading[3] = (this.channelBalance >= 0) ? false : true;
       }
 
       this.networkInfo = rtlStore.networkInfo;
@@ -126,9 +122,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.flgLoading[4] = (undefined !== this.networkInfo.num_nodes) ? false : true;
       }
 
-      this.totalBalances = [...[{'name': 'Local Balance', 'value': +rtlStore.totalLocalBalance}, {'name': 'Remote Balance', 'value': +rtlStore.totalRemoteBalance}]];
-      this.maxBalanceValue = (rtlStore.totalLocalBalance > rtlStore.totalRemoteBalance) ? rtlStore.totalLocalBalance : rtlStore.totalRemoteBalance;
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) {
+        this.totalBalances = [{'name': 'Local Balance', 'value': rtlStore.totalLocalBalance}, {'name': 'Remote Balance', 'value': rtlStore.totalRemoteBalance}];
+        this.maxBalanceValue = (rtlStore.totalLocalBalance > rtlStore.totalRemoteBalance) ? rtlStore.totalLocalBalance : rtlStore.totalRemoteBalance;
         this.flgTotalCalculated = true;
         if (this.flgLoading[5] !== 'error') {
           this.flgLoading[5] = false;
@@ -146,17 +142,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       this.logger.info(rtlStore);
     });
-  }
-
-  initializeRemainingData() {
-    this.store.dispatch(new RTLActions.FetchFees());
-    this.store.dispatch(new RTLActions.FetchPeers());
-    this.store.dispatch(new RTLActions.FetchBalance('channels'));
-    this.store.dispatch(new RTLActions.FetchNetwork());
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
-    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
-    this.store.dispatch(new RTLActions.FetchPayments());
   }
 
   ngOnDestroy() {

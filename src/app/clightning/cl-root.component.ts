@@ -5,4 +5,6 @@ import { Component } from '@angular/core';
   templateUrl: './cl-root.component.html',
   styleUrls: ['./cl-root.component.scss']
 })
-export class CLRootComponent { constructor() {} }
+export class CLRootComponent {
+  constructor() {}
+}

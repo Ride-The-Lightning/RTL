@@ -58,13 +58,13 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
 
       this.blockchainBalance = rtlStore.blockchainBalance;
       if (undefined === this.blockchainBalance.total_balance) {
-        this.blockchainBalance.total_balance = '0';
+        this.blockchainBalance.total_balance = 0;
       }
       if (undefined === this.blockchainBalance.confirmed_balance) {
-        this.blockchainBalance.confirmed_balance =  '0';
+        this.blockchainBalance.confirmed_balance = 0;
       }
       if (undefined === this.blockchainBalance.unconfirmed_balance) {
-        this.blockchainBalance.unconfirmed_balance =  '0';
+        this.blockchainBalance.unconfirmed_balance = 0;
       }
       if (this.flgLoadingWallet !== 'error') {
         this.flgLoadingWallet = false;

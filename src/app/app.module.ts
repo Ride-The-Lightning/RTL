@@ -23,7 +23,7 @@ import { ThemeOverlay } from './shared/theme/overlay-container/theme-overlay';
 import { AppComponent } from './app.component';
 
 import { environment } from '../environments/environment';
-import { CommonService } from './shared/services/common.service';
+import { SessionService } from './shared/services/session.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
@@ -53,7 +53,7 @@ import { CLEffects } from './clightning/store/cl.effects';
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
-    AuthGuard, CommonService
+    AuthGuard, SessionService
   ],
   bootstrap: [AppComponent]
 })

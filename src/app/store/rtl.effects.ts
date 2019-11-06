@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
+import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration, AuthenticateWith } from '../shared/models/RTLconfig';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
@@ -31,6 +32,7 @@ export class RTLEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
+    private sessionService: SessionService,
     public dialog: MatDialog,
     private router: Router,
     private location: Location) { }
@@ -162,7 +164,7 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '') : action.payload 
+      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
       map((postRes: any) => {
@@ -202,18 +204,14 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '') : action.payload 
+      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
-        if(rootStore.selNode.lnImplementation.toUpperCase() === 'CLT') {
-          this.router.navigate(['/cl/home']);
-        } else {
-          this.router.navigate(['/lnd/home']);
-        }
+        this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
       }),
       catchError((err) => {
         this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', message: JSON.stringify(err.error)}}));
@@ -221,7 +219,7 @@ export class RTLEffects implements OnDestroy {
         this.logger.error(err.error);
         this.logger.info('Redirecting to Signin Error Page');
         if (+rootStore.appConfig.sso.rtlSSO) {
-          this.router.navigate(['/ssoerror']);
+          this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {
           this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
         }
@@ -240,9 +238,9 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
     }
-    sessionStorage.removeItem('clUnlocked');
-    sessionStorage.removeItem('lndUnlocked');
-    sessionStorage.removeItem('token');
+    this.sessionService.removeItem('clUnlocked');
+    this.sessionService.removeItem('lndUnlocked');
+    this.sessionService.removeItem('token');
     this.logger.warn('LOGGED OUT');
     return of();
   }));
@@ -251,44 +249,14 @@ export class RTLEffects implements OnDestroy {
  setSelectedNode = this.actions$.pipe(
    ofType(RTLActions.SET_SELECTED_NODE),
    mergeMap((action: RTLActions.SetSelelectedNode) => {
-    sessionStorage.setItem('lndUnlocked', 'true');     
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
      return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.lnNode.index })
      .pipe(
        map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
-        let selNode = { channelBackupPath: action.payload.lnNode.settings.channelBackupPath, satsToBTC: action.payload.lnNode.settings.satsToBTC };
-        this.store.dispatch(new RTLActions.ResetRootStore(action.payload.lnNode));
-        this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
-        this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-        if (sessionStorage.getItem('token')) {
-          let newRoute = this.location.path();
-          if(action.payload.lnNode.lnImplementation.toUpperCase() === 'CLT') {
-            newRoute = '/cl/home';
-            this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-            this.router.onSameUrlNavigation = 'reload';              
-            this.router.navigate([newRoute]);
-            this.CHILD_API_URL = API_URL + '/cl';
-            return { type: RTLActions.VOID };
-          } else {
-            newRoute = '/lnd/home';
-            this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-            this.router.onSameUrlNavigation = 'reload';              
-            this.router.navigate([newRoute]);
-            this.CHILD_API_URL = API_URL + '/lnd';
-            return { type: RTLActions.VOID };
-          }
-        } else {
-          if (!action.payload.isInitialSetup) {
-            return {
-              type: RTLActions.OPEN_ALERT,
-              payload: { width: '70%', data: {type: 'WARN', titleMessage: 'Authorization required to get the data from the node!' }}
-            };
-          } else {
-            return { type: RTLActions.VOID };
-          }
-        }
+        this.initializeNode(action.payload);
+        return { type: RTLActions.VOID };
        }),
        catchError((err: any) => {
          this.store.dispatch(new RTLActions.CloseSpinner());
@@ -305,16 +273,30 @@ export class RTLEffects implements OnDestroy {
        })
      );
    }
- ));
+  ));
 
+  initializeNode(node) {
+    let selNode = { channelBackupPath: node.lnNode.settings.channelBackupPath, satsToBTC: node.lnNode.settings.satsToBTC };
+    this.store.dispatch(new RTLActions.ResetRootStore(node.lnNode));
+    this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
+    this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+    if(node.lnNode.lnImplementation.toUpperCase() === 'CLT') {
+      this.CHILD_API_URL = API_URL + '/cl';
+      this.store.dispatch(new RTLActions.FetchInfoCL());
+    } else {
+      this.CHILD_API_URL = API_URL + '/lnd';
+      this.store.dispatch(new RTLActions.FetchInfo());
+    }
+  }
+ 
  SetToken(token: string) {
     if (token) {
-      sessionStorage.setItem('lndUnlocked', 'true');
-      sessionStorage.setItem('token', token);
+      this.sessionService.setItem('lndUnlocked', 'true');
+      this.sessionService.setItem('token', token);
       this.store.dispatch(new RTLActions.InitAppData());
     } else {
-      sessionStorage.removeItem('lndUnlocked');
-      sessionStorage.removeItem('token');
+      this.sessionService.removeItem('lndUnlocked');
+      this.sessionService.removeItem('token');
     }
   }
 

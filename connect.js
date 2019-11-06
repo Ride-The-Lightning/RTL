@@ -372,7 +372,11 @@ connect.setSSOParams = (config) => {
     } else {
       common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
     }
-    connect.readCookie(common.rtl_cookie_path);
+    if (common.rtl_cookie_path === '') {
+      errMsg = 'Please set rtlCookiePath value for single sign on option!';
+    } else {
+      connect.readCookie(common.rtl_cookie_path);
+    }
   }
 };
 
@@ -400,7 +404,12 @@ connect.createDirectory = (dirname) => {
 connect.readCookie = (cookieFile) => {
   let exists = fs.existsSync(cookieFile);
   if (exists) {
-    common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+    try {
+      common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+    } catch (err) {
+      console.error('Something went wrong while reading cookie: \n' + err);
+      throw new Error(err);
+    }
   } else {
     try {
       var dirname = path.dirname(cookieFile);

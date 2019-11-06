@@ -11,8 +11,9 @@ import { MatTreeNestedDataSource } from '@angular/material/tree';
 
 import { LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
+import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { MenuChildNode, FlatMenuNode, MENU_DATA } from '../../../models/navMenu';
+import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -36,13 +37,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public numPendingChannels = 0;
   public smallScreen = false;
   public childRootRoute = '';
-  private unSubs = [new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
   treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
   treeControlNested = new NestedTreeControl<MenuChildNode>(node => node.children);
   navMenus = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -75,10 +76,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       }
 
       this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
-      this.showLogout = (sessionStorage.getItem('token')) ? true : false;
-      if (!sessionStorage.getItem('token')) {
-        this.flgLoading = false;
-      }
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
@@ -88,6 +85,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.navMenus.data = MENU_DATA.LNDChildren;
       }
       this.logger.info(rtlStore);
+    });
+    this.sessionService.watchSession()
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(session => {
+      this.showLogout = session.token ? true : false;
+      this.flgLoading = session.token ? true : false;
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.SIGNOUT))
@@ -104,7 +107,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[1]))
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.showLogout = false;

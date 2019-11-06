@@ -80,7 +80,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
       this.firstOffset = +rtlStore.invoices.first_index_offset;
       this.lastOffset = +rtlStore.invoices.last_index_offset;
       this.logger.info(rtlStore);
-      this.loadInvoicesTable(rtlStore.invoices.invoices);
+      this.loadInvoicesTable(rtlStore.invoices.invoices ? rtlStore.invoices.invoices : []);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
       }

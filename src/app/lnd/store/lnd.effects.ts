@@ -4,12 +4,14 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
-import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
+import { Location } from '@angular/common';
 
 import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
+import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -26,9 +28,10 @@ export class LNDEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
+    private sessionService: SessionService,
     public dialog: MatDialog,
-    private router: Router) { }
-
+    private router: Router,
+    private location: Location) { }
 
   @Effect()
   infoFetch = this.actions$.pipe(
@@ -41,7 +44,7 @@ export class LNDEffects implements OnDestroy {
           map((info) => {
             this.logger.info(info);
             if (undefined === info.identity_pubkey) {
-              sessionStorage.removeItem('lndUnlocked');
+              this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/unlocklnd']);
               return {
@@ -49,33 +52,7 @@ export class LNDEffects implements OnDestroy {
                 payload: {}
               };
             } else {
-              sessionStorage.setItem('lndUnlocked', 'true');
-              if (undefined !== info.chains) {
-                if (typeof info.chains[0] === 'string') {
-                  info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-                  info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
-                } else if (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain')) {
-                  const getInfoChain = <GetInfoChain>info.chains[0];
-                  info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-                  info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
-                }
-                info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
-              } else {
-                info.smaller_currency_unit = 'Sats';
-                info.currency_unit = 'BTC';
-                info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
-              }
-              const node_data = {
-                identity_pubkey: info.identity_pubkey,
-                alias: info.alias, 
-                testnet: info.testnet, 
-                chains: info.chains, 
-                version: info.version, 
-                currency_unit: info.currency_unit, 
-                smaller_currency_unit: info.smaller_currency_unit, 
-                numberOfPendingChannels: info.num_pending_channels
-              };
-              this.store.dispatch(new RTLActions.SetNodeData(node_data));
+              this.initializeRemainingData(info);
               return {
                 type: RTLActions.SET_INFO,
                 payload: (undefined !== info) ? info : {}
@@ -83,14 +60,30 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
-            this.logger.error(err);
-            if (err.status === 401) {
-              this.logger.info('Redirecting to Signin');
-              return of({ type: RTLActions.SIGNOUT });  
-            } else {
+            if (typeof err.error.error === 'string' && err.error.error.includes('Not Found')) {
+              this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/unlocklnd']);
-              return of();
+              return this.handleErrorWithoutAlert('FetchInfo', err);
+            } else {
+              let code = err.status ? err.status : '';
+              let message = err.error.message ? err.error.message + ' ' : '';
+              if (err.error && err.error.error) {
+                if (err.error.error.code) {
+                  code = err.error.error.code;
+                } else if (err.error.error.message && err.error.error.message.code) {
+                  code = err.error.error.message.code;
+                }
+                if (typeof err.error.error === 'string') {
+                  message = message + err.error.error;
+                } else if (err.error.error.error) {
+                  message = message + err.error.error.error;
+                } else if (err.error.error.errno) {
+                  message = message + err.error.error.errno;
+                }
+              }
+              this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
+              return this.handleErrorWithoutAlert('FetchInfo', err);
             }
           })
         );
@@ -112,12 +105,10 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchPeers', code: err.status, message: err.error.error }));
-            this.logger.error(err);
-            return of();
+            return this.handleErrorWithoutAlert('FetchPeers', err);
           })
         );
-    }
+      }
     ));
 
   @Effect()
@@ -136,22 +127,10 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Add Peer Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
           })
         );
-    }
+      }
     ));
 
   @Effect()
@@ -170,22 +149,10 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Unable to Detach Peer. Try again later.',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey, err);
           })
         );
-    }
+      }
     ));
 
   @Effect()
@@ -216,19 +183,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Add Invoice Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
           })
         );
     }
@@ -255,23 +210,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Open Channel Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Open Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect()
   updateChannel = this.actions$.pipe(
@@ -290,23 +233,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Update Channel Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/chanPolicy', err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect()
   closeChannel = this.actions$.pipe(
@@ -332,23 +263,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Unable to Close Channel. Try again later.',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error.message })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly, err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect()
   backupChannels = this.actions$.pipe(
@@ -367,24 +286,12 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'BackupChannels', code: err.status, message: err.error.error }));
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: action.payload.showMessage + ' ' + 'Unable to Backup Channel. Try again later.',
-                    message: JSON.stringify({ code: err.status, Message: err.error.message })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', action.payload.showMessage + ' ' + 'Unable to Backup Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint, err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect()
   verifyChannels = this.actions$.pipe(
@@ -403,23 +310,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'VerifyChannels', code: err.status, message: err.error.error }));
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Unable to Verify Channel. Try again later.',
-                    message: JSON.stringify({ code: err.status, Message: err.error.message })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Unable to Verify Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, err);
           })
         );
-    }
+      }
     ));
 
     @Effect()
@@ -440,20 +335,8 @@ export class LNDEffects implements OnDestroy {
               };
             }),
             catchError((err: any) => {
-              this.store.dispatch(new RTLActions.CloseSpinner());
-              this.logger.error(err);
               this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'RestoreChannels', code: err.status, message: err.error.error }));
-              return of(
-                {
-                  type: RTLActions.OPEN_ALERT,
-                  payload: {
-                    width: '70%', data: {
-                      type: 'ERROR', titleMessage: 'Unable to Restore Channel. Try again later.',
-                      message: JSON.stringify({ code: err.status, Message: err.error.error })
-                    }
-                  }
-                }
-              );
+              return this.handleErrorWithAlert('ERROR', 'Unable to Restore Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/' + action.payload.channelPoint, err);
           })
         );
       }
@@ -474,11 +357,9 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchFees', code: err.status, message: err.error.error }));
-      return of();
-    }
-    ));
+      return this.handleErrorWithoutAlert('FetchFees', err);
+    })
+  );
 
   @Effect()
   balanceFetch = this.actions$.pipe(
@@ -499,13 +380,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.logger.error(err);
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchBalance/' + action.payload, code: err.status, message: err.error.error }));
-            return of();
+            return this.handleErrorWithoutAlert('FetchBalance/' + action.payload, err);
           }
-          ));
+      ));
     }
-    ));
+  ));
 
   @Effect()
   networkInfoFetch = this.actions$.pipe(
@@ -522,11 +401,9 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchNetwork', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchNetwork', err);
     }
-    ));
+  ));
 
   @Effect()
   channelsFetch = this.actions$.pipe(
@@ -571,14 +448,12 @@ export class LNDEffects implements OnDestroy {
               };
             }
           },
-            catchError((err: any) => {
-              this.logger.error(err);
-              this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchChannels/' + action.payload.routeParam, code: err.status, message: err.error.error }));
-              return of();
-            })
-          ));
+          catchError((err: any) => {
+            return this.handleErrorWithoutAlert('FetchChannels/' + action.payload.routeParam, err);
+          })
+      ));
     }
-    ));
+  ));
 
   @Effect()
   invoicesFetch = this.actions$.pipe(
@@ -599,13 +474,11 @@ export class LNDEffects implements OnDestroy {
             payload: res
           };
         }),
-          catchError((err: any) => {
-            this.logger.error(err);
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchInvoices', code: err.status, message: err.error.error }));
-            return of();
-          }
-          ));
-    }));
+        catchError((err: any) => {
+          return this.handleErrorWithoutAlert('FetchInvoices', err);
+        }
+    ));
+  }));
 
   @Effect()
   transactionsFetch = this.actions$.pipe(
@@ -622,11 +495,9 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchTransactions', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchTransactions', err);
     }
-    ));
+  ));
 
   @Effect()
   paymentsFetch = this.actions$.pipe(
@@ -643,11 +514,9 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchPayments', code: err.status, message: err.error.error }));
-      return of();
+      return this.handleErrorWithoutAlert('FetchPayments', err);
     }
-    ));
+  ));
 
   @Effect()
   decodePayment = this.actions$.pipe(
@@ -664,19 +533,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Decode Payment Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload, err);
           })
         );
     })
@@ -709,7 +566,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             if (sendRes.payment_error) {
               this.logger.error('Error: ' + sendRes.payment_error);
-              return of({
+              return {
                 type: RTLActions.OPEN_ALERT,
                 payload: {
                   width: '70%', data: {
@@ -719,7 +576,7 @@ export class LNDEffects implements OnDestroy {
                     )
                   }
                 }
-              });
+              };
             } else {
               const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
               confirmationMsg['Amount (' + ((undefined === store.nodeData.smaller_currency_unit) ?
@@ -742,19 +599,7 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Send Payment Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload[0] })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', err);
           })
         );
     })
@@ -773,23 +618,11 @@ export class LNDEffects implements OnDestroy {
             payload: (undefined !== graphNode) ? graphNode : {}
           };
         }),
-          catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Get Node Address Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
-          }));
-    }
-    ));
+        catchError((err: any) => {
+          return this.handleErrorWithAlert('ERROR', 'Get Node Address Failed', this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload, err);
+        }));
+      }
+  ));
 
   @Effect({ dispatch: false })
   setGraphNode = this.actions$.pipe(
@@ -813,21 +646,9 @@ export class LNDEffects implements OnDestroy {
             payload: (undefined !== newAddress && undefined !== newAddress.address) ? newAddress.address : {}
           };
         }),
-          catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Generate New Address Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId })
-                  }
-                }
-              }
-            );
-          }));
+        catchError((err: any) => {
+          return this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId, err);
+        }));
     })
   );
 
@@ -859,22 +680,10 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'SetChannelTransaction', code: err.status, message: err.error.error }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Sending Fund Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.TRANSACTIONS_API, err);
           }));
-    })
+      })
   );
 
   @Effect()
@@ -896,18 +705,7 @@ export class LNDEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'GetForwardingHistory', code: err.status, message: err.error.error }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Get Forwarding History Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.SWITCH_API })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Get Forwarding History Failed', this.CHILD_API_URL + environment.SWITCH_API, err);
           })
         );
     })
@@ -928,18 +726,7 @@ export class LNDEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.store.dispatch(new RTLActions.SetQueryRoutes({}));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Get Query Routes Failed',
-                    message: JSON.stringify({ code: err.status, Message: err.error.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.NETWORK_API, err);
           })
         );
     }
@@ -969,14 +756,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'ERROR', titleMessage: err.error.message + ' ' + err.error.error.code } }));
-            this.logger.error(err.error.error);
-            return of();
+            return this.handleErrorWithAlert('ERROR', err.error.message + ' ' + err.error.error.code, this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect({ dispatch: false })
   genSeedResponse = this.actions$.pipe(
@@ -1014,14 +798,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'ERROR', titleMessage: err.error.error } }));
-            this.logger.error(err.error.error);
-            return of();
+            return this.handleErrorWithAlert('ERROR', err.error.error, this.CHILD_API_URL + environment.WALLET_API + '/initwallet', err);
           })
         );
-    }
-    ));
+      }
+  ));
 
   @Effect({ dispatch: false })
   unlockWallet = this.actions$.pipe(
@@ -1034,20 +815,17 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node...'));
             this.logger.info('Successfully Unlocked!');
-            sessionStorage.setItem('lndUnlocked', 'true');
+            this.sessionService.setItem('lndUnlocked', 'true');
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
               this.logger.info('Successfully Initialized!');
-              this.store.dispatch(new RTLActions.InitAppData());
-              this.router.navigate(['/lnd/']);
+              this.store.dispatch(new RTLActions.FetchInfo());
+              this.router.navigate(['/lnd/home']);
             }, 1000 * 90);
-            return of({});
+            return { type: RTLActions.VOID };
           }),
           catchError((err) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'ERROR', titleMessage: err.error.error } }));
-            this.logger.error(err.error.error);
-            return of();
+            return this.handleErrorWithAlert('ERROR', 'err.error.error', this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', err);
           })
         );
     }
@@ -1069,20 +847,8 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'Lookup', code: err.status, message: err.error.message }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Peer Lookup Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload, err);
           })
         );
     })
@@ -1104,20 +870,8 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'Lookup', code: err.status, message: err.error.message }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Channel Lookup Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload, err);
           })
         );
     })
@@ -1139,20 +893,8 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'Lookup', code: err.status, message: err.error.message }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Invoice Lookup Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error.error, URL: this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload, err);
           })
         );
     })
@@ -1184,20 +926,8 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'RestoreChannelsList', code: err.status, message: err.error.message }));
-            this.logger.error(err);
-            return of(
-              {
-                type: RTLActions.OPEN_ALERT,
-                payload: {
-                  width: '70%', data: {
-                    type: 'ERROR', titleMessage: 'Restore Channels List Failed',
-                    message: JSON.stringify({ Code: err.status, Message: err.error, URL: this.CHILD_API_URL + environment.CHANNELS_BACKUP_API })
-                  }
-                }
-              }
-            );
+            return this.handleErrorWithAlert('ERROR', 'Restore Channels List Failed', this.CHILD_API_URL + environment.CHANNELS_BACKUP_API, err);
           })
         );
     })
@@ -1211,6 +941,83 @@ export class LNDEffects implements OnDestroy {
       return action.payload;
     })
   );
+
+  initializeRemainingData(info: any) {
+    this.sessionService.setItem('lndUnlocked', 'true');
+    if (undefined !== info.chains) {
+      if (typeof info.chains[0] === 'string') {
+        info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
+        info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+      } else if (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain')) {
+        const getInfoChain = <GetInfoChain>info.chains[0];
+        info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
+        info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+      }
+      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+    } else {
+      info.smaller_currency_unit = 'Sats';
+      info.currency_unit = 'BTC';
+      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+    }
+    const node_data = {
+      identity_pubkey: info.identity_pubkey,
+      alias: info.alias, 
+      testnet: info.testnet, 
+      chains: info.chains, 
+      version: info.version, 
+      currency_unit: info.currency_unit, 
+      smaller_currency_unit: info.smaller_currency_unit, 
+      numberOfPendingChannels: info.num_pending_channels
+    };
+    this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new RTLActions.FetchFees());
+    this.store.dispatch(new RTLActions.FetchPeers());
+    this.store.dispatch(new RTLActions.FetchBalance('channels'));
+    this.store.dispatch(new RTLActions.FetchNetwork());
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    this.store.dispatch(new RTLActions.FetchPayments());
+    let newRoute = this.location.path();
+    if (newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '') {
+      newRoute = '/lnd/home';
+    } else {
+      if(newRoute.includes('/cl/')) {
+        newRoute = newRoute.replace('/cl/', '/lnd/');
+      }
+    }
+    this.router.navigate([newRoute]);
+  }
+
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.logger.error(err);
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      return of({ type: RTLActions.SIGNOUT });
+    } else {
+      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      return of({ type: RTLActions.VOID });
+    }
+  }
+
+  handleErrorWithAlert(alerType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+    this.logger.error(err);
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      return of({ type: RTLActions.SIGNOUT });
+    } else {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      return of({
+        type: RTLActions.OPEN_ALERT,
+        payload: {
+          width: '70%', data: {
+            type: alerType, titleMessage: alertTitle,
+            message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
+          }
+        }
+      });
+    }
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

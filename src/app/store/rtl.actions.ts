@@ -635,7 +635,7 @@ export class FetchLocalRemoteBalanceCL implements Action {
 
 export class SetLocalRemoteBalanceCL implements Action {
   readonly type = SET_LOCAL_REMOTE_BALANCE_CL;
-  constructor(public payload: {}) {}
+  constructor(public payload: {localBalance: number, remoteBalance: number}) {}
 }
 
 export class GetNewAddressCL implements Action {

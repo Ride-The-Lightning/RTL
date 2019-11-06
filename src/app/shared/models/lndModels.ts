@@ -5,16 +5,16 @@ export interface AddressType {
 }
 
 export interface Balance {
-  btc_balance?: string;
-  balance?: string;
-  btc_pending_open_balance?: string;
-  pending_open_balance?: string;
-  btc_total_balance?: string;
-  total_balance?: string;
-  btc_confirmed_balance?: string;
-  confirmed_balance?: string;
-  btc_unconfirmed_balance?: string;
-  unconfirmed_balance?: string;
+  btc_balance?: number;
+  balance?: number;
+  btc_pending_open_balance?: number;
+  pending_open_balance?: number;
+  btc_total_balance?: number;
+  total_balance?: number;
+  btc_confirmed_balance?: number;
+  confirmed_balance?: number;
+  btc_unconfirmed_balance?: number;
+  unconfirmed_balance?: number;
 }
 
 export interface ChannelFeeReport {

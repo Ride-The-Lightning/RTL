@@ -8,7 +8,7 @@ exports.genSeed = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/genseed';
   if (undefined !== req.params.passphrase) {
-    options.form = JSON.stringify({aezeed_passphrase: atob(req.params.passphrase)});
+    options.form = JSON.stringify({aezeed_passphrase: Buffer.from(atob(req.params.passphrase)).toString('base64')});
   }
   request(options).then((body) => {
     if(undefined === body || body.error) {

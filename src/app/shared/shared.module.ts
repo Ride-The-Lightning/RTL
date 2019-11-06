@@ -26,7 +26,7 @@ import { TopMenuComponent } from './components/navigation/top-menu/top-menu.comp
 import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
 import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
 import { ServerConfigComponent } from './components/server-config/server-config.component';
-import { SsoFailedComponent } from './components/sso-failed/sso-failed.component';
+import { ErrorComponent } from './components/error/error.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
 
@@ -130,7 +130,7 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         HelpComponent,
         ServerConfigComponent,
         ClipboardDirective,
-        SsoFailedComponent,
+        ErrorComponent,
         RemoveLeadingZerosPipe
     ],
     entryComponents: [

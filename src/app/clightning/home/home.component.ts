@@ -4,7 +4,6 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, FeeRatesCL } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
@@ -22,14 +21,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public fees: FeesCL;
   public information: GetInfoCL = {};
   public totalBalance: BalanceCL = {};
-  public lrBalance: LocalRemoteBalanceCL = {};
+  public lrBalance: LocalRemoteBalanceCL = { localBalance: 0, remoteBalance: 0 };
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true];
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
   public position = 'below';
   barPadding = 0;
   maxBalanceValue = 0;
-  lrBalances = [...[{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}]];
+  lrBalances = [{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}];
   flgTotalCalculated = false;
   view = [];
   yAxisLabel = 'Balance';
@@ -59,17 +58,13 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchInfoCL());
-    this.actions$.pipe(takeUntil(this.unsub[0]), filter((action) => action.type === RTLActions.SET_INFO_CL))
-    .subscribe((infoData: RTLActions.SetInfoCL) => {
-      if(infoData.type === RTLActions.SET_INFO_CL && undefined !== infoData.payload.id) {
-        this.initializeRemainingData();
-      }
+    this.actions$.pipe(takeUntil(this.unsub[0]),
+    filter(action => action.type === RTLActions.SET_SELECTED_NODE))
+    .subscribe((data) => {
+      this.flgTotalCalculated = false;
     });
-
-    this.flgTotalCalculated = false;
     this.store.select('cl')
-    .pipe(takeUntil(this.unsub[1]))
+    .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsCl.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfoCL') {
@@ -107,9 +102,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
       this.lrBalance = rtlStore.localRemoteBalance;
       this.maxBalanceValue = (rtlStore.localRemoteBalance.localBalance > rtlStore.localRemoteBalance.remoteBalance) ? rtlStore.localRemoteBalance.localBalance : rtlStore.localRemoteBalance.remoteBalance;
-      this.lrBalances = [...[{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}]];
+      this.lrBalances = [{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}];
       if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = ('' !== this.lrBalance) ? false : true;
+        this.flgLoading[3] = (this.lrBalance.localBalance >= 0) ? false : true;
       }
 
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;
@@ -120,15 +115,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
       this.logger.info(rtlStore);
     });
-  }
-
-  initializeRemainingData() {
-    this.store.dispatch(new RTLActions.FetchFeesCL());
-    this.store.dispatch(new RTLActions.FetchBalanceCL());
-    this.store.dispatch(new RTLActions.FetchLocalRemoteBalanceCL());
-    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));
-    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
-    this.store.dispatch(new RTLActions.FetchPeersCL());
   }
 
   ngOnDestroy() {

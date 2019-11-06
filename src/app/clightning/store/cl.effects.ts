@@ -1,13 +1,16 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 import { formatDate } from '@angular/common';
+import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
+import { SessionService } from '../../shared/services/session.service';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -22,7 +25,10 @@ export class CLEffects implements OnDestroy {
     private actions$: Actions,
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
-    private logger: LoggerService) { }
+    private sessionService: SessionService,
+    private logger: LoggerService,
+    private router: Router,
+    private location: Location) { }
 
   @Effect()
   infoFetchCL = this.actions$.pipe(
@@ -34,39 +40,31 @@ export class CLEffects implements OnDestroy {
         .pipe(
           map((info) => {
             this.logger.info(info);
-            let chainObj = { chain: '', network: '' };
-            if (info.network === 'testnet') {
-              chainObj.chain = 'Bitcoin';
-              chainObj.network = 'Testnet';
-            } else if (info.network === 'bitcoin') {
-              chainObj.chain = 'Bitcoin';
-              chainObj.network = 'Mainnet';
-            } else if (info.network === 'litecoin') {
-              chainObj.chain = 'Litecoin';
-              chainObj.network = 'Mainnet';
-            } else if (info.network === 'litecoin-testnet') {
-              chainObj.chain = 'Litecoin';
-              chainObj.network = 'Testnet';
-            }
-            sessionStorage.setItem('clUnlocked', 'true');
-            const node_data = {
-              identity_pubkey: info.id,
-              alias: info.alias,
-              testnet: (info.network === 'testnet' || info.network === 'litecoin-testnet') ? true : false,
-              chains: [chainObj],
-              version: info.version,
-              currency_unit: 'BTC',
-              smaller_currency_unit: 'Sats',
-              numberOfPendingChannels: info.num_pending_channels
-            };
-            this.store.dispatch(new RTLActions.SetNodeData(node_data));
+            this.initializeRemainingData(info);
             return {
               type: RTLActions.SET_INFO_CL,
               payload: (undefined !== info) ? info : {}
             };
           }),
           catchError((err) => {
-            return this.handleErrorWithAlert('ERROR', 'Get Info Failed', this.CHILD_API_URL + environment.GETINFO_API, err);
+            let code = err.status ? err.status : '';
+            let message = err.error.message ? err.error.message + ' ' : '';
+            if (err.error && err.error.error) {
+              if (err.error.error.code) {
+                code = err.error.error.code;
+              } else if (err.error.error.message && err.error.error.message.code) {
+                code = err.error.error.message.code;
+              }
+              if (typeof err.error.error === 'string') {
+                message = message + err.error.error;
+              } else if (err.error.error.error) {
+                message = message + err.error.error.error;
+              } else if (err.error.error.errno) {
+                message = message + err.error.error.errno;
+              }
+            }
+            this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
+            return this.handleErrorWithoutAlert('FetchInfoCL', err);            
           })
         );
     }
@@ -346,7 +344,7 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       return this.handleErrorWithoutAlert('FetchPaymentsCL', err);
     }
-    ));
+  ));
 
   @Effect()
   decodePaymentCL = this.actions$.pipe(
@@ -647,6 +645,50 @@ export class CLEffects implements OnDestroy {
             }));
       })
     );
+
+  initializeRemainingData(info: any) {
+    this.sessionService.setItem('clUnlocked', 'true');
+    let chainObj = { chain: '', network: '' };
+    if (info.network === 'testnet') {
+      chainObj.chain = 'Bitcoin';
+      chainObj.network = 'Testnet';
+    } else if (info.network === 'bitcoin') {
+      chainObj.chain = 'Bitcoin';
+      chainObj.network = 'Mainnet';
+    } else if (info.network === 'litecoin') {
+      chainObj.chain = 'Litecoin';
+      chainObj.network = 'Mainnet';
+    } else if (info.network === 'litecoin-testnet') {
+      chainObj.chain = 'Litecoin';
+      chainObj.network = 'Testnet';
+    }
+    const node_data = {
+      identity_pubkey: info.id,
+      alias: info.alias,
+      testnet: (info.network === 'testnet' || info.network === 'litecoin-testnet') ? true : false,
+      chains: [chainObj],
+      version: info.version,
+      currency_unit: 'BTC',
+      smaller_currency_unit: 'Sats',
+      numberOfPendingChannels: info.num_pending_channels
+    };
+    this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new RTLActions.FetchFeesCL());
+    this.store.dispatch(new RTLActions.FetchBalanceCL());
+    this.store.dispatch(new RTLActions.FetchLocalRemoteBalanceCL());
+    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));
+    this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
+    this.store.dispatch(new RTLActions.FetchPeersCL());
+    let newRoute = this.location.path();
+    if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '') {
+      newRoute = '/cl/home';
+    } else {
+      if(newRoute.includes('/lnd/')) {
+        newRoute = newRoute.replace('/lnd/', '/cl/');
+      }
+    }
+    this.router.navigate([newRoute]);
+  }
   
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error(err);
@@ -668,17 +710,15 @@ export class CLEffects implements OnDestroy {
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.logger.error(err);
-      return of(
-        {
-          type: RTLActions.OPEN_ALERT,
-          payload: {
-            width: '70%', data: {
-              type: alerType, titleMessage: alertTitle,
-              message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
-            }
+      return of({
+        type: RTLActions.OPEN_ALERT,
+        payload: {
+          width: '70%', data: {
+            type: alerType, titleMessage: alertTitle,
+            message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
           }
         }
-      );
+      });
     }
   }
 
