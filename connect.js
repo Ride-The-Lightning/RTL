@@ -218,14 +218,16 @@ connect.validateSingleNodeConfig = (config) => {
     common.ln_implementation = 'LND';
   }
 
-  if (undefined !== process.env.RTL_PASS) {
-		common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
-  } else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
-		common.rtl_pass = config.Authentication.rtlPassHashed;
-	} else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
-    common.rtl_pass = connect.convertCustomToHash('SINGLE');
-	}
-
+  if(!+config.SSO.rtlSSO) {
+    if (undefined !== process.env.RTL_PASS) {
+      common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
+    } else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
+      common.rtl_pass = config.Authentication.rtlPassHashed;
+    } else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
+      common.rtl_pass = connect.convertCustomToHash('SINGLE');
+    }
+  }
+  
 	if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
 		errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment or RTL.conf';
 	}
@@ -269,17 +271,18 @@ connect.validateSingleNodeConfig = (config) => {
 }
 
 connect.validateMultiNodeConfig = (config) => {
-  common.node_auth_type = 'CUSTOM';
-  if (undefined !== process.env.RTL_PASS) {
-		common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
-  } else if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
-		common.rtl_pass = config.multiPassHashed;
-	} else if (config.multiPass !== '' && undefined !== config.multiPass) {
-    common.rtl_pass = connect.convertCustomToHash('MULTI');
-	} else {
-    errMsg = errMsg + '\nMulti Node Authentication can be set with multiPass only. Please set MultiPass in RTL-Multi-Node-Conf.json';
+  if(!+config.SSO.rtlSSO) {
+    common.node_auth_type = 'CUSTOM';
+    if (undefined !== process.env.RTL_PASS) {
+      common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
+    } else if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
+      common.rtl_pass = config.multiPassHashed;
+    } else if (config.multiPass !== '' && undefined !== config.multiPass) {
+      common.rtl_pass = connect.convertCustomToHash('MULTI');
+    } else {
+      errMsg = errMsg + '\nMulti Node Authentication can be set with multiPass only. Please set MultiPass in RTL-Multi-Node-Conf.json';
+    }
   }
-
   common.port = (undefined !== config.port) ? connect.normalizePort(config.port) : 3000;
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
@@ -418,7 +421,7 @@ connect.readCookie = (cookieFile) => {
       common.cookie = fs.readFileSync(cookieFile, 'utf-8');
     }
     catch(err) {
-      console.error('Something went wrong while reading cookie: \n' + err);
+      console.error('Something went wrong while reading the cookie: \n' + err);
       throw new Error(err);
     }
   }

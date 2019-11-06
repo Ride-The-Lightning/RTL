@@ -34,13 +34,13 @@ export class CLEffects implements OnDestroy {
   infoFetchCL = this.actions$.pipe(
     ofType(RTLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]) => {
+    mergeMap(([action, store]: [RTLActions.FetchInfoCL, fromRTLReducer.RootState]) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));
       return this.httpClient.get<GetInfoCL>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           map((info) => {
             this.logger.info(info);
-            this.initializeRemainingData(info);
+            this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: RTLActions.SET_INFO_CL,
               payload: (undefined !== info) ? info : {}
@@ -646,7 +646,7 @@ export class CLEffects implements OnDestroy {
       })
     );
 
-  initializeRemainingData(info: any) {
+  initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');
     let chainObj = { chain: '', network: '' };
     if (info.network === 'testnet') {
@@ -680,7 +680,7 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
     this.store.dispatch(new RTLActions.FetchPeersCL());
     let newRoute = this.location.path();
-    if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '') {
+    if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/cl/home';
     } else {
       if(newRoute.includes('/lnd/')) {
@@ -691,7 +691,7 @@ export class CLEffects implements OnDestroy {
   }
   
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
-    this.logger.error(err);
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Signin');
       return of({ type: RTLActions.SIGNOUT });

@@ -255,7 +255,7 @@ export class RTLEffects implements OnDestroy {
        map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
-        this.initializeNode(action.payload);
+        this.initializeNode(action.payload.lnNode, action.payload.isInitialSetup);
         return { type: RTLActions.VOID };
        }),
        catchError((err: any) => {
@@ -275,17 +275,20 @@ export class RTLEffects implements OnDestroy {
    }
   ));
 
-  initializeNode(node) {
-    let selNode = { channelBackupPath: node.lnNode.settings.channelBackupPath, satsToBTC: node.lnNode.settings.satsToBTC };
-    this.store.dispatch(new RTLActions.ResetRootStore(node.lnNode));
+  initializeNode(node: any, isInitialSetup: boolean) {
+    const landingPage = isInitialSetup ? '' : 'HOME';
+    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC };
+    this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-    if(node.lnNode.lnImplementation.toUpperCase() === 'CLT') {
-      this.CHILD_API_URL = API_URL + '/cl';
-      this.store.dispatch(new RTLActions.FetchInfoCL());
-    } else {
-      this.CHILD_API_URL = API_URL + '/lnd';
-      this.store.dispatch(new RTLActions.FetchInfo());
+    if(this.sessionService.getItem('token')) {
+      if(node.lnImplementation.toUpperCase() === 'CLT') {
+        this.CHILD_API_URL = API_URL + '/cl';
+        this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
+      } else {
+        this.CHILD_API_URL = API_URL + '/lnd';
+        this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+      }
     }
   }
  
@@ -293,7 +296,6 @@ export class RTLEffects implements OnDestroy {
     if (token) {
       this.sessionService.setItem('lndUnlocked', 'true');
       this.sessionService.setItem('token', token);
-      this.store.dispatch(new RTLActions.InitAppData());
     } else {
       this.sessionService.removeItem('lndUnlocked');
       this.sessionService.removeItem('token');

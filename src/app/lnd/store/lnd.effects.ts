@@ -37,7 +37,7 @@ export class LNDEffects implements OnDestroy {
   infoFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_INFO),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]) => {
+    mergeMap(([action, store]: [RTLActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
@@ -52,7 +52,7 @@ export class LNDEffects implements OnDestroy {
                 payload: {}
               };
             } else {
-              this.initializeRemainingData(info);
+              this.initializeRemainingData(info, action.payload.loadPage);
               return {
                 type: RTLActions.SET_INFO,
                 payload: (undefined !== info) ? info : {}
@@ -819,8 +819,8 @@ export class LNDEffects implements OnDestroy {
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
               this.logger.info('Successfully Initialized!');
-              this.store.dispatch(new RTLActions.FetchInfo());
-              this.router.navigate(['/lnd/home']);
+              this.store.dispatch(new RTLActions.FetchInfo({loadPage: 'HOME'}));
+              // this.router.navigate(['/lnd/home']);
             }, 1000 * 90);
             return { type: RTLActions.VOID };
           }),
@@ -942,7 +942,7 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  initializeRemainingData(info: any) {
+  initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (undefined !== info.chains) {
       if (typeof info.chains[0] === 'string') {
@@ -979,7 +979,7 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
     let newRoute = this.location.path();
-    if (newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '') {
+    if (newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/lnd/home';
     } else {
       if(newRoute.includes('/cl/')) {
@@ -990,7 +990,7 @@ export class LNDEffects implements OnDestroy {
   }
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
-    this.logger.error(err);
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Signin');
       return of({ type: RTLActions.SIGNOUT });
@@ -1000,7 +1000,7 @@ export class LNDEffects implements OnDestroy {
     }
   }
 
-  handleErrorWithAlert(alerType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+  handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Signin');
@@ -1011,7 +1011,7 @@ export class LNDEffects implements OnDestroy {
         type: RTLActions.OPEN_ALERT,
         payload: {
           width: '70%', data: {
-            type: alerType, titleMessage: alertTitle,
+            type: alertType, titleMessage: alertTitle,
             message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
           }
         }
