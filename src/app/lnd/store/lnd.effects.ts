@@ -60,7 +60,7 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
-            if (typeof err.error.error === 'string' && err.error.error.includes('Not Found')) {
+            if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/unlocklnd']);
@@ -757,6 +757,27 @@ export class LNDEffects implements OnDestroy {
           }),
           catchError((err) => {
             return this.handleErrorWithAlert('ERROR', err.error.message + ' ' + err.error.error.code, this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
+          })
+        );
+      }
+  ));
+
+  @Effect()
+  updateSelNodeOptions = this.actions$.pipe(
+    ofType(RTLActions.UPDATE_SELECTED_NODE_OPTIONS),
+    mergeMap((action: RTLActions.UpdateSelectedNodeOptions) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/updateSelNodeOptions')
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info('Update Sel Node Successfull');
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.VOID
+            };
+          }),
+          catchError((err) => {
+            return this.handleErrorWithAlert('ERROR', 'Update macaroon for newly initialized node failed! Please check the macaroon path and restart the server!', 'Update Macaroon', err);
           })
         );
       }

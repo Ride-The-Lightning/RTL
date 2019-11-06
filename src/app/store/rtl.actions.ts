@@ -10,6 +10,7 @@ import {
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
+export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
@@ -208,6 +209,10 @@ export class OpenConfirmation implements Action {
 export class CloseConfirmation implements Action {
   readonly type = CLOSE_CONFIRMATION;
   constructor(public payload: boolean) {}
+}
+
+export class UpdateSelectedNodeOptions implements Action {
+  readonly type = UPDATE_SELECTED_NODE_OPTIONS;
 }
 
 export class ResetRootStore implements Action {
@@ -806,7 +811,7 @@ export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
-  ResetRootStore | ResetLNDStore | ResetCLStore |
+  UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |

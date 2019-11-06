@@ -143,8 +143,8 @@ export class UnlockLNDComponent implements OnInit, OnDestroy {
 
   onGoToHome() {
     setTimeout(() => {
+      this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
       this.store.dispatch(new RTLActions.FetchInfo({loadPage:'HOME'}));
-      // this.router.navigate(['/lnd/home']);
     }, 1000 * 1);
   }
 

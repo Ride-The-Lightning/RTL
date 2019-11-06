@@ -24,6 +24,32 @@ common.getOptions = () => {
   return common.selectedNode.options;
 };
 
+common.updateSelectedNodeOptions = () => {
+  common.selectedNode.options = {
+    url: '',
+    rejectUnauthorized: false,
+    json: true,
+    form: ''
+  };
+  try {
+    if (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() === 'CLT') {
+      common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
+    } else {
+      common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+    }
+    return { status: 200, message: 'Updated Successfully!' };
+  } catch(err) {
+    common.selectedNode.options = {
+      url: '',
+      rejectUnauthorized: false,
+      json: true,
+      form: ''
+    };
+    console.error('Common Update Selected Node Options Error:' + JSON.stringify(err));    
+    return { status: 502, message: err };
+  }
+}
+
 common.setOptions = () => {
   if (undefined !== common.nodes[0].options && undefined !== common.nodes[0].options.headers) { return; }
   if (common.nodes && common.nodes.length > 0) {
@@ -50,27 +76,7 @@ common.setOptions = () => {
         };
       }
     });
-    common.selectedNode.options = {
-      url: '',
-      rejectUnauthorized: false,
-      json: true,
-      form: ''
-    };
-    try {
-      if (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() === 'CLT') {
-        common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
-      } else {
-        common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
-      }
-    } catch(err) {
-      console.error('Common Set Options Error:' + JSON.stringify(err));
-      common.selectedNode.options = {
-        url: '',
-        rejectUnauthorized: false,
-        json: true,
-        form: ''
-      };
-    }
+    common.updateSelectedNodeOptions();        
   }
 }
 

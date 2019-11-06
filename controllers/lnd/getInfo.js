@@ -14,8 +14,8 @@ exports.getInfo = (req, res, next) => {
     logger.info({fileName:'GetInfo', msg: 'Single Node Setup!'});
   }
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
-    logger.error({fileName: 'GetInfo', msg: 'Get info failed due to bad or missing macaroon!'});
-    res.status(500).json({
+    logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'Get info failed due to bad or missing macaroon!'});
+    res.status(502).json({
       message: "Fetching Info Failed!",
       error: "Bad Macaroon"
     });
