@@ -9,6 +9,7 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
+import { SessionService } from './shared/services/session.service';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
@@ -33,7 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
-    private userIdle: UserIdleService, private router: Router, private activatedRoute: ActivatedRoute) {}
+    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
@@ -55,15 +56,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.smallScreen = true;
       }
       this.logger.info(this.settings);
-      if (!sessionStorage.getItem('token')) {
+      if (!this.sessionService.getItem('token')) {
         this.flgLoading[0] = false;
       }
     });
+
     this.actions$.pipe(takeUntil(this.unsubs[1]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
     .subscribe((action: (RTLActions.SetRTLConfig)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
-        if (!sessionStorage.getItem('token')) {
+        if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
             this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
           } else {
@@ -82,7 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userIdle.startWatching();
     this.userIdle.onTimerStart().subscribe(count => {});
     this.userIdle.onTimeout().subscribe(() => {
-      if (sessionStorage.getItem('token')) {
+      if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity! Logging out!');
         this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
           type: 'WARN',

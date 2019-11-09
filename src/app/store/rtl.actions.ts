@@ -10,6 +10,7 @@ import {
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
+export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
@@ -90,7 +91,6 @@ export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
 export const SIGNIN = 'SIGNIN';
 export const SIGNOUT = 'SIGNOUT';
-export const INIT_APP_DATA = 'INIT_APP_DATA';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -211,6 +211,10 @@ export class CloseConfirmation implements Action {
   constructor(public payload: boolean) {}
 }
 
+export class UpdateSelectedNodeOptions implements Action {
+  readonly type = UPDATE_SELECTED_NODE_OPTIONS;
+}
+
 export class ResetRootStore implements Action {
   readonly type = RESET_ROOT_STORE;
   constructor(public payload: LightningNode) {}
@@ -262,6 +266,7 @@ export class SetChildNodeSettings implements Action {
 
 export class FetchInfo implements Action {
   readonly type = FETCH_INFO;
+  constructor(public payload: {loadPage: string}) {}
 }
 
 export class SetInfo implements Action {
@@ -583,10 +588,6 @@ export class Signout implements Action {
   constructor() {}
 }
 
-export class InitAppData implements Action {
-  readonly type = INIT_APP_DATA;
-}
-
 export class SetChildNodeSettingsCL implements Action {
   readonly type = SET_CHILD_NODE_SETTINGS_CL;
   constructor(public payload: SelNodeChild) {}
@@ -594,6 +595,7 @@ export class SetChildNodeSettingsCL implements Action {
 
 export class FetchInfoCL implements Action {
   readonly type = FETCH_INFO_CL;
+  constructor(public payload: {loadPage: string}) {}
 }
 
 export class SetInfoCL implements Action {
@@ -635,7 +637,7 @@ export class FetchLocalRemoteBalanceCL implements Action {
 
 export class SetLocalRemoteBalanceCL implements Action {
   readonly type = SET_LOCAL_REMOTE_BALANCE_CL;
-  constructor(public payload: {}) {}
+  constructor(public payload: {localBalance: number, remoteBalance: number}) {}
 }
 
 export class GetNewAddressCL implements Action {
@@ -809,7 +811,7 @@ export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
-  ResetRootStore | ResetLNDStore | ResetCLStore |
+  UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
@@ -828,7 +830,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  IsAuthorized | IsAuthorizedRes | Signin | Signout | InitAppData |
+  IsAuthorized | IsAuthorizedRes | Signin | Signout |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

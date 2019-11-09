@@ -135,7 +135,7 @@ exports.listForwards = (req, res, next) => {
         error: (undefined === body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (body.length > 0) {
+      if (body && body.length > 0) {
         body.forEach(event => {
           event.received_time_str =  (undefined === event.received_time) ? '' : common.convertTimestampToDate(event.received_time);
           event.resolved_time_str =  (undefined === event.resolved_time) ? '' : common.convertTimestampToDate(event.resolved_time);

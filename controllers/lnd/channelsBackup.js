@@ -10,15 +10,17 @@ function getFilesList(callback) {
   let response = {all_restore_exists: false, files: []};
   fs.readdir(common.selectedNode.channel_backup_path + common.path_separator + 'restore', function (err, files) {
     if (err && err.code !== 'ENOENT' && err.errno !== -4058) { response = { message: 'Channels Restore List Failed!', error: err } }
-    files.forEach(file => {
-      if (!file.includes('.restored')) {
-        if (file === 'channel-all.bak') {
-          all_restore_exists = true;
-        } else {
-          files_list.push({channel_point: file.substring(8, file.length - 4).replace('-', ':')});
+    if(undefined !== files && files.length > 0) {
+      files.forEach(file => {
+        if (!file.includes('.restored')) {
+          if (file === 'channel-all.bak') {
+            all_restore_exists = true;
+          } else {
+            files_list.push({channel_point: file.substring(8, file.length - 4).replace('-', ':')});
+          }
         }
-      }
-    });
+      });
+    }
     response =  {all_restore_exists: all_restore_exists, files: files_list};
     callback(response);
   });

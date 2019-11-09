@@ -28,8 +28,6 @@ Pre-requisite for running RTL is a functioning and synced LND node. You can setu
 * Windows/Mac users can follow Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
 * Linux or Raspberry Pi users can follow Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
 
-RTL source code is available at this [repo](https://github.com/ShahanaFarooqui/RTLFullApplication)
-
 For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
 
 RTL is available on the below platforms/services:

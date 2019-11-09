@@ -43,8 +43,8 @@ export interface BalanceCL {
 }
 
 export interface LocalRemoteBalanceCL {
-  localBalance?: number;
-  remoteBalance?: number;
+  localBalance: number;
+  remoteBalance: number;
   btc_localBalance?: number;
   btc_remoteBalance?: number;
 }

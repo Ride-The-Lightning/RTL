@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
+import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
@@ -20,10 +22,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public remainder = 0;
   public totalPeers = -1;
-  public totalBalance = '';
-  public channelBalance = '';
-  public BTCtotalBalance = '';
-  public BTCchannelBalance = '';
+  public totalBalance = 0;
+  public channelBalance = 0;
+  public BTCtotalBalance = 0;
+  public BTCchannelBalance = 0;
   public networkInfo: NetworkInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -35,13 +37,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   public peers: Peer[] = [];
   barPadding = 0;
   maxBalanceValue = 0;
-  totalBalances = [...[{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}]];
+  totalBalances = [{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}];
   flgTotalCalculated = false;
   view = [];
   yAxisLabel = 'Balance';
   colorScheme = {domain: ['#FFFFFF']};
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 730):
         this.view = [250, 352];
@@ -63,9 +65,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.flgTotalCalculated = false;
+    this.actions$.pipe(takeUntil(this.unsub[0]),
+    filter(action => action.type === RTLActions.SET_SELECTED_NODE))
+    .subscribe((data) => {
+      this.flgTotalCalculated = false;
+    });
     this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unsub[1]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
@@ -102,13 +108,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.totalBalance = rtlStore.blockchainBalance.total_balance;
       this.BTCtotalBalance = rtlStore.blockchainBalance.btc_total_balance;
       if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = ('' !== this.totalBalance) ? false : true;
+        this.flgLoading[2] = (this.totalBalance >= 0) ? false : true;
       }
 
       this.channelBalance = rtlStore.channelBalance.balance;
       this.BTCchannelBalance = rtlStore.channelBalance.btc_balance;
       if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = ('' !== this.channelBalance) ? false : true;
+        this.flgLoading[3] = (this.channelBalance >= 0) ? false : true;
       }
 
       this.networkInfo = rtlStore.networkInfo;
@@ -116,9 +122,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.flgLoading[4] = (undefined !== this.networkInfo.num_nodes) ? false : true;
       }
 
-      this.totalBalances = [...[{'name': 'Local Balance', 'value': +rtlStore.totalLocalBalance}, {'name': 'Remote Balance', 'value': +rtlStore.totalRemoteBalance}]];
-      this.maxBalanceValue = (rtlStore.totalLocalBalance > rtlStore.totalRemoteBalance) ? rtlStore.totalLocalBalance : rtlStore.totalRemoteBalance;
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) {
+        this.totalBalances = [{'name': 'Local Balance', 'value': rtlStore.totalLocalBalance}, {'name': 'Remote Balance', 'value': rtlStore.totalRemoteBalance}];
+        this.maxBalanceValue = (rtlStore.totalLocalBalance > rtlStore.totalRemoteBalance) ? rtlStore.totalLocalBalance : rtlStore.totalRemoteBalance;
         this.flgTotalCalculated = true;
         if (this.flgLoading[5] !== 'error') {
           this.flgLoading[5] = false;

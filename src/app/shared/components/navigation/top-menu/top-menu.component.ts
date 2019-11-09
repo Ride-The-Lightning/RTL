@@ -6,6 +6,7 @@ import { Actions } from '@ngrx/effects';
 
 import { GetInfoRoot, LightningNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
+import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
 
@@ -30,9 +31,9 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
   public showLogout = false;
-  private unSubs = [new Subject(), new Subject(), new Subject()];
+  private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
     this.version = environment.VERSION;
   }
 
@@ -58,12 +59,13 @@ export class TopMenuComponent implements OnInit, OnDestroy {
         this.informationChain.chain = '';
         this.informationChain.network = '';
       }
-      this.showLogout = (sessionStorage.getItem('token')) ? true : false;
-
       this.logger.info(rtlStore);
-      if (!sessionStorage.getItem('token')) {
-        this.flgLoading = false;
-      }
+    });
+    this.sessionService.watchSession()
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(session => {
+      this.showLogout = session.token ? true : false;
+      this.flgLoading = session.token ? true : false;
     });
     this.actions$
     .pipe(
@@ -79,7 +81,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[1]))
+    .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.showLogout = false;

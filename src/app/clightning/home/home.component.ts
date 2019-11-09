@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, FeeRatesCL } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
+import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
@@ -19,14 +21,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public fees: FeesCL;
   public information: GetInfoCL = {};
   public totalBalance: BalanceCL = {};
-  public lrBalance: LocalRemoteBalanceCL = {};
+  public lrBalance: LocalRemoteBalanceCL = { localBalance: 0, remoteBalance: 0 };
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true];
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
   public position = 'below';
   barPadding = 0;
   maxBalanceValue = 0;
-  lrBalances = [...[{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}]];
+  lrBalances = [{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}];
   flgTotalCalculated = false;
   view = [];
   yAxisLabel = 'Balance';
@@ -34,7 +36,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   feeRatesPerKB: FeeRatesCL = {};
   feeRatesPerKW: FeeRatesCL = {};
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     switch (true) {
       case (window.innerWidth <= 730):
         this.view = [250, 352];
@@ -56,7 +58,11 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.flgTotalCalculated = false;
+    this.actions$.pipe(takeUntil(this.unsub[0]),
+    filter(action => action.type === RTLActions.SET_SELECTED_NODE))
+    .subscribe((data) => {
+      this.flgTotalCalculated = false;
+    });
     this.store.select('cl')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
@@ -96,9 +102,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
       this.lrBalance = rtlStore.localRemoteBalance;
       this.maxBalanceValue = (rtlStore.localRemoteBalance.localBalance > rtlStore.localRemoteBalance.remoteBalance) ? rtlStore.localRemoteBalance.localBalance : rtlStore.localRemoteBalance.remoteBalance;
-      this.lrBalances = [...[{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}]];
+      this.lrBalances = [{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}];
       if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = ('' !== this.lrBalance) ? false : true;
+        this.flgLoading[3] = (this.lrBalance.localBalance >= 0) ? false : true;
       }
 
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;

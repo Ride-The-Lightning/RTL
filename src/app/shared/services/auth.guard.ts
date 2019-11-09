@@ -2,12 +2,14 @@ import { CanActivate } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { SessionService } from './session.service';
+
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor() {}
+  constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
-    if (!sessionStorage.getItem('token')) {
+    if (!this.sessionService.getItem('token')) {
       return false;
     } else {
       return true;
@@ -17,10 +19,10 @@ export class AuthGuard implements CanActivate {
 
 @Injectable()
 export class LNDUnlockedGuard implements CanActivate {
-  constructor() {}
+  constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
-    if (!sessionStorage.getItem('lndUnlocked')) {
+    if (!this.sessionService.getItem('lndUnlocked')) {
       return false;
     } else {
       return true;
@@ -30,11 +32,11 @@ export class LNDUnlockedGuard implements CanActivate {
 
 @Injectable()
 export class CLUnlockedGuard implements CanActivate {
-  constructor() {}
+  constructor(private sessionService: SessionService) {}
 
   canActivate(): boolean | Observable<boolean> | Promise<boolean> {
     return true;
-    if (!sessionStorage.getItem('clUnlocked')) {
+    if (!this.sessionService.getItem('clUnlocked')) {
       return false;
     } else {
       return true;

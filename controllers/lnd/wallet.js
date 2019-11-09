@@ -6,9 +6,10 @@ var options = {};
 
 exports.genSeed = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/genseed';
   if (undefined !== req.params.passphrase) {
-    options.form = JSON.stringify({aezeed_passphrase: atob(req.params.passphrase)});
+    options.url = common.getSelLNServerUrl() + '/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
+  } else {
+    options.url = common.getSelLNServerUrl() + '/genseed';
   }
   request(options).then((body) => {
     if(undefined === body || body.error) {
@@ -86,8 +87,13 @@ exports.operateWallet = (req, res, next) => {
     } else {
       res.status(500).json({
         message: err_message,
-        error: error.message
+        error: error.error.message ? error.error.message : error.message
       });
     }
   });
 };
+
+exports.updateSelNodeOptions = (req, res, next) => {
+    let response = common.updateSelectedNodeOptions();
+    res.status(response.status).json({updateMessage: response.message});
+}

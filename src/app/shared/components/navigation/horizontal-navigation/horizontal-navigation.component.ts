@@ -1,12 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 
-import { faEject } from '@fortawesome/free-solid-svg-icons';
-
-import { LoggerService } from '../../../services/logger.service';
+import { SessionService } from '../../../services/session.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
@@ -18,14 +15,14 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   templateUrl: './horizontal-navigation.component.html',
   styleUrls: ['./horizontal-navigation.component.scss']
 })
-export class HorizontalNavigationComponent implements OnInit {
+export class HorizontalNavigationComponent implements OnInit, OnDestroy {
   public menuNodes = [];
   public logoutNode = [];
   public showLogout = false;
   public numPendingChannels = 0;
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
+  constructor(private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
   }
 
   ngOnInit() {
@@ -39,21 +36,15 @@ export class HorizontalNavigationComponent implements OnInit {
         this.menuNodes = MENU_DATA.LNDChildren;
       }
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[2]),
-      filter((action) => action.type === RTLActions.SIGNOUT ||  action.type === RTLActions.SIGNIN)
-    ).subscribe((action) => {
-      if (action.type === RTLActions.SIGNIN) {
-        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'SVG', icon: 'logout'});
-      }
-      if (action.type === RTLActions.SIGNOUT) {
+    this.sessionService.watchSession()
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(session => {
+      if(session.token) {
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
+      } else {
         this.menuNodes.pop();
       }
     });
-    if (sessionStorage.getItem('token')) {
-      this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'SVG', icon: 'logout'});
-    }
   }
 
   onClick(node) {
@@ -62,7 +53,7 @@ export class HorizontalNavigationComponent implements OnInit {
         width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[1]))
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.showLogout = false;
@@ -70,5 +61,12 @@ export class HorizontalNavigationComponent implements OnInit {
         }
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
   }
 }

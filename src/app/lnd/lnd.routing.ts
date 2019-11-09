@@ -19,13 +19,13 @@ import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
 import { ChannelBackupComponent } from './channels/channel-backup/channel-backup.component';
 import { ChannelRestoreComponent } from './channels/channel-restore/channel-restore.component';
 
-import { LNDUnlockedGuard } from '../shared/services/auth.guard';
+import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
 
 export const LndRoutes: Routes = [
   { path: '', component: LNDRootComponent,
     children: [
-    { path: 'unlocklnd', component: UnlockLNDComponent },
+    { path: 'unlocklnd', component: UnlockLNDComponent, canActivate: [AuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'peers', component: PeersComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'chnlclosed', component: ChannelClosedComponent, canActivate: [LNDUnlockedGuard] },

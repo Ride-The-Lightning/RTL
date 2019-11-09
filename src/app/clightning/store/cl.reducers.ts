@@ -30,7 +30,7 @@ export const initCLState: CLState = {
   feeRatesPerKB: {},
   feeRatesPerKW: {},
   balance: {},
-  localRemoteBalance: {},
+  localRemoteBalance: { localBalance: -1, remoteBalance: -1 },
   peers: [],
   allChannels: [],
   payments: [],
