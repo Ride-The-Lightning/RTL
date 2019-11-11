@@ -48,7 +48,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.information = rtlStore.nodeData;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 768) {
-        this.settings.menu = 'Vertical';
+        this.settings.menu = 'vertical';
         this.settings.flgSidenavOpened = false;
         this.settings.flgSidenavPinned = false;
       }
@@ -73,9 +73,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
         if (
-          this.settings.menu === 'Horizontal' ||
-          this.settings.menuType === 'Compact' ||
-          this.settings.menuType === 'Mini') {
+          this.settings.menu === 'horizontal' ||
+          this.settings.menuType === 'compact' ||
+          this.settings.menuType === 'mini') {
           this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.settingSidenav.toggle(); }, 100);
         }
@@ -115,7 +115,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize')
   public onWindowResize(): void {
     if (window.innerWidth <= 768) {
-      this.settings.menu = 'Vertical';
+      this.settings.menu = 'vertical';
       this.settings.flgSidenavOpened = false;
       this.settings.flgSidenavPinned = false;
     }

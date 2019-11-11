@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { faEject } from '@fortawesome/free-solid-svg-icons';
 import { SessionService } from '../../../services/session.service';
 import { MENU_DATA } from '../../../models/navMenu';
 
@@ -40,7 +41,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(session => {
       if(session.token) {
-        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', icon: 'eject'});
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject});
       } else {
         this.menuNodes.pop();
       }

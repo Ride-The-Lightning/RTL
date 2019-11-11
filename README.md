@@ -95,10 +95,11 @@ logoutRedirectLink=/login
 [Settings]
 flgSidenavOpened=true
 flgSidenavPinned=true
-menu=Vertical
-menuType=Regular
-fontSize=Regular
-theme=dark-blue
+menu=vertical
+menuType=regular
+fontSize=regular-font
+themeMode=night
+themeColor=blue
 satsToBTC=false
 lndServerUrl=https://192.168.0.0:8080/v1
 bitcoindConfigPath=

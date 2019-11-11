@@ -25,7 +25,6 @@ import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
 import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
-import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
 import { ServerConfigComponent } from './components/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
@@ -109,7 +108,6 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         ConfirmationMessageComponent,
         SpinnerDialogComponent,
         NotFoundComponent,
-        SettingsNavComponent,
         SideNavigationComponent,
         TopMenuComponent,
         HorizontalNavigationComponent,
@@ -127,7 +125,6 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         ConfirmationMessageComponent,
         SpinnerDialogComponent,
         NotFoundComponent,
-        SettingsNavComponent,
         SideNavigationComponent,
         TopMenuComponent,
         HorizontalNavigationComponent,

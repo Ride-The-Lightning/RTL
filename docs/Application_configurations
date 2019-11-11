@@ -18,13 +18,15 @@ flgSidenavOpened=true
 ;Set by RTL
 flgSidenavPinned=true
 ;Set by RTL
-menu=Vertical
+menu=vertical
 ;Set by RTL
-menuType=Regular
+menuType=regular
 ;Set by RTL
-fontSize=Regular
+fontSize=regular-font
 ;Set by RTL
-theme=dark-blue
+themeMode=night
+;Set by RTL
+themeColor=blue
 ;Set by RTL
 satsToBTC=false
 ;Full path of the bitcoin.conf file including the file name

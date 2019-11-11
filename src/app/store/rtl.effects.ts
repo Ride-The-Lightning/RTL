@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
-import { Location } from '@angular/common';
 
 import { MatDialog } from '@angular/material';
 
@@ -34,8 +33,7 @@ export class RTLEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     public dialog: MatDialog,
-    private router: Router,
-    private location: Location) { }
+    private router: Router) { }
 
   @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
@@ -104,18 +102,31 @@ export class RTLEffects implements OnDestroy {
       };
     },
     catchError((err) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'FetchRTLConfig', code: err.status, message: err.error.error }));
-      return of();
+      this.handleErrorWithoutAlert('FetchRTLConfig', err);
+      return of({type: RTLActions.VOID});
     })
   ));
 
-  @Effect({ dispatch: false })
+  @Effect()
   settingSave = this.actions$.pipe(
     ofType(RTLActions.SAVE_SETTINGS),
     mergeMap((action: RTLActions.SaveSettings) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSettings'));
       return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload });
-    }
+    }),
+    map((updateStatus: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.info(updateStatus);
+      return {
+        type: RTLActions.OPEN_ALERT,
+        payload: { data: { type: 'SUCCESS', titleMessage: updateStatus.message } }
+      };
+    },
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSettings', code: err.status, message: err.error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update Settings Failed!', environment.CONF_API, err);
+      return of({type: RTLActions.VOID});
+    })
   ));
 
   @Effect()
@@ -133,16 +144,9 @@ export class RTLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          this.logger.error(err);
           this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'fetchConfig', code: err.status, message: err.error.error }));
-          return of(
-            {
-              type: RTLActions.OPEN_ALERT,
-              payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Fetch Config Failed!',
-              message: JSON.stringify({Code: err.status, Message: err.error.error})}}
-            }
-          );
+          this.handleErrorWithAlert('ERROR', 'Fetch Config Failed!', environment.CONF_API + '/config/' + action.payload, err);
+          return of({type: RTLActions.VOID});
         }
       ));
     })
@@ -176,10 +180,8 @@ export class RTLEffects implements OnDestroy {
         };
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', titleMessage: 'Authorization Failed',
-         message: JSON.stringify({Code: err.status, Message: err.error.error})}}));
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'IsAuthorized', code: err.status, message: err.error.message }));
-        this.logger.error(err.error);
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed', environment.AUTHENTICATE_API, err);
         return of({
           type: RTLActions.IS_AUTHORIZED_RES,
           payload: 'ERROR'
@@ -214,16 +216,15 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', message: JSON.stringify(err.error)}}));
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Signin', code: err.status, message: err.error.message }));
-        this.logger.error(err.error);
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err.error);
         this.logger.info('Redirecting to Signin Error Page');
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {
           this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
         }
-        return of();
+        return of({type: RTLActions.VOID});
       })
     );
   }));
@@ -259,17 +260,9 @@ export class RTLEffects implements OnDestroy {
         return { type: RTLActions.VOID };
        }),
        catchError((err: any) => {
-         this.store.dispatch(new RTLActions.CloseSpinner());
-         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
-         this.logger.error(err);
-         return of(
-           {
-             type: RTLActions.OPEN_ALERT,
-             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Update Selected Node Failed!',
-               message: JSON.stringify({code: err.status, Message: err.error.error})
-             }}
-           }
-         );
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
+        this.handleErrorWithAlert('ERROR', 'Update Selected Node Failed!', environment.CONF_API + '/updateSelNode', err);
+        return of({type: RTLActions.VOID});
        })
      );
    }
@@ -299,6 +292,32 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.sessionService.removeItem('lndUnlocked');
       this.sessionService.removeItem('token');
+    }
+  }
+
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      this.store.dispatch(new RTLActions.Signout());
+    } else {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
+    }
+  }
+
+  handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+    this.logger.error(err);
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      this.store.dispatch(new RTLActions.Signout());
+    } else {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({
+        width: '70%', data: {
+          type: alertType, titleMessage: alertTitle,
+          message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
+        }
+      }));
     }
   }
 

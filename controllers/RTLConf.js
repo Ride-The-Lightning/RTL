@@ -100,7 +100,8 @@ exports.updateUISettings = (req, res, next) => {
         node.Settings.menu = req.body.updatedSettings.menu;
         node.Settings.menuType = req.body.updatedSettings.menuType;
         node.Settings.fontSize = req.body.updatedSettings.fontSize;
-        node.Settings.theme = req.body.updatedSettings.theme;
+        node.Settings.themeMode = req.body.updatedSettings.themeMode;
+        node.Settings.themeColor = req.body.updatedSettings.themeColor;
         node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
       }
     });
@@ -125,7 +126,8 @@ exports.updateUISettings = (req, res, next) => {
     settingsTemp.menu = req.body.updatedSettings.menu;
     settingsTemp.menuType = req.body.updatedSettings.menuType;
     settingsTemp.fontSize = req.body.updatedSettings.fontSize;
-    settingsTemp.theme = req.body.updatedSettings.theme;
+    settingsTemp.themeMode = req.body.updatedSettings.themeMode;
+    settingsTemp.themeColor = req.body.updatedSettings.themeColor;
     settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
     delete config.Settings;
     fs.writeFileSync(RTLConfFile, ini.stringify(config));

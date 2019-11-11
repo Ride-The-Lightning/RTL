@@ -2,6 +2,7 @@
 
 @mixin change-theme($theme, $alternate-theme) {
   $primary: map-get($theme, primary);
+  $primary-lighter: mat-color(mat-palette($primary, lighter));
   $primary-darker: mat-color(mat-palette($primary, darker));
   $primary-node-toolbar : mat-color(mat-palette($primary, A700));
   $accent: map-get($theme, accent);
@@ -39,6 +40,20 @@
     @include _mat-toolbar-color($alternate-primary);
   }
 
+  &.night {
+    .selected-color {
+      border-color: $primary-lighter;
+    }
+  }
+  &.day {
+    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon {
+      color: rgba(0, 0, 0, 0.6);
+    }
+    .selected-color {
+      border-color: $primary-darker;
+    }
+  }
+  
   &.small-font {
     .mr-4 {
       margin-right: 1rem !important;
@@ -204,6 +219,9 @@
     color: mat-color($primary); 
     cursor: pointer;
     background: rgba(0, 0, 0, 0.04);
+    & .ng-fa-icon, & .mat-icon {
+      color: mat-color($primary);
+    }
     & .sidenav-img svg {
       fill: mat-color($primary);
     }

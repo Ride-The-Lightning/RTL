@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { LightningNode, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
+import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
@@ -20,18 +20,21 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public selNode: LightningNode;
   public information: GetInfoRoot = {};
-  public menus = ['Vertical', 'Horizontal'];
-  public menuTypes = ['Regular', 'Compact', 'Mini'];
-  public themeModes = ['Day', 'Night'];
+  public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
+  public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];
+  public themeModes = [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}];
+  public themeColors = ['purple-white', 'green', 'pink', 'blue'];
   public fontSizes = [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}];
-  public selectedMenu: string;
-  public selectedMenuType: string;
-  public selectedFontSize: any;
-  public selectedThemeMode = 'Day';
+  public selectedMenu = {id: 'vertical', name: 'Vertical'};
+  public selectedMenuType = {id: 'regular', name: 'Regular'};
+  public selectedFontSize = {id: 2, name: 'Regular', class: 'regular-font'};
+  public selectedThemeMode = {id: 'day', name: 'Day'};
+  public selectedThemeColor = 'blue';
   public currencyUnit = 'BTC';
   public smallerCurrencyUnit = 'SATS';
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
+  public previousSettings: Settings;
 
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
@@ -44,11 +47,13 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
-      this.selectedMenu = this.selNode.settings.menu;
-      this.selectedMenuType = this.selNode.settings.menuType;
-      this.selectedFontSize = this.fontSizes.filter(fontSize => fontSize.class === this.selNode.settings.fontSize)[0];
+      this.selectedMenu = this.menus.find(menu => menu.id === this.selNode.settings.menu);
+      this.selectedMenuType = this.menuTypes.find(menuType => this.selNode.settings.menuType === menuType.id);
+      this.selectedThemeMode = this.themeModes.find(themeMode => this.selNode.settings.themeMode === themeMode.id);
+      this.selectedThemeColor = this.selNode.settings.themeColor;
+      this.selectedFontSize = this.fontSizes.find(fontSize => fontSize.class === this.selNode.settings.fontSize);
       if (window.innerWidth <= 768) {
-        this.selNode.settings.menu = 'Vertical';
+        this.selNode.settings.menu = 'vertical';
         this.selNode.settings.flgSidenavOpened = false;
         this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
@@ -56,12 +61,13 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.nodeData;
       this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'SATS';
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
+      this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.logger.info(rtlStore);
     });
   }
 
   public chooseMenuType() {
-    this.selNode.settings.menuType = this.selectedMenuType;
+    this.selNode.settings.menuType = this.selectedMenuType.id;
   }
 
   public chooseFontSize() {
@@ -76,35 +82,37 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
       setTimeout(() => {
-        this.selNode.settings.menu = (!event.checked) ? 'Horizontal' : 'Vertical';
+        this.selNode.settings.menu = (!event.checked) ? 'horizontal' : 'vertical';
       }, 10);
     } else {
       this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
     }
   }
 
-  changeTheme(newTheme: string) {
-    this.selNode.settings.theme = newTheme;
+  changeThemeColor(newThemeColor: string) {
+    this.selectedThemeColor = newThemeColor;
+    this.selNode.settings.themeColor = newThemeColor;
   }
 
-  choosethemeMode() {
-
+  chooseThemeMode() {
+    this.selNode.settings.themeMode = this.selectedThemeMode.id;
   }
 
   onUpdateSettings() {
     this.logger.info(this.selNode.settings);
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
     this.store.dispatch(new RTLActions.SaveSettings(this.selNode.settings));
     this.done.emit();
   }
 
-  onSelectionChange(selNodeValue: LightningNode) {
-    this.selNode = selNodeValue;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
-  }
-
   onResetSettings() {
-
+    this.selNode.settings = this.previousSettings;
+    this.selectedMenu = this.menus.find(menu => menu.id === this.previousSettings.menu);
+    this.selectedMenuType = this.menuTypes.find(menuType => menuType.id === this.previousSettings.menuType);
+    this.selectedFontSize = this.fontSizes.find(fontSize => fontSize.class === this.previousSettings.fontSize);
+    this.selectedThemeMode = this.themeModes.find(themeMode => themeMode.id === this.previousSettings.themeMode);
+    this.selectedThemeColor = this.previousSettings.themeColor;
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: this.selNode, isInitialSetup: true }));    
   }  
 
   ngOnDestroy() {

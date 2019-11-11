@@ -1,0 +1,18 @@
+@import './color-swatches/purple-primary.swatch.scss';
+@import './color-swatches/white-accent.swatch.scss';
+@import './color-swatches/blue-primary.swatch.scss';
+@import '~@angular/material/theming';
+@include mat-core();
+
+$purple-white-primary: mat-palette($purple-primary, 500, 400, 700);
+$purple-white-accent:  mat-palette($white-accent, 800, 600, 900);
+$purple-white-warn:    mat-palette($mat-red);
+
+$alternate-purple-white-primary: mat-palette($blue-primary, 500, 300, 900);
+$alternate-purple-white-accent:  mat-palette($white-accent, 800, 600, 900);
+$alternate-purple-white-warn:    mat-palette($mat-red);
+
+$purple-white-day-theme: mat-light-theme($purple-white-primary, $purple-white-accent, $purple-white-warn);
+$alternate-purple-white-day-theme: mat-light-theme($alternate-purple-white-primary, $alternate-purple-white-accent, $alternate-purple-white-warn);
+$purple-white-night-theme: mat-dark-theme($purple-white-primary, $purple-white-accent, $purple-white-warn);
+$alternate-purple-white-night-theme: mat-dark-theme($alternate-purple-white-primary, $alternate-purple-white-accent, $alternate-purple-white-warn);

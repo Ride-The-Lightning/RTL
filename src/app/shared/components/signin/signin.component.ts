@@ -4,6 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 
+import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
+
 import { LightningNode } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -15,6 +17,7 @@ import * as RTLActions from '../../../store/rtl.actions';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
+  public faUnlockAlt = faUnlockAlt;
   public selNode: LightningNode;
   public password = '';
   public nodeAuthType = '';
