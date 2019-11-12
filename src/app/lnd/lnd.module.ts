@@ -24,7 +24,6 @@ import { ChannelBackupComponent } from './channels/channel-backup/channel-backup
 import { ChannelRestoreComponent } from './channels/channel-restore/channel-restore.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 
-import { CommonService } from '../shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -57,8 +56,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
-    LNDUnlockedGuard,
-    CommonService
+    LNDUnlockedGuard
   ],
   bootstrap: [LNDRootComponent]
 })

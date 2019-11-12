@@ -29,6 +29,7 @@ import { ServerConfigComponent } from './components/server-config/server-config.
 import { ErrorComponent } from './components/error/error.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
+import { CommonService } from './services/common.service';
 
 @NgModule({
     imports: [
@@ -141,7 +142,8 @@ import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
         ConfirmationMessageComponent
     ],
     providers: [
-        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } }
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
+        CommonService
     ]
 })
 export class SharedModule { }

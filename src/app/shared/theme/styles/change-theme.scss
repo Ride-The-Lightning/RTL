@@ -208,7 +208,7 @@
     color: mat-color($primary);
   }
 
-  .active-link, .active-link .sidenav-img svg {
+  .active-link, .active-link .fa-icon-small {
     color: mat-color($primary); 
     font-weight: 500;
     cursor: pointer;
@@ -232,19 +232,6 @@
     fill:  $foreground-color;
   }
 
-  // .mat-menu-panel {
-  //   background-color: mat-color($primary);
-  // }
-
-  .mat-button.app-config-nodes {
-    border-radius: 0;
-    border-bottom: 2px solid mat-color($primary);
-  }
-
-  .mat-button.app-config-nodes.selected-node {
-    border-bottom: 2px solid mat-color($accent);
-  }
-
   .h-active-link {
     border-bottom: 2px solid mat-color($accent);
   }
@@ -257,10 +244,6 @@
     }
   }
 
-  .mat-primary .mat-select, .mat-primary .mat-select-trigger, .mat-primary .mat-select-value, .mat-primary .mat-select-arrow {
-    // color: white !important;    
-  }
-  
   .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     background: none;
@@ -327,7 +310,6 @@
     background: mat-color($primary, lighter);
     border-radius: 12rem;
     &:hover {
-      // background: mat-color($primary, darker);
       background: mat-color($accent);
       color: mat-color($primary, darker);
     }

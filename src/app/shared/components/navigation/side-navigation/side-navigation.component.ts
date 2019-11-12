@@ -10,7 +10,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { faEject } from '@fortawesome/free-solid-svg-icons';
 
-import { LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
+import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -28,6 +28,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
+  public appConfig: RTLConfiguration;
   public selNode: LightningNode;
   public settings: Settings;
   public version = '';
@@ -55,9 +56,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    let token = this.sessionService.getItem('token');
+    this.showLogout = token ? true : false;
+    this.flgLoading = token ? true : false;
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
+      this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.nodeData;
@@ -124,6 +129,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.ChildNavClicked.emit(node);
   }
   
+  onNodeSelectionChange(selNodeValue: LightningNode) {
+    this.selNode = selNodeValue;
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

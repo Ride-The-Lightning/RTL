@@ -1,109 +1,109 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between space-between">
-  <div>
-    <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="mt-2"
-      *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
-        <div (click)="onChildNavClicked(node)">
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
-            <span *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">{{node.name}}</span><span
-              *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
-              matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span>
-          </div>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
+  <mat-select *ngIf="appConfig.nodes.length > 1" [value]="selNode" (selectionChange)="onNodeSelectionChange($event.value)" class="m-2 multi-node-select">
+    <mat-option *ngFor="let node of appConfig.nodes" [value]="node" tabindex="1">
+      {{node.lnNode}} ({{node.lnImplementation}})
+    </mat-option>
+  </mat-select>
+  <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
+      <div (click)="onChildNavClicked(node)">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
+          <span *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">{{node.name}}</span><span
+            *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
+            matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span>
         </div>
-      </mat-tree-node>
-      <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
-        <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
-          <div fxFlex="89" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
-            <span>{{node.name}}</span>
-          </div>
-          <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name"
-            fxLayoutAlign="end center">
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
-          </button>
+      </div>
+    </mat-tree-node>
+    <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
+      <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
+        <div fxFlex="89" fxLayoutAlign="start center">
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
+          <span>{{node.name}}</span>
         </div>
-        <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
-          <ng-container matTreeNodeOutlet></ng-container>
-        </div>
-      </mat-nested-tree-node>
-    </mat-tree>
-    <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-      *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini' && showLogout" class="mt-minus-1">
-      <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
-        <span>{{node.name}}</span>
-      </mat-tree-node>
-    </mat-tree>
+        <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name"
+          fxLayoutAlign="end center">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+        </button>
+      </div>
+      <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </mat-nested-tree-node>
+  </mat-tree>
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
+    *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini' && showLogout">
+    <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+      <span>{{node.name}}</span>
+    </mat-tree-node>
+  </mat-tree>
 
-    <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="mt-2"
-      *ngIf="settings.menuType === 'compact'">
-      <mat-tree-node fxLayout="row" matTreeNodeToggle fxLayoutAlign="start center" *matTreeNodeDef="let node"
-        (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
-        <span>{{node.name}}<span *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
-            matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span></span>
-      </mat-tree-node>
+  <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType === 'compact'">
+    <mat-tree-node fxLayout="row" matTreeNodeToggle fxLayoutAlign="start center" *matTreeNodeDef="let node"
+      (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
+      <span>{{node.name}}<span *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
+          matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span></span>
+    </mat-tree-node>
 
-      <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
-        <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
-          <div fxFlex="89" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
-            <span>{{node.name}}</span>
-          </div>
-          <button fxFlex="11" mat-icon-button [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
-          </button>
+    <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
+      <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
+        <div fxFlex="89" fxLayoutAlign="start center">
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
+          <span>{{node.name}}</span>
         </div>
-        <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
-          <ng-container matTreeNodeOutlet></ng-container>
-        </div>
-      </mat-nested-tree-node>
-    </mat-tree>
-    <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-      *ngIf="settings.menuType === 'compact' && showLogout" class="mt-minus-1">
-      <mat-tree-node fxLayout="row" fxLayoutAlign="start center" *matTreeNodeDef="let node"
-        (click)="onClick(node)">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
-        <span>{{node.name}}</span>
-      </mat-tree-node>
-    </mat-tree>
+        <button fxFlex="11" mat-icon-button [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+        </button>
+      </div>
+      <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </mat-nested-tree-node>
+  </mat-tree>
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
+    *ngIf="settings.menuType === 'compact' && showLogout">
+    <mat-tree-node fxLayout="row" fxLayoutAlign="start center" *matTreeNodeDef="let node"
+      (click)="onClick(node)">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
+      <span>{{node.name}}</span>
+    </mat-tree-node>
+  </mat-tree>
 
-    <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" class="mt-2"
-      *ngIf="settings.menuType === 'mini'">
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
-        <div (click)="onChildNavClicked(node)">
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"><span
-              *ngIf="node.name === 'Peers/Channels'"
-              [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false"
-              matBadgeColor="primary"></span></fa-icon>
-          </div>
+  <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType === 'mini'">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
+      <div (click)="onChildNavClicked(node)">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"><span
+            *ngIf="node.name === 'Peers/Channels'"
+            [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false"
+            matBadgeColor="primary"></span></fa-icon>
         </div>
-      </mat-tree-node>
-      <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
-        <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
-          <div fxFlex="89" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
-          </div>
-          <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name"
-            fxLayoutAlign="end center">
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
-          </button>
+      </div>
+    </mat-tree-node>
+    <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
+      <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
+        <div fxFlex="89" fxLayoutAlign="start center">
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
         </div>
-        <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
-          <ng-container matTreeNodeOutlet></ng-container>
-        </div>
-      </mat-nested-tree-node>
-    </mat-tree>
-    <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-      *ngIf="settings.menuType === 'mini' && showLogout" class="mt-minus-1">
-      <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)" fxLayoutAlign="start center">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
-      </mat-tree-node>
-    </mat-tree>
-  </div>
+        <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name"
+          fxLayoutAlign="end center">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+        </button>
+      </div>
+      <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </mat-nested-tree-node>
+  </mat-tree>
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
+    *ngIf="settings.menuType === 'mini' && showLogout">
+    <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)" fxLayoutAlign="start center">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+    </mat-tree-node>
+  </mat-tree>
 </div>

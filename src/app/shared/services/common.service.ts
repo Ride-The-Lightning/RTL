@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable()
-export class CommonService {
+export class CommonService implements OnDestroy {
+  containerWidthChanged = new Subject<string>();
 
   sortDescByKey(array, key) {
     return array.sort(function (a, b) {
@@ -17,4 +19,12 @@ export class CommonService {
     }).replace(/\s+/g, '');
   } 
 
+  changeContainerWidth(fieldType: string) {
+    this.containerWidthChanged.next(fieldType);
+  }
+
+  ngOnDestroy() {
+    this.containerWidthChanged.next();
+    this.containerWidthChanged.complete();
+  }
 }

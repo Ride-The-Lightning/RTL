@@ -18,7 +18,6 @@ import { CLPaymentsComponent } from './payments/send-receive/payments.component'
 import { CLPeersComponent } from './peers/peers.component';
 import { CLForwardingHistoryComponent } from './forwarding-history/forwarding-history.component';
 
-import { CommonService } from '../shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -45,8 +44,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
-    CLUnlockedGuard,
-    CommonService
+    CLUnlockedGuard
   ],
   bootstrap: [CLRootComponent]
 })

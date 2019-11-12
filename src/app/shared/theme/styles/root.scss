@@ -35,7 +35,7 @@ body {
       font-size: 1.8rem;
       line-height: 2rem;
     }
-    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
       font-size: 1.2rem !important;
     }
     .logo {
@@ -67,7 +67,7 @@ body {
     .material-icons {
       font-size: 2.8rem;
     }
-    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
       font-size: 1.4rem !important;
     }
     .logo {
@@ -99,7 +99,7 @@ body {
     .material-icons {
       font-size: 3.8rem;
     }
-    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
+    .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
       font-size: 1.6rem !important;
     }
     .logo {
@@ -134,8 +134,14 @@ body {
     .inner-sidenav-content {
       top: $gap;
     }
+    .mat-sidenav-container .mat-drawer-content.mat-sidenav-content {
+      margin-left: 0;
+    }
   }    
   &.compact {
+    .mat-sidenav-container .mat-sidenav-content {
+      margin-left: $compact-sidenav-width;
+    }
     .sidenav{
       width: $compact-sidenav-width;
     }
@@ -149,8 +155,14 @@ body {
     }
   }
   &.mini {
+    .mat-sidenav-container .mat-sidenav-content {
+      margin-left: $mini-sidenav-width;
+    }
     .sidenav {
       width: $mini-sidenav-width;
+    }
+    .mat-select.multi-node-select {
+      width: 84%;
     }
     .mat-tree-node, .mat-nested-tree-node-parent {
       min-height: 5.4rem;
@@ -792,4 +804,8 @@ tr.mat-row:hover {
 .mat-icon-36 {
   width: $icon-size !important;
   height: $icon-size !important;
+}
+
+.mat-select.multi-node-select {
+  width: 87%;
 }

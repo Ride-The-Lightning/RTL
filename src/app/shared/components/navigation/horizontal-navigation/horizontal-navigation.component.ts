@@ -36,6 +36,13 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
       } else {
         this.menuNodes = MENU_DATA.LNDChildren;
       }
+      if(this.sessionService.getItem('token') && this.menuNodes[this.menuNodes.length - 1].id !== 200) {
+        this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject});
+      } else {
+        if(this.menuNodes[this.menuNodes.length - 1].id === 200) {
+          this.menuNodes.pop();
+        }
+      }
     });
     this.sessionService.watchSession()
     .pipe(takeUntil(this.unSubs[1]))
@@ -43,7 +50,9 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
       if(session.token) {
         this.menuNodes.push({id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject});
       } else {
-        this.menuNodes.pop();
+        if(this.menuNodes[this.menuNodes.length - 1].id === 200) {
+          this.menuNodes.pop();
+        }
       }
     });
   }

@@ -7,6 +7,7 @@ import { faTools } from '@fortawesome/free-solid-svg-icons';
 
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
+import { CommonService } from '../../services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -31,7 +32,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public selectedThemeMode = {id: 'day', name: 'Day'};
   public selectedThemeColor = 'blue';
   public currencyUnit = 'BTC';
-  public smallerCurrencyUnit = 'SATS';
+  public smallerCurrencyUnit = 'Sats';
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
   public previousSettings: Settings;
@@ -39,7 +40,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -59,7 +60,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
         this.showSettingOption = false;
       }
       this.information = rtlStore.nodeData;
-      this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'SATS';
+      this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.logger.info(rtlStore);
@@ -68,6 +69,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   public chooseMenuType() {
     this.selNode.settings.menuType = this.selectedMenuType.id;
+    this.commonService.changeContainerWidth('menuType');
   }
 
   public chooseFontSize() {
@@ -86,6 +88,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       }, 10);
     } else {
       this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];
+      if(toggleField === 'flgSidenavOpened' || toggleField === 'flgSidenavPinned') {
+        this.commonService.changeContainerWidth(toggleField);
+      }
     }
   }
 

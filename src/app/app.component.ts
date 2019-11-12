@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 
@@ -9,6 +9,7 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
+import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
@@ -22,7 +23,6 @@ import * as fromRTLReducer from './store/rtl.reducers';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
-  @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
   public selNode: LightningNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
@@ -31,9 +31,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public smallScreen = false;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
@@ -60,7 +60,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoading[0] = false;
       }
     });
-
     this.actions$.pipe(takeUntil(this.unsubs[1]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
     .subscribe((action: (RTLActions.SetRTLConfig)) => {
@@ -76,14 +75,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.settings.menu === 'horizontal' ||
           this.settings.menuType === 'compact' ||
           this.settings.menuType === 'mini') {
-          this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
-          setTimeout(() => { this.settingSidenav.toggle(); }, 100);
-        }
+            this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
+            setTimeout(() => { this.sideNavigation.toggle(); }, 100);
+          }
       }     
     });
     this.userIdle.startWatching();
-    this.userIdle.onTimerStart().subscribe(count => {});
-    this.userIdle.onTimeout().subscribe(() => {
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unsubs[2])).subscribe(count => {});
+    this.userIdle.onTimeout().pipe(takeUntil(this.unsubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity! Logging out!');
         this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
@@ -94,6 +93,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.resetTimer();
       }
     });
+    this.commonService.containerWidthChanged.pipe(takeUntil(this.unsubs[4]))
+    .subscribe((fieldType: string) => {
+      if(fieldType !== 'menuType') {
+        this.sideNavToggle();
+      } else {
+        this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
+        setTimeout(() => { this.sideNavigation.toggle(); }, 0);
+      }
+    });
   }
 
   private readAccessKey() {
@@ -102,13 +110,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (!this.settings.flgSidenavPinned) {
+    if (this.settings.menuType.toLowerCase() !== 'regular' || !this.settings.flgSidenavPinned) {
       this.sideNavigation.close();
-      this.settingSidenav.toggle();
     }
     if (window.innerWidth <= 768) {
       this.sideNavigation.close();
-      this.settingSidenav.toggle();
     }
   }
 
@@ -136,12 +142,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
-  }
-
-  onSelectionChange(selNodeValue: LightningNode) {
-    this.selNode = selNodeValue;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
   }
 
   ngOnDestroy() {
