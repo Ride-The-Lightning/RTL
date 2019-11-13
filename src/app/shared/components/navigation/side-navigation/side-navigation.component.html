@@ -4,12 +4,13 @@
       {{node.lnNode}} ({{node.lnImplementation}})
     </mat-option>
   </mat-select>
-  <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">
+  <mat-divider class="w-100 mb-2"></mat-divider>
+  <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType === 'regular'">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
       <div (click)="onChildNavClicked(node)">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
           <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
-          <span *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini'">{{node.name}}</span><span
+          <span *ngIf="settings.menuType === 'regular'">{{node.name}}</span><span
             *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
             matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span>
         </div>
@@ -32,8 +33,7 @@
       </div>
     </mat-nested-tree-node>
   </mat-tree>
-  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-    *ngIf="settings.menuType !== 'compact' && settings.menuType !== 'mini' && showLogout">
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType === 'regular' && showLogout">
     <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
       <span>{{node.name}}</span>
@@ -64,10 +64,8 @@
       </div>
     </mat-nested-tree-node>
   </mat-tree>
-  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-    *ngIf="settings.menuType === 'compact' && showLogout">
-    <mat-tree-node fxLayout="row" fxLayoutAlign="start center" *matTreeNodeDef="let node"
-      (click)="onClick(node)">
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType === 'compact' && showLogout">
+    <mat-tree-node fxLayout="row" fxLayoutAlign="start center" *matTreeNodeDef="let node" (click)="onClick(node)">
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
       <span>{{node.name}}</span>
     </mat-tree-node>
@@ -100,9 +98,28 @@
       </div>
     </mat-nested-tree-node>
   </mat-tree>
-  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout"
-    *ngIf="settings.menuType === 'mini' && showLogout">
+  <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType === 'mini' && showLogout">
     <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)" fxLayoutAlign="start center">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+    </mat-tree-node>
+  </mat-tree>
+  <mat-divider class="w-100 mt-2"></mat-divider>
+  <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData" *ngIf="settings.menuType === 'regular'">
+    <mat-tree-node *matTreeNodeDef="let node" (click)="onShowData(node)">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+      <span>{{node.name}}</span>
+    </mat-tree-node>
+  </mat-tree>
+
+  <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData" *ngIf="settings.menuType === 'compact'">
+    <mat-tree-node fxLayout="row" fxLayoutAlign="start center" *matTreeNodeDef="let node" (click)="onShowData(node)">
+      <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
+      <span>{{node.name}}</span>
+    </mat-tree-node>
+  </mat-tree>
+
+  <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData" *ngIf="settings.menuType === 'mini'">
+    <mat-tree-node *matTreeNodeDef="let node" (click)="onShowData(node)" fxLayoutAlign="start center">
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
     </mat-tree-node>
   </mat-tree>

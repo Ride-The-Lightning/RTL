@@ -8,7 +8,7 @@ import { environment } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { faEject } from '@fortawesome/free-solid-svg-icons';
+import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
@@ -28,6 +28,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class SideNavigationComponent implements OnInit, OnDestroy {
   @Output() ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
+  faEye = faEye;
   public appConfig: RTLConfiguration;
   public selNode: LightningNode;
   public settings: Settings;
@@ -36,15 +37,18 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public informationChain: GetInfoChain = {};
   public flgLoading = true;
   public logoutNode = [{id: 200, parentId: 0, name: 'Logout', iconType: 'FA', icon: faEject}];
+  public showDataNodes = [{id: 1000, parentId: 0, name: 'Public Key', iconType: 'FA', icon: faEye}];
   public showLogout = false;
   public numPendingChannels = 0;
   public smallScreen = false;
   public childRootRoute = '';
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
-  treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
   treeControlNested = new NestedTreeControl<MenuChildNode>(node => node.children);
+  treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
+  treeControlShowData = new NestedTreeControl<MenuChildNode>(node => node.children);
   navMenus = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
+  navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
   constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
     this.version = environment.VERSION;
@@ -53,6 +57,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     }
     this.navMenus.data = MENU_DATA.LNDChildren;
     this.navMenusLogout.data = this.logoutNode;
+    this.navMenusShowData.data = this.showDataNodes;
   }
 
   ngOnInit() {
@@ -129,6 +134,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.ChildNavClicked.emit(node);
   }
   
+  onShowData(node: MenuChildNode) {
+    console.warn(node);
+  }
+
   onNodeSelectionChange(selNodeValue: LightningNode) {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));

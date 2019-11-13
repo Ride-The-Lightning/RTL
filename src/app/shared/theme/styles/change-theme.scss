@@ -52,6 +52,12 @@
     .selected-color {
       border-color: $primary-darker;
     }
+    .page-title-container {
+      & .page-title-img {
+        color: rgba(0, 0, 0, 0.4);  
+      }
+      color: rgba(0, 0, 0, 0.6);
+    }
   }
   
   &.small-font {
@@ -75,7 +81,7 @@
     .insecure-message {
       font-size: 1.2rem * 1.2;
     }
-    .page-title {
+    .page-title-container {
       font-size: 1.2rem * 1.1;
       & .page-title-img {
         width: 2rem; 
@@ -120,7 +126,7 @@
     .insecure-message {
       font-size: 1.4rem * 1.2;
     }
-    .page-title {
+    .page-title-container {
       font-size: 1.4rem * 1.1;
       & .page-title-img {
         width: 2rem; 
@@ -165,7 +171,7 @@
     .insecure-message {
       font-size: 1.6rem * 1.2;
     }
-    .page-title {
+    .page-title-container {
       margin-top: 0.5rem;
       font-size: 1.6rem * 1.1;
       & .page-title-img {
@@ -228,7 +234,7 @@
   }
 
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
-  .page-title .page-title-img, .horizontal-button .sidenav-img svg, svg.top-icon-small {
+  .page-title-container .page-title-img, .horizontal-button .sidenav-img svg, svg.top-icon-small {
     fill:  $foreground-color;
   }
 
@@ -266,7 +272,7 @@
     color: mat-color($accent);
   }
 
-  .page-title {
+  .page-title-container {
     color: mat-color($foreground);
   }
 
