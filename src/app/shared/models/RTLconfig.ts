@@ -1,10 +1,5 @@
 import { GetInfoChain } from './lndModels';
 
-export enum AuthenticateWith {
-  TOKEN = 'TOKEN',
-  PASSWORD = 'PASSWORD'
-}
-
 export class SSO {
   constructor(
     public rtlSSO: number,
@@ -25,7 +20,8 @@ export class Settings {
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
-    public channelBackupPath?: string
+    public channelBackupPath?: string,
+    public currencyUnit?: string
   ) { }
 }
 
@@ -69,4 +65,5 @@ export interface GetInfoRoot {
 export interface SelNodeChild {
   channelBackupPath?: string;
   satsToBTC?: boolean;
+  currencyUnits?: string[];
 }

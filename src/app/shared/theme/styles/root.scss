@@ -269,9 +269,13 @@ body {
 }
 
 .mat-card {
-  padding: 1.2rem 2.4rem !important;
+  padding: 0 !important;
   overflow: hidden;
   border-radius: 2px !important;
+}
+
+.mat-tab-body-wrapper, .card-content-gap {
+  padding: 1.2rem 2.4rem !important;
 }
 
 .mat-card-actions{
@@ -374,6 +378,10 @@ body {
 
 .mb-2 {
   margin-bottom: 1.6rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 3.2rem !important;
 }
 
 .ml-2 {
@@ -812,4 +820,20 @@ tr.mat-row:hover {
 
 .mat-select.multi-node-select {
   width: 87%;
+}
+
+.page-title-container {
+  margin-bottom: 1.2rem;
+}
+
+.cc-data-block {
+  margin-right: 3.2rem;
+  & .cc-data-title {
+    font-size: 80%;
+    font-weight: 500;
+  }
+  & .cc-data-value {
+    font-size: 120%;
+    color: rgba(0, 0, 0, 0.6);
+  }
 }

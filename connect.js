@@ -22,46 +22,58 @@ connect.setDefaultConfig = () => {
     case 'win32':
       macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
       configPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
+      channelBackupPath = homeDir + '\\backup\\node-1';
       break;
     case 'darwin':
       macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
+      channelBackupPath = homeDir + '/backup/node-1';
       break;
     case 'linux':
       macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/.lnd/lnd.conf';
+      channelBackupPath = homeDir + '/backup/node-1';
       break;
     default:
       macaroonPath = '';
       configPath = '';
+      channelBackupPath = '';
       break;
   }  
   return {
-    Authentication: {
-      macaroonPath: macaroonPath,
-      nodeAuthType: 'DEFAULT',
-      configPath: configPath,
-      rtlPass: ''
-    },
-    Settings: {
-      flgSidenavOpened: true,
-      flgSidenavPinned: true,
-      menu: 'vertical',
-      menuType: 'regular',
-      fontSize: 'regular-font',
-      themeMode: 'night',
-      themeColor: 'blue',
-      satsToBTC: false,
-      channelBackupPath: homeDir + common.path_separator + 'backup' + common.path_separator + 'node-0',
-      lnServerUrl: 'https://localhost:8080/v1',
-      enableLogging: false,
-      port: 3000
-    },
+    port: "3000",
+    defaultNodeIndex: 1,
+    multiPass: "password",
     SSO: {
       rtlSSO: 0,
-      rtlCookiePath: '',
-      logoutRedirectLink: '/login'
-    }
+      rtlCookiePath: "",
+      logoutRedirectLink: ""
+    },
+    nodes: [
+      {
+        index: 1,
+        lnNode: "LND Testnet",
+        lnImplementation: "LND",
+        Authentication: {
+          macaroonPath: macaroonPath,
+          configPath: configPath,
+        },
+        Settings: {
+          flgSidenavOpened: true,
+          flgSidenavPinned: true,
+          menu: "vertical",
+          menuType: "regular",
+          fontSize: "regular-font",
+          themeMode: "day",
+          themeColor: "purple-white",
+          satsToBTC: false,
+          channelBackupPath: channelBackupPath,
+          enableLogging: "true",
+          lndServerUrl: "https://localhost:8080/v1",
+          currencyUnit: "USD"
+        }
+      }
+    ]
   };
 }
 
@@ -259,6 +271,14 @@ connect.validateSingleNodeConfig = (config) => {
 		}
 	}
 
+  if (undefined !== process.env.CURRENCY_UNIT) {
+		common.nodes[0].currency_unit = process.env.CURRENCY_UNIT;
+	} else if (undefined !== config.Settings.currencyUnit) {
+		common.nodes[0].currency_unit = config.Settings.currencyUnit;
+	} else {
+    common.nodes[0].currency_unit = 'USD';
+  }
+
   if (undefined !== process.env.PORT) {
 		common.port = connect.normalizePort(process.env.PORT);
 	} else if (undefined !== config.Settings.port) {
@@ -307,6 +327,8 @@ connect.validateMultiNodeConfig = (config) => {
       common.nodes[idx].index = node.index;
       common.nodes[idx].ln_node = node.lnNode;
       common.nodes[idx].ln_implementation = node.lnImplementation;
+      common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';  
+
       if (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) {
         common.nodes[idx].config_path = node.Authentication.lndConfigPath;
       } else if (undefined !== node.Authentication && undefined !== node.Authentication.configPath) {
@@ -453,6 +475,7 @@ connect.logEnvVariables = () => {
       logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.currency_unit, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'MACAROON_PATH: ' + node.macaroon_path, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + node.ln_server_url, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'RTL_CONFIG_PATH: ' + node.rtl_conf_file_path, node});
@@ -464,6 +487,7 @@ connect.logEnvVariables = () => {
     if (!common.nodes[0].enable_logging) { return; }
     logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: SINGLE'});
     logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
+    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.currency_unit});
     logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + common.nodes[0].ln_server_url});
     logger.info({fileName: 'Config Setup Variable', msg: 'MACAROON_PATH: ' + common.nodes[0].macaroon_path});
     logger.info({fileName: 'Config Setup Variable', msg: 'NODE_AUTH_TYPE: ' + common.node_auth_type});

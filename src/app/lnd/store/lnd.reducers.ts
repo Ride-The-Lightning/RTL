@@ -32,7 +32,7 @@ export interface LNDState {
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { channelBackupPath: '', satsToBTC: false },
+  nodeSettings: { channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   peers: [],
   fees: {},

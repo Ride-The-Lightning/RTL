@@ -6,7 +6,7 @@ export const MENU_DATA: MenuRootNode = {
     {id: 2, parentId: 0, name: 'On-chain', iconType: 'FA', icon: faLink, link:  '/lnd/transsendreceive'},
     {id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/lnd/chnlmanage', children: [
       {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/lnd/chnlpending'},
-      {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/chnlmanage'},
+      {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/transactions'},
       {id: 33, parentId: 3, name: 'Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/chnlclosed'},
       {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/chnlbackup'}
     ]},

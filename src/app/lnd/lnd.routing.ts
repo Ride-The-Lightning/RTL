@@ -8,6 +8,7 @@ import { ChannelClosedComponent } from './channels/channel-closed/channel-closed
 import { ChannelManageComponent } from './channels/channel-manage/channel-manage.component';
 import { ChannelPendingComponent } from './channels/channel-pending/channel-pending.component';
 import { PeersComponent } from './peers/peers.component';
+import { TransactionsComponent } from './transactions/transactions.component';
 import { SendReceiveTransComponent } from './transactions/send-receive/send-receive-trans.component';
 import { ListTransactionsComponent } from './transactions/list-transactions/list-transactions.component';
 import { PaymentsComponent } from './payments/send-receive/payments.component';
@@ -33,6 +34,7 @@ export const LndRoutes: Routes = [
     { path: 'chnlpending', component: ChannelPendingComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'chnlrestore', component: ChannelRestoreComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'translist', component: ListTransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'paymentsend', component: PaymentsComponent, canActivate: [LNDUnlockedGuard] },

@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
+import { CURRENCY_UNITS } from '../../../../environments/environment';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -21,6 +22,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public selNode: LightningNode;
   public information: GetInfoRoot = {};
+  public currencyUnits = [{id: 'USD', name: 'United States Dollar'}, {id: 'GBP', name: 'Pound'}, {id: 'INR', name: 'Indian Rupee'}];
   public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
   public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];
   public themeModes = [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}];
@@ -67,19 +69,24 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  public chooseMenuType() {
+  onCurrencyChange(event: any) {
+    console.warn(event);
+    this.selNode.settings.currencyUnit = event.value;
+  }
+
+  chooseMenuType() {
     this.selNode.settings.menuType = this.selectedMenuType.id;
     this.commonService.changeContainerWidth('menuType');
   }
 
-  public chooseFontSize() {
+  chooseFontSize() {
     this.selNode.settings.fontSize = (this.fontSizes.filter(fontSize => fontSize.id === this.selectedFontSize.id)[0]).class;
   }
 
   toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
-      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
-      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
     }
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;

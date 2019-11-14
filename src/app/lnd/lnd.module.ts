@@ -14,6 +14,7 @@ import { PaymentsComponent } from './payments/send-receive/payments.component';
 import { ChannelManageComponent } from './channels/channel-manage/channel-manage.component';
 import { ChannelPendingComponent } from './channels/channel-pending/channel-pending.component';
 import { ChannelClosedComponent } from './channels/channel-closed/channel-closed.component';
+import { TransactionsComponent } from './transactions/transactions.component';
 import { ListTransactionsComponent } from './transactions/list-transactions/list-transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
 import { ForwardingHistoryComponent } from './switch/forwarding-history.component';
@@ -44,6 +45,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelManageComponent,
     ChannelPendingComponent,
     ChannelClosedComponent,
+    TransactionsComponent,
     ListTransactionsComponent,
     LookupsComponent,
     ForwardingHistoryComponent,

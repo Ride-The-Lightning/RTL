@@ -10,3 +10,12 @@ export class RemoveLeadingZerosPipe implements PipeTransform {
   }
 
 }
+
+@Pipe({ name: 'unitconvert' })
+export class CurrencyUnitConvertPipe implements PipeTransform {
+
+  transform(value: string, multiplier?: number): string {
+    return (+value * multiplier).toString();
+  }
+
+}

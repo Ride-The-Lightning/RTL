@@ -1,19 +1,32 @@
-<div fxLayout="row" class="padding-gap page-title-container">
+<div fxLayout="row" class="padding-gap-x page-title-container">
   <fa-icon [icon]="faTools" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">Application Settings</span>
 </div>
 <div fxLayout="column" class="padding-gap-x settings-container">
   <mat-card>
-    <mat-card-content fxLayout="column">
-      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center"
-        fxLayoutAlign="center space-between">
-        <div fxFlex="30" *ngIf="selNode.lnImplementation !== 'CLT'">
-          <h4>Currency Unit</h4>
-          <div fxLayoutAlign="start center">
-            <span class="slider-text">{{smallerCurrencyUnit}}</span>
-            <mat-slide-toggle color="primary" [checked]="selNode?.settings?.satsToBTC"
-              (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
-            <span class="slider-text">{{currencyUnit}}</span>
+    <mat-card-content fxLayout="column" class="card-content-gap">
+      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="center space-between">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+          <div fxFlex="50">
+            <div fxFlex="60">
+              <h4>Currency Unit{{selNode.settings.currencyUnit}}</h4>
+              <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
+                <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+                  {{currencyUnit.name}}
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+          <div fxFlex="50" *ngIf="selNode.lnImplementation !== 'CLT'">
+            <div fxFlex="60">
+              <h4>BTC</h4>
+              <div fxLayoutAlign="start center">
+                <span class="slider-text">{{smallerCurrencyUnit}}</span>
+                <mat-slide-toggle color="primary" [checked]="selNode?.settings?.satsToBTC"
+                  (change)="toggleSettings('satsToBTC')" labelPosition="before"></mat-slide-toggle>
+                <span class="slider-text">{{currencyUnit}}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

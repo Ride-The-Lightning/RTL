@@ -2,14 +2,16 @@
 
 @mixin change-theme($theme, $alternate-theme) {
   $primary: map-get($theme, primary);
-  $primary-lighter: mat-color(mat-palette($primary, lighter));
-  $primary-darker: mat-color(mat-palette($primary, darker));
-  $primary-node-toolbar : mat-color(mat-palette($primary, A700));
+  $primary-color: mat-color($primary);
+  $primary-lighter: mat-color($primary, lighter);
+  $primary-darker: mat-color($primary, darker);
   $accent: map-get($theme, accent);
-  $accent-color: mat-color(mat-palette($accent));
+  $accent-color: mat-color($accent);
   $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
-  $foreground-color: mat-color($foreground, text);
+  $foreground-color: mat-color($foreground);
+  $foreground-text: mat-color($foreground, text);
+  $foreground-divider: mat-color($foreground, divider);
   $background: map-get($theme, background);
   $alternate-primary: map-get($alternate-theme, primary);
 
@@ -199,7 +201,7 @@
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
-    stroke: mat-color($foreground, text);
+    stroke: $foreground-text;
   }
 
   .mat-toolbar-row, .mat-toolbar-single-row {
@@ -207,45 +209,45 @@
   }
 
   .lnd-info{
-    border-bottom: 1px solid mat-color($foreground, divider);
+    border-bottom: 1px solid $foreground-divider;
   }
 
-  a {
-    color: mat-color($primary);
+  a, .cc-data-block .cc-data-title {
+    color: $primary-color;
   }
 
   .active-link, .active-link .fa-icon-small {
-    color: mat-color($primary); 
+    color: $primary-color; 
     font-weight: 500;
     cursor: pointer;
-    fill: mat-color($primary); 
+    fill: $primary-color; 
   }
 
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
-    color: mat-color($primary); 
+    color: $primary-color; 
     cursor: pointer;
     background: rgba(0, 0, 0, 0.04);
     & .ng-fa-icon, & .mat-icon {
-      color: mat-color($primary);
+      color: $primary-color;
     }
     & .sidenav-img svg {
-      fill: mat-color($primary);
+      fill: $primary-color;
     }
   }
 
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
   .page-title-container .page-title-img, .horizontal-button .sidenav-img svg, svg.top-icon-small {
-    fill:  $foreground-color;
+    fill:  $foreground-text;
   }
 
   .h-active-link {
-    border-bottom: 2px solid mat-color($accent);
+    border-bottom: 2px solid $accent-color;
   }
   
   .ngx-charts {
-    fill: mat-color($foreground, text);
+    fill: $foreground-text;
     .bar {
-      fill: mat-color($primary) !important;
+      fill: $primary-color !important;
       cursor: default;
     }
   }
@@ -264,27 +266,27 @@
 
   .genseed-message {
     width:10%;
-    color: mat-color($accent);
+    color: $accent-color;
   }
 
   .insecure-message {
     width:100%;
-    color: mat-color($accent);
+    color: $accent-color;
   }
 
   .page-title-container {
-    color: mat-color($foreground);
+    color: $foreground-color;
   }
 
-  .material-icons.primary { color: mat-color($primary); }
+  .material-icons.primary { color: $primary-color; }
 
-  .material-icons.accent { color: mat-color($accent); }
+  .material-icons.accent { color: $accent-color; }
 
   .validation-error-message {
     position: relative;
     margin-top: 0.5rem;
     width:100%;
-    color: mat-color($accent);
+    color: $accent-color;
   }
 
   .mat-vertical-content {
@@ -306,19 +308,22 @@
     height: $toolbar-height;
     border-radius: 0;
     &:hover {
-      background: mat-color($primary, darker);
-      color: mat-color($accent);
+      background: $primary-darker;
+      color: $accent-color;
     }
   }
 
   .horizontal-button-show {
-    color: mat-color($accent);
-    background: mat-color($primary, lighter);
+    color: $accent-color;
+    background: $primary-lighter;
     border-radius: 12rem;
     &:hover {
-      background: mat-color($accent);
-      color: mat-color($primary, darker);
+      background: $accent-color;
+      color: $primary-darker;
     }
   }
 
+  .mat-tab-label.mat-tab-label-active {
+    color: $primary-darker;
+  }
 }

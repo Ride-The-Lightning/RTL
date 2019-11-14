@@ -10,10 +10,10 @@ export interface RootState {
   effectErrorsRoot: ErrorPayload[];
   selNode: LightningNode;
   appConfig: RTLConfiguration;
-  nodeData: GetInfoRoot
+  nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'vertical', menuType: 'regular', fontSize: 'regular-font', themeMode: 'night', themeColor: 'blue', satsToBTC: false, channelBackupPath: '' };
+const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'vertical', menuType: 'regular', fontSize: 'regular-font', themeMode: 'night', themeColor: 'blue', satsToBTC: false, channelBackupPath: '', currencyUnit: 'USD' };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {

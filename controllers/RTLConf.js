@@ -103,6 +103,7 @@ exports.updateUISettings = (req, res, next) => {
         node.Settings.themeMode = req.body.updatedSettings.themeMode;
         node.Settings.themeColor = req.body.updatedSettings.themeColor;
         node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
+        node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit;
       }
     });
     try {
@@ -129,6 +130,7 @@ exports.updateUISettings = (req, res, next) => {
     settingsTemp.themeMode = req.body.updatedSettings.themeMode;
     settingsTemp.themeColor = req.body.updatedSettings.themeColor;
     settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
+    settingsTemp.currencyUnit = req.body.updatedSettings.currencyUnit;
     delete config.Settings;
     fs.writeFileSync(RTLConfFile, ini.stringify(config));
     fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {

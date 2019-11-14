@@ -8,10 +8,11 @@ import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material';
 
-import { environment, API_URL } from '../../environments/environment';
+import { environment, API_URL, CURRENCY_UNITS } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
-import { Settings, RTLConfiguration, AuthenticateWith } from '../shared/models/RTLconfig';
+import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
+import { AuthenticateWith } from '../shared/models/enums';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
@@ -270,7 +271,7 @@ export class RTLEffects implements OnDestroy {
 
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC };
+    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
