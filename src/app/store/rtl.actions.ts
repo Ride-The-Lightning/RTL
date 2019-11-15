@@ -241,7 +241,7 @@ export class SetRTLConfig implements Action {
 
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
-  constructor(public payload: Settings) {}
+  constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
 }
 
 export class SetSelelectedNode implements Action {

@@ -4,18 +4,18 @@
 @import 'typography';
 
 .rtl-container{
-  &.purple-white {
-    @import "../skins/purple-white";
+  &.purple {
+    @import "../skins/purple";
     &.small-font {@include mat-core($small-typography);}
     &.regular-font {@include mat-core($regular-typography);}
     &.large-font {@include mat-core($large-typography);}
     &.day {
-      @include angular-material-theme($purple-white-day-theme);
-      @include change-theme($purple-white-day-theme, $alternate-purple-white-day-theme);
+      @include angular-material-theme($purple-day-theme);
+      @include change-theme($purple-day-theme);
     }
     &.night {
-      @include angular-material-theme($purple-white-night-theme);
-      @include change-theme($purple-white-night-theme, $alternate-purple-white-night-theme);
+      @include angular-material-theme($purple-night-theme);
+      @include change-theme($purple-night-theme);
     }
   }
   &.blue{
@@ -25,11 +25,11 @@
     &.large-font {@include mat-core($large-typography);}
     &.day {
       @include angular-material-theme($blue-day-theme);
-      @include change-theme($blue-day-theme, $alternate-blue-day-theme);
+      @include change-theme($blue-day-theme);
     }
     &.night {
       @include angular-material-theme($blue-night-theme);
-      @include change-theme($blue-night-theme, $alternate-blue-night-theme);
+      @include change-theme($blue-night-theme);
     }
   }
   &.green{
@@ -39,11 +39,11 @@
     &.large-font {@include mat-core($large-typography);}
     &.day {
       @include angular-material-theme($green-day-theme);
-      @include change-theme($green-day-theme, $alternate-green-day-theme);
+      @include change-theme($green-day-theme);
     }
     &.night {
       @include angular-material-theme($green-night-theme);
-      @include change-theme($green-night-theme, $alternate-green-night-theme);
+      @include change-theme($green-night-theme);
     }
   }
   &.pink{
@@ -53,11 +53,11 @@
     &.large-font {@include mat-core($large-typography);}
     &.day {
       @include angular-material-theme($pink-day-theme);
-      @include change-theme($pink-day-theme, $alternate-pink-day-theme);
+      @include change-theme($pink-day-theme);
     }
     &.night {
       @include angular-material-theme($pink-night-theme);
-      @include change-theme($pink-night-theme, $alternate-pink-night-theme);
+      @include change-theme($pink-night-theme);
     }
   }
 }

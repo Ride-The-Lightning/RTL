@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS } from '../../../../environments/environment';
+import { CURRENCY_UNITS, CURRENCY_UNITS_INVERSE } from '../../models/enums';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -26,7 +26,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
   public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];
   public themeModes = [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}];
-  public themeColors = ['purple-white', 'green', 'pink', 'blue'];
+  public themeColors = ['purple', 'green', 'pink', 'blue'];
   public fontSizes = [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}];
   public selectedMenu = {id: 'vertical', name: 'Vertical'};
   public selectedMenuType = {id: 'regular', name: 'Regular'};
@@ -38,6 +38,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
   public previousSettings: Settings;
+  public previousDefaultNode = 0;
 
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
@@ -65,12 +66,12 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
+      this.previousDefaultNode = this.appConfig.defaultNodeIndex;
       this.logger.info(rtlStore);
     });
   }
 
   onCurrencyChange(event: any) {
-    console.warn(event);
     this.selNode.settings.currencyUnit = event.value;
   }
 
@@ -85,8 +86,13 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
-      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
-      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+      if (this.selNode.settings.satsToBTC) {
+        this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, this.selNode.settings.currencyUnit]}));
+        this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, this.selNode.settings.currencyUnit]}));
+      } else {
+        this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+        this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+      }
     }
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
@@ -111,9 +117,11 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateSettings() {
+    let updatedSettings = (JSON.stringify(this.previousSettings) !== JSON.stringify(this.selNode.settings)) ? this.selNode.settings : null;
+    let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings(this.selNode.settings));
+    this.store.dispatch(new RTLActions.SaveSettings({settings: updatedSettings, defaultNodeIndex: defaultNodeIndex}));
     this.done.emit();
   }
 

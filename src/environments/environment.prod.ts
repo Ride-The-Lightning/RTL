@@ -1,6 +1,5 @@
 import { VERSION } from './version';
 
-export const CURRENCY_UNITS = [ 'SATS', 'BTC' ];
 export const API_URL = './api';
 
 export const environment = {

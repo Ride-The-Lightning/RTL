@@ -20,6 +20,7 @@ const initRootState: RootState = {
   effectErrorsRoot: [],
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
   appConfig: {
+    defaultNodeIndex: -1,
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]

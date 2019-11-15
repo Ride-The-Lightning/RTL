@@ -1,7 +1,5 @@
 @import './color-swatches/day-foreground.scss';
 @import './color-swatches/day-background.scss';
-@import './color-swatches/white-accent.swatch.scss';
-@import './color-swatches/blue-primary.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
@@ -20,12 +18,5 @@ $green-primary: mat-palette($mat-teal, 800, 300, 900);
 $green-accent: mat-palette($mat-amber, A200, A100, A700);
 $green-warn: mat-palette($mat-red, A200);
 
-$alternate-green-primary: mat-palette($blue-primary, 500, 300, 900);
-$alternate-green-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-green-warn:    mat-palette($mat-red);
-
 $green-day-theme: create-custom-theme($green-primary, $green-accent, $green-warn);
-$alternate-green-day-theme: mat-light-theme($alternate-green-primary, $alternate-green-accent, $alternate-green-warn);
-
 $green-night-theme: mat-dark-theme($green-primary, $green-accent, $green-warn);
-$alternate-green-night-theme: mat-dark-theme($alternate-green-primary, $alternate-green-accent, $alternate-green-warn);

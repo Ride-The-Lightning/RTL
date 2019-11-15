@@ -3,16 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of, Subject } from 'rxjs';
+import { of, Subject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material';
 
-import { environment, API_URL, CURRENCY_UNITS } from '../../environments/environment';
+import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { AuthenticateWith } from '../shared/models/enums';
+import { AuthenticateWith, CURRENCY_UNITS, CURRENCY_UNITS_INVERSE } from '../shared/models/enums';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
@@ -113,19 +113,27 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.SAVE_SETTINGS),
     mergeMap((action: RTLActions.SaveSettings) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSettings'));
-      return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload });
+      if(action.payload.settings && action.payload.defaultNodeIndex) {
+        let settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+        let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+        return forkJoin([settingsRes, defaultNodeRes]);      
+      } else if(action.payload.settings && !action.payload.defaultNodeIndex) {
+        return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+      } else if(!action.payload.settings && action.payload.defaultNodeIndex) {
+        return this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+      }
     }),
     map((updateStatus: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.logger.info(updateStatus);
       return {
         type: RTLActions.OPEN_ALERT,
-        payload: { data: { type: 'SUCCESS', titleMessage: updateStatus.message } }
+        payload: { data: { type: 'SUCCESS', titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message } }
       };
     },
     catchError((err) => {
-      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSettings', code: err.status, message: err.error.error }));
-      this.handleErrorWithAlert('ERROR', 'Update Settings Failed!', environment.CONF_API, err);
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSettings', code: (!err.length) ? err.status : err[0].status, message: (!err.length) ? err.error.error : err[0].error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
       return of({type: RTLActions.VOID});
     })
   ));
@@ -247,8 +255,9 @@ export class RTLEffects implements OnDestroy {
     return of();
   }));
 
- @Effect()
- setSelectedNode = this.actions$.pipe(
+
+  @Effect()
+  setSelectedNode = this.actions$.pipe(
    ofType(RTLActions.SET_SELECTED_NODE),
    mergeMap((action: RTLActions.SetSelelectedNode) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
@@ -271,7 +280,12 @@ export class RTLEffects implements OnDestroy {
 
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
+    let selNode = {};
+    if (node.settings.satsToBTC) {
+      selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, node.settings.currencyUnit] };
+    } else {
+      selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
+    }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));

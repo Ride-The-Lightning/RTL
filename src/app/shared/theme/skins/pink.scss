@@ -1,5 +1,3 @@
-@import './color-swatches/white-accent.swatch.scss';
-@import './color-swatches/blue-primary.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
@@ -7,11 +5,5 @@ $pink-primary: mat-palette($mat-pink, 700, 400, 900);
 $pink-accent: mat-palette($mat-blue-grey, 700, 500, 900);
 $pink-warn: mat-palette($mat-red, A200);
 
-$alternate-pink-primary: mat-palette($blue-primary, 500, 300, 900);
-$alternate-pink-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-pink-warn:    mat-palette($mat-red);
-
 $pink-day-theme: mat-light-theme($pink-primary, $pink-accent, $pink-warn);
-$alternate-pink-day-theme: mat-light-theme($alternate-pink-primary, $alternate-pink-accent, $alternate-pink-warn);
 $pink-night-theme: mat-dark-theme($pink-primary, $pink-accent, $pink-warn);
-$alternate-pink-night-theme: mat-dark-theme($alternate-pink-primary, $alternate-pink-accent, $alternate-pink-warn);

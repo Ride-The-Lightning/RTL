@@ -7,8 +7,18 @@
     <mat-card-content fxLayout="column" class="card-content-gap">
       <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="center space-between">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-          <div fxFlex="50">
-            <div fxFlex="60">
+          <div fxFlex="25" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
+            <div fxFlex.gt-md="50" fxFlex="80">
+              <h4>Default Selected Node</h4>
+              <mat-select [(ngModel)]="appConfig.defaultNodeIndex" placeholder="Default Node" tabindex="1" required name="defaultNode">
+                <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
+                  {{node.lnNode}} ({{node.lnImplementation}})
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+          <div fxFlex="25">
+            <div fxFlex.gt-md="30" fxFlex="70">
               <h4>Currency Unit</h4>
               <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
                 <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
@@ -109,10 +119,10 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="start start" class="mt-4">
         <mat-divider class="mb-2"></mat-divider>
-        <div class="mt-4">
-          <button class="mr-4" fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary"
+        <div class="mt-2">
+          <button class="mr-2" fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary"
             (click)="onUpdateSettings()" tabindex="12">Update</button>
-          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="accent" (click)="onResetSettings()"
+          <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="accent" (click)="onResetSettings()"
             tabindex="13">Reset</button>
         </div>
       </div>

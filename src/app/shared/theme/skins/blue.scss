@@ -1,7 +1,5 @@
 @import './color-swatches/day-foreground.scss';
 @import './color-swatches/day-background.scss';
-@import './color-swatches/white-accent.swatch.scss';
-@import './color-swatches/blue-primary.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
@@ -20,11 +18,5 @@ $blue-primary: mat-palette($mat-indigo, 800, 300, 900);
 $blue-accent: mat-palette($mat-pink, A200, A100, A400);
 $blue-warn: mat-palette($mat-red, 500);
 
-$alternate-blue-primary: mat-palette($blue-primary, 500, 300, 900);
-$alternate-blue-accent:  mat-palette($white-accent, 800, 600, 900);
-$alternate-blue-warn:    mat-palette($mat-red);
-
 $blue-day-theme: create-custom-theme($blue-primary, $blue-accent, $blue-warn);
-$alternate-blue-day-theme:   mat-light-theme($alternate-blue-primary, $alternate-blue-accent, $alternate-blue-warn);
 $blue-night-theme: mat-dark-theme($blue-primary, $blue-accent, $blue-warn);
-$alternate-blue-night-theme:   mat-dark-theme($alternate-blue-primary, $alternate-blue-accent, $alternate-blue-warn);

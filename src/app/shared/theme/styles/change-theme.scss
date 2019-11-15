@@ -1,6 +1,6 @@
 @import "constants";
 
-@mixin change-theme($theme, $alternate-theme) {
+@mixin change-theme($theme) {
   $primary: map-get($theme, primary);
   $primary-color: mat-color($primary);
   $primary-lighter: mat-color($primary, lighter);
@@ -16,7 +16,6 @@
   $foreground-divider: mat-color($foreground, divider);
   $background: map-get($theme, background);
   $hover-background: rgba(0, 0, 0, 0.04);
-  $alternate-primary: map-get($alternate-theme, primary);
 
   .bg-primary {
     @include _mat-toolbar-color($primary);
@@ -37,23 +36,12 @@
     text-transform: capitalize;
   }
 
-  .bg-alternate-primary {
-    @include _mat-toolbar-color($alternate-primary);
-  }
-
-  .toolbar-dropdown-menu {
-    @include _mat-toolbar-color($alternate-primary);
-  }
-
   &.night {
     .selected-color {
       border-color: $primary-lighter;
     }
   }
   &.day {
-    .mat-stroked-button.mat-accent {
-      color: $foreground-text;
-    }
     .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon {
       color: $foreground-secondary-text;
     }
@@ -68,144 +56,6 @@
     }
   }
   
-  &.small-font {
-    .mr-4 {
-      margin-right: 1rem !important;
-    }
-    .mat-menu-item, .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
-      min-height: $tree-node-height * 0.7;
-      height: $tree-node-height * 0.7;
-    }
-    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
-    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      font-size: 1.2rem * 1.1;
-    }
-    .validation-error-icon {
-      font-size: 1.2rem * 1.2;
-    }
-    .genseed-message {
-      font-size: 1.2rem * 1.2;
-    }
-    .insecure-message {
-      font-size: 1.2rem * 1.2;
-    }
-    .page-title-container, .page-sub-title-container {
-      font-size: 1.2rem * 1.1;
-      & .page-title-img {
-        width: 2rem; 
-        height: 2rem; 
-        font-size: 1.6rem * 1.1;
-      }
-    }
-    .fa-icon-small, .top-icon-small {
-      font-size: 1.4rem;
-    }
-    .mat-icon-button .top-toolbar-icon.icon-pinned {
-      padding-top: 1rem;
-    }
-    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
-      width: 2rem; 
-      height: 2rem;
-      font-size: 1.5rem;
-    }
-    .horizontal-button .sidenav-img svg {
-      width: 2.5rem; 
-      height: 2.5rem;
-      font-size: 2.2rem;
-    }
-  }
-  &.regular-font {
-    .inner-sidenav-content {
-      padding-top: 1.5rem;
-    }
-    .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
-      height: $tree-node-height;
-    }
-    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
-    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      font-size: 1.4rem * 1.1;
-    }
-    .validation-error-icon {
-      font-size: 1.4rem * 1.2;
-    }
-    .genseed-message {
-      font-size: 1.4rem * 1.2;
-    }
-    .insecure-message {
-      font-size: 1.4rem * 1.2;
-    }
-    .page-title-container, .page-sub-title-container {
-      font-size: 1.4rem * 1.1;
-      & .page-title-img {
-        width: 2rem; 
-        height: 2rem; 
-        font-size: 1.6rem * 1.1;
-      }
-    }
-    .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned {
-      font-size: 1.4rem;
-    }
-    .fa-icon-small, .top-icon-small {
-      font-size: 1.8rem;
-    }
-    .top-toolbar-icon.icon-pinned {
-      font-size: 1.8rem;
-    }
-    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
-      width: 2.5rem; 
-      height: 2.5rem;
-      font-size: 1.8rem;
-    }
-    .horizontal-button .sidenav-img svg {
-      width: 3rem; 
-      height: 3rem;
-      font-size: 2.5rem;
-    }
-  }
-  &.large-font {
-    .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
-      height: $tree-node-height;
-    }
-    .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
-    .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      font-size: 1.6rem * 1.1;
-    }
-    .validation-error-icon {
-      font-size: 1.6rem * 1.2;
-    }
-    .genseed-message {
-      font-size: 1.6rem * 1.2;
-    }
-    .insecure-message {
-      font-size: 1.6rem * 1.2;
-    }
-    .page-title-container, .page-sub-title-container {
-      margin-top: 0.5rem;
-      font-size: 1.6rem * 1.1;
-      & .page-title-img {
-        width: 3rem; 
-        height: 3rem; 
-        font-size: 2.5rem * 1.1;
-      }
-    }
-    .fa-icon-small, .top-icon-small {
-      font-size: 2.2rem;
-    }
-    .top-toolbar-icon.icon-pinned {
-      font-size: 2rem;
-    }
-    .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
-      width: 3rem; 
-      height: 3rem;
-      font-size: 2rem;
-    }
-    .horizontal-button .sidenav-img svg {
-      width: 3.5rem; 
-      height: 3.5rem;
-      font-size: 3rem;
-    }
-  }
-
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
     stroke: $foreground-text;
   }
@@ -242,12 +92,17 @@
   }
 
   .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
-  .page-title-container .page-title-img, .horizontal-button .sidenav-img svg, svg.top-icon-small {
+  .page-title-container .page-title-img, svg.top-icon-small {
     fill:  $foreground-text;
   }
 
+  .horizontal-button .fa-icon-small {
+    fill: white;
+    color: white;
+  }
+
   .h-active-link {
-    border-bottom: 2px solid $accent-color;
+    border-bottom: 2px solid white;
   }
   
   .ngx-charts {
@@ -319,16 +174,15 @@
   }
 
   .horizontal-button-show {
-    color: $accent-color;
-    background: $primary-lighter;
+    background: white;
     border-radius: 12rem;
-    &:hover {
-      background: $accent-color;
-      color: $primary-darker;
-    }
   }
 
   .mat-tab-label.mat-tab-label-active {
+    color: $primary-darker;
+  }
+
+  .mat-stroked-button.mat-accent:hover {
     color: $primary-darker;
   }
 

@@ -95,7 +95,7 @@
                 <button fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="undefined === selectedAddress.addressId" (click)="onGenerateAddress()" tabindex="2" class="top-minus-15px">Generate Address</button>
               </div>
               <div fxFlex.gt-md="30" fxFlex.lt-lg="49" fxLayoutAlign="start end">
-                <button fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
+                <button fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="3" (click)="resetReceiveData()" class="top-minus-15px">Clear</button>
               </div>
             </div>
             <div fxFlex="42" fxLayoutAlign="start end">
@@ -157,7 +157,7 @@
               <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">Invalid Values</p>
               <ng-template #sendText><p>Send</p></ng-template>
             </button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="9" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="9" type="reset" (click)="resetData()">Clear</button>
           </div>
         </div>
       </mat-card-content>

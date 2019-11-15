@@ -45,6 +45,7 @@ export class LightningNode {
 
 export class RTLConfiguration {
   constructor(
+    public defaultNodeIndex: number,
     public selectedNodeIndex: number,
     public sso: SSO,
     public nodes: LightningNode[]

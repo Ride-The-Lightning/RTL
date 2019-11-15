@@ -65,7 +65,7 @@ connect.setDefaultConfig = () => {
           menuType: "regular",
           fontSize: "regular-font",
           themeMode: "day",
-          themeColor: "purple-white",
+          themeColor: "purple",
           satsToBTC: false,
           channelBackupPath: channelBackupPath,
           enableLogging: "true",

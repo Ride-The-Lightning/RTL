@@ -31,7 +31,7 @@ exports.getRTLConfig = (req, res, next) => {
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
         jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
-        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
+        res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
           lnImplementation: '',
@@ -46,7 +46,7 @@ exports.getRTLConfig = (req, res, next) => {
       if (err) {
         if (err.code === 'ENOENT') {
           logger.error({fileName: 'RTLConf', lineNum: 46, msg: 'Multi Node Config does not exist!'});
-          res.status(200).json({ selectedNodeIndex: {}, sso: {}, nodes: [] });
+          res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
         } else {
           logger.error({fileName: 'RTLConf', lineNum: 49, msg: 'Getting Multi Node Config Failed!'});
           res.status(500).json({
@@ -82,7 +82,7 @@ exports.getRTLConfig = (req, res, next) => {
               authentication: authentication})
           });
         }
-        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
+        res.status(200).json({ defaultNodeIndex: multiNodeConfig.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
       }
     });
   }
@@ -144,6 +144,24 @@ exports.updateUISettings = (req, res, next) => {
         logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
         res.status(201).json({message: 'UI Settings Updated Successfully'});
       }
+    });
+  }
+};
+
+exports.updateDefaultNode = (req, res, next) => {
+  RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  config.defaultNodeIndex = req.body.defaultNodeIndex;
+  try {
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    logger.info({fileName: 'RTLConf', msg: 'Updating Default Node Succesful!'});
+    res.status(201).json({message: 'Default Node Updated Successfully'});
+  }
+  catch (err) {
+    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Default Node Failed!'});
+    res.status(500).json({
+      message: "Updating Default Node Failed!",
+      error: 'Updating Default Node Failed!'
     });
   }
 };
