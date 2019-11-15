@@ -23,7 +23,7 @@ export class ChannelLookupComponent implements OnInit {
   ngOnInit() {
     if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_update_str) {
       this.lookupResult.last_update_str = (this.lookupResult.last_update_str === '') ?
-        '' : formatDate(this.lookupResult.last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        '' : formatDate(this.lookupResult.last_update_str, 'dd/MMM/yyyy HH:mm', 'en-US');
     }
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))

@@ -603,7 +603,7 @@ export class CLEffects implements OnDestroy {
             postRes.msatoshi = action.payload.amount;
             postRes.description = action.payload.description;
             postRes.expires_at_str = new Date(postRes.expires_at * 1000).toUTCString();
-            postRes.expires_at_str = formatDate(postRes.expires_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+            postRes.expires_at_str = formatDate(postRes.expires_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenAlert({

@@ -19,7 +19,7 @@ export class CLNodeLookupComponent implements OnInit {
     this.logger.info(this.lookupResult);
     if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_timestamp_str) {
       this.lookupResult.last_timestamp_str = (this.lookupResult.last_timestamp_str === '') ?
-        '' : formatDate(this.lookupResult.last_timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        '' : formatDate(this.lookupResult.last_timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
     }
   }
 

@@ -9,10 +9,13 @@
   $accent-color: mat-color($accent);
   $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
-  $foreground-color: mat-color($foreground);
+  $foreground-base: mat-color($foreground, base);
   $foreground-text: mat-color($foreground, text);
+  $foreground-secondary-text: mat-color($foreground, secondary-text);
+  $foreground-disabled: mat-color($foreground, disabled);
   $foreground-divider: mat-color($foreground, divider);
   $background: map-get($theme, background);
+  $hover-background: rgba(0, 0, 0, 0.04);
   $alternate-primary: map-get($alternate-theme, primary);
 
   .bg-primary {
@@ -48,17 +51,20 @@
     }
   }
   &.day {
+    .mat-stroked-button.mat-accent {
+      color: $foreground-text;
+    }
     .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon {
-      color: rgba(0, 0, 0, 0.6);
+      color: $foreground-secondary-text;
     }
     .selected-color {
       border-color: $primary-darker;
     }
-    .page-title-container {
+    .page-title-container, .page-sub-title-container {
       & .page-title-img {
-        color: rgba(0, 0, 0, 0.4);  
+        color: $foreground-disabled;  
       }
-      color: rgba(0, 0, 0, 0.6);
+      color: $foreground-secondary-text;
     }
   }
   
@@ -83,7 +89,7 @@
     .insecure-message {
       font-size: 1.2rem * 1.2;
     }
-    .page-title-container {
+    .page-title-container, .page-sub-title-container {
       font-size: 1.2rem * 1.1;
       & .page-title-img {
         width: 2rem; 
@@ -128,7 +134,7 @@
     .insecure-message {
       font-size: 1.4rem * 1.2;
     }
-    .page-title-container {
+    .page-title-container, .page-sub-title-container {
       font-size: 1.4rem * 1.1;
       & .page-title-img {
         width: 2rem; 
@@ -173,7 +179,7 @@
     .insecure-message {
       font-size: 1.6rem * 1.2;
     }
-    .page-title-container {
+    .page-title-container, .page-sub-title-container {
       margin-top: 0.5rem;
       font-size: 1.6rem * 1.1;
       & .page-title-img {
@@ -226,7 +232,7 @@
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
     color: $primary-color; 
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.04);
+    background: $hover-background;
     & .ng-fa-icon, & .mat-icon {
       color: $primary-color;
     }
@@ -266,16 +272,15 @@
 
   .genseed-message {
     width:10%;
-    color: $accent-color;
+    color: $primary-color;
   }
 
   .insecure-message {
     width:100%;
-    color: $accent-color;
   }
 
-  .page-title-container {
-    color: $foreground-color;
+  .page-title-container, .page-sub-title-container {
+    color: $foreground-text;
   }
 
   .material-icons.primary { color: $primary-color; }
@@ -326,4 +331,35 @@
   .mat-tab-label.mat-tab-label-active {
     color: $primary-darker;
   }
+
+  .cc-data-block {
+    margin-right: 3.2rem;
+    & .cc-data-title {
+      font-size: 80%;
+      font-weight: 500;
+    }
+    & .cc-data-value {
+      font-size: 120%;
+      color: $foreground-secondary-text;
+    }
+  }
+  
+  .mat-cell, .mat-header-cell, .mat-footer-cell {
+    border-bottom-width: 1px;
+    border-bottom-style: solid; 
+    border-bottom-color: $foreground-divider;
+  }
+
+  table.mat-table {
+    border: 1px solid $foreground-divider;
+    border-radius: 4px;
+    background: none;
+    thead tr th {
+      color: $foreground-base;
+    }
+    tr.mat-row:hover {
+      background-color: $hover-background;
+    }
+  }
+
 }

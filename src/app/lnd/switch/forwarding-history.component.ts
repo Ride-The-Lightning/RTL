@@ -93,7 +93,7 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.data.forEach(event => {
-      event.timestamp_str = (event.timestamp_str === '') ? '' : formatDate(event.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+      event.timestamp_str = (event.timestamp_str === '') ? '' : formatDate(event.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
     });
 
     this.logger.info(this.forwardingHistoryEvents);

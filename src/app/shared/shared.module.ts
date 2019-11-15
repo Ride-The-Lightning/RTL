@@ -9,7 +9,7 @@ import {
   MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
   MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
   MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
-  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule
+  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatPaginatorIntl
 } from '@angular/material';
 
 import { QRCodeModule } from 'angularx-qrcode';

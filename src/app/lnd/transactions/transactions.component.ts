@@ -17,7 +17,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
   currencyUnits = [];
-  balances = [{title: 'Local Capacity', dataValue: -1, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: -1, tooltip: 'Amount you can receive'}];
+  balances = [{title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive'}];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}

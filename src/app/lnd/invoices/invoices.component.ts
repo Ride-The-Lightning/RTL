@@ -119,10 +119,10 @@ export class InvoicesComponent implements OnInit, OnDestroy {
     this.invoices.sort = this.sort;
     this.invoices.data.forEach(invoice => {
       if (undefined !== invoice.creation_date_str) {
-        invoice.creation_date_str = (invoice.creation_date_str === '') ? '' : formatDate(invoice.creation_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        invoice.creation_date_str = (invoice.creation_date_str === '') ? '' : formatDate(invoice.creation_date_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       }
       if (undefined !== invoice.settle_date_str) {
-        invoice.settle_date_str = (invoice.settle_date_str === '') ? '' : formatDate(invoice.settle_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        invoice.settle_date_str = (invoice.settle_date_str === '') ? '' : formatDate(invoice.settle_date_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       }
     });
     setTimeout(() => { this.flgAnimate = false; }, 5000);

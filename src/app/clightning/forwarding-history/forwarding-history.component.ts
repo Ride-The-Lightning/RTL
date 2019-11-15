@@ -95,8 +95,8 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEventCL>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.data.forEach(event => {
-      event.received_time_str = (event.received_time_str === '') ? '' : formatDate(event.received_time_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-      event.resolved_time_str = (event.resolved_time_str === '') ? '' : formatDate(event.resolved_time_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+      event.received_time_str = (event.received_time_str === '') ? '' : formatDate(event.received_time_str, 'dd/MMM/yyyy HH:mm', 'en-US');
+      event.resolved_time_str = (event.resolved_time_str === '') ? '' : formatDate(event.resolved_time_str, 'dd/MMM/yyyy HH:mm', 'en-US');
     });
     this.logger.info(this.forwardingHistoryEvents);
   }

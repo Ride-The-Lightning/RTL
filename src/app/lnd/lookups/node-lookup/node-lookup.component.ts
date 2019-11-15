@@ -17,7 +17,7 @@ export class NodeLookupComponent implements OnInit {
   ngOnInit() {
     if (undefined !== this.lookupResult && undefined !== this.lookupResult.node && undefined !== this.lookupResult.node.last_update_str) {
       this.lookupResult.node.last_update_str = (this.lookupResult.node.last_update_str === '') ?
-        '' : formatDate(this.lookupResult.node.last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        '' : formatDate(this.lookupResult.node.last_update_str, 'dd/MMM/yyyy HH:mm', 'en-US');
     }
   }
 

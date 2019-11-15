@@ -3,10 +3,12 @@ import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { getPaymentsPaginator } from '../../../shared/services/paginator.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -15,14 +17,19 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-payments',
-  templateUrl: './payments.component.html',
-  styleUrls: ['./payments.component.scss'],
-  animations: [newlyAddedRowAnimation]
+  selector: 'rtl-lightning-payments',
+  templateUrl: './lightning-payments.component.html',
+  styleUrls: ['./lightning-payments.component.scss'],
+  animations: [newlyAddedRowAnimation],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaymentsPaginator() },
+  ]  
 })
-export class PaymentsComponent implements OnInit, OnDestroy {
+export class LightningPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild('sendPaymentForm', { static: true }) form;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -33,26 +40,28 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public flgSticky = false;
+  public pageSizeOptions = [5, 10, 25, 100];
+
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedColumns = ['creation_date', 'fee', 'value'];
+        this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage'];
+        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'path'];
+        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
+        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'payment_preimage', 'value_msat', 'value_sat', 'path'];
+        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
         break;
     }
   }
@@ -72,8 +81,9 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.data.forEach(payment => {
-        payment.creation_date_str = (payment.creation_date_str === '') ? '' : formatDate(payment.creation_date_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        payment.creation_date_str = (payment.creation_date_str === '') ? '' : formatDate(payment.creation_date_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       });
+      this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
@@ -95,7 +105,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
         this.paymentDecoded = decodedPayment;
         if (undefined !== this.paymentDecoded.timestamp_str) {
           this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-          formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+          formatDate(this.paymentDecoded.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
           if (undefined === this.paymentDecoded.num_satoshis) {
             this.paymentDecoded.num_satoshis = '0';
           }
@@ -151,7 +161,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecoded = decodedPayment;
       if (undefined !== this.paymentDecoded.timestamp_str) {
         this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-        formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        formatDate(this.paymentDecoded.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       } else {
         this.resetData();
       }

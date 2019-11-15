@@ -99,7 +99,7 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
     this.listTransactions.sort = this.sort;
     this.listTransactions.data.forEach(transaction => {
       if (undefined !== transaction.time_stamp_str) {
-        transaction.time_stamp_str = (transaction.time_stamp_str === '') ? '' : formatDate(transaction.time_stamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        transaction.time_stamp_str = (transaction.time_stamp_str === '') ? '' : formatDate(transaction.time_stamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       }
     });
     this.logger.info(this.listTransactions);

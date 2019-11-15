@@ -133,10 +133,10 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
     this.invoices.sort = this.sort;
     this.invoices.data.forEach(invoice => {
       if (undefined !== invoice.paid_at_str) {
-        invoice.paid_at_str = (invoice.paid_at_str === '') ? '' : formatDate(invoice.paid_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        invoice.paid_at_str = (invoice.paid_at_str === '') ? '' : formatDate(invoice.paid_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       }
       if (undefined !== invoice.expires_at_str) {
-        invoice.expires_at_str = (invoice.expires_at_str === '') ? '' : formatDate(invoice.expires_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        invoice.expires_at_str = (invoice.expires_at_str === '') ? '' : formatDate(invoice.expires_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       }
     });
     setTimeout(() => { this.flgAnimate = false; }, 5000);

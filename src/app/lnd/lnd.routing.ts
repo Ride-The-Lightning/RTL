@@ -9,9 +9,9 @@ import { ChannelManageComponent } from './channels/channel-manage/channel-manage
 import { ChannelPendingComponent } from './channels/channel-pending/channel-pending.component';
 import { PeersComponent } from './peers/peers.component';
 import { TransactionsComponent } from './transactions/transactions.component';
-import { SendReceiveTransComponent } from './transactions/send-receive/send-receive-trans.component';
-import { ListTransactionsComponent } from './transactions/list-transactions/list-transactions.component';
-import { PaymentsComponent } from './payments/send-receive/payments.component';
+import { SendReceiveTransComponent } from './old-transactions/send-receive/send-receive-trans.component';
+import { ListTransactionsComponent } from './old-transactions/list-transactions/list-transactions.component';
+import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 import { InvoicesComponent } from './invoices/invoices.component';
 import { LookupsComponent } from './lookups/lookups.component';
@@ -37,7 +37,7 @@ export const LndRoutes: Routes = [
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'translist', component: ListTransactionsComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'paymentsend', component: PaymentsComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'paymentsend', component: LightningPaymentsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'invoices', component: InvoicesComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'switch', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },

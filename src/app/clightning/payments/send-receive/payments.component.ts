@@ -73,7 +73,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.data.forEach(payment => {
-        payment.created_at_str = (payment.created_at_str === '') ? '' : formatDate(payment.created_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+        payment.created_at_str = (payment.created_at_str === '') ? '' : formatDate(payment.created_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
       });
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
@@ -96,9 +96,9 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
         this.paymentDecoded = decodedPayment;
         if (undefined !== this.paymentDecoded.created_at_str) {
           this.paymentDecoded.created_at_str = (this.paymentDecoded.created_at_str === '') ? '' :
-          formatDate(this.paymentDecoded.created_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+          formatDate(this.paymentDecoded.created_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
           this.paymentDecoded.expire_at_str = (this.paymentDecoded.expire_at_str === '') ? '' :
-          formatDate(this.paymentDecoded.expire_at_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+          formatDate(this.paymentDecoded.expire_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
           if (undefined === this.paymentDecoded.msatoshi) {
             this.paymentDecoded.msatoshi = 0;
           }
@@ -153,7 +153,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
   //     this.paymentDecoded = decodedPayment;
   //     if (undefined !== this.paymentDecoded.timestamp_str) {
   //       this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-  //       formatDate(this.paymentDecoded.timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
+  //       formatDate(this.paymentDecoded.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
   //     } else {
   //       this.resetData();
   //     }

@@ -9,10 +9,10 @@
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
           <div fxFlex="50">
             <div fxFlex="60">
-              <h4>Currency Unit{{selNode.settings.currencyUnit}}</h4>
+              <h4>Currency Unit</h4>
               <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
                 <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
-                  {{currencyUnit.name}}
+                  {{currencyUnit.id}}
                 </mat-option>
               </mat-select>
             </div>
