@@ -151,9 +151,11 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.memo = '';
-    this.invoiceValue = 0;
+    this.invoiceValue = undefined;
     this.private = false;
     this.expiry = undefined;
+    this.invoiceValueHint = '';
+    this.selTimeUnit = this.timeUnits[0];
   }
 
   applyFilter(selFilter: string) {
@@ -187,6 +189,8 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       } else {
         self.invoiceValueHint = '= ' + this.currConvertorRate[self.currencyUnits[2]].symbol + self.decimalPipe.transform(self.currencyConvert.transform(self.invoiceValue.toString(), this.currConvertorRate[self.currencyUnits[2]].last * 0.00000001), '1.2-2') + ' ' + self.currencyUnits[2];
       }
+    } else {
+      this.invoiceValueHint = '';
     }
   }
 

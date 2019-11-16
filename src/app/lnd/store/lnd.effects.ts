@@ -10,10 +10,10 @@ import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
+import { InvoiceInformationComponent } from '../../shared/components/invoice-information/invoice-information.component';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
-import { InvoiceInformationComponent } from '../../../shared/components/invoice-information/invoice-information.component';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -174,18 +174,13 @@ export class LNDEffects implements OnDestroy {
             postRes.expiry = action.payload.expiry;
             postRes.cltv_expiry = '144';
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-            postRes.creation_date_str = new Date(+postRes.creation_date * 1000).toUTCString();
+            postRes.creation_date_str = new Date(+postRes.creation_date * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            const msg = { payment_request: postRes.payment_request };
             this.store.dispatch(new RTLActions.OpenAlert({
               config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(postRes)}},
               component: InvoiceInformationComponent
             }));            
-            // this.store.dispatch(new RTLActions.OpenAlert({ config: {
-            //   width: '70%',
-            //   data: { type: 'SUCCESS', titleMessage: 'Invoice Added Successfully!', message: JSON.stringify(msg) }
-            // }}));
             return {
               type: RTLActions.FETCH_INVOICES,
               payload: { num_max_invoices: action.payload.pageSize, reversed: true }
