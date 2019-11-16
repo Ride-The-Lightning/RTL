@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AlertData } from '../../../shared/models/alertData';
@@ -13,11 +14,10 @@ import { Invoice } from '../../../shared/models/lndModels';
 })
 export class InvoiceInformationComponent implements OnInit {
   public faReceipt = faReceipt;
-  public flgCopied = false;
   public showAdvanced = false;
   public invoice: Invoice;
 
-  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService) { }
+  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.invoice = JSON.parse(this.data.message);
@@ -31,9 +31,8 @@ export class InvoiceInformationComponent implements OnInit {
     this.showAdvanced = !this.showAdvanced;
   }  
 
-  onCopyPayment(payload) {
-    this.flgCopied = true;
-    setTimeout(() => {this.flgCopied = false; }, 5000);
+  onCopyPayment(payload: string) {
+    this.snackBar.open('Payment request copied');
     this.logger.info('Copied Text: ' + payload);
   }
 }

@@ -12,7 +12,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { AuthenticateWith, CURRENCY_UNITS, CURRENCY_UNITS_INVERSE } from '../shared/models/enums';
+import { AuthenticateWith, CURRENCY_UNITS } from '../shared/models/enums';
 
 import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
@@ -132,7 +132,7 @@ export class RTLEffects implements OnDestroy {
       this.logger.info(updateStatus);
       return {
         type: RTLActions.OPEN_ALERT,
-        payload: { data: { type: 'SUCCESS', titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message } }
+        payload: { config : { width: '70%', data: { type: 'SUCCESS', titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message }}}
       };
     },
     catchError((err) => {
@@ -285,11 +285,7 @@ export class RTLEffects implements OnDestroy {
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
-    if (node.settings.satsToBTC) {
-      selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, node.settings.currencyUnit] };
-    } else {
-      selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
-    }
+    selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));

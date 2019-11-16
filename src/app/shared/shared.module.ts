@@ -9,7 +9,7 @@ import {
   MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
   MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
   MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
-  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatPaginatorIntl
+  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material';
 
 import { QRCodeModule } from 'angularx-qrcode';
@@ -70,6 +70,7 @@ import { CommonService } from './services/common.service';
     MatStepperModule,
     MatSliderModule,
     MatTabsModule,
+    MatSnackBarModule,
     QRCodeModule,
     NgxChartsModule,
     RouterModule,
@@ -109,6 +110,7 @@ import { CommonService } from './services/common.service';
     MatStepperModule,
     MatSliderModule,
     MatTabsModule,
+    MatSnackBarModule,
     AppSettingsComponent,
     InvoiceInformationComponent,
     AlertMessageComponent,
@@ -155,6 +157,7 @@ import { CommonService } from './services/common.service';
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
     CommonService, CurrencyUnitConvertPipe, DecimalPipe
   ]
 })

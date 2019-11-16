@@ -69,13 +69,10 @@
           <mat-divider class="w-100 my-1"></mat-divider>        
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
-          <button fxFlex="25" fxLayoutAlign="center center" class="mr-2" mat-stroked-button color="accent" type="reset" (click)="onShowAdvanced()" tabindex="1">
+          <button fxFlex="33" fxLayoutAlign="center center" class="mr-2" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">Copy Payment Request</button>
+          <button fxFlex="25" fxLayoutAlign="center center" mat-stroked-button color="accent" type="reset" (click)="onShowAdvanced()" tabindex="1">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
-          </button>
-          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">
-            <p *ngIf="!flgCopied; else copiedText">Copy Payment Request</p>
-            <ng-template #copiedText><p>Copied</p></ng-template>
           </button>
         </div>
       </div>

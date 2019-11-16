@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, CURRENCY_UNITS_INVERSE } from '../../models/enums';
+import { CURRENCY_UNITS } from '../../models/enums';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -73,6 +73,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   onCurrencyChange(event: any) {
     this.selNode.settings.currencyUnit = event.value;
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
   }
 
   chooseMenuType() {
@@ -86,13 +88,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
-      if (this.selNode.settings.satsToBTC) {
-        this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, this.selNode.settings.currencyUnit]}));
-        this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS_INVERSE, this.selNode.settings.currencyUnit]}));
-      } else {
-        this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
-        this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
-      }
+      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
     }
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
@@ -120,9 +117,16 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     let updatedSettings = (JSON.stringify(this.previousSettings) !== JSON.stringify(this.selNode.settings)) ? this.selNode.settings : null;
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings({settings: updatedSettings, defaultNodeIndex: defaultNodeIndex}));
-    this.done.emit();
+    if (!updatedSettings && !defaultNodeIndex) {
+      this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
+        type: 'INFO',
+        titleMessage: 'Nothing has been updated to save!'
+      }}}));
+    } else {
+      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
+      this.store.dispatch(new RTLActions.SaveSettings({settings: updatedSettings, defaultNodeIndex: defaultNodeIndex}));
+      this.done.emit();
+    }
   }
 
   onResetSettings() {

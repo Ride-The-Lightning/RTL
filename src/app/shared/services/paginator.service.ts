@@ -5,3 +5,9 @@ export function getPaymentsPaginator() {
   paymentsPaginator.itemsPerPageLabel = 'Payments per page:';
   return paymentsPaginator;
 }
+
+export function getInvoicesPaginator() {
+  const invoicesPaginator = new MatPaginatorIntl();
+  invoicesPaginator.itemsPerPageLabel = 'Invoices per page:';
+  return invoicesPaginator;
+}

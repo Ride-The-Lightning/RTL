@@ -148,6 +148,8 @@ THE SOFTWARE.
 
 @angular/material/slide-toggle
 
+@angular/material/snack-bar
+
 @angular/material/sort
 
 @angular/material/stepper

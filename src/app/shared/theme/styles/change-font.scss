@@ -24,8 +24,8 @@
     .page-title-container, .page-sub-title-container {
       font-size: $small-font-size * 1.1;
       & .page-title-img {
-        width: $small-font-size * 1.8; 
-        height: $small-font-size * 1.8; 
+        width: $small-font-size * 1.5; 
+        height: $small-font-size * 1.5; 
         font-size: $small-font-size * 1.5;
       }
     }
@@ -98,8 +98,8 @@
       font-size: $regular-font-size * 1.1;
       & .page-title-img {
         width: 2rem; 
-        height: 2rem; 
-        font-size: $regular-font-size * 1.3;
+        height: 2.6rem; 
+        font-size: $regular-font-size * 1.4;
       }
     }
     .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned {
@@ -140,7 +140,7 @@
       font-size: $regular-font-size * 5;
     }
     .icon-medium {
-      font-size: $regular-font-size * 2 !important;
+      font-size: $regular-font-size * 2.2 !important;
     }
     .icon-small {
       font-size: $regular-font-size * 1.5 !important;
@@ -173,9 +173,9 @@
       margin-top: 0.5rem;
       font-size: $large-font-size * 1.1;
       & .page-title-img {
-        width: $large-font-size * 2; 
-        height: $large-font-size * 2; 
-        font-size: $large-font-size * 2.1;
+        width: $large-font-size * 1.9; 
+        height: $large-font-size * 2.25; 
+        font-size: $large-font-size * 1.5;
       }
     }
     .fa-icon-small, .top-icon-small, .invoice-info-header {
@@ -213,7 +213,7 @@
       font-size: $large-font-size * 5;
     }
     .icon-medium {
-      font-size: $large-font-size * 2 !important;
+      font-size: $large-font-size * 2.2 !important;
     }
     .icon-small {
       font-size: $large-font-size * 1.5 !important;

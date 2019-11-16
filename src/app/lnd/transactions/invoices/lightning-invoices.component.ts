@@ -5,8 +5,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
+import { getInvoicesPaginator } from '../../../shared/services/paginator.service';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { CurrencyUnitConvertPipe } from '../../../shared/pipes/app.pipe';
@@ -21,7 +22,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   selector: 'rtl-lightning-invoices',
   templateUrl: './lightning-invoices.component.html',
   styleUrls: ['./lightning-invoices.component.scss'],
-  animations: [newlyAddedRowAnimation]
+  animations: [newlyAddedRowAnimation],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getInvoicesPaginator() },
+  ]  
 })
 export class LightningInvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;

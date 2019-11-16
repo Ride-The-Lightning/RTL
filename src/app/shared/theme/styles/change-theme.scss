@@ -215,9 +215,6 @@
     thead tr th {
       color: $foreground-base;
     }
-    tr.mat-row:hover {
-      background-color: $hover-background;
-    }
   }
 
   .invoice-info-header {
@@ -232,4 +229,12 @@
     background: $foreground-divider;
   }
 
+  .rtl-snack-bar {
+    background: $primary-darker;
+    & .mat-simple-snackbar {
+      justify-content: center;
+      align-content: center;
+      align-items: center;
+    }
+  }
 }

@@ -1029,7 +1029,7 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchNetwork());
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
-    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
+    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
     let newRoute = this.location.path();
     if(newRoute.includes('/cl/')) {

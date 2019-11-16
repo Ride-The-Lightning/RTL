@@ -108,14 +108,14 @@ exports.updateUISettings = (req, res, next) => {
     });
     try {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-      logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
-      res.status(201).json({message: 'UI Settings Updated Successfully'});
+      logger.info({fileName: 'RTLConf', msg: 'Updating Application Node Settings Succesful!'});
+      res.status(201).json({message: 'Application Node Settings Updated Successfully'});
     }
     catch (err) {
-      logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating UI Settings Failed!'});
+      logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Application Node Settings Failed!'});
       res.status(500).json({
-        message: "Updating UI Settings Failed!",
-        error: 'Updating UI Settings Failed!'
+        message: "Updating Application Node Settings Failed!",
+        error: 'Updating Application Node Settings Failed!'
       });
     }
   } else {
@@ -135,14 +135,14 @@ exports.updateUISettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, ini.stringify(config));
     fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {
       if (err) {
-        logger.error({fileName: 'Conf', lineNum: 122, msg:'Updating UI Settings Failed!'});
+        logger.error({fileName: 'Conf', lineNum: 122, msg:'Updating Application Node Settings Failed!'});
         res.status(500).json({
-          message: "Updating UI Settings Failed!",
-          error: 'Updating UI Settings Failed!'
+          message: "Updating Application Node Settings Failed!",
+          error: 'Updating Application Node Settings Failed!'
         });
       } else {
-        logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
-        res.status(201).json({message: 'UI Settings Updated Successfully'});
+        logger.info({fileName: 'RTLConf', msg: 'Updating Application Node Settings Succesful!'});
+        res.status(201).json({message: 'Application Node Settings Updated Successfully'});
       }
     });
   }
