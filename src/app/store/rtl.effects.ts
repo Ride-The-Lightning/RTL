@@ -56,7 +56,11 @@ export class RTLEffects implements OnDestroy {
   openAlert = this.actions$.pipe(
     ofType(RTLActions.OPEN_ALERT),
     map((action: RTLActions.OpenAlert) => {
-      this.dialogRef = this.dialog.open(AlertMessageComponent, action.payload);
+      if(action.payload.component) {
+        this.dialogRef = this.dialog.open(action.payload.component, action.payload.config);
+      } else {
+        this.dialogRef = this.dialog.open(AlertMessageComponent, action.payload.config);
+      }
     }
   ));
 
@@ -327,12 +331,12 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Signout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({
+      this.store.dispatch(new RTLActions.OpenAlert({ config: {
         width: '70%', data: {
           type: alertType, titleMessage: alertTitle,
           message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
         }
-      }));
+      }}));
     }
   }
 

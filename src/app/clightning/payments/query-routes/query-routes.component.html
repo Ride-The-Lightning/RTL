@@ -40,10 +40,10 @@
   <div class="padding-gap">
     <mat-card>
       <mat-card-content class="table-card-content">
-        <div perfectScrollbar class="table-container mat-elevation-z8">
+        <div perfectScrollbar class="table-container">
           <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="qRoutes" matSort
-            [ngClass]="{'mat-elevation-z8 overflow-x-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-x-auto': true}">
+            [ngClass]="{'overflow-x-auto error-border': flgLoading[0]==='error','overflow-x-auto': true}">
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
               <td mat-cell *matCellDef="let route"> {{route?.id}} </td>

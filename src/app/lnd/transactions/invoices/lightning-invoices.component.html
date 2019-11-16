@@ -1,0 +1,81 @@
+<div fxLayout="column">
+  <form #addInvoiceForm="ngForm">
+    <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="start center">
+      <mat-form-field fxFlex="100" fxLayoutAlign="start end">
+        <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
+      </mat-form-field>
+      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="60" fxLayoutAlign.gt-sm="space-between center">
+        <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+          <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
+          <span matSuffix> {{information?.smaller_currency_unit}} </span>
+          <mat-hint>{{invoiceValueHint}}</mat-hint>          
+        </mat-form-field>
+        <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+          <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" step="{{selTimeUnit === 'Secs' ? 300 : selTimeUnit === 'Mins' ? 10 : selTimeUnit === 'Hours' ? 2 : 1}}" min="1" tabindex="3" name="expiry">
+          <span matSuffix> {{selTimeUnit}} </span>
+        </mat-form-field>
+        <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+          <mat-select [value]="selTimeUnit" tabindex="4" required name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
+            <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div fxFlex="15" tabindex="4" fxLayoutAlign="start center">
+          <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private</mat-slide-toggle>
+        </div>
+      </div>
+    </div>
+    <div class="mt-2">
+      <button fxFlex="48" fxFlex.gt-md="10" fxLayoutAlign="center center" class="mr-2" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="5" class="mr-2">
+        <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>
+        <ng-template #createText><p>Create Invoice</p></ng-template>
+      </button>
+      <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="6" type="reset" (click)="resetData()">Clear Field</button>
+    </div>
+  </form>
+  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-2">
+    <div fxFlex="70">
+      <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Invoices History</span>
+    </div>
+    <mat-form-field fxFlex="30">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+  </div>
+  <div perfectScrollbar class="table-container">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <ng-container matColumnDef="settled">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Settled </th>
+        <td mat-cell *matCellDef="let invoice">
+          <span *ngIf="invoice.settled"><i class="material-icons primary">done_all</i></span>
+          <span *ngIf="!invoice.settled"><i class="material-icons primary">done</i></span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="creation_date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
+        <td mat-cell *matCellDef="let invoice">{{invoice.creation_date_str}}</td>
+      </ng-container>
+      <ng-container matColumnDef="memo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Memo </th>
+        <td mat-cell *matCellDef="let invoice">{{invoice.memo}}</td>
+      </ng-container>
+      <ng-container matColumnDef="value">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Value ({{(selNode?.satsToBTC) ? information?.currency_unit : information?.smaller_currency_unit}}) </th>
+        <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{(selNode?.satsToBTC) ? (invoice?.btc_value | number:'1.0-3') : (invoice?.value | number)}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="settle_date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-4"> Date Settled </th>
+        <td mat-cell *matCellDef="let invoice" class="pl-4">{{invoice.settle_date_str || '-'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+        <td mat-cell *matCellDef="let invoice">
+          <button mat-stroked-button color="accent" type="button" tabindex="4" (click)="onInvoiceClick(invoice, $event)">View Info</button>          
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" class="row-invoices"></tr>
+    </table>
+    <mat-paginator [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons class="mb-4"></mat-paginator>
+  </div>
+</div>

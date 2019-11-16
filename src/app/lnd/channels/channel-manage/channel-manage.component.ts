@@ -209,10 +209,10 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       'active', 'remote_pubkey', 'remote_alias', 'channel_point', 'chan_id', 'capacity', 'local_balance', 'remote_balance', 'commit_fee', 'commit_weight',
       'fee_per_kw', 'unsettled_balance', 'total_satoshis_sent', 'total_satoshis_received', 'num_updates', 'pending_htlcs', 'csv_delay', 'private'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   loadChannelsTable(channels) {

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -83,19 +82,15 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
       return (fhEvent.chan_id_in === selRow.chan_id_in && fhEvent.timestamp === selRow.timestamp);
     })[0];
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, ['timestamp_str', 'chan_id_in', 'alias_in', 'chan_id_out', 'alias_out', 'amt_out', 'amt_in', 'fee'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedFHEvent)
-    }}));
+    }}}));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.data.forEach(event => {
-      event.timestamp_str = (event.timestamp_str === '') ? '' : formatDate(event.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-    });
-
     this.logger.info(this.forwardingHistoryEvents);
   }
 

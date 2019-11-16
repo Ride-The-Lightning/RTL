@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
-import { formatDate } from '@angular/common';
 import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -211,7 +210,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' }}}));
             return {
               type: RTLActions.SET_PEERS_CL,
               payload: (undefined !== postRes && postRes.length > 0) ? postRes : []
@@ -234,7 +233,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' }}}));
             return {
               type: RTLActions.REMOVE_PEER_CL,
               payload: { id: action.payload.id }
@@ -303,7 +302,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' }}}));
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };
@@ -404,10 +403,10 @@ export class CLEffects implements OnDestroy {
             if (sendRes.error) {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.status, error: sendRes.error.message });
             } else {
-              this.store.dispatch(new RTLActions.OpenAlert({
+              this.store.dispatch(new RTLActions.OpenAlert({ config: {
                 width: '70%',
                 data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(sendRes) }
-              }));
+              }}));
               this.store.dispatch(new RTLActions.FetchChannelsCL());
               this.store.dispatch(new RTLActions.FetchBalanceCL());
               this.store.dispatch(new RTLActions.FetchPaymentsCL());
@@ -573,10 +572,10 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({
+            this.store.dispatch(new RTLActions.OpenAlert({ config: {
               width: '70%',
               data: { type: 'SUCCESS', titleMessage: 'Invoices Deleted Successfully!' }
-            }));
+            }}));
             return {
               type: RTLActions.FETCH_INVOICES_CL,
               payload: { num_max_invoices: 100, reversed: true }
@@ -602,14 +601,14 @@ export class CLEffects implements OnDestroy {
             postRes.label = action.payload.label;
             postRes.msatoshi = action.payload.amount;
             postRes.description = action.payload.description;
-            postRes.expires_at_str = new Date(postRes.expires_at * 1000).toUTCString();
-            postRes.expires_at_str = formatDate(postRes.expires_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
+            postRes.expires_at = Math.round(new Date().getTime() / 1000);
+            postRes.expires_at_str = new Date(+postRes.expires_at * 1000).toUTCString();
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({
+            this.store.dispatch(new RTLActions.OpenAlert({ config: {
               width: '70%',
               data: { type: 'SUCCESS', titleMessage: 'Invoice Added Successfully!', message: JSON.stringify(postRes) }
-            }));
+            }}));
             return {
               type: RTLActions.FETCH_INVOICES_CL,
               payload: { num_max_invoices: 100, reversed: true }
@@ -705,12 +704,11 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
     this.store.dispatch(new RTLActions.FetchPeersCL());
     let newRoute = this.location.path();
+    if(newRoute.includes('/lnd/')) {
+      newRoute = newRoute.replace('/lnd/', '/cl/');
+    }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/cl/home';
-    } else {
-      if(newRoute.includes('/lnd/')) {
-        newRoute = newRoute.replace('/lnd/', '/cl/');
-      }
     }
     this.router.navigate([newRoute]);
   }
@@ -732,12 +730,12 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Signout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({
+      this.store.dispatch(new RTLActions.OpenAlert({ config: {
         width: '70%', data: {
           type: alerType, titleMessage: alertTitle,
           message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
         }
-      }));
+      }}));
     }
   }
 

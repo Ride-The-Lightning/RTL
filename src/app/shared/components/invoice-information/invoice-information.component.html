@@ -1,0 +1,84 @@
+<div fxLayout="row">
+  <div fxFlex="35" fxLayoutAlign="center start" class="invoice-qr-code-container padding-gap-large">
+    <qrcode [qrdata]="invoice.payment_request" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+  </div>
+  <div fxFlex="65" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="invoice-info-header mb-2">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
+        <span class="page-title">Invoice Information</span>
+      </div>
+      <mat-icon fxFlex="5" type="button" (click)="onClose()" class="cursor-pointer icon-medium">close</mat-icon>
+    </mat-card-header>
+    <mat-card-content>
+      <div fxLayout="column">
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested</h4>
+            <span class="foreground-secondary-text">{{(invoice.value || 0) | number}} Sats</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Memo</h4>
+            <span class="foreground-secondary-text">{{invoice.memo}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>        
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
+            <span class="foreground-secondary-text">{{invoice.creation_date_str}}</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
+            <span class="foreground-secondary-text">{{invoice.settle_date_str || '-'}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>        
+        <div fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_request}}</span>
+          </div>
+        </div>
+        <div *ngIf="showAdvanced">
+          <mat-divider class="w-100 my-1"></mat-divider>        
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">R Hash</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.r_hash}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>        
+          <div fxLayout="row">
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">R Preimage</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.r_preimage || '-'}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>        
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Expiry</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.expiry}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">CLTV Expiry</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.cltv_expiry}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>        
+        </div>
+        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
+          <button fxFlex="25" fxLayoutAlign="center center" class="mr-2" mat-stroked-button color="accent" type="reset" (click)="onShowAdvanced()" tabindex="1">
+            <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
+            <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
+          </button>
+          <button fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">
+            <p *ngIf="!flgCopied; else copiedText">Copy Payment Request</p>
+            <ng-template #copiedText><p>Copied</p></ng-template>
+          </button>
+        </div>
+      </div>
+      </mat-card-content>
+  </div>
+</div>

@@ -139,10 +139,10 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   onForceClosingClick(selRow: any, event: any) {
@@ -153,10 +153,10 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   onClosingClick(selRow: any, event: any) {
@@ -167,10 +167,10 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   onWaitClosingClick(selRow: any, event: any) {
@@ -181,10 +181,10 @@ export class ChannelPendingComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   loadOpenChannelsTable(channels) {

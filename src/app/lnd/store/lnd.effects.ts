@@ -13,6 +13,7 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
+import { InvoiceInformationComponent } from '../../../shared/components/invoice-information/invoice-information.component';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -122,7 +123,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' }}}));
             return {
               type: RTLActions.SET_PEERS,
               payload: (undefined !== postRes && postRes.length > 0) ? postRes : []
@@ -145,7 +146,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' }}}));
             return {
               type: RTLActions.REMOVE_PEER,
               payload: { pubkey: action.payload.pubkey }
@@ -178,9 +179,13 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             const msg = { payment_request: postRes.payment_request };
             this.store.dispatch(new RTLActions.OpenAlert({
-              width: '70%',
-              data: { type: 'SUCCESS', titleMessage: 'Invoice Added Successfully!', message: JSON.stringify(msg) }
-            }));
+              config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(postRes)}},
+              component: InvoiceInformationComponent
+            }));            
+            // this.store.dispatch(new RTLActions.OpenAlert({ config: {
+            //   width: '70%',
+            //   data: { type: 'SUCCESS', titleMessage: 'Invoice Added Successfully!', message: JSON.stringify(msg) }
+            // }}));
             return {
               type: RTLActions.FETCH_INVOICES,
               payload: { num_max_invoices: action.payload.pageSize, reversed: true }
@@ -232,7 +237,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' }}}));
             return {
               type: RTLActions.FETCH_CHANNELS,
               payload: { routeParam: 'all', channelStatus: '' }
@@ -287,7 +292,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: action.payload.showMessage + ' ' + postRes.message } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: action.payload.showMessage + ' ' + postRes.message }}}));
             return {
               type: RTLActions.BACKUP_CHANNELS_RES,
               payload: postRes.message
@@ -312,7 +317,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message } }));
+            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message }}}));
             return {
               type: RTLActions.VERIFY_CHANNELS_RES,
               payload: postRes.message
@@ -337,7 +342,7 @@ export class LNDEffects implements OnDestroy {
             map((postRes: any) => {
               this.logger.info(postRes);
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message } }));
+              this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message }}}));
               this.store.dispatch(new RTLActions.SetRestoreChannelsList(postRes.list));
               return {
                 type: RTLActions.RESTORE_CHANNELS_RES,
@@ -587,14 +592,14 @@ export class LNDEffects implements OnDestroy {
               this.logger.error('Error: ' + sendRes.payment_error);
               return {
                 type: RTLActions.OPEN_ALERT,
-                payload: {
+                payload: {config : {
                   width: '70%', data: {
                     type: 'ERROR', titleMessage: 'Send Payment Failed',
                     message: JSON.stringify(
                       { code: sendRes.payment_error.status, Message: sendRes.payment_error.error.message, URL: this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload[0] }
                     )
                   }
-                }
+                }}
               };
             } else {
               const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
@@ -604,10 +609,10 @@ export class LNDEffects implements OnDestroy {
               msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? 'Sats' : store.nodeData.smaller_currency_unit) + ')'] =
                 (sendRes.payment_route.total_fees_msat / 1000);
               Object.assign(msg, confirmationMsg);
-              this.store.dispatch(new RTLActions.OpenAlert({
+              this.store.dispatch(new RTLActions.OpenAlert({ config: {
                 width: '70%',
                 data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }
-              }));
+              }}));
               this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'all' }));
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());
@@ -1032,12 +1037,11 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 25, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
     let newRoute = this.location.path();
-    if (newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
+    if(newRoute.includes('/cl/')) {
+      newRoute = newRoute.replace('/cl/', '/lnd/');
+    }
+    if(newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/lnd/home';
-    } else {
-      if(newRoute.includes('/cl/')) {
-        newRoute = newRoute.replace('/cl/', '/lnd/');
-      }
     }
     this.router.navigate([newRoute]);
   }
@@ -1059,12 +1063,12 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Signout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({
+      this.store.dispatch(new RTLActions.OpenAlert({config: {
         width: '70%', data: {
           type: alertType, titleMessage: alertTitle,
           message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
         }
-      }));
+      }}));
     }
   }
 

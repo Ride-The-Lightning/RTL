@@ -72,10 +72,10 @@
             <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
           </mat-form-field>
         </div>
-        <div perfectScrollbar class="table-container mat-elevation-z8">
+        <div perfectScrollbar class="table-container">
           <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
           <table mat-table #table [dataSource]="channels" matSort
-            [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+            [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
             <ng-container matColumnDef="close">
               <th mat-header-cell *matHeaderCellDef> Close Channel </th>
               <td mat-cell *matCellDef="let channel">

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -30,6 +29,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('sendPaymentForm', { static: true }) form;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   faHistory = faHistory;
+  public pageSize = 10;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -80,9 +80,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
-      this.payments.data.forEach(payment => {
-        payment.creation_date_str = (payment.creation_date_str === '') ? '' : formatDate(payment.creation_date_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      });
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
@@ -104,8 +101,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (undefined !== this.paymentDecoded.timestamp_str) {
-          this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-          formatDate(this.paymentDecoded.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
           if (undefined === this.paymentDecoded.num_satoshis) {
             this.paymentDecoded.num_satoshis = '0';
           }
@@ -159,18 +154,13 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
     this.lndEffects.setDecodedPayment.subscribe(decodedPayment => {
       this.paymentDecoded = decodedPayment;
-      if (undefined !== this.paymentDecoded.timestamp_str) {
-        this.paymentDecoded.timestamp_str = (this.paymentDecoded.timestamp_str === '') ? '' :
-        formatDate(this.paymentDecoded.timestamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      } else {
-        this.resetData();
-      }
     });
   }
 
   resetData() {
-    this.form.reset();
     this.paymentDecoded = {};
+    this.paymentRequest = '';
+    this.form.reset();
   }
 
   onPaymentClick(selRow: Payment, event: any) {
@@ -184,10 +174,10 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
       'creation_date_str', 'payment_hash', 'fee', 'value_msat', 'value_sat', 'value', 'payment_preimage', 'path'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedPayment)
-    }}));
+    }}}));
   }
 
   applyFilter(selFilter: string) {

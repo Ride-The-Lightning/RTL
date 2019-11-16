@@ -96,10 +96,10 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       });
     }
     const reorderedRoutingPeer = JSON.parse(JSON.stringify(selRPeer, ['chan_id', 'alias', 'events', 'total_amount'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedRoutingPeer)
-    }}));
+    }}}));
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {

@@ -42,7 +42,7 @@
     }
   }
   &.day {
-    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon {
+    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
       color: $foreground-secondary-text;
     }
     .selected-color {
@@ -56,6 +56,10 @@
     }
   }
   
+  .foreground-secondary-text {
+    color: $foreground-secondary-text !important;
+  }
+
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
     stroke: $foreground-text;
   }
@@ -134,7 +138,7 @@
     width:100%;
   }
 
-  .page-title-container, .page-sub-title-container {
+  .page-title-container, .page-sub-title-container, .mat-form-field-infix .mat-form-field-label-wrapper .mat-form-field-label {
     color: $foreground-text;
   }
 
@@ -214,6 +218,18 @@
     tr.mat-row:hover {
       background-color: $hover-background;
     }
+  }
+
+  .invoice-info-header {
+    color: $foreground-text;
+    font-weight: 500;
+    & .page-title-img svg {
+      color: $foreground-text;
+    }
+  }
+
+  .invoice-qr-code-container {
+    background: $foreground-divider;
   }
 
 }

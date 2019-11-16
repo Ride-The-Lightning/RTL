@@ -90,7 +90,7 @@ common.convertToBTC = (num) => {
 };
 
 common.convertTimestampToDate = (num) => {
-  return new Date(+num * 1000).toUTCString();
+  return new Date(+num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
 };
 
 common.sortAscByKey = (array, key) => {

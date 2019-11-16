@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -72,9 +71,6 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
-      this.payments.data.forEach(payment => {
-        payment.created_at_str = (payment.created_at_str === '') ? '' : formatDate(payment.created_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      });
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
@@ -94,18 +90,10 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if (undefined !== this.paymentDecoded.created_at_str) {
-          this.paymentDecoded.created_at_str = (this.paymentDecoded.created_at_str === '') ? '' :
-          formatDate(this.paymentDecoded.created_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-          this.paymentDecoded.expire_at_str = (this.paymentDecoded.expire_at_str === '') ? '' :
-          formatDate(this.paymentDecoded.expire_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-          if (undefined === this.paymentDecoded.msatoshi) {
-            this.paymentDecoded.msatoshi = 0;
-          }
-          this.sendPayment();
-        } else {
-          this.resetData();
+        if (undefined === this.paymentDecoded.msatoshi) {
+          this.paymentDecoded.msatoshi = 0;
         }
+        this.sendPayment();
       });
     }
   }
@@ -172,10 +160,10 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
     const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
       'id', 'bolt11', 'created_at_str', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedPayment)
-    }}));
+    }}}));
   }
 
   applyFilter(selFilter: string) {

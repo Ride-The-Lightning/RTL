@@ -179,10 +179,10 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
       return;
     }
     if (channelToClose.state === 'AWAITING_UNILATERAL') {
-      this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
         type: 'WARN',
         titleMessage: 'Channel can not be closed when it is in AWAITING UNILATERAL state.'
-      }}));
+      }}}));
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({
         width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.channel_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
@@ -217,10 +217,10 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
     const reorderedChannel = JSON.parse(JSON.stringify(selChannel, [
       'channel_id', 'short_channel_id', 'id', 'alias', 'connected', 'private', 'state', 'funding_txid', 'msatoshi_to_us', 'msatoshi_total', 'their_channel_reserve_satoshis', 'our_channel_reserve_satoshis', 'spendable_msatoshi'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   loadChannelsTable(channels) {

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { formatDate } from '@angular/common';
 
 import { GraphNode } from '../../../shared/models/lndModels';
 
@@ -14,11 +13,6 @@ export class NodeLookupComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-    if (undefined !== this.lookupResult && undefined !== this.lookupResult.node && undefined !== this.lookupResult.node.last_update_str) {
-      this.lookupResult.node.last_update_str = (this.lookupResult.node.last_update_str === '') ?
-        '' : formatDate(this.lookupResult.node.last_update_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-    }
-  }
+  ngOnInit() {}
 
 }

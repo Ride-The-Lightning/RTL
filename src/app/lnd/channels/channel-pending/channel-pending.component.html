@@ -26,7 +26,7 @@
                 <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
               </mat-expansion-panel-header>
               <mat-table #table perfectScrollbar [dataSource]="pendingOpenChannels" matSort
-                [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+                [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
                 <ng-container matColumnDef="remote_node_pub">
                   <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
                   <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
@@ -90,7 +90,7 @@
                 <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
               </mat-expansion-panel-header>
               <mat-table #table perfectScrollbar [dataSource]="pendingForceClosingChannels" matSort
-                [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+                [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
                 <ng-container matColumnDef="remote_node_pub">
                   <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
                   <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
@@ -160,7 +160,7 @@
                 <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
               </mat-expansion-panel-header>
               <mat-table #table perfectScrollbar [dataSource]="pendingClosingChannels" matSort
-                [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+                [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
                 <ng-container matColumnDef="remote_node_pub">
                   <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
                   <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
@@ -206,7 +206,7 @@
                 <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
               </mat-expansion-panel-header>
               <mat-table #table perfectScrollbar [dataSource]="pendingWaitClosingChannels" matSort
-                [ngClass]="{'mat-elevation-z8 overflow-auto error-border': flgLoading[0]==='error','mat-elevation-z8 overflow-auto': true}">
+                [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
                 <ng-container matColumnDef="remote_node_pub">
                   <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
                   <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>

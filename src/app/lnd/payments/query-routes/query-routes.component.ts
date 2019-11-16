@@ -85,7 +85,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedHop = JSON.parse(JSON.stringify(selHop, [
       'hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'chan_capacity', 'expiry', 'amt_to_forward', 'amt_to_forward_msat', 'fee_msat'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedHop)}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedHop)}}}));
   }
 
   ngOnDestroy() {

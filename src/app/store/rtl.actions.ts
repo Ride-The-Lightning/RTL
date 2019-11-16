@@ -194,7 +194,7 @@ export class CloseSpinner implements Action {
 
 export class OpenAlert implements Action {
   readonly type = OPEN_ALERT;
-  constructor(public payload: MatDialogConfig) {}
+  constructor(public payload: {config: MatDialogConfig, component?: any}) {}
 }
 
 export class CloseAlert implements Action {

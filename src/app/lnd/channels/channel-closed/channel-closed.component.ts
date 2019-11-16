@@ -85,10 +85,10 @@ export class ChannelClosedComponent implements OnInit, OnDestroy {
     })[0];
     const reorderedChannel = JSON.parse(JSON.stringify(selChannel, ['close_type', 'channel_point', 'chan_id', 'closing_tx_hash', 'remote_pubkey', 'capacity',
     'close_height', 'settled_balance', 'time_locked_balance'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedChannel)
-    }}));
+    }}}));
   }
 
   loadClosedChannelsTable(closedChannels) {

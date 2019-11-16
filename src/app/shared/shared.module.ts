@@ -14,7 +14,9 @@ import {
 
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { DecimalPipe } from '@angular/common';
 
+import { InvoiceInformationComponent } from './components/invoice-information/invoice-information.component';
 import { AppSettingsComponent } from './components/app-settings/app-settings.component';
 import { AlertMessageComponent } from './components/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
@@ -108,6 +110,7 @@ import { CommonService } from './services/common.service';
     MatSliderModule,
     MatTabsModule,
     AppSettingsComponent,
+    InvoiceInformationComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
     SpinnerDialogComponent,
@@ -127,6 +130,7 @@ import { CommonService } from './services/common.service';
   ],
   declarations: [
     AppSettingsComponent,
+    InvoiceInformationComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
     SpinnerDialogComponent,
@@ -144,13 +148,14 @@ import { CommonService } from './services/common.service';
     CurrencyUnitConvertPipe
   ],
   entryComponents: [
+    InvoiceInformationComponent,
     AlertMessageComponent,
     SpinnerDialogComponent,
     ConfirmationMessageComponent
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
-    CommonService
+    CommonService, CurrencyUnitConvertPipe, DecimalPipe
   ]
 })
 export class SharedModule { }

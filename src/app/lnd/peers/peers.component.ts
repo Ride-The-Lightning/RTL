@@ -129,7 +129,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
       'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}));
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}}));
   }
 
   resetData() {

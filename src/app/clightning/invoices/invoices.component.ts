@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -122,23 +121,15 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
     const reorderedInvoice = JSON.parse(JSON.stringify(selInvoice, [
      'status', 'expires_at_str', 'paid_at_str', 'pay_index', 'label', 'bolt11', 'payment_hash', 'msatoshi', 'msatoshi_received', 'description'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedInvoice)
-    }}));
+    }}}));
   }
 
   loadInvoicesTable(invoices) {
     this.invoices = new MatTableDataSource<InvoiceCL>([...invoices]);
     this.invoices.sort = this.sort;
-    this.invoices.data.forEach(invoice => {
-      if (undefined !== invoice.paid_at_str) {
-        invoice.paid_at_str = (invoice.paid_at_str === '') ? '' : formatDate(invoice.paid_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      }
-      if (undefined !== invoice.expires_at_str) {
-        invoice.expires_at_str = (invoice.expires_at_str === '') ? '' : formatDate(invoice.expires_at_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      }
-    });
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }

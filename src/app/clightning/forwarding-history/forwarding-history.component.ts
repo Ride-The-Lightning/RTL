@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -85,19 +84,15 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, [
       'status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'in_msat', 'out_msatoshi', 'out_msat', 'fee', 'fee_msat', 'payment_hash'      
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedFHEvent)
-    }}));
+    }}}));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEventCL[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEventCL>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.data.forEach(event => {
-      event.received_time_str = (event.received_time_str === '') ? '' : formatDate(event.received_time_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      event.resolved_time_str = (event.resolved_time_str === '') ? '' : formatDate(event.resolved_time_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-    });
     this.logger.info(this.forwardingHistoryEvents);
   }
 

@@ -8,7 +8,7 @@ import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
 import { PeersComponent } from './peers/peers.component';
 import { SendReceiveTransComponent } from './old-transactions/send-receive/send-receive-trans.component';
-import { InvoicesComponent } from './invoices/invoices.component';
+import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelManageComponent } from './channels/channel-manage/channel-manage.component';
@@ -39,7 +39,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     HomeComponent,
     PeersComponent,
     SendReceiveTransComponent,
-    InvoicesComponent,
+    LightningInvoicesComponent,
     UnlockLNDComponent,
     LightningPaymentsComponent,
     ChannelManageComponent,

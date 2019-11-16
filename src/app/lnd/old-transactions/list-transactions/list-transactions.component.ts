@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -88,20 +87,15 @@ export class ListTransactionsComponent implements OnInit, OnDestroy {
     const reorderedTransactions = JSON.parse(JSON.stringify(selTransaction, [
       'dest_addresses', 'time_stamp_str', 'num_confirmations', 'total_fees', 'block_hash', 'block_height', 'tx_hash', 'amount'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
       type: 'INFO',
       message: JSON.stringify(reorderedTransactions)
-    }}));
+    }}}));
   }
 
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.data.forEach(transaction => {
-      if (undefined !== transaction.time_stamp_str) {
-        transaction.time_stamp_str = (transaction.time_stamp_str === '') ? '' : formatDate(transaction.time_stamp_str, 'dd/MMM/yyyy HH:mm', 'en-US');
-      }
-    });
     this.logger.info(this.listTransactions);
   }
 

@@ -85,7 +85,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedRoute = JSON.parse(JSON.stringify(selRoute, [
       'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedRoute)}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedRoute)}}}));
   }
 
   ngOnDestroy() {

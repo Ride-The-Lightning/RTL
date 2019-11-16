@@ -106,7 +106,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
       'id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}}));
   }
 
   resetData() {

@@ -4,7 +4,7 @@
       {{node.lnNode}} ({{node.lnImplementation}})
     </mat-option>
   </mat-select>
-  <mat-divider class="w-100 mb-2"></mat-divider>
+  <mat-divider class="w-100 mb-1"></mat-divider>
   <mat-tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.menuType === 'regular'">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
       <div (click)="onChildNavClicked(node)">
@@ -103,7 +103,7 @@
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
     </mat-tree-node>
   </mat-tree>
-  <mat-divider class="w-100 mt-2"></mat-divider>
+  <mat-divider class="w-100 mt-1"></mat-divider>
   <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData" *ngIf="settings.menuType === 'regular'">
     <mat-tree-node *matTreeNodeDef="let node" (click)="onShowData(node)">
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>

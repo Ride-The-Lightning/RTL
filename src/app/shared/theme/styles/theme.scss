@@ -1,14 +1,15 @@
 @import '~@angular/material/theming';
-@include mat-core();
+@import 'change-font';
 @import 'change-theme';
 @import 'typography';
+@include mat-core();
 
 .rtl-container{
   &.purple {
     @import "../skins/purple";
-    &.small-font {@include mat-core($small-typography);}
-    &.regular-font {@include mat-core($regular-typography);}
-    &.large-font {@include mat-core($large-typography);}
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($purple-day-theme);
       @include change-theme($purple-day-theme);
@@ -20,9 +21,9 @@
   }
   &.blue{
     @import "../skins/blue";
-    &.small-font {@include mat-core($small-typography);}
-    &.regular-font {@include mat-core($regular-typography);}
-    &.large-font {@include mat-core($large-typography);}
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($blue-day-theme);
       @include change-theme($blue-day-theme);
@@ -34,9 +35,9 @@
   }
   &.green{
     @import "../skins/green";
-    &.small-font {@include mat-core($small-typography);}
-    &.regular-font {@include mat-core($regular-typography);}
-    &.large-font {@include mat-core($large-typography);}
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($green-day-theme);
       @include change-theme($green-day-theme);
@@ -48,9 +49,9 @@
   }
   &.pink{
     @import "../skins/pink";
-    &.small-font {@include mat-core($small-typography);}
-    &.regular-font {@include mat-core($regular-typography);}
-    &.large-font {@include mat-core($large-typography);}
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($pink-day-theme);
       @include change-theme($pink-day-theme);
