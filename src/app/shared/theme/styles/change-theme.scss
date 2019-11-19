@@ -42,6 +42,9 @@
     }
   }
   &.day {
+    .mat-stroked-button.mat-primary {
+      border-color: $primary-color;
+    }
     .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
       color: $foreground-secondary-text;
     }
@@ -183,10 +186,6 @@
   }
 
   .mat-tab-label.mat-tab-label-active {
-    color: $primary-darker;
-  }
-
-  .mat-stroked-button.mat-accent:hover {
     color: $primary-darker;
   }
 

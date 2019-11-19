@@ -6,14 +6,14 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 import { Location } from '@angular/common';
-
 import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
-import { InvoiceInformationComponent } from '../../shared/components/invoice-information/invoice-information.component';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
+import { CurrencyUnitEnum } from '../../shared/models/enums';
+import { InvoiceInformationComponent } from '../../shared/components/invoice-information/invoice-information.component';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -599,9 +599,9 @@ export class LNDEffects implements OnDestroy {
             } else {
               const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
               confirmationMsg['Amount (' + ((undefined === store.nodeData.smaller_currency_unit) ?
-                'Sats' : store.nodeData.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
+              CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
               const msg = {};
-              msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? 'Sats' : store.nodeData.smaller_currency_unit) + ')'] =
+              msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] =
                 (sendRes.payment_route.total_fees_msat / 1000);
               Object.assign(msg, confirmationMsg);
               this.store.dispatch(new RTLActions.OpenAlert({ config: {
@@ -999,17 +999,17 @@ export class LNDEffects implements OnDestroy {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (undefined !== info.chains) {
       if (typeof info.chains[0] === 'string') {
-        info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-        info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+        info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
+        info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
       } else if (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain')) {
         const getInfoChain = <GetInfoChain>info.chains[0];
-        info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'Litoshis' : 'Sats';
-        info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? 'LTC' : 'BTC';
+        info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
+        info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
       }
       info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
     } else {
-      info.smaller_currency_unit = 'Sats';
-      info.currency_unit = 'BTC';
+      info.smaller_currency_unit = CurrencyUnitEnum.SATS;
+      info.currency_unit = CurrencyUnitEnum.BTC;
       info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
     }
     const node_data = {

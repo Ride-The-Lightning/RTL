@@ -228,4 +228,17 @@
       font-size: $large-font-size;
     }
   }
+
+  .icon-medium.mat-icon:focus, .icon-medium.mat-icon:hover {
+    outline: none;
+    @include mat-elevation(1);
+  }
+
+  .mat-raised-button.mat-primary:focus, .mat-raised-button.mat-primary:hover {
+    @include mat-elevation(8);
+  }
+
+  .mat-raised-button.mat-primary:disabled {
+    cursor: not-allowed;
+  }
 }

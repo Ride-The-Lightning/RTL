@@ -15,7 +15,7 @@
           </mat-radio-group>
           <div fxFlex="30" fxLayoutAlign="space-between stretch">
             <button fxFlex="50" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onShowConfig()" tabindex="2">Show Config</button>
-            <button fxFlex="50" fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="3" type="reset" class="ml-2" (click)="resetData()">Clear</button>
+            <button fxFlex="50" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" class="ml-2" (click)="resetData()">Clear</button>
           </div>
         </form>     
         <div *ngIf="configData !== '' && fileFormat === 'JSON'">

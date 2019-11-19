@@ -21,7 +21,7 @@
                 <mat-hint>Enter Wallet Password</mat-hint>
               </mat-form-field>
               <button mat-raised-button fxFlex="15" color="primary" [disabled]="walletPassword == ''" (click)="onOperateWallet()" tabindex="4">Unlock Wallet</button>
-              <button fxFlex="15" fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="5" type="reset" (click)="resetData()">Clear</button>
+              <button fxFlex="15" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="resetData()">Clear</button>
             </form>                              
           </div>
           <ng-template #initBlock>
@@ -29,7 +29,7 @@
               <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
                 <div fxFlex="65" fxLayoutAlign="start" class="insecure-message">Warning: Your connection is unsecure, it's not safe to generate private keys over this connection.Are you sure you want to proceed?</div>
                 <button mat-raised-button fxFlex="15" color="primary" type="submit" (click)="proceed=true;warnRes=true" tabindex="4">Proceed</button>
-                <button fxFlex="15" fxLayoutAlign="center center" mat-stroked-button color="accent" tabindex="5" type="reset" (click)="proceed=false;warnRes=true">Cancel</button>
+                <button fxFlex="15" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="proceed=false;warnRes=true">Cancel</button>
               </form>                              
             </div>
             <div *ngIf="warnRes && !proceed" fxFlex="100" fxLayoutAlign="start" class="insecure-message mt-2">Please reconfig & restart RTL after securing your LND connction. You can close this window now.</div>
@@ -61,7 +61,7 @@
                     <mat-hint>Cipher Seed</mat-hint>
                   </mat-form-field>
                   <button mat-raised-button color="primary" fxFlex="10" [disabled]="!cipherFormGroup.valid" type="submit" matStepperNext>Next</button>
-                  <button mat-stroked-button color="accent" fxFlex="10" type="reset" matStepperPrevious>Back</button>
+                  <button mat-stroked-button color="primary" fxFlex="10" type="reset" matStepperPrevious>Back</button>
                   <div *ngIf="cipherFormGroup.errors?.invalidCipher && cipherFormGroup.controls.existingCipher.value && (cipherFormGroup.controls.cipherSeed.touched || cipherFormGroup.controls.cipherSeed.dirty)" class="validation-error-message">
                     <mat-icon class="validation-error-icon red">cancel</mat-icon>Invalid Cipher. Enter comma separated 24 words cipher seed.
                   </div>

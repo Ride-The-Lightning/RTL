@@ -9,6 +9,9 @@ import { HomeComponent } from './home/home.component';
 import { PeersComponent } from './peers/peers.component';
 import { SendReceiveTransComponent } from './old-transactions/send-receive/send-receive-trans.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
+import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
+import { OnChainComponent } from './on-chain/on-chain.component';
 import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelManageComponent } from './channels/channel-manage/channel-manage.component';
@@ -27,6 +30,7 @@ import { QueryRoutesComponent } from './payments/query-routes/query-routes.compo
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
+import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
 
 @NgModule({
   imports: [
@@ -54,7 +58,11 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     NodeLookupComponent,
     ChannelBackupComponent,
     QueryRoutesComponent,
-    ChannelRestoreComponent
+    ChannelRestoreComponent,
+    OnChainSendComponent,
+    OnChainReceiveComponent,
+    OnChainComponent,
+    OnChainTransactionHistoryComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

@@ -658,7 +658,7 @@ a {
 .mat-tree-node div:focus, .mat-tree-node div:active, .mat-nested-tree-node-parent div:focus, .mat-nested-tree-node-parent div:active,
 .mat-tree-node .mat-icon:focus, .mat-tree-node .mat-icon:active, .mat-nested-tree-node-parent .mat-icon:focus, .mat-nested-tree-node-parent .mat-icon:active {
   outline: none;
-}  
+}
 
 .lnd-info {
   height: $sidenav-info-height;
@@ -742,6 +742,24 @@ table {
   width:100%;
 }
 
-.mat-button-focus-overlay {
-  background-color: transparent!important;
+// .mat-button-focus-overlay {
+//   background-color: transparent!important;
+// }
+
+.green-dot {
+  display: inline-flex;
+  width: $dot-size;
+  height: $dot-size;
+  border-radius: $dot-size;
+  margin-right: 1rem;
+  background-color: $green-color;
+}
+
+.yellow-dot {
+  display: inline-flex;
+  width: $dot-size;
+  height: $dot-size;
+  border-radius: $dot-size;
+  margin-right: 1rem;
+  background-color: $yellow-color;
 }

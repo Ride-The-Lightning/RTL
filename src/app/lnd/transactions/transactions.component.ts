@@ -16,6 +16,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 export class TransactionsComponent implements OnInit, OnDestroy {
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
+  currencyUnits = [];
   balances = [{title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive'}];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -25,6 +26,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
       this.balances = [{title: 'Local Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive'}];
       this.logger.info(rtlStore);
     });

@@ -27,8 +27,8 @@ export class AlertMessageComponent implements OnInit {
   setStyleOnAlertType() {
     // INFO/WARN/ERROR/SUCCESS/CONFIRM
     if (this.data.type === 'WARN') {
-      this.msgTypeBackground = 'bg-accent p-1';
-      this.msgTypeForeground = 'accent';
+      this.msgTypeBackground = 'primary p-1';
+      this.msgTypeForeground = 'primary';
     }
     if (this.data.type === 'ERROR') {
       this.msgTypeBackground = 'bg-warn p-1';

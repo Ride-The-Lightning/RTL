@@ -1,19 +1,19 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { getInvoicesPaginator } from '../../../shared/services/paginator.service';
-
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
+
+import { getInvoicesPaginator } from '../../../shared/services/paginator.service';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS } from '../../../shared/models/enums';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
-import { CurrencyUnitConvertPipe } from '../../../shared/pipes/app.pipe';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { InvoiceInformationComponent } from '../../../shared/components/invoice-information/invoice-information.component';
+import { CommonService } from '../../../shared/services/common.service';
 
+import { InvoiceInformationComponent } from '../../../shared/components/invoice-information/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -30,8 +30,6 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class LightningInvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   faHistory = faHistory;
-  public currencyUnits = [];
-  public currConvertorRate = null;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
@@ -47,34 +45,35 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public private = false;
-  public timeUnits = ['Secs', 'Mins', 'Hours', 'Days'];
-  public selTimeUnit = 'Secs';
   public expiryStep = 100;
   public totalInvoices = 100;
   public pageSize = 10;
   public pageSizeOptions = [5, 10, 25, 100];
+  public timeUnitEnum = TimeUnitEnum;
+  public timeUnits = TIME_UNITS;
+  public selTimeUnit = TimeUnitEnum.SECS;
   private firstOffset = -1;
   private lastOffset = -1;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private httpClient: HttpClient, private currencyConvert: CurrencyUnitConvertPipe, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedColumns = ['settled', 'creation_date', 'value', 'actions'];
+        this.displayedColumns = ['creation_date', 'value', 'actions'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['settled', 'creation_date', 'value', 'settle_date', 'actions'];
+        this.displayedColumns = ['creation_date', 'value', 'settle_date', 'actions'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['settled', 'creation_date', 'memo', 'value', 'settle_date', 'actions'];
+        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['settled', 'creation_date', 'memo', 'value', 'settle_date', 'actions'];
+        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['settled', 'creation_date', 'memo', 'value', 'settle_date', 'actions'];
+        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
         break;
     }
   }
@@ -88,7 +87,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.totalInvoices = rtlStore.totalInvoices;
@@ -105,21 +103,8 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
 
   onAddInvoice(form: any) {
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== this.timeUnits[0]) {
-      switch (this.selTimeUnit) {
-        case this.timeUnits[1]:
-          expiryInSecs = this.expiry * 60;      
-          break;
-        case this.timeUnits[2]:
-          expiryInSecs = this.expiry * 3600;
-          break;
-        case this.timeUnits[3]:
-          expiryInSecs = this.expiry * 3600 * 24;      
-          break;
-        default:
-          expiryInSecs = this.expiry;
-          break;
-      }
+    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
+      expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = this.memo;
@@ -159,7 +144,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     this.private = false;
     this.expiry = undefined;
     this.invoiceValueHint = '';
-    this.selTimeUnit = this.timeUnits[0];
+    this.selTimeUnit = TimeUnitEnum.SECS;
   }
 
   applyFilter(selFilter: string) {
@@ -181,89 +166,19 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    let self = this;
-    if(this.currencyUnits[2] && this.invoiceValue && this.invoiceValue.toString().length > 2) {
-      if(!this.currConvertorRate) {
-        this.httpClient.get('https://blockchain.info/ticker')
-        .pipe(takeUntil(this.unSubs[0]))
-        .subscribe((currConvertorData: any) => {
-          self.currConvertorRate = currConvertorData;
-          self.invoiceValueHint = '= ' + currConvertorData[self.currencyUnits[2]].symbol + self.decimalPipe.transform(self.currencyConvert.transform(self.invoiceValue.toString(), currConvertorData[self.currencyUnits[2]].last * 0.00000001), '1.2-2') + ' ' + self.currencyUnits[2];
-        });
-      } else {
-        self.invoiceValueHint = '= ' + this.currConvertorRate[self.currencyUnits[2]].symbol + self.decimalPipe.transform(self.currencyConvert.transform(self.invoiceValue.toString(), this.currConvertorRate[self.currencyUnits[2]].last * 0.00000001), '1.2-2') + ' ' + self.currencyUnits[2];
-      }
-    } else {
+    if(this.invoiceValue > 99) {
       this.invoiceValueHint = '';
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2])
+      .pipe(takeUntil(this.unSubs[1]))
+      .subscribe(data => {
+        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, '1.2-2') + ' ' + data.unit;
+      });
     }
   }
 
   onTimeUnitChange(event: any) {
     if(this.expiry && this.selTimeUnit !== event.value) {
-      switch (this.selTimeUnit) {
-        case this.timeUnits[0]:
-          switch (event.value) {
-            case this.timeUnits[1]:
-              this.expiry = this.expiry / 60;
-              break;
-            case this.timeUnits[2]:
-              this.expiry = this.expiry / 3600;
-              break;
-            case this.timeUnits[3]:
-              this.expiry = this.expiry / (3600 * 24);
-              break;
-            default:
-              break;
-          }
-          break;
-        case this.timeUnits[1]:
-          switch (event.value) {
-            case this.timeUnits[0]:
-              this.expiry = this.expiry * 60;
-              break;
-            case this.timeUnits[2]:
-              this.expiry = this.expiry / 60;
-              break;
-            case this.timeUnits[3]:
-              this.expiry = this.expiry / (60 * 24);
-              break;
-            default:
-              break;
-          }
-          break;
-        case this.timeUnits[2]:
-          switch (event.value) {
-            case this.timeUnits[0]:
-              this.expiry = this.expiry * 3600;
-              break;
-            case this.timeUnits[1]:
-              this.expiry = this.expiry * 60;
-              break;
-            case this.timeUnits[3]:
-              this.expiry = this.expiry / 24;
-              break;
-            default:
-              break;
-          }
-          break;
-        case this.timeUnits[3]:
-          switch (event.value) {
-            case this.timeUnits[0]:
-              this.expiry = this.expiry * 3600 * 24;
-              break;
-            case this.timeUnits[1]:
-              this.expiry = this.expiry * 60 * 24;
-              break;
-            case this.timeUnits[2]:
-              this.expiry = this.expiry * 24;
-              break;
-            default:
-              break;
-          }
-          break;
-        default:
-          break;
-      }
+      this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
     }
     this.selTimeUnit = event.value;
   }

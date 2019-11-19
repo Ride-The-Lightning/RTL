@@ -1,13 +1,9 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
+import { takeUntil } from 'rxjs/operators';
 
-import { LoggerService } from '../../services/logger.service';
-import { CurrencyUnit } from '../../models/enums';
-
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { CurrencyUnitEnum } from '../../models/enums';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'rtl-currency-unit-converter',
@@ -15,26 +11,41 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./currency-unit-converter.component.scss']
 })
 export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
-  @Input() values = [];
-  currencyUnits = [];
-  CurrencyUnitEnum = CurrencyUnit;
-  unitConversionValue = 0;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  public currencyUnitEnum = CurrencyUnitEnum;
+  private _values: Array<any>;
+  private _currencyUnits = [];
+  private unSubs = [new Subject()];
+  get values(): Array<any> { return this._values; }  
+  get currencyUnits(): Array<any> { return this._currencyUnits; }  
+  @Input() set values(data: Array<any>) { 
+    this._values = data;
+    if(this._currencyUnits.length > 2 && this._values[0].dataValue >= 0) {
+      this.getCurrencyValues(this._values);
+    }
+  }
+  @Input() set currencyUnits(data: Array<any>) {
+    this._currencyUnits = data;
+    if(this._currencyUnits.length > 2 && this._values[0].dataValue >= 0) {
+      this.getCurrencyValues(this._values);
+    }
+  }
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private httpClient: HttpClient) {}
+  constructor(public commonService: CommonService) {}
 
-  ngOnInit() {
-    this.store.select('lnd')
-    .pipe(take(2))
-    .subscribe((rtlStore) => {
-      this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
-      this.logger.info(rtlStore);
-      if(this.currencyUnits[2]) {
-        this.httpClient.get('https://blockchain.info/ticker')
+  ngOnInit() {}
+
+  getCurrencyValues(values) {
+    values.forEach(value => {
+      if(value.dataValue > 0) {
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2])
         .pipe(takeUntil(this.unSubs[0]))
-        .subscribe((data: any) => {
-          this.unitConversionValue = data[this.currencyUnits[2]].last;
+        .subscribe(data => {
+          value.dataValueBTC = data.BTC;
+          value.dataValueOTHER = data.OTHER;
         });
+      } else {
+        value.dataValueBTC = value.dataValue;
+        value.dataValueOTHER = value.dataValue;
       }
     });
   }
@@ -45,5 +56,4 @@ export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
       completeSub.complete();
     });
   }
-
 }

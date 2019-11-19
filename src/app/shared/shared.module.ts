@@ -31,7 +31,8 @@ import { ServerConfigComponent } from './components/server-config/server-config.
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
-import { RemoveLeadingZerosPipe, CurrencyUnitConvertPipe } from './pipes/app.pipe';
+import { AutoFocusDirective } from './directive/auto-focus.directive';
+import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 import { CommonService } from './services/common.service';
 
 @NgModule({
@@ -125,10 +126,10 @@ import { CommonService } from './services/common.service';
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
     ClipboardDirective,
+    AutoFocusDirective,
     QRCodeModule,
     NgxChartsModule,
-    RemoveLeadingZerosPipe,
-    CurrencyUnitConvertPipe
+    RemoveLeadingZerosPipe
   ],
   declarations: [
     AppSettingsComponent,
@@ -146,8 +147,8 @@ import { CommonService } from './services/common.service';
     CurrencyUnitConverterComponent,
     ErrorComponent,
     ClipboardDirective,
-    RemoveLeadingZerosPipe,
-    CurrencyUnitConvertPipe
+    AutoFocusDirective,
+    RemoveLeadingZerosPipe
   ],
   entryComponents: [
     InvoiceInformationComponent,
@@ -158,7 +159,7 @@ import { CommonService } from './services/common.service';
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    CommonService, CurrencyUnitConvertPipe, DecimalPipe
+    CommonService, DecimalPipe
   ]
 })
 export class SharedModule { }

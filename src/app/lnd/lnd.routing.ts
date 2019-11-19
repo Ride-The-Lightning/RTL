@@ -17,6 +17,7 @@ import { ForwardingHistoryComponent } from './switch/forwarding-history.componen
 import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
 import { ChannelBackupComponent } from './channels/channel-backup/channel-backup.component';
 import { ChannelRestoreComponent } from './channels/channel-restore/channel-restore.component';
+import { OnChainComponent } from './on-chain/on-chain.component';
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -33,13 +34,12 @@ export const LndRoutes: Routes = [
     { path: 'chnlbackup', component: ChannelBackupComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'chnlrestore', component: ChannelRestoreComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'transsendreceive', component: SendReceiveTransComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'translist', component: ListTransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'switch', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'onchain', redirectTo: 'transsendreceive' },
     { path: 'forwardinghistory', redirectTo: 'switch' },
     { path: '**', component: NotFoundComponent }
   ]}
