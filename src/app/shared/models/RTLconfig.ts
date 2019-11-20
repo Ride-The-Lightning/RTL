@@ -17,11 +17,12 @@ export class Settings {
     public themeMode: string,
     public themeColor: string,
     public satsToBTC: boolean,
+    public currencyUnits: Array<string>,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
     public channelBackupPath?: string,
-    public currencyUnit?: string
+    public currencyUnit?: string,
   ) { }
 }
 
@@ -66,5 +67,6 @@ export interface GetInfoRoot {
 export interface SelNodeChild {
   channelBackupPath?: string;
   satsToBTC?: boolean;
+  currencyUnit?: string;  
   currencyUnits?: string[];
 }

@@ -7,7 +7,7 @@
       <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="70" fxLayoutAlign.gt-sm="space-between center">
         <mat-form-field fxFlex="40" fxLayoutAlign="start end">
           <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
-          <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
+          <span matSuffix> {{information?.smaller_currency_unit}} </span>
           <mat-hint>{{invoiceValueHint}}</mat-hint>          
         </mat-form-field>
         <mat-form-field fxFlex="15" fxLayoutAlign="start end">

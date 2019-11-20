@@ -1,6 +1,13 @@
-export const CURRENCY_UNITS = [ 'SATS', 'BTC' ];
+export const CURRENCY_UNITS = [ 'Sats', 'BTC' ];
+
+export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 
 export const TIME_UNITS = ['SECS', 'MINS', 'HOURS', 'DAYS'];
+
+export const ADDRESS_TYPES = [
+  { addressId: '0', addressTp: 'p2wkh', addressDetails: 'Pay to witness key hash'},
+  { addressId: '1', addressTp: 'np2wkh', addressDetails: 'Pay to nested witness key hash (default)'}
+];
 
 export enum AuthenticateWith {
   TOKEN = 'TOKEN',
@@ -15,7 +22,7 @@ export enum TimeUnitEnum {
 }
 
 export enum CurrencyUnitEnum {
-  SATS = 'SATS',
+  SATS = 'Sats',
   BTC = 'BTC',
   LITOSHIS = 'LITOSHIS',
   LTC = 'LTC',

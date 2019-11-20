@@ -54,7 +54,7 @@ export class SendReceiveTransComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      this.addressTypes = rtlStore.addressTypes;
+      // this.addressTypes = rtlStore.addressTypes;
 
       this.blockchainBalance = rtlStore.blockchainBalance;
       if (undefined === this.blockchainBalance.total_balance) {

@@ -1,9 +1,9 @@
 <div fxLayout="row">
-  <div fxFlex="35" fxLayoutAlign="center start" class="invoice-qr-code-container padding-gap-large">
+  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
     <qrcode [qrdata]="invoice.payment_request" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="invoice-info-header mb-2">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Invoice Information</span>

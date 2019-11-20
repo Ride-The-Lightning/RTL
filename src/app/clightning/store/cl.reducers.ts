@@ -24,7 +24,7 @@ export interface CLState {
 
 export const initCLState: CLState = {
   effectErrorsCl: [],
-  nodeSettings: { channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
+  nodeSettings: { currencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   fees: {},
   feeRatesPerKB: {},

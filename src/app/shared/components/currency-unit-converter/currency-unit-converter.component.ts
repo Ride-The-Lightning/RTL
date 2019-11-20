@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { CurrencyUnitEnum } from '../../models/enums';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../models/enums';
 import { CommonService } from '../../services/common.service';
 
 @Component({
@@ -12,6 +12,7 @@ import { CommonService } from '../../services/common.service';
 })
 export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
   public currencyUnitEnum = CurrencyUnitEnum;
+  public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private _values: Array<any>;
   private _currencyUnits = [];
   private unSubs = [new Subject()];
@@ -40,12 +41,12 @@ export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
         this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2])
         .pipe(takeUntil(this.unSubs[0]))
         .subscribe(data => {
-          value.dataValueBTC = data.BTC;
-          value.dataValueOTHER = data.OTHER;
+          value[CurrencyUnitEnum.BTC] = data.BTC;
+          value[CurrencyUnitEnum.OTHER] = data.OTHER;
         });
       } else {
-        value.dataValueBTC = value.dataValue;
-        value.dataValueOTHER = value.dataValue;
+        value[CurrencyUnitEnum.BTC] = value.dataValue;
+        value[CurrencyUnitEnum.OTHER] = value.dataValue;
       }
     });
   }

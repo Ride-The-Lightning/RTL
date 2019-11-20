@@ -54,22 +54,25 @@ export class CommonService implements OnInit, OnDestroy {
   }
 
   convert(value: number, from: string, otherCurrencyUnit: string) {
-    let returnValue = {unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol, SATS: 0, BTC: 0, OTHER: 0};
+    let returnValue = {unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol};
+    returnValue[CurrencyUnitEnum.SATS] = 0;
+    returnValue[CurrencyUnitEnum.BTC] = 0;
+    returnValue[CurrencyUnitEnum.OTHER] = 0;
     switch (from) {
       case CurrencyUnitEnum.SATS:
-        returnValue.SATS = value;
-        returnValue.BTC = value * 0.00000001;
-        returnValue.OTHER = value * 0.00000001 * this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.SATS] = value;
+        returnValue[CurrencyUnitEnum.BTC] = value * 0.00000001;
+        returnValue[CurrencyUnitEnum.OTHER] = value * 0.00000001 * this.unitConversionValue;
         break;
       case CurrencyUnitEnum.BTC:
-        returnValue.SATS = value * 100000000;
-        returnValue.BTC = value;
-        returnValue.OTHER = value * this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.SATS] = value * 100000000;
+        returnValue[CurrencyUnitEnum.BTC] = value;
+        returnValue[CurrencyUnitEnum.OTHER] = value * this.unitConversionValue;
         break;
-      case CurrencyUnitEnum.OTHER:
-        returnValue.SATS = value / this.unitConversionValue * 100000000;
-        returnValue.BTC = value / this.unitConversionValue;
-        returnValue.OTHER = value;
+      case (CurrencyUnitEnum.OTHER):
+        returnValue[CurrencyUnitEnum.SATS] = value / this.unitConversionValue * 100000000;
+        returnValue[CurrencyUnitEnum.BTC] = value / this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.OTHER] = value;
         break;
       default:
         break;

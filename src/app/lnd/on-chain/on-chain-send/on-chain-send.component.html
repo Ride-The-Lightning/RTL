@@ -1,68 +1,42 @@
-<div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="100" class="padding-gap">
-    <div fxLayout="column" fxLayout.gt-sm="row wrap">
-      <div fxFlex="58" fxLayoutAlign="start end">
-        <mat-form-field fxFlex="99">
-          <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address"
-            tabindex="1" name="address" #address="ngModel">
-        </mat-form-field>
-      </div>
-      <!-- <div fxFlex="38" fxLayoutAlign="start end">
-        <mat-radio-group fxFlex="100" fxLayoutAlign="space-between center" (change)="onOptionChange($event)" [(ngModel)]="flgCustomAmount">
-          <mat-radio-button fxFlex="35" value="0">Sweep All</mat-radio-button>
-          <mat-radio-button fxFlex="60" value="1">
-            <mat-form-field fxFlex="70"><input matInput [(ngModel)]="transaction.amount" (click)="onCustomClicked()" placeholder="Amount ({{information?.smaller_currency_unit}})" name="amount" type="number" step="100" min="0" tabindex="5" #amount="ngModel"></mat-form-field>
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>           -->
-      <div fxFlex="30" fxLayoutAlign="start end">
-        <mat-form-field fxFlex="70">
-          <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" #amount="ngModel">
-          <span matSuffix> {{selAmountUnit}} </span>
-        </mat-form-field>
-      </div>
-      <mat-form-field fxFlex="10" fxLayoutAlign="start end">
-        <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
-          <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div fxLayout="column" fxLayout.gt-sm="row wrap">
-      <div fxFlex="30" fxLayoutAlign="start start">
-        <mat-form-field fxFlex="99">
-          <mat-select [(value)]="selTransType" tabindex="4">
-            <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
-              {{transType.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div fxFlex="30" fxLayoutAlign="start start">
-        <mat-form-field fxFlex="99" *ngIf="selTransType=='1'">
-          <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number"
-            name="blocks" step="1" min="0" required tabindex="5" #blocks="ngModel">
-        </mat-form-field>
-        <mat-form-field fxFlex="99" *ngIf="selTransType=='2'">
-          <input matInput [(ngModel)]="transaction.fees"
-            placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1"
-            min="0" required tabindex="6" #fees="ngModel">
-        </mat-form-field>
-      </div>
-      <div fxFlex="40" fxLayoutAlign="space-between start">
-        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7"
-        type="reset" (click)="resetData()">Clear Fields</button>
-        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary"
-          [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
-          <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">
-            Invalid Values</p>
-          <ng-template #sendText>
-            <p>Send Funds</p>
-          </ng-template>
-        </button>
-      </div>
-    </div>
+<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">
+  <mat-form-field fxFlex.gt-sm="55">
+    <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #address="ngModel">
+  </mat-form-field>
+  <mat-form-field fxFlex.gt-sm="30">
+    <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" #amount="ngModel" [disabled]="sweepAll">
+    <span matSuffix> {{selAmountUnit}} </span>
+    <mat-hint *ngIf="sweepAll">{{sweepAllHint}}</mat-hint>          
+  </mat-form-field>
+  <mat-form-field fxFlex.gt-sm="10" fxLayoutAlign="start end">
+    <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
+      <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">  
+    <mat-form-field fxFlex="48">
+      <mat-select [(value)]="selTransType" tabindex="4">
+        <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
+          {{transType.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field fxFlex="48" *ngIf="selTransType=='1'">
+      <input matInput [(ngModel)]="transaction.blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1" min="0" required tabindex="5" #blocks="ngModel">
+    </mat-form-field>
+    <mat-form-field fxFlex="48" *ngIf="selTransType=='2'">
+      <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #fees="ngModel">
+    </mat-form-field>
   </div>
+  <div fxFlex="50" fxLayoutAlign="space-between start">
+    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary"
+      [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
+      <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">
+        Invalid Values</p>
+      <ng-template #sendText>
+        <p>Send Funds</p>
+      </ng-template>
+    </button>
+  </div>
+  <rtl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
 </div>
-<ng-template #withoutData>
-  <h3>Sats</h3>
-</ng-template>

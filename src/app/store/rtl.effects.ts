@@ -100,7 +100,9 @@ export class RTLEffects implements OnDestroy {
     }),
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
-      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex), isInitialSetup: true}))
+      let searchNode = rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex);
+      searchNode.settings.currencyUnits = [...CURRENCY_UNITS, searchNode.settings.currencyUnit];
+      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: searchNode, isInitialSetup: true}))
       return {
         type: RTLActions.SET_RTL_CONFIG,
         payload: rtlConfig
@@ -226,6 +228,7 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
+        rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
       }),
       catchError((err) => {
@@ -284,8 +287,7 @@ export class RTLEffects implements OnDestroy {
 
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = {};
-    selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
+    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));

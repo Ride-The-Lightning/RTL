@@ -18,13 +18,13 @@
     <mat-card-content fxLayout="column">
       <mat-tab-group>
         <mat-tab label="Send">
-          <rtl-on-chain-send></rtl-on-chain-send>
+          <rtl-on-chain-send [sweepAll]="false"></rtl-on-chain-send>
         </mat-tab>
         <mat-tab label="Receive">
           <rtl-on-chain-receive></rtl-on-chain-receive>
         </mat-tab>
         <mat-tab label="Sweep All">
-          <rtl-on-chain-send></rtl-on-chain-send>
+          <rtl-on-chain-send [sweepAll]="true" [sweepBalance]="balances[0].dataValue"></rtl-on-chain-send>
         </mat-tab>
       </mat-tab-group>
     </mat-card-content>

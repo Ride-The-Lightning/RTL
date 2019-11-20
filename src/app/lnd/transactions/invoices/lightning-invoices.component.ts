@@ -7,13 +7,13 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
 import { getInvoicesPaginator } from '../../../shared/services/paginator.service';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS } from '../../../shared/models/enums';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS } from '../../../shared/models/enums';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { InvoiceInformationComponent } from '../../../shared/components/invoice-information/invoice-information.component';
+import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -171,7 +171,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2])
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
-        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, '1.2-2') + ' ' + data.unit;
+        this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       });
     }
   }

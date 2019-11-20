@@ -72,9 +72,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onCurrencyChange(event: any) {
-    this.selNode.settings.currencyUnit = event.value;
-    this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+    this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
   }
 
   chooseMenuType() {
@@ -88,8 +88,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
-      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
-      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnits: [...CURRENCY_UNITS, this.selNode.settings.currencyUnit]}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
     }
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;

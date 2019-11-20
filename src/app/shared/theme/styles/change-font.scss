@@ -42,7 +42,7 @@
       height: $small-font-size * 2.1;
       font-size: 2.2rem;
     }
-    .material-icons, .invoice-info-header {
+    .material-icons, .modal-info-header {
       font-size: $small-font-size * 1.5;
       line-height: 2rem;
     }
@@ -105,7 +105,7 @@
     .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned {
       font-size: $regular-font-size;
     }
-    .fa-icon-small, .top-icon-small, .invoice-info-header {
+    .fa-icon-small, .top-icon-small, .modal-info-header {
       font-size: $regular-font-size * 1.5;
     }
     .top-toolbar-icon.icon-pinned {
@@ -178,7 +178,7 @@
         font-size: $large-font-size * 1.5;
       }
     }
-    .fa-icon-small, .top-icon-small, .invoice-info-header {
+    .fa-icon-small, .top-icon-small, .modal-info-header {
       font-size: $large-font-size * 1.4;
     }
     .top-toolbar-icon.icon-pinned {

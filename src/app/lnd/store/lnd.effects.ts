@@ -13,7 +13,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 import { CurrencyUnitEnum } from '../../shared/models/enums';
-import { InvoiceInformationComponent } from '../../shared/components/invoice-information/invoice-information.component';
+import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';

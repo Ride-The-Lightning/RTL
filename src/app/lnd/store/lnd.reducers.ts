@@ -27,12 +27,11 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
-  addressTypes: AddressType[];
 }
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
+  nodeSettings: { currencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   peers: [],
   fees: {},
@@ -51,11 +50,7 @@ export const initLNDState: LNDState = {
   transactions: [],
   payments: [],
   invoices: {invoices: []},
-  forwardingHistory: {},
-  addressTypes: [
-    { addressId: '0', addressTp: 'p2wkh', addressDetails: 'Pay to witness key hash'},
-    { addressId: '1', addressTp: 'np2wkh', addressDetails: 'Pay to nested witness key hash (default)'}
-  ]
+  forwardingHistory: {}
 }
 
 export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) {

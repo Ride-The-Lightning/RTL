@@ -3,9 +3,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { LoggerService } from '../../../shared/services/logger.service';
-import { AlertData } from '../../../shared/models/alertData';
-import { Invoice } from '../../../shared/models/lndModels';
+import { LoggerService } from '../../../services/logger.service';
+import { AlertData } from '../../../models/alertData';
+import { Invoice } from '../../../models/lndModels';
 
 @Component({
   selector: 'rtl-invoice-information',

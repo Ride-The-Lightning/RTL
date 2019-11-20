@@ -216,7 +216,7 @@
     }
   }
 
-  .invoice-info-header {
+  .modal-info-header {
     color: $foreground-text;
     font-weight: 500;
     & .page-title-img svg {
@@ -224,7 +224,7 @@
     }
   }
 
-  .invoice-qr-code-container {
+  .modal-qr-code-container {
     background: $foreground-divider;
   }
 
