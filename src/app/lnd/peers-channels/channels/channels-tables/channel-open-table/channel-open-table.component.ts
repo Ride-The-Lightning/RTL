@@ -3,9 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { getPaginatorLabel } from '../../../../../shared/services/paginator.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -15,19 +16,26 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-channel-open-table',
   templateUrl: './channel-open-table.component.html',
-  styleUrls: ['./channel-open-table.component.scss']
+  styleUrls: ['./channel-open-table.component.scss'],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('channels') },
+  ]  
 })
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
   public information: GetInfo = {};
+  public numPeers = -1;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public myChanPolicy: any = {};
+  public pageSize = 10;
+  public pageSizeOptions = [5, 10, 25, 100];
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
@@ -62,6 +70,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
       if (undefined !== rtlStore.allChannels) {
         this.loadChannelsTable(rtlStore.allChannels);
@@ -183,16 +192,17 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
     this.channels = new MatTableDataSource<Channel>([...channels]);
+    // this.channels.filterPredicate = (channel: Channel, fltr: string) => {
+    //   const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
+    //   (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
+    //   (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
+    //   (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
+    //   (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
+    //   (channel.private ? 'private' : 'public');
+    //   return newChannel.includes(fltr);
+    // };
     this.channels.sort = this.sort;
-    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
-      (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
-      (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-      (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-      (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-      (channel.private ? 'private' : 'public');
-      return newChannel.includes(fltr);
-    };
+    this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }
 

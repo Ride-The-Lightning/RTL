@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
-import { getInvoicesPaginator } from '../../../shared/services/paginator.service';
+import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS } from '../../../shared/models/enums';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./lightning-invoices.component.scss'],
   animations: [newlyAddedRowAnimation],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getInvoicesPaginator() },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
 export class LightningInvoicesComponent implements OnInit, OnDestroy {

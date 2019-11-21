@@ -8,6 +8,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -16,7 +17,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-on-chain-transaction-history',
   templateUrl: './on-chain-transaction-history.component.html',
-  styleUrls: ['./on-chain-transaction-history.component.scss']
+  styleUrls: ['./on-chain-transaction-history.component.scss'],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') },
+  ]  
 })
 export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;

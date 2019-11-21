@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { getPaymentsPaginator } from '../../../shared/services/paginator.service';
+import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./lightning-payments.component.scss'],
   animations: [newlyAddedRowAnimation],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaymentsPaginator() },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') },
   ]  
 })
 export class LightningPaymentsComponent implements OnInit, OnDestroy {
@@ -29,7 +29,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('sendPaymentForm', { static: true }) form;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   faHistory = faHistory;
-  public pageSize = 10;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -40,8 +39,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public flgSticky = false;
+  public pageSize = 10;
   public pageSizeOptions = [5, 10, 25, 100];
-
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {

@@ -1,13 +1,8 @@
 import { MatPaginatorIntl } from '@angular/material';
 
-export function getPaymentsPaginator() {
-  const paymentsPaginator = new MatPaginatorIntl();
-  paymentsPaginator.itemsPerPageLabel = 'Payments per page:';
-  return paymentsPaginator;
-}
-
-export function getInvoicesPaginator() {
-  const invoicesPaginator = new MatPaginatorIntl();
-  invoicesPaginator.itemsPerPageLabel = 'Invoices per page:';
-  return invoicesPaginator;
+export function getPaginatorLabel(field: string) {
+  const appPaginator = new MatPaginatorIntl();
+  field = field.charAt(0).toUpperCase() + field.substring(1).toLowerCase();
+  appPaginator.itemsPerPageLabel = field + ' per page:';
+  return appPaginator;
 }
