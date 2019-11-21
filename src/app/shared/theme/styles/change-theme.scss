@@ -216,6 +216,12 @@
     }
   }
 
+  .bordered-box {
+    border: 1px solid $foreground-divider;
+    border-radius: 4px;
+    background: none;
+  }
+
   .modal-info-header {
     color: $foreground-text;
     font-weight: 500;
@@ -234,6 +240,26 @@
       justify-content: center;
       align-content: center;
       align-items: center;
+    }
+  }
+
+  .tab-badge {
+    & .mat-badge-content {
+      width: $dot-size * 1.5;
+      height: $dot-size * 1.5;
+      border-radius: $dot-size * 1.5;
+      line-height: $dot-size * 1.5;
+      margin-top: 1.2rem;
+      font-size: 80%;
+      font-weight: 500;
+    }
+  }
+
+  .table-actions-select {
+    padding: 0.5rem 1rem;
+    margin: 0.7rem 0;
+    & .mat-select-placeholder {
+      color: $foreground-text;
     }
   }
 }

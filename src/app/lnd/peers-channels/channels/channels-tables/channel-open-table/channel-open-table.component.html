@@ -1,0 +1,54 @@
+<div fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-2">
+    <div fxFlex="70"></div>
+    <mat-form-field fxFlex="30">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
+    </mat-form-field>
+  </div>
+  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <ng-container matColumnDef="remote_alias">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
+        <td mat-cell *matCellDef="let channel">
+          <span *ngIf="channel.active" class="green-dot"></span>
+          <span *ngIf="!channel.active" class="yellow-dot"></span>
+          {{channel.remote_alias}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="total_satoshis_sent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sent ({{information?.smaller_currency_unit}}) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_sent | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="total_satoshis_received">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Received ({{information?.smaller_currency_unit}}) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="capacity">
+        <th mat-header-cell *matHeaderCellDef>Capacity</th>
+        <td mat-cell *matCellDef="let channel">
+          <div fxLayout="row">
+            <mat-hint fxFlex="50" fxLayoutAlign="start center"><strong>Local: </strong>{{channel.local_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
+            <mat-hint fxFlex="50" fxLayoutAlign="end center"><strong>Remote: </strong>{{channel.remote_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
+          </div>
+          <mat-progress-bar mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>          
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
+          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+              <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+              <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+            </mat-select>
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

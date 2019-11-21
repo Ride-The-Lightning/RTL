@@ -14,9 +14,9 @@ import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
 import { AuthenticateWith, CURRENCY_UNITS } from '../shared/models/enums';
 
-import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
-import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from '../shared/components/confirmation-message/confirmation-message.component';
+import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from '../shared/components/data-modal/confirmation-message/confirmation-message.component';
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';

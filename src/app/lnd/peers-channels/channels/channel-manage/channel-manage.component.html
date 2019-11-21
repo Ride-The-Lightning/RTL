@@ -1,0 +1,56 @@
+<div fxLayout="column" fxFlex="100" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between center">
+  <mat-form-field fxFlex="45" fxLayoutAlign="start end">
+    <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required name="selPeer" #selPeer="ngModel">
+      <mat-option (click)="addNewPeer()" [value]="'new'">
+        ADD PEER
+      </mat-option>
+      <mat-option *ngFor="let peer of peers" [value]="peer.pub_key">
+        {{peer.alias}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field fxFlex="25" fxLayoutAlign="start end">
+    <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel">
+    <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
+    <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
+  </mat-form-field>
+  <div fxFlex="15" fxLayoutAlign="start center">
+    <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+  </div>
+  <div fxFlex="15" fxLayoutAlign="start center">
+    <button fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="4">
+      <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
+      <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
+    </button>
+  </div>
+  <div *ngIf="showAdvanced" fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="75" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between center">
+    <mat-form-field fxFlex="33" fxLayoutAlign="start end">
+      <mat-select tabindex="5" [(value)]="selTransType">
+        <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
+          {{transType.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field fxFlex="33" *ngIf="selTransType=='0'">
+      <input matInput placeholder="Channel Opening Priority" disabled>
+    </mat-form-field>
+    <mat-form-field fxFlex="33" *ngIf="selTransType=='1'">
+      <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="7" #blocks="ngModel">
+    </mat-form-field>
+    <mat-form-field fxFlex="33" *ngIf="selTransType=='2'">
+      <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="8" #fees="ngModel">
+    </mat-form-field>
+    <div fxFlex="34" fxLayoutAlign="start center">
+      <mat-slide-toggle tabindex="9" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+    </div>
+  </div>
+  <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="30" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">
+    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear</button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="selectedPeer === '' || fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="11">
+      <p *ngIf="(selectedPeer === '' || fundingAmount == null) && (selPeer.touched || selPeer.dirty) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
+      <ng-template #openText><p>Open Channel</p></ng-template>
+    </button>
+  </div>  
+  <rtl-channels-tables fxLayout="row" fxFlex="100"></rtl-channels-tables>
+</div>
+  

@@ -173,6 +173,7 @@ export class LNDEffects implements OnDestroy {
             postRes.value = action.payload.invoiceValue;
             postRes.expiry = action.payload.expiry;
             postRes.cltv_expiry = '144';
+            postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = new Date(+postRes.creation_date * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
             this.logger.info(postRes);

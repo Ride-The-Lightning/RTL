@@ -1,0 +1,11 @@
+.mat-column-capacity {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  flex: 0 0 40%;
+  width: 40%;
+}
+
+.mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
+  flex: 0 0 10%;
+  width: 10%;
+}

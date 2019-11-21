@@ -19,9 +19,9 @@ import { DecimalPipe } from '@angular/common';
 import { InvoiceInformationComponent } from './components/data-modal/invoice-information/invoice-information.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 import { AppSettingsComponent } from './components/app-settings/app-settings.component';
-import { AlertMessageComponent } from './components/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
-import { SpinnerDialogComponent } from './components/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
+import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/spinner-dialog.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { HelpComponent } from './components/help/help.component';
@@ -162,7 +162,7 @@ import { CommonService } from './services/common.service';
   ],
   providers: [
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
     CommonService, DecimalPipe
   ]
 })
