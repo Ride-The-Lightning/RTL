@@ -7,21 +7,21 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { Channel } from '../../../../shared/models/lndModels';
-import { LoggerService } from '../../../../shared/services/logger.service';
+import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
+import { Channel } from '../../../../../shared/models/lndModels';
+import { LoggerService } from '../../../../../shared/services/logger.service';
 
-import { LNDEffects } from '../../../store/lnd.effects';
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { LNDEffects } from '../../../../store/lnd.effects';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-channel-restore',
-  templateUrl: './channel-restore.component.html',
-  styleUrls: ['./channel-restore.component.scss']
+  selector: 'rtl-channel-restore-table',
+  templateUrl: './channel-restore-table.component.html',
+  styleUrls: ['./channel-restore-table.component.scss']
 })
-export class ChannelRestoreComponent implements OnInit {
+export class ChannelRestoreTableComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public selNode: SelNodeChild = {};
   public displayedColumns = ['chan_point', 'restore'];

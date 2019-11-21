@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfoCL, InvoiceCL } from '../../shared/models/clModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../shared/models/enums';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
@@ -37,8 +38,8 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public private = false;
   public totalInvoices = 100;
-  public pageSize = 25;
-  public pageSizeOptions = [5, 10, 25, 100];
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private firstOffset = -1;
   private lastOffset = -1;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];

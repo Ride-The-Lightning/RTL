@@ -7,20 +7,20 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { SelNodeChild } from '../../../../shared/models/RTLconfig';
-import { Channel } from '../../../../shared/models/lndModels';
-import { LoggerService } from '../../../../shared/services/logger.service';
+import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
+import { Channel } from '../../../../../shared/models/lndModels';
+import { LoggerService } from '../../../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-channel-backup',
-  templateUrl: './channel-backup.component.html',
-  styleUrls: ['./channel-backup.component.scss']
+  selector: 'rtl-channel-backup-table',
+  templateUrl: './channel-backup-table.component.html',
+  styleUrls: ['./channel-backup-table.component.scss']
 })
-export class ChannelBackupComponent implements OnInit, OnDestroy {
+export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public selNode: SelNodeChild = {};
   public displayedColumns = ['chan_point', 'backup', 'verify'];

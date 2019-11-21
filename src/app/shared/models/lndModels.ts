@@ -278,6 +278,7 @@ export interface Peer {
   sat_recv?: string;
   inbound?: boolean;
   ping_time?: number;
+  sync_type?: string;
 }
 
 export interface QueryRoutes {

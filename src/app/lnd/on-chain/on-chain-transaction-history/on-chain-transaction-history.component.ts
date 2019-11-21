@@ -7,6 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 
@@ -19,7 +20,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './on-chain-transaction-history.component.html',
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
 export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
@@ -30,8 +31,8 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
-  public pageSize = 10;
-  public pageSizeOptions = [5, 10, 25, 100];
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {

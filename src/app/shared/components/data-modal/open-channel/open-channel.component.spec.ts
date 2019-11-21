@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChannelBackupComponent } from './channel-backup.component';
+import { OpenChannelComponent } from './open-channel.component';
 
-describe('ChannelBackupComponent', () => {
-  let component: ChannelBackupComponent;
-  let fixture: ComponentFixture<ChannelBackupComponent>;
+describe('OpenChannelComponent', () => {
+  let component: OpenChannelComponent;
+  let fixture: ComponentFixture<OpenChannelComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelBackupComponent ]
+      declarations: [ OpenChannelComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ChannelBackupComponent);
+    fixture = TestBed.createComponent(OpenChannelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

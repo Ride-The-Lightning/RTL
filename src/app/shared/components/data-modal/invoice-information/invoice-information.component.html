@@ -73,11 +73,11 @@
           <mat-divider class="w-100 my-1"></mat-divider>        
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
-          <button fxFlex="25" fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="2" class="mr-2">
+          <button fxFlex="25" fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-2">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">Copy Payment Request</button>
+          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">Copy Payment Request</button>
         </div>
       </div>
       </mat-card-content>

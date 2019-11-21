@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../../../shared/models/enums';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { getPaginatorLabel } from '../../../../../shared/services/paginator.service';
 
@@ -18,7 +19,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   templateUrl: './channel-open-table.component.html',
   styleUrls: ['./channel-open-table.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('channels') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
@@ -34,9 +35,9 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public selFilter = '';
   public flgSticky = false;
   public myChanPolicy: any = {};
-  public pageSize = 10;
-  public pageSizeOptions = [5, 10, 25, 100];
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
     switch (true) {
@@ -62,7 +63,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/all') {
@@ -94,7 +95,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         ]
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unsub[2]))
+      .pipe(takeUntil(this.unSubs[1]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -109,7 +110,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
       this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
       this.lndEffects.setLookup
-      .pipe(takeUntil(this.unsub[3]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(resLookup => {
         this.logger.info(resLookup);
         if (resLookup.node1_pub === this.information.identity_pubkey) {
@@ -132,7 +133,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }}));
       });
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unsub[2]))
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -151,7 +152,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unsub[1]))
+    .pipe(takeUntil(this.unSubs[4]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
@@ -166,14 +167,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClick(selRow: Channel, event: any) {
-    console.warn(selRow.local_balance && selRow.local_balance > 0 ? ((+selRow.local_balance/(selRow.local_balance+selRow.remote_balance))*100) : 0);
-    const flgCloseClicked =
-      event.target.className.includes('mat-column-close')
-      || event.target.className.includes('mat-column-update')
-      || event.target.className.includes('mat-icon');
-    if (flgCloseClicked) {
-      return;
-    }
+    const flgCloseClicked = event.target.className.includes('mat-column-close') || event.target.className.includes('mat-column-update') || event.target.className.includes('mat-icon');
+    if (flgCloseClicked) { return; }
     const selChannel = this.channels.data.filter(channel => {
       return channel.chan_id === selRow.chan_id;
     })[0];
@@ -187,27 +182,27 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     }}}));
   }
 
-  loadChannelsTable(channels) {
-    channels.sort(function(a, b) {
+  loadChannelsTable(mychannels) {
+    mychannels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
-    this.channels = new MatTableDataSource<Channel>([...channels]);
-    // this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-    //   const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
-    //   (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
-    //   (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
-    //   (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
-    //   (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
-    //   (channel.private ? 'private' : 'public');
-    //   return newChannel.includes(fltr);
-    // };
+    this.channels = new MatTableDataSource<Channel>([...mychannels]);
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
+      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
+      (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
+      (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
+      (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
+      (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +
+      (channel.private ? 'private' : 'public');
+      return newChannel.includes(fltr);
+    };
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }
 
   ngOnDestroy() {
-    this.unsub.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

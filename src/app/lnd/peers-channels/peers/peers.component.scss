@@ -1,17 +1,20 @@
-.mat-column-detach {
-  flex: 0 0 5%;
-  min-width: 50px;
-}
-
-.mat-column-alias, .mat-column-address {
+.mat-column-alias {
   flex: 0 0 15%;
-  min-width: 100px;
+  width: 15%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
 }
 
-.mat-cell.mat-column-detach {
-  cursor: pointer;
+.mat-column-pub_key {
+  flex: 0 0 35%;
+  width: 35%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+  padding: 0 2rem;
 }
 
-table {
-  width:100%;
+.mat-column-ping_time {
+  padding-right: 2rem;
 }

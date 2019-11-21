@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
 import { getPaginatorLabel } from '../../../shared/services/paginator.service';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS } from '../../../shared/models/enums';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -47,8 +47,8 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   public private = false;
   public expiryStep = 100;
   public totalInvoices = 100;
-  public pageSize = 10;
-  public pageSizeOptions = [5, 10, 25, 100];
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public timeUnitEnum = TimeUnitEnum;
   public timeUnits = TIME_UNITS;
   public selTimeUnit = TimeUnitEnum.SECS;

@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { TRANS_TYPES } from '../../../../shared/models/enums';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../../store/lnd.effects';
@@ -31,7 +32,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public selectedFilter = '';
   public myChanPolicy: any = {};
   public selFilter = '';
-  public transTypes = [{id: '0', name: 'Default Priority'}, {id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
+  public transTypes = TRANS_TYPES;
   public selTransType = '0';
   public transTypeValue = {blocks: '', fees: ''};
   public spendUnconfirmed = false;

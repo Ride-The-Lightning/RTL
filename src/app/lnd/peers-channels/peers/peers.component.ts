@@ -5,11 +5,14 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
 import { LoggerService } from '../../../shared/services/logger.service';
-
+import { getPaginatorLabel } from '../../../shared/services/paginator.service';
+import { OpenChannelComponent } from '../../../shared/components/data-modal/open-channel/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -20,38 +23,46 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   selector: 'rtl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
-  animations: [newlyAddedRowAnimation]
+  animations: [newlyAddedRowAnimation],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
+  ]
 })
 export class PeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
   public displayedColumns = [];
   public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
+  public availableBalance = 0;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private actions$: Actions, private router: Router) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedColumns = ['detach', 'pub_key', 'alias'];
+        this.displayedColumns = [ 'alias', 'sat_sent', 'sat_recv', 'actions'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['detach', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv'];
+        this.displayedColumns = [ 'alias', 'pub_key', 'sat_sent', 'sat_recv', 'actions'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound'];
+        this.displayedColumns = ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['detach', 'open_channel', 'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'];
+        this.displayedColumns = ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
         break;
     }
   }
@@ -66,6 +77,7 @@ export class PeersComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
       if (undefined !== rtlStore.peers) {
@@ -74,6 +86,7 @@ export class PeersComponent implements OnInit, OnDestroy {
         setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
       this.peers.sort = this.sort;
+      this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
@@ -94,7 +107,6 @@ export class PeersComponent implements OnInit, OnDestroy {
     const deviderIndex = this.peerAddress.search('@');
     let pubkey = '';
     let host = '';
-
     if (new RegExp(pattern).test(this.peerAddress)) {
       pubkey = this.peerAddress.substring(0, deviderIndex);
       host = this.peerAddress.substring(deviderIndex + 1);
@@ -127,7 +139,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       return peer.pub_key === selRow.pub_key;
     })[0];
     const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
-      'pub_key', 'alias', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'
+       'alias', 'pub_key', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'
     ] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}}));
   }
@@ -137,7 +149,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.router.navigate(['lnd/chnlmanage'], { state: { peer: peerToAddChannel.pub_key }});
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance})}}, component: OpenChannelComponent}));
   }
 
   onPeerDetach(peerToDetach: Peer) {

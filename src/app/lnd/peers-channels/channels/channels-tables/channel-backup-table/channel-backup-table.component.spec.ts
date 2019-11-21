@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChannelRestoreComponent } from './channel-restore.component';
+import { ChannelBackupTableComponent } from './channel-backup-table.component';
 
-describe('ChannelRestoreComponent', () => {
-  let component: ChannelRestoreComponent;
-  let fixture: ComponentFixture<ChannelRestoreComponent>;
+describe('ChannelBackupTableComponent', () => {
+  let component: ChannelBackupTableComponent;
+  let fixture: ComponentFixture<ChannelBackupTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelRestoreComponent ]
+      declarations: [ ChannelBackupTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ChannelRestoreComponent);
+    fixture = TestBed.createComponent(ChannelBackupTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

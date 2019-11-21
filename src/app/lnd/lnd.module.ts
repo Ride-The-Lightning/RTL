@@ -25,8 +25,8 @@ import { ForwardingHistoryComponent } from './switch/forwarding-history.componen
 import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
 import { ChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
-import { ChannelBackupComponent } from './peers-channels/channels/channel-backup/channel-backup.component';
-import { ChannelRestoreComponent } from './peers-channels/channels/channel-restore/channel-restore.component';
+import { ChannelBackupTableComponent } from './peers-channels/channels/channels-tables/channel-backup-table/channel-backup-table.component';
+import { ChannelRestoreTableComponent } from './peers-channels/channels/channels-tables/channel-restore-table/channel-restore-table.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
@@ -56,9 +56,9 @@ import { ChannelOpenTableComponent } from './peers-channels/channels/channels-ta
     RoutingPeersComponent,
     ChannelLookupComponent,
     NodeLookupComponent,
-    ChannelBackupComponent,
+    ChannelBackupTableComponent,
     QueryRoutesComponent,
-    ChannelRestoreComponent,
+    ChannelRestoreTableComponent,
     OnChainSendComponent,
     OnChainReceiveComponent,
     OnChainComponent,

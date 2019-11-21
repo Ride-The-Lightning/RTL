@@ -247,6 +247,10 @@ body {
   margin-top: 2px !important;
 }
 
+.mt-5px {
+  margin-top: 5px !important;
+}
+
 .my-2px {
   margin: 2px 0 !important;
 }
@@ -297,6 +301,10 @@ body {
 
 .mt-minus-1 {
   margin-top: -1rem !important;
+}
+
+.mt-minus-2 {
+  margin-top: -2rem !important;
 }
 
 .mb-2 {
@@ -774,4 +782,16 @@ table {
   border-radius: $dot-size;
   margin-right: 1rem;
   background-color: $yellow-color;
+}
+
+.font-size-80 {
+  font-size: 80% !important;
+}
+
+.font-weight-900 {
+  font-weight: 900 !important;
+}
+
+.display-none {
+  display: none !important;
 }

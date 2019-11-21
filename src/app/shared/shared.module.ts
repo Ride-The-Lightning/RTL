@@ -35,6 +35,7 @@ import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 import { CommonService } from './services/common.service';
+import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
 
 @NgModule({
   imports: [
@@ -151,11 +152,13 @@ import { CommonService } from './services/common.service';
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,
-    RemoveLeadingZerosPipe
+    RemoveLeadingZerosPipe,
+    OpenChannelComponent
   ],
   entryComponents: [
     InvoiceInformationComponent,
     OnChainGeneratedAddressComponent,
+    OpenChannelComponent,
     AlertMessageComponent,
     SpinnerDialogComponent,
     ConfirmationMessageComponent

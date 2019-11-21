@@ -1,12 +1,20 @@
 export const CURRENCY_UNITS = [ 'Sats', 'BTC' ];
-
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 
 export const TIME_UNITS = ['SECS', 'MINS', 'HOURS', 'DAYS'];
 
+export const PAGE_SIZE = 10;
+export const PAGE_SIZE_OPTIONS = [5, 10, 25, 100];
+
 export const ADDRESS_TYPES = [
   { addressId: '0', addressTp: 'Bech32 (P2WKH)', addressDetails: 'Pay to witness key hash'},
   { addressId: '1', addressTp: 'P2SH (NP2WKH)', addressDetails: 'Pay to nested witness key hash (default)'}
+];
+
+export const TRANS_TYPES = [
+  {id: '0', name: 'Default Priority'},
+  {id: '1', name: 'Target Confirmation Blocks'},
+  {id: '2', name: 'Fee'}
 ];
 
 export enum AuthenticateWith {
