@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.5.3 (Docker build pending)
+### Stable Release: v0.5.4
 
 **Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
 
@@ -54,7 +54,7 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 #### First time setup
 * Fetch sources from RTL git repository, by executing the below on the command prompt:
 
-`$ git clone https://github.com/ShahanaFarooqui/RTL.git`
+`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
 * Change directory to RTL folder:
 
 `$ cd RTL`
