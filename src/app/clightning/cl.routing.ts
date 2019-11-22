@@ -27,7 +27,7 @@ export const ClRoutes: Routes = [
     { path: 'invoices', component: CLInvoicesComponent, canActivate: [CLUnlockedGuard] },
     { path: 'forwardinghistory', component: CLForwardingHistoryComponent, canActivate: [CLUnlockedGuard] },
     { path: 'lookups', component: CLLookupsComponent, canActivate: [CLUnlockedGuard] },
-    { path: 'unlocklnd', redirectTo: 'home' },
+    { path: 'wallet', redirectTo: 'home' },
     { path: 'chnlclosed', redirectTo: 'chnlmanage' },
     { path: 'chnlpending', redirectTo: 'chnlmanage' },
     { path: 'chnlbackup', redirectTo: 'chnlmanage' },

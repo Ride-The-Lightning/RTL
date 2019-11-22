@@ -18,7 +18,7 @@
     .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
       font-size: $small-font-size * 1.1;
     }
-    .genseed-message, .insecure-message, .validation-error-icon, .fa-icon-small, .top-icon-small {
+    .genseed-message, .validation-error-message .validation-error-icon.mat-icon, .fa-icon-small, .top-icon-small {
       font-size: $small-font-size * 1.2;
     }
     .page-title-container, .page-sub-title-container {
@@ -29,7 +29,7 @@
         font-size: $small-font-size * 1.5;
       }
     }
-    .mat-icon-button .top-toolbar-icon.icon-pinned {
+    .mat-icon-button .top-toolbar-icon.icon-pinned, .mat-step-header .mat-step-icon .mat-icon {
       padding-top: 1rem;
     }
     .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
@@ -94,7 +94,7 @@
     .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
       font-size: $regular-font-size * 1.1;
     }
-    .genseed-message, .insecure-message, .validation-error-icon {
+    .genseed-message, .validation-error-message .validation-error-icon.mat-icon {
       font-size: $regular-font-size * 1.2;
     }
     .page-title-container, .page-sub-title-container {
@@ -105,13 +105,10 @@
         font-size: $regular-font-size * 1.4;
       }
     }
-    .mat-button .mat-icon-button .top-toolbar-icon.icon-pinned {
-      font-size: $regular-font-size;
-    }
     .fa-icon-small, .top-icon-small, .modal-info-header {
       font-size: $regular-font-size * 1.5;
     }
-    .top-toolbar-icon.icon-pinned {
+    .top-toolbar-icon.icon-pinned, .mat-step-header .mat-step-icon .mat-icon {
       font-size: $regular-font-size * 1.3;
     }
     .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
@@ -172,7 +169,7 @@
     .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
       font-size: $large-font-size * 1.1;
     }
-    .genseed-message, .insecure-message, .validation-error-icon {
+    .genseed-message, .validation-error-message .validation-error-icon.mat-icon {
       font-size: $large-font-size * 1.2;
     }
     .page-title-container, .page-sub-title-container {
@@ -187,7 +184,7 @@
     .fa-icon-small, .top-icon-small, .modal-info-header {
       font-size: $large-font-size * 1.4;
     }
-    .top-toolbar-icon.icon-pinned {
+    .top-toolbar-icon.icon-pinned, .mat-step-header .mat-step-icon .mat-icon {
       font-size: $large-font-size * 1.25;
     }
     .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {

@@ -28,14 +28,14 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
-  public displayedColumns = ['chan_point', 'actions'];
+  public displayedColumns = ['channel_point', 'actions'];
   public selChannel: Channel;
   public channels: any;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
-  public pageSize = PAGE_SIZE;
-  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}

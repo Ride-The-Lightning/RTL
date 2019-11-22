@@ -8,6 +8,7 @@
   $accent: map-get($theme, accent);
   $accent-color: mat-color($accent);
   $warn: map-get($theme, warn);
+  $warn-color: mat-color($warn);
   $foreground: map-get($theme, foreground);
   $foreground-base: mat-color($foreground, base);
   $foreground-text: mat-color($foreground, text);
@@ -44,6 +45,12 @@
   &.day {
     .mat-stroked-button.mat-primary {
       border-color: $primary-color;
+    }
+    .mat-stroked-button.mat-accent {
+      border-color: $accent-color;
+    }
+    .mat-stroked-button.mat-warn {
+      border-color: $warn-color;
     }
     .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
       color: $foreground-secondary-text;
@@ -135,10 +142,6 @@
   .genseed-message {
     width:10%;
     color: $primary-color;
-  }
-
-  .insecure-message {
-    width:100%;
   }
 
   .page-title-container, .page-sub-title-container, .mat-form-field-infix .mat-form-field-label-wrapper .mat-form-field-label {

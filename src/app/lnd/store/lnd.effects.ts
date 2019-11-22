@@ -47,7 +47,7 @@ export class LNDEffects implements OnDestroy {
             if (undefined === info.identity_pubkey) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
-              this.router.navigate(['/lnd/unlocklnd']);
+              this.router.navigate(['/lnd/wallet']);
               return {
                 type: RTLActions.SET_INFO,
                 payload: {}
@@ -64,7 +64,7 @@ export class LNDEffects implements OnDestroy {
             if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
-              this.router.navigate(['/lnd/unlocklnd']);
+              this.router.navigate(['/lnd/wallet']);
               this.handleErrorWithoutAlert('FetchInfo', err);
             } else {
               let code = err.status ? err.status : '';
@@ -85,8 +85,8 @@ export class LNDEffects implements OnDestroy {
               }
               this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
               this.handleErrorWithoutAlert('FetchInfo', err);
-              return of({type: RTLActions.VOID});
             }
+            return of({type: RTLActions.VOID});
           })
         );
     }

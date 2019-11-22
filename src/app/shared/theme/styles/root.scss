@@ -436,7 +436,7 @@ body {
 }
 
 .px-4 {
-  padding: 0 3.2rem !important;
+  padding: 0 4rem !important;
 }
 
 .py-2 {
@@ -799,3 +799,12 @@ table {
 .display-none {
   display: none !important;
 }
+
+.blinker {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation { to { visibility: hidden; }}
+
+@-webkit-keyframes blink-animation { to { visibility: hidden; }}

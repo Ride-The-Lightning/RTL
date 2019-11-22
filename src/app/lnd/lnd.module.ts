@@ -14,7 +14,7 @@ import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.com
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
-import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
+import { WalletComponent } from './wallet/wallet.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelManageComponent } from './peers-channels/channels/channel-manage/channel-manage.component';
 import { ChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
@@ -32,6 +32,8 @@ import { QueryRoutesComponent } from './payments/query-routes/query-routes.compo
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
+import { InitializeWalletComponent } from './wallet/initialize/initialize.component';
 
 @NgModule({
   imports: [
@@ -45,7 +47,7 @@ import { ChannelOpenTableComponent } from './peers-channels/channels/channels-ta
     PeersComponent,
     PeersChannelsComponent,
     LightningInvoicesComponent,
-    UnlockLNDComponent,
+    WalletComponent,
     LightningPaymentsComponent,
     ChannelManageComponent,
     ChannelPendingTableComponent,
@@ -64,7 +66,9 @@ import { ChannelOpenTableComponent } from './peers-channels/channels/channels-ta
     OnChainComponent,
     OnChainTransactionHistoryComponent,
     ChannelsTablesComponent,
-    ChannelOpenTableComponent
+    ChannelOpenTableComponent,
+    UnlockWalletComponent,
+    InitializeWalletComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

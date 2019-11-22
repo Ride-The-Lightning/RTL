@@ -4,7 +4,7 @@ import { ModuleWithProviders } from '@angular/core';
 import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
 import { PeersChannelsComponent } from './peers-channels/peers-channels.component';
-import { UnlockLNDComponent } from './unlock-lnd/unlock-lnd.component';
+import { WalletComponent } from './wallet/wallet.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
 import { LookupsComponent } from './lookups/lookups.component';
@@ -18,7 +18,7 @@ import { NotFoundComponent } from '../shared/components/not-found/not-found.comp
 export const LndRoutes: Routes = [
   { path: '', component: LNDRootComponent,
     children: [
-    { path: 'unlocklnd', component: UnlockLNDComponent, canActivate: [AuthGuard] },
+    { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'peerschannels', component: PeersChannelsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },

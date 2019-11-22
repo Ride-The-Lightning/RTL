@@ -6,16 +6,16 @@
   <div class="padding-gap">
     <mat-card>
       <mat-card-content class="card-content-gap">
-        <form (ngSubmit)="onSignin()" #signinForm="ngForm" fxLayoutAlign="start center">
-          <mat-form-field fxFlex="50" fxLayoutAlign="start">
+        <form (ngSubmit)="onSignin()" #signinForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+          <mat-form-field fxFlex="100" fxLayoutAlign="start">
             <input matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password"
               tabindex="1" required>
             <mat-hint>{{hintStr}}</mat-hint>
           </mat-form-field>
-          <button fxFlex="10" class="mr-2" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2"
-            type="submit" [disabled]="!password">Login</button>
-          <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset"
-            (click)="resetData()">Clear</button>
+          <div fxLayout="column" fxFlex.gt-sm="30" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between center" class="mt-2">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="3" type="submit" [disabled]="!password">Login</button>
+          </div> 
         </form>
       </mat-card-content>
     </mat-card>
