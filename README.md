@@ -54,7 +54,7 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 #### First time setup
 * Fetch sources from RTL git repository, by executing the below on the command prompt:
 
-`$ git clone https://github.com/ShahanaFarooqui/RTL.git`
+`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
 * Change directory to RTL folder:
 
 `$ cd RTL`
