@@ -56,7 +56,7 @@ export class LNDEffects implements OnDestroy {
               this.initializeRemainingData(info, action.payload.loadPage);
               return {
                 type: RTLActions.SET_INFO,
-                payload: (undefined !== info) ? info : {}
+                payload: info ? info : {}
               };
             }
           }),
@@ -103,7 +103,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(peers);
             return {
               type: RTLActions.SET_PEERS,
-              payload: (undefined !== peers) ? peers : []
+              payload: peers ? peers : []
             };
           }),
           catchError((err: any) => {
@@ -126,7 +126,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' }}}));
             return {
               type: RTLActions.SET_PEERS,
-              payload: (undefined !== postRes && postRes.length > 0) ? postRes : []
+              payload: (postRes && postRes.length > 0) ? postRes : []
             };
           }),
           catchError((err: any) => {
@@ -365,7 +365,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info(fees);
       return {
         type: RTLActions.SET_FEES,
-        payload: (undefined !== fees) ? fees : {}
+        payload: fees ? fees : {}
       };
     }),
     catchError((err: any) => {
@@ -389,7 +389,7 @@ export class LNDEffects implements OnDestroy {
             const emptyRes = (action.payload === 'channels') ? { balance: '', btc_balance: '' } : { total_balance: '', btc_total_balance: '' };
             return {
               type: RTLActions.SET_BALANCE,
-              payload: (undefined !== res) ? { target: action.payload, balance: res } : { target: action.payload, balance: emptyRes }
+              payload: res ? { target: action.payload, balance: res } : { target: action.payload, balance: emptyRes }
             };
           }),
           catchError((err: any) => {
@@ -411,7 +411,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info(networkInfo);
       return {
         type: RTLActions.SET_NETWORK,
-        payload: (undefined !== networkInfo) ? networkInfo : {}
+        payload: networkInfo ? networkInfo : {}
       };
     }),
     catchError((err: any) => {
@@ -449,17 +449,17 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.SetNodePendingChannelsData(pendingChannels));
               return {
                 type: RTLActions.SET_PENDING_CHANNELS,
-                payload: (undefined !== channels) ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
+                payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
               };
             } else if (action.payload.routeParam === 'closed') {
               return {
                 type: RTLActions.SET_CLOSED_CHANNELS,
-                payload: (undefined !== channels && undefined !== channels.channels && channels.channels.length > 0) ? channels.channels : []
+                payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
               };
             } else if (action.payload.routeParam === 'all') {
               return {
                 type: RTLActions.SET_CHANNELS,
-                payload: (undefined !== channels && undefined !== channels.channels && channels.channels.length > 0) ? channels.channels : []
+                payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
               };
             }
           },
@@ -508,7 +508,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info(transactions);
       return {
         type: RTLActions.SET_TRANSACTIONS,
-        payload: (undefined !== transactions && transactions.length > 0) ? transactions : []
+        payload: (transactions && transactions.length > 0) ? transactions : []
       };
     }),
     catchError((err: any) => {
@@ -528,7 +528,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info(payments);
       return {
         type: RTLActions.SET_PAYMENTS,
-        payload: (undefined !== payments && null != payments) ? payments : []
+        payload: payments ? payments : []
       };
     }),
     catchError((err: any) => {
@@ -548,7 +548,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: RTLActions.SET_DECODED_PAYMENT,
-              payload: (undefined !== decodedPayment) ? decodedPayment : {}
+              payload: decodedPayment ? decodedPayment : {}
             };
           }),
           catchError((err: any) => {
@@ -636,7 +636,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: RTLActions.SET_GRAPH_NODE,
-            payload: (undefined !== graphNode) ? graphNode : {}
+            payload: graphNode ? graphNode : {}
           };
         }),
         catchError((err: any) => {
@@ -665,7 +665,7 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: RTLActions.SET_NEW_ADDRESS,
-            payload: (undefined !== newAddress && undefined !== newAddress.address) ? newAddress.address : {}
+            payload: (newAddress && newAddress.address) ? newAddress.address : {}
           };
         }),
         catchError((err: any) => {
@@ -998,7 +998,7 @@ export class LNDEffects implements OnDestroy {
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
-    if (undefined !== info.chains) {
+    if (info.chains) {
       if (typeof info.chains[0] === 'string') {
         info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
         info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;

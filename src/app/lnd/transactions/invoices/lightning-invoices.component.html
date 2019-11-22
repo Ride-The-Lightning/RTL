@@ -64,11 +64,17 @@
         <td mat-cell *matCellDef="let invoice" class="pl-4">{{invoice.settle_date_str || '-'}}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
         <td mat-cell *matCellDef="let invoice">
           <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onInvoiceClick(invoice, $event)">View Info</button>          
         </td>
       </ng-container>
+      <ng-container matColumnDef="no_invoice">
+        <td mat-footer-cell *matFooterCellDef colspan="4">
+          <p *ngIf="!invoices.data || invoices.data.length<1">No invoices available.</p>
+        </td>
+      </ng-container>
+      <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices.data && invoices.data.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" class="row-invoices"></tr>
     </table>

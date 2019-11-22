@@ -262,4 +262,13 @@
       color: $foreground-text;
     }
   }
+
+  .mat-expansion-panel.flat-expansion-panel {
+    box-shadow: none;
+    padding: 0;
+    border: 1px solid $foreground-divider;
+    border-radius: 4px;
+    background: none;
+  }
+
 }

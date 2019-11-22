@@ -1,51 +1,47 @@
-<div fxLayout="column" fxLayoutAlign="center center" class="test-banner mx-1">
-  <h5>Save your backup files in a redundant location</h5>
-</div>
 <div fxLayout="column">
-  <div class="padding-gap">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-subtitle>
-          <h2>Channels Backup</h2>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between start">
-          <h4 fxFlex="100">Backup folder location: {{selNode.channelBackupPath}}</h4>
-          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onBackupChannels({})">Backup All Channels</button>
-          <button fxFlex="49" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onVerifyChannels({})">Verify All Channels Backup</button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap">
+    <h4 fxFlex="100">Save your backup files in a redundant location.</h4>
+    <h4 fxFlex="100" class="mt-1">Backup folder location: {{selNode.channelBackupPath}}</h4>
+    <div fxLayout="row" fxFlex.gt-sm="30" fxLayoutAlign.gt-sm="space-between start" fxLayoutAlign="start start" class="mt-2">
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All Channels Backup</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All Channels</button>
+    </div>
   </div>
-  <div class="padding-gap">
-    <mat-card>
-      <mat-card-content class="table-card-content">
-        <div fxLayout="row" fxLayoutAlign="start start">
-          <mat-form-field fxFlex="30">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-          </mat-form-field>
-        </div>
-        <div perfectScrollbar class="table-container">
-          <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-          <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-            <ng-container matColumnDef="chan_point">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
-              <td mat-cell *matCellDef="let channel">{{channel?.channel_point}}</td>
-            </ng-container>
-            <ng-container matColumnDef="backup">
-              <th mat-header-cell *matHeaderCellDef>Backup</th>
-              <td mat-cell *matCellDef="let channel"><mat-icon color="primary" (click)="onBackupChannels(channel)">save_alt</mat-icon></td>
-            </ng-container>
-            <ng-container matColumnDef="verify">
-              <th mat-header-cell *matHeaderCellDef>Verify</th>
-              <td mat-cell *matCellDef="let channel"><mat-icon color="primary" (click)="onVerifyChannels(channel)">verified_user</mat-icon></td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onChannelClick(row, $event)"></tr>
-          </table>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-minus-2">
+    <div fxFlex="70"></div>
+    <mat-form-field fxFlex="30">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    </mat-form-field>
   </div>
+  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <ng-container matColumnDef="chan_point">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+        <td mat-cell *matCellDef="let channel">{{channel?.channel_point}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
+        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
+          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+              <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
+              <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
+            </mat-select>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="no_channel">
+        <td mat-footer-cell *matFooterCellDef colspan="4">
+          <p *ngIf="!channels.data || channels.data.length<1">No channels available.</p>
+        </td>
+      </ng-container>
+      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels.data && channels.data.length>0}"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="mb-4"></mat-paginator>
 </div>

@@ -25,25 +25,22 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
   public pendingChannels: PendingChannels = {};
   public displayedClosingColumns = [
     'closing_txid',
-    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'
+    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity', 'actions'
   ];
   public pendingClosingChannelsLength = 0;
   public pendingClosingChannels: any;
   public displayedForceClosingColumns = [
     'closing_txid', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance',
-    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'
+    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity', 'actions'
   ];
   public pendingForceClosingChannelsLength = 0;
   public pendingForceClosingChannels: any;
-  public displayedOpenColumns = [
-    'commit_weight', 'confirmation_height', 'fee_per_kw', 'commit_fee',
-    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'
-  ];
+  public displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
   public pendingOpenChannelsLength = 0;
   public pendingOpenChannels: any;
   public displayedWaitClosingColumns = [
     'limbo_balance',
-    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'
+    'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity', 'actions'
   ];
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
@@ -53,44 +50,34 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance'];
-        this.displayedForceClosingColumns = ['remote_node_pub', 'recovered_balance', 'limbo_balance'];
-        this.displayedOpenColumns = ['remote_node_pub', 'local_balance', 'commit_fee'];
-        this.displayedWaitClosingColumns = ['remote_node_pub', 'limbo_balance', 'local_balance'];
+        this.displayedClosingColumns = ['channel_point', 'capacity', 'actions'];
+        this.displayedForceClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
+        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'actions'];
+        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance', 'capacity'];
-        this.displayedForceClosingColumns = ['remote_node_pub', 'recovered_balance', 'limbo_balance', 'blocks_til_maturity', 'maturity_height'];
-        this.displayedOpenColumns = ['remote_node_pub', 'local_balance', 'commit_fee', 'remote_balance'];
-        this.displayedWaitClosingColumns = ['remote_node_pub', 'limbo_balance', 'local_balance', 'remote_balance'];
+        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'actions'];
+        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'actions'];
+        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'actions'];
+        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'capacity', 'actions'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance', 'capacity', 'closing_txid'];
-        this.displayedForceClosingColumns = ['remote_node_pub', 'recovered_balance', 'limbo_balance', 'blocks_til_maturity', 'maturity_height', 'local_balance'];
-        this.displayedOpenColumns = ['remote_node_pub', 'local_balance', 'commit_fee', 'remote_balance', 'capacity'];
-        this.displayedWaitClosingColumns = ['remote_node_pub', 'limbo_balance', 'local_balance', 'remote_balance', 'capacity', 'channel_point'];
+        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance', 'capacity', 'closing_txid', 'channel_point'];
-        this.displayedForceClosingColumns = [
-          'remote_node_pub', 'recovered_balance', 'limbo_balance', 'blocks_til_maturity',
-          'maturity_height', 'local_balance', 'remote_balance', 'capacity', 'closing_txid', 'channel_point'
-        ];
-        this.displayedOpenColumns = [
-          'remote_node_pub', 'local_balance', 'commit_fee', 'remote_balance', 'capacity', 'commit_weight', 'fee_per_kw', 'confirmation_height', 'channel_point'
-        ];
-        this.displayedWaitClosingColumns = ['remote_node_pub', 'limbo_balance', 'local_balance', 'remote_balance', 'capacity', 'channel_point'];
+        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
         break;
       default:
-        this.displayedClosingColumns = ['remote_node_pub', 'local_balance', 'remote_balance', 'capacity', 'closing_txid', 'channel_point'];
-        this.displayedForceClosingColumns = [
-          'remote_node_pub', 'recovered_balance', 'limbo_balance', 'blocks_til_maturity',
-          'maturity_height', 'local_balance', 'remote_balance', 'capacity', 'closing_txid', 'channel_point'
-        ];
-        this.displayedOpenColumns = [
-          'remote_node_pub', 'local_balance', 'commit_fee', 'remote_balance', 'capacity', 'commit_weight', 'fee_per_kw', 'confirmation_height', 'channel_point'
-        ];
-        this.displayedWaitClosingColumns = ['remote_node_pub', 'limbo_balance', 'local_balance', 'remote_balance', 'capacity', 'channel_point'];
+        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
         break;
     }
   }
@@ -108,23 +95,23 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
-      if (undefined !== this.pendingChannels.total_limbo_balance) {
+      if (this.pendingChannels.total_limbo_balance) {
         this.flgLoading[1] = false;
-        if (undefined !== this.pendingChannels.pending_closing_channels) {
+        if (this.pendingChannels.pending_closing_channels) {
           this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
         }
-        if (undefined !== this.pendingChannels.pending_force_closing_channels) {
+        if (this.pendingChannels.pending_force_closing_channels) {
           this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
         }
-        if (undefined !== this.pendingChannels.pending_open_channels) {
+        if (this.pendingChannels.pending_open_channels) {
           this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
         }
-        if (undefined !== this.pendingChannels.waiting_close_channels) {
+        if (this.pendingChannels.waiting_close_channels) {
           this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
         }
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+        this.flgLoading[0] = (this.information.identity_pubkey) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -191,7 +178,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     channels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
-    this.pendingOpenChannelsLength = (undefined !== channels.length) ? channels.length : 0;
+    this.pendingOpenChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingOpenChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingOpenChannels.sort = this.sort;
     this.logger.info(this.pendingOpenChannels);
@@ -201,7 +188,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     channels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
-    this.pendingForceClosingChannelsLength = (undefined !== channels.length) ? channels.length : 0;
+    this.pendingForceClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingForceClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingForceClosingChannels.sort = this.sort;
     this.logger.info(this.pendingForceClosingChannels);
@@ -211,7 +198,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     channels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
-    this.pendingClosingChannelsLength = (undefined !== channels.length) ? channels.length : 0;
+    this.pendingClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingClosingChannels.sort = this.sort;
     this.logger.info(this.pendingClosingChannels);
@@ -221,7 +208,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     channels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? -1 : 1);
     });
-    this.pendingWaitClosingChannelsLength = (undefined !== channels.length) ? channels.length : 0;
+    this.pendingWaitClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingWaitClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingWaitClosingChannels.sort = this.sort;
     this.logger.info(this.pendingWaitClosingChannels);
@@ -229,6 +216,21 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: number) {
     this.selectedFilter = selFilter;
+  }
+
+  onPendingClick(selRow: any, event: any) {
+    // // const flgExpansionClicked = event.target.className.includes('mat-expansion-panel-header') || event.target.className.includes('mat-expansion-indicator');
+    // // if (flgExpansionClicked) { return; }
+    // const selPayment = this.payments.data.filter(payment => {
+    //   return payment.payment_hash === selRow.payment_hash;
+    // })[0];
+    // const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
+    //   'creation_date_str', 'payment_hash', 'fee', 'value_msat', 'value_sat', 'value', 'payment_preimage', 'path'
+    // ] , 2));
+    // this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
+    //   type: 'INFO',
+    //   message: JSON.stringify(reorderedPayment)
+    // }}}));
   }
 
   ngOnDestroy() {

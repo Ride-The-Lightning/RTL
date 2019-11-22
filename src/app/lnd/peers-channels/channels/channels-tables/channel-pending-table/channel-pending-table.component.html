@@ -1,234 +1,197 @@
-<div fxLayout="column">
-  <div fxFlex="100" class="padding-gap">
-    <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} {{information?.smaller_currency_unit}}</span>
-    <div class="">
-      <mat-accordion displayMode="flat">
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Pending Open Channels({{pendingOpenChannelsLength}})</mat-panel-title>
-            <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-          </mat-expansion-panel-header>
-          <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-            <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'overflow-auto error-border bordered-box': flgLoading[0]==='error','overflow-auto bordered-box': true}">
-              <ng-container matColumnDef="remote_node_pub">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="local_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Local Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-                      number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="commit_fee">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Commit Fee </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_fee | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="remote_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Remote Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
-                          number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="capacity">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Capacity </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-                            number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="commit_weight">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Commit Weight </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_weight | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="fee_per_kw">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Fee Per KW </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.fee_per_kw | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="confirmation_height">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Confirmation Height </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.confirmation_height |
-                  number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="channel_point">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedOpenColumns"></mat-header-row>
-              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedOpenColumns;"
-                (click)="onOpenClick(row, $event)"></mat-row>
-            </mat-table>
-          </div>            
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Pending Force Closing Channels({{pendingForceClosingChannelsLength}})</mat-panel-title>
-            <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-          </mat-expansion-panel-header>
-          <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-            <mat-table #table [dataSource]="pendingForceClosingChannels" matSort
-              [ngClass]="{'overflow-auto error-border bordered-box': flgLoading[0]==='error','overflow-auto bordered-box': true}">
-              <ng-container matColumnDef="remote_node_pub">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="recovered_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Recovered Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance |
-                        number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="limbo_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Limbo Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="blocks_til_maturity">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Block Till Maturity </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.blocks_til_maturity |
-                            number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="maturity_height">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Maturity Height </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.maturity_height | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="local_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Local Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-                            number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="remote_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Remote Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
-                          number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="capacity">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Capacity </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-                          number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="closing_txid">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> Transaction Id </mat-header-cell>
-                <mat-cell *matCellDef="let channel">
-                  <div class="flex-ellipsis">{{channel.closing_txid}}</div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="channel_point">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedForceClosingColumns"></mat-header-row>
-              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedForceClosingColumns;"
-                (click)="onForceClosingClick(row, $event)"></mat-row>
-            </mat-table>
-          </div>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Pending Closing Channels({{pendingClosingChannelsLength}})</mat-panel-title>
-            <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-          </mat-expansion-panel-header>
-          <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-            <mat-table #table [dataSource]="pendingClosingChannels" matSort
-              [ngClass]="{'overflow-auto error-border bordered-box': flgLoading[0]==='error','overflow-auto bordered-box': true}">
-              <ng-container matColumnDef="remote_node_pub">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="local_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Local Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-                  number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="remote_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Remote Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
-                  number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="capacity">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Capacity </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-                    number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="closing_txid">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> Transaction Id </mat-header-cell>
-                <mat-cell *matCellDef="let channel">
-                  <div class="flex-ellipsis">{{channel.closing_txid}}</div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="channel_point">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedClosingColumns"></mat-header-row>
-              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedClosingColumns;"
-                (click)="onClosingClick(row, $event)"></mat-row>
-            </mat-table>
-          </div>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Waiting Close Channels({{pendingWaitClosingChannelsLength}})</mat-panel-title>
-            <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-          </mat-expansion-panel-header>
-          <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-              <mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
-              [ngClass]="{'overflow-auto error-border bordered-box': flgLoading[0]==='error','overflow-auto bordered-box': true}">
-              <ng-container matColumnDef="remote_node_pub">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Remote Node Pub </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.remote_node_pub}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="limbo_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Limbo Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="local_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Local Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
-                  number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="remote_balance">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Remote Balance </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
+<div fxLayout="column" class="mb-2">
+  <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} {{information?.smaller_currency_unit}}</span>
+  <mat-accordion displayMode="flat" class="mt-1">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Pending Open Channels({{pendingOpenChannelsLength}})</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div perfectScrollbar class="table-container">
+        <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
+            <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commit_fee">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_fee | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="commit_weight">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Weight </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_weight | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="capacity">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <td mat-cell *matCellDef="let channel" class="pl-4">
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="1" (click)="onPendingClick(channel,$event)">View Info</button>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_pending_open">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!pendingOpenChannels || !pendingOpenChannels.data || pendingOpenChannels.data.length<1">No pending open channels.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_open']" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels.data && pendingOpenChannels.data.length>0}"></tr>
+          <mat-header-row *matHeaderRowDef="displayedOpenColumns"></mat-header-row>
+          <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedOpenColumns;"
+            (click)="onOpenClick(row, $event)"></mat-row>
+        </mat-table>
+      </div>            
+    </mat-expansion-panel>
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Pending Force Closing Channels({{pendingForceClosingChannelsLength}})</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div perfectScrollbar class="table-container">
+        <mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
+            <mat-cell *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="recovered_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="limbo_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="capacity">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <td mat-cell *matCellDef="let channel" class="pl-4">
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="2" (click)="onPendingClick(channel,$event)">View Info</button>          
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_pending_force_closing">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!pendingForceClosingChannels || !pendingForceClosingChannels.data || pendingForceClosingChannels.data.length<1">No pending force closing channels.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_force_closing']" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels.data && pendingForceClosingChannels.data.length>0}"></tr>
+          <mat-header-row *matHeaderRowDef="displayedForceClosingColumns"></mat-header-row>
+          <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedForceClosingColumns;"
+            (click)="onForceClosingClick(row, $event)"></mat-row>
+        </mat-table>
+      </div>
+    </mat-expansion-panel>
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Pending Closing Channels({{pendingClosingChannelsLength}})</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div perfectScrollbar class="table-container">
+        <mat-table #table [dataSource]="pendingClosingChannels" matSort
+          [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
+            <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Local Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
+              number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Remote Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
+              number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="capacity">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Capacity </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
                 number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="capacity">
-                <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-                  Capacity </mat-header-cell>
-                <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
-                  number}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="channel_point">
-                <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-                <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedWaitClosingColumns"></mat-header-row>
-              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedWaitClosingColumns;"
-                (click)="onWaitClosingClick(row, $event)"></mat-row>
-            </mat-table>
-          </div>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </div>
-  </div>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <td mat-cell *matCellDef="let channel" class="pl-4">
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="3" (click)="onPendingClick(channel,$event)">View Info</button>          
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_pending_closing">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!pendingClosingChannels || !pendingClosingChannels.data || pendingClosingChannels.data.length<1">No pending closing channels.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_closing']" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels.data && pendingClosingChannels.data.length>0}"></tr>
+          <mat-header-row *matHeaderRowDef="displayedClosingColumns"></mat-header-row>
+          <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedClosingColumns;"
+            (click)="onClosingClick(row, $event)"></mat-row>
+        </mat-table>
+      </div>
+    </mat-expansion-panel>
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Waiting Close Channels({{pendingWaitClosingChannelsLength}})</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div perfectScrollbar class="table-container">
+        <mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
+          [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
+          <ng-container matColumnDef="channel_point">
+            <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
+            <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="limbo_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Limbo Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="local_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Local Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
+              number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="remote_balance">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Remote Balance </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
+            number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="capacity">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
+              Capacity </mat-header-cell>
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
+              number}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <mat-header-cell fxLayoutAlign="end center" class="pl-4 pr-3" *matHeaderCellDef>Actions</mat-header-cell>            
+            <td mat-cell *matCellDef="let channel" class="pl-4">
+              <span fxLayoutAlign="end center">
+                <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPendingClick(channel,$event)">View Info</button>          
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_pending_wait_closing">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!pendingWaitClosingChannels || !pendingWaitClosingChannels.data || pendingWaitClosingChannels.data.length<1">No pending wait closing channels.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_wait_closing']" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels.data && pendingWaitClosingChannels.data.length>0}"></tr>
+          <mat-header-row *matHeaderRowDef="displayedWaitClosingColumns"></mat-header-row>
+          <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedWaitClosingColumns;"
+            (click)="onWaitClosingClick(row, $event)"></mat-row>
+        </mat-table>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>

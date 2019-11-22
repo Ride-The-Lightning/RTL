@@ -42,7 +42,7 @@ export class CLEffects implements OnDestroy {
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: RTLActions.SET_INFO_CL,
-              payload: (undefined !== info) ? info : {}
+              payload: info ? info : {}
             };
           }),
           catchError((err) => {
@@ -81,7 +81,7 @@ export class CLEffects implements OnDestroy {
       this.logger.info(fees);
       return {
         type: RTLActions.SET_FEES_CL,
-        payload: (undefined !== fees) ? fees : {}
+        payload: fees ? fees : {}
       };
     }),
     catchError((err: any) => {
@@ -101,7 +101,7 @@ export class CLEffects implements OnDestroy {
       this.logger.info(feeRates);
       return {
         type: RTLActions.SET_FEE_RATES_CL,
-        payload: (undefined !== feeRates) ? feeRates : {}
+        payload: feeRates ? feeRates : {}
       };
     }),
     catchError((err: any) => {
@@ -121,7 +121,7 @@ export class CLEffects implements OnDestroy {
       this.logger.info(balance);
       return {
         type: RTLActions.SET_BALANCE_CL,
-        payload: (undefined !== balance) ? balance : {}
+        payload: balance ? balance : {}
       };
     }),
     catchError((err: any) => {
@@ -141,7 +141,7 @@ export class CLEffects implements OnDestroy {
       this.logger.info(lrBalance);
       return {
         type: RTLActions.SET_LOCAL_REMOTE_BALANCE_CL,
-        payload: (undefined !== lrBalance) ? lrBalance : {}
+        payload: lrBalance ? lrBalance : {}
       };
     }),
     catchError((err: any) => {
@@ -160,7 +160,7 @@ export class CLEffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: RTLActions.SET_NEW_ADDRESS_CL,
-            payload: (undefined !== newAddress && undefined !== newAddress.address) ? newAddress.address : {}
+            payload: (newAddress && newAddress.address) ? newAddress.address : {}
           };
         }),
           catchError((err: any) => {
@@ -190,7 +190,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(peers);
             return {
               type: RTLActions.SET_PEERS_CL,
-              payload: (undefined !== peers) ? peers : []
+              payload: peers ? peers : []
             };
           }),
           catchError((err: any) => {
@@ -213,7 +213,7 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' }}}));
             return {
               type: RTLActions.SET_PEERS_CL,
-              payload: (undefined !== postRes && postRes.length > 0) ? postRes : []
+              payload: (postRes && postRes.length > 0) ? postRes : []
             };
           }),
           catchError((err: any) => {
@@ -258,7 +258,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(channels);
             return {
               type: RTLActions.SET_CHANNELS_CL,
-              payload: (undefined !== channels && channels.length > 0) ? channels : []
+              payload: (channels && channels.length > 0) ? channels : []
             };
           },
             catchError((err: any) => {
@@ -350,7 +350,7 @@ export class CLEffects implements OnDestroy {
       this.logger.info(payments);
       return {
         type: RTLActions.SET_PAYMENTS_CL,
-        payload: (undefined !== payments && null != payments) ? payments : []
+        payload: payments ? payments : []
       };
     }),
     catchError((err: any) => {
@@ -370,7 +370,7 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: RTLActions.SET_DECODED_PAYMENT_CL,
-              payload: (undefined !== decodedPayment) ? decodedPayment : {}
+              payload: decodedPayment ? decodedPayment : {}
             };
           }),
           catchError((err: any) => {
