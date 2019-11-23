@@ -18,7 +18,7 @@ Follow the below steps to install and setup RTL to run on c-lightning.
 ### <a name="prereq"></a>Pre-requisites:
 1. Functioning C-lightning node
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
-3. Cl-Rest - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/saubyk/c-lightning-REST/blob/master/README.md)
+3. Cl-Rest - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/Ride-The-Lightning/c-lightning-REST)
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
 
 ### <a name="arch"></a>Architecture
