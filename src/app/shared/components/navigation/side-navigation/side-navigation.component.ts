@@ -14,6 +14,7 @@ import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../..
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
+import { ShowPubkeyComponent } from '../../../components/data-modal/show-pubkey/show-pubkey.component';
 import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
@@ -135,12 +136,10 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
   
   onShowData(node: MenuChildNode) {
-    console.warn(node);
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'WARN',
-      titleMessage: node.name,
-      message: JSON.stringify(node)
-    }}}));
+    this.store.dispatch(new RTLActions.OpenAlert({
+      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(this.information.identity_pubkey)}},
+      component: ShowPubkeyComponent
+    }));
   }
 
   onNodeSelectionChange(selNodeValue: LightningNode) {

@@ -144,7 +144,14 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.transaction = {};
+    this.selTransType = '1';      
+    if (this.sweepAll) {
+      this.transaction.address = '';
+      this.transaction.blocks = null;
+      this.transaction.fees = null;
+    } else {
+      this.transaction = {};
+    }
   }
 
   onAmountUnitChange(event: any) {

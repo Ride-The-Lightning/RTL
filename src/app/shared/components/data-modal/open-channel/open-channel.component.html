@@ -31,7 +31,7 @@
                   </div>
                   <div fxFlex="50">
                       <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
-                      <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'Inbound' : 'Outbound'}}</span>
+                      <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'True' : 'False'}}</span>
                     </div>
                   </div>
               </div>
@@ -63,7 +63,7 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field fxFlex="25" *ngIf="selTransType=='0'">
-              <input matInput placeholder="Channel Opening Priority" disabled>
+              <input matInput placeholder="Default" disabled>
             </mat-form-field>
             <mat-form-field fxFlex="25" *ngIf="selTransType=='1'">
               <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="3" #blocks="ngModel">

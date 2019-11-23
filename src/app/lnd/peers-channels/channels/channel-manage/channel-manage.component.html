@@ -32,7 +32,7 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field fxFlex="33" *ngIf="selTransType=='0'">
-      <input matInput placeholder="Channel Opening Priority" disabled>
+      <input matInput placeholder="Default" disabled>
     </mat-form-field>
     <mat-form-field fxFlex="33" *ngIf="selTransType=='1'">
       <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="7" #blocks="ngModel">
@@ -45,7 +45,7 @@
     </div>
   </div>
   <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="30" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">
-    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear</button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear Field</button>
     <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="selectedPeer === '' || fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="11">
       <p *ngIf="(selectedPeer === '' || fundingAmount == null) && (selPeer.touched || selPeer.dirty) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
       <ng-template #openText><p>Open Channel</p></ng-template>

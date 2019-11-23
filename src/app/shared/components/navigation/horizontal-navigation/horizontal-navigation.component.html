@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+<div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
   <div fxLayoutAlign="start start">
     <div *ngFor="let menuNode of menuNodes">
       <button mat-button *ngIf="undefined === menuNode.children" fxLayoutAlign="center center" class="horizontal-button" routerLinkActive="h-active-link" [routerLinkActiveOptions]="{exact: true}" routerLink="{{menuNode.link}}" (click)="onClick(menuNode)">
@@ -19,8 +19,8 @@
       </div>
     </div>
   </div>
-  <div fxLayoutAlign="end end" style="align-self: center;">
-    <button mat-stroked-button fxLayoutAlign="center center" color="accent" class="horizontal-button-show" tabindex="20" type="click">Show Public Key</button>
+  <div fxLayoutAlign="end center">
+    <button fxLayoutAlign="center center" mat-stroked-button color="primary" class="horizontal-button-show" tabindex="20" (click)="onShowPubkey()">Show Public Key</button>
     <rtl-top-menu></rtl-top-menu>
   </div>
 </div>

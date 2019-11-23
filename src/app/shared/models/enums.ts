@@ -12,10 +12,18 @@ export const ADDRESS_TYPES = [
 ];
 
 export const TRANS_TYPES = [
-  {id: '0', name: 'Default Priority'},
+  {id: '0', name: 'Priority (Default)'},
   {id: '1', name: 'Target Confirmation Blocks'},
   {id: '2', name: 'Fee'}
 ];
+
+export enum AlertTypeEnum {
+  INFO = 'Information',
+  WARN = 'Warning',
+  ERROR = 'Error',
+  SUCCESS = 'Success',
+  CONFIRM = 'Confirm'
+}
 
 export enum AuthenticateWith {
   TOKEN = 'TOKEN',

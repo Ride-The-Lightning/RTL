@@ -1,16 +1,16 @@
-<div fxLayout="column">
-  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" *ngIf="allRestoreExists">
-    <h4 fxFlex="100" class="mt-1">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+<div fxLayout="column" class="mt-2">
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="allRestoreExists">
+    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
     <div fxLayout="row" fxFlex.gt-sm="20" fxLayoutAlign="start start" class="mt-2">
       <button fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" (click)="onRestoreChannels({})">Restore All Channels</button>
     </div>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && (!channels || channels.data.length<=0)">
-    <h4 fxFlex="100" class="mt-1">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && (!channels || channels.data.length<=0)">
+    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
     <h4 fxFlex="100" class="mt-1">All channel backup file not found! To perform channel restoration, channel backup file/s must be placed at the above location.</h4>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && channels && channels.data.length && channels.data.length>0">
-    <h4 fxFlex="100" class="mt-1">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && channels && channels.data.length && channels.data.length>0">
+    <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
   </div>
   <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-minus-2">
     <div fxFlex="70"></div>

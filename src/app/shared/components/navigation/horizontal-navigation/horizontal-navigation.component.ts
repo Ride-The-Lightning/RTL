@@ -6,10 +6,12 @@ import { Store } from '@ngrx/store';
 import { faEject } from '@fortawesome/free-solid-svg-icons';
 import { SessionService } from '../../../services/session.service';
 import { MENU_DATA } from '../../../models/navMenu';
+import { ShowPubkeyComponent } from '../../data-modal/show-pubkey/show-pubkey.component';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { GetInfoRoot } from '../../../models/RTLconfig';
 
 @Component({
   selector: 'rtl-horizontal-navigation',
@@ -21,6 +23,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
   public logoutNode = [];
   public showLogout = false;
   public numPendingChannels = 0;
+  public information: GetInfoRoot = {};
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
   constructor(private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
@@ -30,6 +33,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.information = rtlStore.nodeData;
       this.numPendingChannels = rtlStore.nodeData.numberOfPendingChannels;
       if(rtlStore.selNode.lnImplementation.toUpperCase() === 'CLT') {
         this.menuNodes = MENU_DATA.CLChildren;
@@ -72,6 +76,13 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  onShowPubkey() {
+    this.store.dispatch(new RTLActions.OpenAlert({
+      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(this.information.identity_pubkey)}},
+      component: ShowPubkeyComponent
+    }));
+  }  
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

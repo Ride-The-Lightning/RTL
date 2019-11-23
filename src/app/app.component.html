@@ -1,5 +1,5 @@
 <div fxLayout="column" id="rtl-container" class="rtl-container" [ngClass]="[settings.themeColor, settings.themeMode, settings.fontSize]" [class.horizontal]="settings.menu === 'horizontal'" [class.compact]="settings.menuType === 'compact'" [class.mini]="settings.menuType === 'mini'">
-  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary" *ngIf="settings.menu === 'vertical'">
+  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar" *ngIf="settings.menu === 'vertical'">
     <div fxLayoutAlign="center center">
       <button *ngIf="settings.menu === 'vertical'" class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
         <mat-icon>menu</mat-icon>

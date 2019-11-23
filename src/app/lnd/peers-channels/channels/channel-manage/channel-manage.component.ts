@@ -249,7 +249,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.showAdvanced = !this.showAdvanced;
     if (!this.showAdvanced) {
       this.spendUnconfirmed = false;
-      this.isPrivate = false;
       this.selTransType = '0';
       this.transTypeValue = {blocks: '', fees: ''};
     }

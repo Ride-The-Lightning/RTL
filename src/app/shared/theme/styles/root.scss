@@ -459,6 +459,10 @@ body {
   overflow-y: auto;
 }
 
+.overflow-y-hidden {
+  overflow-y: hidden !important;
+}
+
 .overflow-auto {
   overflow: auto;
 }
@@ -808,3 +812,4 @@ table {
 @keyframes blink-animation { to { visibility: hidden; }}
 
 @-webkit-keyframes blink-animation { to { visibility: hidden; }}
+

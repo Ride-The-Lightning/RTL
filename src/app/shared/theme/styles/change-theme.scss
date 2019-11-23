@@ -16,7 +16,9 @@
   $foreground-disabled: mat-color($foreground, disabled);
   $foreground-divider: mat-color($foreground, divider);
   $background: map-get($theme, background);
+  $background-color: mat-color($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
+  $hover-background-white: rgba(255, 255, 255, 0.06);
 
   .bg-primary {
     @include _mat-toolbar-color($primary);
@@ -30,19 +32,68 @@
     @include _mat-toolbar-color($warn);
   }
 
-  .btn-primary-darker {
-    background-color: $primary-darker;
-    color: $accent-color;
-    border-radius: 1.6rem;
-    text-transform: capitalize;
-  }
-
   &.night {
+    .rtl-top-toolbar {
+      border-bottom: 1px solid $background-color;
+    }
+    .mat-tab-label.mat-tab-label-active {
+      color: $primary-darker;
+    }
+    .cc-data-block .cc-data-title {
+      color: $primary-darker;
+    }    
+    .mat-stroked-button.mat-primary {
+      border-color: $primary-darker;
+      color: $primary-darker;
+    }
+    .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
+      background-color: white;
+      opacity: 0.09;
+    }    
+    .mat-stroked-button.mat-accent {
+      border-color: $accent-color;
+    }
+    .mat-stroked-button.mat-warn {
+      border-color: $warn-color;
+    }
+    .active-link, .active-link .fa-icon-small {
+      color: $primary-darker; 
+      font-weight: 500;
+      cursor: pointer;
+      fill: $primary-darker; 
+    }
+    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
+      color: $primary-darker; 
+      cursor: pointer;
+      background: $hover-background-white;
+      & .ng-fa-icon, & .mat-icon {
+        color: $primary-darker;
+      }
+      & .sidenav-img svg {
+        fill: $primary-darker;
+      }
+    }
+    .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
+    .page-title-container .page-title-img, svg.top-icon-small {
+      fill:  $foreground-text;
+    }
     .selected-color {
-      border-color: $primary-lighter;
+      border-color: $primary-darker;
+    }
+    .rtl-snack-bar {
+      background: $primary-color;
     }
   }
   &.day {
+    .rtl-top-toolbar {
+      border-bottom: 1px solid white;
+    }
+    .mat-tab-label.mat-tab-label-active {
+      color: $primary-color;
+    }
+    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
+      color: $foreground-secondary-text;
+    }
     .mat-stroked-button.mat-primary {
       border-color: $primary-color;
     }
@@ -52,17 +103,44 @@
     .mat-stroked-button.mat-warn {
       border-color: $warn-color;
     }
-    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
-      color: $foreground-secondary-text;
-    }
     .selected-color {
-      border-color: $primary-darker;
+      border-color: $primary-color;
     }
+    .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
+      opacity: 0.06;
+    }    
     .page-title-container, .page-sub-title-container {
       & .page-title-img {
         color: $foreground-disabled;  
       }
       color: $foreground-secondary-text;
+    }
+    .cc-data-block .cc-data-title {
+      color: $primary-color;
+    }    
+    .active-link, .active-link .fa-icon-small {
+      color: $primary-color; 
+      font-weight: 500;
+      cursor: pointer;
+      fill: $primary-color; 
+    }
+    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
+      color: $primary-color; 
+      cursor: pointer;
+      background: $hover-background;
+      & .ng-fa-icon, & .mat-icon {
+        color: $primary-color;
+      }
+      & .sidenav-img svg {
+        fill: $primary-color;
+      }
+    }
+    .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
+    .page-title-container .page-title-img, svg.top-icon-small {
+      fill:  $foreground-text;
+    }
+    .rtl-snack-bar {
+      background: $primary-color;
     }
   }
   
@@ -82,32 +160,8 @@
     border-bottom: 1px solid $foreground-divider;
   }
 
-  a, .cc-data-block .cc-data-title {
+  a {
     color: $primary-color;
-  }
-
-  .active-link, .active-link .fa-icon-small {
-    color: $primary-color; 
-    font-weight: 500;
-    cursor: pointer;
-    fill: $primary-color; 
-  }
-
-  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
-    color: $primary-color; 
-    cursor: pointer;
-    background: $hover-background;
-    & .ng-fa-icon, & .mat-icon {
-      color: $primary-color;
-    }
-    & .sidenav-img svg {
-      fill: $primary-color;
-    }
-  }
-
-  .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
-  .page-title-container .page-title-img, svg.top-icon-small {
-    fill:  $foreground-text;
   }
 
   .horizontal-button .fa-icon-small {
@@ -178,18 +232,22 @@
     height: $toolbar-height;
     border-radius: 0;
     &:hover {
-      background: $primary-darker;
+      background: $primary-lighter;
       color: $accent-color;
     }
   }
 
-  .horizontal-button-show {
-    background: white;
+  .mat-stroked-button.mat-primary.horizontal-button-show {
+    line-height: 2.4rem;
     border-radius: 12rem;
-  }
-
-  .mat-tab-label.mat-tab-label-active {
-    color: $primary-darker;
+    background-color: white;
+    color: $primary-color;
+    &:hover {
+      @include mat-elevation(4);
+    }
+    &:hover .mat-button-focus-overlay {
+      opacity: 0.09;
+    }
   }
 
   .cc-data-block {
@@ -237,15 +295,6 @@
     background: $foreground-divider;
   }
 
-  .rtl-snack-bar {
-    background: $primary-darker;
-    & .mat-simple-snackbar {
-      justify-content: center;
-      align-content: center;
-      align-items: center;
-    }
-  }
-
   .tab-badge {
     & .mat-badge-content {
       width: $dot-size * 1.5;
@@ -272,6 +321,12 @@
     border: 1px solid $foreground-divider;
     border-radius: 4px;
     background: none;
+  }
+
+  .rtl-snack-bar .mat-simple-snackbar {
+    justify-content: center;
+    align-content: center;
+    align-items: center;
   }
 
 }

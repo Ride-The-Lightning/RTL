@@ -4,6 +4,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
+import { AlertTypeEnum } from '../../../models/enums';
 
 @Component({
   selector: 'rtl-alert-message',
@@ -15,7 +16,8 @@ export class AlertMessageComponent implements OnInit {
   public msgTypeForeground = 'primary';
   public messageObj = [];
   public flgCopied = false;
-  faCopy = faCopy;
+  public faCopy = faCopy;
+  public alertTypeEnum = AlertTypeEnum;
   
   constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService) { }
 
@@ -67,6 +69,7 @@ export class AlertMessageComponent implements OnInit {
       }
       // End: To Merge Time Value Again with ':', example Payment Creation Time
     });
+    console.warn(this.messageObj);
   }
 
   showCopyOption(key): boolean {
