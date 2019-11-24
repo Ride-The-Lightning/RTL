@@ -71,13 +71,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
         }
-        if (
-          this.settings.menu === 'horizontal' ||
-          this.settings.menuType === 'compact' ||
-          this.settings.menuType === 'mini') {
-            this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
-            setTimeout(() => { this.sideNavigation.toggle(); }, 100);
-          }
+        if (this.settings.menuType === 'compact' || this.settings.menuType === 'mini') {
+          this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
+          setTimeout(() => { this.sideNavigation.toggle(); }, 100);
+        }
       }     
     });
     this.userIdle.startWatching();

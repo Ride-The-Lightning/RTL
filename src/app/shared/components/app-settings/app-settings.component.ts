@@ -26,7 +26,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
   public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];
   public themeModes = [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}];
-  public themeColors = ['purple', 'green', 'pink', 'blue'];
+  public themeColors = ['purple', 'teal', 'indigo', 'pink'];
   public fontSizes = [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}];
   public selectedMenu = {id: 'vertical', name: 'Vertical'};
   public selectedMenuType = {id: 'regular', name: 'Regular'};

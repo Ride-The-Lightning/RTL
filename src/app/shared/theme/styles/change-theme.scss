@@ -78,7 +78,7 @@
       fill:  $foreground-text;
     }
     .selected-color {
-      border-color: $primary-darker;
+      border-color: $primary-lighter;
     }
     .rtl-snack-bar {
       background: $primary-color;
@@ -104,7 +104,7 @@
       border-color: $warn-color;
     }
     .selected-color {
-      border-color: $primary-color;
+      border-color: $primary-lighter;
     }
     .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
       opacity: 0.06;

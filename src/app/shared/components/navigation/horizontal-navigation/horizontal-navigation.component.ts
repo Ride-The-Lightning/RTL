@@ -67,7 +67,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
         width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[3]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.showLogout = false;
@@ -78,10 +78,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
   }
 
   onShowPubkey() {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(this.information.identity_pubkey)}},
-      component: ShowPubkeyComponent
-    }));
+    this.store.dispatch(new RTLActions.ShowPubkey());
   }  
 
   ngOnDestroy() {

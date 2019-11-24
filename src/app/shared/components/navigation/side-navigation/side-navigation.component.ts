@@ -136,10 +136,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
   
   onShowData(node: MenuChildNode) {
-    this.store.dispatch(new RTLActions.OpenAlert({
-      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(this.information.identity_pubkey)}},
-      component: ShowPubkeyComponent
-    }));
+    this.store.dispatch(new RTLActions.ShowPubkey());
   }
 
   onNodeSelectionChange(selNodeValue: LightningNode) {

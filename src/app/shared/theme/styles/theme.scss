@@ -33,6 +33,20 @@
       @include change-theme($blue-night-theme);
     }
   }
+  &.indigo{
+    @import "../skins/indigo";
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($indigo-day-theme);
+      @include change-theme($indigo-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($indigo-night-theme);
+      @include change-theme($indigo-night-theme);
+    }
+  }
   &.green{
     @import "../skins/green";
     &.small-font {@include change-font($small-typography);}
@@ -45,6 +59,20 @@
     &.night {
       @include angular-material-theme($green-night-theme);
       @include change-theme($green-night-theme);
+    }
+  }
+  &.teal{
+    @import "../skins/teal";
+    &.small-font {@include change-font($small-typography);}
+    &.regular-font {@include change-font($regular-typography);}
+    &.large-font {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($teal-day-theme);
+      @include change-theme($teal-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($teal-night-theme);
+      @include change-theme($teal-night-theme);
     }
   }
   &.pink{

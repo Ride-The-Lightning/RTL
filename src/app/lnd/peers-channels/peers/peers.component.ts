@@ -149,7 +149,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance})}}, component: OpenChannelComponent}));
+    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance, newlyAdded: false})}}, component: OpenChannelComponent}));
   }
 
   onPeerDetach(peerToDetach: Peer) {

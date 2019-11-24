@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
+import { GetInfoRoot } from '../../../models/RTLconfig';
 
 @Component({
   selector: 'rtl-show-pubkey',
@@ -13,12 +14,15 @@ import { AlertData } from '../../../models/alertData';
 })
 export class ShowPubkeyComponent implements OnInit {
   public faReceipt = faReceipt;
-  public pubkey: string;
-
+  public information: GetInfoRoot;
+  public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}, { infoID: 1, infoKey: 'node URI', infoName: 'Node URI'}];
+  public selInfoType = this.infoTypes[0];
+  
   constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.pubkey = JSON.parse(this.data.message);
+    this.information = JSON.parse(this.data.message);
+    this.information.uris[0]
   }
 
   onClose() {
@@ -26,7 +30,7 @@ export class ShowPubkeyComponent implements OnInit {
   }
 
   onCopyPubkey(payload: string) {
-    this.snackBar.open('Pubkey copied');
+    this.snackBar.open(this.selInfoType.infoName + ' copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 

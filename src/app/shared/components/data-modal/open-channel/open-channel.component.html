@@ -2,7 +2,7 @@
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Peer Connected</span>
+        <span class="page-title">{{newlyAdded ? 'Peer Connected' : 'Open Channel'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
@@ -13,7 +13,7 @@
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  <strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp; added as a peer.
+                  <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div fxLayout="column">
@@ -77,11 +77,21 @@
           </div>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button fxFlex="25" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onClose()" tabindex="6" class="mr-2">Do It Later</button>
-          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="7">
-            <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
-            <ng-template #openText><p>Open Channel</p></ng-template>
-          </button>
+          <div *ngIf="newlyAdded" fxLayoutAlign="space-between center" fxFlex="60">
+            <button fxFlex="33" fxLayoutAlign="center center" mat-stroked-button color="warn" (click)="onClose()" tabindex="6">Do It Later</button>
+            <button fxFlex="32" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
+            <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="8">
+              <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
+              <ng-template #openText><p>Open Channel</p></ng-template>
+            </button>
+          </div>
+          <div *ngIf="!newlyAdded" fxLayoutAlign="space-between center" fxFlex="40">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
+            <button autoFocus fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="8">
+              <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
+              <ng-template #openText><p>Open Channel</p></ng-template>
+            </button>
+          </div>
         </div>
       </div>
     </mat-card-content>

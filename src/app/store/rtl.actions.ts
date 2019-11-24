@@ -20,6 +20,7 @@ export const OPEN_ALERT = 'OPEN_ALERT';
 export const CLOSE_ALERT = 'CLOSE_ALERT';
 export const OPEN_CONFIRMATION = 'OPEN_CONFIRMATION';
 export const CLOSE_CONFIRMATION = 'CLOSE_CONFIRMATION';
+export const SHOW_PUBKEY = 'SHOW_PUBKEY';
 export const FETCH_STORE = 'FETCH_STORE';
 export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
@@ -209,6 +210,11 @@ export class OpenConfirmation implements Action {
 export class CloseConfirmation implements Action {
   readonly type = CLOSE_CONFIRMATION;
   constructor(public payload: boolean) {}
+}
+
+export class ShowPubkey implements Action {
+  readonly type = SHOW_PUBKEY;
+  constructor() {}
 }
 
 export class UpdateSelectedNodeOptions implements Action {
@@ -810,7 +816,7 @@ export class SetChannelTransactionCL implements Action {
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
-  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
+  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |

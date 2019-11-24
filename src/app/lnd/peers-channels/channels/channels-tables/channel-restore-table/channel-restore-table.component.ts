@@ -55,7 +55,6 @@ export class ChannelRestoreTableComponent implements OnInit {
       this.channels.data = resRCList.files;
       this.channels.sort = this.sort;
       this.channels.paginator = this.paginator;
-      console.warn(this.channels);
       if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
         this.flgLoading[0] = false;
       }

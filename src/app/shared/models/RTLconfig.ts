@@ -58,6 +58,7 @@ export interface GetInfoRoot {
   alias?: string;
   testnet?: boolean;
   chains?: GetInfoChain[] | string[];
+  uris?: string[];  
   version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;  

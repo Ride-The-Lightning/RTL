@@ -12,11 +12,13 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
-import { CurrencyUnitEnum } from '../../shared/models/enums';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
+import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
+import { CurrencyUnitEnum } from '../../shared/models/enums';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromLNDReducers from '../store/lnd.reducers';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
@@ -117,16 +119,17 @@ export class LNDEffects implements OnDestroy {
   @Effect()
   saveNewPeer = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_PEER),
-    mergeMap((action: RTLActions.SaveNewPeer) => {
+    withLatestFrom(this.store.select('lnd')),
+    mergeMap(([action, lndData]: [RTLActions.SaveNewPeer, fromLNDReducers.LNDState]) => {    
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm })
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Added Successfully!' }}}));
+            this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
             return {
-              type: RTLActions.SET_PEERS,
-              payload: (postRes && postRes.length > 0) ? postRes : []
+              type: RTLActions.OPEN_ALERT,
+              payload: {config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: postRes[0], information: lndData.information, balance: lndData.blockchainBalance.total_balance || 0, newlyAdded: true})}}, component: OpenChannelComponent}
             };
           }),
           catchError((err: any) => {
@@ -1017,7 +1020,8 @@ export class LNDEffects implements OnDestroy {
       identity_pubkey: info.identity_pubkey,
       alias: info.alias, 
       testnet: info.testnet, 
-      chains: info.chains, 
+      chains: info.chains,
+      uris: info.uris,
       version: info.version, 
       currency_unit: info.currency_unit, 
       smaller_currency_unit: info.smaller_currency_unit, 

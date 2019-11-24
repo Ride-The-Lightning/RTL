@@ -21,6 +21,7 @@ export class OpenChannelComponent implements OnInit {
   public fundingAmount: number;
   public isPrivate = false;
   public selTransType = '0';
+  public newlyAdded = false;
   public transTypeValue = {blocks: '', fees: ''};
   public transTypes = TRANS_TYPES;
 
@@ -31,10 +32,18 @@ export class OpenChannelComponent implements OnInit {
     this.peer = JSONdata.peer;
     this.information = JSONdata.information;
     this.totalBalance = JSONdata.balance;
+    this.newlyAdded = JSONdata.newlyAdded;
   }
 
   onClose() {
     this.dialogRef.close(false);
+  }
+
+  resetData() {
+    this.fundingAmount = null;
+    this.isPrivate = false;
+    this.selTransType = '0';
+    this.transTypeValue = {blocks: '', fees: ''};
   }
 
   onOpenChannel() {

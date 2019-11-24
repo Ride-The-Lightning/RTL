@@ -1,8 +1,6 @@
-
 @import './color-swatches/day-foreground.scss';
 @import './color-swatches/day-background.scss';
 @import './color-swatches/red-warn.swatch.scss';
-@import './color-swatches/green-primary.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
@@ -17,9 +15,9 @@
   );
 }
 
-$green-primary: mat-palette($green-primary, 500, 300, A200);
-$green-accent: mat-palette($mat-amber, A200, A100, A700);
-$green-warn: mat-palette($red-warn, 500);
+$indigo-primary: mat-palette($mat-indigo, 500, 200, A200);
+$indigo-accent: mat-palette($mat-pink, A200, A100, A400);
+$indigo-warn: mat-palette($red-warn, 500);
 
-$green-day-theme: create-custom-theme($green-primary, $green-accent, $green-warn);
-$green-night-theme: mat-dark-theme($green-primary, $green-accent, $green-warn);
+$indigo-day-theme: create-custom-theme($indigo-primary, $indigo-accent, $indigo-warn);
+$indigo-night-theme: mat-dark-theme($indigo-primary, $indigo-accent, $indigo-warn);

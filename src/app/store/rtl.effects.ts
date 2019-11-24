@@ -7,6 +7,7 @@ import { of, Subject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
@@ -17,6 +18,7 @@ import { AuthenticateWith, CURRENCY_UNITS } from '../shared/models/enums';
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from '../shared/components/data-modal/confirmation-message/confirmation-message.component';
+import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
@@ -34,6 +36,7 @@ export class RTLEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router) { }
 
   @Effect({ dispatch: false })
@@ -90,6 +93,22 @@ export class RTLEffects implements OnDestroy {
       return action.payload;
     }
   ));
+
+  @Effect()
+  showNodePubkey = this.actions$.pipe(
+  ofType(RTLActions.SHOW_PUBKEY),
+  withLatestFrom(this.store.select('root')),
+  mergeMap(([action, rootData]: [RTLActions.ShowPubkey, fromRTLReducer.RootState]) => {
+    if (!this.sessionService.getItem('token') || !rootData.nodeData.identity_pubkey) {
+      this.snackBar.open('Node Pubkey does not exist.');
+    } else {
+      this.store.dispatch(new RTLActions.OpenAlert({
+        config: { width: '70%', data: { type: 'INFO', message: JSON.stringify(rootData.nodeData)}},
+        component: ShowPubkeyComponent
+      }));
+    }
+    return of({type: RTLActions.VOID});
+  }));
 
   @Effect()
   appConfigFetch = this.actions$.pipe(
