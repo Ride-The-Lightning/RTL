@@ -10,9 +10,7 @@
       <div (click)="onChildNavClicked(node)">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
           <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
-          <span *ngIf="settings.menuType === 'regular'">{{node.name}}</span><span
-            *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
-            matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span>
+          <span *ngIf="settings.menuType === 'regular'">{{node.name}}</span>
         </div>
       </div>
     </mat-tree-node>
@@ -44,8 +42,7 @@
     <mat-tree-node fxLayout="row" matTreeNodeToggle fxLayoutAlign="start center" *matTreeNodeDef="let node"
       (click)="onChildNavClicked(node)" routerLinkActive="active-link" routerLink="{{node.link}}">
       <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-1"></fa-icon>
-      <span>{{node.name}}<span *ngIf="node.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1"
-          matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="primary"></span></span>
+      <span>{{node.name}}</span>
     </mat-tree-node>
 
     <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
@@ -75,10 +72,7 @@
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
       <div (click)="onChildNavClicked(node)">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"><span
-            *ngIf="node.name === 'Peers/Channels'"
-            [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false"
-            matBadgeColor="primary"></span></fa-icon>
+          <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-regular" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
         </div>
       </div>
     </mat-tree-node>

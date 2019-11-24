@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,8 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../../../shared/models/enums';
-import { getPaginatorLabel } from '../../../../../shared/services/paginator.service';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';

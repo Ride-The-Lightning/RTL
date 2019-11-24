@@ -7,9 +7,8 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';

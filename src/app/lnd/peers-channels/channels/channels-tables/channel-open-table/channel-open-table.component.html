@@ -11,9 +11,11 @@
       <ng-container matColumnDef="remote_alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
         <td mat-cell *matCellDef="let channel">
-          <span *ngIf="channel.active" class="green-dot"></span>
-          <span *ngIf="!channel.active" class="yellow-dot"></span>
-          {{channel.remote_alias || channel.chan_id}}
+          <div class="ellipsis-parent">
+            <span *ngIf="channel.active" class="green-dot"></span>
+            <span *ngIf="!channel.active" class="yellow-dot"></span>
+            <span class="ellipsis-child">{{channel.remote_alias || channel.remote_pubkey}}</span>
+          </div>            
         </td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">

@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Peer, GetInfo } from '../../../models/lndModels';
 import { AlertData } from '../../../models/alertData';
-import { TRANS_TYPES } from '../../../models/enums';
+import { TRANS_TYPES } from '../../../services/consts-enums-functions';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -22,6 +22,7 @@ export class OpenChannelComponent implements OnInit {
   public isPrivate = false;
   public selTransType = '0';
   public newlyAdded = false;
+  public spendUnconfirmed = false;
   public transTypeValue = {blocks: '', fees: ''};
   public transTypes = TRANS_TYPES;
 
@@ -42,6 +43,7 @@ export class OpenChannelComponent implements OnInit {
   resetData() {
     this.fundingAmount = null;
     this.isPrivate = false;
+    this.spendUnconfirmed = false;
     this.selTransType = '0';
     this.transTypeValue = {blocks: '', fees: ''};
   }
@@ -56,7 +58,7 @@ export class OpenChannelComponent implements OnInit {
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new RTLActions.SaveNewChannel({
       selectedPeerPubkey: this.peer.pub_key, fundingAmount: this.fundingAmount, private: this.isPrivate,
-      transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: false
+      transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
     }));
     this.dialogRef.close(false);
   }

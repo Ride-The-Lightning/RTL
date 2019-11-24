@@ -6,8 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
-import { getPaginatorLabel } from '../../../shared/services/paginator.service';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';

@@ -5,9 +5,8 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../../../shared/models/enums';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
-import { getPaginatorLabel } from '../../../../../shared/services/paginator.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';

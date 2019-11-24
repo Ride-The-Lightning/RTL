@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../models/enums';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
 @Component({

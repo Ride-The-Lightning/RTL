@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AddressType } from '../../../shared/models/lndModels';
-import { ADDRESS_TYPES } from '../../../shared/models/enums';
+import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { LNDEffects } from '../../store/lnd.effects';

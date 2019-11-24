@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -9,11 +7,9 @@ import { Actions } from '@ngrx/effects';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../../../shared/models/enums';
-import { getPaginatorLabel } from '../../../../../shared/services/paginator.service';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -38,7 +34,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
     this.store.select('lnd')

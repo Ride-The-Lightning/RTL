@@ -1,6 +1,15 @@
+.mat-column-remote_alias {
+  flex: 0 0 28%;
+  width: 28%;
+  & .ellipsis-parent {
+    display: flex;
+    max-width: 25rem;
+  }
+}
+
 .mat-column-capacity {
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
   flex: 0 0 40%;
   width: 40%;
 }

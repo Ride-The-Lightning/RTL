@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfoCL, InvoiceCL } from '../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../shared/models/enums';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';

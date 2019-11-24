@@ -472,10 +472,11 @@ body {
 }
 
 .flex-ellipsis {
-  padding-right: 3rem;
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-right: 3rem;
 }
 
 .mat-list, .mat-list .mat-list-item .mat-list-item-content, .mat-nav-list, .mat-selection-list {
@@ -802,6 +803,13 @@ table {
 
 .display-none {
   display: none !important;
+}
+
+.ellipsis-child {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
 }
 
 .blinker {

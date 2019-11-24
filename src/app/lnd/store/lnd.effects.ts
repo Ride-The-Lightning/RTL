@@ -7,6 +7,7 @@ import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -14,7 +15,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
-import { CurrencyUnitEnum } from '../../shared/models/enums';
+import { CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -33,6 +34,7 @@ export class LNDEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router,
     private location: Location) { }
 
@@ -291,7 +293,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: action.payload.showMessage + ' ' + postRes.message }}}));
+            this.snackBar.open(action.payload.showMessage + ' ' + postRes.message);
             return {
               type: RTLActions.BACKUP_CHANNELS_RES,
               payload: postRes.message
@@ -316,7 +318,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message }}}));
+            this.snackBar.open(postRes.message);
             return {
               type: RTLActions.VERIFY_CHANNELS_RES,
               payload: postRes.message
@@ -341,7 +343,7 @@ export class LNDEffects implements OnDestroy {
             map((postRes: any) => {
               this.logger.info(postRes);
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: postRes.message }}}));
+              this.snackBar.open(postRes.message);
               this.store.dispatch(new RTLActions.SetRestoreChannelsList(postRes.list));
               return {
                 type: RTLActions.RESTORE_CHANNELS_RES,

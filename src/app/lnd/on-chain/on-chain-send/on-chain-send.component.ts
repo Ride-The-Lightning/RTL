@@ -3,10 +3,11 @@ import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/models/enums';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -31,7 +32,6 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     this._sweepBalance = bal;
     this.transaction.amount = this._sweepBalance;
   }
-  public sweepAllHint = 'Sending all your funds';
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
@@ -51,7 +51,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -77,27 +77,18 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     }
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[2]))
-    .subscribe(confirmRes => {
-      if (confirmRes) {
-        if (this.transaction.sendAll && !+this.appConfig.sso.rtlSSO) {
-          this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-            {type: 'CONFIRM', titleMessage: 'Enter Login Password', noBtnText: 'Cancel', yesBtnText: 'Authorize', flgShowInput: true, getInputs: [
-              {placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}
-            ]}
-          }));
-          this.rtlEffects.closeConfirm
-          .pipe(takeUntil(this.unSubs[3]))
-          .subscribe(pwdConfirmRes => {
-            if (pwdConfirmRes) {
-              const pwd = pwdConfirmRes[0].inputValue;
-              this.store.dispatch(new RTLActions.IsAuthorized(sha256(pwd)));
-              this.rtlEffects.isAuthorizedRes
-              .pipe(take(1))
-              .subscribe(authRes => {
-                if (authRes !== 'ERROR') {
-                  this.dispatchToSendFunds();
-                }
-              });
+    .subscribe(pwdConfirmRes => {
+      if (pwdConfirmRes) {
+        if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
+          const pwd = pwdConfirmRes[0].inputValue;
+          this.store.dispatch(new RTLActions.IsAuthorized(sha256(pwd)));
+          this.rtlEffects.isAuthorizedRes
+          .pipe(take(1))
+          .subscribe(authRes => {
+            if (authRes !== 'ERROR') {
+              this.dispatchToSendFunds();
+            } else {
+              this.snackBar.open('Unauthorized User. Logging out from RTL.');
             }
           });
         } else {
@@ -125,9 +116,18 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       delete this.transaction.blocks;
       confirmationMsg['Fee (' + this.nodeData.smaller_currency_unit + '/Byte)'] = this.transaction.fees;
     }
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-      {type: 'CONFIRM', message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Send'}
-    }));
+    if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
+        {type: 'CONFIRM', titleMessage: 'Please authorize to sweep all funds with login password.',
+          message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Authorize And Sweep All Funds',
+          flgShowInput: true, getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}
+        ]}
+      }));
+    } else {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
+        {type: 'CONFIRM', message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Send'}
+      }));
+    }
   }
 
   dispatchToSendFunds() {
@@ -137,10 +137,8 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   get invalidValues(): boolean {
-    return (undefined === this.transaction.address || this.transaction.address === '')
-        || (undefined === this.transaction.amount || this.transaction.amount <= 0)
-        || (this.selTransType === '1' && (undefined === this.transaction.blocks || this.transaction.blocks <= 0))
-        || (this.selTransType === '2' && (undefined === this.transaction.fees || this.transaction.fees <= 0));
+    return (this.transaction.address === '') || (this.transaction.amount <= 0)
+    || (this.selTransType === '1' && this.transaction.blocks && this.transaction.blocks <= 0) || (this.selTransType === '2' && this.transaction.fees && this.transaction.fees <= 0);
   }
 
   resetData() {
@@ -150,7 +148,10 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       this.transaction.blocks = null;
       this.transaction.fees = null;
     } else {
-      this.transaction = {};
+      this.transaction.address = '';
+      this.transaction.amount = null;
+      this.transaction.blocks = null;
+      this.transaction.fees = null;
     }
   }
 

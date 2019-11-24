@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
-import { CurrencyUnitEnum, TimeUnitEnum } from '../models/enums';
-
+import { CurrencyUnitEnum, TimeUnitEnum } from './consts-enums-functions';
 
 @Injectable()
 export class CommonService implements OnInit, OnDestroy {
@@ -33,13 +32,17 @@ export class CommonService implements OnInit, OnDestroy {
     }).replace(/\s+/g, '');
   } 
 
+  titleCase(str) {
+    return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+  } 
+
   changeContainerWidth(fieldType: string) {
     this.containerWidthChanged.next(fieldType);
   }
 
   convertCurrency(value: number, from: string, otherCurrencyUnit: string): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 600000))) {
+    if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
       return of(this.convert(value, from, otherCurrencyUnit));
     } else {
       return this.httpClient.get('https://blockchain.info/ticker')

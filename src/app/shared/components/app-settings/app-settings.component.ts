@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS } from '../../models/enums';
+import { CURRENCY_UNITS } from '../../services/consts-enums-functions';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';

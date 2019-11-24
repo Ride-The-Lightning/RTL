@@ -9,9 +9,8 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../../shared/models/enums';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { getPaginatorLabel } from '../../../shared/services/paginator.service';
 import { OpenChannelComponent } from '../../../shared/components/data-modal/open-channel/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';

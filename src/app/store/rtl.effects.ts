@@ -13,7 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { AuthenticateWith, CURRENCY_UNITS } from '../shared/models/enums';
+import { AuthenticateWith, CURRENCY_UNITS } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';

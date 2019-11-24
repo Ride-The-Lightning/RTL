@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, Peer, GetInfo } from '../../../../shared/models/lndModels';
-import { TRANS_TYPES } from '../../../../shared/models/enums';
+import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../../store/lnd.effects';

@@ -82,24 +82,23 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
       if (this.pendingChannels.total_limbo_balance) {
         this.flgLoading[1] = false;
-        if (this.pendingChannels.pending_open_channels) {
-          this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
-        }
-        if (this.pendingChannels.pending_force_closing_channels) {
-          this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
-        }
-        if (this.pendingChannels.pending_closing_channels) {
-          this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
-        }
-        if (this.pendingChannels.waiting_close_channels) {
-          this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
-        }
+      }
+      if (this.pendingChannels.pending_open_channels) {
+        this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
+      }
+      if (this.pendingChannels.pending_force_closing_channels) {
+        this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
+      }
+      if (this.pendingChannels.pending_closing_channels) {
+        this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
+      }
+      if (this.pendingChannels.waiting_close_channels) {
+        this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (this.information.identity_pubkey) ? false : true;

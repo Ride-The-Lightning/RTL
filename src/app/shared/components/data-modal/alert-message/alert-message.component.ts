@@ -4,7 +4,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
-import { AlertTypeEnum } from '../../../models/enums';
+import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-alert-message',

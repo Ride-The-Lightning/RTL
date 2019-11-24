@@ -12,7 +12,6 @@
           <div *ngFor="let childNode of menuNode.children">
             <button mat-button class="horizontal-button bg-primary px-2" fxFlex="100" fxLayoutAlign="center center" [routerLinkActive]="'h-active-link'" routerLink="{{childNode.link}}" [routerLinkActiveOptions]="{exact: true}">
               <fa-icon *ngIf="childNode.iconType === 'FA'" matTooltip="{{childNode.name}}" [icon]="childNode.icon" class="fa-icon-small"></fa-icon>
-              <span *ngIf="childNode.name === 'Peers/Channels'" [matBadgeHidden]="numPendingChannels<1" matBadge="{{numPendingChannels}}" matBadgeOverlap="false" matBadgeColor="accent"></span>
             </button>
           </div>
         </mat-menu>

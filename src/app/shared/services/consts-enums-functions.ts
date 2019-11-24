@@ -1,3 +1,11 @@
+import { MatPaginatorIntl } from '@angular/material';
+
+export function getPaginatorLabel(field: string) {
+  const appPaginator = new MatPaginatorIntl();
+  appPaginator.itemsPerPageLabel = field + ' per page:';
+  return appPaginator;
+}
+
 export const CURRENCY_UNITS = [ 'Sats', 'BTC' ];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 
