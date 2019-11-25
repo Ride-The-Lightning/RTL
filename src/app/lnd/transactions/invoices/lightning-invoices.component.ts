@@ -125,7 +125,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       'amt_paid', 'amt_paid_sat', 'amt_paid_msat'
     ] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({
-      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(reorderedInvoice)}},
+      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(reorderedInvoice), newlyAdded: false}},
       component: InvoiceInformationComponent
     }));
   }

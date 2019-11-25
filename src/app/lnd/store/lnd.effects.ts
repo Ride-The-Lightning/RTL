@@ -131,8 +131,9 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
             return {
               type: RTLActions.OPEN_ALERT,
-              payload: {config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: postRes[0], information: lndData.information, balance: lndData.blockchainBalance.total_balance || 0, newlyAdded: true})}}, component: OpenChannelComponent}
-            };
+              payload: {config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: postRes[0], information: lndData.information, balance: lndData.blockchainBalance.total_balance || 0}), newlyAdded: true}},
+              component: OpenChannelComponent
+            }};
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
@@ -184,7 +185,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenAlert({
-              config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(postRes)}},
+              config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(postRes), newlyAdded: true}},
               component: InvoiceInformationComponent
             }));            
             return {

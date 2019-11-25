@@ -8,6 +8,7 @@ export interface AlertData {
   type: string; // INFO/WARN/ERROR/SUCCESS/CONFIRM
   titleMessage?: string;
   message?: string;
+  newlyAdded?: boolean;
   noBtnText?: string;
   yesBtnText?: string;
   flgShowInput?: boolean;

@@ -56,13 +56,13 @@
     .mat-stroked-button.mat-warn {
       border-color: $warn-color;
     }
-    .active-link, .active-link .fa-icon-small {
+    .active-link, .active-link .fa-icon-small, .mat-select-panel .mat-option.mat-active, .mat-select-panel .mat-option.mat-active .fa-icon-small {
       color: $primary-darker; 
       font-weight: 500;
       cursor: pointer;
       fill: $primary-darker; 
     }
-    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
+    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
       color: $primary-darker; 
       cursor: pointer;
       background: $hover-background-white;
@@ -124,7 +124,7 @@
       cursor: pointer;
       fill: $primary-color; 
     }
-    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover  {
+    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
       color: $primary-color; 
       cursor: pointer;
       background: $hover-background;
@@ -327,6 +327,10 @@
     justify-content: center;
     align-content: center;
     align-items: center;
+  }
+
+  .mat-select-panel .mat-option.mat-active {
+    background: none;
   }
 
 }

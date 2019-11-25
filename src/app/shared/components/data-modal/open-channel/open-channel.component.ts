@@ -33,7 +33,7 @@ export class OpenChannelComponent implements OnInit {
     this.peer = JSONdata.peer;
     this.information = JSONdata.information;
     this.totalBalance = JSONdata.balance;
-    this.newlyAdded = JSONdata.newlyAdded;
+    this.newlyAdded = this.data.newlyAdded;
   }
 
   onClose() {

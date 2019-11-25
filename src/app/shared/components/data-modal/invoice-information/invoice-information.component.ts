@@ -15,12 +15,14 @@ import { Invoice } from '../../../models/lndModels';
 export class InvoiceInformationComponent implements OnInit {
   public faReceipt = faReceipt;
   public showAdvanced = false;
+  public newlyAdded = false;
   public invoice: Invoice;
 
   constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.invoice = JSON.parse(this.data.message);
+    this.newlyAdded = this.data.newlyAdded;
   }
 
   onClose() {
