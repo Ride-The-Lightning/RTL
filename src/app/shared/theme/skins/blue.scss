@@ -1,5 +1,5 @@
-@import './color-swatches/day-foreground.scss';
-@import './color-swatches/day-background.scss';
+@import './color-swatches/light-dull-theme.scss';
+@import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
@@ -8,5 +8,8 @@ $blue-primary: mat-palette($mat-blue, 700, 200, A200);
 $blue-accent: mat-palette($mat-pink, A200, A100, A400);
 $blue-warn: mat-palette($red-warn, 500);
 
+// $blue-day-theme: create-light-dull-theme($blue-primary, $blue-accent, $blue-warn);
+$blue-night-theme: create-dark-bright-theme($blue-primary, $blue-accent, $blue-warn);
+
 $blue-day-theme: mat-light-theme($blue-primary, $blue-accent, $blue-warn);
-$blue-night-theme: mat-dark-theme($blue-primary, $blue-accent, $blue-warn);
+// $blue-night-theme: mat-dark-theme($blue-primary, $blue-accent, $blue-warn);

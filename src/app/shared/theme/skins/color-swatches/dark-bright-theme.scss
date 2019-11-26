@@ -1,0 +1,78 @@
+$dark-grey: (
+  50 : #484848,
+  100 : #464646,
+  200 : #444444,
+  300 : #404040,
+  400 : #363636,
+  500 : #303030,
+  600 : #262626,
+  700 : #202020,
+  800 : #1b1b1b,
+  900 : #0d0d0d,
+  A100 : #0d0d0d,
+  A200 : #0a0a0a,
+  A400 : #080808,
+  A700 : #030303,
+  contrast: (
+      50 : #000000,
+      100 : #000000,
+      200 : #000000,
+      300 : #ffffff,
+      400 : #ffffff,
+      500 : #ffffff,
+      600 : #ffffff,
+      700 : #ffffff,
+      800 : #ffffff,
+      900 : #ffffff,
+      A100 : #000000,
+      A200 : #ffffff,
+      A400 : #ffffff,
+      A700 : #ffffff,
+  )
+);
+
+$dark-bright-foreground: (
+  base:              white,
+  divider:           $light-dividers,
+  dividers:          $light-dividers,
+  disabled:          $light-disabled-text,
+  disabled-button:   rgba(white, 0.26),
+  disabled-text:     $light-disabled-text,
+  hint-text:         $light-disabled-text,
+  secondary-text:    $light-secondary-text,
+  icon:              rgba(white, 1),
+  icons:             rgba(white, 1),
+  text:              rgba(white, 1),
+  slider-min:        rgba(white, 1),
+  slider-off:        rgba(white, 0.5),
+  slider-off-active: rgba(white, 0.6)
+);
+
+$dark-bright-background: (
+  status-bar: map_get($dark-grey, 600),
+  app-bar:    map_get($dark-grey, 600),
+  background:map_get($dark-grey, 900),
+  hover:      rgba(black, 0.04),
+  card:       map_get($dark-grey, 700),
+  dialog:     map_get($dark-grey, 700),
+  disabled-button: map_get($dark-grey, 300),
+  raised-button: map_get($dark-grey, 400),
+  focused-button: $dark-focused,
+  selected-button: map_get($dark-grey, 500),
+  selected-disabled-button: map_get($dark-grey, 400),
+  disabled-button-toggle: map_get($dark-grey, 300),
+  unselected-chip: map_get($dark-grey, 300),
+  disabled-list-option: map_get($dark-grey, 200),
+);
+
+@function create-dark-bright-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+  @return (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+    is-dark: true,
+    foreground: $dark-bright-foreground,
+    background: $dark-bright-background
+  );
+}
+

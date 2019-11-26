@@ -1,23 +1,16 @@
-@import './color-swatches/day-foreground.scss';
-@import './color-swatches/day-background.scss';
+@import './color-swatches/light-dull-theme.scss';
+@import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
-@function create-custom-theme($primary, $accent, $warn: mat-palette($mat-red)) {
-  @return (
-    primary: $primary,
-    accent: $accent,
-    warn: $warn,
-    is-dark: false,
-    foreground: $custom-day-theme-foreground,
-    background: $custom-day-theme-background
-  );
-}
 
 $indigo-primary: mat-palette($mat-indigo, 500, 200, A200);
 $indigo-accent: mat-palette($mat-pink, A200, A100, A400);
 $indigo-warn: mat-palette($red-warn, 500);
 
-$indigo-day-theme: create-custom-theme($indigo-primary, $indigo-accent, $indigo-warn);
-$indigo-night-theme: mat-dark-theme($indigo-primary, $indigo-accent, $indigo-warn);
+// $indigo-day-theme: create-light-dull-theme($indigo-primary, $indigo-accent, $indigo-warn);
+$indigo-night-theme: create-dark-bright-theme($indigo-primary, $indigo-accent, $indigo-warn);
+
+$indigo-day-theme: mat-light-theme($indigo-primary, $indigo-accent, $indigo-warn);
+// $indigo-night-theme: mat-dark-theme($indigo-primary, $indigo-accent, $indigo-warn);

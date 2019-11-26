@@ -210,7 +210,7 @@
     position: relative;
     margin-top: 0.5rem;
     width:100%;
-    color: $accent-color;
+    color: $warn-color;
   }
 
   .mat-vertical-content {
@@ -331,6 +331,10 @@
 
   .mat-select-panel .mat-option.mat-active {
     background: none;
+  }
+
+  .mat-tab-label {
+    opacity: 1;
   }
 
 }
