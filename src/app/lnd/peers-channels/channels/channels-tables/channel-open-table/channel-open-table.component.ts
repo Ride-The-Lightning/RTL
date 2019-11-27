@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
@@ -87,7 +87,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       const titleMsg = 'Updated Values for ALL Channels';
       const confirmationMsg = {};
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-        type: 'CONFIRM', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
+        type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Update', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
           {placeholder: 'Base Fee msat', inputType: 'number', inputValue: 1000},
           {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: 1, min: 1},
           {placeholder: 'Time Lock Delta', inputType: 'number', inputValue: 144}
@@ -124,7 +124,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         const titleMsg = 'Updated Values for Channel Point: ' + channelToUpdate.channel_point;
         const confirmationMsg = {};
         this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-          type: 'CONFIRM', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Update', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
             {placeholder: 'Base Fee msat', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat},
             {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1},
             {placeholder: 'Time Lock Delta', inputType: 'number', inputValue: this.myChanPolicy.time_lock_delta}
@@ -148,7 +148,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
+      width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Closing', titleMessage: 'Closing channel: ' + channelToClose.chan_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[4]))
@@ -175,10 +175,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       'active', 'remote_pubkey', 'remote_alias', 'channel_point', 'chan_id', 'capacity', 'local_balance', 'remote_balance', 'commit_fee', 'commit_weight',
       'fee_per_kw', 'unsettled_balance', 'total_satoshis_sent', 'total_satoshis_received', 'num_updates', 'pending_htlcs', 'csv_delay', 'private'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   loadChannelsTable(mychannels) {

@@ -10,6 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-forwarding-history',
@@ -84,10 +85,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, [
       'status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'in_msat', 'out_msatoshi', 'out_msat', 'fee', 'fee_msat', 'payment_hash'      
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
-      message: JSON.stringify(reorderedFHEvent)
-    }}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Forwarding History', message: JSON.stringify(reorderedFHEvent)}}));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEventCL[]) {

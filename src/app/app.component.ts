@@ -15,6 +15,7 @@ import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
+import { AlertTypeEnum } from './shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-app',
@@ -81,11 +82,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userIdle.onTimerStart().pipe(takeUntil(this.unsubs[2])).subscribe(count => {});
     this.userIdle.onTimeout().pipe(takeUntil(this.unsubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
-        this.logger.warn('Time limit exceeded for session inactivity! Logging out!');
-        this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-          type: 'WARN',
-          titleMessage: 'Time limit exceeded for session inactivity! Logging out!'
-        }}}));
+        this.logger.warn('Time limit exceeded for session inactivity.');
+        this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+          type: AlertTypeEnum.WARNING,
+          alertTitle: 'Logging out',
+          titleMessage: 'Time limit exceeded for session inactivity.'
+        }}));
         this.store.dispatch(new RTLActions.Signout());
         this.userIdle.resetTimer();
       }

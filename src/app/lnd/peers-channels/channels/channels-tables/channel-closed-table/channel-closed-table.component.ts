@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -92,10 +92,11 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
     })[0];
     const reorderedChannel = JSON.parse(JSON.stringify(selChannel, ['close_type', 'channel_point', 'chan_id', 'closing_tx_hash', 'remote_pubkey', 'capacity',
     'close_height', 'settled_balance', 'time_locked_balance'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Closed Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   loadClosedChannelsTable(closedChannels) {

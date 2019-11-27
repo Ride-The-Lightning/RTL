@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -124,10 +124,14 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       'description_hash', 'expiry', 'fallback_addr', 'cltv_expiry', 'route_hints', 'private', 'add_index', 'settle_index',
       'amt_paid', 'amt_paid_sat', 'amt_paid_msat'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({
-      config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(reorderedInvoice), newlyAdded: false}},
-      component: InvoiceInformationComponent
-    }));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '58%', 
+      data: { 
+        type: AlertTypeEnum.INFORMATION, 
+        alertTitle: 'Invoice Information',
+        message: JSON.stringify(reorderedInvoice),
+        newlyAdded: false,
+        component: InvoiceInformationComponent
+    }}));
   }
 
   loadInvoicesTable(invoices) {

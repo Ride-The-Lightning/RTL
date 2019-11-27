@@ -11,6 +11,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -116,10 +117,11 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Opening Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   onForceClosingClick(selRow: any) {
@@ -130,10 +132,11 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Force Closing Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   onClosingClick(selRow: any) {
@@ -144,10 +147,11 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Closing Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   onWaitClosingClick(selRow: any) {
@@ -158,10 +162,11 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const reorderedChannel = {};
     Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Wait Closing Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   loadOpenChannelsTable(channels) {

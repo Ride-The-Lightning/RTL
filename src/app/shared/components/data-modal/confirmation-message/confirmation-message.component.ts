@@ -5,6 +5,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData, InputData } from '../../../models/alertData';
+import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -22,7 +23,8 @@ export class ConfirmationMessageComponent implements OnInit {
   public messageObj = [];
   public flgCopied = false;
   public flgShowInput = false;
-  faCopy = faCopy;
+  public faCopy = faCopy;
+  public alertTypeEnum = AlertTypeEnum;
   public getInputs: Array<InputData> = [{placeholder: '', inputType: 'text', inputValue: ''}];
 
   constructor(public dialogRef: MatDialogRef<ConfirmationMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService,
@@ -33,11 +35,7 @@ export class ConfirmationMessageComponent implements OnInit {
     this.getInputs = this.data.getInputs;
     this.noBtnText = (undefined !== this.data.noBtnText) ? this.data.noBtnText : 'No';
     this.yesBtnText = (undefined !== this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
-
-    // INFO/WARN/ERROR/SUCCESS/CONFIRM
-    if (this.data.type === 'WARN') {
-      this.msgTypeBackground = 'bg-primary p-1';
-    }
+    // INFORMATION/WARNING/ERROR/SUCCESS/CONFIRM
     if (this.data.type === 'ERROR') {
       this.msgTypeBackground = 'bg-warn p-1';
       this.msgTypeForeground = 'warn';

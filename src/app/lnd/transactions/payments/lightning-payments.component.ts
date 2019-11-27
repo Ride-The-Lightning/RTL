@@ -6,7 +6,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
@@ -116,9 +116,9 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (undefined === this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
-        const titleMsg = 'This is an empty invoice. Enter the amount (Sats) to pay.';
+        const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
         this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-          type: 'CONFIRM', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Enter Amount and Confirm Send Payment', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
             {placeholder: 'Amount (Sats)', inputType: 'number', inputValue: ''}
           ]
         }}));
@@ -134,7 +134,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
         });
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-        type: 'CONFIRM', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
+        type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Send Payment', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
       }}));
       this.rtlEffects.closeConfirm
       .pipe(take(1))
@@ -173,10 +173,11 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
       'creation_date_str', 'payment_hash', 'fee', 'value_msat', 'value_sat', 'value', 'payment_preimage', 'path'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Payment Information',
       message: JSON.stringify(reorderedPayment)
-    }}}));
+    }}));
   }
 
   applyFilter(selFilter: string) {

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS } from '../../services/consts-enums-functions';
+import { CURRENCY_UNITS, AlertTypeEnum } from '../../services/consts-enums-functions';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -118,10 +118,11 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
     if (!updatedSettings && !defaultNodeIndex) {
-      this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: {
-        type: 'INFO',
+      this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+        type: AlertTypeEnum.WARNING,
+        alertTitle: 'Configuration Not Updated',
         titleMessage: 'Nothing has been updated to save!'
-      }}}));
+      }}));
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
       this.store.dispatch(new RTLActions.SaveSettings({settings: updatedSettings, defaultNodeIndex: defaultNodeIndex}));

@@ -15,7 +15,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
-import { CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -131,9 +131,9 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
             return {
               type: RTLActions.OPEN_ALERT,
-              payload: {config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: postRes[0], information: lndData.information, balance: lndData.blockchainBalance.total_balance || 0}), newlyAdded: true}},
+              payload: { width: '50%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Peer Connected', message: JSON.stringify({peer: postRes[0], information: lndData.information, balance: lndData.blockchainBalance.total_balance || 0}), newlyAdded: true}},
               component: OpenChannelComponent
-            }};
+            };
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
@@ -152,7 +152,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Peer Detached Successfully!' }}}));
+            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Disconnected', titleMessage: 'Peer Disconnected Successfully!' }}));
             return {
               type: RTLActions.REMOVE_PEER,
               payload: { pubkey: action.payload.pubkey }
@@ -185,9 +185,8 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenAlert({
-              config: { width: '58%', data: { type: 'INFO', message: JSON.stringify(postRes), newlyAdded: true}},
-              component: InvoiceInformationComponent
-            }));            
+              width: '58%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Invoice Created', message: JSON.stringify(postRes), newlyAdded: true, component: InvoiceInformationComponent
+            }}));            
             return {
               type: RTLActions.FETCH_INVOICES,
               payload: { num_max_invoices: action.payload.pageSize, reversed: true }
@@ -239,7 +238,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '70%', data: { type: 'SUCCESS', titleMessage: 'Channel Updated Successfully!' }}}));
+            this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
             return {
               type: RTLActions.FETCH_CHANNELS,
               payload: { routeParam: 'all', channelStatus: '' }
@@ -611,10 +610,10 @@ export class LNDEffects implements OnDestroy {
               msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] =
                 (sendRes.payment_route.total_fees_msat / 1000);
               Object.assign(msg, confirmationMsg);
-              this.store.dispatch(new RTLActions.OpenAlert({ config: {
+              this.store.dispatch(new RTLActions.OpenAlert({
                 width: '70%',
-                data: { type: 'SUCCESS', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }
-              }}));
+                data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Payment Sent', titleMessage: 'Payment Sent Successfully!', message: JSON.stringify(msg) }
+              }));
               this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'all' }));
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());
@@ -705,7 +704,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
             return {
               type: RTLActions.OPEN_ALERT,
-              payload: { data: { type: 'SUCCESS', titleMessage: 'Fund Sent Successfully!' } }
+              payload: { data: { type: AlertTypeEnum.SUCCESS, titleMessage: 'Fund Sent Successfully!' } }
             };
           }),
           catchError((err: any) => {
@@ -1066,12 +1065,12 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Signout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({config: {
+      this.store.dispatch(new RTLActions.OpenAlert({
         width: '70%', data: {
-          type: alertType, titleMessage: alertTitle,
+          type: alertType, alertTitle: alertType, titleMessage: alertTitle,
           message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
         }
-      }}));
+      }));
     }
   }
 

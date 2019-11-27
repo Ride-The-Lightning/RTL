@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
@@ -81,10 +81,11 @@ export class ChannelRestoreTableComponent implements OnInit {
       'active', 'remote_pubkey', 'remote_alias', 'channel_point', 'chan_id', 'capacity', 'local_balance', 'remote_balance', 'commit_fee', 'commit_weight',
       'fee_per_kw', 'unsettled_balance', 'total_satoshis_sent', 'total_satoshis_received', 'num_updates', 'pending_htlcs', 'csv_delay', 'private'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Restored Channel Information',
       message: JSON.stringify(reorderedChannel)
-    }}}));
+    }}));
   }
 
   ngOnDestroy() {

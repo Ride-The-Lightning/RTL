@@ -1,7 +1,7 @@
-import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
+import { DialogConfig } from '../shared/models/alertData';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
@@ -195,7 +195,7 @@ export class CloseSpinner implements Action {
 
 export class OpenAlert implements Action {
   readonly type = OPEN_ALERT;
-  constructor(public payload: {config: MatDialogConfig, component?: any}) {}
+  constructor(public payload: DialogConfig) {}
 }
 
 export class CloseAlert implements Action {
@@ -204,7 +204,7 @@ export class CloseAlert implements Action {
 
 export class OpenConfirmation implements Action {
   readonly type = OPEN_CONFIRMATION;
-  constructor(public payload: MatDialogConfig) {}
+  constructor(public payload: DialogConfig) {}
 }
 
 export class CloseConfirmation implements Action {

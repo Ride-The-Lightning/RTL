@@ -12,6 +12,7 @@ import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-payments',
@@ -102,9 +103,9 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
     if (undefined === this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
-        const titleMsg = 'This is an empty invoice. Enter the amount (Sats) to pay.';
+        const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
         this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-          type: 'CONFIRM', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
+          type: AlertTypeEnum.CONFIRM, alertTitle: 'Enter Amount and Confirm Send Payment', titleMessage: titleMsg, message: JSON.stringify(this.paymentDecoded), noBtnText: 'Cancel', yesBtnText: 'Send', flgShowInput: true, getInputs: [
             {placeholder: 'Amount (mSats)', inputType: 'number', inputValue: ''}
           ]
         }}));
@@ -120,7 +121,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
         });
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-        type: 'CONFIRM', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
+        type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Send Payment', titleMessage: 'Send Payment', noBtnText: 'Cancel', yesBtnText: 'Send', message: JSON.stringify(this.paymentDecoded)
       }}));
       this.rtlEffects.closeConfirm
       .pipe(take(1))
@@ -160,10 +161,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
     const reorderedPayment = JSON.parse(JSON.stringify(selPayment, [
       'id', 'bolt11', 'created_at_str', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
-      message: JSON.stringify(reorderedPayment)
-    }}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Payment Information', message: JSON.stringify(reorderedPayment)}}));
   }
 
   applyFilter(selFilter: string) {

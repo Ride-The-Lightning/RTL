@@ -11,6 +11,7 @@ import { CommonService } from '../../shared/services/common.service';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -96,10 +97,11 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       });
     }
     const reorderedRoutingPeer = JSON.parse(JSON.stringify(selRPeer, ['chan_id', 'alias', 'events', 'total_amount'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Route Information',
       message: JSON.stringify(reorderedRoutingPeer)
-    }}}));
+    }}));
   }
 
   loadRoutingPeersTable(forwardingEvents: ForwardingEvent[]) {

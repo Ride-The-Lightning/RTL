@@ -20,6 +20,7 @@ import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -117,7 +118,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
-        width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+        width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
       .pipe(takeUntil(this.unSubs[3]))

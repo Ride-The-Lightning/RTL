@@ -12,6 +12,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CLEffects } from '../../store/cl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-query-routes',
@@ -85,7 +86,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedRoute = JSON.parse(JSON.stringify(selRoute, [
       'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedRoute)}}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Route Information', message: JSON.stringify(reorderedRoute)}}));
   }
 
   ngOnDestroy() {

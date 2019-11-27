@@ -9,7 +9,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { OpenChannelComponent } from '../../../shared/components/data-modal/open-channel/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
@@ -140,7 +140,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
        'alias', 'pub_key', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '75%', data: { type: 'INFO', message: JSON.stringify(reorderedPeer)}}}));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Peer Information', message: JSON.stringify(reorderedPeer)}}));
   }
 
   resetData() {
@@ -148,13 +148,12 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.store.dispatch(new RTLActions.OpenAlert({config: { width: '50%', data: { type: 'INFO', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance}), newlyAdded: false}}, component: OpenChannelComponent}));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '50%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Open Channel', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance}), newlyAdded: false, component: OpenChannelComponent}}));
   }
 
   onPeerDetach(peerToDetach: Peer) {
-    const msg = 'Detach peer: ' + peerToDetach.pub_key;
-    const msg_type = 'CONFIRM';
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: { type: msg_type, titleMessage: msg, noBtnText: 'Cancel', yesBtnText: 'Detach'}}));
+    const msg = 'Disconnect peer: ' + peerToDetach.pub_key;
+    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Peer Disconnect', titleMessage: msg, noBtnText: 'Cancel', yesBtnText: 'Detach'}}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {

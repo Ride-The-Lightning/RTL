@@ -10,6 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-forwarding-history',
@@ -82,10 +83,11 @@ export class ForwardingHistoryComponent implements OnInit, OnDestroy {
       return (fhEvent.chan_id_in === selRow.chan_id_in && fhEvent.timestamp === selRow.timestamp);
     })[0];
     const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, ['timestamp_str', 'chan_id_in', 'alias_in', 'chan_id_out', 'alias_out', 'amt_out', 'amt_in', 'fee'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Event Information',
       message: JSON.stringify(reorderedFHEvent)
-    }}}));
+    }}));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {

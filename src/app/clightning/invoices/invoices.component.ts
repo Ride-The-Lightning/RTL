@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfoCL, InvoiceCL } from '../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
@@ -103,7 +103,7 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
 
   onDeleteExpiredInvoices() {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
+      width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Delete Invoices', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[1]))
@@ -122,10 +122,11 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
     const reorderedInvoice = JSON.parse(JSON.stringify(selInvoice, [
      'status', 'expires_at_str', 'paid_at_str', 'pay_index', 'label', 'bolt11', 'payment_hash', 'msatoshi', 'msatoshi_received', 'description'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Invoice Information',
       message: JSON.stringify(reorderedInvoice)
-    }}}));
+    }}));
   }
 
   loadInvoicesTable(invoices) {

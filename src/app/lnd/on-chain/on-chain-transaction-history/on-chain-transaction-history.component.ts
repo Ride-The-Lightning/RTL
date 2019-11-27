@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -96,10 +96,11 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     const reorderedTransactions = JSON.parse(JSON.stringify(selTransaction, [
       'dest_addresses', 'time_stamp_str', 'num_confirmations', 'total_fees', 'block_hash', 'block_height', 'tx_hash', 'amount'
     ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ config: { width: '75%', data: {
-      type: 'INFO',
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Transaction Information',
       message: JSON.stringify(reorderedTransactions)
-    }}}));
+    }}));
   }
 
   loadTransactionsTable(transactions) {

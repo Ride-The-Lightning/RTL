@@ -1,12 +1,14 @@
 <div fxLayout="row">
-  <div class="w-100">
-    <mat-card-header [ngClass]="msgTypeBackground" fxLayoutAlign="end">
-      <h2 fxFlex="91">{{data.type}}</h2>
-      <mat-icon autoFocus fxFlex="3" fxLayoutAlign="end" type="button" (click)="onClose(false)" class="cursor-pointer" tabindex="1">close</mat-icon>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="pb-2 p-2 wrap-text new-line">
-        <h4 *ngIf="data.titleMessage" fxLayoutAlign="start center" class="title-message pb-1 pl-1">{{data.titleMessage | titlecase}}</h4>
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose(false)" mat-button>X</button>
+    </mat-card-header>    
+    <mat-card-content class="mt-5px">
+      <div fxLayout="column">
+        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="title-message pb-1 pl-1">{{data.titleMessage | titlecase}}</p>
         <div *ngIf="flgShowInput" fxLayoutAlign="start center">
           <mat-form-field class="pl-2" *ngFor="let getInput of getInputs; index as i">
             <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [type]="getInput.inputType" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>

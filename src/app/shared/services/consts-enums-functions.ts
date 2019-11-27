@@ -26,8 +26,8 @@ export const TRANS_TYPES = [
 ];
 
 export enum AlertTypeEnum {
-  INFO = 'Information',
-  WARN = 'Warning',
+  INFORMATION = 'Information',
+  WARNING = 'Warning',
   ERROR = 'Error',
   SUCCESS = 'Success',
   CONFIRM = 'Confirm'

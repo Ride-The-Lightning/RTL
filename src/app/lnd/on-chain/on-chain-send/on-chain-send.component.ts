@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -118,14 +118,14 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     }
     if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-        {type: 'CONFIRM', titleMessage: 'Please authorize to sweep all funds with login password.',
+        {type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Payment', titleMessage: 'Please authorize to sweep all funds with login password.',
           message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Authorize And Sweep All Funds',
           flgShowInput: true, getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}
         ]}
       }));
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-        {type: 'CONFIRM', message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Send'}
+        {type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Payment', message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Send'}
       }));
     }
   }

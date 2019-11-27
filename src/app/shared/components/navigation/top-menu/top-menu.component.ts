@@ -14,6 +14,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
 import { faCodeBranch, faCog, faLifeRing, faEject } from '@fortawesome/free-solid-svg-icons';
+import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-top-menu',
@@ -78,7 +79,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
 
   onClick() {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+      width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))

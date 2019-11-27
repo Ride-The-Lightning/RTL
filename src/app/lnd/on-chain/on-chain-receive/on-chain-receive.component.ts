@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AddressType } from '../../../shared/models/lndModels';
-import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
+import { ADDRESS_TYPES, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { LNDEffects } from '../../store/lnd.effects';
@@ -34,8 +34,13 @@ export class OnChainReceiveComponent implements OnInit, OnDestroy {
     .subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
-        config: { width: '58%', data: { type: 'INFO', message: JSON.stringify({address: this.newAddress, addressType: this.selectedAddressType.addressTp})}},
-        component: OnChainGeneratedAddressComponent
+        width: '58%',
+        data: {
+          type: AlertTypeEnum.INFORMATION,
+          alertTitle: 'Generated Address',
+          message: JSON.stringify({address: this.newAddress, addressType: this.selectedAddressType.addressTp}),
+          component: OnChainGeneratedAddressComponent
+        }
       }));
     });
   }

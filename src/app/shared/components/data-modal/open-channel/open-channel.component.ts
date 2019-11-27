@@ -15,6 +15,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./open-channel.component.scss']
 })
 export class OpenChannelComponent implements OnInit {
+  public alertTitle: string;
   public peer: Peer;
   public information: GetInfo;
   public totalBalance = 0;
@@ -34,6 +35,7 @@ export class OpenChannelComponent implements OnInit {
     this.information = JSONdata.information;
     this.totalBalance = JSONdata.balance;
     this.newlyAdded = this.data.newlyAdded;
+    this.alertTitle = this.data.alertTitle;
   }
 
   onClose() {
