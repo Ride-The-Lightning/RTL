@@ -12,6 +12,7 @@ export interface AlertData {
   alertTitle?: string;
   titleMessage?: string;
   message?: string;
+  messageFieldsBreakdown?: Array<number>;
   noBtnText?: string;
   yesBtnText?: string;
   flgShowInput?: boolean;

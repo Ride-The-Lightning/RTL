@@ -14,7 +14,9 @@ import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 export class AlertMessageComponent implements OnInit {
   public msgTypeBackground = 'bg-primary p-1';
   public msgTypeForeground = 'primary';
-  public messageObj = [];
+  public messageObjsArr = [];
+  public messageObjs = [];
+  public messageFieldsBreakdown = [];
   public flgCopied = false;
   public faCopy = faCopy;
   public alertTypeEnum = AlertTypeEnum;
@@ -22,20 +24,20 @@ export class AlertMessageComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService) { }
 
   ngOnInit() {
+    this.messageFieldsBreakdown = this.data.messageFieldsBreakdown;
     this.setStyleOnAlertType();
     this.convertJSONData();
   }
 
   setStyleOnAlertType() {
-    // INFO/WARN/ERROR/SUCCESS/CONFIRM
-    if (this.data.type === 'WARN') {
+    if (this.data.type === AlertTypeEnum.WARNING) {
       this.msgTypeBackground = 'bg-primary p-1';
       this.msgTypeForeground = 'primary';
     }
-    if (this.data.type === 'ERROR') {
+    if (this.data.type === AlertTypeEnum.ERROR) {
       this.msgTypeBackground = 'bg-warn p-1';
       this.msgTypeForeground = 'warn';
-      if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObj.length <= 0 ) {
+      if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObjsArr.length <= 0 ) {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }
@@ -52,24 +54,30 @@ export class AlertMessageComponent implements OnInit {
       this.data.message.substring(arrayEndIdx + 1));
     }
     // End: For Payment Path
-    this.messageObj = (this.data.message === '') ? [] : this.data.message.split(',');
-    this.messageObj.forEach((obj, idx) => {
-      this.messageObj[idx] = obj.split(':');
-      this.messageObj[idx][0] = this.messageObj[idx][0].replace('_str', '');
-      this.messageObj[idx][0] = this.messageObj[idx][0].replace(/_/g, ' '); // To replace Backend Data's '_'
+    this.messageObjsArr = (this.data.message === '') ? [] : this.data.message.split(',');
+    this.messageObjsArr.forEach((obj, idx) => {
+      this.messageObjsArr[idx] = obj.split(':');
+      this.messageObjsArr[idx][0] = this.messageObjsArr[idx][0].replace('_str', '');
+      this.messageObjsArr[idx][0] = this.messageObjsArr[idx][0].replace(/_/g, ' '); // To replace Backend Data's '_'
       // Start: To Merge Time Value Again with ':', example Payment Creation Time
-      if (this.messageObj[idx].length > 2) {
-        this.messageObj[idx].forEach((dataValue, j) => {
+      if (this.messageObjsArr[idx].length > 2) {
+        this.messageObjsArr[idx].forEach((dataValue, j) => {
           if (j === 0 || j === 1) {
             return;
           } else {
-            this.messageObj[idx][1] = this.messageObj[idx][1] + ':' + this.messageObj[idx][j];
+            this.messageObjsArr[idx][1] = this.messageObjsArr[idx][1] + ':' + this.messageObjsArr[idx][j];
           }
         });
       }
       // End: To Merge Time Value Again with ':', example Payment Creation Time
     });
-    console.warn(this.messageObj);
+    for (let i = 0; i < this.messageFieldsBreakdown.length; i++) {
+      this.messageObjs[i] = [];
+      for (let j = 0, k = i; k < (i + this.messageFieldsBreakdown[i]); j++, k++) {
+        this.messageObjs[i][j] = this.messageObjsArr[k];
+      }
+    }
+    console.warn(this.messageObjs);
   }
 
   showCopyOption(key): boolean {

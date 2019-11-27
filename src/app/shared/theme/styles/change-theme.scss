@@ -146,6 +146,7 @@
   
   .foreground-secondary-text {
     color: $foreground-secondary-text !important;
+    white-space: pre-line;
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {

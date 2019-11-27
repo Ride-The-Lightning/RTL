@@ -9,27 +9,18 @@
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
         <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="title-message pb-1 pl-1">{{data.titleMessage | titlecase}}</p>
-        <div *ngIf="messageObj?.length>0">
-          <div *ngFor="let obj of messageObj">
-            <div fxLayout="column" fxFlex="100" fxFlex.gt-md="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">{{obj[0] | titlecase}}</h4>
-              <span class="foreground-secondary-text" *ngIf="isNumber(obj[1], obj[0]);else notNumberTemplate">{{obj[1] | number:'1.0-3'}}</span>
-              <ng-template #notNumberTemplate>
-                <span fxFlex="100">{{obj[1]}}
-                  <fa-icon *ngIf="showCopyOption(obj[0])" rtlClipboard [payload]="obj[1]" (copied)="copiedText($event)" [icon]="faCopy"></fa-icon>
-                  <span *ngIf="showCopyOption(obj[0])" [hidden]="!flgCopied">Copied</span>
-                </span>
-                <div *ngIf="showCopyOption(obj[0])" fxFlex="100" fxLayoutAlign.gt-sm="start center">
-                  <qrcode [qrdata]="obj[1]" [size]="120" [level]="'L'" [allowEmptyString]="true" [ngStyle]="{'visibility': (obj[1] === '') ? 'hidden' : 'visible'}" class="qr-border"></qrcode>
-                </div>
-              </ng-template>
-              <mat-divider class="w-100 my-1"></mat-divider>                
+        <div *ngIf="messageObjs?.length>0">
+          <div *ngFor="let objs of messageObjs; index as i;">
+            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
+              <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{100/messageFieldsBreakdown[i]}}" *ngFor="let obj of objs">
+                <h4 fxLayoutAlign="start" class="font-bold-500">{{obj[0] | titlecase}}</h4>
+                <span fxFlex="100" class="foreground-secondary-text" *ngIf="isNumber(obj[1], obj[0]);else notNumberTemplate">{{obj[1] | number:'1.0-3'}}</span>
+                <ng-template #notNumberTemplate>
+                  <span fxFlex="100" class="foreground-secondary-text">{{obj[1]}}</span>
+                </ng-template>
+                <mat-divider class="w-100 my-1"></mat-divider>
+              </div>                
             </div>
-            <div fxLayout="column" fxFlex="100" fxFlex.gt-md="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">{{obj[0] | titlecase}}</h4>
-              <span class="foreground-secondary-text">{{obj[1]}}</span>
-              <mat-divider class="w-100 my-1"></mat-divider>                
-            </div>  
           </div>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">

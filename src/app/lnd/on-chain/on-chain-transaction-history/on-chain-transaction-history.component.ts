@@ -93,13 +93,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     const selTransaction = this.listTransactions.data.filter(transaction => {
       return transaction.tx_hash === selRow.tx_hash;
     })[0];
-    const reorderedTransactions = JSON.parse(JSON.stringify(selTransaction, [
-      'dest_addresses', 'time_stamp_str', 'num_confirmations', 'total_fees', 'block_hash', 'block_height', 'tx_hash', 'amount'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const reorderedTransactions = JSON.parse(JSON.stringify(selTransaction, ['dest_addresses', 'block_hash', 'tx_hash', 'time_stamp_str', 'block_height', 'num_confirmations', 'total_fees', 'amount'], 2));
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '35%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
-      message: JSON.stringify(reorderedTransactions)
+      message: JSON.stringify(reorderedTransactions),
+      messageFieldsBreakdown: [1, 1, 1, 2, 3]
     }}));
   }
 
