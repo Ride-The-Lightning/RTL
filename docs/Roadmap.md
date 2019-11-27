@@ -14,6 +14,12 @@ As the functional complexity increases, we need to add automated testing to ensu
 
 ### LND Loop Integration
 LND's Loop-Out and Loop-In are important tools for channel re-balancing and will be integrated with RTL UI in the near future.
+* Loop-Out
+
+![](../screenshots/Loop-Out-info.png)
+* Loop-In
+
+![](../screenshots/Loop-In-info.png)
 
 ### Multi-Language Support
 We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support
