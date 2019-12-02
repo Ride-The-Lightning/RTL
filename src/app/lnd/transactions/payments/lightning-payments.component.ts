@@ -28,7 +28,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('sendPaymentForm', { static: true }) form;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  faHistory = faHistory;
+  public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public flgLoading: Array<Boolean | 'error'> = [true];

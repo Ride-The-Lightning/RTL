@@ -1,16 +1,26 @@
-table {
-  width:100%;
+.mat-column-actions {
+  flex: 0 0 6%;
+  width: 6%;
 }
 
-.ellipsis-parent {
-  min-width: 20px;
-  display: flex;
-  padding: 13px 0 13px 24px;
+.mat-column-chan_id, .mat-column-alias {
+  flex: 0 0 30%;
+  width: 30%;
 }
 
-.ellipsis-child {
-  max-width:97%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.mat-column-events, .mat-column-total_amount {
+  flex: 0 0 17%;
+  width: 17%;
+}
+
+table.mat-table.incoming-table {
+  border-bottom: none !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+table.mat-table.outgoing-table {
+  border-top: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
