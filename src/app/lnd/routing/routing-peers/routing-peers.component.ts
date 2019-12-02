@@ -5,13 +5,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { ForwardingEvent, RoutingPeers } from '../../shared/models/lndModels';
-import { LoggerService } from '../../shared/services/logger.service';
-import { CommonService } from '../../shared/services/common.service';
+import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
 
-import * as RTLActions from '../../store/rtl.actions';
-import * as fromRTLReducer from '../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
+import * as RTLActions from '../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-routing-peers',

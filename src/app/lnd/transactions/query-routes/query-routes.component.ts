@@ -1,13 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
+import { faRoute } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Hop } from '../../../shared/models/lndModels';
-import { LoggerService } from '../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -27,26 +25,28 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public displayedColumns = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
+  public faRoute = faRoute;
+  // public faRoad = faRoad;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private actions$: Actions) {
+  constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects) {
     switch (true) {
       case (window.innerWidth <= 415):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat'];
+        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
         break;
       case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'fee_msat'];
+        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
         break;
       case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
+        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
         break;
       case (window.innerWidth > 1024 && window.innerWidth <= 1280):
         this.flgSticky = true;
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
+        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
         break;
       default:
         this.flgSticky = true;
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_id', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat'];
+        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
         break;
     }
   }
@@ -84,10 +84,16 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
       return hop.hop_sequence === selRow.hop_sequence;
     })[0];
     const reorderedHop = [
-      [{key: 'active', value: selHop.active, title: 'Active', width: 100, type: DataTypeEnum.NUMBER}]
-      // 'hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'chan_capacity', 'expiry', 'amt_to_forward', 'amt_to_forward_msat', 'fee_msat'
+      [{key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'fee', value: selHop.fee, title: 'Fee (Sats)', width: 40, type: DataTypeEnum.NUMBER}],
+      [{key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 30, type: DataTypeEnum.STRING},
+        {key: 'pub_key', value: selHop.pub_key, title: 'Peer Pubkey', width: 70, type: DataTypeEnum.STRING}],
+      [{key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 30, type: DataTypeEnum.STRING},
+        {key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity', width: 40, type: DataTypeEnum.NUMBER}],
+        // amt_to_forward_msat, fee_msat
     ];
-
     this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',

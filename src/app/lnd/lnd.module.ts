@@ -21,13 +21,14 @@ import { ChannelPendingTableComponent } from './peers-channels/channels/channels
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
-import { ForwardingHistoryComponent } from './switch/forwarding-history.component';
-import { RoutingPeersComponent } from './routing-peers/routing-peers.component';
+import { RoutingComponent } from './routing/routing.component';
+import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
+import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { ChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { ChannelBackupTableComponent } from './peers-channels/channels/channels-tables/channel-backup-table/channel-backup-table.component';
 import { ChannelRestoreTableComponent } from './peers-channels/channels/channels-tables/channel-restore-table/channel-restore-table.component';
-import { QueryRoutesComponent } from './payments/query-routes/query-routes.component';
+import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
@@ -54,6 +55,7 @@ import { InitializeWalletComponent } from './wallet/initialize/initialize.compon
     ChannelClosedTableComponent,
     TransactionsComponent,
     LookupsComponent,
+    RoutingComponent,
     ForwardingHistoryComponent,
     RoutingPeersComponent,
     ChannelLookupComponent,

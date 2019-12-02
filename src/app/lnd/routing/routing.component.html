@@ -1,0 +1,18 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faProjectDiagram" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Routing</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <mat-tab-group>
+        <mat-tab label="Forwarding History">
+          <rtl-forwarding-history></rtl-forwarding-history>
+        </mat-tab>
+        <mat-tab label="Routing Peers">
+          <rtl-routing-peers></rtl-routing-peers>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>

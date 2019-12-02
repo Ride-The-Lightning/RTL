@@ -8,9 +8,9 @@ export const MENU_DATA: MenuRootNode = {
       {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/lnd/peerschannels'},
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/transactions'},
       {id: 33, parentId: 3, name: 'Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'},
-      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/routingpeers'}
+      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/routing'}
     ]},
-    {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/sconfig'},
+    {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/advanced'},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
     {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ],
@@ -21,9 +21,9 @@ export const MENU_DATA: MenuRootNode = {
       {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/cl/peers'},
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cl/chnlmanage'},
       {id: 33, parentId: 3, name: 'Lookup', iconType: 'FA', icon: faSearch, link: '/cl/lookups'},
-      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/cl/queryroutes'}
+      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/cl/routing'}
     ]},
-    {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/sconfig'},
+    {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/advanced'},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
     {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ]
