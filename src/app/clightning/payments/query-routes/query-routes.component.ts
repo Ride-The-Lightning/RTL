@@ -12,7 +12,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CLEffects } from '../../store/cl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-query-routes',
@@ -83,10 +83,15 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     const selRoute = this.qRoutes.data.filter(route => {
       return route.id === route.id;
     })[0];
-    const reorderedRoute = JSON.parse(JSON.stringify(selRoute, [
-      'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Route Information', message: JSON.stringify(reorderedRoute)}}));
+    const reorderedRoute = [
+      [{key: 'id', value: selRoute.id, title: 'ID', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Route Information',
+      message: reorderedRoute
+    }}));
   }
 
   ngOnDestroy() {

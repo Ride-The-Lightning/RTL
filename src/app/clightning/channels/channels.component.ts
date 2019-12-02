@@ -13,7 +13,7 @@ import { CLEffects } from '../store/cl.effects';
 import { RTLEffects } from '../../store/rtl.effects';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-channels',
@@ -118,9 +118,16 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
     }
     if (channelToUpdate === 'all') {
       const titleMsg = 'Updated Values for ALL Channels';
-      const confirmationMsg = {};
+      // const confirmationMsg = {};
+      const confirmationMsg = [[{key: '', value: '', title: '', width: 0, type: DataTypeEnum.NUMBER}]];
       this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-        type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channels Update', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
+        type: AlertTypeEnum.CONFIRM,
+        alertTitle: 'Confirm Channels Update',
+        titleMessage: titleMsg,
+        noBtnText: 'Cancel',
+        yesBtnText: 'Update',
+        message: confirmationMsg,
+        flgShowInput: true, getInputs: [
           {placeholder: 'Base Fee msat', inputType: 'number', inputValue: 1000},
           {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: 1, min: 1}
         ]
@@ -153,9 +160,17 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
         this.logger.info(this.myChanPolicy);
         this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Updated Values for Channel: ' + channelToUpdate.channel_id;
-        const confirmationMsg = {};
+        // const confirmationMsg = {};
+        const confirmationMsg = [[{key: '', value: '', title: '', width: 0, type: DataTypeEnum.NUMBER}]];
         this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
-          type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Update', titleMessage: titleMsg, noBtnText: 'Cancel', yesBtnText: 'Update', message: JSON.stringify(confirmationMsg), flgShowInput: true, getInputs: [
+          type: AlertTypeEnum.CONFIRM,
+          alertTitle: 'Confirm Channel Update', 
+          titleMessage: titleMsg, 
+          noBtnText: 'Cancel',
+          yesBtnText: 'Update',
+          message: confirmationMsg,
+          flgShowInput: true,
+          getInputs: [
             {placeholder: 'Base Fee msat', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat},
             {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1}
           ]
@@ -180,7 +195,7 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
       return;
     }
     if (channelToClose.state === 'AWAITING_UNILATERAL') {
-      this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
         type: AlertTypeEnum.WARNING,
         alertTitle: 'Unable to Close Channel',
         titleMessage: 'Channel can not be closed when it is in AWAITING UNILATERAL state.'
@@ -216,13 +231,14 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
     const selChannel = this.channels.data.filter(channel => {
       return channel.channel_id === selRow.channel_id;
     })[0];
-    const reorderedChannel = JSON.parse(JSON.stringify(selChannel, [
-      'channel_id', 'short_channel_id', 'id', 'alias', 'connected', 'private', 'state', 'funding_txid', 'msatoshi_to_us', 'msatoshi_total', 'their_channel_reserve_satoshis', 'our_channel_reserve_satoshis', 'spendable_msatoshi'
-    ] , 2));
+    const reorderedChannel = [
+      [{key: 'status', value: selChannel.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'channel_id', 'short_channel_id', 'id', 'alias', 'connected', 'private', 'state', 'funding_txid', 'msatoshi_to_us', 'msatoshi_total', 'their_channel_reserve_satoshis', 'our_channel_reserve_satoshis', 'spendable_msatoshi'
+    ];
     this.store.dispatch(new RTLActions.OpenAlert({width: '75%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 

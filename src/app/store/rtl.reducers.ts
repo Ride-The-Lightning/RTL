@@ -18,7 +18,7 @@ const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoin
 
 const initRootState: RootState = {
   effectErrorsRoot: [],
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
+  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,

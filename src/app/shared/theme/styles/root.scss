@@ -259,8 +259,16 @@ body {
   margin-top: 1rem !important;
 }
 
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
 .mb-1 {
   margin-bottom: 1rem !important;
+}
+
+.mb-6 {
+  margin-bottom: 6rem !important;
 }
 
 .ml-1 {
@@ -341,6 +349,10 @@ body {
 
 .my-2 {
   margin: 2rem 0 !important;
+}
+
+.my-4 {
+  margin: 4rem 0 !important;
 }
 
 .m-2 {
@@ -433,6 +445,10 @@ body {
 
 .px-2 {
   padding: 0 2rem !important;
+}
+
+.px-3 {
+  padding: 0 3rem !important;
 }
 
 .px-4 {
@@ -653,7 +669,7 @@ body {
 }
 
 .not-found-box {
-  min-width: 30%;
+  min-width: 50%;
 }
 
 .w-100 {
@@ -770,10 +786,6 @@ a {
 table {
   width:100%;
 }
-
-// .mat-button-focus-overlay {
-//   background-color: transparent!important;
-// }
 
 .green-dot {
   display: inline-flex;

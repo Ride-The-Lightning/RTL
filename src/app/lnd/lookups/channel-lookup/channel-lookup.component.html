@@ -1,109 +1,106 @@
-<div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <mat-card fxFlex="100" fxLayoutAlign="start start">
-    <mat-card-content fxFlex="100" *ngIf="lookupResult">
-      <mat-list fxLayoutAlign="space-between start">
-        <mat-list-item fxFlex="30" fxLayoutAlign="start start">Channel Id</mat-list-item>
-        <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.channel_id}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="space-between start">
-        <mat-list-item fxFlex="30" fxLayoutAlign="start start">Channel Point</mat-list-item>
-        <mat-list-item fxFlex="68" fxLayoutAlign="start start" class="word-break">{{lookupResult.chan_point}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="space-between start">
-        <mat-list-item fxFlex="30" fxLayoutAlign="start start">Last Update</mat-list-item>
-        <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.last_update_str}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="space-between start">
-        <mat-list-item fxFlex="30" fxLayoutAlign="start start">Capacity (Sats)</mat-list-item>
-        <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.capacity | number}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
-</div>
-<div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-sm="row wrap" class="mt-2">
-  <div fxFlex="48">
-    <mat-card class="custom-card mat-elevation-z12">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5 *ngIf="!node1_match">Node 1</h5>
-          <h5 *ngIf="node1_match">Node 1 (Your Node)</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content class="px-2">
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="100" fxLayoutAlign="start start" class="word-break">{{lookupResult.node1_pub}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Time Lock Delta</mat-list-item>
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.time_lock_delta}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Min HTLC</mat-list-item>
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.min_htlc}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Base Msat</mat-list-item>
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.fee_base_msat}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Rate Milli Msat</mat-list-item>
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.fee_rate_milli_msat}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-        <mat-list fxLayoutAlign="start start">
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">Disabled</mat-list-item>
-          <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.disabled}}</mat-list-item>
-          <mat-divider></mat-divider>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
+<div fxLayout="column" *ngIf="lookupResult">
+  <mat-list fxLayoutAlign="space-between start">
+    <mat-list-item fxFlex="30" fxLayoutAlign="start start">Channel Id</mat-list-item>
+    <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.channel_id}}</mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-list>
+  <mat-list fxLayoutAlign="space-between start">
+    <mat-list-item fxFlex="30" fxLayoutAlign="start start">Channel Point</mat-list-item>
+    <mat-list-item fxFlex="68" fxLayoutAlign="start start" class="word-break">{{lookupResult.chan_point}}</mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-list>
+  <mat-list fxLayoutAlign="space-between start">
+    <mat-list-item fxFlex="30" fxLayoutAlign="start start">Last Update</mat-list-item>
+    <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.last_update_str}}</mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-list>
+  <mat-list fxLayoutAlign="space-between start">
+    <mat-list-item fxFlex="30" fxLayoutAlign="start start">Capacity (Sats)</mat-list-item>
+    <mat-list-item fxFlex="68" fxLayoutAlign="start start">{{lookupResult.capacity | number}}</mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-list>
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-sm="row wrap" class="mt-1">
+    <div fxFlex="48">
+      <mat-card class="custom-card">
+        <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+          <mat-card-title class="m-0 pt-2">
+            <h5 *ngIf="!node1_match">Node 1</h5>
+            <h5 *ngIf="node1_match">Node 1 (Your Node)</h5>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="px-2">
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="100" fxLayoutAlign="start start" class="word-break">{{lookupResult.node1_pub}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Time Lock Delta</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.time_lock_delta}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Min HTLC</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.min_htlc}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Base Msat</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.fee_base_msat}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Rate Milli Msat</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.fee_rate_milli_msat}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Disabled</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node1_policy.disabled}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div fxFlex="48">
+      <mat-card class="custom-card">
+        <mat-card-header class="bg-primary" fxLayoutAlign="center center">
+          <mat-card-title class="m-0 pt-2">
+            <h5 *ngIf="!node2_match">Node 2</h5>
+            <h5 *ngIf="node2_match">Node 2 (Your Node)</h5>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="px-2">
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="100" fxLayoutAlign="start start" class="word-break">{{lookupResult.node2_pub}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Time Lock Delta</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.time_lock_delta}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Min HTLC</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.min_htlc}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Base Msat</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.fee_base_msat}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Rate Milli Msat</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.fee_rate_milli_msat}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+          <mat-list fxLayoutAlign="start start">
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Disabled</mat-list-item>
+            <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.disabled}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
-  <div fxFlex="48">
-  <mat-card class="custom-card mat-elevation-z12">
-    <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-      <mat-card-title class="m-0 pt-2">
-        <h5 *ngIf="!node2_match">Node 2</h5>
-        <h5 *ngIf="node2_match">Node 2 (Your Node)</h5>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="px-2">
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="100" fxLayoutAlign="start start" class="word-break">{{lookupResult.node2_pub}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Time Lock Delta</mat-list-item>
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.time_lock_delta}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Min HTLC</mat-list-item>
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.min_htlc}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Base Msat</mat-list-item>
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.fee_base_msat}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Fee Rate Milli Msat</mat-list-item>
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.fee_rate_milli_msat}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-      <mat-list fxLayoutAlign="start start">
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">Disabled</mat-list-item>
-        <mat-list-item fxFlex="50" fxLayoutAlign="start start">{{lookupResult.node2_policy.disabled}}</mat-list-item>
-        <mat-divider></mat-divider>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
 </div>

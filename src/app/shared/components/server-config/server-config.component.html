@@ -1,27 +1,28 @@
-<div fxLayout="column">
-  <div class="padding-gap">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-subtitle>
-          <h2>Show Configurations</h2>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" class="mb-2">
-          <mat-radio-group fxFlex="20" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
-            <mat-radio-button class="pr-5" value="rtl" [checked]="selectedNodeType=='rtl'">RTL</mat-radio-button>
-            <mat-radio-button class="pr-5" value="ln" *ngIf="showLnConfig" [checked]="selectedNodeType=='ln'">{{lnImplementationStr}}</mat-radio-button>
-            <mat-radio-button class="pr-5" value="bitcoind" *ngIf="showBitcoind" [checked]="selectedNodeType=='bitcoind'">BITCOIND</mat-radio-button>
+<div fxLayout="column" fxFlex="100">
+  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+    <fa-icon [icon]="faCog" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Show Configurations</span>
+  </div>
+  <div fxLayout="row" class="padding-gap-x" fxLayoutAlign="start start">
+    <mat-card fxLayout="column" fxFlex="100" class="padding-gap-large">
+      <mat-card-content class="card-content-gap">
+        <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap">
+          <mat-radio-group color="primary" fxFlex="20" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
+            <mat-radio-button tabindex="1" class="pr-5" value="rtl" [checked]="selectedNodeType=='rtl'">RTL</mat-radio-button>
+            <mat-radio-button tabindex="2" class="pr-5" value="ln" *ngIf="showLnConfig" [checked]="selectedNodeType=='ln'">{{lnImplementationStr}}</mat-radio-button>
+            <mat-radio-button tabindex="3" class="pr-5" value="bitcoind" *ngIf="showBitcoind" [checked]="selectedNodeType=='bitcoind'">BITCOIND</mat-radio-button>
           </mat-radio-group>
-          <div fxFlex="30" fxLayoutAlign="space-between stretch">
-            <button fxFlex="50" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onShowConfig()" tabindex="2">Show Config</button>
-            <button fxFlex="50" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" class="ml-2" (click)="resetData()">Clear</button>
+          <div fxFlex="30" fxLayoutAlign="space-between center">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onShowConfig()" tabindex="5">Show Config</button>
           </div>
         </form>     
-        <div *ngIf="configData !== '' && fileFormat === 'JSON'">
+        <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
+        <div *ngIf="configData !== '' && fileFormat === 'JSON'" class="mt-2 mb-6">
           <pre>{{configData | json}}</pre>
+          <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
         </div>
-        <div *ngIf="configData !== '' && fileFormat === 'INI'">
+        <div *ngIf="configData !== '' && fileFormat === 'INI'" class="mt-2">
           <mat-list>
             <mat-list-item *ngFor="let conf of configData; index as i;">
               <mat-card-subtitle class="my-1">
@@ -38,3 +39,4 @@
     </mat-card>
   </div>
 </div>
+  

@@ -4,7 +4,7 @@ import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../services/logger.service';
-import { AlertData } from '../../../models/alertData';
+import { InvoiceInformation } from '../../../models/alertData';
 import { Invoice } from '../../../models/lndModels';
 
 @Component({
@@ -18,10 +18,10 @@ export class InvoiceInformationComponent implements OnInit {
   public newlyAdded = false;
   public invoice: Invoice;
 
-  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.invoice = JSON.parse(this.data.message);
+    this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
   }
 

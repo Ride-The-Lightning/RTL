@@ -1,46 +1,37 @@
 <div fxLayout="column">
-  <div class="padding-gap">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-subtitle>
-          <h2>Lookups</h2>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <form fxLayout="column" fxLayout.gt-sm="row wrap" #form="ngForm">
-          <mat-form-field fxFlex="20" fxLayoutAlign="start end">
-            <mat-select [(ngModel)]="selectedField" placeholder="Lookup Field" (selectionChange)="onSelectChange($event)" tabindex="1" required name="lookupField">
-              <mat-option *ngFor="let lookupField of lookupFields" [value]="lookupField">
+  <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container">
+    <fa-icon [icon]="faSearch" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Lookups</span>
+  </div>
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
+    <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
+      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
+        <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100" #form="ngForm">
+          <mat-form-field fxFlex="22" fxLayoutAlign="start end">
+            <mat-select [(ngModel)]="selectedFieldId" placeholder="Lookup Field" (selectionChange)="onSelectChange($event)" tabindex="1" required name="lookupField">
+              <mat-option *ngFor="let lookupField of lookupFields" [value]="lookupField.id">
                 {{lookupField.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="50" fxLayoutAlign="start end">
-            <input matInput name="lookupKey" [placeholder]="selectedField?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
+            <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
           </mat-form-field>
-          <div fxFlex="12" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="3" type="submit" (click)="onLookup()" [disabled]="!form.valid">Lookup</button>
+          <div fxFlex="25" fxLayoutAlign="space-between center">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()" [disabled]="!form.valid">Lookup</button>
           </div>
-          <div fxFlex="12" fxLayoutAlign="start start">
-            <button fxFlex="90" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
+        </form>     
+        <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="lookupValue && flgSetLookupValue" class="w-100 mt-2">
+          <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+            <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
           </div>
-        </form>                              
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div class="padding-gap" *ngIf="lookupValue && flgSetLookupValue">
-    <mat-card [ngClass]="{'error-border': flgLoading[0]==='error'}">
-      <mat-card-header>
-        <mat-card-subtitle>
-          <h2>{{selectedField.name}} Details</h2>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div [ngSwitch]="selectedField.id">
-          <span *ngSwitchCase="0"><rtl-node-lookup [lookupResult]="lookupValue"></rtl-node-lookup></span>
-          <span *ngSwitchCase="1"><rtl-channel-lookup [lookupResult]="lookupValue"></rtl-channel-lookup></span>
-          <span *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
-        </div>
+          <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+            <span fxFlex="100" *ngSwitchCase="0"><rtl-node-lookup [lookupResult]="lookupValue"></rtl-node-lookup></span>
+            <span fxFlex="100" *ngSwitchCase="1"><rtl-channel-lookup [lookupResult]="lookupValue"></rtl-channel-lookup></span>
+            <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
+          </div>
+        </div>      
       </mat-card-content>
     </mat-card>
   </div>

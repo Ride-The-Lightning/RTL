@@ -12,7 +12,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { LNDEffects } from '../../store/lnd.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -83,10 +83,16 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     const selHop = this.qrHops.data.filter(hop => {
       return hop.hop_sequence === selRow.hop_sequence;
     })[0];
-    const reorderedHop = JSON.parse(JSON.stringify(selHop, [
-      'hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'chan_capacity', 'expiry', 'amt_to_forward', 'amt_to_forward_msat', 'fee_msat'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Route Information', message: JSON.stringify(reorderedHop)}}));
+    const reorderedHop = [
+      [{key: 'active', value: selHop.active, title: 'Active', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'hop_sequence', 'pubkey_alias', 'pub_key', 'chan_id', 'chan_capacity', 'expiry', 'amt_to_forward', 'amt_to_forward_msat', 'fee_msat'
+    ];
+
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Route Information',
+      message: reorderedHop
+    }}));
   }
 
   ngOnDestroy() {

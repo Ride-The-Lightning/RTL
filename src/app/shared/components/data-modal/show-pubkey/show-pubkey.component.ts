@@ -4,7 +4,7 @@ import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../services/logger.service';
-import { AlertData } from '../../../models/alertData';
+import { ShowPubkeyData } from '../../../models/alertData';
 import { GetInfoRoot } from '../../../models/RTLconfig';
 
 @Component({
@@ -18,11 +18,10 @@ export class ShowPubkeyComponent implements OnInit {
   public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}, { infoID: 1, infoKey: 'node URI', infoName: 'Node URI'}];
   public selInfoType = this.infoTypes[0];
   
-  constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: ShowPubkeyData, private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.information = JSON.parse(this.data.message);
-    this.information.uris[0]
+    this.information = this.data.information;
   }
 
   onClose() {

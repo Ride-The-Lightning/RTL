@@ -7,6 +7,7 @@ import { LightningNode } from '../../models/RTLconfig';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-server-config',
@@ -21,18 +22,17 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   public showBitcoind = false;
   public configData = '';
   public fileFormat = 'INI';
-  private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  public faCog = faCog;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
     this.store.select('root')
-    .pipe(takeUntil(this.unsubs[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsRoot.forEach(effectsErr => {
-        if (effectsErr.action === 'fetchConfig') {
-          this.resetData();
-        }
+        if (effectsErr.action === 'fetchConfig') { this.resetData(); }
       });
       this.configData = '';
       this.showLnConfig = false;
@@ -63,7 +63,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Config File...'));
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
     this.rtlEffects.showLnConfig
-    .pipe(takeUntil(this.unsubs[1]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((config: any) => {
       const configFile = config.data;
       this.fileFormat = config.format;
@@ -83,7 +83,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

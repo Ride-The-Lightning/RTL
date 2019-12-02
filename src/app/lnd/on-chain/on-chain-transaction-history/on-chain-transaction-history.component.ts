@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -93,12 +93,21 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     const selTransaction = this.listTransactions.data.filter(transaction => {
       return transaction.tx_hash === selRow.tx_hash;
     })[0];
-    const reorderedTransactions = JSON.parse(JSON.stringify(selTransaction, ['dest_addresses', 'block_hash', 'tx_hash', 'time_stamp_str', 'block_height', 'num_confirmations', 'total_fees', 'amount'], 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '35%', data: {
+    const reorderedTransactions = [
+      [{key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Address', width: 100, type: DataTypeEnum.ARRAY}],
+      [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
+      [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
+      [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+        {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'active', value: selTransaction.active, title: 'Active', width: 50, type: DataTypeEnum.BOOLEAN}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
-      message: JSON.stringify(reorderedTransactions),
-      messageFieldsBreakdown: [1, 1, 1, 2, 3]
+      message: reorderedTransactions,
     }}));
   }
 

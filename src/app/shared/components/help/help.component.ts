@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
 export class HelpTopic {
   question: string;
@@ -17,13 +18,13 @@ export class HelpTopic {
 })
 export class HelpComponent implements OnInit {
   public helpTopics: Array<HelpTopic> = [];
+  public faQuestion = faQuestion;
 
   constructor() {}
 
   ngOnInit() {
-    // this.helpTopics.push(new HelpTopic('Set LND home directory?',
-    //   'Pass the directroy information while getting the server up with --lndir "local-lnd-path".<br>Example: node rtl --lndir C:\lnd\dir\path'));
-    this.helpTopics.push(new HelpTopic('Change theme?', 'Click on rotating setting icon on the right side of the screen and choose from the given options.'));
+    this.helpTopics.push(new HelpTopic('Change setting?', 'Click on setting icon on the navigation and choose from the given options.'));
+    // this.helpTopics.push(new HelpTopic('', ''));
   }
 
 }

@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faProjectDiagram, faCog, faLifeRing, faSearch, faTools } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faProjectDiagram, faCog, faQuestion, faSearch, faTools } from '@fortawesome/free-solid-svg-icons';
 
 export const MENU_DATA: MenuRootNode = {
   LNDChildren: [
@@ -12,7 +12,7 @@ export const MENU_DATA: MenuRootNode = {
     ]},
     {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/sconfig'},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
-    {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faLifeRing, link: '/help'}    
+    {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ],
   CLChildren: [
     {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/cl/home'},
@@ -25,7 +25,7 @@ export const MENU_DATA: MenuRootNode = {
     ]},
     {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/sconfig'},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
-    {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faLifeRing, link: '/help'}    
+    {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ]
 };
 

@@ -11,7 +11,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -115,12 +115,23 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     })[0];
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['commit_weight', 'confirmation_height', 'fee_per_kw', 'commit_fee'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
-    const reorderedChannel = {};
-    Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const preOrderedChannel: any = {};
+    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
+    const reorderedChannel = [
+      [{key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'confirmation_height', value: preOrderedChannel.confirmation_height, title: 'Confirmation Height', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'fee_per_kw', value: preOrderedChannel.fee_per_kw, title: 'Fee/KW', width: 40, type: DataTypeEnum.NUMBER},
+      {key: 'commit_weight', value: preOrderedChannel.commit_weight, title: 'Commit Weight', width: 30, type: DataTypeEnum.NUMBER},
+      {key: 'commit_fee', value: preOrderedChannel.commit_fee, title: 'Commit Fee', width: 30, type: DataTypeEnum.NUMBER}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Opening Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 
@@ -130,12 +141,24 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     })[0];
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
-    const reorderedChannel = {};
-    Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const preOrderedChannel: any = {};
+    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
+    const reorderedChannel = [
+      [{key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 100, type: DataTypeEnum.NUMBER}],
+      [{key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'maturity_height', value: preOrderedChannel.maturity_height, title: 'Maturity Height', width: 40, type: DataTypeEnum.NUMBER},
+        {key: 'blocks_til_maturity', value: preOrderedChannel.blocks_til_maturity, title: 'Blocks Till Maturity', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'recovered_balance', value: preOrderedChannel.recovered_balance, title: 'Recovered Balance', width: 30, type: DataTypeEnum.NUMBER}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Force Closing Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 
@@ -145,12 +168,20 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     })[0];
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
-    const reorderedChannel = {};
-    Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const preOrderedChannel: any = {};
+    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
+    const reorderedChannel = [
+      [{key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 50, type: DataTypeEnum.STRING}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Closing Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 
@@ -160,12 +191,20 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     })[0];
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['limbo_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
-    const reorderedChannel = {};
-    Object.assign(reorderedChannel, fcChannelObj1, fcChannelObj2);
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const preOrderedChannel: any = {};
+    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
+    const reorderedChannel = [
+      [{key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'remote_balance', value: preOrderedChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'local_balance', value: preOrderedChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 50, type: DataTypeEnum.NUMBER}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Wait Closing Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 

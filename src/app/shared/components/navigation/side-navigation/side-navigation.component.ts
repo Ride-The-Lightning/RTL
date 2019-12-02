@@ -118,7 +118,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
-        width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+        width: '55%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
       .pipe(takeUntil(this.unSubs[3]))

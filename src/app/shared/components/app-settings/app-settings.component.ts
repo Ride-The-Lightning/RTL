@@ -118,7 +118,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
     if (!updatedSettings && !defaultNodeIndex) {
-      this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
         type: AlertTypeEnum.WARNING,
         alertTitle: 'Configuration Not Updated',
         titleMessage: 'Nothing has been updated to save!'

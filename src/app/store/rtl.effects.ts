@@ -13,7 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum } from '../shared/services/consts-enums-functions';
+import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum, DataTypeEnum } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -22,6 +22,7 @@ import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
+import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
@@ -102,11 +103,8 @@ export class RTLEffects implements OnDestroy {
     if (!this.sessionService.getItem('token') || !rootData.nodeData.identity_pubkey) {
       this.snackBar.open('Node Pubkey does not exist.');
     } else {
-      this.store.dispatch(new RTLActions.OpenAlert({width: '70%',
-      data: {
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: '',
-        message: JSON.stringify(rootData.nodeData),
+      this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
+        information: rootData.nodeData,
         component: ShowPubkeyComponent
       }}));
     }
@@ -156,7 +154,11 @@ export class RTLEffects implements OnDestroy {
       this.logger.info(updateStatus);
       return {
         type: RTLActions.OPEN_ALERT,
-        payload: { config : { width: '70%', data: { type: AlertTypeEnum.SUCCESS, titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message }}}
+        payload: { width: '55%', data: { 
+          type: AlertTypeEnum.SUCCESS,
+          alertTitle: 'Settings updated',
+          titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message 
+        }}
       };
     },
     catchError((err) => {
@@ -352,11 +354,11 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
-        width: '70%', data: {
+        width: '55%', data: {
           type: alertType,
           alertTitle: alertTitle,
-          titleMessage: alertTitle,
-          message: JSON.stringify({ code: err.status, Message: err.error.error, URL: errURL })
+          message: { code: err.status, message: err.error.error, URL: errURL },
+          component: ErrorMessageComponent
         }
       }));
     }

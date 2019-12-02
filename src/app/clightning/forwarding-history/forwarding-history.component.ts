@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-forwarding-history',
@@ -82,10 +82,16 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     const selFEvent = this.forwardingHistoryEvents.data.filter(fhEvent => {
       return (fhEvent.received_time === selRow.received_time && fhEvent.in_channel === selRow.in_channel);
     })[0];
-    const reorderedFHEvent = JSON.parse(JSON.stringify(selFEvent, [
-      'status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'in_msat', 'out_msatoshi', 'out_msat', 'fee', 'fee_msat', 'payment_hash'      
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Forwarding History', message: JSON.stringify(reorderedFHEvent)}}));
+    const reorderedFHEvent = [
+      [{key: 'status', value: selFEvent.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'in_msat', 'out_msatoshi', 'out_msat', 'fee', 'fee_msat', 'payment_hash'      
+    ];
+
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: { 
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Forwarding History',
+      message: reorderedFHEvent
+    }}));
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEventCL[]) {

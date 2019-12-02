@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -119,16 +119,9 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     const selInvoice = this.invoices.data.filter(invoice => {
       return invoice.payment_request === selRow.payment_request;
     })[0];
-    const reorderedInvoice = JSON.parse(JSON.stringify(selInvoice, [
-      'settled', 'creation_date_str', 'settle_date_str', 'memo', 'receipt', 'r_preimage', 'r_hash', 'value', 'payment_request',
-      'description_hash', 'expiry', 'fallback_addr', 'cltv_expiry', 'route_hints', 'private', 'add_index', 'settle_index',
-      'amt_paid', 'amt_paid_sat', 'amt_paid_msat'
-    ] , 2));
     this.store.dispatch(new RTLActions.OpenAlert({ width: '58%', 
       data: { 
-        type: AlertTypeEnum.INFORMATION, 
-        alertTitle: 'Invoice Information',
-        message: JSON.stringify(reorderedInvoice),
+        invoice: selInvoice,
         newlyAdded: false,
         component: InvoiceInformationComponent
     }}));

@@ -1,30 +1,42 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
+  <div *ngIf="showQRField !== ''" fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
+    <qrcode [qrdata]="showQRField" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+  </div>
+  <div [fxFlex]="showQRField !== '' ? '65' : '100'" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
       </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="mt-5px mb-0">
       <div fxLayout="column">
-        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="title-message pb-1 pl-1">{{data.titleMessage | titlecase}}</p>
+        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="messageObjs?.length>0">
           <div *ngFor="let objs of messageObjs; index as i;">
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-              <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{100/messageFieldsBreakdown[i]}}" *ngFor="let obj of objs">
-                <h4 fxLayoutAlign="start" class="font-bold-500">{{obj[0] | titlecase}}</h4>
-                <span fxFlex="100" class="foreground-secondary-text" *ngIf="isNumber(obj[1], obj[0]);else notNumberTemplate">{{obj[1] | number:'1.0-3'}}</span>
-                <ng-template #notNumberTemplate>
-                  <span fxFlex="100" class="foreground-secondary-text">{{obj[1]}}</span>
+              <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
+                <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
+                <span *ngIf="obj && obj.value; else emptyField">
+                  <span [ngSwitch]="obj.type" class="foreground-secondary-text">
+                    <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block">{{arrayObj}}</span></ng-container>
+                    <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
+                    <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value === true ? 'True' : 'False'}}</ng-container>
+                    <ng-container *ngSwitchDefault>{{obj.value}}</ng-container>
+                  </span>
+                </span>
+                <ng-template #emptyField>
+                  <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
                 </ng-template>
                 <mat-divider class="w-100 my-1"></mat-divider>
               </div>                
             </div>
           </div>
         </div>
-        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button fxLayoutAlign="center center" tabindex="1" autoFocus mat-raised-button color="primary" fxFlex="20" type="submit" [mat-dialog-close]="false" default>OK</button>
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button *ngIf="!showQRField || showQRField == ''" fxLayoutAlign="center center" tabindex="1" autoFocus mat-raised-button color="primary" fxFlex="20" type="submit" [mat-dialog-close]="false" default>OK</button>
+          <button *ngIf="showQRField !== ''" fxLayoutAlign="center center" tabindex="1" class="mr-2" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>OK</button>
+          <button *ngIf="showQRField !== ''" fxFlex="30" fxLayoutAlign="center center" autoFocus mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
         </div>
       </div>
     </mat-card-content>

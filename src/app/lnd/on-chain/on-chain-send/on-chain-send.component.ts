@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -16,6 +16,7 @@ import * as sha256 from 'sha256';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-on-chain-send',
@@ -99,34 +100,42 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   confirmSend() {
-    const confirmationMsg = {
-      'BTC Address': this.transaction.address,
-    };
+    const confirmationMsg: Array<Array<MessageDataField>> = [
+      [{key: 'address', value: this.transaction.address, title: 'BTC Address', width: 100}]
+    ];
     if (this.sweepAll) {
-      confirmationMsg['Sweep All'] = 'True';
+      confirmationMsg.push([{key: 'sweep_all', value: true, title: 'Sweep All', width: 50, type: DataTypeEnum.BOOLEAN}]);
       this.transaction.sendAll = true;
     } else {
-      confirmationMsg['Amount (' + this.nodeData.smaller_currency_unit + ')'] = this.transaction.amount;
+      confirmationMsg.push([{key: 'amount', value: this.transaction.amount, title: 'Amount (' + this.nodeData.smaller_currency_unit + ')', width: 50, type: DataTypeEnum.NUMBER}]);
       this.transaction.sendAll = false;
     }
     if (this.selTransType === '1') {
       delete this.transaction.fees;
-      confirmationMsg['Target Confirmation Blocks'] = this.transaction.blocks;
+      confirmationMsg[1].push({key: 'target_conf_blocks', value: this.transaction.blocks, title: 'Target Confirmation Blocks', width: 50, type: DataTypeEnum.NUMBER});
     } else {
       delete this.transaction.blocks;
-      confirmationMsg['Fee (' + this.nodeData.smaller_currency_unit + '/Byte)'] = this.transaction.fees;
+      confirmationMsg[1].push({key: 'fees_per_byte', value: this.transaction.fees, title: 'Fee (' + this.nodeData.smaller_currency_unit + '/Byte)', width: 50, type: DataTypeEnum.NUMBER});
     }
     if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-        {type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Payment', titleMessage: 'Please authorize to sweep all funds with login password.',
-          message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Authorize And Sweep All Funds',
-          flgShowInput: true, getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}
-        ]}
-      }));
+      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+        type: AlertTypeEnum.CONFIRM,
+        alertTitle: 'Confirm Payment',
+        titleMessage: 'Please authorize to sweep all funds with login password.',
+        message: confirmationMsg,
+        noBtnText: 'Cancel',
+        yesBtnText: 'Authorize And Sweep All',
+        flgShowInput: true,
+        getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}]
+      }}));
     } else {
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-        {type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Payment', message: JSON.stringify(confirmationMsg), noBtnText: 'Cancel', yesBtnText: 'Send'}
-      }));
+      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+        type: AlertTypeEnum.CONFIRM,
+        alertTitle: 'Confirm Payment',
+        message: confirmationMsg,
+        noBtnText: 'Cancel',
+        yesBtnText: 'Send'
+      }}));
     }
   }
 

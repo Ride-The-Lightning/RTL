@@ -26,9 +26,17 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Received ({{information?.smaller_currency_unit}}) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
       </ng-container>
+      <ng-container matColumnDef="local_balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_balance | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="remote_balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
+      </ng-container>
       <ng-container matColumnDef="capacity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacity</th>
-        <td mat-cell *matCellDef="let channel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-3">Capacity</th>
+        <td mat-cell *matCellDef="let channel" class="px-3">
           <div fxLayout="row">
             <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local: </strong>{{channel.local_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
             <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote: </strong>{{channel.remote_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>

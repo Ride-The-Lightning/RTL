@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfoCL, InvoiceCL } from '../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
@@ -119,13 +119,14 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
     const selInvoice = this.invoices.data.filter(invoice => {
       return invoice.bolt11 === selRow.bolt11;
     })[0];
-    const reorderedInvoice = JSON.parse(JSON.stringify(selInvoice, [
-     'status', 'expires_at_str', 'paid_at_str', 'pay_index', 'label', 'bolt11', 'payment_hash', 'msatoshi', 'msatoshi_received', 'description'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const reorderedInvoice = [
+      [{key: 'status', value: selInvoice.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'status', 'expires_at_str', 'paid_at_str', 'pay_index', 'label', 'bolt11', 'payment_hash', 'msatoshi', 'msatoshi_received', 'description'
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Invoice Information',
-      message: JSON.stringify(reorderedInvoice)
+      message: reorderedInvoice
     }}));
   }
 

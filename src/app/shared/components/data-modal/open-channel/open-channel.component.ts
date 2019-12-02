@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Store } from '@ngrx/store';
 
 import { Peer, GetInfo } from '../../../models/lndModels';
-import { AlertData } from '../../../models/alertData';
+import { OpenChannelAlert } from '../../../models/alertData';
 import { TRANS_TYPES } from '../../../services/consts-enums-functions';
 
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -27,13 +27,12 @@ export class OpenChannelComponent implements OnInit {
   public transTypeValue = {blocks: '', fees: ''};
   public transTypes = TRANS_TYPES;
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    let JSONdata = JSON.parse(this.data.message);
-    this.peer = JSONdata.peer;
-    this.information = JSONdata.information;
-    this.totalBalance = JSONdata.balance;
+    this.peer = this.data.message.peer;
+    this.information = this.data.message.information;
+    this.totalBalance = this.data.message.balance;
     this.newlyAdded = this.data.newlyAdded;
     this.alertTitle = this.data.alertTitle;
   }

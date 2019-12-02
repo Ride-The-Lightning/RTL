@@ -13,7 +13,7 @@ import { CLEffects } from '../store/cl.effects';
 import { RTLEffects } from '../../store/rtl.effects';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-on-chain',
@@ -87,9 +87,16 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds() {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data:
-      {type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Send Funds', message: JSON.stringify(this.transaction), noBtnText: 'Cancel', yesBtnText: 'Send'}
-    }));
+    const reorderedTransaction = [
+      [{key: 'address', value: this.transaction.address, title: 'Address', width: 100, type: DataTypeEnum.NUMBER}]
+    ];
+    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Confirm Send Funds',
+      message: reorderedTransaction,
+      noBtnText: 'Cancel',
+      yesBtnText: 'Send'
+    }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unsub[3]))
     .subscribe(confirmRes => {

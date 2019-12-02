@@ -9,7 +9,7 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 
 import { PeerCL, GetInfoCL } from '../../shared/models/clModels';
 import { DialogConfig } from '../../shared/models/alertData';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { newlyAddedRowAnimation } from '../../shared/animation/row-animation';
@@ -105,10 +105,15 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     const selPeer = this.peers.data.filter(peer => {
       return peer.id === selRow.id;
     })[0];
-    const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
-      'id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Peer Information', message: JSON.stringify(reorderedPeer)}}));
+    const reorderedPeer = [
+      [{key: 'status', value: selPeer.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
+      // 'id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures'
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: { 
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Peer Information',
+      message: reorderedPeer
+    }}));
   }
 
   resetData() {

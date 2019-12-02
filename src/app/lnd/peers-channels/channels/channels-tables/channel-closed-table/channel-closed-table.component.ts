@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -90,12 +90,21 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
     const selChannel = this.closedChannels.data.filter(closedChannel => {
       return closedChannel.chan_id === selRow.chan_id;
     })[0];
-    const reorderedChannel = JSON.parse(JSON.stringify(selChannel, ['close_type', 'channel_point', 'chan_id', 'closing_tx_hash', 'remote_pubkey', 'capacity',
-    'close_height', 'settled_balance', 'time_locked_balance'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const reorderedChannel = [
+      [{key: 'close_type', value: selChannel.close_type, title: 'Close Type', width: 40, type: DataTypeEnum.STRING},
+        {key: 'time_locked_balance', value: selChannel.time_locked_balance, title: 'Time Locked Balance', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'settled_balance', value: selChannel.settled_balance, title: 'Settled Balance', width: 30, type: DataTypeEnum.NUMBER}],
+      [{key: 'remote_pubkey', value: selChannel.remote_pubkey, title: 'Peer Public Key', width: 100}],
+      [{key: 'channel_point', value: selChannel.channel_point, title: 'Channel Point', width: 100}],
+      [{key: 'chan_id', value: selChannel.chan_id, title: 'Channel ID', width: 40},
+        {key: 'capacity', value: selChannel.capacity, title: 'capacity', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'close_height', value: selChannel.close_height, title: 'Close Height', width: 30, type: DataTypeEnum.NUMBER}],
+      [{key: 'closing_tx_hash', value: selChannel.closing_tx_hash, title: 'Closing Transaction Hash', width: 100, type: DataTypeEnum.STRING}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Closed Channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 

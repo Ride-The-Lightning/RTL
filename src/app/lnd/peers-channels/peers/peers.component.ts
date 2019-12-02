@@ -9,7 +9,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { OpenChannelComponent } from '../../../shared/components/data-modal/open-channel/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
@@ -137,10 +137,20 @@ export class PeersComponent implements OnInit, OnDestroy {
     const selPeer = this.peers.data.filter(peer => {
       return peer.pub_key === selRow.pub_key;
     })[0];
-    const reorderedPeer = JSON.parse(JSON.stringify(selPeer, [
-       'alias', 'pub_key', 'address', 'bytes_sent', 'bytes_recv', 'sat_sent', 'sat_recv', 'inbound', 'ping_time'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Peer Information', message: JSON.stringify(reorderedPeer)}}));
+    const reorderedPeer = [
+      [{key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100}],
+      [{key: 'address', value: selPeer.address, title: 'Address', width: 100}],
+      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 40}, {key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30}, {key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time', width: 30, type: DataTypeEnum.NUMBER}],
+      [{key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER}],
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Peer Information',
+      showQRName: 'Public Key',
+      showQRField: selPeer.pub_key,
+      message: reorderedPeer
+    }}));
   }
 
   resetData() {
@@ -148,17 +158,33 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '50%', data: { type: AlertTypeEnum.INFORMATION, alertTitle: 'Open Channel', message: JSON.stringify({peer: peerToAddChannel, information: this.information, balance: this.availableBalance}), newlyAdded: false, component: OpenChannelComponent}}));
+    const peerToAddChannelMessage = {
+      peer: peerToAddChannel, 
+      information: this.information,
+      balance: this.availableBalance
+    };
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '50%', data: { 
+      alertTitle: 'Open Channel',
+      message: peerToAddChannelMessage,
+      newlyAdded: false,
+      component: OpenChannelComponent
+    }}));
   }
 
   onPeerDetach(peerToDetach: Peer) {
-    const msg = 'Disconnect peer: ' + peerToDetach.pub_key;
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Peer Disconnect', titleMessage: msg, noBtnText: 'Cancel', yesBtnText: 'Detach'}}));
+    const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.pub_key);
+    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Disconnect Peer',
+      titleMessage: msg,
+      noBtnText: 'Cancel',
+      yesBtnText: 'Disconnect'
+    }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Detaching Peer...'));
+        this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
         this.store.dispatch(new RTLActions.DetachPeer({pubkey: peerToDetach.pub_key}));
       }
     });

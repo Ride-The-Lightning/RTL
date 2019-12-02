@@ -11,7 +11,7 @@ import { CommonService } from '../../shared/services/common.service';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -86,7 +86,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   onRoutingPeerClick(selRow: RoutingPeers, event: any, direction: string) {
-    let selRPeer = {};
+    let selRPeer: RoutingPeers = {};
     if (direction === 'in') {
       selRPeer = this.RoutingPeersIncoming.data.find(rPeer => {
         return rPeer.chan_id === selRow.chan_id;
@@ -96,11 +96,14 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
         return rPeer.chan_id === selRow.chan_id;
       });
     }
-    const reorderedRoutingPeer = JSON.parse(JSON.stringify(selRPeer, ['chan_id', 'alias', 'events', 'total_amount'] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const reorderedRoutingPeer = [
+      [{key: 'chan_id', value: selRPeer.chan_id, title: 'Channel ID', width: 100, type: DataTypeEnum.STRING}]
+      // 'chan_id', 'alias', 'events', 'total_amount'
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',
-      message: JSON.stringify(reorderedRoutingPeer)
+      message: reorderedRoutingPeer
     }}));
   }
 

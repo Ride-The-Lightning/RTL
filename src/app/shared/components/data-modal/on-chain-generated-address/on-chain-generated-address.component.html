@@ -1,6 +1,6 @@
 <div fxLayout="row">
   <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
-    <qrcode [qrdata]="address.address" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+    <qrcode [qrdata]="address" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
@@ -15,19 +15,19 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address Type</h4>
-            <span class="foreground-secondary-text">{{address.addressType}}</span>
+            <span class="foreground-secondary-text">{{addressType}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>        
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{address.address}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{address}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>        
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" type="submit" rtlClipboard [payload]="address.address" (copied)="onCopyAddress($event)">Copy Address</button>
+          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="1" type="submit" rtlClipboard [payload]="address" (copied)="onCopyAddress($event)">Copy Address</button>
         </div>
       </div>
       </mat-card-content>

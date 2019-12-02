@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-error',
@@ -10,9 +11,10 @@ import { filter, map, takeUntil } from 'rxjs/operators';
 })
 export class ErrorComponent implements OnInit {
   error = {errorCode: '', errorMessage: ''};
+  public faTimes = faTimes;
   private unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap
@@ -20,6 +22,10 @@ export class ErrorComponent implements OnInit {
     .subscribe(data => {
       this.error = window.history.state;
     });
+  }
+
+  goToHelp(): void {
+    this.router.navigate(['/help']);
   }
 
 }

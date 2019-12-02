@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
@@ -95,14 +95,30 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     const selChannel = this.channels.data.filter(channel => {
       return channel.chan_id === selRow.chan_id;
     })[0];
-    const reorderedChannel = JSON.parse(JSON.stringify(selChannel, [
-      'active', 'remote_pubkey', 'remote_alias', 'channel_point', 'chan_id', 'capacity', 'local_balance', 'remote_balance', 'commit_fee', 'commit_weight',
-      'fee_per_kw', 'unsettled_balance', 'total_satoshis_sent', 'total_satoshis_received', 'num_updates', 'pending_htlcs', 'csv_delay', 'private'
-    ] , 2));
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
+    const reorderedChannel = [
+      [{key: 'remote_alias', value: selChannel.remote_alias, title: 'Peer Alias', width: 40},
+        {key: 'active', value: selChannel.active, title: 'Active', width: 30, type: DataTypeEnum.BOOLEAN},
+        {key: 'private', value: selChannel.private, title: 'Private', width: 30, type: DataTypeEnum.BOOLEAN}],
+      [{key: 'remote_pubkey', value: selChannel.remote_pubkey, title: 'Peer Public Key', width: 100}],
+      [{key: 'channel_point', value: selChannel.channel_point, title: 'Channel Point', width: 100}],
+      [{key: 'chan_id', value: selChannel.chan_id, title: 'Channel ID', width: 50},
+        {key: 'capacity', value: selChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'local_balance', value: selChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'remote_balance', value: selChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'commit_fee', value: selChannel.commit_fee, title: 'Commit Fee', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'commit_weight', value: selChannel.commit_weight, title: 'Commit Weight', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'fee_per_kw', value: selChannel.fee_per_kw, title: 'Fee/KW', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'unsettled_balance', value: selChannel.unsettled_balance, title: 'Unsettled Balance', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'total_satoshis_sent', value: selChannel.total_satoshis_sent, title: 'Total Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'total_satoshis_received', value: selChannel.total_satoshis_received, title: 'Total Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'num_updates', value: selChannel.num_updates, title: 'Number of Updates', width: 40, type: DataTypeEnum.NUMBER},
+        {key: 'pending_htlcs', value: selChannel.pending_htlcs, title: 'Pending HTLCs', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'csv_delay', value: selChannel.csv_delay, title: 'CSV Delay', width: 30, type: DataTypeEnum.NUMBER}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'channel Information',
-      message: JSON.stringify(reorderedChannel)
+      message: reorderedChannel
     }}));
   }
 

@@ -52,3 +52,13 @@ export enum CurrencyUnitEnum {
   LTC = 'LTC',
   OTHER = 'OTHER'
 }
+
+export enum DataTypeEnum {
+  ARRAY = 'ARRAY',
+  NUMBER = 'NUMBER',
+  STRING = 'STRING',
+  BOOLEAN = 'BOOLEAN',
+  PASSWORD = 'PASSWORD',
+  DATE = 'DATE',
+  DATE_TIME = 'DATE_TIME'
+}
