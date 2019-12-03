@@ -229,12 +229,16 @@ body {
   color: #388e3c !important;
 }
 
+.yellow {
+  color: #ffd740 !important;
+}
+
 .red {
   color: #c62828 !important;
 }
 
-.yellow {
-  color: #ffd740 !important;
+.grey {
+  color: #CCCCCC !important;
 }
 
 .mat-dialog-container {
@@ -415,6 +419,10 @@ body {
 
 .p-1 {
   padding: 1rem !important;
+}
+
+.p-16 {
+  padding: 1.6rem !important;
 }
 
 .pt-2 {
@@ -793,22 +801,31 @@ table {
   width:100%;
 }
 
-.green-dot {
+.dot {
   display: inline-flex;
   width: $dot-size;
   height: $dot-size;
   border-radius: $dot-size;
   margin-right: 1rem;
-  background-color: $green-color;
-}
-
-.yellow-dot {
-  display: inline-flex;
-  width: $dot-size;
-  height: $dot-size;
-  border-radius: $dot-size;
-  margin-right: 1rem;
-  background-color: $yellow-color;
+  &.tiny-dot {
+    width: $tiny-dot-size;
+    height: $tiny-dot-size;
+    border-radius: $tiny-dot-size;
+    margin-right: 0.6rem;
+    margin-bottom: 0.2rem;
+  }
+  &.green {
+    background-color: $green-color;
+  }
+  &.yellow {
+    background-color: $yellow-color;
+  }
+  &.red {
+    background-color: $red-color;
+  }
+  &.grey {
+    background-color: $grey-color;
+  }
 }
 
 .font-size-80 {

@@ -26,6 +26,7 @@ export interface GetInfoCL {
   fees_collected_msat?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;
+  lnImplementation?: string;
 }
 
 export interface FeesCL {

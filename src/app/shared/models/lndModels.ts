@@ -1,3 +1,15 @@
+export interface ChannelStatus {
+  channels?: number;
+  capacity?:number;
+}
+
+export interface ChannelsStatus {
+  active?: ChannelStatus;
+  inactive?: ChannelStatus;
+  pending?: ChannelStatus;
+  closed?: ChannelStatus;
+}
+
 export interface AddressType {
   addressId?: string;
   addressTp?: string;
@@ -142,6 +154,7 @@ export interface GetInfoChain {
 export interface GetInfo {
   identity_pubkey?: string;
   alias?: string;
+  color?: string;
   num_pending_channels?: number;
   num_active_channels?: number;
   num_peers?: number;
@@ -155,6 +168,7 @@ export interface GetInfo {
   version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;
+  lnImplementation?: string;
 }
 
 export interface GraphNode {

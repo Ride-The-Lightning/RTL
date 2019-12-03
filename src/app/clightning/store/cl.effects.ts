@@ -41,6 +41,7 @@ export class CLEffects implements OnDestroy {
         .pipe(
           map((info) => {
             this.logger.info(info);
+            info.lnImplementation = 'C-Lightning';
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: RTLActions.SET_INFO_CL,

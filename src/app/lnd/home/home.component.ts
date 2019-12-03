@@ -1,11 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Subject, of } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
+import { faSmile } from '@fortawesome/free-regular-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
+import { ChannelsStatus, GetInfo, NetworkInfo, Fees, Peer } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -17,9 +20,11 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  public faSmile = faSmile;
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
+  public balances = { onchain: -1, lightning: -1 };
   public remainder = 0;
   public totalPeers = -1;
   public totalBalance = 0;
@@ -34,6 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public activeChannels = 0;
   public inactiveChannels = 0;
   public pendingChannels = 0;
+  public channelsStatus: ChannelsStatus = {};
   public peers: Peer[] = [];
   barPadding = 0;
   maxBalanceValue = 0;
@@ -42,8 +48,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   view = [];
   yAxisLabel = 'Balance';
   colorScheme = {domain: ['#FFFFFF']};
+  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map(({ matches }) => {
+      if (matches) {
+        return [
+          { id: 'node', title: 'Node Details', cols: 10, rows: 1 },
+          { id: 'balance', title: 'Balances', cols: 10, rows: 1 },
+          { id: 'fee', title: 'Routing Fee Earned', cols: 10, rows: 1 },
+          { id: 'status', title: 'Channel Status', cols: 10, rows: 1 },
+          { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 1 }
+        ];
+      }
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+      return [
+        { id: 'node', title: 'Node Details', cols: 3, rows: 1 },
+        { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', title: 'Channel Capacity', cols: 4, rows: 2 },
+        { id: 'fee', title: 'Routing Fee Earned', cols: 3, rows: 1 },
+        { id: 'status', title: 'Channel Status', cols: 3, rows: 1 }
+      ];
+    })
+  );    
+
+
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver) {
     switch (true) {
       case (window.innerWidth <= 730):
         this.view = [250, 352];
@@ -104,7 +132,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = (undefined !== this.fees.day_fee_sum) ? false : true;
       }
-
+      this.balances.onchain = rtlStore.blockchainBalance.total_balance;
       this.totalBalance = rtlStore.blockchainBalance.total_balance;
       this.BTCtotalBalance = rtlStore.blockchainBalance.btc_total_balance;
       if (this.flgLoading[2] !== 'error') {
@@ -123,6 +151,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
 
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) {
+        this.balances.lightning = rtlStore.totalLocalBalance;
         this.totalBalances = [{'name': 'Local Balance', 'value': rtlStore.totalLocalBalance}, {'name': 'Remote Balance', 'value': rtlStore.totalRemoteBalance}];
         this.maxBalanceValue = (rtlStore.totalLocalBalance > rtlStore.totalRemoteBalance) ? rtlStore.totalLocalBalance : rtlStore.totalRemoteBalance;
         this.flgTotalCalculated = true;
@@ -130,10 +159,19 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.flgLoading[5] = false;
         }
       }
-
       this.activeChannels =  rtlStore.numberOfActiveChannels;
       this.inactiveChannels = rtlStore.numberOfInactiveChannels;
       this.pendingChannels = (undefined !== rtlStore.pendingChannels.pending_open_channels) ? rtlStore.pendingChannels.pending_open_channels.length : 0;
+      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.waiting_close_channels) ? rtlStore.pendingChannels.waiting_close_channels.length : 0);
+      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.pending_closing_channels) ? rtlStore.pendingChannels.pending_closing_channels.length : 0);
+      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.pending_force_closing_channels) ? rtlStore.pendingChannels.pending_force_closing_channels.length : 0);
+console.warn(rtlStore.pendingChannels.total_limbo_balance);
+      this.channelsStatus = {
+        active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
+        inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
+        pending: { channels: this.pendingChannels, capacity: rtlStore.pendingChannels.total_limbo_balance },
+        closed: { channels: (rtlStore.closedChannels && rtlStore.closedChannels.length) ? rtlStore.closedChannels.length : 0, capacity: 0 }
+      };
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0 && this.flgLoading[6] !== 'error') {
         this.flgLoading[6] = false;
       }
@@ -144,6 +182,30 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  initializeCards() {
+    this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return [
+            { title: 'Card 1', cols: 1, rows: 1 },
+            { title: 'Card 2', cols: 1, rows: 1 },
+            { title: 'Card 3', cols: 1, rows: 1 },
+            { title: 'Card 4', cols: 1, rows: 1 },
+            { title: 'Card 4', cols: 1, rows: 1 }
+          ];
+        }
+  
+        return [
+          { title: 'Card 1', cols: 3, rows: 1 },
+          { title: 'Card 2', cols: 3, rows: 1 },
+          { title: 'Card 3', cols: 4, rows: 2 },
+          { title: 'Card 4', cols: 3, rows: 1 },
+          { title: 'Card 4', cols: 3, rows: 1 }
+        ];
+      })
+    );    
+  }
+  
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {
       completeSub.next();

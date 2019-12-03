@@ -58,6 +58,7 @@ export class LNDEffects implements OnDestroy {
                 payload: {}
               };
             } else {
+              info.lnImplementation = 'LND';    
               this.initializeRemainingData(info, action.payload.loadPage);
               return {
                 type: RTLActions.SET_INFO,
@@ -1048,6 +1049,7 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchNetwork());
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
     this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
+    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
     let newRoute = this.location.path();

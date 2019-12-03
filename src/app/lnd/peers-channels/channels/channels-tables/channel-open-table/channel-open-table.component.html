@@ -12,8 +12,8 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
         <td mat-cell *matCellDef="let channel">
           <div class="ellipsis-parent">
-            <span *ngIf="channel.active" class="green-dot"></span>
-            <span *ngIf="!channel.active" class="yellow-dot"></span>
+            <span *ngIf="channel.active" class="dot green"></span>
+            <span *ngIf="!channel.active" class="dot yellow"></span>
             <span class="ellipsis-child">{{channel.remote_alias || channel.remote_pubkey}}</span>
           </div>            
         </td>

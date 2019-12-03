@@ -1,4 +1,39 @@
-<div fxLayout="column" fxLayout.gt-sm="row wrap">
+<div fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container mb-0">
+    <fa-icon [icon]="faSmile" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Welcome! Your node is up and running.</span>
+  </div>
+  <mat-grid-list cols="10" rowHeight="330px">
+    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
+      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-16">
+        <mat-card-header>
+          <mat-card-title>
+            {{card.title}}
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content w-100" fxFlex="100">
+          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
+            <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"></rtl-node-info>
+            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"></rtl-balances-info>
+            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'"></rtl-channel-capacity-info>
+            <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees"></rtl-fee-info>
+            <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus"></rtl-channel-status-info>
+            <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+  
+<!-- <div fxLayout="column" fxLayout.gt-sm="row wrap">
   <div fxFlex="25" class="padding-gap">
     <mat-card [ngClass]="{'custom-card error-border': flgLoading[2]==='error','custom-card': true}">
       <mat-card-header class="bg-primary" fxLayoutAlign="center end">
@@ -234,4 +269,4 @@
     </mat-card>
   </div>  
 </div>
-<ng-template #withoutData><h3>Sats</h3></ng-template>
+<ng-template #withoutData><h3>Sats</h3></ng-template> -->

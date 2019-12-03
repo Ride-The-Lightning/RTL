@@ -1,7 +1,7 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
-  GetInfo, Peer, AddressType, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
+  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -20,6 +20,8 @@ export interface LNDState {
   numberOfActiveChannels: number;
   numberOfInactiveChannels: number;
   numberOfPendingChannels: number;
+  totalCapacityActive: number;
+  totalCapacityInactive: number;
   totalLocalBalance: number;
   totalRemoteBalance: number;
   totalInvoices: number;
@@ -44,6 +46,8 @@ export const initLNDState: LNDState = {
   numberOfActiveChannels: 0,
   numberOfInactiveChannels: 0,
   numberOfPendingChannels: -1,
+  totalCapacityActive: -1,
+  totalCapacityInactive: -1,
   totalLocalBalance: -1,
   totalRemoteBalance: -1,
   totalInvoices: -1,
@@ -133,7 +137,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         numberOfPendingChannels: action.payload.pendingChannels,
       };
     case RTLActions.SET_CHANNELS:
-      let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0;
+      let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
         action.payload.filter(channel => {
           if (undefined !== channel.local_balance) {
@@ -143,8 +147,10 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
             remoteBal = +remoteBal + +channel.remote_balance;
           }
           if (channel.active === true) {
+            totalCapacityActive = totalCapacityActive + +channel.capacity;
             activeChannels = activeChannels + 1;
           } else {
+            totalCapacityInactive = totalCapacityInactive + +channel.capacity;
             inactiveChannels = inactiveChannels + 1;
           }
         });
@@ -154,6 +160,8 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         allChannels: action.payload,
         numberOfActiveChannels: activeChannels,
         numberOfInactiveChannels: inactiveChannels,
+        totalCapacityActive: totalCapacityActive,
+        totalCapacityInactive: totalCapacityInactive,
         totalLocalBalance: localBal,
         totalRemoteBalance: remoteBal
       };

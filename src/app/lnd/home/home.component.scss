@@ -1,12 +1,30 @@
-.network-info-list .mat-list-item {
-  height: 44px;
+.dashboard-card {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
 }
 
-.mat-column-bytes_sent, .mat-column-bytes_recv, .mat-column-sat_sent, .mat-column-sat_recv, .mat-column-inbound, .mat-column-ping_time {
-  flex: 0 0 8%;
-  min-width: 80px;
+.more-button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
 }
 
-.card-chnl-balances {
-  min-height: 354px;
+.dashboard-card-content {
+  text-align: left;
 }
+
+// .network-info-list .mat-list-item {
+//   height: 44px;
+// }
+
+// .mat-column-bytes_sent, .mat-column-bytes_recv, .mat-column-sat_sent, .mat-column-sat_recv, .mat-column-inbound, .mat-column-ping_time {
+//   flex: 0 0 8%;
+//   min-width: 80px;
+// }
+
+// .card-chnl-balances {
+//   min-height: 354px;
+// }
