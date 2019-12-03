@@ -18,7 +18,7 @@
           <rtl-top-menu></rtl-top-menu>
         </div>
       </mat-toolbar>
-      <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary flex-wrap pubkey-info-top" rtlClipboard [payload]="information?.identity_pubkey" (copied)="copiedText($event)">
+      <div matTooltip="Copy public key" matTooltipPosition="above" fxLayout="row" fxLayoutAlign="center center" class="bg-primary flex-wrap pubkey-info-top" rtlClipboard [payload]="information?.identity_pubkey" (copied)="copiedText($event)">
         <mat-icon [ngClass]="{'icon-smaller': smallScreen}">vpn_key</mat-icon>
         <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{information?.identity_pubkey}}
           <mat-spinner [diameter]="20" *ngIf="flgLoading[0]" class="inline-spinner foreground"></mat-spinner>
