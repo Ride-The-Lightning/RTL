@@ -1,7 +1,10 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="center start">
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
-    <div class="foreground-secondary-text" [ngStyle]="{'backgroundColor': information.color}">{{information.alias}}</div>
+    <div class="foreground-secondary-text">
+      <span class="dot" [ngStyle]="{'backgroundColor': information.color}"></span>
+      {{information.alias}}
+    </div>
   </div>
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Implementation</h4>

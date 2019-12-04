@@ -14,6 +14,7 @@ export class NodeInfoComponent implements OnChanges {
   constructor(private commonService: CommonService) { }
 
   ngOnChanges() {
+    console.warn(this.information);
     if(this.information && this.information.chains && this.information.chains.length > 0) {
       this.chains = [''];
       this.information.chains.forEach(chain => {

@@ -86,13 +86,12 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     const reorderedHop = [
       [{key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 30, type: DataTypeEnum.NUMBER},
         {key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'fee', value: selHop.fee, title: 'Fee (Sats)', width: 40, type: DataTypeEnum.NUMBER}],
+        {key: 'fee_msat', value: selHop.fee_msat, title: 'Fee (mSats)', width: 40, type: DataTypeEnum.NUMBER}],
       [{key: 'pubkey_alias', value: selHop.pubkey_alias, title: 'Peer Alias', width: 30, type: DataTypeEnum.STRING},
         {key: 'pub_key', value: selHop.pub_key, title: 'Peer Pubkey', width: 70, type: DataTypeEnum.STRING}],
       [{key: 'expiry', value: selHop.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
         {key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 30, type: DataTypeEnum.STRING},
         {key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity', width: 40, type: DataTypeEnum.NUMBER}],
-        // amt_to_forward_msat, fee_msat
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
       type: AlertTypeEnum.INFORMATION,

@@ -33,8 +33,8 @@ $dark-grey: (
 
 $dark-bright-foreground: (
   base:              white,
-  divider:           $light-dividers,
-  dividers:          $light-dividers,
+  divider:           rgba(white, 0.3),
+  dividers:          rgba(white, 0.3),
   disabled:          $light-disabled-text,
   disabled-button:   rgba(white, 0.26),
   disabled-text:     $light-disabled-text,

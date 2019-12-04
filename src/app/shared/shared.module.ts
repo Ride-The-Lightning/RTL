@@ -15,6 +15,14 @@ import {
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { DecimalPipe } from '@angular/common';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: false,
+  suppressScrollY: false
+};
 
 import { InvoiceInformationComponent } from './components/data-modal/invoice-information/invoice-information.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
@@ -79,7 +87,8 @@ import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pu
     QRCodeModule,
     NgxChartsModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    PerfectScrollbarModule
   ],
   exports: [
     FormsModule,
@@ -135,7 +144,8 @@ import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pu
     AutoFocusDirective,
     QRCodeModule,
     NgxChartsModule,
-    RemoveLeadingZerosPipe
+    RemoveLeadingZerosPipe,
+    PerfectScrollbarModule
   ],
   declarations: [
     AppSettingsComponent,
@@ -171,6 +181,7 @@ import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pu
     ErrorMessageComponent
   ],
   providers: [
+    { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
     CommonService, DecimalPipe

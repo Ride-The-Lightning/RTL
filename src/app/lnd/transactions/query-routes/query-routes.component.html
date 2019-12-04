@@ -40,8 +40,8 @@
         <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.chan_capacity | number}}</span></td>
       </ng-container>
       <ng-container matColumnDef="amt_to_forward_msat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount To Fwd (mSats) </th>
-        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.amt_to_forward_msat | number}}
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount To Fwd (Sats) </th>
+        <td mat-cell *matCellDef="let hop"><span fxLayoutAlign="end center"> {{hop?.amt_to_forward | number}}
           </span></td>
       </ng-container>
       <ng-container matColumnDef="fee_msat">

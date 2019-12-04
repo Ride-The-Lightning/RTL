@@ -43,6 +43,7 @@ exports.getChannels = (req, res, next) => {
       )
       .then(function(values) {
         logger.info({fileName: 'Channels', msg: 'Channels with Alias: ' + JSON.stringify(body)});
+        body.channels = common.sortAscByKey(body.channels, 'capacity');
         res.status(200).json(body);
       }).catch(err => {
         console.error(err.error);

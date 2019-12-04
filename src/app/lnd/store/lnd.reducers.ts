@@ -142,15 +142,19 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         action.payload.filter(channel => {
           if (undefined !== channel.local_balance) {
             localBal = +localBal + +channel.local_balance;
+          } else {
+            channel.local_balance = 0;
           }
           if (undefined !== channel.remote_balance) {
             remoteBal = +remoteBal + +channel.remote_balance;
+          } else {
+            channel.remote_balance = 0;
           }
           if (channel.active === true) {
-            totalCapacityActive = totalCapacityActive + +channel.capacity;
+            totalCapacityActive = totalCapacityActive + +channel.local_balance;
             activeChannels = activeChannels + 1;
           } else {
-            totalCapacityInactive = totalCapacityInactive + +channel.capacity;
+            totalCapacityInactive = totalCapacityInactive + +channel.local_balance;
             inactiveChannels = inactiveChannels + 1;
           }
         });

@@ -9,14 +9,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { UserIdleModule } from 'angular-user-idle';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-
-const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  suppressScrollX: false
-};
-
 import { routing } from './app.routing';
 import { SharedModule } from './shared/shared.module';
 import { ThemeOverlay } from './shared/theme/overlay-container/theme-overlay';
@@ -38,7 +30,6 @@ import { CLEffects } from './clightning/store/cl.effects';
     BrowserModule,
     BrowserAnimationsModule,
     SharedModule,
-    PerfectScrollbarModule,
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
     StoreModule.forRoot(RTLReducer),
@@ -51,7 +42,6 @@ import { CLEffects } from './clightning/store/cl.effects';
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: OverlayContainer, useClass: ThemeOverlay },
-    { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
     AuthGuard, SessionService
   ],
