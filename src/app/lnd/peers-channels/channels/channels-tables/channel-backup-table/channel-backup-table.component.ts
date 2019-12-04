@@ -71,8 +71,8 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.SET_CHANNELS)
-    ).subscribe((setchannels: RTLActions.SetChannels) => {
+      filter((action) => action.type === RTLActions.SET_ALL_CHANNELS)
+    ).subscribe((setchannels: RTLActions.SetAllChannels) => {
       this.selChannel = undefined;
     });
   }

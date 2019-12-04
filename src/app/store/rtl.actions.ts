@@ -50,11 +50,13 @@ export const FETCH_BALANCE = 'FETCH_BALANCE';
 export const SET_BALANCE = 'SET_BALANCE';
 export const FETCH_NETWORK = 'FETCH_NETWORK';
 export const SET_NETWORK = 'SET_NETWORK';
-export const FETCH_CHANNELS = 'FETCH_CHANNELS';
-export const SET_CHANNELS = 'SET_CHANNELS';
-export const UPDATE_CHANNELS = 'UPDATE_CHANNELS';
+export const FETCH_ALL_CHANNELS = 'FETCH_ALL_CHANNELS';
+export const FETCH_PENDING_CHANNELS = 'FETCH_PENDING_CHANNELS';
+export const FETCH_CLOSED_CHANNELS = 'FETCH_CLOSED_CHANNELS';
+export const SET_ALL_CHANNELS = 'SET_ALL_CHANNELS';
 export const SET_PENDING_CHANNELS = 'SET_PENDING_CHANNELS';
 export const SET_CLOSED_CHANNELS = 'SET_CLOSED_CHANNELS';
+export const UPDATE_CHANNELS = 'UPDATE_CHANNELS';
 export const SAVE_NEW_CHANNEL = 'SAVE_NEW_CHANNEL';
 export const CLOSE_CHANNEL = 'CLOSE_CHANNEL';
 export const REMOVE_CHANNEL = 'REMOVE_CHANNEL';
@@ -347,19 +349,17 @@ export class SetNetwork implements Action {
   constructor(public payload: NetworkInfo) {}
 }
 
-export class FetchChannels implements Action {
-  readonly type = FETCH_CHANNELS;
-  constructor(public payload: {routeParam: string}) {}
+export class FetchAllChannels implements Action {
+  readonly type = FETCH_ALL_CHANNELS;
 }
 
-export class SetChannels implements Action {
-  readonly type = SET_CHANNELS;
+export class SetAllChannels implements Action {
+  readonly type = SET_ALL_CHANNELS;
   constructor(public payload: Channel[]) {}
 }
 
-export class UpdateChannels implements Action {
-  readonly type = UPDATE_CHANNELS;
-  constructor(public payload: any) {}
+export class FetchPendingChannels implements Action {
+  readonly type = FETCH_PENDING_CHANNELS;
 }
 
 export class SetPendingChannels implements Action {
@@ -367,9 +367,18 @@ export class SetPendingChannels implements Action {
   constructor(public payload: {channels: PendingChannels, pendingChannels: number}) {}
 }
 
+export class FetchClosedChannels implements Action {
+  readonly type = FETCH_CLOSED_CHANNELS;
+}
+
 export class SetClosedChannels implements Action {
   readonly type = SET_CLOSED_CHANNELS;
   constructor(public payload: ClosedChannel[]) {}
+}
+
+export class UpdateChannels implements Action {
+  readonly type = UPDATE_CHANNELS;
+  constructor(public payload: any) {}
 }
 
 export class SaveNewChannel implements Action {
@@ -824,7 +833,7 @@ export type RTLActions =
   FetchFees | SetFees |
   FetchBalance | SetBalance |
   FetchNetwork | SetNetwork |
-  FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
+  FetchAllChannels | SetAllChannels | FetchPendingChannels | SetPendingChannels | FetchClosedChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
   BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
   RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |

@@ -8,13 +8,18 @@
     <mat-divider class="w-100 dashboard-divider"></mat-divider>
   </div>
   <div fxLayout="column" fxFlex="92" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
-    <div fxLayout="column" fxFlex="100" class="w-100 mt-2" *ngFor="let channel of allChannels">
-      <h4>{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</h4>
-      <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-        <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-        <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
+    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
+      <div *ngFor="let channel of allChannels" class="mt-2">
+        <h4>{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</h4>
+        <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
+          <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
+        </div>
+        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>
       </div>
-      <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>
     </div>
   </div>
 </div>
+<ng-template #noChannelBlock>
+  <div fxLayout="column" fxFlex="100" class="w-100 mt-2">No channels available.</div>
+</ng-template>

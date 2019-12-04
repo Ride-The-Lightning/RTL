@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="50" fxLayoutAlign="center start">
+<div fxLayout="column" fxFlex="60" fxLayoutAlign="center start">
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Daily</h4>
     <div class="foreground-secondary-text">{{fees?.day_fee_sum | number}} (Sats)</div>
@@ -12,4 +12,11 @@
     <div class="foreground-secondary-text">{{fees?.month_fee_sum | number}} (Sats)</div>
   </div>
 </div>
-<div fxLayout="column" fxFlex="50" fxLayoutAlign="center center" style="background-color:#afa7d2;height:67%;border-radius: 500px;">Pie Chart</div>
+<div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
+  <ngx-charts-gauge class="fee-info-gauge-chart" style="margin-top: -2.5rem;margin-left: -8rem;"
+    [showText]="false"
+    [max]="maxFeeValue"
+    [view]="[300, 300]"
+    [results]="totalFees">
+  </ngx-charts-gauge>
+</div>

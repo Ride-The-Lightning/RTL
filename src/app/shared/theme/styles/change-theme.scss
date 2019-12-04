@@ -341,4 +341,59 @@
   .mat-drawer-inner-container {
     overflow: hidden;
   }
+
+  .balances-info-pie-chart .ngx-charts .ng-star-inserted:nth-child(1) {
+    & .arc {
+      fill: mat-color($primary, 400);
+    }
+
+    & .arc.active, .arc:hover {
+      fill: mat-color($primary, 300);
+    }
+  }
+
+  .balances-info-pie-chart .ngx-charts .ng-star-inserted:nth-child(2) {
+    & .arc {
+      fill: mat-color($primary, 600);
+    }
+    & .arc.active, .arc:hover {
+      fill: mat-color($primary, 700);
+    }
+  }
+
+  .ngx-charts .arc.active, .ngx-charts .arc:hover {
+    opacity: 1;
+    transform: scale(1.03);
+    -webkit-transition: transform 200ms linear;
+    transition: transform 200ms linear;
+  }
+
+  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(1) g g:nth-child(2) {
+    & .arc {
+      fill: mat-color($primary, 700);
+    }
+
+    & .arc.active, .arc:hover {
+      fill: mat-color($primary, 900);
+    }
+  }
+
+  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(2) g g:nth-child(2) {
+    & .arc {
+      fill: mat-color($primary, 500);
+    }
+    & .arc.active, .arc:hover {
+      fill: mat-color($primary, 900);
+    }
+  }
+
+  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(3) g g:nth-child(2) {
+    & .arc {
+      fill: mat-color($primary, 300);
+    }
+
+    & .arc.active, .arc:hover {
+      fill: mat-color($primary, 900);
+    }
+  }
 }

@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
+<!-- <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Lightning</h4>
     <div class="foreground-secondary-text">{{balances.lightning | number}} (Sats)</div>
@@ -7,11 +7,55 @@
     <h4 fxLayoutAlign="start" class="font-bold-500">On-chain</h4>
     <div class="foreground-secondary-text">{{balances.onchain | number}} (Sats)</div>
   </div>
-  <div fxFlex="43" fxLayoutAlign="start start" style="margin-left: -2rem;">
+  <div fxFlex="43" fxLayoutAlign="start start" style="margin-left: -1.4rem;">
+    <div *ngIf="flgBalanceUpdated">
       <ngx-charts-bar-horizontal
-      [view]="[360, 80]"
-      [scheme]="colorScheme"
-      [results]="totalBalances">
+        [yAxis]="true"
+        [showDataLabel]="true"
+        [tooltipDisabled]="true"
+        [view]="[360, 80]"
+        [results]="totalBalances">
       </ngx-charts-bar-horizontal>
+    </div>
   </div>
+</div> -->
+<!-- <div fxLayout="column" fxFlex="40" fxLayoutAlign="start start">
+  <div fxFlex="33">
+    <h4 fxLayoutAlign="start" class="font-bold-500">Lightning</h4>
+    <div class="foreground-secondary-text">{{balances.lightning | number}} (Sats)</div>
+  </div>
+  <div fxFlex="33">
+    <h4 fxLayoutAlign="start" class="font-bold-500">On-chain</h4>
+    <div class="foreground-secondary-text">{{balances.onchain | number}} (Sats)</div>
+  </div>
+  <div fxFlex="34" fxLayoutAlign="start start"></div>
+</div>
+<div fxLayout="column" fxFlex="60" fxLayoutAlign="start start">
+  <div *ngIf="flgBalanceUpdated">
+    <ngx-charts-bar-vertical
+      [xAxis]="true"
+      [showDataLabel]="true"
+      [tooltipDisabled]="true"
+      [view]="[190, 240]"
+      [results]="totalBalances">
+    </ngx-charts-bar-vertical>
+  </div>
+</div> -->
+<div fxLayout="column" fxFlex="40" fxLayoutAlign="start start">
+  <div fxFlex="33">
+    <h4 fxLayoutAlign="start" class="font-bold-500">Lightning</h4>
+    <div class="foreground-secondary-text">{{balances.lightning | number}} (Sats)</div>
+  </div>
+  <div fxFlex="33">
+    <h4 fxLayoutAlign="start" class="font-bold-500">On-chain</h4>
+    <div class="foreground-secondary-text">{{balances.onchain | number}} (Sats)</div>
+  </div>
+  <div fxFlex="34" fxLayoutAlign="start start"></div>
+</div>
+<div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
+  <ngx-charts-pie-chart class="balances-info-pie-chart" style="margin-top: -2.5rem;"
+    [explodeSlices]="true"
+    [view]="[190, 190]"
+    [results]="totalBalances">
+  </ngx-charts-pie-chart>
 </div>

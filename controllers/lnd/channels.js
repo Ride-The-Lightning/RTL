@@ -3,72 +3,98 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
-getAliasForChannel = (channel, channelType) => {
+getAliasForChannel = (channel) => {
   return new Promise(function(resolve, reject) {
-    if (undefined === channelType || channelType === 'all') {
-      options.url = common.getSelLNServerUrl() + '/graph/node/' + channel.remote_pubkey;
-    } else {
-      options.url = common.getSelLNServerUrl() + '/graph/node/' + channel.channel.remote_node_pub;
-    }
+    options.url = common.getSelLNServerUrl() + '/graph/node/' + channel.remote_pubkey;
     request(options).then(function(aliasBody) {
       logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
-      if (undefined === channelType || channelType === 'all') {
-        channel.remote_alias = aliasBody.node.alias;
-        resolve(aliasBody.node.alias);
-      } else {
-        channel.channel.remote_alias = aliasBody.node.alias;
-        resolve(aliasBody.node.alias);
-      }
+      channel.remote_alias = aliasBody.node.alias;
+      resolve(aliasBody.node.alias);
     })
     .catch(err => resolve(''));
   });
 }
 
-exports.getChannels = (req, res, next) => {
+exports.getAllChannels = (req, res, next) => {
   options = common.getOptions();
-  if (undefined === req.params.channelType || req.params.channelType === 'all') {
-    options.url = common.getSelLNServerUrl() + '/channels';
-  } else {
-    options.url = common.getSelLNServerUrl() + '/channels/' + req.params.channelType; // active_only, inactive_only, public_only, private_only, Not Implemented in Frontend yet
-  }
+  options.url = common.getSelLNServerUrl() + '/channels';
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = [];
-    if (undefined === req.params.channelType || req.params.channelType === 'all') {
-      channels = (undefined === body.channels) ? [] : body.channels;
+    if(body.channels) {
+      let channels = body.channels;
       Promise.all(
         channels.map(channel => {
-          return getAliasForChannel(channel, req.params.channelType);
+          return getAliasForChannel(channel);
         })
       )
       .then(function(values) {
-        logger.info({fileName: 'Channels', msg: 'Channels with Alias: ' + JSON.stringify(body)});
+        logger.info({fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
         body.channels = common.sortAscByKey(body.channels, 'capacity');
         res.status(200).json(body);
       }).catch(err => {
-        console.error(err.error);
+        logger.error({fileName: 'Channels', lineNum: 49, msg: 'Get All Channel Alias: ' + JSON.stringify(err)});
+        res.status(500).json({
+          message: 'Fetching Channels Alias Failed!',
+          error: err.error
+        });
       });
     } else {
-      if (undefined === body.total_limbo_balance) {
-        body.total_limbo_balance = 0;
-        body.btc_total_limbo_balance = 0;
-      } else {
-        body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
-      }
-      if (req.params.channelType === 'closed' && body.channels && body.channels.length > 0) {
-        body.channels.forEach(channel => {
-          channel.close_type = (undefined === channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
-        });
-        body.channels = common.sortDescByKey(body.channels, 'close_type');
-      }
-      logger.info({fileName: 'Channels', msg: 'Pending/Closed Channels: ' + JSON.stringify(body)});
+      body.channels = [];
       res.status(200).json(body);
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get All Channel: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: 'Fetching Channels Failed!',
+      message: 'Fetching All Channels Failed!',
+      error: err.error
+    });
+  });
+};
+
+exports.getPendingChannels = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channels/pending';
+  options.qs = req.query;
+  request(options).then(function (body) {
+    let channels = [];
+    if (undefined === body.total_limbo_balance) {
+      body.total_limbo_balance = 0;
+      body.btc_total_limbo_balance = 0;
+    } else {
+      body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
+    }
+    logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Pending Channel: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Fetching Pending Channels Failed!',
+      error: err.error
+    });
+  });
+};
+
+exports.getClosedChannels = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/channels/closed';
+  options.qs = req.query;
+  request(options).then(function (body) {
+    let channels = [];
+    if (body.channels && body.channels.length > 0) {
+      body.channels.forEach(channel => {
+        channel.close_type = (undefined === channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+      });
+      body.channels = common.sortDescByKey(body.channels, 'close_type');
+    }
+    logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Closed Channel: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: 'Fetching Closed Channels Failed!',
       error: err.error
     });
   });

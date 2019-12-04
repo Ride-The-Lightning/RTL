@@ -59,7 +59,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
+      this.store.dispatch(new RTLActions.FetchClosedChannels());
     });
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))

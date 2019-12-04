@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -14,7 +13,6 @@ import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../..
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
-import { ShowPubkeyComponent } from '../../../components/data-modal/show-pubkey/show-pubkey.component';
 import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
@@ -52,7 +50,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();

@@ -231,11 +231,10 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
-            this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'all' }));
+            this.store.dispatch(new RTLActions.FetchAllChannels());
             this.store.dispatch(new RTLActions.BackupChannels({ channelPoint: 'ALL', showMessage: 'Channel Added Successfully!' }));
             return {
-              type: RTLActions.FETCH_CHANNELS,
-              payload: { routeParam: 'pending', channelStatus: '' }
+              type: RTLActions.FETCH_PENDING_CHANNELS
             };
           }),
           catchError((err: any) => {
@@ -258,8 +257,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
             return {
-              type: RTLActions.FETCH_CHANNELS,
-              payload: { routeParam: 'all', channelStatus: '' }
+              type: RTLActions.FETCH_ALL_CHANNELS
             };
           }),
           catchError((err: any) => {
@@ -281,11 +279,11 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.FetchBalance('channels'));
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
-            this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'all' }));
+            this.store.dispatch(new RTLActions.FetchAllChannels());
             if (action.payload.forcibly) {
-              this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'pending' }));
+              this.store.dispatch(new RTLActions.FetchPendingChannels());
             } else {
-              this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'closed' }));
+              this.store.dispatch(new RTLActions.FetchClosedChannels());
             }
             this.store.dispatch(new RTLActions.BackupChannels({ channelPoint: 'ALL', showMessage: 'Channel Closed Successfully!' }));
             return {
@@ -444,50 +442,82 @@ export class LNDEffects implements OnDestroy {
   ));
 
   @Effect()
-  channelsFetch = this.actions$.pipe(
-    ofType(RTLActions.FETCH_CHANNELS),
-    mergeMap((action: RTLActions.FetchChannels) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchChannels/' + action.payload.routeParam));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.routeParam)
+  channelsAllFetch = this.actions$.pipe(
+    ofType(RTLActions.FETCH_ALL_CHANNELS),
+    mergeMap((action: RTLActions.FetchAllChannels) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchChannels/all'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API)
         .pipe(
           map((channels: any) => {
             this.logger.info(channels);
-            if (action.payload.routeParam === 'pending') {
-              let pendingChannels = -1;
-              if (channels) {
-                pendingChannels = 0;
-                if (channels.pending_closing_channels) {
-                  pendingChannels = pendingChannels + channels.pending_closing_channels.length;
-                }
-                if (channels.pending_force_closing_channels) {
-                  pendingChannels = pendingChannels + channels.pending_force_closing_channels.length;
-                }
-                if (channels.pending_open_channels) {
-                  pendingChannels = pendingChannels + channels.pending_open_channels.length;
-                }
-                if (channels.waiting_close_channels) {
-                  pendingChannels = pendingChannels + channels.waiting_close_channels.length;
-                }
-              }
-              this.store.dispatch(new RTLActions.SetNodePendingChannelsData(pendingChannels));
-              return {
-                type: RTLActions.SET_PENDING_CHANNELS,
-                payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
-              };
-            } else if (action.payload.routeParam === 'closed') {
-              return {
-                type: RTLActions.SET_CLOSED_CHANNELS,
-                payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
-              };
-            } else if (action.payload.routeParam === 'all') {
-              return {
-                type: RTLActions.SET_CHANNELS,
-                payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
-              };
-            }
+            return {
+              type: RTLActions.SET_ALL_CHANNELS,
+              payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
+            };
           },
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels/' + action.payload.routeParam, err);
+            this.handleErrorWithoutAlert('FetchChannels/all', err);
+            return of({type: RTLActions.VOID});
+          })
+      ));
+    }
+  ));
+
+  @Effect()
+  channelsPendingFetch = this.actions$.pipe(
+    ofType(RTLActions.FETCH_PENDING_CHANNELS),
+    mergeMap((action: RTLActions.FetchPendingChannels) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchChannels/pending'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/pending')
+        .pipe(
+          map((channels: any) => {
+            this.logger.info(channels);
+            let pendingChannels = -1;
+            if (channels) {
+              pendingChannels = 0;
+              if (channels.pending_closing_channels) {
+                pendingChannels = pendingChannels + channels.pending_closing_channels.length;
+              }
+              if (channels.pending_force_closing_channels) {
+                pendingChannels = pendingChannels + channels.pending_force_closing_channels.length;
+              }
+              if (channels.pending_open_channels) {
+                pendingChannels = pendingChannels + channels.pending_open_channels.length;
+              }
+              if (channels.waiting_close_channels) {
+                pendingChannels = pendingChannels + channels.waiting_close_channels.length;
+              }
+            }
+            this.store.dispatch(new RTLActions.SetNodePendingChannelsData(pendingChannels));
+            return {
+              type: RTLActions.SET_PENDING_CHANNELS,
+              payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
+            };
+          },
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchChannels/pending', err);
+            return of({type: RTLActions.VOID});
+          })
+      ));
+    }
+  ));
+
+  @Effect()
+  channelsClosedFetch = this.actions$.pipe(
+    ofType(RTLActions.FETCH_CLOSED_CHANNELS),
+    mergeMap((action: RTLActions.FetchClosedChannels) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchChannels/closed'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/closed')
+        .pipe(
+          map((channels: any) => {
+            this.logger.info(channels);
+            return {
+              type: RTLActions.SET_CLOSED_CHANNELS,
+              payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
+            };
+          },
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchChannels/closed', err);
             return of({type: RTLActions.VOID});
           })
       ));
@@ -626,7 +656,7 @@ export class LNDEffects implements OnDestroy {
                 titleMessage: 'Payment Sent Successfully!',
                 message: msg
               }}));
-              this.store.dispatch(new RTLActions.FetchChannels({ routeParam: 'all' }));
+              this.store.dispatch(new RTLActions.FetchAllChannels());
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());
               return {
@@ -1047,9 +1077,9 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchPeers());
     this.store.dispatch(new RTLActions.FetchBalance('channels'));
     this.store.dispatch(new RTLActions.FetchNetwork());
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'all'}));
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'pending'}));
-    this.store.dispatch(new RTLActions.FetchChannels({routeParam: 'closed'}));
+    this.store.dispatch(new RTLActions.FetchAllChannels());
+    this.store.dispatch(new RTLActions.FetchPendingChannels());
+    this.store.dispatch(new RTLActions.FetchClosedChannels());
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
     let newRoute = this.location.path();

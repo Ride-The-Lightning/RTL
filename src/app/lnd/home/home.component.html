@@ -20,11 +20,11 @@
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"></rtl-node-info>
-            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"></rtl-balances-info>
-            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [channelBalances]="channelBalances" [allChannels]="allChannels"></rtl-channel-capacity-info>
-            <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees"></rtl-fee-info>
-            <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus"></rtl-channel-status-info>
+            <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
+            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [flgInfoUpdate]="flgChildInfoUpdated" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
+            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [channelBalances]="channelBalances" [allChannels]="allChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
+            <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [flgInfoUpdate]="flgChildInfoUpdated" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-fee-info>
+            <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[5]==='error' || flgLoading[6]==='error'}"></rtl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>

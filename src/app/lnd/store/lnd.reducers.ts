@@ -46,10 +46,10 @@ export const initLNDState: LNDState = {
   numberOfActiveChannels: 0,
   numberOfInactiveChannels: 0,
   numberOfPendingChannels: -1,
-  totalCapacityActive: -1,
-  totalCapacityInactive: -1,
-  totalLocalBalance: -1,
-  totalRemoteBalance: -1,
+  totalCapacityActive: 0,
+  totalCapacityInactive: 0,
+  totalLocalBalance: 0,
+  totalRemoteBalance: 0,
   totalInvoices: -1,
   transactions: [],
   payments: [],
@@ -136,7 +136,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         pendingChannels: action.payload.channels,
         numberOfPendingChannels: action.payload.pendingChannels,
       };
-    case RTLActions.SET_CHANNELS:
+    case RTLActions.SET_ALL_CHANNELS:
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
         action.payload.filter(channel => {
