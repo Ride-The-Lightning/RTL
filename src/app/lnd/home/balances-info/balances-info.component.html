@@ -55,6 +55,9 @@
 <div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
   <ngx-charts-pie-chart class="balances-info-pie-chart" style="margin-top: -2.5rem;"
     [explodeSlices]="true"
+    [legend]="true"
+    [legendTitle]="''"
+    [legendPosition]="'below'"
     [view]="[190, 190]"
     [results]="totalBalances">
   </ngx-charts-pie-chart>

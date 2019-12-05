@@ -174,14 +174,6 @@
     border-bottom: 2px solid white;
   }
   
-  .ngx-charts {
-    fill: $foreground-text;
-    .bar {
-      fill: $primary-color !important;
-      cursor: default;
-    }
-  }
-
   .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
     background: none;
@@ -342,58 +334,79 @@
     overflow: hidden;
   }
 
-  .balances-info-pie-chart .ngx-charts .ng-star-inserted:nth-child(1) {
-    & .arc {
-      fill: mat-color($primary, 400);
+
+  .ngx-charts {
+    fill: $foreground-text;
+    .bar {
+      fill: $primary-color;
+      cursor: default;
     }
 
-    & .arc.active, .arc:hover {
-      fill: mat-color($primary, 300);
+    & .arc.active, .ngx-charts .arc:hover {
+      opacity: 1;
+      transform: scale(1.03);
+      -webkit-transition: transform 200ms linear;
+      transition: transform 200ms linear;
     }
   }
 
-  .balances-info-pie-chart .ngx-charts .ng-star-inserted:nth-child(2) {
-    & .arc {
-      fill: mat-color($primary, 600);
+  .balances-info-pie-chart {
+    & .legend-label:nth-child(1) .legend-label-color {
+      background-color: mat-color($primary, 400) !important;
     }
-    & .arc.active, .arc:hover {
-      fill: mat-color($primary, 700);
+
+    & .legend-label:nth-child(2) .legend-label-color {
+      background-color: mat-color($primary, 600) !important;
+    }
+
+    & .ngx-charts .ng-star-inserted:nth-child(1) {
+      & .arc {
+        fill: mat-color($primary, 400);
+      }
+      & .arc.active, .arc:hover {
+        fill: mat-color($primary, 300);
+      }
+    }
+
+    & .ngx-charts .ng-star-inserted:nth-child(2) {
+      & .arc {
+        fill: mat-color($primary, 600);
+      }
+      & .arc.active, .arc:hover {
+        fill: mat-color($primary, 700);
+      }
     }
   }
 
-  .ngx-charts .arc.active, .ngx-charts .arc:hover {
-    opacity: 1;
-    transform: scale(1.03);
-    -webkit-transition: transform 200ms linear;
-    transition: transform 200ms linear;
-  }
+  .fee-info-gauge-chart .ngx-charts .gauge {
+    & .ng-star-inserted:nth-child(1) g g:nth-child(2) {
+      & .arc {
+        fill: mat-color($primary, 700);
+      }
 
-  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(1) g g:nth-child(2) {
-    & .arc {
-      fill: mat-color($primary, 700);
+      & .arc.active, .arc:hover {
+        fill: mat-color($primary, 900);
+      }
     }
 
-    & .arc.active, .arc:hover {
-      fill: mat-color($primary, 900);
-    }
-  }
+    & .ng-star-inserted:nth-child(2) g g:nth-child(2) {
+      & .arc {
+        fill: mat-color($primary, 500);
+      }
 
-  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(2) g g:nth-child(2) {
-    & .arc {
-      fill: mat-color($primary, 500);
-    }
-    & .arc.active, .arc:hover {
-      fill: mat-color($primary, 900);
-    }
-  }
-
-  .fee-info-gauge-chart .ngx-charts .gauge .ng-star-inserted:nth-child(3) g g:nth-child(2) {
-    & .arc {
-      fill: mat-color($primary, 300);
+      & .arc.active, .arc:hover {
+        fill: mat-color($primary, 900);
+      }
     }
 
-    & .arc.active, .arc:hover {
-      fill: mat-color($primary, 900);
+    & .ng-star-inserted:nth-child(3) g g:nth-child(2) {
+      & .arc {
+        fill: mat-color($primary, 300);
+      }
+
+      & .arc.active, .arc:hover {
+        fill: mat-color($primary, 900);
+      }
     }
   }
 }

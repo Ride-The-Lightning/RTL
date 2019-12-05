@@ -15,7 +15,7 @@
           <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
           <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         </div>
-        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{(channel.balancedness)}}"></mat-progress-bar>
       </div>
     </div>
   </div>

@@ -95,14 +95,14 @@ common.convertTimestampToDate = (num) => {
 
 common.sortAscByKey = (array, key) => {
   return array.sort(function (a, b) {
-    var x = a[key]; var y = b[key];
+    var x = +a[key]; var y = +b[key];
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   });
 }
 
 common.sortDescByKey = (array, key) => {
   const temp = array.sort(function (a, b) {
-    var x = a[key]; var y = b[key];
+    var x = +a[key]; var y = +b[key];
     return ((x > y) ? -1 : ((x < y) ? 1 : 0));
   });
   return temp;

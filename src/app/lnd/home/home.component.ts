@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
-  public balances = { onchain: 0, lightning: 0 };
+  public balances = { onchain: -1, lightning: -1 };
   public allChannels = [];
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -120,6 +120,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.flgLoading[5] = false;
       }
       this.allChannels = rtlStore.allChannels.filter(channel => channel.active === true);
+      if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
+        this.flgChildInfoUpdated = true;
+      } else {
+        this.flgChildInfoUpdated = false;
+      }
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),

@@ -55,6 +55,7 @@ export interface Channel {
   private?: boolean;
   pending_htlcs?: HTLC[];
   csv_delay?: number;
+  balancedness?: number; // Between -1 to +1
 }
 
 export interface PendingChannels {

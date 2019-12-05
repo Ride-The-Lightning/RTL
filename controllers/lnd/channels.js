@@ -21,15 +21,32 @@ exports.getAllChannels = (req, res, next) => {
   options.qs = req.query;
   request(options).then(function (body) {
     if(body.channels) {
-      let channels = body.channels;
       Promise.all(
-        channels.map(channel => {
+        body.channels.map(channel => {
+          if (!channel.local_balance && !channel.remote_balance) {
+            channel.balancedness = 50;  
+          } else if(channel.local_balance && !channel.remote_balance) {
+            channel.balancedness = 0;  
+          } else if(!channel.local_balance && channel.remote_balance) {
+            channel.balancedness = 100;  
+          } else {
+            channel.balancedness = (+channel.local_balance/(+channel.remote_balance + +channel.local_balance)) * 100;
+          }
+          // if (!channel.local_balance && !channel.remote_balance) {
+          //   channel.balancedness = 0;  
+          // } else if(channel.local_balance && !channel.remote_balance) {
+          //   channel.balancedness = -1;  
+          // } else if(!channel.local_balance && channel.remote_balance) {
+          //   channel.balancedness = 1;  
+          // } else {
+          //   channel.balancedness = ((+channel.remote_balance - +channel.local_balance)/(+channel.remote_balance + +channel.local_balance)).toFixed(10);
+          // }
           return getAliasForChannel(channel);
         })
       )
       .then(function(values) {
+        body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.info({fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
-        body.channels = common.sortAscByKey(body.channels, 'capacity');
         res.status(200).json(body);
       }).catch(err => {
         logger.error({fileName: 'Channels', lineNum: 49, msg: 'Get All Channel Alias: ' + JSON.stringify(err)});
