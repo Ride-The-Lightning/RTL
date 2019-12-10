@@ -802,7 +802,7 @@ table {
   width: $dot-size;
   height: $dot-size;
   border-radius: $dot-size;
-  margin-right: 1rem;
+  margin: 0.4rem 1rem 0 0;
   &.tiny-dot {
     width: $tiny-dot-size;
     height: $tiny-dot-size;

@@ -9,9 +9,17 @@ import { Channel } from '../../../shared/models/lndModels';
 export class ChannelCapacityInfoComponent implements OnChanges {
   @Input() channelBalances: {localBalance: number, remoteBalance: number};
   @Input() allChannels: Channel[];
+  allChannelBalances = [];
 
   constructor() {}
 
-  ngOnChanges() {}
+  ngOnChanges() {
+    // this.allChannelBalances = [];
+    // this.allChannels.forEach((channel, idx) => {
+    //   if(idx < 20) {
+    //     this.allChannelBalances.push({"name": ((idx + 1) + ' ' + channel.remote_alias), "series": [{ "name": "Local Balance", "value": -channel.local_balance}, {"name": "Remote Balance","value": +channel.remote_balance}]});
+    //   }
+    // });
+  }
 
 }

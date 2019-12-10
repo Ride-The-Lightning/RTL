@@ -25,6 +25,11 @@ export const TRANS_TYPES = [
   {id: '2', name: 'Fee'}
 ];
 
+export enum UserPersonaEnum {
+  OPERATOR = 'OPERATOR',
+  MERCHANT = 'MERCHANT'
+}
+
 export enum AlertTypeEnum {
   INFORMATION = 'Information',
   WARNING = 'Warning',

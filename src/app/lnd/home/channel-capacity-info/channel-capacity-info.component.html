@@ -23,3 +23,26 @@
 <ng-template #noChannelBlock>
   <div fxLayout="column" fxFlex="100" class="w-100 mt-2">No channels available.</div>
 </ng-template>
+<!-- <div fxLayout="column" fxLayoutAlign="space-between start" fxFlex="100">
+  <div fxLayout="column" fxFlex="5" fxLayoutAlign="start start" class="w-100">
+    <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
+      <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channelBalances.localBalance || 0 | number}} Sats</mat-hint>
+      <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channelBalances.remoteBalance || 0 | number}} Sats</mat-hint>
+    </div>
+    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channelBalances.localBalance && channelBalances.localBalance > 0 ? ((+channelBalances.localBalance/((+channelBalances.localBalance)+(+channelBalances.remoteBalance)))*100) : 0}}"></mat-progress-bar>
+    <mat-divider class="w-100 dashboard-divider"></mat-divider>
+  </div>
+  <div fxLayout="column" fxFlex="92" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
+    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
+        <ngx-charts-bar-horizontal-stacked
+        [xAxis]="true"
+        [yAxis]="true"
+        [noBarWhenZero]="false"
+        [showDataLabel]="true"
+        [results]="allChannelBalances"></ngx-charts-bar-horizontal-stacked>
+    </div>
+  </div>
+</div>
+<ng-template #noChannelBlock>
+  <div fxLayout="column" fxFlex="100" class="w-100 mt-2">No channels available.</div>
+</ng-template> -->

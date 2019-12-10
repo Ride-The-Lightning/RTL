@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -8,7 +9,8 @@ import { Actions } from '@ngrx/effects';
 import { faSmile } from '@fortawesome/free-regular-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { ChannelsStatus, GetInfo, Fees, Peer } from '../../shared/models/lndModels';
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -21,6 +23,8 @@ import * as RTLActions from '../../store/rtl.actions';
 export class HomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
   public flgChildInfoUpdated = false;
+  public userPersonaEnum = UserPersonaEnum;
+  public userPersona = UserPersonaEnum.OPERATOR;
   public activeChannels = 0;
   public inactiveChannels = 0;
   public pendingChannels = 0;
@@ -29,12 +33,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1 };
-  public allChannels = [];
+  public allChannels: Channel[] = [];
+  public channelsStatus: ChannelsStatus = {};
+  public allInboundChannels: Channel[] = [];
+  public allOutboundChannels: Channel[] = [];
+  public totalInboundLiquidity = 0;
+  public totalOutboundLiquidity = 0;
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
-  public channelsStatus: ChannelsStatus = {};
-  public peers: Peer[] = [];
-  public cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+  public operatorCards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({ matches }) => {
       if (matches) {
         return [
@@ -54,9 +61,29 @@ export class HomeComponent implements OnInit, OnDestroy {
         { id: 'status', title: 'Channel Status', cols: 3, rows: 1 }
       ];
     })
-  );    
+  );
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver) {}
+  public merchantCards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map(({ matches }) => {
+      if (matches) {
+        return [
+          { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
+          { id: 'transactions', title: 'Transactions', cols: 3, rows: 1 },
+          { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 1 },
+          { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 1 }
+        ];
+      }
+
+      return [
+        { id: 'balance', title: 'Balances', cols: 1, rows: 1 },
+        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 1, rows: 3 },
+        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 1, rows: 3 },
+        { id: 'transactions', title: 'Transactions', cols: 1, rows: 2 }
+      ];
+    })
+  );
+
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver, private router: Router) {}
 
   ngOnInit() {
     this.store.select('lnd')
@@ -119,7 +146,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0 && this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = false;
       }
+      this.totalInboundLiquidity = 0;
+      this.totalOutboundLiquidity = 0;
       this.allChannels = rtlStore.allChannels.filter(channel => channel.active === true);
+      this.allChannels.forEach(channel => {
+        this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
+      });
       if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
         this.flgChildInfoUpdated = true;
       } else {
