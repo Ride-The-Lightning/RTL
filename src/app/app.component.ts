@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public accessKey = '';
   public smallScreen = false;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService) {}
@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')
-    .pipe(takeUntil(this.unsubs[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoading[0] = false;
       }
     });
-    this.actions$.pipe(takeUntil(this.unsubs[1]),
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
     .subscribe((action: (RTLActions.SetRTLConfig)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
@@ -79,8 +79,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }     
     });
     this.userIdle.startWatching();
-    this.userIdle.onTimerStart().pipe(takeUntil(this.unsubs[2])).subscribe(count => {});
-    this.userIdle.onTimeout().pipe(takeUntil(this.unsubs[3])).subscribe(() => {
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[2])).subscribe(count => {});
+    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity.');
         this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
@@ -92,7 +92,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.resetTimer();
       }
     });
-    this.commonService.containerWidthChanged.pipe(takeUntil(this.unsubs[4]))
+    this.commonService.containerWidthChanged.pipe(takeUntil(this.unSubs[4]))
     .subscribe((fieldType: string) => {
       if(fieldType !== 'menuType') {
         this.sideNavToggle();
@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsubs.forEach(unsub => {
+    this.unSubs.forEach(unsub => {
       unsub.next();
       unsub.complete();
     });

@@ -48,6 +48,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { DashboardTransactionsComponent } from './home/dashboard-transactions/dashboard-transactions.component';
+import { LoopComponent } from './loop/loop.component';
 
 @NgModule({
   imports: [
@@ -96,7 +97,8 @@ import { DashboardTransactionsComponent } from './home/dashboard-transactions/da
     ChannelStatusInfoComponent,
     ChannelCapacityInfoComponent,
     ChannelLiquidityInfoComponent,
-    DashboardTransactionsComponent
+    DashboardTransactionsComponent,
+    LoopComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
