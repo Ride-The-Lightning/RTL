@@ -41,7 +41,7 @@
             <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local: </strong>{{channel.local_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
             <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote: </strong>{{channel.remote_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>          
+          <mat-progress-bar mode="determinate" value="{{channel.balancedness}}"></mat-progress-bar>          
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

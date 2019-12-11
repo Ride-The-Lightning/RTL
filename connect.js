@@ -59,6 +59,7 @@ connect.setDefaultConfig = () => {
           configPath: configPath,
         },
         Settings: {
+          userPersona: 'Operator',
           flgSidenavOpened: true,
           flgSidenavPinned: true,
           menu: "vertical",

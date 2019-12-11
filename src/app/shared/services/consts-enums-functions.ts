@@ -26,8 +26,8 @@ export const TRANS_TYPES = [
 ];
 
 export enum UserPersonaEnum {
-  OPERATOR = 'OPERATOR',
-  MERCHANT = 'MERCHANT'
+  OPERATOR = 'Operator',
+  MERCHANT = 'Merchant'
 }
 
 export enum AlertTypeEnum {

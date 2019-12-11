@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -25,6 +25,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class LightningPaymentsComponent implements OnInit, OnDestroy {
+  @Input() showDetails = true;
   @ViewChild('sendPaymentForm', { static: true }) form;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;

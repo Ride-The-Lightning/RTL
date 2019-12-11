@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -27,6 +27,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class LightningInvoicesComponent implements OnInit, OnDestroy {
+  @Input() showDetails = true;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};

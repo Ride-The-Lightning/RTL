@@ -1,4 +1,4 @@
-<div fxLayout="column" *ngIf="userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
+<div fxLayout="column" *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
   <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container mb-0">
     <fa-icon [icon]="faSmile" class="page-title-img mr-1"></fa-icon>
     <span class="page-title">Welcome! Your node is up and running.</span>
@@ -15,7 +15,7 @@
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
             <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [flgInfoUpdate]="flgChildInfoUpdated" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
-            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [channelBalances]="channelBalances" [allChannels]="allChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
+            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
             <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [flgInfoUpdate]="flgChildInfoUpdated" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-fee-info>
             <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[5]==='error' || flgLoading[6]==='error'}"></rtl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
@@ -32,14 +32,19 @@
   </div>
   <mat-grid-list cols="3" rowHeight="220px">
     <mat-grid-tile *ngFor="let card of merchantCards | async" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-16">
-        <mat-card-header><mat-card-title>{{card.title}}</mat-card-title></mat-card-header>
-        <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
+      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card" [ngClass]="{'p-16': card.id !== 'transactions'}">
+        <mat-card-header *ngIf="card.id !== 'transactions'"><mat-card-title>{{card.title}}</mat-card-title></mat-card-header>
+        <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [flgInfoUpdate]="flgChildInfoUpdated" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
-            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
-            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
-            <rtl-dashboard-transactions fxFlex="100" *ngSwitchCase="'transactions'"></rtl-dashboard-transactions>
+            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
+            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
+            <span fxLayout="column" fxFlex="100" *ngSwitchCase="'transactions'">
+              <mat-tab-group fxLayout="column" fxFlex="100">
+                <mat-tab label="Receive"><rtl-lightning-invoices class="h-100" [showDetails]="false"></rtl-lightning-invoices></mat-tab>
+                <mat-tab label="Pay"><rtl-lightning-payments [showDetails]="false"></rtl-lightning-payments></mat-tab>
+              </mat-tab-group>
+            </span>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -9,6 +8,7 @@ import { Actions } from '@ngrx/effects';
 import { faSmile } from '@fortawesome/free-regular-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
+import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
@@ -24,7 +24,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
-  public userPersona = UserPersonaEnum.OPERATOR;
   public activeChannels = 0;
   public inactiveChannels = 0;
   public pendingChannels = 0;
@@ -35,6 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public balances = { onchain: -1, lightning: -1 };
   public allChannels: Channel[] = [];
   public channelsStatus: ChannelsStatus = {};
+  public allChannelsCapacity: Channel[] = [];
   public allInboundChannels: Channel[] = [];
   public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
@@ -83,7 +83,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   );
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver, private router: Router) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver, private commonService: CommonService) {}
 
   ngOnInit() {
     this.store.select('lnd')
@@ -149,6 +149,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;
       this.allChannels = rtlStore.allChannels.filter(channel => channel.active === true);
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'remote_balance')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'local_balance')));
       this.allChannels.forEach(channel => {
         this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;

@@ -4,6 +4,7 @@ import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 export interface LNDState {
   effectErrorsLnd: ErrorPayload[];
@@ -33,7 +34,7 @@ export interface LNDState {
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { currencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   peers: [],
   fees: {},

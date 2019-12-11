@@ -75,6 +75,7 @@ Ensure that the follow values are correct per your config:
         "configPath": "<Optional - Config file path for c-lightning>"
       },
       "Settings": {
+        "userPersona": "Operator",
         "flgSidenavOpened": false,
         "flgSidenavPinned": true,
         "menu": "vertical",

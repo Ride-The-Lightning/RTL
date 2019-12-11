@@ -14,6 +14,8 @@ rtlPass=<>
 
 [Settings]
 ;Set by RTL
+userPersona=Operator
+;Set by RTL
 flgSidenavOpened=true
 ;Set by RTL
 flgSidenavPinned=true

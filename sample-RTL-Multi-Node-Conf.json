@@ -17,6 +17,7 @@
         "lndConfigPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
       "Settings": {
+        "userPersona": "Operator",
         "flgSidenavOpened": "true",
         "flgSidenavPinned": "true",
         "menu": "vertical",
@@ -39,6 +40,7 @@
         "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 2>"
       },
       "Settings": {
+        "userPersona": "Merchant",
         "flgSidenavOpened": "true",
         "flgSidenavPinned": "true",
         "menu": "vertical",

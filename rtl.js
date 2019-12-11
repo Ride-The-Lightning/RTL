@@ -65,10 +65,10 @@ const loopMonitor = io.of('/loopMonitor').on('connection', (socket) => {
     interval = setInterval(() => {
       socket.emit('message', { message: 'Message ' + i });
       i++;
-    }, 2000);
+    }, 15000);
   });
   socket.on('end', function() {
-    // call = null;
+    call = null;
     clearInterval(interval);
     console.log('Socket stopped subscription');
   });

@@ -95,6 +95,7 @@ exports.updateUISettings = (req, res, next) => {
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.find(node => {
       if(node.index == common.selectedNode.index) {
+        node.Settings.userPersona = req.body.updatedSettings.userPersona;
         node.Settings.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
         node.Settings.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
         node.Settings.menu = req.body.updatedSettings.menu;
@@ -122,6 +123,7 @@ exports.updateUISettings = (req, res, next) => {
     RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const settingsTemp = config.Settings;
+    settingsTemp.userPersona = req.body.updatedSettings.userPersona;
     settingsTemp.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
     settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
     settingsTemp.menu = req.body.updatedSettings.menu;

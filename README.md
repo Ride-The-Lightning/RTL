@@ -93,6 +93,7 @@ rtlCookiePath=C:\RTL\cookies\auth.cookie
 logoutRedirectLink=/login
 
 [Settings]
+userPersona=Operator
 flgSidenavOpened=true
 flgSidenavPinned=true
 menu=vertical

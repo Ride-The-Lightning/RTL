@@ -9,6 +9,7 @@ export class SSO {
 
 export class Settings {
   constructor(
+    public userPersona: string,
     public flgSidenavOpened: boolean,
     public flgSidenavPinned: boolean,
     public menu: string,
@@ -66,8 +67,9 @@ export interface GetInfoRoot {
 }
 
 export interface SelNodeChild {
+  userPersona?: string;
   channelBackupPath?: string;
   satsToBTC?: boolean;
-  currencyUnit?: string;  
+  selCurrencyUnit?: string;  
   currencyUnits?: string[];
 }

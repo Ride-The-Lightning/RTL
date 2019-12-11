@@ -1,18 +1,18 @@
 <mat-menu #topMenu="matMenu" [overlapTrigger]="false" class="top-menu">
   <p mat-menu-item>
-    <fa-icon [icon]="faCodeBranch" class="fa-icon-small mr-4"></fa-icon>
+    <fa-icon [icon]="faCodeBranch" class="fa-icon-small mr-1"></fa-icon>
     <span>Version: {{version}}</span>
   </p>
-  <a mat-menu-item routerLink="/sconfig">
-    <fa-icon [icon]="faCog" class="fa-icon-small mr-4"></fa-icon>
-    <span routerLink="/sconfig">Node Config</span>
+  <a mat-menu-item routerLink="/advanced">
+    <fa-icon [icon]="faCog" class="fa-icon-small mr-1"></fa-icon>
+    <span routerLink="/advanced">Node Config</span>
   </a>
   <a mat-menu-item routerLink="/help">
-    <fa-icon [icon]="faLifeRing" class="fa-icon-small mr-4"></fa-icon>
+    <fa-icon [icon]="faLifeRing" class="fa-icon-small mr-1"></fa-icon>
     <span routerLink="/help">Help</span>
   </a>
   <a *ngIf="showLogout" mat-menu-item (click)="onClick()">
-    <fa-icon [icon]="faEject" class="fa-icon-small mr-4"></fa-icon>
+    <fa-icon [icon]="faEject" class="fa-icon-small mr-1"></fa-icon>
     <span>Logout</span>
   </a>
 </mat-menu>

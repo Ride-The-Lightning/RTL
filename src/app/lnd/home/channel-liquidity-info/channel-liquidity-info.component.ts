@@ -1,4 +1,5 @@
 import { Component, OnChanges, Input } from '@angular/core';
+
 import { Channel } from '../../../shared/models/lndModels';
 
 @Component({
@@ -10,12 +11,18 @@ export class ChannelLiquidityInfoComponent implements OnChanges {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
-  public maxTransactionAmount = 0;
+  public maxAmount = 0;
 
   constructor() {}
 
   ngOnChanges() {
-    this.maxTransactionAmount = this.allChannels && this.allChannels.length > 0 ? (this.direction === 'In' ? this.allChannels[0].remote_balance : this.allChannels[0].local_balance) : 0;
+    if (this.allChannels && this.allChannels.length > 0) {
+      if(this.direction === 'In') {
+        this.maxAmount =  this.allChannels[0].remote_balance;
+      } else {
+        this.maxAmount = this.allChannels[0].local_balance;
+      }
+    }
   }
 
 }

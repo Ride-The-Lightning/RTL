@@ -7,7 +7,17 @@
     <mat-card-content fxLayout="column" class="card-content-gap">
       <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="center space-between">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-          <div fxFlex="33" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
+          <div fxFlex="25">
+            <div fxFlex.gt-md="50" fxFlex="80">
+              <h4>User Persona</h4>
+              <mat-select [(ngModel)]="selNode.settings.userPersona" placeholder="Select User Persona" tabindex="1" required name="userPersona">
+                <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
+                  {{userPersona}}
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+          <div fxFlex="25" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
             <div fxFlex.gt-md="50" fxFlex="80">
               <h4>Default Selected Node</h4>
               <mat-select [(ngModel)]="appConfig.defaultNodeIndex" placeholder="Default Node" tabindex="1" required name="defaultNode">
@@ -17,7 +27,7 @@
               </mat-select>
             </div>
           </div>
-          <div fxFlex="33">
+          <div fxFlex="25">
             <div fxFlex.gt-md="30" fxFlex="70">
               <h4>Currency Unit</h4>
               <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
@@ -27,7 +37,7 @@
               </mat-select>
             </div>
           </div>
-          <div fxFlex="33" *ngIf="selNode.lnImplementation !== 'CLT'">
+          <div fxFlex="25" *ngIf="selNode.lnImplementation !== 'CLT'">
             <div fxFlex="60">
               <h4>BTC</h4>
               <div fxLayoutAlign="start center">
@@ -120,10 +130,8 @@
       <div fxLayout="row" fxLayoutAlign="start start" class="mt-4">
         <mat-divider class="mb-2"></mat-divider>
         <div class="mt-2">
-          <button class="mr-2" fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary"
-            (click)="onUpdateSettings()" tabindex="12">Update</button>
-          <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()"
-            tabindex="13">Reset</button>
+          <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12" class="mr-2">Reset</button>
+          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
         </div>
       </div>
     </mat-card-content>

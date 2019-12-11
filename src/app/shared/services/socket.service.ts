@@ -15,8 +15,8 @@ export class SocketService {
   observer: Observer<any>;
 
   startLoopMonitor(): Observable<any> {
-    // this.loopMonitor = socketIo('http://localhost:3000/loopMonitor');
-    this.loopMonitor = socketIo('/loopMonitor');
+    this.loopMonitor = socketIo('http://localhost:3000/loopMonitor');
+    // this.loopMonitor = socketIo('/loopMonitor');
     this.loopMonitor.emit('start');
     this.loopMonitor.on('message', (res) => { this.observer.next(res.message); });
     return this.createObservable();

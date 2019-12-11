@@ -2,6 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL, FeeRateTypeCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 export interface CLState {
   effectErrorsCl: ErrorPayload[];
@@ -24,7 +25,7 @@ export interface CLState {
 
 export const initCLState: CLState = {
   effectErrorsCl: [],
-  nodeSettings: { currencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   fees: {},
   feeRatesPerKB: {},

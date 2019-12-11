@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, AlertTypeEnum } from '../../services/consts-enums-functions';
+import { CURRENCY_UNITS, AlertTypeEnum, UserPersonaEnum } from '../../services/consts-enums-functions';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -22,13 +22,14 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public faTools = faTools;
   public selNode: LightningNode;
   public information: GetInfoRoot = {};
+  public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = [{id: 'USD', name: 'United States Dollar'}, {id: 'GBP', name: 'Pound'}, {id: 'INR', name: 'Indian Rupee'}];
   public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
+  public selectedMenu = {id: 'vertical', name: 'Vertical'};
   public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];
   public themeModes = [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}];
   public themeColors = ['purple', 'teal', 'indigo', 'pink'];
   public fontSizes = [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}];
-  public selectedMenu = {id: 'vertical', name: 'Vertical'};
   public selectedMenuType = {id: 'regular', name: 'Regular'};
   public selectedFontSize = {id: 2, name: 'Regular', class: 'regular-font'};
   public selectedThemeMode = {id: 'day', name: 'Day'};
@@ -73,8 +74,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   onCurrencyChange(event: any) {
     this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
-    this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
   }
 
   chooseMenuType() {
@@ -88,8 +89,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   toggleSettings(toggleField: string, event?: any) {
     if (toggleField === 'satsToBTC') {
-      this.store.dispatch(new RTLActions.SetChildNodeSettings({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
-      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, currencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
+      this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
     }
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
@@ -114,20 +115,11 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateSettings() {
-    let updatedSettings = (JSON.stringify(this.previousSettings) !== JSON.stringify(this.selNode.settings)) ? this.selNode.settings : null;
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
-    if (!updatedSettings && !defaultNodeIndex) {
-      this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
-        type: AlertTypeEnum.WARNING,
-        alertTitle: 'Configuration Not Updated',
-        titleMessage: 'Nothing has been updated to save!'
-      }}));
-    } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
-      this.store.dispatch(new RTLActions.SaveSettings({settings: updatedSettings, defaultNodeIndex: defaultNodeIndex}));
-      this.done.emit();
-    }
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
+    this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings, defaultNodeIndex: defaultNodeIndex}));
+    this.done.emit();
   }
 
   onResetSettings() {
