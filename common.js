@@ -26,6 +26,9 @@ common.getOptions = () => {
 };
 
 common.updateSelectedNodeOptions = () => {
+  if (!common.selectedNode) {
+    common.selectedNode = {};
+  }
   common.selectedNode.options = {
     url: '',
     rejectUnauthorized: false,

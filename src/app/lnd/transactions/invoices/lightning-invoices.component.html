@@ -3,22 +3,22 @@
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
       <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
     </mat-form-field>
-    <div fxLayout="column" [fxLayout.gt-sm]="showDetails ? 'row wrap' : 'column'" [fxFlex]="showDetails ? 70 : 100" [fxLayoutAlign.gt-sm]="showDetails ? 'space-between center' : 'start stretch'" fxLayoutAlign="space-between center">
+    <div fxLayout="column" [fxLayout.gt-sm]="showDetails ? 'row wrap' : 'column'" [fxFlex]="showDetails ? 70 : 100" [fxLayoutAlign.gt-sm]="showDetails ? 'space-between center' : 'start stretch'" fxLayoutAlign="start stretch">
       <mat-form-field fxFlex="40" fxLayoutAlign="start end">
         <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
         <span matSuffix> {{information?.smaller_currency_unit}} </span>
         <mat-hint>{{invoiceValueHint}}</mat-hint>          
       </mat-form-field>
-      <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+      <mat-form-field fxFlex="15" fxLayoutAlign="start end" *ngIf="showDetails">
         <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" step="{{selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1}}" min="1" tabindex="3" name="expiry">
         <span matSuffix> {{selTimeUnit | titlecase}} </span>
       </mat-form-field>
-      <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+      <mat-form-field fxFlex="15" fxLayoutAlign="start end" *ngIf="showDetails">
         <mat-select [value]="selTimeUnit" tabindex="4" required name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
           <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <div fxFlex="25" tabindex="4" fxLayoutAlign="start center">
+      <div fxFlex="25" tabindex="4" fxLayoutAlign="start center" *ngIf="showDetails">
         <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faSmile } from '@fortawesome/free-regular-svg-icons';
+import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
@@ -22,6 +22,7 @@ import * as RTLActions from '../../store/rtl.actions';
 })
 export class HomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
+  public faFrown = faFrown;
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
@@ -67,18 +68,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     map(({ matches }) => {
       if (matches) {
         return [
-          { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
-          { id: 'transactions', title: 'Transactions', cols: 3, rows: 1 },
-          { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 1 },
-          { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 1 }
+          { id: 'node', title: 'Node Details', cols: 3, rows: 3 },
+          { id: 'balance', title: 'Balances', cols: 3, rows: 3 },
+          { id: 'transactions', title: 'Transactions', cols: 3, rows: 4 },
+          { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+          { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
         ];
       }
 
       return [
-        { id: 'balance', title: 'Balances', cols: 1, rows: 1 },
-        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 1, rows: 3 },
-        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 1, rows: 3 },
-        { id: 'transactions', title: 'Transactions', cols: 1, rows: 2 }
+        { id: 'node', title: 'Node Details', cols: 1, rows: 3 },
+        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 1, rows: 10 },
+        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 1, rows: 10 },
+        { id: 'balance', title: 'Balances', cols: 1, rows: 3 },
+        { id: 'transactions', title: 'Transactions', cols: 1, rows: 4 }
       ];
     })
   );

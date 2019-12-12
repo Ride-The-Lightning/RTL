@@ -48,6 +48,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { LoopComponent } from './loop/loop.component';
+import { NetworkInfoComponent } from './network-info/network-info.component';
 
 @NgModule({
   imports: [
@@ -96,7 +97,8 @@ import { LoopComponent } from './loop/loop.component';
     ChannelStatusInfoComponent,
     ChannelCapacityInfoComponent,
     LoopComponent,
-    ChannelLiquidityInfoComponent
+    ChannelLiquidityInfoComponent,
+    NetworkInfoComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

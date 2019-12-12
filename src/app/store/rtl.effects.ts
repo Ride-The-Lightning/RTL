@@ -121,12 +121,18 @@ export class RTLEffects implements OnDestroy {
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
       let searchNode = rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex);
-      searchNode.settings.currencyUnits = [...CURRENCY_UNITS, searchNode.settings.currencyUnit];
-      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: searchNode, isInitialSetup: true}))
-      return {
-        type: RTLActions.SET_RTL_CONFIG,
-        payload: rtlConfig
-      };
+      if(searchNode) {
+        searchNode.settings.currencyUnits = [...CURRENCY_UNITS, searchNode.settings.currencyUnit];
+        this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: searchNode, isInitialSetup: true}))
+        return {
+          type: RTLActions.SET_RTL_CONFIG,
+          payload: rtlConfig
+        };
+      } else {
+        return {
+          type: RTLActions.VOID
+        }
+      }
     },
     catchError((err) => {
       this.handleErrorWithoutAlert('FetchRTLConfig', err);
@@ -242,6 +248,8 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.SIGNIN),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
+    this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
+    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -357,7 +365,7 @@ export class RTLEffects implements OnDestroy {
         width: '55%', data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

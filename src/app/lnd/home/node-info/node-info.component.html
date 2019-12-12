@@ -8,7 +8,7 @@
   </div>
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Implementation</h4>
-    <div class="foreground-secondary-text">{{information.lnImplementation + ' v' + information.version}}</div>
+    <div class="foreground-secondary-text">{{(information.lnImplementation || information.version) ? information.lnImplementation + ' v' + information.version : ''}}</div>
   </div>
   <div fxFlex="34">
     <h4 fxLayoutAlign="start" class="font-bold-500">Chain</h4>
