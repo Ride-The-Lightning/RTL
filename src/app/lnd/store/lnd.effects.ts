@@ -164,7 +164,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+            this.store.dispatch(new RTLActions.OpenAlert({ data: {
               type: AlertTypeEnum.SUCCESS,
               alertTitle: 'Peer Disconnected',
               titleMessage: 'Peer Disconnected Successfully!'
@@ -200,7 +200,7 @@ export class LNDEffects implements OnDestroy {
             postRes.creation_date_str = new Date(+postRes.creation_date * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '58%', data: {
+            this.store.dispatch(new RTLActions.OpenAlert({ data: {
               invoice: postRes,
               newlyAdded: true,
               component: InvoiceInformationComponent
@@ -255,7 +255,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
             return {
               type: RTLActions.FETCH_ALL_CHANNELS
             };
@@ -454,12 +454,12 @@ export class LNDEffects implements OnDestroy {
               type: RTLActions.SET_ALL_CHANNELS,
               payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
             };
-          },
+          }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchChannels/all', err);
             return of({type: RTLActions.VOID});
           })
-      ));
+      );
     }
   ));
 
@@ -650,7 +650,7 @@ export class LNDEffects implements OnDestroy {
               msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] =
                 (sendRes.payment_route.total_fees_msat / 1000);
               Object.assign(msg, confirmationMsg);
-              this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+              this.store.dispatch(new RTLActions.OpenAlert({ data: {
                 type: AlertTypeEnum.SUCCESS,
                 alertTitle: 'Payment Sent',
                 titleMessage: 'Payment Sent Successfully!',

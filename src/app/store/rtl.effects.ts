@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of, Subject, forkJoin, Observable } from 'rxjs';
+import { of, Subject, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material';
@@ -12,8 +12,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
+import { CommonService } from '../shared/services/common.service';
 import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
-import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum, DataTypeEnum } from '../shared/services/consts-enums-functions';
+import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
@@ -28,6 +29,9 @@ import { ErrorMessageComponent } from '../shared/components/data-modal/error-mes
 export class RTLEffects implements OnDestroy {
   dialogRef: any;
   CHILD_API_URL = API_URL + '/lnd';
+  screenSize = '';
+  alertWidth = '55%';
+  confirmWidth = '70%';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -36,9 +40,10 @@ export class RTLEffects implements OnDestroy {
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
     private sessionService: SessionService,
+    private commonService: CommonService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router) { }
+    private router: Router) {}
 
   @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
@@ -60,6 +65,7 @@ export class RTLEffects implements OnDestroy {
   openAlert = this.actions$.pipe(
     ofType(RTLActions.OPEN_ALERT),
     map((action: RTLActions.OpenAlert) => {
+      action.payload.width = this.alertWidth;
       if(action.payload.data.component) {
         this.dialogRef = this.dialog.open(action.payload.data.component, action.payload);
       } else {
@@ -80,6 +86,7 @@ export class RTLEffects implements OnDestroy {
   openConfirm = this.actions$.pipe(
     ofType(RTLActions.OPEN_CONFIRMATION),
     map((action: RTLActions.OpenConfirmation) => {
+      action.payload.width = this.confirmWidth;
       this.dialogRef = this.dialog.open(ConfirmationMessageComponent, action.payload);
     })
   );
@@ -115,6 +122,17 @@ export class RTLEffects implements OnDestroy {
   appConfigFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_RTL_CONFIG),
     mergeMap((action: RTLActions.FetchRTLConfig) => {
+      this.screenSize = this.commonService.getScreenSize();
+      if(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+        this.alertWidth = '95%';
+        this.confirmWidth = '95%';
+      } else if(this.screenSize === ScreenSizeEnum.MD) {
+        this.alertWidth = '80%';
+        this.confirmWidth = '80%';
+      } else {
+        this.alertWidth = '55%';
+        this.confirmWidth = '70%';
+      }
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('FetchRTLConfig'));
       return this.httpClient.get(environment.CONF_API + '/rtlconf');
     }),

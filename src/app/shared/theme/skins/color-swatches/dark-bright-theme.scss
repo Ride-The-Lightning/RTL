@@ -54,7 +54,7 @@ $dark-bright-background: (
   background:map_get($dark-grey, 900),
   hover:      rgba(black, 0.04),
   card:       map_get($dark-grey, 700),
-  dialog:     map_get($dark-grey, 700),
+  dialog:     map_get($dark-grey, 600),
   disabled-button: map_get($dark-grey, 300),
   raised-button: map_get($dark-grey, 400),
   focused-button: $dark-focused,

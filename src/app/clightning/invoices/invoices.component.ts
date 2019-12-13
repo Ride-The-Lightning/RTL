@@ -103,7 +103,7 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
 
   onDeleteExpiredInvoices() {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Delete Invoices', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
+      data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Delete Invoices', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[1]))
@@ -123,7 +123,7 @@ export class CLInvoicesComponent implements OnInit, OnDestroy {
       [{key: 'status', value: selInvoice.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
       // 'status', 'expires_at_str', 'paid_at_str', 'pay_index', 'label', 'bolt11', 'payment_hash', 'msatoshi', 'msatoshi_received', 'description'
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Invoice Information',
       message: reorderedInvoice

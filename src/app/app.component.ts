@@ -1,5 +1,6 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 
@@ -11,11 +12,11 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
+import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
-import { AlertTypeEnum } from './shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-app',
@@ -35,9 +36,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
-    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService) {}
+    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
+    .pipe(takeUntil(this.unSubs[5]))
+    .subscribe((matches) => {
+      if(matches.breakpoints[Breakpoints.XSmall]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.XS);
+        this.smallScreen = true;
+      } else if(matches.breakpoints[Breakpoints.TabletPortrait]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.SM);
+        this.smallScreen = true;
+      } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.MD);
+        this.smallScreen = false;
+      } else if(matches.breakpoints[Breakpoints.Large] || matches.breakpoints[Breakpoints.XLarge]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.LG);
+        this.smallScreen = false;
+      } else {
+        this.commonService.setScreenSize(ScreenSizeEnum.MD);
+        this.smallScreen = false;
+      }
+    });
+    
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')
@@ -48,14 +70,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.nodeData;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
-      if (window.innerWidth <= 768) {
-        this.settings.menu = 'vertical';
-        this.settings.flgSidenavOpened = false;
-        this.settings.flgSidenavPinned = false;
-      }
-      if (window.innerWidth <= 414) {
-        this.smallScreen = true;
-      }
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
         this.flgLoading[0] = false;
@@ -83,7 +97,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity.');
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+        this.store.dispatch(new RTLActions.OpenAlert({ data: {
           type: AlertTypeEnum.WARNING,
           alertTitle: 'Logging out',
           titleMessage: 'Time limit exceeded for session inactivity.'
@@ -109,20 +123,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.settings.menuType.toLowerCase() !== 'regular' || !this.settings.flgSidenavPinned) {
+    if ((this.settings.menuType.toLowerCase() !== 'regular' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
       this.sideNavigation.close();
-    }
-    if (window.innerWidth <= 768) {
-      this.sideNavigation.close();
-    }
-  }
-
-  @HostListener('window:resize')
-  public onWindowResize(): void {
-    if (window.innerWidth <= 768) {
-      this.settings.menu = 'vertical';
-      this.settings.flgSidenavOpened = false;
-      this.settings.flgSidenavPinned = false;
     }
   }
 
@@ -132,7 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onNavigationClicked(event: any) {
-    if (window.innerWidth <= 414) {
+    if (this.smallScreen) {
       this.sideNavigation.close();
     }
   }

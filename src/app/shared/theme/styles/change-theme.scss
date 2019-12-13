@@ -88,7 +88,16 @@
     }
     .chart-legend .legend-label:hover, .chart-legend .legend-label .active .legend-label-text {
       color: $foreground-text !important;
-    }    
+    } 
+    .cdk-overlay-dark-backdrop {
+      background: rgba(255, 255, 255, 0.32);
+    }   
+    .mat-tree {
+      background: mat-color($background, dialog);
+    }
+    .mat-expansion-panel {
+      border: 1px solid $foreground-secondary-text;
+    }
   }
 
   &.day {
@@ -152,6 +161,16 @@
     .mat-progress-bar-fill::after {
       background-color: mat-color($primary, 900);
     }
+    .modal-qr-code-container {
+      background: $foreground-divider;
+    }
+    .mat-expansion-panel.flat-expansion-panel {
+      box-shadow: none;
+      padding: 0;
+      border: 1px solid $foreground-divider;
+      border-radius: 4px;
+      background: none;
+    }
   }
   
   .mat-progress-bar-buffer {
@@ -161,6 +180,7 @@
   .foreground-secondary-text {
     color: $foreground-secondary-text !important;
     white-space: pre-line;
+    overflow-wrap: break-word;
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
@@ -298,10 +318,6 @@
     }
   }
 
-  .modal-qr-code-container {
-    background: $foreground-divider;
-  }
-
   .tab-badge {
     & .mat-badge-content {
       width: $dot-size * 1.5;
@@ -320,14 +336,6 @@
     & .mat-select-placeholder {
       color: $foreground-text;
     }
-  }
-
-  .mat-expansion-panel.flat-expansion-panel {
-    box-shadow: none;
-    padding: 0;
-    border: 1px solid $foreground-divider;
-    border-radius: 4px;
-    background: none;
   }
 
   .rtl-snack-bar .mat-simple-snackbar {

@@ -120,7 +120,7 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
       const titleMsg = 'Updated Values for ALL Channels';
       // const confirmationMsg = {};
       const confirmationMsg = [[{key: '', value: '', title: '', width: 0, type: DataTypeEnum.NUMBER}]];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
         alertTitle: 'Confirm Channels Update',
         titleMessage: titleMsg,
@@ -162,7 +162,7 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
         const titleMsg = 'Updated Values for Channel: ' + channelToUpdate.channel_id;
         // const confirmationMsg = {};
         const confirmationMsg = [[{key: '', value: '', title: '', width: 0, type: DataTypeEnum.NUMBER}]];
-        this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Confirm Channel Update', 
           titleMessage: titleMsg, 
@@ -195,14 +195,14 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
       return;
     }
     if (channelToClose.state === 'AWAITING_UNILATERAL') {
-      this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
         type: AlertTypeEnum.WARNING,
         alertTitle: 'Unable to Close Channel',
         titleMessage: 'Channel can not be closed when it is in AWAITING UNILATERAL state.'
       }}));
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({
-        width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Closing', titleMessage: 'Closing channel: ' + channelToClose.channel_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
+        data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Channel Closing', titleMessage: 'Closing channel: ' + channelToClose.channel_id, noBtnText: 'Cancel', yesBtnText: 'Close Channel'
       }}));
       this.rtlEffects.closeConfirm
       .pipe(takeUntil(this.unsub[1]))

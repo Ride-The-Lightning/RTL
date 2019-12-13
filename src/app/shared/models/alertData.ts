@@ -82,6 +82,6 @@ export interface ErrorData {
 }
 
 export interface DialogConfig {
-  width: string;
+  width?: string;
   data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | InvoiceInformation | OnChainAddressInformation | ShowPubkeyData;
 }

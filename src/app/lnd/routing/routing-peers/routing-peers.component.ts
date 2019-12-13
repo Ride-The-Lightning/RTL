@@ -75,7 +75,7 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
       [{key: 'events', value: selRPeer.events, title: 'Events', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'total_amount', value: selRPeer.total_amount, title: 'Total Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: alertTitle,
       message: reorderedRoutingPeer

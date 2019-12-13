@@ -90,7 +90,7 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
     const reorderedTransaction = [
       [{key: 'address', value: this.transaction.address, title: 'Address', width: 100, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Confirm Send Funds',
       message: reorderedTransaction,

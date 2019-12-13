@@ -93,7 +93,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
         {key: 'chan_id', value: selHop.chan_id, title: 'Channel ID', width: 30, type: DataTypeEnum.STRING},
         {key: 'chan_capacity', value: selHop.chan_capacity, title: 'Channel Capacity', width: 40, type: DataTypeEnum.NUMBER}],
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',
       message: reorderedHop

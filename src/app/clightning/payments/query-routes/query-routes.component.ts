@@ -87,7 +87,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
       [{key: 'id', value: selRoute.id, title: 'ID', width: 100, type: DataTypeEnum.NUMBER}]
       // 'id', 'alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'delay'
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Route Information',
       message: reorderedRoute

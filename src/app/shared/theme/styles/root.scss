@@ -219,7 +219,6 @@ body {
 
 .mat-form-field-wrapper {
   width: 100%;
-  margin: 0 1.5rem 0 0;
 }
 
 .mat-select {
@@ -296,6 +295,10 @@ body {
 
 .mr-0 {
   margin-right: 0 !important;
+}
+
+.mr-5px {
+  margin-right: 0.5rem !important;
 }
 
 .mr-1 {
@@ -504,6 +507,10 @@ body {
 
 .overflow-y-hidden {
   overflow-y: hidden !important;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden !important;
 }
 
 .overflow-auto {
@@ -845,8 +852,18 @@ table {
   font-weight: 900 !important;
 }
 
+.pre-wrap {
+  white-space: pre-wrap !important;
+}
+
 .display-none {
   display: none !important;
+}
+
+.lightning-send-tab {
+  & .mat-tab-body-content {
+    padding-left: 0.5rem;
+  }  
 }
 
 .ellipsis-child {

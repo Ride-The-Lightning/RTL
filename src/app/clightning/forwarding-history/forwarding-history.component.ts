@@ -87,7 +87,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
       // 'status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'in_msat', 'out_msatoshi', 'out_msat', 'fee', 'fee_msat', 'payment_hash'      
     ];
 
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Forwarding History',
       message: reorderedFHEvent

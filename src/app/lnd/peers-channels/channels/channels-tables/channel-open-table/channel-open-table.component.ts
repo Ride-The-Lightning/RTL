@@ -86,7 +86,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     if (channelToUpdate === 'all') {
       const titleMsg = 'Updated Values for ALL Channels';
       const confirmationMsg = [];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
         alertTitle: 'Update Channel',
         titleMessage: titleMsg,
@@ -130,7 +130,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update values for channel point: ' + channelToUpdate.channel_point;
         const confirmationMsg = [];
-        this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Update Channel',
           titleMessage: titleMsg,
@@ -161,7 +161,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({width: '55%', data: { 
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Close Channel',
       titleMessage: 'Closing channel: ' + channelToClose.channel_point,
@@ -209,7 +209,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         {key: 'pending_htlcs', value: selChannel.pending_htlcs, title: 'Pending HTLCs', width: 30, type: DataTypeEnum.NUMBER},
         {key: 'csv_delay', value: selChannel.csv_delay, title: 'CSV Delay', width: 30, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Channel Information',
       message: reorderedChannel

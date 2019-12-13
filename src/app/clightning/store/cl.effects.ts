@@ -213,7 +213,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Connected', titleMessage: 'Peer Added Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Connected', titleMessage: 'Peer Added Successfully!' }}));
             return {
               type: RTLActions.SET_PEERS_CL,
               payload: (postRes && postRes.length > 0) ? postRes : []
@@ -236,7 +236,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Disconnected', titleMessage: 'Peer Disconnected Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Disconnected', titleMessage: 'Peer Disconnected Successfully!' }}));
             return {
               type: RTLActions.REMOVE_PEER_CL,
               payload: { id: action.payload.id }
@@ -305,7 +305,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };

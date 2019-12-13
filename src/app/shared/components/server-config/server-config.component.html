@@ -19,7 +19,7 @@
         </form>     
         <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
         <div *ngIf="configData !== '' && fileFormat === 'JSON'" class="mt-2 mb-6">
-          <pre>{{configData | json}}</pre>
+          <pre class="pre-wrap">{{configData | json}}</pre>
           <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
         </div>
         <div *ngIf="configData !== '' && fileFormat === 'INI'" class="mt-2">

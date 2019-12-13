@@ -4,7 +4,7 @@
     <span class="page-title">{{!flgLoading[0] ? 'Welcome! Your node is up and running.' : 'Error! Please check the server connection.'}}</span>
   </div>
   <mat-grid-list cols="10" rowHeight="330px">
-    <mat-grid-tile *ngFor="let card of operatorCards | async" [colspan]="card.cols" [rowspan]="card.rows">
+    <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-16">
         <mat-card-header>
           <mat-card-title>
@@ -30,8 +30,8 @@
     <fa-icon [icon]="faSmile" class="page-title-img mr-1"></fa-icon>
     <span class="page-title">Welcome! Your node is up and running.</span>
   </div>
-  <mat-grid-list cols="3" rowHeight="66px">
-    <mat-grid-tile *ngFor="let card of merchantCards | async" [colspan]="card.cols" [rowspan]="card.rows">
+  <mat-grid-list cols="6" rowHeight="66px">
+    <mat-grid-tile *ngFor="let card of merchantCards" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card" [ngClass]="{'p-16': card.id !== 'transactions'}">
         <mat-card-header *ngIf="card.id !== 'transactions'"><mat-card-title>{{card.title}}</mat-card-title></mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">

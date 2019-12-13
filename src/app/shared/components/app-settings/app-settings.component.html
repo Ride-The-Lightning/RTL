@@ -5,21 +5,21 @@
 <div fxLayout="column" class="padding-gap-x settings-container">
   <mat-card>
     <mat-card-content fxLayout="column" class="card-content-gap">
-      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="center space-between">
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+      <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start center">
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="start stretch" class="w-100">
           <div fxFlex="25">
-            <div fxFlex.gt-md="50" fxFlex="80">
+            <div fxFlex.gt-md="50" fxFlex="90">
               <h4>User Persona</h4>
               <mat-select [(ngModel)]="selNode.settings.userPersona" placeholder="Select User Persona" tabindex="1" required name="userPersona">
                 <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
-                  {{userPersona}}
+                  {{userPersona | titlecase}}
                 </mat-option>
               </mat-select>
             </div>
           </div>
           <div fxFlex="25" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
-            <div fxFlex.gt-md="50" fxFlex="80">
-              <h4>Default Selected Node</h4>
+            <div fxFlex.gt-md="70" fxFlex="90">
+              <h4>Default Node</h4>
               <mat-select [(ngModel)]="appConfig.defaultNodeIndex" placeholder="Default Node" tabindex="1" required name="defaultNode">
                 <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
                   {{node.lnNode}} ({{node.lnImplementation}})
@@ -28,7 +28,7 @@
             </div>
           </div>
           <div fxFlex="25">
-            <div fxFlex.gt-md="30" fxFlex="70">
+            <div fxFlex.gt-md="50" fxFlex="90">
               <h4>Currency Unit</h4>
               <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
                 <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
@@ -38,7 +38,7 @@
             </div>
           </div>
           <div fxFlex="25" *ngIf="selNode.lnImplementation !== 'CLT'">
-            <div fxFlex="60">
+            <div fxFlex.gt-md="50" fxFlex="90">
               <h4>BTC</h4>
               <div fxLayoutAlign="start center">
                 <span class="slider-text">{{smallerCurrencyUnit}}</span>
@@ -57,7 +57,7 @@
         </div>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
           <div fxFlex="50">
-            <div fxFlex="60">
+            <div fxFlex="70">
               <h4>Font Size</h4>
               <mat-radio-group color="primary" [(ngModel)]="selectedFontSize" (change)="chooseFontSize()">
                 <mat-radio-button *ngFor="let fontSize of fontSizes" [value]="fontSize">{{fontSize.name}}
@@ -78,7 +78,7 @@
         <div *ngIf="showSettingOption && selNode?.settings?.menu === 'vertical'" fxFlex="100" fxLayout="row"
           fxLayoutAlign="space-between center">
           <div fxFlex="50">
-            <div fxFlex="60">
+            <div fxFlex="70">
               <h4>Menu Type</h4>
               <mat-radio-group color="primary" [(ngModel)]="selectedMenuType" (change)="chooseMenuType()">
                 <mat-radio-button *ngFor="let menuType of menuTypes" [value]="menuType">{{menuType.name}}</mat-radio-button>

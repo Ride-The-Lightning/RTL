@@ -100,7 +100,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
         {key: 'close_height', value: selChannel.close_height, title: 'Close Height', width: 30, type: DataTypeEnum.NUMBER}],
       [{key: 'closing_tx_hash', value: selChannel.closing_tx_hash, title: 'Closing Transaction Hash', width: 100, type: DataTypeEnum.STRING}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Closed Channel Information',
       message: reorderedChannel

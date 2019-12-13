@@ -120,8 +120,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     const selInvoice = this.invoices.data.filter(invoice => {
       return invoice.payment_request === selRow.payment_request;
     })[0];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '58%', 
-      data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         invoice: selInvoice,
         newlyAdded: false,
         component: InvoiceInformationComponent

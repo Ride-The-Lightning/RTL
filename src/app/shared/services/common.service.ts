@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
-import { CurrencyUnitEnum, TimeUnitEnum } from './consts-enums-functions';
+import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class CommonService implements OnInit, OnDestroy {
@@ -12,11 +13,21 @@ export class CommonService implements OnInit, OnDestroy {
   unitConversionValue = 0;
   containerWidthChanged = new Subject<string>();
   conversionData = { data: null, last_fetched: null };
+  private screenSize = ScreenSizeEnum.MD;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient) {}
 
   ngOnInit() {}
+
+  getScreenSize() {
+    return this.screenSize;
+  }
+
+  setScreenSize(screenSize: ScreenSizeEnum) {
+    this.screenSize = screenSize;
+    console.warn(this.screenSize);
+  }
 
   sortDescByKey(array, key) {
     return array.sort(function (a, b) {
@@ -45,7 +56,7 @@ export class CommonService implements OnInit, OnDestroy {
     if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
       return of(this.convert(value, from, otherCurrencyUnit));
     } else {
-      return this.httpClient.get('https://blockchain.info/ticker')
+      return this.httpClient.get(environment.CONF_API + '/rates')
       .pipe(take(1),
       map(data => {
         this.conversionData.data = data;

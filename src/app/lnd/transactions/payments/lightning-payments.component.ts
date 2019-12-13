@@ -126,7 +126,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
             {key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30}]
         ];
         const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
-        this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',
           titleMessage: titleMsg,
@@ -158,7 +158,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 50}]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
         alertTitle: 'Send Payment',
         noBtnText: 'Cancel',
@@ -209,7 +209,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'value_sat', value: selPayment.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
       message: reorderedPayment

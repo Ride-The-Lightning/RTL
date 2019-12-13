@@ -128,7 +128,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       {key: 'commit_weight', value: preOrderedChannel.commit_weight, title: 'Commit Weight', width: 30, type: DataTypeEnum.NUMBER},
       {key: 'commit_fee', value: preOrderedChannel.commit_fee, title: 'Commit Fee', width: 30, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Opening Channel Information',
       message: reorderedChannel
@@ -155,7 +155,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
         {key: 'blocks_til_maturity', value: preOrderedChannel.blocks_til_maturity, title: 'Blocks Till Maturity', width: 30, type: DataTypeEnum.NUMBER},
         {key: 'recovered_balance', value: preOrderedChannel.recovered_balance, title: 'Recovered Balance', width: 30, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Force Closing Channel Information',
       message: reorderedChannel
@@ -178,7 +178,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'closing_txid', value: preOrderedChannel.closing_txid, title: 'Closing Transaction ID', width: 50, type: DataTypeEnum.STRING}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Closing Channel Information',
       message: reorderedChannel
@@ -201,7 +201,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       [{key: 'capacity', value: preOrderedChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'limbo_balance', value: preOrderedChannel.limbo_balance, title: 'Limbo Balance', width: 50, type: DataTypeEnum.NUMBER}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Wait Closing Channel Information',
       message: reorderedChannel

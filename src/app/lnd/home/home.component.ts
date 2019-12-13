@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -9,7 +7,7 @@ import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -40,53 +38,61 @@ export class HomeComponent implements OnInit, OnDestroy {
   public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
   public totalOutboundLiquidity = 0;
+  public operatorCards = [];
+  public merchantCards = [];
+  public screenSize = '';
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
-  public operatorCards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return [
-          { id: 'node', title: 'Node Details', cols: 10, rows: 1 },
-          { id: 'balance', title: 'Balances', cols: 10, rows: 1 },
-          { id: 'fee', title: 'Routing Fee Earned', cols: 10, rows: 1 },
-          { id: 'status', title: 'Channel Status', cols: 10, rows: 1 },
-          { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 1 }
-        ];
-      }
 
-      return [
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.operatorCards = [
+        { id: 'node', title: 'Node Details', cols: 10, rows: 1 },
+        { id: 'balance', title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', title: 'Routing Fee Earned', cols: 10, rows: 1 },
+        { id: 'status', title: 'Channel Status', cols: 10, rows: 1 },
+        { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 2 }
+      ];
+      this.merchantCards = [
+        { id: 'node', title: 'Node Details', cols: 6, rows: 3 },
+        { id: 'balance', title: 'Balances', cols: 6, rows: 3 },
+        { id: 'transactions', title: 'Transactions', cols: 6, rows: 4 },
+        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+      ];
+    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+      this.operatorCards = [
+        { id: 'node', title: 'Node Details', cols: 5, rows: 1 },
+        { id: 'balance', title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', title: 'Routing Fee Earned', cols: 5, rows: 1 },
+        { id: 'status', title: 'Channel Status', cols: 5, rows: 1 },
+        { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 2 }
+      ];
+      this.merchantCards = [
+        { id: 'node', title: 'Node Details', cols: 3, rows: 3 },
+        { id: 'balance', title: 'Balances', cols: 3, rows: 3 },
+        { id: 'transactions', title: 'Transactions', cols: 6, rows: 4 },
+        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+      ];
+    } else {
+      this.operatorCards = [
         { id: 'node', title: 'Node Details', cols: 3, rows: 1 },
         { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
         { id: 'capacity', title: 'Channel Capacity', cols: 4, rows: 2 },
         { id: 'fee', title: 'Routing Fee Earned', cols: 3, rows: 1 },
         { id: 'status', title: 'Channel Status', cols: 3, rows: 1 }
       ];
-    })
-  );
-
-  public merchantCards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return [
-          { id: 'node', title: 'Node Details', cols: 3, rows: 3 },
-          { id: 'balance', title: 'Balances', cols: 3, rows: 3 },
-          { id: 'transactions', title: 'Transactions', cols: 3, rows: 4 },
-          { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-          { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
-        ];
-      }
-
-      return [
-        { id: 'node', title: 'Node Details', cols: 1, rows: 3 },
-        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 1, rows: 10 },
-        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 1, rows: 10 },
-        { id: 'balance', title: 'Balances', cols: 1, rows: 3 },
-        { id: 'transactions', title: 'Transactions', cols: 1, rows: 4 }
+      this.merchantCards = [
+        { id: 'node', title: 'Node Details', cols: 2, rows: 3 },
+        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'balance', title: 'Balances', cols: 2, rows: 3 },
+        { id: 'transactions', title: 'Transactions', cols: 2, rows: 4 }
       ];
-    })
-  );
-
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private breakpointObserver: BreakpointObserver, private commonService: CommonService) {}
+    }
+  }
 
   ngOnInit() {
     this.store.select('lnd')

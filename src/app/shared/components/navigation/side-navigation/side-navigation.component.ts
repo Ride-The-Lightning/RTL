@@ -116,7 +116,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   onClick(node: MenuChildNode) {
     if (node.name === 'Logout') {
       this.store.dispatch(new RTLActions.OpenConfirmation({
-        width: '55%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
+        data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Logout', titleMessage: 'Logout from this device?', noBtnText: 'Cancel', yesBtnText: 'Logout'
       }}));
       this.rtlEffects.closeConfirm
       .pipe(takeUntil(this.unSubs[3]))
@@ -142,6 +142,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
+    this.ChildNavClicked.emit('selectNode');
   }
 
   ngOnDestroy() {

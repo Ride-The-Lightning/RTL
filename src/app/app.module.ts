@@ -16,6 +16,7 @@ import { AppComponent } from './app.component';
 
 import { environment } from '../environments/environment';
 import { SessionService } from './shared/services/session.service';
+import { CommonService } from './shared/services/common.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
@@ -43,7 +44,7 @@ import { CLEffects } from './clightning/store/cl.effects';
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
-    AuthGuard, SessionService
+    CommonService, AuthGuard, SessionService
   ],
   bootstrap: [AppComponent]
 })

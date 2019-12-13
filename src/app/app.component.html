@@ -2,7 +2,7 @@
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar" *ngIf="settings.menu === 'vertical'">
     <div fxLayoutAlign="center center">
       <button *ngIf="settings.menu === 'vertical'" class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
-        <mat-icon>menu</mat-icon>
+        <mat-icon class="mr-5px">menu</mat-icon>
       </button>
       <button *ngIf="settings.fontSize === 'small-font' && settings.menu === 'vertical' && !smallScreen" mat-icon-button (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
         <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 42 42">
@@ -31,8 +31,7 @@
     <rtl-horizontal-navigation fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="h-100"></rtl-horizontal-navigation>
   </mat-toolbar>
   <mat-sidenav-container>
-      <mat-sidenav perfectScrollbar *ngIf="settings.menu === 'vertical'" [opened]="settings.flgSidenavOpened" [mode]="(settings.flgSidenavPinned) ? 'side' : 'over'"
-      #sideNavigation class="sidenav mat-elevation-z6">
+    <mat-sidenav perfectScrollbar *ngIf="settings.menu === 'vertical'" [opened]="settings.flgSidenavOpened" [mode]="(settings.flgSidenavPinned) ? 'side' : 'over'" #sideNavigation class="sidenav mat-elevation-z6">
       <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
     <mat-sidenav-content perfectScrollbar>

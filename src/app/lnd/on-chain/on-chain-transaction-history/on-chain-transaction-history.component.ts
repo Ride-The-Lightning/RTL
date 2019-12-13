@@ -7,10 +7,10 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Transaction } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
 
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -34,25 +34,17 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['time_stamp_str', 'amount', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+    let ss = this.commonService.getScreenSize();
+    if(ss === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['time_stamp_str', 'amount', 'actions'];
+    } else if(ss === ScreenSizeEnum.SM || ss === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
+    } else if(ss === ScreenSizeEnum.LG) {
+      this.flgSticky = true;
+      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
     }
   }
 
@@ -104,7 +96,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
       [{key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'active', value: selTransaction.active, title: 'Active', width: 50, type: DataTypeEnum.BOOLEAN}]
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
       message: reorderedTransactions,

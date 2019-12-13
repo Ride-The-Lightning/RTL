@@ -12,7 +12,7 @@
               tabindex="1" required>
             <mat-hint>{{hintStr}}</mat-hint>
           </mat-form-field>
-          <div fxLayout="column" fxFlex.gt-sm="30" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between center" class="mt-2">
+          <div fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between start" fxLayoutAlign.gt-sm="space-between center" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="3" type="submit" [disabled]="!password">Login</button>
           </div> 

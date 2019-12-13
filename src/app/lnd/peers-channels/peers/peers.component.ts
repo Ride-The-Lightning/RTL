@@ -144,7 +144,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       [{key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER}],
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Peer Information',
       showQRName: 'Public Key',
@@ -163,7 +163,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       information: this.information,
       balance: this.availableBalance
     };
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '50%', data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,
@@ -173,7 +173,7 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   onPeerDetach(peerToDetach: Peer) {
     const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.pub_key);
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Disconnect Peer',
       titleMessage: msg,

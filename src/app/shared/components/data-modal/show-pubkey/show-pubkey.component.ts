@@ -4,8 +4,10 @@ import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../services/logger.service';
+import { CommonService } from '../../../services/common.service';
 import { ShowPubkeyData } from '../../../models/alertData';
 import { GetInfoRoot } from '../../../models/RTLconfig';
+import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-show-pubkey',
@@ -17,11 +19,22 @@ export class ShowPubkeyComponent implements OnInit {
   public information: GetInfoRoot;
   public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}, { infoID: 1, infoKey: 'node URI', infoName: 'Node URI'}];
   public selInfoType = this.infoTypes[0];
+  public qrWidth = 230;
+  public screenSize = '';
   
-  constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: ShowPubkeyData, private logger: LoggerService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: ShowPubkeyData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService) { }
 
   ngOnInit() {
     this.information = this.data.information;
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.qrWidth = 90;
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
+      this.qrWidth = 160;
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.qrWidth = 200;
+    }
+
   }
 
   onClose() {

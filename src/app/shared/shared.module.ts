@@ -45,7 +45,6 @@ import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
-import { CommonService } from './services/common.service';
 import { SocketService } from './services/socket.service';
 
 @NgModule({
@@ -183,9 +182,9 @@ import { SocketService } from './services/socket.service';
   ],
   providers: [
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    CommonService, DecimalPipe, SocketService
+    DecimalPipe, SocketService
   ]
 })
 export class SharedModule { }

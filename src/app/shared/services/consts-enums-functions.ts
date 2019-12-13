@@ -26,8 +26,8 @@ export const TRANS_TYPES = [
 ];
 
 export enum UserPersonaEnum {
-  OPERATOR = 'Operator',
-  MERCHANT = 'Merchant'
+  OPERATOR = 'operator',
+  MERCHANT = 'merchant'
 }
 
 export enum AlertTypeEnum {
@@ -66,4 +66,11 @@ export enum DataTypeEnum {
   PASSWORD = 'PASSWORD',
   DATE = 'DATE',
   DATE_TIME = 'DATE_TIME'
+}
+
+export enum ScreenSizeEnum {
+  XS = 'XS', // < 600 => mobile handsets
+  SM = 'SM', // 600 - 839 => tab portrait
+  MD = 'MD', // 840 - 1439 => tab landscape & small laptops
+  LG = 'LG'  // >1440 => big laptops
 }

@@ -2,6 +2,8 @@ var ini = require('ini');
 var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
+var request = require('request-promise');
+var options = {};
 
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
@@ -217,5 +219,27 @@ exports.getConfig = (req, res, next) => {
       const responseJSON = (JSONFormat) ? jsonConfig : ini.stringify(jsonConfig);
       res.status(200).json({format: (JSONFormat) ? 'JSON' : 'INI', data: responseJSON});
     }
+  });
+};
+
+exports.getCurrencyRates = (req, res, next) => {
+  options = common.getOptions();
+  options.url = 'https://blockchain.info/ticker';
+  request(options).then((body) => {
+    logger.info({fileName: 'RTLConf', msg: 'Rates Received: ' + JSON.stringify(body)});
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Fetching Rates Failed!",
+        error: (undefined === body) ? 'Error From External Server!' : body.error
+      });
+    } else {
+      res.status(200).json(body);
+    }
+  })
+  .catch(function (err) {
+    return res.status(500).json({
+      message: "Fetching Rates Failed!",
+      error: err.error
+    });
   });
 };

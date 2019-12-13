@@ -107,7 +107,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
     ];
     if (undefined === this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
         const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
-        this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: {
+        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',
           titleMessage: titleMsg,
@@ -130,7 +130,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       const reorderedDecodedPayment = [
         [{key: 'amount_msat', value: this.paymentDecoded.amount_msat, title: 'Amount (mSat)', width: 100, type: DataTypeEnum.NUMBER}]
       ];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ width: '40%', data: {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
         alertTitle: 'Confirm Send Payment',
         titleMessage: 'Send Payment',
@@ -177,7 +177,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'id', value: selPayment.id, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
       // 'id', 'bolt11', 'created_at_str', 'created_at', 'destination', 'status', 'msatoshi', 'msatoshi_sent', 'payment_hash', 'payment_preimage','amount_msat', 'amount_sent_msat'
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '55%', data: {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
       message: reorderedPayment

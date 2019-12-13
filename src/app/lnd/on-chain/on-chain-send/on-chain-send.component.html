@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;">
+<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="overflow-x-hidden">
   <mat-form-field fxFlex.gt-sm="55">
     <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #address="ngModel">
   </mat-form-field>
@@ -11,7 +11,7 @@
       <mat-option *ngFor="let amountUnit of amountUnits" [value]="amountUnit">{{amountUnit}}</mat-option>
     </mat-select>
   </mat-form-field>
-  <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">  
+  <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="60" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">  
     <mat-form-field fxFlex="48">
       <mat-select [(value)]="selTransType" tabindex="4">
         <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
@@ -40,9 +40,9 @@
 </div>
 <ng-template #sweepAllBlock>
   <div fxLayout="column" fxFlex="100">
-    <div fxLayout="column" fxFlex="100" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between start">
+    <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="overflow-x-hidden">
       <mat-form-field fxFlex.gt-sm="55">
-        <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #address="ngModel">
+        <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #addressSweep="ngModel">
       </mat-form-field>
       <mat-form-field fxFlex.gt-sm="20">
         <mat-select [(value)]="selTransType" tabindex="4">
@@ -55,15 +55,15 @@
         <input matInput [(ngModel)]="transaction.blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1" min="0" required tabindex="5" #blocks="ngModel">
       </mat-form-field>
       <mat-form-field fxFlex.gt-sm="20" fxLayoutAlign="start end" *ngIf="selTransType=='2'">
-        <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #fees="ngModel">
+        <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #feesSweep="ngModel">
       </mat-form-field>
     </div>
     <div>
-      <div fxFlex="30" fxLayout="row wrap" fxLayoutAlign="space-between start">  
+      <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row wrap" fxLayoutAlign="space-between start">  
         <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
         <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
-          <p *ngIf="invalidValues && (address.touched || address.dirty); else sendText">Invalid Values</p>
-          <ng-template #sendText><p>Send Funds</p></ng-template>
+          <p *ngIf="invalidValues && (addressSweep.touched || addressSweep.dirty); else sendTextSweep">Invalid Values</p>
+          <ng-template #sendTextSweep><p>Send Funds</p></ng-template>
         </button>
       </div>
     </div>

@@ -109,7 +109,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       [{key: 'status', value: selPeer.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
       // 'id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures'
     ];
-    this.store.dispatch(new RTLActions.OpenAlert({ width: '40%', data: { 
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Peer Information',
       message: reorderedPeer
@@ -126,7 +126,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
 
   onPeerDetach(peerToDetach: PeerCL) {
     const msg = 'Detach peer: ' + peerToDetach.id;
-    this.store.dispatch(new RTLActions.OpenConfirmation({ width: '70%', data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Disconnect Peer', titleMessage: msg, noBtnText: 'Cancel', yesBtnText: 'Detach'}}));
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { type: AlertTypeEnum.CONFIRM, alertTitle: 'Confirm Disconnect Peer', titleMessage: msg, noBtnText: 'Cancel', yesBtnText: 'Detach'}}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {

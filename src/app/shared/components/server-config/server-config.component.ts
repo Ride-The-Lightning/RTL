@@ -65,6 +65,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
     this.rtlEffects.showLnConfig
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((config: any) => {
+      console.warn(config);
       const configFile = config.data;
       this.fileFormat = config.format;
       if (configFile !== '' && undefined !== configFile && this.fileFormat === 'INI') {
