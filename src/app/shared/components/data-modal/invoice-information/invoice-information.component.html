@@ -1,12 +1,12 @@
 <div fxLayout="row">
   <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
-    <qrcode [qrdata]="invoice.payment_request" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+    <qrcode [qrdata]="invoice.payment_request" [size]="qrWidth" [level]="'L'" [allowEmptyString]="true" [ngClass]="{'qr-border': screenSize !== screenSizeEnum.XS, 'qr-thin-border': screenSize === screenSizeEnum.XS}"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
-        <span class="page-title">{{newlyAdded ? 'Invoice Created' : 'Invoice Information'}}</span>
+        <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
@@ -14,7 +14,7 @@
       <div fxLayout="column">
         <div fxLayout="row">
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
             <span class="foreground-secondary-text">{{(invoice.value || 0) | number}} Sats<ng-container *ngIf="!invoice.value"> (Open Amount) </ng-container></span>
           </div>
           <div fxFlex="50">
@@ -72,12 +72,12 @@
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        
         </div>
-        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center">
-          <button fxFlex="25" fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-2">
+        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
+          <button fxFlex="50" fxFlex.gt-sm="25" fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-2">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">Copy Payment Request</button>
+          <button autoFocus fxFlex="50" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
         </div>
       </div>
       </mat-card-content>

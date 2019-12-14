@@ -98,6 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
+      this.flgLoading = [true, true, true, true, true, true, true, true];
       rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';

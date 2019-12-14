@@ -6,8 +6,9 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -44,25 +45,20 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
+    let ss = this.commonService.getScreenSize();
+    if(ss === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'value', 'actions'];
+    } else if(ss === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
+    } else if(ss === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'path', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
     }
   }
 

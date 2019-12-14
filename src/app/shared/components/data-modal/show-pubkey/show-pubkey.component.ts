@@ -19,7 +19,7 @@ export class ShowPubkeyComponent implements OnInit {
   public information: GetInfoRoot;
   public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}, { infoID: 1, infoKey: 'node URI', infoName: 'Node URI'}];
   public selInfoType = this.infoTypes[0];
-  public qrWidth = 230;
+  public qrWidth = 210;
   public screenSize = '';
   
   constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: ShowPubkeyData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService) { }

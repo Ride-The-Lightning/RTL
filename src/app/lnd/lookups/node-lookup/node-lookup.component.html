@@ -1,52 +1,49 @@
-<div fxLayout="column" *ngIf="lookupResult">
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Alias</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.alias}}</mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Pub Key</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.pub_key}}</mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Color</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start"><span [ngStyle]="{'background-color': lookupResult.node?.color}">{{lookupResult.node?.color}}</span></mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Last Update</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.node.last_update_str}}</mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Total Capacity (Sats)</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.total_capacity | number}}</mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayoutAlign="start start">
-    <mat-list-item fxFlex="50" fxLayoutAlign="start start">Number of Channels</mat-list-item>
-    <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult.num_channels | number}}</mat-list-item>
-    <mat-divider></mat-divider>
-  </mat-list>
-  <mat-list fxLayout="column" fxLayoutAlign="start start">
-    <mat-divider></mat-divider>
-    <mat-list-item fxFlex="100" fxLayoutAlign="start start">Addresses</mat-list-item>
-    <div fxLayout="row" fxLayoutAlign="start center" class="w-100">
-      <div perfectScrollbar class="table-container" fxFlex="100">    
-        <table mat-table [dataSource]="lookupResult.node.addresses" matSort class="overflow-auto">
-          <ng-container matColumnDef="network">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Network</mat-header-cell>
-            <mat-cell *matCellDef="let address"><div>{{address?.network}}</div></mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="addr">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
-            <mat-cell *matCellDef="let address"><div>{{address?.addr}}</div></mat-cell>
-          </ng-container>
-          <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
-          <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </table>
-      </div>
+<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
+  <mat-divider></mat-divider>        
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
+    <h4 fxLayoutAlign="start" class="font-bold-500">Pub Key</h4>
+    <span class="foreground-secondary-text w-100">{{lookupResult.node.pub_key}}</span>
+    <mat-divider class="my-1"></mat-divider>        
+  </div>
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
+      <span class="foreground-secondary-text">{{lookupResult.node.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult.node?.color}">{{lookupResult.node?.color}}</span></span>
+      <mat-divider class="my-1"></mat-divider>        
     </div>
-  </mat-list>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
+      <span class="foreground-secondary-text">{{lookupResult.node.last_update_str}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+  </div>
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Total Capacity (Sats)</h4>
+      <span class="foreground-secondary-text">{{lookupResult.total_capacity | number}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Number of Channels</h4>
+      <span class="foreground-secondary-text">{{lookupResult.num_channels | number}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+  </div>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start" class="my-1">
+    <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500">Addresses</h4>
+    <div perfectScrollbar class="table-container mt-2" fxFlex="100">    
+      <table mat-table [dataSource]="lookupResult.node.addresses" matSort class="overflow-auto">
+        <ng-container matColumnDef="network">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Network</mat-header-cell>
+          <mat-cell *matCellDef="let address"><div>{{address?.network}}</div></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="addr">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+          <mat-cell *matCellDef="let address"><div>{{address?.addr}}</div></mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
+        <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </table>
+    </div>
+  </div>
 </div>

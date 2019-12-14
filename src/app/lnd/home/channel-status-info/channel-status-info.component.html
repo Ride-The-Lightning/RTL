@@ -1,36 +1,28 @@
-<div fxLayout="column" fxFlex="40" fxLayoutAlign="center start">
-  <div fxFlex="25">
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="center start">
+  <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Active</h4>
     <div class="foreground-secondary-text"><span class="dot tiny-dot green"></span>{{(channelsStatus.active.channels || 0) | number}}</div>
   </div>
-  <div fxFlex="25">
+  <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Pending</h4>
     <div class="foreground-secondary-text"><span class="dot tiny-dot yellow"></span>{{(channelsStatus.pending.channels || 0) | number}}</div>
   </div>
-  <div fxFlex="25">
+  <div fxFlex="34">
     <h4 fxLayoutAlign="start" class="font-bold-500">Inactive</h4>
     <div class="foreground-secondary-text"><span class="dot tiny-dot red"></span>{{(channelsStatus.inactive.channels || 0) | number}}</div>
   </div>
-  <div fxFlex="25">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Closed</h4>
-    <div class="foreground-secondary-text"><span class="dot tiny-dot grey"></span>{{(channelsStatus.closed.channels || 0) | number}}</div>
-  </div>
 </div>
-<div fxLayout="column" fxFlex="60" fxLayoutAlign="center start">
-  <div fxFlex="25">
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="center start">
+  <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Capacity</h4>
     <div class="foreground-secondary-text">{{(channelsStatus.active.capacity || 0) | number}} (Sats)</div>
   </div>
-  <div fxFlex="25">
+  <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">Capacity</h4>
     <div class="foreground-secondary-text">{{(channelsStatus.pending.capacity || 0) | number}} (Sats)</div>
   </div>
-  <div fxFlex="25">
+  <div fxFlex="34">
     <h4 fxLayoutAlign="start" class="font-bold-500">Capacity</h4>
     <div class="foreground-secondary-text">{{(channelsStatus.inactive.capacity || 0) | number}} (Sats)</div>
-  </div>
-  <div fxFlex="25">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Capacity</h4>
-    <div class="foreground-secondary-text">{{(channelsStatus.closed.capacity || 0) | number}} (Sats)</div>
   </div>
 </div>

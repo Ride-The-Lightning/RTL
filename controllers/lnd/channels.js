@@ -25,22 +25,13 @@ exports.getAllChannels = (req, res, next) => {
         body.channels.map(channel => {
           if (!channel.local_balance && !channel.remote_balance) {
             channel.balancedness = 50;  
-          } else if(channel.local_balance && !channel.remote_balance) {
-            channel.balancedness = 0;  
-          } else if(!channel.local_balance && channel.remote_balance) {
+          } else if((channel.local_balance || channel.local_balance < 1) && !channel.remote_balance) {
             channel.balancedness = 100;  
+          } else if(!channel.local_balance && (channel.remote_balance || channel.remote_balance < 1)) {
+            channel.balancedness = 0;  
           } else {
             channel.balancedness = (+channel.local_balance/(+channel.remote_balance + +channel.local_balance)) * 100;
           }
-          // if (!channel.local_balance && !channel.remote_balance) {
-          //   channel.balancedness = 0;  
-          // } else if(channel.local_balance && !channel.remote_balance) {
-          //   channel.balancedness = -1;  
-          // } else if(!channel.local_balance && channel.remote_balance) {
-          //   channel.balancedness = 1;  
-          // } else {
-          //   channel.balancedness = ((+channel.remote_balance - +channel.local_balance)/(+channel.remote_balance + +channel.local_balance)).toFixed(10);
-          // }
           return getAliasForChannel(channel);
         })
       )

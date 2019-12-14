@@ -9,7 +9,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-channel-lookup',
   templateUrl: './channel-lookup.component.html',
-  styleUrls: ['./channel-lookup.component.css']
+  styleUrls: ['./channel-lookup.component.scss']
 })
 export class ChannelLookupComponent implements OnInit {
   @Input() lookupResult: ChannelEdge;

@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="overflow-x-hidden">
+<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="padding-gap overflow-x-hidden">
   <mat-form-field fxFlex.gt-sm="55">
     <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #address="ngModel">
   </mat-form-field>
@@ -39,8 +39,8 @@
   </div>
 </div>
 <ng-template #sweepAllBlock>
-  <div fxLayout="column" fxFlex="100">
-    <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="overflow-x-hidden">
+  <div fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden">
+    <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
       <mat-form-field fxFlex.gt-sm="55">
         <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #addressSweep="ngModel">
       </mat-form-field>

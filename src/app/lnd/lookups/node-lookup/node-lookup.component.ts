@@ -5,7 +5,7 @@ import { GraphNode } from '../../../shared/models/lndModels';
 @Component({
   selector: 'rtl-node-lookup',
   templateUrl: './node-lookup.component.html',
-  styleUrls: ['./node-lookup.component.css']
+  styleUrls: ['./node-lookup.component.scss']
 })
 export class NodeLookupComponent implements OnInit {
   @Input() lookupResult: GraphNode;

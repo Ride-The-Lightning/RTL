@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -54,27 +54,24 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   public selTimeUnit = TimeUnitEnum.SECS;
   private firstOffset = -1;
   private lastOffset = -1;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['creation_date', 'value', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['creation_date', 'value', 'settle_date', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
-        break;
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'value', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
     }
   }
 

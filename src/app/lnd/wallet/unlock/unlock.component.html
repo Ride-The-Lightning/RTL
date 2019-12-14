@@ -4,7 +4,7 @@
       <input matInput type="password" placeholder="Password" name="walletPassword" [(ngModel)]="walletPassword" tabindex="1" required>
       <mat-hint>Enter Wallet Password</mat-hint>
     </mat-form-field>
-    <div fxLayout="column" fxFlex.gt-sm="30" fxLayout.gt-sm="row wrap" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="space-between center" class="mt-2">
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="35" fxLayoutAlign="space-between start" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
       <button mat-raised-button fxFlex="48" color="primary" [disabled]="walletPassword == ''" (click)="onUnlockWallet()" tabindex="3">Unlock Wallet</button>
     </div> 

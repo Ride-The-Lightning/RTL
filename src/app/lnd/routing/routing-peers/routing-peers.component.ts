@@ -9,7 +9,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -28,24 +28,19 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
   public flgSticky = false;
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['chan_id', 'events', 'total_amount', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['chan_id', 'events', 'total_amount', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
-        break;
+    let ss = this.commonService.getScreenSize();
+    if(ss === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['chan_id', 'events', 'actions'];
+    } else if(ss === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['chan_id', 'events', 'total_amount', 'actions'];
+    } else if(ss === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
     }
   }
 

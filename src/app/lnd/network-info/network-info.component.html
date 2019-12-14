@@ -4,49 +4,54 @@
     <span class="page-title">Network Information</span>
   </div>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
-    <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
+    <mat-card fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
       <mat-progress-bar *ngIf="flgLoading[1]===true" mode="indeterminate"></mat-progress-bar>
-      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="card-content-gap">
-        <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="my-2">
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Network Capacity</h4>
+      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="card-content-gap w-100">
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start space-between" fxLayoutAlign.gt-sm="start start" fxFlex="100">
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Network Capacity</h4>
             <span class="foreground-secondary-text">{{networkInfo.total_network_capacity | number}} Sats</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Number of Nodes</h4>
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Number of Nodes</h4>
             <span class="foreground-secondary-text">{{networkInfo.num_nodes | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Number of Channels</h4>
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Number of Channels</h4>
             <span class="foreground-secondary-text">{{networkInfo.num_channels | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <mat-divider fxFlex="100" class="w-100 mt-6"></mat-divider>        
         </div>
-        <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="my-2">
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Max Channel Size</h4>
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start space-between" fxLayoutAlign.gt-sm="start start" fxFlex="100">
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Max Channel Size</h4>
             <span class="foreground-secondary-text">{{networkInfo.max_channel_size | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Avg Channel Size</h4>
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Avg Channel Size</h4>
             <span class="foreground-secondary-text">{{networkInfo.avg_channel_size | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Min Channel Size</h4>
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Min Channel Size</h4>
             <span class="foreground-secondary-text">{{networkInfo.min_channel_size | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <mat-divider fxFlex="100" class="w-100 mt-6"></mat-divider>        
         </div>
-        <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="my-2">
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Max Out Degree</h4>
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start space-between" fxLayoutAlign.gt-sm="start start" fxFlex="100">
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Max Out Degree</h4>
             <span class="foreground-secondary-text">{{networkInfo.max_out_degree | number}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <div fxFlex="33">
-            <h4 fxLayoutAlign="start" class="font-bold-330">Avg Out Degree</h4>
+          <div fxLayout="column" fxFlex="33" fxLayoutAlign="end space-between" class="network-info-block">
+            <h4 class="font-bold-330">Avg Out Degree</h4>
             <span class="foreground-secondary-text">{{networkInfo.avg_out_degree | number:'1.0-2'}}</span>
+            <mat-divider class="mt-1"></mat-divider>        
           </div>
-          <mat-divider fxFlex="100" class="w-100 mt-6"></mat-divider>        
         </div>
       </mat-card-content>
     </mat-card>

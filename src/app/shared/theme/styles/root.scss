@@ -759,6 +759,10 @@ a {
   border: 1.2rem solid white;
 }
 
+.qr-thin-border img {
+  border: .5rem solid white;
+}
+
 .pubkey-info-top {
   flex-wrap: wrap;
   margin-top: 1px;
@@ -860,10 +864,8 @@ table {
   display: none !important;
 }
 
-.lightning-send-tab {
-  & .mat-tab-body-content {
-    padding-left: 0.5rem;
-  }  
+.mat-vertical-stepper-header {
+  padding: 1rem !important;
 }
 
 .ellipsis-child {

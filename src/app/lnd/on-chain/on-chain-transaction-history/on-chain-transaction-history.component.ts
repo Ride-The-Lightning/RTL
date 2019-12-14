@@ -42,7 +42,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     } else if(ss === ScreenSizeEnum.SM || ss === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
-    } else if(ss === ScreenSizeEnum.LG) {
+    } else {
       this.flgSticky = true;
       this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
     }

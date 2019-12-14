@@ -4,8 +4,10 @@ import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../services/logger.service';
+import { CommonService } from '../../../services/common.service';
 import { InvoiceInformation } from '../../../models/alertData';
 import { Invoice } from '../../../models/lndModels';
+import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-invoice-information',
@@ -17,12 +19,23 @@ export class InvoiceInformationComponent implements OnInit {
   public showAdvanced = false;
   public newlyAdded = false;
   public invoice: Invoice;
+  public qrWidth = 210;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.qrWidth = 120;
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
+      this.qrWidth = 200;
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.qrWidth = 240;
+    }
   }
 
   onClose() {

@@ -1,9 +1,11 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-currency-unit-converter',
@@ -15,7 +17,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private _values: Array<any>;
   private _currencyUnits = [];
-  private unSubs = [new Subject()];
+  private unSubs = [new Subject(), new Subject()];
   get values(): Array<any> { return this._values; }  
   get currencyUnits(): Array<any> { return this._currencyUnits; }  
   @Input() set values(data: Array<any>) { 
@@ -31,11 +33,21 @@ export class CurrencyUnitConverterComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(public commonService: CommonService) {}
+  constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('root')
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe((rtlStore) => {
+      this.currencyUnits = rtlStore.selNode.settings.currencyUnits;
+      if(this.currencyUnits.length > 2 && this.values[0].dataValue >= 0) {
+        this.getCurrencyValues(this._values);
+      }      
+    });
+  }
 
   getCurrencyValues(values) {
+    console.warn('GETTING VALUES: ' + this.currencyUnits[2]);
     values.forEach(value => {
       if(value.dataValue > 0) {
         this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2])

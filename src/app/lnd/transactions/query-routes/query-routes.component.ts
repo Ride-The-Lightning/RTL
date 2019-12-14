@@ -4,13 +4,14 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faRoute } from '@fortawesome/free-solid-svg-icons';
 
+import { CommonService } from '../../../shared/services/common.service';
 import { MatTableDataSource, MatSort } from '@angular/material';
 import { Hop } from '../../../shared/models/lndModels';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -26,28 +27,23 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
-  // public faRoad = faRoad;
+  public screenSize = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
-        break;
+  constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['pubkey_alias', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
     }
   }
 

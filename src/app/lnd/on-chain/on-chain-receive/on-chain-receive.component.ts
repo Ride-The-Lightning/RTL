@@ -36,7 +36,6 @@ export class OnChainReceiveComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '58%',
         data: {
-          alertTitle: 'Generated Address',
           address: this.newAddress,
           addressType: this.selectedAddressType.addressTp,
           component: OnChainGeneratedAddressComponent

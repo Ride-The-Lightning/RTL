@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
 export class CommonService implements OnInit, OnDestroy {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
-  unitConversionValue = 0;
   containerWidthChanged = new Subject<string>();
   conversionData = { data: null, last_fetched: null };
   private screenSize = ScreenSizeEnum.MD;
@@ -61,7 +60,6 @@ export class CommonService implements OnInit, OnDestroy {
       map(data => {
         this.conversionData.data = data;
         this.conversionData.last_fetched = latest_date;
-        this.unitConversionValue = this.conversionData.data[otherCurrencyUnit].last;
         return this.convert(value, from, otherCurrencyUnit);
       }));
     }
@@ -76,16 +74,16 @@ export class CommonService implements OnInit, OnDestroy {
       case CurrencyUnitEnum.SATS:
         returnValue[CurrencyUnitEnum.SATS] = value;
         returnValue[CurrencyUnitEnum.BTC] = value * 0.00000001;
-        returnValue[CurrencyUnitEnum.OTHER] = value * 0.00000001 * this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.OTHER] = value * 0.00000001 * this.conversionData.data[otherCurrencyUnit].last;
         break;
       case CurrencyUnitEnum.BTC:
         returnValue[CurrencyUnitEnum.SATS] = value * 100000000;
         returnValue[CurrencyUnitEnum.BTC] = value;
-        returnValue[CurrencyUnitEnum.OTHER] = value * this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.OTHER] = value * this.conversionData.data[otherCurrencyUnit].last;
         break;
       case (CurrencyUnitEnum.OTHER):
-        returnValue[CurrencyUnitEnum.SATS] = value / this.unitConversionValue * 100000000;
-        returnValue[CurrencyUnitEnum.BTC] = value / this.unitConversionValue;
+        returnValue[CurrencyUnitEnum.SATS] = value / this.conversionData.data[otherCurrencyUnit].last * 100000000;
+        returnValue[CurrencyUnitEnum.BTC] = value / this.conversionData.data[otherCurrencyUnit].last;
         returnValue[CurrencyUnitEnum.OTHER] = value;
         break;
       default:

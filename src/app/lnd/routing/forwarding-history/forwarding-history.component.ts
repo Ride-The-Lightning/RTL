@@ -1,10 +1,11 @@
 import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+
 import { ForwardingEvent } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -27,25 +28,17 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['timestamp', 'fee', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+    let ss = this.commonService.getScreenSize();
+    if(ss === ScreenSizeEnum.XS || ss === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['timestamp', 'fee', 'actions'];
+    } else if(ss === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
     }
   }
 

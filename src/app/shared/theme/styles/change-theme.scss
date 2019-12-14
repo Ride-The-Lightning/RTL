@@ -374,7 +374,7 @@
 
   .balances-info-pie-chart {
     & .legend-label:nth-child(1) .legend-label-color {
-      background-color: mat-color($primary, 400) !important;
+      background-color: mat-color($primary, 200) !important;
     }
 
     & .legend-label:nth-child(2) .legend-label-color {
@@ -383,10 +383,10 @@
 
     & .ngx-charts .ng-star-inserted:nth-child(1) {
       & .arc {
-        fill: mat-color($primary, 400);
+        fill: mat-color($primary, 200);
       }
       & .arc.active, .arc:hover {
-        fill: mat-color($primary, 300);
+        fill: mat-color($primary, 400);
       }
     }
 
