@@ -3,7 +3,7 @@
     <mat-form-field fxFlex="100" fxLayoutAlign="end start">
       <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
     </mat-form-field>
-    <mat-form-field fxFlex="30" fxLayoutAlign="start end" [ngClass]="{'mr-2': screenSize === screenSizeEnum.LG}">
+    <mat-form-field [fxFlex]="showDetails ? '30' : '100'" fxLayoutAlign="start end" [ngClass]="{'mr-2': screenSize === screenSizeEnum.LG}">
       <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
       <span matSuffix> {{information?.smaller_currency_unit}} </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>          
@@ -20,14 +20,14 @@
     <div fxFlex="20" tabindex="4" fxLayoutAlign="start center" *ngIf="showDetails">
       <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
     </div>
-    <div class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutAlign.gt-md="start start" *ngIf="showDetails">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutAlign.gt-md="start start" *ngIf="showDetails">
       <button fxFlex="48" fxFlex.gt-md="10" fxLayoutAlign="center center" mat-stroked-button color="primary" class="mr-2" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
       <button fxFlex="48" fxFlex.gt-md="10" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">
         <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>
         <ng-template #createText><p>Create Invoice</p></ng-template>
       </button>
     </div>
-    <div class="mt-2" fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" class="mr-2" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">
         <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>

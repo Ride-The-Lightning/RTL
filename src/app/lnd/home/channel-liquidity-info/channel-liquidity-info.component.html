@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutAlign="space-between start" fxFlex="100">
   <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start" class="w-100">
     <h2>{{totalLiquidity | number}} Sats</h2>
-    <h4>Max Transaction Amount: {{(maxAmount <= 4200000 ? maxAmount : 4200000) | number}} Sats</h4>
+    <h4>Max Transaction Amount: {{(maxAmount <= 4294967 ? maxAmount : 4294967) | number}} Sats</h4>
     <mat-divider class="w-100 dashboard-divider mt-2"></mat-divider>
   </div>
   <div fxLayout="column" fxFlex="90" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll w-100 mt-2" perfectScrollbar>

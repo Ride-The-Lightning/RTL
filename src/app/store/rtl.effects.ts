@@ -13,7 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
-import { Settings, RTLConfiguration } from '../shared/models/RTLconfig';
+import { Settings, RTLConfiguration, LightningNode } from '../shared/models/RTLconfig';
 import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
@@ -131,16 +131,19 @@ export class RTLEffects implements OnDestroy {
         this.confirmWidth = '80%';
       } else {
         this.alertWidth = '55%';
-        this.confirmWidth = '70%';
+        this.confirmWidth = '60%';
       }
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('FetchRTLConfig'));
       return this.httpClient.get(environment.CONF_API + '/rtlconf');
     }),
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
-      let searchNode = rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex);
+      let searchNode: LightningNode;
+      rtlConfig.nodes.forEach(node => {
+        node.settings.currencyUnits = [...CURRENCY_UNITS, node.settings.currencyUnit];
+        if(+node.index === rtlConfig.selectedNodeIndex) { searchNode = node; }
+      });
       if(searchNode) {
-        searchNode.settings.currencyUnits = [...CURRENCY_UNITS, searchNode.settings.currencyUnit];
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: searchNode, isInitialSetup: true}))
         return {
           type: RTLActions.SET_RTL_CONFIG,

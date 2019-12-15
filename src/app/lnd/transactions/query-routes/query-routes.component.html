@@ -1,12 +1,12 @@
 <div fxLayout="column" fxFlex="100" class="padding-gap">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" (ngSubmit)="queryRoutesForm.form.valid && onQueryRoutes()" #queryRoutesForm="ngForm">
-    <mat-form-field fxFlex="49" fxLayoutAlign="start end">
+    <mat-form-field fxFlex="69" fxLayoutAlign="start end">
       <input matInput placeholder="Destination Pubkey" name="destinationPubkey" [(ngModel)]="destinationPubkey" tabindex="1" required #destPubkey="ngModel">
     </mat-form-field>
-    <mat-form-field fxFlex="19" fxLayoutAlign="start end">
+    <mat-form-field fxFlex="29" fxLayoutAlign="start end">
       <input matInput placeholder="Amount (Sats)" name="amount" [(ngModel)]="amount" tabindex="2" type="number" step="1000" min="0" required #destAmount="ngModel">
     </mat-form-field>
-    <div fxFlex="29" fxLayoutAlign="space-between start">
+    <div fxFlex="30" fxLayoutAlign="space-between start">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="destPubkey.invalid || destAmount.invalid" type="submit" tabindex="4">
         <p *ngIf="(destPubkey.invalid && (destPubkey.dirty || destPubkey.touched) || (destAmount.invalid && (destAmount.dirty || destAmount.touched))); else queryText">Invalid Pubkey/Amount</p>

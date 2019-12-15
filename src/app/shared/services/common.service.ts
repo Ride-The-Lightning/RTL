@@ -25,7 +25,6 @@ export class CommonService implements OnInit, OnDestroy {
 
   setScreenSize(screenSize: ScreenSizeEnum) {
     this.screenSize = screenSize;
-    console.warn(this.screenSize);
   }
 
   sortDescByKey(array, key) {

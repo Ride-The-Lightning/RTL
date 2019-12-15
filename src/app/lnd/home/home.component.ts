@@ -41,6 +41,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public operatorCards = [];
   public merchantCards = [];
   public screenSize = '';
+  public operatorCardHeight = '330px';
+  public merchantCardHeight = '65px';
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -77,6 +79,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
+      this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
+      this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', title: 'Node Details', cols: 3, rows: 1 },
         { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
