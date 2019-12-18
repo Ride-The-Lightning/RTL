@@ -39,12 +39,15 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     if(ss === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['time_stamp_str', 'amount', 'actions'];
-    } else if(ss === ScreenSizeEnum.SM || ss === ScreenSizeEnum.MD) {
+    } else if(ss === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'total_fees', 'actions'];
+    } else if(ss === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['time_stamp_str', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp_str', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     }
   }
 

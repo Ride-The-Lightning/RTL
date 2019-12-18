@@ -1,9 +1,9 @@
-<div fxLayout="column">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap" #peersForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #peersForm="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
       <input matInput placeholder="Lightning Address (pubkey OR pubkey@ip:port)" name="peerAddress" [(ngModel)]="peerAddress" tabindex="1" required #peerAdd="ngModel">
     </mat-form-field>
-    <div fxFlex="30" fxLayoutAlign="space-between start">
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="peerAdd.invalid" type="submit" tabindex="3" (click)="onConnectPeer()">
         <p *ngIf="peerAdd.invalid && (peerAdd.dirty || peerAdd.touched); else connectText">Invalid Address</p>
@@ -51,8 +51,8 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
-          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center">
+          <th mat-header-cell *matHeaderCellDef class="px-3"><span fxLayoutAlign="end center">Actions</span></th>        
+          <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center" class="pl-3">
             <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
               <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                 <mat-select-trigger></mat-select-trigger>

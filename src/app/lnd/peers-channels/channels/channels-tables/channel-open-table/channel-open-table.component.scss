@@ -3,15 +3,13 @@
   width: 20%;
   & .ellipsis-parent {
     display: flex;
-    max-width: 25rem;
   }
 }
 
 .mat-column-capacity {
   padding-left: 3rem;
-  padding-right: 3rem;
-  flex: 0 0 30%;
-  width: 30%;
+  flex: 0 0 25%;
+  width: 25%;
 }
 
 .mat-column-local_balance, .mat-column-remote_balance, .mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
@@ -23,7 +21,7 @@
 }
 
 .mat-column-actions {
-  width: 12rem;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

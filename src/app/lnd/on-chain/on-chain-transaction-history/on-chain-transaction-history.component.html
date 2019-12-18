@@ -21,6 +21,14 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
           <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction.amount | number}}</span></td>
         </ng-container>
+        <ng-container matColumnDef="total_fees">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Fees (Sats) </th>
+          <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction.total_fees | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="block_height">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Block Height </th>
+          <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction.block_height | number}}</span></td>
+        </ng-container>
         <ng-container matColumnDef="num_confirmations">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Confirmations </th>
           <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">

@@ -7,12 +7,12 @@
     <mat-card fxLayout="column" fxFlex="100" class="padding-gap-large">
       <mat-card-content class="card-content-gap">
         <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-md="row wrap">
-          <mat-radio-group color="primary" fxFlex="20" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
+          <mat-radio-group color="primary" fxFlex="100" fxLayoutAlign="start" (change)="onSelectionChange($event)" class="mt-1 mb-1">
             <mat-radio-button tabindex="1" class="pr-5" value="rtl" [checked]="selectedNodeType=='rtl'">RTL</mat-radio-button>
             <mat-radio-button tabindex="2" class="pr-5" value="ln" *ngIf="showLnConfig" [checked]="selectedNodeType=='ln'">{{lnImplementationStr}}</mat-radio-button>
             <mat-radio-button tabindex="3" class="pr-5" value="bitcoind" *ngIf="showBitcoind" [checked]="selectedNodeType=='bitcoind'">BITCOIND</mat-radio-button>
           </mat-radio-group>
-          <div fxFlex="30" fxLayoutAlign="space-between center">
+          <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onShowConfig()" tabindex="5">Show Config</button>
           </div>

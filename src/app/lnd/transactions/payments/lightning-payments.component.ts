@@ -49,13 +49,13 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     let ss = this.commonService.getScreenSize();
     if(ss === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'actions'];
     } else if(ss === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'value', 'actions'];
     } else if(ss === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'fee', 'value', 'path', 'actions'];
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];

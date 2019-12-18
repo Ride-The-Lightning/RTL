@@ -7,10 +7,10 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { CommonService } from '../../../../../shared/services/common.service';
 
-import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -33,27 +33,21 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['close_type', 'chan_id', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['close_type', 'chan_id', 'close_height', 'settled_balance', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['close_type', 'chan_id', 'capacity', 'close_height', 'settled_balance', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['close_type', 'chan_id', 'capacity', 'close_height', 'settled_balance', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['close_type', 'chan_id', 'capacity', 'close_height', 'settled_balance', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = ['chan_id', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['close_type', 'chan_id', 'settled_balance', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['close_type', 'chan_id', 'capacity', 'close_height', 'settled_balance', 'actions'];
     }
   }
 

@@ -5,9 +5,9 @@
   </div>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
     <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
-      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
+      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap mt-1">
         <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100" (ngSubmit)="routingForm.form.valid && onEventsFetch()" #routingForm="ngForm">
-          <div fxFlex="69" fxLayoutAlign="space-between stretch">
+          <div fxFlex="100" fxLayoutAlign="space-between stretch">
             <mat-form-field fxFlex="49" fxLayoutAlign="start">
               <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="yesterday"
                 name="startDate" [(ngModel)]="startDate" tabindex="1" #strtDate="ngModel">
@@ -21,7 +21,7 @@
               <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
             </mat-form-field>
           </div>
-          <div fxFlex="30" fxLayoutAlign="space-between center">
+          <div fxFlex="50" fxLayoutAlign="space-between stretch">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="routingForm.invalid" type="submit" tabindex="4">Fetch Events</button>
           </div>

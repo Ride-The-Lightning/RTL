@@ -7,11 +7,11 @@ import { MatTableDataSource, MatSort } from '@angular/material';
 import { Channel, GetInfo, PendingChannels } from '../../../../../shared/models/lndModels';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { CommonService } from '../../../../../shared/services/common.service';
 
-import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -37,40 +37,27 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'actions'];
-        this.displayedForceClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
-        this.displayedClosingColumns = ['channel_point', 'capacity', 'actions'];
-        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'actions'];
-        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'actions'];
-        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'actions'];
-        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'capacity', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
-        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
-        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
-        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
-        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
-        break;
-      default:
-        this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
-        this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
-        this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.displayedOpenColumns = ['channel_point', 'actions'];
+      this.displayedForceClosingColumns = ['channel_point', 'actions'];
+      this.displayedClosingColumns = ['channel_point', 'actions'];
+      this.displayedWaitClosingColumns = ['channel_point', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+      this.displayedOpenColumns = ['channel_point', 'commit_fee', 'actions'];
+      this.displayedForceClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
+      this.displayedClosingColumns = ['channel_point', 'remote_balance', 'actions'];
+      this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'actions'];
+    } else {
+      this.displayedOpenColumns = ['channel_point', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+      this.displayedForceClosingColumns = ['channel_point', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+      this.displayedClosingColumns = ['channel_point', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+      this.displayedWaitClosingColumns = ['channel_point', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
     }
   }
 

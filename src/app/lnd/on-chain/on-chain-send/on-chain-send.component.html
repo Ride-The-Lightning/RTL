@@ -26,7 +26,7 @@
       <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #fees="ngModel">
     </mat-form-field>
   </div>
-  <div fxFlex="50" fxLayoutAlign="space-between start">
+  <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch">
     <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
     <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary"
       [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
@@ -59,7 +59,7 @@
       </mat-form-field>
     </div>
     <div>
-      <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row wrap" fxLayoutAlign="space-between start">  
+      <div fxFlex="100" fxFlex.gt-sm="50" fxLayout="row" fxLayoutAlign="space-between stretch">  
         <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
         <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
           <p *ngIf="invalidValues && (addressSweep.touched || addressSweep.dirty); else sendTextSweep">Invalid Values</p>

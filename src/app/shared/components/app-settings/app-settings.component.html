@@ -127,11 +127,10 @@
           </div>
         </div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="start start" class="mt-4">
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="mt-2">
-          <button fxFlex="10" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12" class="mr-2">Reset</button>
-          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
+      <div fxLayout="row" fxFlex="100" class="mt-4">
+        <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch">
+          <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12">Reset</button>
+          <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
         </div>
       </div>
     </mat-card-content>

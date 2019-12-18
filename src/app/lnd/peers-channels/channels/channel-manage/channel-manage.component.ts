@@ -1,16 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
-import { Channel, Peer, GetInfo } from '../../../../shared/models/lndModels';
-import { TRANS_TYPES, AlertTypeEnum, DataTypeEnum } from '../../../../shared/services/consts-enums-functions';
+import { MatSort } from '@angular/material';
+import { Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { TRANS_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
+import { CommonService } from '../../../../shared/services/common.service';
 
-import { LNDEffects } from '../../../store/lnd.effects';
-import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
@@ -33,9 +31,13 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public spendUnconfirmed = false;
   public isPrivate = false;
   public showAdvanced = false;
+  public screenSizeEnum = ScreenSizeEnum;
+  public screenSize = '';
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private activatedRoute: ActivatedRoute) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+  }
 
   ngOnInit() {
     this.store.select('lnd')

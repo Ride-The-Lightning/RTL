@@ -7,15 +7,14 @@
   </div>
   <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table [dataSource]="closedChannels" matSort
-      [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <table mat-table #table [dataSource]="closedChannels" matSort [ngClass]="{'error-border': flgLoading[0]==='error'}">
       <ng-container matColumnDef="close_type">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
         <td mat-cell *matCellDef="let channel"> {{channel.close_type}} </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let channel"> {{channel.chan_id}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel ID </th>
+        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{channel.chan_id}} </td>
       </ng-container>
       <ng-container matColumnDef="capacity">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Capacity </th>
@@ -33,8 +32,8 @@
           </span></td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-4 pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-        <td mat-cell *matCellDef="let channel" class="pl-4">
+        <th mat-header-cell *matHeaderCellDef class="pl-1"><span fxLayoutAlign="end center">Actions</span></th>
+        <td mat-cell *matCellDef="let channel" class="pl-1">
           <span fxLayoutAlign="end center">
             <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onClosedChannelClick(channel,$event)">View Info</button>          
           </span>

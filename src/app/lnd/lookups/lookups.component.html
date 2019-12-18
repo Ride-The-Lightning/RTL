@@ -3,21 +3,21 @@
     <fa-icon [icon]="faSearch" class="page-title-img mr-1"></fa-icon>
     <span class="page-title">Lookups</span>
   </div>
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap">
     <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
-      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
+      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="card-content-gap mt-1">
         <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100" #form="ngForm">
-          <mat-form-field fxFlex="22" fxLayoutAlign="start end">
+          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
             <mat-select [(ngModel)]="selectedFieldId" placeholder="Lookup Field" (selectionChange)="onSelectChange($event)" tabindex="1" required name="lookupField">
               <mat-option *ngFor="let lookupField of lookupFields" [value]="lookupField.id">
                 {{lookupField.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+          <mat-form-field fxFlex="68" fxLayoutAlign="start end">
             <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
           </mat-form-field>
-          <div fxFlex="25" fxLayoutAlign="space-between center">
+          <div fxFlex="50" fxLayoutAlign="space-between stretch">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()" [disabled]="!form.valid">Lookup</button>
           </div>

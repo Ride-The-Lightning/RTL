@@ -4,7 +4,7 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
-        <mat-panel-title>Pending Open Channels({{pendingOpenChannelsLength}})</mat-panel-title>
+        <mat-panel-title>Pending Open ({{pendingOpenChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
         <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'w-100 error-border bordered-box': flgLoading[0]==='error','bordered-box w-100': true}">
@@ -13,7 +13,7 @@
             <mat-cell *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="commit_fee">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee </mat-header-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_fee | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="commit_weight">
@@ -21,7 +21,7 @@
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.commit_weight | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity </mat-header-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats)</mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
@@ -32,7 +32,7 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_open">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingOpenChannels || !pendingOpenChannels.data || pendingOpenChannels.data.length<1">No pending open channels.</p>
+              <p *ngIf="!pendingOpenChannels || !pendingOpenChannels.data || pendingOpenChannels.data.length<1">No pending channels.</p>
             </td>
           </ng-container>
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_open']" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels.data && pendingOpenChannels.data.length>0}"></tr>
@@ -44,7 +44,7 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
-        <mat-panel-title>Pending Force Closing Channels({{pendingForceClosingChannelsLength}})</mat-panel-title>
+        <mat-panel-title>Pending Force Closing ({{pendingForceClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div perfectScrollbar class="table-container">
         <mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
@@ -53,15 +53,15 @@
             <mat-cell *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="recovered_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance </mat-header-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance </mat-header-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Limbo Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
-            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity </mat-header-cell>
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Capacity (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
@@ -72,7 +72,7 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingForceClosingChannels || !pendingForceClosingChannels.data || pendingForceClosingChannels.data.length<1">No pending force closing channels.</p>
+              <p *ngIf="!pendingForceClosingChannels || !pendingForceClosingChannels.data || pendingForceClosingChannels.data.length<1">No pending channels.</p>
             </td>
           </ng-container>
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_force_closing']" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels.data && pendingForceClosingChannels.data.length>0}"></tr>
@@ -84,7 +84,7 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
-        <mat-panel-title>Pending Closing Channels({{pendingClosingChannelsLength}})</mat-panel-title>
+        <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div perfectScrollbar class="table-container">
         <mat-table #table [dataSource]="pendingClosingChannels" matSort
@@ -95,19 +95,19 @@
           </ng-container>
           <ng-container matColumnDef="local_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Local Balance </mat-header-cell>
+              Local Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
               number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="remote_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Remote Balance </mat-header-cell>
+              Remote Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
               number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Capacity </mat-header-cell>
+              Capacity (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
                 number}}</mat-cell>
           </ng-container>
@@ -119,7 +119,7 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingClosingChannels || !pendingClosingChannels.data || pendingClosingChannels.data.length<1">No pending closing channels.</p>
+              <p *ngIf="!pendingClosingChannels || !pendingClosingChannels.data || pendingClosingChannels.data.length<1">No pending channels.</p>
             </td>
           </ng-container>
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_closing']" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels.data && pendingClosingChannels.data.length>0}"></tr>
@@ -131,7 +131,7 @@
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">
       <mat-expansion-panel-header>
-        <mat-panel-title>Waiting Close Channels({{pendingWaitClosingChannelsLength}})</mat-panel-title>
+        <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div perfectScrollbar class="table-container">
         <mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
@@ -142,25 +142,25 @@
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Limbo Balance </mat-header-cell>
+              Limbo Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.limbo_balance | number}}
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="local_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Local Balance </mat-header-cell>
+              Local Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.local_balance |
               number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="remote_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Remote Balance </mat-header-cell>
+              Remote Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.remote_balance |
             number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="capacity">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
-              Capacity </mat-header-cell>
+              Capacity (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity |
               number}}</mat-cell>
           </ng-container>
@@ -172,7 +172,7 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingWaitClosingChannels || !pendingWaitClosingChannels.data || pendingWaitClosingChannels.data.length<1">No pending wait closing channels.</p>
+              <p *ngIf="!pendingWaitClosingChannels || !pendingWaitClosingChannels.data || pendingWaitClosingChannels.data.length<1">No pending channels.</p>
             </td>
           </ng-container>
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_wait_closing']" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels.data && pendingWaitClosingChannels.data.length>0}"></tr>

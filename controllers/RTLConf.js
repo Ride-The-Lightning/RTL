@@ -223,8 +223,8 @@ exports.getConfig = (req, res, next) => {
 };
 
 exports.getCurrencyRates = (req, res, next) => {
-  options = common.getOptions();
   options.url = 'https://blockchain.info/ticker';
+  console.log(options);
   request(options).then((body) => {
     logger.info({fileName: 'RTLConf', msg: 'Rates Received: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
@@ -237,6 +237,7 @@ exports.getCurrencyRates = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.error({fileName: 'Conf', lineNum: 241, msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Rates Failed!",
       error: err.error

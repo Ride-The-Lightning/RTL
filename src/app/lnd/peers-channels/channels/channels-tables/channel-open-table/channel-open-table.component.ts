@@ -5,8 +5,9 @@ import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { CommonService } from '../../../../../shared/services/common.service';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -36,27 +37,24 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public myChanPolicy: any = {};
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
-    switch (true) {
-      case (window.innerWidth <= 415):
-        this.displayedColumns = ['remote_alias', 'capacity', 'actions'];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'actions'];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.flgSticky = true;
-        this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        break;
-      default:
-        this.flgSticky = true;
-        this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-        break;
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.flgSticky = false;
+      this.displayedColumns = [ 'remote_alias', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
+      this.flgSticky = false;
+      this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
+    } else {
+      this.flgSticky = true;
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'total_satoshis_sent', 'total_satoshis_received', 'capacity', 'actions'];
     }
   }
 

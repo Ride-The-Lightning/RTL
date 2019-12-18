@@ -56,8 +56,8 @@ export class CommonService implements OnInit, OnDestroy {
     } else {
       return this.httpClient.get(environment.CONF_API + '/rates')
       .pipe(take(1),
-      map(data => {
-        this.conversionData.data = data;
+      map((data: any) => {
+        this.conversionData.data = data ? JSON.parse(data) : {};
         this.conversionData.last_fetched = latest_date;
         return this.convert(value, from, otherCurrencyUnit);
       }));
