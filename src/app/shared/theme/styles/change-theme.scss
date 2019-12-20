@@ -207,6 +207,10 @@
   .h-active-link {
     border-bottom: 2px solid white;
   }
+
+  .mat-icon-36 {
+    color: $foreground-secondary-text;
+  }
   
   .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
   .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {

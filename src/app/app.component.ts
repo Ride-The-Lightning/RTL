@@ -39,7 +39,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium])
     .pipe(takeUntil(this.unSubs[5]))
     .subscribe((matches) => {
       if(matches.breakpoints[Breakpoints.XSmall]) {
@@ -51,11 +51,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
         this.commonService.setScreenSize(ScreenSizeEnum.MD);
         this.smallScreen = false;
-      } else if(matches.breakpoints[Breakpoints.Large] || matches.breakpoints[Breakpoints.XLarge]) {
-        this.commonService.setScreenSize(ScreenSizeEnum.LG);
-        this.smallScreen = false;
       } else {
-        this.commonService.setScreenSize(ScreenSizeEnum.MD);
+        this.commonService.setScreenSize(ScreenSizeEnum.LG);
         this.smallScreen = false;
       }
     });

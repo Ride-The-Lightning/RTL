@@ -32,17 +32,19 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
-    let ss = this.commonService.getScreenSize();
-    if(ss === ScreenSizeEnum.XS) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['time_stamp_str', 'amount', 'actions'];
-    } else if(ss === ScreenSizeEnum.SM) {
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'total_fees', 'actions'];
-    } else if(ss === ScreenSizeEnum.MD) {
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['time_stamp_str', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     } else {

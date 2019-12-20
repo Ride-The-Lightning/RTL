@@ -6,6 +6,7 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-transactions',
@@ -26,7 +27,11 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
-      this.balances = [{title: 'Local Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive'}];
+      if(rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {
+        this.balances = [{title: 'Local Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive'}];
+      } else {
+        this.balances = [{title: 'Outbound Capacity', dataValue: rtlStore.totalLocalBalance, tooltip: 'Amount you can send'}, {title: 'Inbound Capacity', dataValue: rtlStore.totalRemoteBalance, tooltip: 'Amount you can receive'}];
+      }
       this.logger.info(rtlStore);
     });
   }

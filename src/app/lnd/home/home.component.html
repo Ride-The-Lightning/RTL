@@ -37,7 +37,7 @@
         <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
-            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [flgInfoUpdate]="flgChildInfoUpdated" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
+            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [cardHeight]="merchantCardHeight" [flgInfoUpdate]="flgChildInfoUpdated" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
             <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
             <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
             <span fxLayout="column" fxFlex="100" *ngSwitchCase="'transactions'">

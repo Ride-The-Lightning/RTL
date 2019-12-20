@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <div class="padding-gap">
-    <mat-card [ngClass]="{'flip': redirectedWithPeer}">
+    <mat-card class="mat-card-original" [ngClass]="{'flip': redirectedWithPeer}">
       <mat-card-header>
         <mat-card-subtitle>
           <h2>Open Channel</h2>
@@ -65,9 +65,9 @@
     </mat-card>
   </div>
   <div class="padding-gap">
-    <mat-card>
+    <mat-card class="mat-card-original">
       <mat-card-content fxFlex="100" fxLayout="column">
-        <div fxLayout="row" fxLayoutAlign="start start">
+        <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch">
           <mat-form-field fxFlex="30">
             <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
           </mat-form-field>

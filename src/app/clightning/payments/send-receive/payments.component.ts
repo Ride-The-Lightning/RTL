@@ -114,7 +114,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
           message: reorderedDecodedPayment,
           noBtnText: 'Cancel',
           yesBtnText: 'Send',
-          flgShowInput: true, getInputs: [{placeholder: 'Amount (mSats)', inputType: 'number', inputValue: ''}]
+          flgShowInput: true, getInputs: [{placeholder: 'Amount (mSats)', inputType: 'number', inputValue: '', width: 30}]
         }}));
         this.rtlEffects.closeConfirm
         .pipe(take(1))

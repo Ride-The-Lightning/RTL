@@ -3,14 +3,15 @@
     <h4 fxLayoutAlign="start" class="font-bold-500">Lightning</h4>
     <div class="foreground-secondary-text">{{balances.lightning | number}} (Sats)</div>
   </div>
+  <div fxFlex="25" fxLayoutAlign="start start"></div>
   <div fxFlex="33">
     <h4 fxLayoutAlign="start" class="font-bold-500">On-chain</h4>
     <div class="foreground-secondary-text">{{balances.onchain | number}} (Sats)</div>
   </div>
-  <div fxFlex="34" fxLayoutAlign="start start"></div>
 </div>
 <div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
-  <ngx-charts-pie-chart class="balances-info-pie-chart" style="margin-top: -4rem;"
+  <ngx-charts-pie-chart class="balances-info-pie-chart" style="margin-top: -5rem;"
+    [view]="graphView"
     [explodeSlices]="true"
     [legend]="true"
     [legendTitle]="''"

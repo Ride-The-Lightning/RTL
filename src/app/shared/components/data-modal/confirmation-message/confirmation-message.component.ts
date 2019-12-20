@@ -37,7 +37,6 @@ export class ConfirmationMessageComponent implements OnInit {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }
-    this.logger.warn(this.messageObjs);
   }
 
   onClose(dialogRes: any) {

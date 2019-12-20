@@ -42,17 +42,19 @@ export class PeersComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private actions$: Actions, private commonService: CommonService) {
-    let ss = this.commonService.getScreenSize();
-    if(ss === ScreenSizeEnum.XS) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = [ 'alias', 'actions'];
-    } else if(ss === ScreenSizeEnum.SM) {
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = [ 'alias', 'sat_sent', 'sat_recv', 'actions'];
-    } else if(ss === ScreenSizeEnum.MD) {
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
     } else {
@@ -121,7 +123,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   connectPeerWithParams(pubkey: string, host: string) {
     this.newlyAddedPeer = pubkey;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
+    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: true}));
   }
 
   onPeerClick(selRow: Peer, event: any) {

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, AlertTypeEnum, UserPersonaEnum } from '../../services/consts-enums-functions';
+import { CURRENCY_UNITS, AlertTypeEnum, UserPersonaEnum, ScreenSizeEnum } from '../../services/consts-enums-functions';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import { CommonService } from '../../services/common.service';
@@ -40,11 +40,14 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public previousSettings: Settings;
   public previousDefaultNode = 0;
-
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+    this.screenSize = this.commonService.getScreenSize();
+  }
 
   ngOnInit() {
     this.store.select('root')

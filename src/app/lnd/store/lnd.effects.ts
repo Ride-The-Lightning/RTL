@@ -131,21 +131,27 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
-            const peerToAddChannelMessage = {
-              peer: postRes[0], 
-              information: lndData.information,
-              balance: lndData.blockchainBalance.total_balance || 0
-            };
-            return {
-              type: RTLActions.OPEN_ALERT,
-              payload: { width: '50%', data: { 
-                type: AlertTypeEnum.INFORMATION,
-                alertTitle: 'Peer Connected',
-                message: peerToAddChannelMessage,
-                newlyAdded: true,
-                component: OpenChannelComponent
-              }}
-            };
+            if(action.payload.showOpenChannelModal) {
+              const peerToAddChannelMessage = {
+                peer: postRes[0], 
+                information: lndData.information,
+                balance: lndData.blockchainBalance.total_balance || 0
+              };
+              return {
+                type: RTLActions.OPEN_ALERT,
+                payload: { width: '50%', data: { 
+                  type: AlertTypeEnum.INFORMATION,
+                  alertTitle: 'Peer Connected',
+                  message: peerToAddChannelMessage,
+                  newlyAdded: true,
+                  component: OpenChannelComponent
+                }}
+              };
+            } else {
+              return {
+                type: RTLActions.VOID
+              }
+            }
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);

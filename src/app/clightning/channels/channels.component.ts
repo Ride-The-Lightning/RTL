@@ -128,8 +128,8 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
         yesBtnText: 'Update',
         message: confirmationMsg,
         flgShowInput: true, getInputs: [
-          {placeholder: 'Base Fee msat', inputType: 'number', inputValue: 1000},
-          {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: 1, min: 1}
+          {placeholder: 'Base Fee msat', inputType: 'number', inputValue: 1000, width: 50},
+          {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: 1, min: 1, width: 50}
         ]
       }}));
       this.rtlEffects.closeConfirm
@@ -171,8 +171,8 @@ export class CLChannelsComponent implements OnInit, OnDestroy {
           message: confirmationMsg,
           flgShowInput: true,
           getInputs: [
-            {placeholder: 'Base Fee msat', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat},
-            {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1}
+            {placeholder: 'Base Fee msat', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 50},
+            {placeholder: 'Fee Rate mili msat', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 50}
           ]
         }}));
       });

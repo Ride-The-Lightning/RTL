@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="page-sub-title-container w-100">
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
     <div fxFlex="70">
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Transaction History</span>
@@ -50,7 +50,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="mb-4"></mat-paginator>
+      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
     </div>
   </div>
 </div>

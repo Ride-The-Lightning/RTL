@@ -43,17 +43,19 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
-    let ss = this.commonService.getScreenSize();
-    if(ss === ScreenSizeEnum.XS) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'actions'];
-    } else if(ss === ScreenSizeEnum.SM) {
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'value', 'actions'];
-    } else if(ss === ScreenSizeEnum.MD) {
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
     } else {
@@ -131,7 +133,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
           yesBtnText: 'Send Payment',
           flgShowInput: true,
           getInputs: [
-            {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: ''}
+            {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
           ]
         }}));
         this.rtlEffects.closeConfirm

@@ -1,5 +1,5 @@
 <div fxLayout="column">
-  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container">
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -49,5 +49,5 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="mb-4"></mat-paginator>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
 </div>

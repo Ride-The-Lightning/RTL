@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <div class="padding-gap">
-    <mat-card>
+    <mat-card class="mat-card-original">
       <mat-card-header>
         <mat-card-subtitle>
           <h2>Connect Peer</h2>
@@ -25,9 +25,9 @@
     </mat-card>
   </div>
   <div class="padding-gap">
-    <mat-card>
+    <mat-card class="mat-card-original">
       <mat-card-content class="table-card-content">
-        <div fxLayout="row" fxLayoutAlign="start start">
+        <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch">
           <mat-form-field fxFlex="30">
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
           </mat-form-field>

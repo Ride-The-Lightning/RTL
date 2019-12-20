@@ -293,7 +293,7 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
+  constructor(public payload: {pubkey: string, host: string, perm: boolean, showOpenChannelModal: boolean}) {}
 }
 
 export class AddPeer implements Action {

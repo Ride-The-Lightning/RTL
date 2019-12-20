@@ -27,13 +27,15 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
-    let ss = this.commonService.getScreenSize();
-    if(ss === ScreenSizeEnum.XS || ss === ScreenSizeEnum.SM) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'fee', 'actions'];
-    } else if(ss === ScreenSizeEnum.MD) {
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
     } else {

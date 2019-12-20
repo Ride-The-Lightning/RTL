@@ -126,7 +126,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
         noBtnText: 'Cancel',
         yesBtnText: 'Authorize And Sweep All',
         flgShowInput: true,
-        getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: ''}]
+        getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: '', width: 30}]
       }}));
     } else {
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {

@@ -10,7 +10,7 @@
       <div fxLayout="column">
         <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="flgShowInput" fxLayoutAlign="space-between center">
-          <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="(getInputs.length > 0 && getInputs.length < 3) ? 25: ((100/getInputs.length) - getInputs.length)">
+          <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="getInput.width">
             <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [type]="getInput.inputType" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
           </mat-form-field>
         </div>        

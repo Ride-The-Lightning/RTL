@@ -18,8 +18,8 @@
       </button>
     </div>
   </form>
-  <div fxLayout="column" fxLayoutAlign="start stretch" *ngIf="showDetails">
-    <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-2">
+  <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
+    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
       <div fxFlex="70">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Payments History</span>
@@ -67,6 +67,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="mb-4"></mat-paginator>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
   </div>
 </div>

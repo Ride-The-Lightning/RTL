@@ -23,6 +23,7 @@ export interface InputData {
   min?: number;
   max?: number;
   step?: number;
+  width?: number;
 }
 
 export interface OpenChannelAlert {

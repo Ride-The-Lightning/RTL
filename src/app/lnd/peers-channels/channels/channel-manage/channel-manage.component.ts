@@ -1,14 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil, filter } from 'rxjs/operators';
+import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material';
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
-import { TRANS_TYPES, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
+import { TRANS_TYPES, ScreenSizeEnum, AlertTypeEnum, DataTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
+import { RTLEffects } from '../../../../store/rtl.effects';
+import { LNDEffects } from '../../../store/lnd.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
@@ -31,17 +34,19 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public spendUnconfirmed = false;
   public isPrivate = false;
   public showAdvanced = false;
+  public peerAddress = '';
+  public newlyAddedPeer = '';
   public screenSizeEnum = ScreenSizeEnum;
   public screenSize = '';
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
     this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.information = rtlStore.information;
       this.peers = rtlStore.peers;
@@ -52,6 +57,11 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       });
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
       this.logger.info(rtlStore);
+    });
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter((action) => action.type === RTLActions.SET_PEERS))
+    .subscribe((action: RTLActions.SetPeers) => {
+      this.selectedPeer = this.newlyAddedPeer;
     });
   }
 
@@ -89,11 +99,54 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }  
 
   addNewPeer() {
-    console.warn('ADD NEW PEER' + this.selectedPeer);
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Add Peer',
+      titleMessage: 'Enter Peer Address',
+      message: '',
+      noBtnText: 'Cancel',
+      yesBtnText: 'Add Peer',
+      flgShowInput: true,
+      getInputs: [
+        {placeholder: 'Lightning Address (pubkey OR pubkey@ip:port)', inputType: DataTypeEnum.STRING, inputValue: '', width: 100}
+      ]
+    }}));
+    this.rtlEffects.closeConfirm
+    .pipe(take(1))
+    .subscribe(confirmRes => {
+      if (confirmRes) {
+        this.peerAddress = confirmRes[0].inputValue;
+        const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
+        const deviderIndex = this.peerAddress.search('@');
+        let pubkey = '';
+        let host = '';
+        if (new RegExp(pattern).test(this.peerAddress)) {
+          pubkey = this.peerAddress.substring(0, deviderIndex);
+          host = this.peerAddress.substring(deviderIndex + 1);
+          this.connectPeerWithParams(pubkey, host);
+        } else {
+          pubkey = (deviderIndex > -1) ? this.peerAddress.substring(0, deviderIndex) : this.peerAddress;
+          this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
+          this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
+          this.lndEffects.setGraphNode
+          .pipe(take(1))
+          .subscribe(graphNode => {
+            host = (undefined === graphNode.node.addresses || undefined === graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+            this.connectPeerWithParams(pubkey, host);
+          });
+        }
+      }
+    });
   } 
 
+  connectPeerWithParams(pubkey: string, host: string) {
+    this.newlyAddedPeer = pubkey;
+    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
+    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: false}));
+  }
+
   ngOnDestroy() {
-    this.unsub.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

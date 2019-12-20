@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <div class="padding-gap">
-    <mat-card>
+    <mat-card class="mat-card-original">
       <mat-card-header>
         <mat-card-subtitle>
           <h2>Lookups</h2>
@@ -29,7 +29,7 @@
     </mat-card>
   </div>
   <div class="padding-gap" *ngIf="lookupValue && flgSetLookupValue">
-    <mat-card [ngClass]="{'error-border': flgLoading[0]==='error'}">
+    <mat-card  class="mat-card-original" [ngClass]="{'error-border': flgLoading[0]==='error'}">
       <mat-card-header>
         <mat-card-subtitle>
           <h2>{{selectedField.name}} Details</h2>
