@@ -21,20 +21,13 @@ export class ShowPubkeyComponent implements OnInit {
   public selInfoType = this.infoTypes[0];
   public qrWidth = 210;
   public screenSize = '';
-  
+  public screenSizeEnum = ScreenSizeEnum;
+
   constructor(public dialogRef: MatDialogRef<ShowPubkeyComponent>, @Inject(MAT_DIALOG_DATA) public data: ShowPubkeyData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService) { }
 
   ngOnInit() {
     this.information = this.data.information;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
-      this.qrWidth = 90;
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
-      this.qrWidth = 160;
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
-      this.qrWidth = 200;
-    }
-
   }
 
   onClose() {

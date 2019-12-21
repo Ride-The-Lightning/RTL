@@ -11,8 +11,6 @@ import { AlertTypeEnum, DataTypeEnum } from '../../../services/consts-enums-func
   styleUrls: ['./alert-message.component.scss']
 })
 export class AlertMessageComponent implements OnInit {
-  public showQRField = '';
-  public showQRName = '';
   public errorMessage = '';
   public messageObjs = [];
   public alertTypeEnum = AlertTypeEnum;
@@ -22,19 +20,12 @@ export class AlertMessageComponent implements OnInit {
 
   ngOnInit() {
     this.messageObjs = this.data.message;
-    this.showQRField = this.data.showQRField ? this.data.showQRField : '';
-    this.showQRName = this.data.showQRName ? this.data.showQRName : '';
     if (this.data.type === AlertTypeEnum.ERROR) {
       if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObjs.length <= 0) {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }
     this.logger.info(this.messageObjs);
-  }
-
-  onCopyField(payload: string) {
-    this.snackBar.open(this.showQRName + ' copied');
-    this.logger.info('Copied Text: ' + payload);
   }
 
   onClose() {

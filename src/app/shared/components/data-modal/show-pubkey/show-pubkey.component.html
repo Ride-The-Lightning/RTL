@@ -1,20 +1,22 @@
-<div fxLayout="row">
-  <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+  <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode qrdata="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" [size]="qrWidth" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
   </div>
-  <div fxFlex="70" class="padding-gap-large pl-3">
+  <div fxFlex="100" fxFlex.gt-sm="70" class="padding-gap-large pl-3">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">{{selInfoType.infoName}}</span>
       </div>
-      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()"
-        mat-button>X</button>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content>
       <div fxLayout="column">
+        <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qrcode qrdata="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" [size]="qrWidth" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+        </div>
         <div fxLayout="row" *ngIf="information.uris && information.uris.length > 0">
-          <mat-form-field fxFlex="80" fxFlex.gt-sm="40" fxLayoutAlign="start end">
+          <mat-form-field fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
             <mat-select tabindex="1" [(value)]="selInfoType">
               <mat-option *ngFor="let infoType of infoTypes" [value]="infoType">
                 {{infoType.infoName}}

@@ -27,13 +27,6 @@ export class OnChainGeneratedAddressComponent implements OnInit {
     this.address = this.data.address;
     this.addressType = this.data.addressType;
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS) {
-      this.qrWidth = 100;
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
-      this.qrWidth = 190;
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
-      this.qrWidth = 220;
-    }
   }
 
   onClose() {

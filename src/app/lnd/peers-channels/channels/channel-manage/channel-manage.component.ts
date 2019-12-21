@@ -4,7 +4,7 @@ import { take, takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 
-import { MatSort } from '@angular/material';
+import { MatSort, MatSnackBar } from '@angular/material';
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { TRANS_TYPES, ScreenSizeEnum, AlertTypeEnum, DataTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -40,7 +40,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   public screenSize = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions, private snackBar: MatSnackBar) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -61,7 +61,11 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === RTLActions.SET_PEERS))
     .subscribe((action: RTLActions.SetPeers) => {
-      this.selectedPeer = this.newlyAddedPeer;
+      if(this.newlyAddedPeer !== '') {
+        this.snackBar.open('Peer added successfully.');
+        this.selectedPeer = this.newlyAddedPeer;
+        this.newlyAddedPeer = '';
+      }
     });
   }
 

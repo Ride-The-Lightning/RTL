@@ -1,5 +1,5 @@
-<div fxLayout="row">
-  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode [qrdata]="invoice.payment_request" [size]="qrWidth" [level]="'L'" [allowEmptyString]="true" [ngClass]="{'qr-border': screenSize !== screenSizeEnum.XS, 'qr-thin-border': screenSize === screenSizeEnum.XS}"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
@@ -12,6 +12,9 @@
     </mat-card-header>
     <mat-card-content>
       <div fxLayout="column">
+        <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qrcode [qrdata]="invoice.payment_request" [size]="qrWidth" [level]="'L'" [allowEmptyString]="true" [ngClass]="{'qr-border': screenSize !== screenSizeEnum.XS, 'qr-thin-border': screenSize === screenSizeEnum.XS}"></qrcode>
+        </div>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>

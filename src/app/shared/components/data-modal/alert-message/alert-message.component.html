@@ -1,8 +1,5 @@
 <div fxLayout="row">
-  <div *ngIf="showQRField !== ''" fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large">
-    <qrcode [qrdata]="showQRField" [size]="230" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
-  </div>
-  <div [fxFlex]="showQRField !== '' ? '65' : '100'" class="padding-gap-large">
+  <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
@@ -34,9 +31,7 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="!showQRField || showQRField == ''" fxLayoutAlign="center center" tabindex="1" autoFocus mat-raised-button color="primary" fxFlex="20" type="submit" [mat-dialog-close]="false" default>OK</button>
-          <button *ngIf="showQRField !== ''" fxLayoutAlign="center center" tabindex="1" class="mr-2" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>OK</button>
-          <button *ngIf="showQRField !== ''" fxFlex="30" fxLayoutAlign="center center" autoFocus mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
+          <button fxLayoutAlign="center center" tabindex="1" autoFocus mat-raised-button color="primary" fxFlex="20" type="submit" [mat-dialog-close]="false" default>OK</button>
         </div>
       </div>
     </mat-card-content>

@@ -14,15 +14,17 @@ import { LoopComponent } from './loop/loop.component';
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
+import { BackupComponent } from './backup/backup.component';
 
 export const LndRoutes: Routes = [
   { path: '', component: LNDRootComponent,
     children: [
     { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'peerschannels', component: PeersChannelsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'backup', component: BackupComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },

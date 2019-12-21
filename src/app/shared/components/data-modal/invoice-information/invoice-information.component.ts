@@ -19,7 +19,7 @@ export class InvoiceInformationComponent implements OnInit {
   public showAdvanced = false;
   public newlyAdded = false;
   public invoice: Invoice;
-  public qrWidth = 210;
+  public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
@@ -30,11 +30,7 @@ export class InvoiceInformationComponent implements OnInit {
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
-      this.qrWidth = 120;
-    } else if(this.screenSize === ScreenSizeEnum.SM) {
-      this.qrWidth = 200;
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
-      this.qrWidth = 240;
+      this.qrWidth = 140;
     }
   }
 
