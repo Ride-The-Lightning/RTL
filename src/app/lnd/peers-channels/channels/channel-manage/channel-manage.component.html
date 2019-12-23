@@ -45,7 +45,7 @@
         <mat-slide-toggle tabindex="9" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
       </div>
     </div>
-    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch" class="mt-2">
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear Field</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="selectedPeer === '' || fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="11">
         <p *ngIf="(selectedPeer === '' || fundingAmount == null) && (selPeer.touched || selPeer.dirty) && (amount.touched || amount.dirty); else openText">Invalid Values</p>

@@ -17,7 +17,7 @@
           <mat-form-field fxFlex="68" fxLayoutAlign="start end">
             <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
           </mat-form-field>
-          <div fxFlex="50" fxLayoutAlign="space-between stretch">
+          <div fxFlex="30" fxLayoutAlign="space-between stretch">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()" [disabled]="!form.valid">Lookup</button>
           </div>
