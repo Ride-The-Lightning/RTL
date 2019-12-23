@@ -6,7 +6,7 @@
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
     <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap mt-1">
-        <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100" (ngSubmit)="routingForm.form.valid && onEventsFetch()" #routingForm="ngForm">
+        <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="routingForm.form.valid && onEventsFetch()" #routingForm="ngForm">
           <div fxFlex="100" fxLayoutAlign="space-between stretch">
             <mat-form-field fxFlex="49" fxLayoutAlign="start">
               <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="yesterday"

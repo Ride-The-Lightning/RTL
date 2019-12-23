@@ -88,6 +88,7 @@
       padding-top: $regular-font-size;
     }
     .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
+      min-height: $tree-node-height;
       height: $tree-node-height;
     }
     .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),

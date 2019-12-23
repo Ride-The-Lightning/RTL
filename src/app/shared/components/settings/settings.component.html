@@ -1,0 +1,24 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faTools" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Settings</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <mat-tab-group>
+        <mat-tab label="Settings"><rtl-app-settings></rtl-app-settings></mat-tab>
+        <mat-tab *ngIf="showLnConfig" [label]="lnImplementationStr">
+          <ng-template matTabContent>
+            <rtl-server-config [selectedNodeType]="'ln'"></rtl-server-config>
+          </ng-template>
+        </mat-tab>
+        <mat-tab *ngIf="showBitcoind" label="BitcoinD Config">
+          <ng-template matTabContent>
+            <rtl-server-config [selectedNodeType]="'bitcoind'"></rtl-server-config>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+  

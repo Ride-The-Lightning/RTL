@@ -21,26 +21,26 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sortOut: MatSort;
   @Input() routingPeersData: any;
   public displayedColumns = [];
-  public displayIncomingHeader = ['incoming'];
-  public displayOutgoingHeader = ['outgoing'];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
-    let ss = this.commonService.getScreenSize();
-    if(ss === ScreenSizeEnum.XS) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['chan_id', 'events', 'actions'];
-    } else if(ss === ScreenSizeEnum.SM) {
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['chan_id', 'events', 'total_amount', 'actions'];
-    } else if(ss === ScreenSizeEnum.MD) {
+      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
+      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount', 'actions'];
+      this.displayedColumns = ['chan_id', 'alias', 'events', 'total_amount'];
     }
   }
 
@@ -113,6 +113,14 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
       }
     });
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
+  }
+
+  applyIncomingFilter(selFilter: string) {
+    this.RoutingPeersIncoming.filter = selFilter;
+  }
+
+  applyOutgoingFilter(selFilter: string) {
+    this.RoutingPeersOutgoing.filter = selFilter;
   }
 
 }

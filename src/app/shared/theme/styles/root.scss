@@ -526,8 +526,16 @@ body {
   overflow: auto;
 }
 
-.mat-footer-row, .mat-header-row, .mat-row {
-  border-bottom-width: 0;
+.mat-footer-row {
+  & .mat-footer-cell {
+    border-bottom: none !important;
+  }
+}
+
+.mat-row:last-child {
+  & .mat-cell {
+    border-bottom: none !important;
+  }
 }
 
 .flex-ellipsis {
@@ -737,6 +745,8 @@ a {
 }
 
 .mat-tree-node, .mat-nested-tree-node-parent {
+  min-height: 4rem;
+  height: 4rem;
   padding: 0 1.2rem 0 1.2rem; 
   cursor: pointer;
 }

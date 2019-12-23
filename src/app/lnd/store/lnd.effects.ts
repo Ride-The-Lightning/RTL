@@ -7,7 +7,6 @@ import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material';
-import { MatSnackBar } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -35,7 +34,6 @@ export class LNDEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private router: Router,
     private location: Location) { }
 
@@ -170,11 +168,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ data: {
-              type: AlertTypeEnum.SUCCESS,
-              alertTitle: 'Peer Disconnected',
-              titleMessage: 'Peer Disconnected Successfully!'
-            }}));
+            this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully.'));
             return {
               type: RTLActions.REMOVE_PEER,
               payload: { pubkey: action.payload.pubkey }
@@ -261,7 +255,11 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
+            if(action.payload.chanPoint === 'all') {
+              this.store.dispatch(new RTLActions.OpenSnackBar('All Channels Updated Successfully.'));
+            } else {
+              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+            }
             return {
               type: RTLActions.FETCH_ALL_CHANNELS
             };
@@ -315,7 +313,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.snackBar.open(action.payload.showMessage + ' ' + postRes.message);
+            this.store.dispatch(new RTLActions.OpenSnackBar(action.payload.showMessage + ' ' + postRes.message));
             return {
               type: RTLActions.BACKUP_CHANNELS_RES,
               payload: postRes.message
@@ -340,7 +338,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.snackBar.open(postRes.message);
+            this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
             return {
               type: RTLActions.VERIFY_CHANNELS_RES,
               payload: postRes.message
@@ -365,7 +363,7 @@ export class LNDEffects implements OnDestroy {
             map((postRes: any) => {
               this.logger.info(postRes);
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.snackBar.open(postRes.message);
+              this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
               this.store.dispatch(new RTLActions.SetRestoreChannelsList(postRes.list));
               return {
                 type: RTLActions.RESTORE_CHANNELS_RES,
@@ -752,8 +750,8 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
             return {
-              type: RTLActions.OPEN_ALERT,
-              payload: { data: { type: AlertTypeEnum.SUCCESS, titleMessage: 'Fund Sent Successfully!' } }
+              type: RTLActions.OPEN_SNACK_BAR,
+              payload: 'Fund Sent Successfully!'
             };
           }),
           catchError((err: any) => {

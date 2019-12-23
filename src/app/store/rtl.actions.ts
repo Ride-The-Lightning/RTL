@@ -14,6 +14,7 @@ export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
 export const OPEN_ALERT = 'OPEN_ALERT';
@@ -184,6 +185,11 @@ export class ClearEffectErrorCl implements Action {
 export class EffectErrorCl implements Action {
   readonly type = EFFECT_ERROR_CL;
   constructor(public payload: ErrorPayload) {}
+}
+
+export class OpenSnackBar implements Action {
+  readonly type = OPEN_SNACK_BAR;
+  constructor(public payload: string) {}
 }
 
 export class OpenSpinner implements Action {
@@ -824,7 +830,7 @@ export class SetChannelTransactionCL implements Action {
 
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |

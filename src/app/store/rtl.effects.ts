@@ -46,6 +46,14 @@ export class RTLEffects implements OnDestroy {
     private router: Router) {}
 
   @Effect({ dispatch: false })
+  openSnackBar = this.actions$.pipe(
+    ofType(RTLActions.OPEN_SNACK_BAR),
+    map((action: RTLActions.OpenSnackBar) => {
+      this.snackBar.open(action.payload);
+    }
+  ));
+
+  @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
     ofType(RTLActions.OPEN_SPINNER),
     map((action: RTLActions.OpenSpinner) => {
@@ -180,12 +188,8 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.logger.info(updateStatus);
       return {
-        type: RTLActions.OPEN_ALERT,
-        payload: { width: '55%', data: { 
-          type: AlertTypeEnum.SUCCESS,
-          alertTitle: 'Settings updated',
-          titleMessage: (!updateStatus.length) ? updateStatus.message : updateStatus[0].message + '. ' + updateStatus[1].message 
-        }}
+        type: RTLActions.OPEN_SNACK_BAR,
+        payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
       };
     },
     catchError((err) => {

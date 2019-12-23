@@ -3,15 +3,13 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { faTools } from '@fortawesome/free-solid-svg-icons';
+import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS } from '../../../services/consts-enums-functions';
+import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
+import { LoggerService } from '../../../services/logger.service';
+import { CommonService } from '../../../services/common.service';
 
-import { CURRENCY_UNITS, AlertTypeEnum, UserPersonaEnum, ScreenSizeEnum } from '../../services/consts-enums-functions';
-import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../models/RTLconfig';
-import { LoggerService } from '../../services/logger.service';
-import { CommonService } from '../../services/common.service';
-
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-app-settings',
@@ -19,11 +17,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./app-settings.component.scss']
 })
 export class AppSettingsComponent implements OnInit, OnDestroy {
-  public faTools = faTools;
   public selNode: LightningNode;
   public information: GetInfoRoot = {};
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
-  public currencyUnits = [{id: 'USD', name: 'United States Dollar'}, {id: 'GBP', name: 'Pound'}, {id: 'INR', name: 'Indian Rupee'}];
+  public currencyUnits = FIAT_CURRENCY_UNITS;
   public menus = [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}];
   public selectedMenu = {id: 'vertical', name: 'Vertical'};
   public menuTypes = [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}];

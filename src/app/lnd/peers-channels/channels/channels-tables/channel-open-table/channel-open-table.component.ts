@@ -82,11 +82,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onChannelUpdate(channelToUpdate: any) {
     if (channelToUpdate === 'all') {
-      const titleMsg = 'Updated Values for ALL Channels';
+      const titleMsg = 'Updated fee policy for all the Channels';
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Channel',
+        alertTitle: 'Update All Channels Fee Policy',
         titleMessage: titleMsg,
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',

@@ -1,0 +1,51 @@
+<div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
+  <div fxLayout="column" class="settings-container mt-1">
+    <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="space-between stretch">
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
+        <mat-select [(ngModel)]="selNode.settings.userPersona" placeholder="User Persona" tabindex="1" required name="userPersona">
+          <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
+            {{userPersona | titlecase}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
+        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" placeholder="Default Node" tabindex="1" required name="defaultNode">
+          <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
+            {{node.lnNode}} ({{node.lnImplementation}})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
+        <mat-select [(ngModel)]="selNode.settings.currencyUnit" placeholder="Currency Unit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
+          <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+            {{currencyUnit.id}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start stretch" class="mt-1">
+      <div fxLayout="column" fxFlex="25" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start space-between">
+        <h4>Mode</h4>
+        <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
+          <mat-radio-button *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div fxLayout="column" fxFlex="9"></div>
+      <div fxLayout="column" fxFlex="40">
+        <h4>Skins</h4>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+          <span *ngFor="let themeColor of themeColors">
+            <div [class]="themeColor" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor}" (click)="changeThemeColor(themeColor)"></div>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div fxLayout="row" fxFlex="100" class="mt-4">
+      <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="space-between stretch">
+        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12">Reset</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
+      </div>
+    </div>
+  </div>
+</div>

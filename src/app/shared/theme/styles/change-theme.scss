@@ -98,6 +98,9 @@
     .mat-expansion-panel {
       border: 1px solid $foreground-secondary-text;
     }
+    .mat-tab-label, .mat-tab-link {
+      color:  $foreground-secondary-text;
+    }
   }
 
   &.day {
@@ -171,6 +174,13 @@
       border-radius: 4px;
       background: none;
     }
+    .mat-tab-label, .mat-tab-link {
+      color: $foreground-secondary-text;
+    }
+    .mat-card, .mat-card:not([class*='mat-elevation-z']){
+      box-shadow: none;
+      border: 1px solid $foreground-divider;
+    }
   }
   
   .mat-progress-bar-buffer {
@@ -181,6 +191,7 @@
     color: $foreground-secondary-text !important;
     white-space: pre-line;
     overflow-wrap: break-word;
+    word-break: break-all;
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {

@@ -1,26 +1,6 @@
-.mat-column-actions {
-  flex: 0 0 6%;
-  width: 6%;
-}
-
 .mat-column-chan_id, .mat-column-alias {
-  flex: 0 0 30%;
-  width: 30%;
-}
-
-.mat-column-events, .mat-column-total_amount {
-  flex: 0 0 17%;
-  width: 17%;
-}
-
-table.mat-table.incoming-table {
-  border-bottom: none !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-}
-
-table.mat-table.outgoing-table {
-  border-top: none !important;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+  flex: 1 1 25%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

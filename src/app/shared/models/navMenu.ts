@@ -12,7 +12,6 @@ export const MENU_DATA: MenuRootNode = {
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'},
       {id: 36, parentId: 3, name: 'Network', iconType: 'FA', icon: faNetworkWired, link: '/lnd/network'}
     ]},
-    {id: 4, parentId: 0, name: 'Advanced', iconType: 'FA', icon: faCog, link: '/advanced'},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
     {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ],
