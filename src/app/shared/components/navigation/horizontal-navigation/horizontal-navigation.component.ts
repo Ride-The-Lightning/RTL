@@ -38,7 +38,6 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
       this.information = rtlStore.nodeData;
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
-      this.numPendingChannels = rtlStore.nodeData.numberOfPendingChannels;
       if(this.selNode.lnImplementation.toUpperCase() === 'CLT') {
         this.menuNodes = MENU_DATA.CLChildren;
       } else {

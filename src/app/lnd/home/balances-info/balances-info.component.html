@@ -1,21 +1,16 @@
-<div fxLayout="column" fxFlex="40" fxLayoutAlign="start start">
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Lightning</h4>
-    <div class="foreground-secondary-text">{{balances.lightning | number}} (Sats)</div>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Lightning</h4>
+    <div class="dashboard-info-value">{{balances.lightning | number}} Sats</div>
+    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{balances.lightning/balances.total*100}}"></mat-progress-bar>
   </div>
-  <div fxFlex="25" fxLayoutAlign="start start"></div>
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">On-chain</h4>
-    <div class="foreground-secondary-text">{{balances.onchain | number}} (Sats)</div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">On-chain</h4>
+    <div class="dashboard-info-value">{{balances.onchain | number}} Sats</div>
+    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{balances.onchain/balances.total*100}}"></mat-progress-bar>
   </div>
-</div>
-<div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
-  <ngx-charts-pie-chart class="balances-info-pie-chart" style="margin-top: -5rem;"
-    [view]="graphView"
-    [explodeSlices]="true"
-    [legend]="true"
-    [legendTitle]="''"
-    [legendPosition]="'below'"
-    [results]="totalBalances">
-  </ngx-charts-pie-chart>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Total</h4>
+    <div class="dashboard-info-value">{{balances.total | number}} Sats</div>
+  </div>
 </div>

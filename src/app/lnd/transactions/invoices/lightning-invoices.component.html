@@ -20,7 +20,7 @@
     <div fxFlex="23" tabindex="4" fxLayoutAlign="start center" *ngIf="showDetails">
       <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
     </div>
-    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between start" *ngIf="showDetails">
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between start" *ngIf="showDetails" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">
         <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>

@@ -1,17 +1,17 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="center start">
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
-    <div class="foreground-secondary-text">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 class="dashboard-info-title">Alias</h4>
+    <div class="dashboard-info-value">
       {{information.alias}}
-      <span class="dot ml-1" [ngStyle]="{'backgroundColor': information.color}"></span>
+      <span class="dashboard-node-dot dot" [ngStyle]="{'backgroundColor': information.color}"></span>
     </div>
   </div>
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Implementation</h4>
-    <div class="foreground-secondary-text">{{(information.lnImplementation || information.version) ? information.lnImplementation + ' v' + information.version : ''}}</div>
+  <div>
+    <h4 class="dashboard-info-title">Implementation</h4>
+    <div class="dashboard-info-value">{{(information.lnImplementation || information.version) ? information.lnImplementation + ' v' + information.version : ''}}</div>
   </div>
-  <div fxFlex="34">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Chain</h4>
-    <span class="overflow-wrap foreground-secondary-text" *ngFor="let chain of chains">{{chain}}</span>
+  <div>
+    <h4 class="dashboard-info-title">Chain</h4>
+    <span class="overflow-wrap dashboard-info-value" *ngFor="let chain of chains">{{chain}}</span>
   </div>
 </div>

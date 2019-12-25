@@ -18,9 +18,9 @@ export class ChannelLiquidityInfoComponent implements OnChanges {
   ngOnChanges() {
     if (this.allChannels && this.allChannels.length > 0) {
       if(this.direction === 'In') {
-        this.maxAmount =  this.allChannels[0].remote_balance;
+        this.maxAmount =  this.allChannels[0].remote_balance <= 4294967 ? this.allChannels[0].remote_balance : 4294967;
       } else {
-        this.maxAmount = this.allChannels[0].local_balance;
+        this.maxAmount =  this.allChannels[0].local_balance <= 4294967 ? this.allChannels[0].local_balance : 4294967;
       }
     }
   }

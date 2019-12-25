@@ -21,7 +21,7 @@
               <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
             </mat-form-field>
           </div>
-          <div fxFlex="30" fxLayoutAlign="space-between stretch">
+          <div fxFlex="30" fxLayoutAlign="space-between stretch" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="routingForm.invalid" type="submit" tabindex="4">Fetch Events</button>
           </div>

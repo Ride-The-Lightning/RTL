@@ -24,7 +24,7 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.openChannels = (rtlStore.allChannels && rtlStore.allChannels.length) ? rtlStore.allChannels.length : 0;
-      this.pendingChannels = (rtlStore.numberOfPendingChannels) ? rtlStore.numberOfPendingChannels : 0;
+      this.pendingChannels = (rtlStore.numberOfPendingChannels.total_channels) ? rtlStore.numberOfPendingChannels.total_channels : 0;
       this.closedChannels = (rtlStore.closedChannels && rtlStore.closedChannels.length) ? rtlStore.closedChannels.length : 0;
       this.logger.info(rtlStore);
     });

@@ -1,16 +1,23 @@
-<div fxLayout="column" fxLayoutAlign="space-between start" fxFlex="100">
-  <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start" class="w-100">
-    <h2>{{totalLiquidity | number}} Sats</h2>
-    <h4>Max Transaction Amount: {{(maxAmount <= 4294967 ? maxAmount : 4294967) | number}} Sats</h4>
+<div fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100">
+  <div fxLayout="column" fxFlex="10" fxLayoutAlign="end stretch">
+    <div fxLayout="row" fxLayoutAlign="space-between start">
+      <span class="dashboard-capacity-header this-channel-capacity">Max Transaction</span>
+      <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between stretch">
+      <mat-hint class="font-size-90">{{maxAmount | number}} Sats</mat-hint>
+      <mat-hint class="font-size-90">{{totalLiquidity | number}} Sats</mat-hint>
+    </div>
+    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{maxAmount/totalLiquidity*100 ? maxAmount/totalLiquidity*100 : 0}}"></mat-progress-bar>
     <mat-divider class="w-100 dashboard-divider mt-2"></mat-divider>
   </div>
-  <div fxLayout="column" fxFlex="90" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll w-100 mt-2" perfectScrollbar>
+  <div fxLayout="column" fxFlex="89" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll w-100 mt-2" perfectScrollbar>
     <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
       <div *ngFor="let channel of allChannels" class="mt-2">
-        <h4>{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</h4>
+        <span class="dashboard-capacity-header">{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-          <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">{{channel.remote_balance || 0 | number}} Sats</strong></mat-hint>
-          <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">{{channel.local_balance || 0 | number}} Sats</strong></mat-hint>
+          <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
+          <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
         </div>
         <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
         <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>

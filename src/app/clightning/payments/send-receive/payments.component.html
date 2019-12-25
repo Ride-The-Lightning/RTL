@@ -15,7 +15,7 @@
                 tabindex="1" required #paymentReq="ngModel">
             </mat-form-field>
           </div>
-          <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row" fxLayoutAlign="space-between stretch">
+          <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row" fxLayoutAlign="space-between stretch" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary"
               [disabled]="paymentReq.invalid" (click)="onSendPayment()" tabindex="2">
               <p *ngIf="paymentReq.invalid && (paymentReq.dirty || paymentReq.touched); else sendText">Invalid Req</p>

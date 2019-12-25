@@ -4,6 +4,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
+import { faFileDownload, faFileUpload, faChartPie, faBolt, faInfoCircle, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
@@ -21,16 +22,21 @@ import * as RTLActions from '../../store/rtl.actions';
 export class HomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
   public faFrown = faFrown;
+  public faFileDownload = faFileDownload;
+  public faFileUpload = faFileUpload;
+  public faChartPie = faChartPie;
+  public faBolt = faBolt;
+  public faInfoCircle = faInfoCircle;
+  public faNetworkWired = faNetworkWired;  
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
   public inactiveChannels = 0;
-  public pendingChannels = 0;
   public channelBalances = {localBalance: 0, remoteBalance: 0};
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
-  public balances = { onchain: -1, lightning: -1 };
+  public balances = { onchain: -1, lightning: -1, total: 0 };
   public allChannels: Channel[] = [];
   public channelsStatus: ChannelsStatus = {};
   public allChannelsCapacity: Channel[] = [];
@@ -50,50 +56,47 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
-        { id: 'node', title: 'Node Details', cols: 10, rows: 1 },
-        { id: 'balance', title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', title: 'Routing Fee Earned', cols: 10, rows: 1 },
-        { id: 'status', title: 'Channel Status', cols: 10, rows: 1 },
-        { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 2 }
+        { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 10, rows: 1 },
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 10, rows: 1 },
+        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'node', title: 'Node Details', cols: 6, rows: 3 },
-        { id: 'balance', title: 'Balances', cols: 6, rows: 3 },
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
         { id: 'transactions', title: 'Transactions', cols: 6, rows: 4 },
-        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
-        { id: 'node', title: 'Node Details', cols: 5, rows: 1 },
-        { id: 'balance', title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', title: 'Routing Fee Earned', cols: 5, rows: 1 },
-        { id: 'status', title: 'Channel Status', cols: 5, rows: 1 },
-        { id: 'capacity', title: 'Channel Capacity', cols: 10, rows: 2 }
+        { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 5, rows: 1 },
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 5, rows: 1 },
+        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'node', title: 'Node Details', cols: 3, rows: 3 },
-        { id: 'balance', title: 'Balances', cols: 3, rows: 3 },
-        { id: 'transactions', title: 'Transactions', cols: 6, rows: 4 },
-        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+        { id: 'transactions', title: 'Transactions', cols: 3, rows: 4 },
+        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
       this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
-        { id: 'node', title: 'Node Details', cols: 3, rows: 1 },
-        { id: 'balance', title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', title: 'Channel Capacity', cols: 4, rows: 2 },
-        { id: 'fee', title: 'Routing Fee Earned', cols: 3, rows: 1 },
-        { id: 'status', title: 'Channel Status', cols: 3, rows: 1 }
+        { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 3, rows: 1 },
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
+        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
-        { id: 'node', title: 'Node Details', cols: 2, rows: 3 },
-        { id: 'inboundLiq', title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'balance', title: 'Balances', cols: 2, rows: 3 },
-        { id: 'transactions', title: 'Transactions', cols: 2, rows: 4 }
+        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
+        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'transactions', title: 'Transactions', cols: 2, rows: 5 }
       ];
     }
   }
@@ -143,19 +146,19 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = false;
       }
+      this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);
   
       this.activeChannels =  rtlStore.numberOfActiveChannels;
       this.inactiveChannels = rtlStore.numberOfInactiveChannels;
-      this.pendingChannels = (undefined !== rtlStore.pendingChannels.pending_open_channels) ? rtlStore.pendingChannels.pending_open_channels.length : 0;
-      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.waiting_close_channels) ? rtlStore.pendingChannels.waiting_close_channels.length : 0);
-      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.pending_closing_channels) ? rtlStore.pendingChannels.pending_closing_channels.length : 0);
-      this.pendingChannels = this.pendingChannels + ((undefined !== rtlStore.pendingChannels.pending_force_closing_channels) ? rtlStore.pendingChannels.pending_force_closing_channels.length : 0);
       this.channelsStatus = {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
-        pending: { channels: this.pendingChannels, capacity: rtlStore.pendingChannels.total_limbo_balance },
-        closed: { channels: (rtlStore.closedChannels && rtlStore.closedChannels.length) ? rtlStore.closedChannels.length : 0, capacity: 0 }
+        pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
+        closing: { 
+          channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
+          capacity: rtlStore.numberOfPendingChannels.closing.limbo_balance + rtlStore.numberOfPendingChannels.force_closing.limbo_balance + rtlStore.numberOfPendingChannels.waiting_close.limbo_balance
+        }
       };
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0 && this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = false;

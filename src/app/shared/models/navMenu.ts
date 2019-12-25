@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faArchive, faProjectDiagram, faNetworkWired, faCog, faQuestion, faSearch, faTools } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faArchive, faProjectDiagram, faNetworkWired, faCog, faQuestion, faSearch, faTools, faServer } from '@fortawesome/free-solid-svg-icons';
 
 export const MENU_DATA: MenuRootNode = {
   LNDChildren: [
@@ -9,11 +9,11 @@ export const MENU_DATA: MenuRootNode = {
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/transactions'},
       {id: 33, parentId: 3, name: 'Backup', iconType: 'FA', icon: faArchive, link: '/lnd/backup'},
       {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/routing'},
-      {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'},
-      {id: 36, parentId: 3, name: 'Network', iconType: 'FA', icon: faNetworkWired, link: '/lnd/network'}
+      {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'}
     ]},
-    {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
-    {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
+    {id: 5, parentId: 0, name: 'Node/Network', iconType: 'FA', icon: faServer, link: '/lnd/network'},
+    {id: 6, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
+    {id: 7, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ],
   CLChildren: [
     {id: 1, parentId: 0, name: 'Home', icon: 'home', link: '/cl/home'},

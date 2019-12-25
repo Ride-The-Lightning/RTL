@@ -7,7 +7,7 @@ export interface ChannelsStatus {
   active?: ChannelStatus;
   inactive?: ChannelStatus;
   pending?: ChannelStatus;
-  closed?: ChannelStatus;
+  closing?: ChannelStatus;
 }
 
 export interface AddressType {
@@ -386,4 +386,18 @@ export interface RoutingPeers {
 export interface SwitchRes {
   last_offset_index?: number;
   forwarding_events?: ForwardingEvent[];
+}
+
+export interface PendingChannelsGroup {
+  open?: PendingChannelsData;
+  closing?: PendingChannelsData;
+  force_closing?: PendingChannelsData;
+  waiting_close?: PendingChannelsData;
+  total_channels?: number;
+  total_limbo_balance?: number;
+}
+
+export interface PendingChannelsData {
+  num_channels: number;
+  limbo_balance: number;
 }

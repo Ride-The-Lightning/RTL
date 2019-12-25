@@ -2,15 +2,15 @@
 @import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/green-primary.swatch.scss';
+@import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
 $green-primary: mat-palette($green-primary, 500, 300, A200);
 $green-accent: mat-palette($mat-amber, A200, A100, A700);
+$green-accent-night:  mat-palette($mat-white, 300, 600, 900);
 $green-warn: mat-palette($red-warn, 500);
 
-// $green-day-theme: create-light-dull-theme($green-primary, $green-accent, $green-warn);
-$green-night-theme: create-dark-bright-theme($green-primary, $green-accent, $green-warn);
+$green-night-theme: create-dark-bright-theme($green-primary, $green-accent-night, $green-warn);
 
 $green-day-theme: mat-light-theme($green-primary, $green-accent, $green-warn);
-// $green-night-theme: mat-dark-theme($green-primary, $green-accent, $green-warn);

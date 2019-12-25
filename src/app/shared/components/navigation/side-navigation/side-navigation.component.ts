@@ -71,7 +71,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.nodeData;
-      this.numPendingChannels = rtlStore.nodeData.numberOfPendingChannels;
 
       if (undefined !== this.information.identity_pubkey) {
         if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {

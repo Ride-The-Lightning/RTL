@@ -8,7 +8,6 @@ import { Fees } from '../../../shared/models/lndModels';
 })
 export class FeeInfoComponent implements OnChanges {
   @Input() fees: Fees;
-  @Input() flgInfoUpdate = false;
   totalFees = [{'name': 'Monthly', 'value': 0}, {'name': 'Weekly', 'value': 0}, {'name': 'Daily', 'value': 0}];
   maxFeeValue = 100;
 

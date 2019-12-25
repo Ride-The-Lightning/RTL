@@ -90,7 +90,7 @@
               <ng-template #openText><p>Open Channel</p></ng-template>
             </button>
           </div>
-          <div *ngIf="!newlyAdded" fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="30">
+          <div *ngIf="!newlyAdded" fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="30" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
             <button autoFocus fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="8">
               <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>

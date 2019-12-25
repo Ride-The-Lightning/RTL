@@ -1,22 +1,14 @@
-<div fxLayout="column" fxFlex="60" fxLayoutAlign="center start">
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Daily</h4>
-    <div class="foreground-secondary-text">{{fees?.day_fee_sum | number}} (Sats)</div>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Daily</h4>
+    <div class="dashboard-info-value">{{fees?.day_fee_sum | number}} Sats</div>
   </div>
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Weekly</h4>
-    <div class="foreground-secondary-text">{{fees?.week_fee_sum | number}} (Sats)</div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Weekly</h4>
+    <div class="dashboard-info-value">{{fees?.week_fee_sum | number}} Sats</div>
   </div>
-  <div fxFlex="33">
-    <h4 fxLayoutAlign="start" class="font-bold-500">Monthly</h4>
-    <div class="foreground-secondary-text">{{fees?.month_fee_sum | number}} (Sats)</div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Monthly</h4>
+    <div class="dashboard-info-value">{{fees?.month_fee_sum | number}} Sats</div>
   </div>
-</div>
-<div fxLayout="column" fxFlex="60" fxLayoutAlign="start start" *ngIf="flgInfoUpdate">
-  <ngx-charts-gauge class="fee-info-gauge-chart" style="margin-top: -2.5rem;margin-left: -8rem;"
-    [showText]="false"
-    [max]="maxFeeValue"
-    [view]="[300, 300]"
-    [results]="totalFees">
-  </ngx-charts-gauge>
 </div>

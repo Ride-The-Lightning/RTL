@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material';
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices } from '../../shared/models/lndModels';
+import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
 import { CurrencyUnitEnum, AlertTypeEnum } from '../../shared/services/consts-enums-functions';
@@ -476,23 +476,37 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((channels: any) => {
             this.logger.info(channels);
-            let pendingChannels = -1;
+            let pendingChannels: PendingChannelsGroup = { open: {num_channels: 0, limbo_balance: 0}, closing: {num_channels: 0, limbo_balance: 0}, force_closing: {num_channels: 0, limbo_balance: 0}, waiting_close: {num_channels: 0, limbo_balance: 0}, total_channels: 0, total_limbo_balance: 0};
             if (channels) {
-              pendingChannels = 0;
               if (channels.pending_closing_channels) {
-                pendingChannels = pendingChannels + channels.pending_closing_channels.length;
+                pendingChannels.closing.num_channels = channels.pending_closing_channels.length;
+                pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_closing_channels.length;
+                channels.pending_closing_channels.forEach(closingChannel => {
+                  pendingChannels.closing.limbo_balance = pendingChannels.closing.limbo_balance + closingChannel.channel.local_balance;
+                });
               }
               if (channels.pending_force_closing_channels) {
-                pendingChannels = pendingChannels + channels.pending_force_closing_channels.length;
+                pendingChannels.force_closing.num_channels = channels.pending_force_closing_channels.length;
+                pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_force_closing_channels.length;
+                channels.pending_force_closing_channels.forEach(closingChannel => {
+                  pendingChannels.force_closing.limbo_balance = pendingChannels.force_closing.limbo_balance + closingChannel.channel.local_balance;
+                });
               }
               if (channels.pending_open_channels) {
-                pendingChannels = pendingChannels + channels.pending_open_channels.length;
+                pendingChannels.open.num_channels = channels.pending_open_channels.length;
+                pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_open_channels.length;
+                channels.pending_open_channels.forEach(openingChannel => {
+                  pendingChannels.open.limbo_balance = pendingChannels.open.limbo_balance + openingChannel.channel.local_balance;
+                });
               }
               if (channels.waiting_close_channels) {
-                pendingChannels = pendingChannels + channels.waiting_close_channels.length;
+                pendingChannels.waiting_close.num_channels = channels.waiting_close_channels.length;
+                pendingChannels.total_channels = pendingChannels.total_channels + channels.waiting_close_channels.length;
+                channels.waiting_close_channels.forEach(closingChannel => {
+                  pendingChannels.waiting_close.limbo_balance = pendingChannels.waiting_close.limbo_balance + closingChannel.channel.local_balance;
+                });
               }
             }
-            this.store.dispatch(new RTLActions.SetNodePendingChannelsData(pendingChannels));
             return {
               type: RTLActions.SET_PENDING_CHANNELS,
               payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
@@ -1073,8 +1087,7 @@ export class LNDEffects implements OnDestroy {
       uris: info.uris,
       version: info.version, 
       currency_unit: info.currency_unit, 
-      smaller_currency_unit: info.smaller_currency_unit, 
-      numberOfPendingChannels: info.num_pending_channels
+      smaller_currency_unit: info.smaller_currency_unit
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new RTLActions.FetchFees());

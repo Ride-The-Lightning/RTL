@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } 
 import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -29,7 +29,6 @@ export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
-export const SET_NODE_PENDING_CHANNELS_DATA = 'SET_NODE_PENDING_CHANNELS_DATA';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
@@ -268,11 +267,6 @@ export class SetNodeData implements Action {
   constructor(public payload: GetInfoRoot) {}
 }
 
-export class SetNodePendingChannelsData implements Action {
-  readonly type = SET_NODE_PENDING_CHANNELS_DATA;
-  constructor(public payload: number) {}
-}
-
 export class SetChildNodeSettings implements Action {
   readonly type = SET_CHILD_NODE_SETTINGS;
   constructor(public payload: SelNodeChild) {}
@@ -370,7 +364,7 @@ export class FetchPendingChannels implements Action {
 
 export class SetPendingChannels implements Action {
   readonly type = SET_PENDING_CHANNELS;
-  constructor(public payload: {channels: PendingChannels, pendingChannels: number}) {}
+  constructor(public payload: {channels: PendingChannels, pendingChannels: PendingChannelsGroup}) {}
 }
 
 export class FetchClosedChannels implements Action {
@@ -833,7 +827,7 @@ export type RTLActions =
   VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
-  SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
+  SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |

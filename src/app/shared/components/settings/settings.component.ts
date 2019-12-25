@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
 import { LightningNode } from '../../models/RTLconfig';
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({

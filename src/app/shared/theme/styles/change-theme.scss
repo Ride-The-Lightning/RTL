@@ -10,11 +10,11 @@
   $warn: map-get($theme, warn);
   $warn-color: mat-color($warn);
   $foreground: map-get($theme, foreground);
-  $foreground-base: mat-color($foreground, base);
-  $foreground-text: mat-color($foreground, text);
-  $foreground-secondary-text: mat-color($foreground, secondary-text);
-  $foreground-disabled: mat-color($foreground, disabled);
-  $foreground-divider: mat-color($foreground, divider);
+  $foreground-base: mat-color($foreground, base); // 1
+  $foreground-text: mat-color($foreground, text); //.87
+  $foreground-secondary-text: mat-color($foreground, secondary-text); // .54
+  $foreground-disabled: mat-color($foreground, disabled); // .38
+  $foreground-divider: mat-color($foreground, divider); // .12
   $background: map-get($theme, background);
   $background-color: mat-color($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
@@ -101,6 +101,50 @@
     .mat-tab-label, .mat-tab-link {
       color:  $foreground-secondary-text;
     }
+    .dashboard-card .mat-card-header .mat-card-title {
+      font-size: 180%;
+      color:  $foreground-text;
+      & .ng-fa-icon {
+        color:  $foreground-text;
+      }
+    }
+    & .dashboard-info-value {
+      font-weight: 700;
+      color: $foreground-text;
+    }
+    & .dashboard-capacity-header {
+      color: $foreground-text;
+    }
+    .alert.alert-info {
+      border: 1px solid $primary-darker;
+      background-color: $hover-background-white;
+      color: $primary-darker;
+      & .ng-fa-icon {
+        fill: $primary-darker;
+        color: $primary-darker;
+      }
+    }
+  
+    .alert.alert-warn {
+      border: 1px solid #856404;
+      background-color: #fff3cd;
+      color: #856404;
+      & .ng-fa-icon {
+        fill: #856404;
+        color: #856404;
+      }
+    }
+  
+    .alert.alert-danger {
+      border: 1px solid $warn-color;
+      background-color: mat-color($warn, 50);
+      color: $warn-color;
+      & .ng-fa-icon {
+        fill: $warn-color;
+        color: $warn-color;
+      }
+    }
+  
   }
 
   &.day {
@@ -181,10 +225,32 @@
       box-shadow: none;
       border: 1px solid $foreground-divider;
     }
+    .dashboard-card .mat-card-header .mat-card-title {
+      font-size: 180%;
+      color:  $foreground-disabled;
+      & .ng-fa-icon {
+        color:  $foreground-disabled;
+      }
+    }
+    & .dashboard-info-value {
+      font-weight: 700;
+      color: $foreground-secondary-text;
+    }
+  }
+  
+  .color-primary {
+    color:  $primary-color;
   }
   
   .mat-progress-bar-buffer {
     background-color: mat-color($primary, 100);
+  }
+
+  .foreground-text {
+    color: $foreground-text !important;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+    word-break: break-all;
   }
 
   .foreground-secondary-text {
@@ -447,4 +513,61 @@
     }
   }
 
+  .dashboard-card {
+    & .dashboard-divider {
+      margin-top: 2rem;
+      border-top-width: 2px;
+    }
+  
+    & .mat-card-header .mat-card-title {
+      margin-bottom: 2.4rem;
+    }
+
+    & .dashboard-info-title {
+      font-weight: 500;
+      color: $primary-color;
+    }
+  
+    & .dashboard-node-dot {
+      margin: 0 0 -2px 1rem;
+      border: 1px solid $foreground-secondary-text;
+    }    
+
+    & .dashboard-capacity-header {
+      font-size: 130%;
+      font-weight: 700;
+      color: $foreground-secondary-text;
+    }
+
+  }
+
+  .alert.alert-info {
+    border: 1px solid $primary-color;
+    background-color: mat-color($primary, 50);
+    color: $primary-color;
+    & .ng-fa-icon {
+      fill: $primary-color;
+      color: $primary-color;
+    }
+  }
+
+  .alert.alert-warn {
+    border: 1px solid #856404;
+    background-color: #fff3cd;
+    color: #856404;
+    & .ng-fa-icon {
+      fill: #856404;
+      color: #856404;
+    }
+  }
+
+  .alert.alert-danger {
+    border: 1px solid $warn-color;
+    background-color: mat-color($warn, 50);
+    color: $warn-color;
+    & .ng-fa-icon {
+      fill: $warn-color;
+      color: $warn-color;
+    }
+  }
 }

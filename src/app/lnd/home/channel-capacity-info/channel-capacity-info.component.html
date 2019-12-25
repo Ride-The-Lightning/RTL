@@ -1,19 +1,20 @@
-<div fxLayout="column" fxLayoutAlign="space-between start" fxFlex="100">
-  <div fxLayout="column" fxFlex="5" fxLayoutAlign="start start" class="w-100">
+<div fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100">
+  <div fxLayout="column" fxFlex="10" fxLayoutAlign="end start">
+    <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-      <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channelBalances.localBalance || 0 | number}} Sats</mat-hint>
-      <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channelBalances.remoteBalance || 0 | number}} Sats</mat-hint>
+      <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-90"><strong class="font-weight-900 mr-5px">Local:</strong>{{channelBalances.localBalance || 0 | number}} Sats</mat-hint>
+      <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-90"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channelBalances.remoteBalance || 0 | number}} Sats</mat-hint>
     </div>
-    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channelBalances.localBalance && channelBalances.localBalance > 0 ? ((+channelBalances.localBalance/((+channelBalances.localBalance)+(+channelBalances.remoteBalance)))*100) : 0}}"></mat-progress-bar>
+    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{channelBalances.localBalance && channelBalances.localBalance > 0 ? ((+channelBalances.localBalance/((+channelBalances.localBalance)+(+channelBalances.remoteBalance)))*100) : 0}}"></mat-progress-bar>
     <mat-divider class="w-100 dashboard-divider"></mat-divider>
   </div>
-  <div fxLayout="column" fxFlex="92" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
+  <div fxLayout="column" fxFlex="89" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
     <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
       <div *ngFor="let channel of allChannels" class="mt-2">
-        <h4>{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</h4>
+        <span class="dashboard-capacity-header">{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-          <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
+          <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         </div>
         <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.balancedness}}"></mat-progress-bar>
       </div>
@@ -23,26 +24,3 @@
 <ng-template #noChannelBlock>
   <div fxLayout="column" fxFlex="100" class="w-100 mt-2">No channels available.</div>
 </ng-template>
-<!-- <div fxLayout="column" fxLayoutAlign="space-between start" fxFlex="100">
-  <div fxLayout="column" fxFlex="5" fxLayoutAlign="start start" class="w-100">
-    <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-      <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local:</strong>{{channelBalances.localBalance || 0 | number}} Sats</mat-hint>
-      <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote:</strong>{{channelBalances.remoteBalance || 0 | number}} Sats</mat-hint>
-    </div>
-    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channelBalances.localBalance && channelBalances.localBalance > 0 ? ((+channelBalances.localBalance/((+channelBalances.localBalance)+(+channelBalances.remoteBalance)))*100) : 0}}"></mat-progress-bar>
-    <mat-divider class="w-100 dashboard-divider"></mat-divider>
-  </div>
-  <div fxLayout="column" fxFlex="92" fxFlex.lt-md="85" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
-    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
-        <ngx-charts-bar-horizontal-stacked
-        [xAxis]="true"
-        [yAxis]="true"
-        [noBarWhenZero]="false"
-        [showDataLabel]="true"
-        [results]="allChannelBalances"></ngx-charts-bar-horizontal-stacked>
-    </div>
-  </div>
-</div>
-<ng-template #noChannelBlock>
-  <div fxLayout="column" fxFlex="100" class="w-100 mt-2">No channels available.</div>
-</ng-template> -->

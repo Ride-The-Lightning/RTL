@@ -1,7 +1,7 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
-  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, QueryRoutes
+  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
@@ -20,7 +20,7 @@ export interface LNDState {
   pendingChannels: PendingChannels;
   numberOfActiveChannels: number;
   numberOfInactiveChannels: number;
-  numberOfPendingChannels: number;
+  numberOfPendingChannels: PendingChannelsGroup;
   totalCapacityActive: number;
   totalCapacityInactive: number;
   totalLocalBalance: number;
@@ -46,7 +46,7 @@ export const initLNDState: LNDState = {
   pendingChannels: {},
   numberOfActiveChannels: 0,
   numberOfInactiveChannels: 0,
-  numberOfPendingChannels: -1,
+  numberOfPendingChannels: { open: {num_channels: 0, limbo_balance: 0}, closing: {num_channels: 0, limbo_balance: 0}, force_closing: {num_channels: 0, limbo_balance: 0}, waiting_close: {num_channels: 0, limbo_balance: 0}, total_channels: 0, total_limbo_balance: 0},
   totalCapacityActive: 0,
   totalCapacityInactive: 0,
   totalLocalBalance: -1,

@@ -105,10 +105,9 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   addNewPeer() {
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Add Peer',
-      titleMessage: 'Enter Peer Address',
+      alertTitle: 'Add peer',
       message: '',
-      noBtnText: 'Cancel',
+      noBtnText: 'Do it Later',
       yesBtnText: 'Add Peer',
       flgShowInput: true,
       getInputs: [

@@ -1,15 +1,15 @@
 @import './color-swatches/light-dull-theme.scss';
 @import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
+@import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
 @include mat-core();
 
 $pink-primary: mat-palette($mat-pink, 500, 300, A200);
 $pink-accent: mat-palette($mat-blue-grey, 700, 500, 900);
+$pink-accent-night:  mat-palette($mat-white, 300, 600, 900);
 $pink-warn: mat-palette($red-warn, 500);
 
-// $pink-day-theme: create-light-dull-theme($pink-primary, $pink-accent, $pink-warn);
-$pink-night-theme: create-dark-bright-theme($pink-primary, $pink-accent, $pink-warn);
+$pink-night-theme: create-dark-bright-theme($pink-primary, $pink-accent-night, $pink-warn);
 
 $pink-day-theme: mat-light-theme($pink-primary, $pink-accent, $pink-warn);
-// $pink-night-theme: mat-dark-theme($pink-primary, $pink-accent, $pink-warn);

@@ -63,13 +63,6 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
         ...state,
         nodeData: action.payload
       };
-    case RTLActions.SET_NODE_PENDING_CHANNELS_DATA:
-      const newNodeData = state.nodeData;
-      newNodeData.numberOfPendingChannels = action.payload;
-      return {
-        ...state,
-        nodeData: newNodeData
-      };
     case RTLActions.SET_RTL_CONFIG:
       return {
         ...state,

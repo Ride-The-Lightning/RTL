@@ -63,7 +63,6 @@ export interface GetInfoRoot {
   version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;  
-  numberOfPendingChannels?: number;
 }
 
 export interface SelNodeChild {
