@@ -45,9 +45,9 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef fxLayoutAlign="end center" class="pl-1">
-          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
-            <mat-select placeholder="Table Actions" tabindex="1" class="mr-0">
+        <th mat-header-cell *matHeaderCellDef class="pl-1">
+          <div class="bordered-box table-actions-select">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelUpdate('all')">Update Fee Policy</mat-option>
             </mat-select>

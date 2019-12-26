@@ -11,9 +11,9 @@ import { Channel } from '../../../shared/models/lndModels';
 export class ChannelCapacityInfoComponent implements OnChanges {
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
-  @Input() channelBalances: {localBalance: number, remoteBalance: number};
+  @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: string};
   @Input() allChannels: Channel[];
-  @Input() sortBy: string = 'Channel Balance';
+  @Input() sortBy: string = 'Balance Score';
 
   constructor() {}
 

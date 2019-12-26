@@ -1,18 +1,16 @@
 .mat-column-alias {
-  flex: 0 0 15%;
-  width: 15%;
+  flex: 1 1 10%;
   white-space: nowrap;
   overflow: hidden;  
   text-overflow: ellipsis;
 }
 
 .mat-column-pub_key {
-  flex: 0 0 35%;
-  width: 35%;
+  flex: 1 1 20%;
   white-space: nowrap;
-  overflow: hidden;  
+  overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 2rem;
+  padding-left: 2rem;
 }
 
 .mat-column-ping_time {

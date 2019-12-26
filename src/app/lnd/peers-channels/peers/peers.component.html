@@ -11,7 +11,7 @@
       </button>
     </div>
   </form>
-  <div fxLayout="column" fxLayoutAlign="start stretch">
+  <div fxLayout="column">
     <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
       <div fxFlex="70">
         <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
@@ -23,27 +23,25 @@
         </div>
       </mat-form-field>
     </div>
-    <div perfectScrollbar class="table-container">
+    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-          <ng-container matColumnDef="alias">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-              <td mat-cell *matCellDef="let peer"> {{peer?.alias}} </td>
-            </ng-container>
-            <ng-container matColumnDef="pub_key">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Pub Key </th>
-          <td mat-cell *matCellDef="let peer">
-            <div> {{peer?.pub_key}} </div>
-          </td>
+        <ng-container matColumnDef="alias">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '10rem'}"> {{peer?.alias}} </td>
+        </ng-container>
+        <ng-container matColumnDef="pub_key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Public Key </th>
+          <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '5rem' : '20rem'}"> {{peer?.pub_key}} </td>
         </ng-container>
         <ng-container matColumnDef="sat_sent">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
-            {{information?.smaller_currency_unit}} Sent </th>
+            Sats Sent </th>
           <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_sent | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="sat_recv">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
-            {{information?.smaller_currency_unit}} Recv </th>
+            Sats Received </th>
           <td mat-cell *matCellDef="let peer"><span fxLayoutAlign="end center"> {{peer?.sat_recv | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="ping_time">
