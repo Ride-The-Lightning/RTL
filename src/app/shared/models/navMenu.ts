@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faTools, faServer, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faTools, faProjectDiagram, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export const MENU_DATA: MenuRootNode = {
   LNDChildren: [
@@ -11,7 +11,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/lnd/routing'},
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'}
     ]},
-    {id: 5, parentId: 0, name: 'Node/Network', iconType: 'FA', icon: faServer, link: '/lnd/network'},
+    {id: 5, parentId: 0, name: 'Network', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/network'},
     {id: 6, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings'},
     {id: 7, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help'}    
   ],

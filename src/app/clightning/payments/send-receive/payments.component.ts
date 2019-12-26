@@ -106,7 +106,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'amount_msat', value: this.paymentDecoded.amount_msat, title: 'Amount (mSat)', width: 100, type: DataTypeEnum.NUMBER}]
     ];
     if (undefined === this.paymentDecoded.msatoshi || this.paymentDecoded.msatoshi === 0) {
-        const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
+        const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',

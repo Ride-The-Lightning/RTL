@@ -10,7 +10,7 @@
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
         <div (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
+            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-2"></fa-icon>
             <mat-icon *ngIf="!node.iconType" class="mat-icon-36">{{node.icon}}</mat-icon>
             <span *ngIf="settings.menuType === 'regular'">{{node.name}}</span>
           </div>
@@ -19,7 +19,7 @@
       <mat-nested-tree-node fxLayout="column" *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
         <div fxLayout="row" fxLayoutAlign="start center" class="mat-nested-tree-node-parent">
           <div fxFlex="89" fxLayoutAlign="start center">
-            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4"></fa-icon>
+            <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-2"></fa-icon>
             <mat-icon *ngIf="!node.iconType" class="mat-icon-36">{{node.icon}}</mat-icon>
             <span>{{node.name}}</span>
           </div>
@@ -90,7 +90,7 @@
     <mat-divider class="w-100"></mat-divider>
     <mat-tree [dataSource]="navMenusShowData" [treeControl]="treeControlShowData" *ngIf="settings.menuType === 'regular'">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onShowData(node)">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-2" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
         <mat-icon *ngIf="!node.iconType" class="mat-icon-36" matTooltip="{{node.name}}" matTooltipPosition="right">{{node.icon}}</mat-icon>
         <span>{{node.name}}</span>
       </mat-tree-node>
@@ -112,7 +112,7 @@
   <div fxLayout="column" fxFlex="10" fxLayoutAlign="end stretch" class="w-100">
     <mat-tree [dataSource]="navMenusLogout" [treeControl]="treeControlLogout" *ngIf="settings.menuType === 'regular' && showLogout">
       <mat-tree-node *matTreeNodeDef="let node" (click)="onClick(node)">
-        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-4" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
+        <fa-icon *ngIf="node.iconType === 'FA'" [icon]="node.icon" class="fa-icon-small mr-2" matTooltip="{{node.name}}" matTooltipPosition="right"></fa-icon>
         <span>{{node.name}}</span>
       </mat-tree-node>
     </mat-tree>

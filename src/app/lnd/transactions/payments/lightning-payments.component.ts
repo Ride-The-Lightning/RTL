@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -15,6 +16,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -33,6 +35,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
+  public selNode: SelNodeChild = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public payments: any;
@@ -40,14 +43,15 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
+  public paymentDecodedHint = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -66,7 +70,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('lnd')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsLnd.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPayments') {
@@ -74,6 +78,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      this.selNode = rtlStore.nodeSettings;
       this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
@@ -123,7 +128,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
             {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
             {key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30}]
         ];
-        const titleMsg = 'It is an open amount invoice. Enter the amount (Sats) to pay.';
+        const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',
@@ -175,12 +180,24 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onVerifyPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-    this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
-    this.lndEffects.setDecodedPayment.subscribe(decodedPayment => {
-      this.paymentDecoded = decodedPayment;
-    });
+  onPaymentRequestEntry() {
+    this.paymentDecodedHint = '';
+    if(this.paymentRequest.length > 100) {
+      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
+      this.lndEffects.setDecodedPayment.subscribe(decodedPayment => {
+        this.paymentDecoded = decodedPayment;
+        if(this.paymentDecoded.num_satoshis) {
+          this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2])
+          .pipe(takeUntil(this.unSubs[1]))
+          .subscribe(data => {
+            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+          });
+        } else {
+          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+        }
+      });
+    }
   }
 
   resetData() {
@@ -219,7 +236,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.unsub.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

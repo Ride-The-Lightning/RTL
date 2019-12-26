@@ -25,6 +25,12 @@ import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { LayoutModule } from '@angular/cdk/layout';
 
 @NgModule({
   imports: [
@@ -35,7 +41,13 @@ import { CLEffects } from './clightning/store/cl.effects';
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
     StoreModule.forRoot(RTLReducer),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    MatGridListModule,
+    MatCardModule,
+    MatMenuModule,
+    MatIconModule,
+    MatButtonModule,
+    LayoutModule
   ],
   declarations: [
     AppComponent

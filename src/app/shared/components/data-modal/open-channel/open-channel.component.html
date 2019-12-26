@@ -8,39 +8,35 @@
     </mat-card-header>
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
-        <div fxLayout="row">
-          <div fxFlex="100">
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <div fxLayout="column">
-                <div fxLayout="row">
-                  <div fxFlex="100">
-                    <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
-                    <span class="foreground-secondary-text">{{peer.pub_key}}</span>
-                  </div>
-                </div>
-                <mat-divider class="w-100 my-1"></mat-divider>
-                <div fxLayout="row">
-                  <div fxFlex="50">
-                    <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-                    <span class="overflow-wrap foreground-secondary-text">{{peer.address}}</span>
-                  </div>
-                  <div fxFlex="50">
-                      <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
-                      <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'True' : 'False'}}</span>
-                    </div>
-                  </div>
+        <mat-expansion-panel class="flat-expansion-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="column">
+            <div fxLayout="row">
+              <div fxFlex="100">
+                <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
+                <span class="foreground-secondary-text">{{peer.pub_key}}</span>
               </div>
-            </mat-expansion-panel>
+            </div>
+            <mat-divider class="w-100 my-1"></mat-divider>
+            <div fxLayout="row">
+              <div fxFlex="50">
+                <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
+                <span class="overflow-wrap foreground-secondary-text">{{peer.address}}</span>
+              </div>
+              <div fxFlex="50">
+                  <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
+                  <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'True' : 'False'}}</span>
+                </div>
+              </div>
           </div>
-        </div>
-        <div fxLayout="column">
+        </mat-expansion-panel>
+        <div fxLayout="column" class="bordered-box mt-2 open-inputs-box">
           <div fxLayout="row" fxFlex="100">
-            <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mt-2">
+            <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
               <div fxFlex="100" fxLayoutAlign="start start">
                 <span class="page-title">Open Channel</span>
               </div>
@@ -49,7 +45,7 @@
           <div fxLayout="row" fxFlex="100">
             Available balance: {{totalBalance | number}} {{information.smaller_currency_unit}}
           </div>
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
+          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
             <mat-form-field fxFlex="60" fxLayoutAlign="start end">
               <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel">
               <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>

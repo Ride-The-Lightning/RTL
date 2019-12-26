@@ -1,14 +1,23 @@
-<div fxLayout="column" class="mt-2">
+<div fxLayout="column">
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-    <h4 fxFlex="100" class="blinker">Save your backup files in a redundant location.</h4>
-    <h4 fxFlex="100" class="mt-1">Backup folder location: {{selNode.channelBackupPath}}</h4>
+    <div fxFlex="100" class="alert alert-warn">
+      <fa-icon [icon]="faExclamationTriangle" class="mr-1"></fa-icon>
+      <span>Save your backup files in a redundant location.</span>
+    </div>
+    <div fxFlex="100" class="alert alert-info">
+      <fa-icon [icon]="faServer" class="mr-1"></fa-icon>
+      <span><strong>Backup Folder Location: </strong>{{selNode.channelBackupPath}}.</span>
+    </div>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All Backups</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>
       <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
     </div>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
-    <div fxFlex="70"></div>
+    <div fxFlex="70">
+      <fa-icon [icon]="faArchive" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Backups</span>
+    </div>
     <mat-form-field fxFlex="30">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>

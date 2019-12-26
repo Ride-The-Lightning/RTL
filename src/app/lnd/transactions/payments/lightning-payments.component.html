@@ -1,7 +1,8 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field class="w-100">
-      <input matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" required #paymentReq="ngModel">
+      <input matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" required #paymentReq="ngModel">
+      <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
     </mat-form-field>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" *ngIf="showDetails" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
