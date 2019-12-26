@@ -35,6 +35,19 @@ export const TRANS_TYPES = [
   {id: '2', name: 'Fee'}
 ];
 
+export const NODE_SETTINGS = {
+  themes: [
+    {id: 'purple', name: 'Diogo'}, 
+    {id: 'teal', name: 'Sauby'},
+    {id: 'indigo', name: 'RTL'},
+    {id: 'pink', name: 'BK'}
+  ],
+  modes: [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}],
+  fontSize: [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}],
+  menuTypes: [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}],
+  menus: [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}]
+};
+
 export enum UserPersonaEnum {
   OPERATOR = 'operator',
   MERCHANT = 'merchant'

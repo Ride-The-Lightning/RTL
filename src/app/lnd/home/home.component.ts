@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
-import { faFileDownload, faFileUpload, faChartPie, faBolt, faInfoCircle, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faInfoCircle, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
@@ -22,8 +23,8 @@ import * as RTLActions from '../../store/rtl.actions';
 export class HomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
   public faFrown = faFrown;
-  public faFileDownload = faFileDownload;
-  public faFileUpload = faFileUpload;
+  public faAngleDoubleDown = faAngleDoubleDown;
+  public faAngleDoubleUp = faAngleDoubleUp;
   public faChartPie = faChartPie;
   public faBolt = faBolt;
   public faInfoCircle = faInfoCircle;
@@ -49,54 +50,55 @@ export class HomeComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
+  public sortField = 'Channel Balance';
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
         { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 10, rows: 1 },
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 10, rows: 1 },
-        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
-        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 10, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
-        { id: 'transactions', title: 'Transactions', cols: 6, rows: 4 },
-        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 6, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 5, rows: 1 },
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 5, rows: 1 },
-        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
-        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 5, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
-        { id: 'transactions', title: 'Transactions', cols: 3, rows: 4 },
-        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 3, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
       this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', icon: this.faInfoCircle, title: 'Node Information', cols: 3, rows: 1 },
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
-        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
-        { id: 'balance', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-        { id: 'inboundLiq', icon: this.faFileDownload, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', icon: this.faFileUpload, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'transactions', title: 'Transactions', cols: 2, rows: 5 }
+        { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 2, rows: 5 }
       ];
     }
   }
@@ -157,7 +159,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         pending: { channels:  rtlStore.numberOfPendingChannels.open.num_channels, capacity: rtlStore.numberOfPendingChannels.open.limbo_balance },
         closing: { 
           channels: rtlStore.numberOfPendingChannels.closing.num_channels + rtlStore.numberOfPendingChannels.force_closing.num_channels + rtlStore.numberOfPendingChannels.waiting_close.num_channels,
-          capacity: rtlStore.numberOfPendingChannels.closing.limbo_balance + rtlStore.numberOfPendingChannels.force_closing.limbo_balance + rtlStore.numberOfPendingChannels.waiting_close.limbo_balance
+          capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
         }
       };
       if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0 && this.flgLoading[5] !== 'error') {
@@ -190,6 +192,24 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.flgChildInfoUpdated = true;
       }
     });
+  }
+
+  onNavigateTo(link: string) {
+    this.router.navigateByUrl(link);
+  }
+
+  onsortChannelsBy() {
+    if (this.sortField === 'Channel Balance') {
+      this.sortField =  'Capacity';
+      this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
+        const x = +a.local_balance + +a.remote_balance;
+        const y = +b.local_balance + +b.remote_balance;
+        return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+      });
+    } else {
+      this.sortField =  'Channel Balance';
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
+    }
   }
 
   ngOnDestroy() {

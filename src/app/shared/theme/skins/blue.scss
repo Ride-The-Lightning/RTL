@@ -6,7 +6,7 @@
 @include mat-core();
 
 $blue-primary: mat-palette($mat-blue, 700, 200, A200);
-$blue-accent: mat-palette($mat-pink, A200, A100, A400);
+$blue-accent:  mat-palette($mat-gray, 800, 600, 900);
 $blue-accent-night:  mat-palette($mat-white, 300, 600, 900);
 $blue-warn: mat-palette($red-warn, 500);
 

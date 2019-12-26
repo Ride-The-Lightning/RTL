@@ -10,13 +10,20 @@
           <mat-card-title>
             <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
             <span>{{card.title}}</span>
+            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuOperator" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
+              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+              <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By {{sortField === 'Channel Balance' ? 'Capacity' : 'Channel Balance'}}</button>
+            </mat-menu>            
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
             <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
-            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
+            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
             <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-fee-info>
             <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[5]==='error' || flgLoading[6]==='error'}"></rtl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
@@ -38,6 +45,12 @@
           <mat-card-title>
             <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
             <span>{{card.title}}</span>
+            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuMerchant" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
+              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+            </mat-menu>            
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
@@ -46,10 +59,20 @@
             <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
             <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
             <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
-            <span fxLayout="column" fxFlex="100" *ngSwitchCase="'transactions'">
-              <mat-tab-group fxLayout="column" fxFlex="100">
+            <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
+              <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive"><rtl-lightning-invoices class="h-100" [showDetails]="false"></rtl-lightning-invoices></mat-tab>
                 <mat-tab label="Pay"><rtl-lightning-payments [showDetails]="false"></rtl-lightning-payments></mat-tab>
+                <mat-tab [disabled]="true">
+                  <ng-template mat-tab-label>
+                    <button mat-icon-button class="more-button" [matMenuTriggerFor]="menuTransactions" aria-label="Toggle menu" style="max-width: 20px;">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
+                      <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                    </mat-menu>            
+                  </ng-template>
+                </mat-tab>                
               </mat-tab-group>
             </span>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>

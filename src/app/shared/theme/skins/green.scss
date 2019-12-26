@@ -7,7 +7,7 @@
 @include mat-core();
 
 $green-primary: mat-palette($green-primary, 500, 300, A200);
-$green-accent: mat-palette($mat-amber, A200, A100, A700);
+$green-accent:  mat-palette($mat-gray, 800, 600, 900);
 $green-accent-night:  mat-palette($mat-white, 300, 600, 900);
 $green-warn: mat-palette($red-warn, 500);
 

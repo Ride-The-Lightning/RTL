@@ -330,6 +330,7 @@ export class RTLEffects implements OnDestroy {
        map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
+        console.warn(action.payload.lnNode);
         this.initializeNode(action.payload.lnNode, action.payload.isInitialSetup);
         return { type: RTLActions.VOID };
        }),

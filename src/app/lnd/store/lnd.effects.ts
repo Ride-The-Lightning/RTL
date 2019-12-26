@@ -478,6 +478,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(channels);
             let pendingChannels: PendingChannelsGroup = { open: {num_channels: 0, limbo_balance: 0}, closing: {num_channels: 0, limbo_balance: 0}, force_closing: {num_channels: 0, limbo_balance: 0}, waiting_close: {num_channels: 0, limbo_balance: 0}, total_channels: 0, total_limbo_balance: 0};
             if (channels) {
+              pendingChannels.total_limbo_balance = channels.total_limbo_balance;
               if (channels.pending_closing_channels) {
                 pendingChannels.closing.num_channels = channels.pending_closing_channels.length;
                 pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_closing_channels.length;

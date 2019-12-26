@@ -33,6 +33,14 @@ exports.getRTLConfig = (req, res, next) => {
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
         jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
+        jsonConfig.Settings.flgSidenavOpened = (undefined !== jsonConfig.Settings.flgSidenavOpened) ? jsonConfig.Settings.flgSidenavOpened : true;
+        jsonConfig.Settings.flgSidenavPinned = (undefined !== jsonConfig.Settings.flgSidenavPinned) ? jsonConfig.Settings.flgSidenavPinned : true;
+        jsonConfig.Settings.menu = (undefined !== jsonConfig.Settings.menu) ? jsonConfig.Settings.menu : 'vertical';
+        jsonConfig.Settings.menuType = (undefined !== jsonConfig.Settings.menuType) ? jsonConfig.Settings.menuType : 'regular';
+        jsonConfig.Settings.fontSize = (undefined !== jsonConfig.Settings.fontSize) ? jsonConfig.Settings.fontSize : 'regular-font';
+        jsonConfig.Settings.themeMode = (undefined !== jsonConfig.Settings.themeMode) ? jsonConfig.Settings.themeMode : 'day';
+        jsonConfig.Settings.themeColor = (undefined !== jsonConfig.Settings.themeColor) ? jsonConfig.Settings.themeColor : 'purple';
+        jsonConfig.Settings.satsToBTC = (undefined !== jsonConfig.Settings.satsToBTC) ? jsonConfig.Settings.satsToBTC : false;
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
@@ -71,11 +79,18 @@ exports.getRTLConfig = (req, res, next) => {
             } else {
               authentication.configPath = '';
             }
-  
-            if(node.Settings.bitcoindConfigPath) {
+              if(node.Settings.bitcoindConfigPath) {
               authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
             }
             node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
+            node.Settings.flgSidenavOpened = (undefined !== node.Settings.flgSidenavOpened) ? node.Settings.flgSidenavOpened : true;
+            node.Settings.flgSidenavPinned = (undefined !== node.Settings.flgSidenavPinned) ? node.Settings.flgSidenavPinned : true;
+            node.Settings.menu = (undefined !== node.Settings.menu) ? node.Settings.menu : 'vertical';
+            node.Settings.menuType = (undefined !== node.Settings.menuType) ? node.Settings.menuType : 'regular';
+            node.Settings.fontSize = (undefined !== node.Settings.fontSize) ? node.Settings.fontSize : 'regular-font';
+            node.Settings.themeMode = (undefined !== node.Settings.themeMode) ? node.Settings.themeMode : 'day';
+            node.Settings.themeColor = (undefined !== node.Settings.themeColor) ? node.Settings.themeColor : 'purple';
+            node.Settings.satsToBTC = (undefined !== node.Settings.satsToBTC) ? node.Settings.satsToBTC : false;
             nodesArr.push({
               index: node.index,
               lnNode: node.lnNode,
@@ -224,7 +239,6 @@ exports.getConfig = (req, res, next) => {
 
 exports.getCurrencyRates = (req, res, next) => {
   options.url = 'https://blockchain.info/ticker';
-  console.log(options);
   request(options).then((body) => {
     if(undefined === body || body.error) {
       res.status(500).json({
@@ -234,7 +248,6 @@ exports.getCurrencyRates = (req, res, next) => {
     } else {
       res.status(200).json(body);
       body = JSON.parse(body);
-      logger.info({fileName: 'RTLConf', msg: 'Rates Received: ' + JSON.stringify(body)});
     }
   })
   .catch(function (err) {

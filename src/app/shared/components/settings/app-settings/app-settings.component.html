@@ -1,13 +1,17 @@
 <div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
   <div fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
-    <div fxFlex="100" class="mb-2">
+    <div fxFlex="100" class="mb-1">
       <fa-icon [icon]="faWrench" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Node Layout</span>
+    </div>
+    <div fxFlex="100" class="alert alert-info">
+      <fa-icon [icon]="faInfoCircle" class="mr-1"></fa-icon>
+      <span>Application layout will be tailored based upon user persona.</span>
     </div>
     <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="space-between stretch">
       <mat-form-field fxFlex="32" fxLayoutAlign="start end">
         <mat-label>User Persona</mat-label>
-        <mat-select [(ngModel)]="selNode.settings.userPersona" tabindex="1" required name="userPersona">
+        <mat-select [(ngModel)]="selNode.settings.userPersona" tabindex="1" name="userPersona">
           <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
             {{userPersona | titlecase}}
           </mat-option>
@@ -15,7 +19,7 @@
       </mat-form-field>
       <mat-form-field fxFlex="32" fxLayoutAlign="start end">
         <mat-label>Currency Unit</mat-label>
-        <mat-select [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="1" required name="currencyUnit">
+        <mat-select [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="1" name="currencyUnit">
           <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
             {{currencyUnit.id}}
           </mat-option>
@@ -23,16 +27,12 @@
       </mat-form-field>
       <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
         <mat-label>Default Node</mat-label>
-        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" required name="defaultNode">
+        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
           <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
             {{node.lnNode}} ({{node.lnImplementation}})
           </mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
-    <div fxFlex="100" class="alert alert-info">
-      <fa-icon [icon]="faInfoCircle" class="mr-1"></fa-icon>
-      <span>Application layout will be tailored based upon user persona, this will affect the information displayed.</span>
     </div>
     <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start stretch" class="mt-1">
       <mat-divider class="w-100"></mat-divider>
@@ -43,7 +43,7 @@
         </div>
         <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
           <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
-            <h4>Theme</h4>
+            <h4>Mode</h4>
             <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
               <mat-radio-button *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
               </mat-radio-button>
@@ -51,11 +51,11 @@
           </div>
           <div fxLayout="column" fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayoutAlign="space-between stretch"></div>
           <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="30" fxLayoutAlign="space-between stretch">
-            <h4>Colors</h4>
+            <h4>Themes</h4>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <span *ngFor="let themeColor of themeColors" fxLayout="row">
-                <div [class]="themeColor" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor}" (click)="changeThemeColor(themeColor)"></div>
-                {{themeColor | titlecase}}                
+                <div [class]="themeColor.id" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+                {{themeColor.name}}
               </span>
             </div>
           </div>

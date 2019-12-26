@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
+import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -17,7 +17,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./routing.component.scss']
 })
 export class RoutingComponent implements OnInit, OnDestroy {
-  public faProjectDiagram = faProjectDiagram;
+  public faMapSigns = faMapSigns;
   public lastOffsetIndex = 0;
   public eventsData = [];
   public today = new Date(Date.now());

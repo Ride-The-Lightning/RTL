@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faArchive } from '@fortawesome/free-solid-svg-icons';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-backup',
@@ -7,7 +7,7 @@ import { faArchive } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./backup.component.scss']
 })
 export class BackupComponent {
-  public faArchive = faArchive;
+  public faDownload = faDownload;
 
   constructor() {}
 

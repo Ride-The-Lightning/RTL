@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faArchive, faProjectDiagram, faNetworkWired, faCog, faQuestion, faSearch, faTools, faServer } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faTools, faServer, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export const MENU_DATA: MenuRootNode = {
   LNDChildren: [
@@ -7,8 +7,8 @@ export const MENU_DATA: MenuRootNode = {
     {id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/lnd/peerschannels', children: [
       {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/lnd/peerschannels'},
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/transactions'},
-      {id: 33, parentId: 3, name: 'Backup', iconType: 'FA', icon: faArchive, link: '/lnd/backup'},
-      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/routing'},
+      {id: 33, parentId: 3, name: 'Backup', iconType: 'FA', icon: faDownload, link: '/lnd/backup'},
+      {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/lnd/routing'},
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/lnd/lookups'}
     ]},
     {id: 5, parentId: 0, name: 'Node/Network', iconType: 'FA', icon: faServer, link: '/lnd/network'},

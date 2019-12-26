@@ -19,19 +19,17 @@ exports.getAllChannels = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channels';
   options.qs = req.query;
+  let local = 0;
+  let remote = 0;
+  let total = 0;
   request(options).then(function (body) {
     if(body.channels) {
       Promise.all(
         body.channels.map(channel => {
-          if (!channel.local_balance && !channel.remote_balance) {
-            channel.balancedness = 50;  
-          } else if((channel.local_balance || channel.local_balance < 1) && !channel.remote_balance) {
-            channel.balancedness = 100;  
-          } else if(!channel.local_balance && (channel.remote_balance || channel.remote_balance < 1)) {
-            channel.balancedness = 0;  
-          } else {
-            channel.balancedness = (+channel.local_balance/(+channel.remote_balance + +channel.local_balance)) * 100;
-          }
+          local = (channel.local_balance) ? +channel.local_balance : 0;
+          remote = (channel.remote_balance) ? +channel.remote_balance : 0;
+          total = local + remote;
+          channel.balancedness = ((1 - Math.abs((local-remote)/total)) * 100).toFixed(2);
           return getAliasForChannel(channel);
         })
       )
