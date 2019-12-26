@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
   public inactiveChannels = 0;
-  public channelBalances = {localBalance: 0, remoteBalance: 0};
+  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
-  public sortField = 'Channel Balance';
+  public sortField = 'Balance Score';
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -142,8 +142,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (this.flgLoading[2] !== 'error') {
         this.flgLoading[2] = false;
       }
+      let local = (rtlStore.totalLocalBalance) ? +rtlStore.totalLocalBalance : 0;
+      let remote = (rtlStore.totalRemoteBalance) ? +rtlStore.totalRemoteBalance : 0;
+      let total = local + remote;
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
 
-      this.channelBalances = { localBalance: rtlStore.totalLocalBalance, remoteBalance: rtlStore.totalRemoteBalance };
       this.balances.lightning = rtlStore.totalLocalBalance;
       if (this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = false;
@@ -199,7 +202,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onsortChannelsBy() {
-    if (this.sortField === 'Channel Balance') {
+    if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
       this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
         const x = +a.local_balance + +a.remote_balance;
@@ -207,7 +210,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
-      this.sortField =  'Channel Balance';
+      this.sortField =  'Balance Score';
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
     }
   }

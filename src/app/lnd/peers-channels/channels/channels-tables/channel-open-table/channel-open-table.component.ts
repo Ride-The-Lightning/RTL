@@ -82,12 +82,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onChannelUpdate(channelToUpdate: any) {
     if (channelToUpdate === 'all') {
-      const titleMsg = 'Updated fee policy for all the Channels';
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update All Channels Fee Policy',
-        titleMessage: titleMsg,
+        alertTitle: 'Update Fee Policy for all Channels',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,
@@ -95,7 +93,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         getInputs: [
           {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
           {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32},
-          {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 144, width: 32}
+          {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32}
         ]
       }}));
       this.rtlEffects.closeConfirm
@@ -126,11 +124,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
         this.logger.info(this.myChanPolicy);
         this.store.dispatch(new RTLActions.CloseSpinner());
-        const titleMsg = 'Update values for channel point: ' + channelToUpdate.channel_point;
+        const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
         const confirmationMsg = [];
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Update Channel',
+          alertTitle: 'Update Fee Policy',
           titleMessage: titleMsg,
           noBtnText: 'Cancel',
           yesBtnText: 'Update Channel',
