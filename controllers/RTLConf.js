@@ -113,15 +113,15 @@ exports.updateUISettings = (req, res, next) => {
     config.nodes.find(node => {
       if(node.index == common.selectedNode.index) {
         node.Settings.userPersona = req.body.updatedSettings.userPersona;
-        node.Settings.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
-        node.Settings.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
-        node.Settings.menu = req.body.updatedSettings.menu;
-        node.Settings.menuType = req.body.updatedSettings.menuType;
-        node.Settings.fontSize = req.body.updatedSettings.fontSize;
         node.Settings.themeMode = req.body.updatedSettings.themeMode;
         node.Settings.themeColor = req.body.updatedSettings.themeColor;
-        node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
         node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit;
+        node.Settings.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
+        node.Settings.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
+        node.Settings.menu = 'vertical'; // req.body.updatedSettings.menu;
+        node.Settings.menuType = 'regular'; // req.body.updatedSettings.menuType;
+        node.Settings.fontSize = 'regular-font'; // req.body.updatedSettings.fontSize;
+        node.Settings.satsToBTC = false; // req.body.updatedSettings.satsToBTC;
       }
     });
     try {
@@ -141,15 +141,15 @@ exports.updateUISettings = (req, res, next) => {
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const settingsTemp = config.Settings;
     settingsTemp.userPersona = req.body.updatedSettings.userPersona;
-    settingsTemp.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
-    settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
-    settingsTemp.menu = req.body.updatedSettings.menu;
-    settingsTemp.menuType = req.body.updatedSettings.menuType;
-    settingsTemp.fontSize = req.body.updatedSettings.fontSize;
     settingsTemp.themeMode = req.body.updatedSettings.themeMode;
     settingsTemp.themeColor = req.body.updatedSettings.themeColor;
-    settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
     settingsTemp.currencyUnit = req.body.updatedSettings.currencyUnit;
+    settingsTemp.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
+    settingsTemp.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
+    settingsTemp.menu = 'vertical'; // req.body.updatedSettings.menu;
+    settingsTemp.menuType = 'regular'; // req.body.updatedSettings.menuType;
+    settingsTemp.fontSize = 'regular-font'; // req.body.updatedSettings.fontSize;
+    settingsTemp.satsToBTC = false; // req.body.updatedSettings.satsToBTC;
     delete config.Settings;
     fs.writeFileSync(RTLConfFile, ini.stringify(config));
     fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {

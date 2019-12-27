@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faServer, faExclamationTriangle, faArchive } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faExclamationTriangle, faArchive } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
@@ -26,7 +26,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  public faServer = faServer;
+  public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public faArchive = faArchive;
   public pageSize = PAGE_SIZE;

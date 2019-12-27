@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faWrench, faPaintBrush, faServer } from '@fortawesome/free-solid-svg-icons';
+import { faWrench, faPaintBrush, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../services/consts-enums-functions';
 import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
@@ -20,7 +20,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class AppSettingsComponent implements OnInit, OnDestroy {
   public faWrench = faWrench;
   public faPaintBrush = faPaintBrush;
-  public faServer = faServer;
+  public faInfoCircle = faInfoCircle;
   public selNode: LightningNode;
   public information: GetInfoRoot = {};
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];

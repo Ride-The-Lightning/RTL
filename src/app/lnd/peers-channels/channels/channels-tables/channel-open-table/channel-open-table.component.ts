@@ -48,13 +48,13 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.displayedColumns = [ 'remote_alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'actions'];
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'total_satoshis_sent', 'total_satoshis_received', 'capacity', 'actions'];
+      this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
   }
 

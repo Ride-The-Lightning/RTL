@@ -27,19 +27,18 @@
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sent ({{information?.smaller_currency_unit}}) </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_sent | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_received">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Received ({{information?.smaller_currency_unit}}) </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
       </ng-container>
-      <ng-container matColumnDef="capacity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-3">Capacity</th>
+      <ng-container matColumnDef="balancedness">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-3">Balance Score </th>
         <td mat-cell *matCellDef="let channel" class="pl-3">
           <div fxLayout="row">
-            <mat-hint fxFlex="50" fxLayoutAlign="start center" class="font-size-80"><strong class="font-weight-900">Local: </strong>{{channel.local_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
-            <mat-hint fxFlex="50" fxLayoutAlign="end center" class="font-size-80"><strong class="font-weight-900">Remote: </strong>{{channel.remote_balance || 0 | number}} {{information?.smaller_currency_unit}}</mat-hint>
+            <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel.balancedness * 100}}</mat-hint>
           </div>
           <mat-progress-bar mode="determinate" value="{{channel.balancedness * 100}}"></mat-progress-bar>          
         </td>

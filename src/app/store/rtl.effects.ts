@@ -14,7 +14,7 @@ import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
 import { Settings, RTLConfiguration, LightningNode } from '../shared/models/RTLconfig';
-import { AuthenticateWith, CURRENCY_UNITS, AlertTypeEnum, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
+import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';

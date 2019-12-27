@@ -1,6 +1,6 @@
 <div fxLayout="column" id="rtl-container" class="rtl-container" [ngClass]="[settings.themeColor, settings.themeMode, settings.fontSize]" [class.horizontal]="settings.menu === 'horizontal'" [class.compact]="settings.menuType === 'compact'" [class.mini]="settings.menuType === 'mini'">
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar" *ngIf="settings.menu === 'vertical'">
-    <div fxLayoutAlign="center center">
+    <div>
       <button *ngIf="settings.menu === 'vertical'" class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
         <mat-icon class="mr-5px">menu</mat-icon>
       </button>
@@ -23,7 +23,11 @@
         </svg>
       </button>
     </div>
-    <div fxLayoutAlign="space-between center">
+    <div>
+      <span *ngIf="xSmallScreen">RTL</span>
+      <span *ngIf="!xSmallScreen">Ride The Lightning</span>
+    </div>
+    <div>
       <rtl-top-menu></rtl-top-menu>
     </div>
   </mat-toolbar>

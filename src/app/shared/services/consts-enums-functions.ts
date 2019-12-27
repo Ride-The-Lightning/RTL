@@ -38,7 +38,7 @@ export const TRANS_TYPES = [
 export const NODE_SETTINGS = {
   themes: [
     {id: 'purple', name: 'Diogo'}, 
-    {id: 'teal', name: 'Sauby'},
+    {id: 'teal', name: 'Suheb'},
     {id: 'indigo', name: 'RTL'},
     {id: 'pink', name: 'BK'}
   ],
@@ -50,7 +50,8 @@ export const NODE_SETTINGS = {
 
 export enum UserPersonaEnum {
   OPERATOR = 'operator',
-  MERCHANT = 'merchant'
+  MERCHANT = 'merchant',
+  ALL = 'all'
 }
 
 export enum AlertTypeEnum {

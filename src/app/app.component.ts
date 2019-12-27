@@ -32,6 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public flgCopied = false;
   public appConfig: RTLConfiguration;
   public accessKey = '';
+  public xSmallScreen = false;
   public smallScreen = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -44,15 +45,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     .subscribe((matches) => {
       if(matches.breakpoints[Breakpoints.XSmall]) {
         this.commonService.setScreenSize(ScreenSizeEnum.XS);
+        this.xSmallScreen = true;
         this.smallScreen = true;
       } else if(matches.breakpoints[Breakpoints.TabletPortrait]) {
         this.commonService.setScreenSize(ScreenSizeEnum.SM);
+        this.xSmallScreen = false;
         this.smallScreen = true;
       } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
         this.commonService.setScreenSize(ScreenSizeEnum.MD);
+        this.xSmallScreen = false;
         this.smallScreen = false;
       } else {
         this.commonService.setScreenSize(ScreenSizeEnum.LG);
+        this.xSmallScreen = false;
         this.smallScreen = false;
       }
     });

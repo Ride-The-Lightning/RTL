@@ -18,7 +18,7 @@ import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { AlertTypeEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, UserPersonaEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -42,6 +42,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public numPendingChannels = 0;
   public smallScreen = false;
   public childRootRoute = '';
+  public userPersonaEnum = UserPersonaEnum;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
   treeControlNested = new NestedTreeControl<MenuChildNode>(node => node.children);
   treeControlLogout = new NestedTreeControl<MenuChildNode>(node => node.children);
@@ -71,7 +72,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.nodeData;
-
       if (undefined !== this.information.identity_pubkey) {
         if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
           this.informationChain.chain = this.information.chains[0].toString();
@@ -91,9 +91,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.smallScreen = true;
       }
       if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toUpperCase() === 'CLT') {
-        this.navMenus.data = MENU_DATA.CLChildren;
+        this.navMenus.data = MENU_DATA.CLChildren.filter(navMenuData => navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona );
       } else {
-        this.navMenus.data = MENU_DATA.LNDChildren;
+        this.navMenus.data = MENU_DATA.LNDChildren.filter(navMenuData => navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona );
       }
       this.logger.info(rtlStore);
     });

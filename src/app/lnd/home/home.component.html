@@ -21,7 +21,7 @@
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
+            <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
             <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
             <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
             <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-fee-info>

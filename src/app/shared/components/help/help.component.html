@@ -4,17 +4,16 @@
     <span class="page-title">Help</span>
   </div>
   <div fxLayout="row" fxFlex="100" class="padding-gap-x" fxLayoutAlign="start start">
-    <mat-card fxLayout="column" fxFlex="100">
-      <mat-card-content fxFlex="100" *ngFor="let helpTopic of helpTopics">
-        <mat-expansion-panel>
+    <div fxLayout="column" fxFlex="100">
+      <div fxFlex="100" *ngFor="let helpTopic of helpTopics">
+        <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px"> 
           <mat-expansion-panel-header>
               <mat-panel-title>{{helpTopic.question}}</mat-panel-title>
             </mat-expansion-panel-header>
-          <mat-panel-description><pre class="pre-wrap">{{helpTopic.answer}}</pre></mat-panel-description>
+          <mat-panel-description><span class="pre-wrap">{{helpTopic.answer}}</span></mat-panel-description>
         </mat-expansion-panel>
-        <div class="divider"></div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </div>
   

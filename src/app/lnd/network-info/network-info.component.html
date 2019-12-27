@@ -12,9 +12,9 @@
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
             <mat-card-content fxFlex="100" class="dashboard-card-content">
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
-                <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-fee-info>
+                <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="true" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
                 <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[3]==='error' || flgLoading[4]==='error'}"></rtl-channel-status-info>
+                <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-fee-info>
               </div>
             </mat-card-content>
           </mat-card>
@@ -45,11 +45,11 @@
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
     <div>
       <h4 class="dashboard-info-title">Network Capacity</h4>
-      <div class="dashboard-info-value">{{networkInfo.total_network_capacity | number}} Sats</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.total_network_capacity | number}} Sats</div>
     </div>
     <div>
       <h4 class="dashboard-info-title">Number of Nodes</h4>
-      <div class="dashboard-info-value">{{networkInfo.num_nodes | number}}</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.num_nodes | number}}</div>
     </div>
     <div>
       <h4 class="dashboard-info-title">Number of Channels</h4>
@@ -61,11 +61,11 @@
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
     <div>
       <h4 class="dashboard-info-title">Max Channel Size</h4>
-      <div class="dashboard-info-value">{{networkInfo.max_channel_size | number}}</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_channel_size | number}}</div>
     </div>
     <div>
       <h4 class="dashboard-info-title">Avg Channel Size</h4>
-      <div class="dashboard-info-value">{{networkInfo.avg_channel_size | number}}</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.avg_channel_size | number}}</div>
     </div>
     <div>
       <h4 class="dashboard-info-title">Min Channel Size</h4>
@@ -77,11 +77,11 @@
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between">
     <div>
       <h4 class="dashboard-info-title">Max Out Degree</h4>
-      <div class="dashboard-info-value">{{networkInfo.max_out_degree | number}}</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.max_out_degree | number}}</div>
     </div>
     <div>
       <h4 class="dashboard-info-title">Avg Out Degree</h4>
-      <div class="dashboard-info-value">{{networkInfo.avg_out_degree | number:'1.0-2'}}</div>
+      <div class="overflow-wrap dashboard-info-value">{{networkInfo.avg_out_degree | number:'1.0-2'}}</div>
     </div>
     <div fxFlex="20">
       <h4 class="dashboard-info-title"></h4>

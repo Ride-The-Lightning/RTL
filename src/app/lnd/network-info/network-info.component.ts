@@ -45,8 +45,8 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
       ];
       this.nodeCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
-        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
-        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 },
+        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 }
       ];
     } else {
       this.networkCards =  [
@@ -56,8 +56,8 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
       ];
       this.nodeCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 1, rows: 1 },
-        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 1, rows: 1 },
-        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 1, rows: 1 }
+        { id: 'status', icon: this.faNetworkWired, title: 'Channels', cols: 1, rows: 1 },
+        { id: 'fee', icon: this.faBolt, title: 'Routing Fee Report', cols: 1, rows: 1 }
       ];
     }
   }

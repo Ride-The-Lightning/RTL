@@ -17,6 +17,7 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ErrorMessageComponent } from '../../../shared/components/data-modal/error-message/error-message.component';
 
 @Component({
   selector: 'rtl-peers',
@@ -98,6 +99,11 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer() {
+    // if(!this.peerAddress) {
+    //   // this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.ERROR, alertTitle: 'Error', message: { code: 'Invalid values', message: 'invalid or empty address.' }, component: ErrorMessageComponent}}));
+    //   this.store.dispatch(new RTLActions.OpenSnackBar('Error: invalid or empty address.'));
+    //   return true;
+    // }
     this.flgAnimate = true;
     const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
     const deviderIndex = this.peerAddress.search('@');
