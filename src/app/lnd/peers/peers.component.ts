@@ -85,11 +85,11 @@ export class PeersComponent implements OnInit, OnDestroy {
       filter((action) => action.type === RTLActions.SET_PEERS)
     ).subscribe((setPeers: RTLActions.SetPeers) => {
       this.peerAddress = undefined;
+      this.flgAnimate = true;
     });
   }
 
   onConnectPeer() {
-    this.flgAnimate = true;
     const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
     const deviderIndex = this.peerAddress.search('@');
     let pubkey = '';
