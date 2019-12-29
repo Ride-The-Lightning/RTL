@@ -8,6 +8,7 @@
 * [Installation](#install)
 * [Prep for execution](#prep)
 * [Start the server and access the app](#start)
+* [Run RTL as a service](#service)
 
 ### <a name="intro"></a>Introduction
 RTL can now be run to manage a c-lightning node via the UI.
@@ -100,6 +101,36 @@ If the server started successfully, you should get the below output on the conso
 `$ Server is up and running, please open the UI at http://localhost:3000`
 
 Open your browser at the following address: http://localhost:3000 to access the RTL app.
+
+### <a name="service"></a>Running c-lightning RTL as a service (RPi or Linux Platform)
+In case you are running a headless Rpi or a Linux node, you can configure RTL as a service.
+
+* Create rtl.service systemd unit in and with the following content. Save and exit.
+```
+[Unit]
+Description=RideTheLightning
+Requires=c-lightning-REST.service
+After=c-lightning-REST.service
+
+[Service]
+User=<user>
+Group=<user>
+Restart=on-failure
+
+ExecStart=/usr/bin/node <Full path to RTL folder>/rtl
+
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+
+# Hardening measures
+PrivateTmp=true
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ### Detailed config and instructions
 For detailed config and access options and other information, view the main readme page.
