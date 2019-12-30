@@ -38,7 +38,7 @@ export const TRANS_TYPES = [
 export const NODE_SETTINGS = {
   themes: [
     {id: 'purple', name: 'Diogo'}, 
-    {id: 'teal', name: 'Suheb'},
+    {id: 'teal', name: 'My2Sats'},
     {id: 'indigo', name: 'RTL'},
     {id: 'pink', name: 'BK'}
   ],
