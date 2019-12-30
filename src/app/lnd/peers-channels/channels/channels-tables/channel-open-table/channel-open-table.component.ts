@@ -208,6 +208,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Channel Information',
+      showCopyName: 'Channel ID',
+      showCopyField: selChannel.chan_id,
       message: reorderedChannel
     }}));
   }

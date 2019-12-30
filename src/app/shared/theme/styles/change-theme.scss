@@ -101,9 +101,6 @@
     .mat-tree {
       background: mat-color($background, dialog);
     }
-    .mat-expansion-panel {
-      border: 1px solid $foreground-secondary-text;
-    }
     .mat-tab-label, .mat-tab-link {
       color:  $foreground-secondary-text;
     }
@@ -255,6 +252,7 @@
     white-space: pre-line;
     overflow-wrap: break-word;
     word-break: break-all;
+    min-height: 2rem;    
   }
 
   .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
@@ -386,6 +384,10 @@
     border: 1px solid $foreground-divider;
     border-radius: 4px;
     background: none;
+  }
+
+  .mat-expansion-panel {
+    border: 1px solid $foreground-divider;
   }
 
   .modal-info-header {

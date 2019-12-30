@@ -60,6 +60,8 @@ export interface AlertData {
   showQRName?: string;
   showQRField?: string;
   newlyAdded?: boolean;
+  showCopyName?: string;
+  showCopyField?: string;
   component?: any;
 }
 

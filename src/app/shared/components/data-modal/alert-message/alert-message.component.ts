@@ -14,6 +14,8 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../services/c
 export class AlertMessageComponent implements OnInit {
   public showQRField = '';
   public showQRName = '';  
+  public showCopyName = '';
+  public showCopyField = '';
   public errorMessage = '';
   public messageObjs = [];
   public alertTypeEnum = AlertTypeEnum;
@@ -28,6 +30,8 @@ export class AlertMessageComponent implements OnInit {
     this.messageObjs = this.data.message;
     this.showQRField = this.data.showQRField ? this.data.showQRField : '';
     this.showQRName = this.data.showQRName ? this.data.showQRName : '';
+    this.showCopyName = this.data.showCopyName ? this.data.showCopyName : '';
+    this.showCopyField = this.data.showCopyField ? this.data.showCopyField : '';
 
     if (this.data.type === AlertTypeEnum.ERROR) {
       if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObjs.length <= 0) {
@@ -38,7 +42,7 @@ export class AlertMessageComponent implements OnInit {
   }
 
   onCopyField(payload: string) {
-    this.snackBar.open(this.showQRName + ' copied');
+    this.snackBar.open((this.showQRName ? this.showQRName : this.showCopyName) + ' copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 
