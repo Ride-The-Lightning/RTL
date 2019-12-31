@@ -29,6 +29,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
+  public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -128,12 +129,20 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString() + '/' + this.information.identity_pubkey));
+      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
       this.lndEffects.setLookup
       .pipe(take(1))
       .subscribe(resLookup => {
-        this.logger.info(resLookup);
+        if (resLookup.node1_pub === this.information.identity_pubkey) {
+          this.myChanPolicy = resLookup.node1_policy;
+        } else if (resLookup.node2_pub === this.information.identity_pubkey) {
+          this.myChanPolicy = resLookup.node2_policy;
+        } else {
+          this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
+        }
+        this.logger.info(this.myChanPolicy);
         this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
         const confirmationMsg = [];
@@ -146,9 +155,9 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           message: confirmationMsg,
           flgShowInput: true,
           getInputs: [
-            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (resLookup.fee_base_msat === '') ? 0 : resLookup.fee_base_msat, width: 32},
-            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: resLookup.fee_rate_milli_msat, min: 1, width: 32},
-            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: resLookup.time_lock_delta, width: 32}
+            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32},
+            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32},
+            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32}
           ]
         }}));
       });
