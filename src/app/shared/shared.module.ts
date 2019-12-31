@@ -43,6 +43,7 @@ import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
+import { NonNegativeAmountValidator } from './directive/non-negative-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
@@ -144,6 +145,7 @@ import { SocketService } from './services/socket.service';
     CurrencyUnitConverterComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    NonNegativeAmountValidator,
     QRCodeModule,
     NgxChartsModule,
     RemoveLeadingZerosPipe,
@@ -169,6 +171,7 @@ import { SocketService } from './services/socket.service';
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    NonNegativeAmountValidator,
     RemoveLeadingZerosPipe,
     OpenChannelComponent,
     ShowPubkeyComponent

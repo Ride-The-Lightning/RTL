@@ -49,6 +49,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   }
 
   onSignin() {
+    if(!this.password) { return true; }
     this.store.dispatch(new RTLActions.Signin(sha256(this.password)));
   }
 

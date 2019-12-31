@@ -70,6 +70,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel() {
+    if (!this.selectedPeer || this.selectedPeer === '' || !this.fundingAmount || (this.totalBalance - ((this.fundingAmount) ? this.fundingAmount : 0) < 0)) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     let transTypeValue = '0';
     if (this.selTransType === '1') {
@@ -138,6 +139,8 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
             this.connectPeerWithParams(pubkey, host);
           });
         }
+      } else {
+        this.selectedPeer = '';
       }
     });
   } 

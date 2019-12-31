@@ -7,8 +7,7 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form fxLayout="column" fxLayout.gt-sm="row wrap"
-          (ngSubmit)="openChannelForm.form.valid && onOpenChannel(openChannelForm)" #openChannelForm="ngForm">
+        <form fxLayout="column" fxLayout.gt-sm="row wrap" (ngSubmit)="openChannelForm.form.valid && onOpenChannel(openChannelForm)" #openChannelForm="ngForm">
           <mat-form-field fxFlex="40" fxLayoutAlign="start end">
             <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required
               name="selPeer" #selPeer="ngModel">

@@ -57,6 +57,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   onLookup() {
+    if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.lookupValue = {};
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));

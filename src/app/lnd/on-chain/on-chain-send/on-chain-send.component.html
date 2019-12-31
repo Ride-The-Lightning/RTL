@@ -1,10 +1,12 @@
-<div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="padding-gap overflow-x-hidden">
+<form fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="padding-gap overflow-x-hidden">
   <mat-form-field fxFlex.gt-sm="55">
-    <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #address="ngModel">
+    <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #address="ngModel">
+    <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
   </mat-form-field>
   <mat-form-field fxFlex.gt-sm="30">
-    <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" #amount="ngModel" [disabled]="sweepAll">
+    <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" required #amount="ngModel">
     <span matSuffix> {{selAmountUnit}} </span>
+    <mat-error *ngIf="!transaction.amount">Amount is required.</mat-error>
   </mat-form-field>
   <mat-form-field fxFlex.gt-sm="10" fxLayoutAlign="start end">
     <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
@@ -21,29 +23,25 @@
     </mat-form-field>
     <mat-form-field fxFlex="48" *ngIf="selTransType=='1'">
       <input matInput [(ngModel)]="transaction.blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1" min="0" required tabindex="5" #blocks="ngModel">
+      <mat-error *ngIf="!transaction.blocks">Number of blocks is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="48" *ngIf="selTransType=='2'">
-      <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #fees="ngModel">
+      <input matInput [(ngModel)]="transaction.fees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #fees="ngModel">
+      <mat-error *ngIf="!transaction.fees">Fees is required.</mat-error>
     </mat-form-field>
   </div>
   <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start"></div>
   <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
     <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
-    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary"
-      [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
-      <p *ngIf="invalidValues && (address.touched || address.dirty) && (amount.touched || amount.dirty); else sendText">
-        Invalid Values</p>
-      <ng-template #sendText>
-        <p>Send Funds</p>
-      </ng-template>
-    </button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8" (click)="onSendFunds()">Send Funds</button>
   </div>
-</div>
+</form>
 <ng-template #sweepAllBlock>
-  <div fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden">
+  <form fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden">
     <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
       <mat-form-field fxFlex.gt-sm="55">
-        <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" #addressSweep="ngModel">
+        <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #addressSweep="ngModel">
+        <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
       </mat-form-field>
       <mat-form-field fxFlex.gt-sm="20">
         <mat-select [(value)]="selTransType" tabindex="4">
@@ -54,19 +52,18 @@
       </mat-form-field>
       <mat-form-field fxFlex.gt-sm="20" fxLayoutAlign="start end" *ngIf="selTransType=='1'">
         <input matInput [(ngModel)]="transaction.blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1" min="0" required tabindex="5" #blocks="ngModel">
+        <mat-error *ngIf="!transaction.blocks">Number of blocks is required.</mat-error>
       </mat-form-field>
       <mat-form-field fxFlex.gt-sm="20" fxLayoutAlign="start end" *ngIf="selTransType=='2'">
-        <input matInput [(ngModel)]="transaction.fees" placeholder="Fee ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #feesSweep="ngModel">
+        <input matInput [(ngModel)]="transaction.fees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="6" #feesSweep="ngModel">
+        <mat-error *ngIf="!transaction.fees">Fees is required.</mat-error>
       </mat-form-field>
     </div>
     <div>
       <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row" fxLayoutAlign="space-between stretch" class="mt-2">  
         <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
-        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="invalidValues" type="submit" tabindex="8" (click)="onSendFunds()">
-          <p *ngIf="invalidValues && (addressSweep.touched || addressSweep.dirty); else sendTextSweep">Invalid Values</p>
-          <ng-template #sendTextSweep><p>Send Funds</p></ng-template>
-        </button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8" (click)="onSendFunds()">Send Funds</button>
       </div>
     </div>
-  </div>
+  </form>
 </ng-template>

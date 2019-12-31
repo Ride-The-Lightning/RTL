@@ -7,7 +7,7 @@
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <div fxLayout="column">
+      <form fxLayout="column" (ngSubmit)="openChannelForm.form.valid && onOpenChannel()" #openChannelForm="ngForm">
         <mat-expansion-panel class="flat-expansion-panel">
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -47,9 +47,11 @@
           </div>
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
             <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel">
+              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
               <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
               <span matSuffix> {{information?.smaller_currency_unit}} </span>
+              <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
+              <mat-error *ngIf="amount.errors?.negative">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
             <div fxFlex="35" fxLayoutAlign="start center">
               <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
@@ -68,9 +70,11 @@
             </mat-form-field>
             <mat-form-field fxFlex="30" *ngIf="selTransType=='1'">
               <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="4" #blocks="ngModel">
+              <mat-error *ngIf="!transTypeValue.blocks">Target confirmation block is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="30" *ngIf="selTransType=='2'">
               <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="5" #fees="ngModel">
+              <mat-error *ngIf="!transTypeValue.fees">Fee is required.</mat-error>
             </mat-form-field>
             <div fxFlex="35" fxLayoutAlign="start center">
               <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
@@ -81,20 +85,14 @@
           <div *ngIf="newlyAdded" fxLayoutAlign="space-between center" fxFlex="60">
             <button fxFlex="33" fxLayoutAlign="center center" mat-stroked-button color="warn" (click)="onClose()" tabindex="7">Do It Later</button>
             <button fxFlex="32" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="8" type="reset" (click)="resetData()">Clear Field</button>
-            <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="9">
-              <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
-              <ng-template #openText><p>Open Channel</p></ng-template>
-            </button>
+            <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="9">Open Channel</button>
           </div>
           <div *ngIf="!newlyAdded" fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="30" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-            <button autoFocus fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="8">
-              <p *ngIf="(fundingAmount == null) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
-              <ng-template #openText><p>Open Channel</p></ng-template>
-            </button>
+            <button autoFocus fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8">Open Channel</button>
           </div>
         </div>
-      </div>
+      </form>
     </mat-card-content>
   </div>
 </div>

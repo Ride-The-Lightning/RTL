@@ -483,28 +483,28 @@ export class LNDEffects implements OnDestroy {
                 pendingChannels.closing.num_channels = channels.pending_closing_channels.length;
                 pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_closing_channels.length;
                 channels.pending_closing_channels.forEach(closingChannel => {
-                  pendingChannels.closing.limbo_balance = +pendingChannels.closing.limbo_balance + +closingChannel.channel.local_balance;
+                  pendingChannels.closing.limbo_balance = +pendingChannels.closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
                 });
               }
               if (channels.pending_force_closing_channels) {
                 pendingChannels.force_closing.num_channels = channels.pending_force_closing_channels.length;
                 pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_force_closing_channels.length;
                 channels.pending_force_closing_channels.forEach(closingChannel => {
-                  pendingChannels.force_closing.limbo_balance = +pendingChannels.force_closing.limbo_balance + +closingChannel.channel.local_balance;
+                  pendingChannels.force_closing.limbo_balance = +pendingChannels.force_closing.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
                 });
               }
               if (channels.pending_open_channels) {
                 pendingChannels.open.num_channels = channels.pending_open_channels.length;
                 pendingChannels.total_channels = pendingChannels.total_channels + channels.pending_open_channels.length;
                 channels.pending_open_channels.forEach(openingChannel => {
-                  pendingChannels.open.limbo_balance = +pendingChannels.open.limbo_balance + +openingChannel.channel.local_balance;
+                  pendingChannels.open.limbo_balance = +pendingChannels.open.limbo_balance + (openingChannel.channel.local_balance ? +openingChannel.channel.local_balance : 0);
                 });
               }
               if (channels.waiting_close_channels) {
                 pendingChannels.waiting_close.num_channels = channels.waiting_close_channels.length;
                 pendingChannels.total_channels = pendingChannels.total_channels + channels.waiting_close_channels.length;
                 channels.waiting_close_channels.forEach(closingChannel => {
-                  pendingChannels.waiting_close.limbo_balance = +pendingChannels.waiting_close.limbo_balance + +closingChannel.channel.local_balance;
+                  pendingChannels.waiting_close.limbo_balance = +pendingChannels.waiting_close.limbo_balance + (closingChannel.channel.local_balance ? +closingChannel.channel.local_balance : 0);
                 });
               }
             }

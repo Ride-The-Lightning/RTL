@@ -99,7 +99,7 @@
     .fa-icon-small, .top-icon-small, .modal-info-header {
       font-size: $regular-font-size * 1.2;
     }
-    .top-toolbar-icon.icon-pinned, .mat-step-header .mat-step-icon .mat-icon {
+    .top-toolbar-icon.icon-pinned {
       font-size: $regular-font-size * 1.3;
     }
     .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
@@ -114,6 +114,9 @@
     }
     .material-icons {
       font-size: $regular-font-size * 2;
+    }
+    .mat-step-header .mat-step-icon .mat-icon {
+      font-size: initial;
     }
     .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
       font-size: $regular-font-size !important;

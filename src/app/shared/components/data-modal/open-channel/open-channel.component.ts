@@ -50,6 +50,7 @@ export class OpenChannelComponent implements OnInit {
   }
 
   onOpenChannel() {
+    if (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.selTransType === '1' && !this.transTypeValue.blocks) || (this.selTransType === '2' && !this.transTypeValue.fees)) { return true; }
     let transTypeValue = '0';
     if (this.selTransType === '1') {
       transTypeValue = this.transTypeValue.blocks;

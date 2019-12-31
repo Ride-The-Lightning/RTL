@@ -16,10 +16,11 @@
           </div>
           <mat-form-field fxFlex="65" fxFlex.gt-md="75" fxLayoutAlign="start end" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
             <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
+            <mat-error *ngIf="!lookupKey">{{lookupFields[selectedFieldId]?.placeholder}} is required.</mat-error>
           </mat-form-field>
           <div fxFlex="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()" [disabled]="!form.valid">Lookup</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
           </div>
         </form>     
         <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="lookupValue && flgSetLookupValue" class="w-100 mt-2">

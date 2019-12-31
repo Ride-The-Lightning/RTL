@@ -13,7 +13,7 @@
       <span matSuffix> {{selTimeUnit | titlecase}} </span>
     </mat-form-field>
     <mat-form-field fxFlex="15" fxLayoutAlign="start end" *ngIf="showDetails" [ngClass]="{'mr-2': screenSize === screenSizeEnum.LG}">
-      <mat-select [value]="selTimeUnit" tabindex="4" required name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
+      <mat-select [value]="selTimeUnit" tabindex="4" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
         <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
       </mat-select>
     </mat-form-field>
@@ -22,17 +22,11 @@
     </div>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between start" *ngIf="showDetails" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">
-        <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>
-        <ng-template #createText><p>Create Invoice</p></ng-template>
-      </button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">Create Invoice</button>
     </div>
-    <div  fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails">
+    <div  fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails" class="mt-1">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" [disabled]="addInvoiceForm.form.invalid" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">
-        <p *ngIf="addInvoiceForm.form.invalid; else createText">Invalid values</p>
-        <ng-template #createText><p>Create Invoice</p></ng-template>
-      </button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">Create Invoice</button>
     </div>
   </form>
   <div fxLayout="column" fxLayoutAlign="start stretch" *ngIf="showDetails">

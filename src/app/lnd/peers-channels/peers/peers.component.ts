@@ -100,11 +100,7 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer() {
-    // if(!this.peerAddress) {
-    //   // this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.ERROR, alertTitle: 'Error', message: { code: 'Invalid values', message: 'invalid or empty address.' }, component: ErrorMessageComponent}}));
-    //   this.store.dispatch(new RTLActions.OpenSnackBar('Error: invalid or empty address.'));
-    //   return true;
-    // }
+    if(!this.peerAddress) { return true; }
     const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
     const deviderIndex = this.peerAddress.search('@');
     let pubkey = '';

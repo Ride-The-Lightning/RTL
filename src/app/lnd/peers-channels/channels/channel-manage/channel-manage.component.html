@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
     <mat-form-field fxFlex="40" fxFlex.gt-sm="30" fxLayoutAlign="start end">
       <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required name="selPeer" #selPeer="ngModel">
         <mat-option (click)="addNewPeer()" [value]="'new'">
@@ -9,11 +9,14 @@
           {{peer.alias}}
         </mat-option>
       </mat-select>
+      <mat-error *ngIf="!selectedPeer">Alias is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="25" fxFlex.gt-sm="30" fxLayoutAlign="start end">
-      <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel">
+      <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
       <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
       <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
+      <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
+      <mat-error *ngIf="amount.errors?.negative">Amount must be less than or equal to {{totalBalance}}.</mat-error>
     </mat-form-field>
     <div fxFlex="15" fxFlex.gt-sm="20" fxLayoutAlign="start center" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
       <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
@@ -37,9 +40,11 @@
       </mat-form-field>
       <mat-form-field fxFlex="33" *ngIf="selTransType=='1'">
         <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="7" #blocks="ngModel">
+        <mat-error *ngIf="!transTypeValue.blocks">Target confirmation blocks is required.</mat-error>
       </mat-form-field>
       <mat-form-field fxFlex="33" *ngIf="selTransType=='2'">
-        <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="8" #fees="ngModel">
+        <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fees ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="8" #fees="ngModel">
+        <mat-error *ngIf="!transTypeValue.fees">Fees is required.</mat-error>
       </mat-form-field>
       <div fxFlex="32" fxLayoutAlign="start center" [ngClass]="{'my-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
         <mat-slide-toggle tabindex="9" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
@@ -47,12 +52,9 @@
     </div>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" [disabled]="selectedPeer === '' || fundingAmount == null || (totalBalance - ((fundingAmount) ? fundingAmount : 0) < 0)" type="submit" tabindex="11">
-        <p *ngIf="(selectedPeer === '' || fundingAmount == null) && (selPeer.touched || selPeer.dirty) && (amount.touched || amount.dirty); else openText">Invalid Values</p>
-        <ng-template #openText><p>Open Channel</p></ng-template>
-      </button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="11">Open Channel</button>
     </div>  
-  </div>
+  </form>
   <rtl-channels-tables fxLayout="row" fxFlex="100"></rtl-channels-tables>
 </div>
   

@@ -66,6 +66,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   onQueryRoutes() {
+    if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
     this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
   }

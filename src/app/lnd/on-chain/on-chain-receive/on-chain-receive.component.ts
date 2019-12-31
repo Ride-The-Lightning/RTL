@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AddressType } from '../../../shared/models/lndModels';
-import { ADDRESS_TYPES, AlertTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { LNDEffects } from '../../store/lnd.effects';
@@ -18,7 +18,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class OnChainReceiveComponent implements OnInit, OnDestroy {
   public addressTypes = ADDRESS_TYPES;
-  public selectedAddressType: AddressType = {};
+  public selectedAddressType: AddressType = ADDRESS_TYPES[0];
   public newAddress = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 

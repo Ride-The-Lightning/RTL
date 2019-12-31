@@ -12,7 +12,7 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
-import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
+import { AlertTypeEnum, ScreenSizeEnum, NODE_SETTINGS } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
@@ -145,6 +145,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
+  }
+
+  getFontSize() {
+    return (this.settings.fontSize === NODE_SETTINGS.fontSize[0].class) ? 14 : 
+      (this.settings.fontSize === NODE_SETTINGS.fontSize[2].class) ? 18 : 16;
   }
 
   ngOnDestroy() {

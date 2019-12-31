@@ -94,6 +94,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onSendPayment() {
+    console.warn('SEND PAYMENT');
+    if(!this.paymentRequest) { return true; } 
     if (undefined !== this.paymentDecoded.timestamp_str) {
       this.sendPayment();
     } else {

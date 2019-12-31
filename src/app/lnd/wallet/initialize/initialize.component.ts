@@ -18,10 +18,8 @@ export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErr
 };
 
 export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-  const existingCipher = control.get('existingCipher');
-  const cipherSeed = control.get('cipherSeed');
-  const cipherArr = cipherSeed.value.toString().trim().split(',');
-  return existingCipher.value && cipherArr && cipherArr.length !== 24 ? { 'invalidCipher': true } : null;
+  const cipherArr = control.value ? control.value.toString().trim().split(',') : [];
+  return cipherArr && cipherArr.length !== 24 ? { 'invalidCipher': true } : null;
 };
 
 @Component({
@@ -53,8 +51,8 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     }, {validators: matchedPasswords});
     this.cipherFormGroup = this.formBuilder.group({
       existingCipher: [false],
-      cipherSeed: [{value: '', disabled: true}]
-    }, {validators: cipherSeedLength});
+      cipherSeed: [{value: '', disabled: true}, [cipherSeedLength]]
+    });
     this.passphraseFormGroup = this.formBuilder.group({
       enterPassphrase: [false],
       passphrase: [{value: '', disabled: true}]
@@ -109,6 +107,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   }
 
   onInitWallet() {
+    if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing...'));
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');

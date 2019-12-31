@@ -949,12 +949,6 @@ table {
   align-items: start;
 }
 
-button.mat-button-base {
-  margin: 0 1rem;
-  &:last-child {
-    margin: 0 0 0 1rem;
-  }
-  // & .mat-button-wrapper {
-  //   padding: 0 2rem;
-  // }
+.mat-vertical-content-container {
+  margin-left: 2rem !important;
 }

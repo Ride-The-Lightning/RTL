@@ -66,6 +66,8 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds() {
+    console.warn('ON SEND');
+    if(this.invalidValues) { return true; }
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2])
       .pipe(takeUntil(this.unSubs[1]))
@@ -146,8 +148,8 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   get invalidValues(): boolean {
-    return (this.transaction.address === '') || (this.transaction.amount <= 0)
-    || (this.selTransType === '1' && this.transaction.blocks && this.transaction.blocks <= 0) || (this.selTransType === '2' && this.transaction.fees && this.transaction.fees <= 0);
+    return (!this.transaction.address || this.transaction.address === '') || (!this.transaction.amount || this.transaction.amount <= 0)
+    || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
   }
 
   resetData() {
