@@ -8,18 +8,18 @@
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="card-content-gap mt-1">
         <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start space-between" class="w-100" #form="ngForm">
           <div fxFlex="35" fxFlex.gt-md="25" fxLayoutAlign="start end">
-            <mat-radio-group color="primary" [(ngModel)]="selectedFieldId" (change)="onSelectChange()" tabindex="1" name="lookupField">
-              <mat-radio-button *ngFor="let lookupField of lookupFields" [value]="lookupField.id" class="mr-4">
+            <mat-radio-group color="primary" [(ngModel)]="selectedFieldId" (change)="onSelectChange($event)" tabindex="1" name="lookupField">
+              <mat-radio-button *ngFor="let lookupField of lookupFields" [value]="lookupField.id" [checked]="selectedFieldId === lookupField.id" class="mr-4">
                 {{lookupField.name}}
               </mat-radio-button>
             </mat-radio-group>
           </div>
           <mat-form-field fxFlex="65" fxFlex.gt-md="75" fxLayoutAlign="start end" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-            <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required>
+            <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required #key>
             <mat-error *ngIf="!lookupKey">{{lookupFields[selectedFieldId]?.placeholder}} is required.</mat-error>
           </mat-form-field>
           <div fxFlex="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
           </div>
         </form>     

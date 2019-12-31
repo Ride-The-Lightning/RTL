@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -18,6 +18,7 @@ import { CommonService } from '../../shared/services/common.service';
   styleUrls: ['./lookups.component.scss']
 })
 export class LookupsComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: false }) form: any;
   public lookupKey = '';
   public lookupValue = {};
   public flgSetLookupValue = false;
@@ -73,13 +74,13 @@ export class LookupsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectChange() {
-    this.flgSetLookupValue = false;
-    this.lookupKey = '';
-    this.lookupValue = {};
+  onSelectChange(event: any) {
+    this.form.resetForm();
+    this.selectedFieldId = event.value;
   }
 
   resetData() {
+    this.form.resetForm();
     this.flgSetLookupValue = false;
     this.selectedFieldId = 0;
     this.lookupKey = '';

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { take, takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 
@@ -35,12 +35,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
-  public myChanPolicy: any = {};
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
@@ -79,13 +78,18 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_LOOKUP))
-    .subscribe((action: any) => {
+  }
+
+  onViewRemotePolicy(selChannel: Channel) {
+    console.warn(selChannel);
+    this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
+    this.lndEffects.setLookup
+      .pipe(take(1))
+      .subscribe(resLookup => {
       const reorderedChannelPolicy = [
-        [{key: 'time_lock_delta', value: action.payload.time_lock_delta, title: 'Time Lock Delta', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'fee_base_msat', value: action.payload.fee_base_msat, title: 'Base Fees (mSats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'fee_rate_milli_msat', value: action.payload.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 34, type: DataTypeEnum.NUMBER}]
+        [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 32, type: DataTypeEnum.NUMBER},
+          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 32, type: DataTypeEnum.NUMBER},
+          {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 32, type: DataTypeEnum.NUMBER}]
       ];      
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         type: AlertTypeEnum.INFORMATION,
@@ -93,10 +97,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         message: reorderedChannelPolicy
       }}));
     });
-  }
 
-  onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
   }
 
   onChannelUpdate(channelToUpdate: any) {
@@ -116,7 +117,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         ]
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[1]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -127,21 +128,12 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
+      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString() + '/' + this.information.identity_pubkey));
       this.lndEffects.setLookup
-      .pipe(takeUntil(this.unSubs[2]))
+      .pipe(take(1))
       .subscribe(resLookup => {
         this.logger.info(resLookup);
-        if (resLookup.node1_pub === this.information.identity_pubkey) {
-          this.myChanPolicy = resLookup.node1_policy;
-        } else if (resLookup.node2_pub === this.information.identity_pubkey) {
-          this.myChanPolicy = resLookup.node2_policy;
-        } else {
-          this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
-        }
-        this.logger.info(this.myChanPolicy);
         this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
         const confirmationMsg = [];
@@ -154,14 +146,14 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           message: confirmationMsg,
           flgShowInput: true,
           getInputs: [
-            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32},
-            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32},
-            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32}
+            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (resLookup.fee_base_msat === '') ? 0 : resLookup.fee_base_msat, width: 32},
+            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: resLookup.fee_rate_milli_msat, min: 1, width: 32},
+            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: resLookup.time_lock_delta, width: 32}
           ]
         }}));
       });
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[3]))
+      .pipe(takeUntil(this.unSubs[4]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -184,7 +176,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[4]))
+    .pipe(takeUntil(this.unSubs[5]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
