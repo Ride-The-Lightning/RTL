@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
+import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
@@ -41,7 +42,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -78,6 +79,24 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter((action) => action.type === RTLActions.SET_LOOKUP))
+    .subscribe((action: any) => {
+      const reorderedChannelPolicy = [
+        [{key: 'time_lock_delta', value: action.payload.time_lock_delta, title: 'Time Lock Delta', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'fee_base_msat', value: action.payload.fee_base_msat, title: 'Base Fees (mSats)', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'fee_rate_milli_msat', value: action.payload.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 34, type: DataTypeEnum.NUMBER}]
+      ];      
+      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+        type: AlertTypeEnum.INFORMATION,
+        alertTitle: 'Remote Channel Policy',
+        message: reorderedChannelPolicy
+      }}));
+    });
+  }
+
+  onViewRemotePolicy(selChannel: Channel) {
+    this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
   }
 
   onChannelUpdate(channelToUpdate: any) {
