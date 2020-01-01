@@ -374,6 +374,7 @@ export interface ForwardingEvent {
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;
+  fee_msat?: string;
 }
 
 export interface RoutingPeers {

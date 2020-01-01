@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faRoute } from '@fortawesome/free-solid-svg-icons';
+import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CommonService } from '../../../shared/services/common.service';
 import { MatTableDataSource, MatSort } from '@angular/material';
@@ -27,6 +27,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
+  public faExclamationTriangle = faExclamationTriangle;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];

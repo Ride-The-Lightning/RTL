@@ -32,15 +32,15 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
-    if(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+    if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'fee', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.displayedColumns = ['timestamp', 'fee_msat', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
+      this.displayedColumns = ['timestamp', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'fee', 'actions'];
+      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
     }
   }
 
@@ -58,7 +58,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
       [{key: 'timestamp_str', value: selFEvent.timestamp_str, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
         {key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
         {key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
-        {key: 'fee', value: selFEvent.fee, title: 'Fee (Sats)', width: 25, type: DataTypeEnum.NUMBER}],
+        {key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER}],
       [{key: 'alias_in', value: selFEvent.alias_in, title: 'Inbound Peer Alias', width: 25, type: DataTypeEnum.STRING},
         {key: 'chan_id_in', value: selFEvent.chan_id_in, title: 'Inbound Channel ID', width: 25, type: DataTypeEnum.STRING},
         {key: 'alias_out', value: selFEvent.alias_out, title: 'Outbound Peer Alias', width: 25, type: DataTypeEnum.STRING},
