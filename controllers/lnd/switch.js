@@ -24,7 +24,7 @@ exports.forwardingHistory = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Switch', msg: 'Switch Post Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
-      logger.error({fileName: 'Switch', lineNum: 27, msg: 'Switch Post Erroe: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
+      logger.error({fileName: 'Switch', lineNum: 27, msg: 'Switch Post Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
       res.status(500).json({
         message: "Switch post failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
