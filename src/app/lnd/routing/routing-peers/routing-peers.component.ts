@@ -18,7 +18,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 })
 export class RoutingPeersComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sortIn: MatSort;
-  @ViewChild(MatSort, { static: true }) sortOut: MatSort;
+  @ViewChild('tableOut', {read: MatSort, static: true}) sortOut: MatSort;
   @Input() routingPeersData: any;
   public displayedColumns = [];
   public RoutingPeersIncoming: any;

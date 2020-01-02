@@ -14,7 +14,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
-import { CurrencyUnitEnum, AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -646,10 +646,17 @@ export class LNDEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
       let queryHeaders = {};
-      if (action.payload[2]) {
-        queryHeaders = { paymentDecoded: action.payload[1] };
+      if(action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
+        queryHeaders['feeLimit'] = {};
+        queryHeaders['feeLimit'][action.payload.feeLimitType.id] = action.payload.feeLimit;
+      }
+      if(action.payload.outgoingChannel) {
+        queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id;
+      }
+      if (action.payload.zeroAmtInvoice) {
+        queryHeaders['paymentDecoded'] = action.payload.paymentDecoded;
       } else {
-        queryHeaders = { paymentReq: action.payload[0] };
+        queryHeaders['paymentReq'] = action.payload.paymentReq;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders)
         .pipe(

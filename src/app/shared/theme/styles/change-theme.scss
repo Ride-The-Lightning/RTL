@@ -390,6 +390,20 @@
     border: 1px solid $foreground-divider;
   }
 
+  .more-button {
+    color: $foreground-disabled;
+  }
+
+  .dashboard-tabs-group {
+    & .mat-tab-label:last-child {
+      padding-right: 0;
+      & .more-button {
+        position: absolute;
+        right: 0
+      }
+    }
+  }
+
   .modal-info-header {
     color: $foreground-text;
     font-weight: 500;

@@ -145,17 +145,25 @@ exports.postTransactions = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channels/transactions';
   if(req.body.paymentReq) {
-    options.form = JSON.stringify({ 
+    options.form = { 
       payment_request: req.body.paymentReq
-    });
+    };
   } else if(req.body.paymentDecoded) {
-    options.form = JSON.stringify({ 
+    options.form = { 
       payment_hash_string: req.body.paymentDecoded.payment_hash,
       final_cltv_delta: parseInt(req.body.paymentDecoded.cltv_expiry),
       amt: req.body.paymentDecoded.num_satoshis,
       dest_string: req.body.paymentDecoded.destination
-    });
+    };
   }
+  if(req.body.feeLimit) {
+    options.form.fee_limit = req.body.feeLimit;
+  }
+  if(req.body.outgoingChannel) {
+    options.form.outgoing_chan_id = req.body.outgoingChannel;
+  }
+  options.form = JSON.stringify(options.form);
+  logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
@@ -228,7 +236,7 @@ exports.postChanPolicy = (req, res, next) => {
       chan_point: {funding_txid_str: txid_str, output_index: parseInt(output_idx)}
     });
   }
-  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

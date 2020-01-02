@@ -6,8 +6,8 @@ import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { GetInfo, Payment, PayRequest } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { GetInfo, Payment, PayRequest, Channel } from '../../../shared/models/lndModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -44,6 +44,12 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
+  public showAdvanced = false;
+  public selActiveChannel: Channel = {};
+  public activeChannels = {};
+  public feeLimit = null;
+  public selFeeLimitType = FEE_LIMIT_TYPES[0];
+  public feeLimitTypes = FEE_LIMIT_TYPES;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -79,6 +85,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
+      this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
       this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
@@ -94,7 +101,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onSendPayment() {
-    console.warn('SEND PAYMENT');
     if(!this.paymentRequest) { return true; } 
     if (undefined !== this.paymentDecoded.timestamp_str) {
       this.sendPayment();
@@ -149,7 +155,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, true]));
+            this.store.dispatch(new RTLActions.SendPayment({paymentDecoded: this.paymentDecoded, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, zeroAmtInvoice: true}));
             this.resetData();
           }
         });
@@ -175,7 +181,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new RTLActions.SendPayment([this.paymentRequest, this.paymentDecoded, false]));
+          this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, zeroAmtInvoice: false}));
           this.resetData();
         }
       });
@@ -202,9 +208,20 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onShowAdvanced() {
+    this.showAdvanced = !this.showAdvanced;
+    if (!this.showAdvanced) {
+      this.selActiveChannel = null;
+      this.feeLimit = null;
+      this.selFeeLimitType = FEE_LIMIT_TYPES[0];
+      this.feeLimitTypes = FEE_LIMIT_TYPES;
+    }
+  }  
+
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
+    this.showAdvanced = false;
     this.form.reset();
   }
 

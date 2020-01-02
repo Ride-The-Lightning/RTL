@@ -20,11 +20,11 @@ exports.forwardingHistory = (req, res, next) => {
     options.form.start_time = req.body.start_time;
   }
   options.form = JSON.stringify(options.form);
-  logger.info({fileName: 'Switch', msg: 'Switch Post Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Switch', msg: 'Forwarding History Start Time: ' + options.form.start_time});
+  logger.info({fileName: 'Switch', msg: 'Forwarding History End Time: ' + options.form.end_time});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Switch', msg: 'Switch Post Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
-      logger.error({fileName: 'Switch', lineNum: 27, msg: 'Switch Post Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
+      logger.error({fileName: 'Switch', lineNum: 27, msg: 'Forwarding History Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
       res.status(500).json({
         message: "Switch post failed!",
         error: (undefined === body) ? 'Error From Server!' : body.error
@@ -41,7 +41,7 @@ exports.forwardingHistory = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Switch', lineNum: 44, msg: 'Switch Post Error: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Switch', lineNum: 44, msg: 'Forwarding History Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Switch post failed!",
       error: err.error

@@ -23,7 +23,7 @@ exports.openChannel = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channel/openChannel';
   options.body = req.body;
-  logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
@@ -48,7 +48,7 @@ exports.setChannelFee = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channel/setChannelFee';
   options.body = req.body;
-  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

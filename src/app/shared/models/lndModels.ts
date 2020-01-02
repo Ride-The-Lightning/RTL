@@ -41,7 +41,7 @@ export interface Channel {
   remote_pubkey?: string;
   remote_alias?: string;
   channel_point?: string;
-  chan_id?: number;
+  chan_id?: string;
   capacity?: number;
   local_balance?: number;
   remote_balance?: number;
@@ -145,6 +145,9 @@ export interface Fees {
   btc_day_fee_sum?: number;
   btc_week_fee_sum?: number;
   btc_month_fee_sum?: number;
+  daily_tx_count?: number;
+  weekly_tx_count?: number;
+  monthly_tx_count?: number;
 }
 
 export interface GetInfoChain {

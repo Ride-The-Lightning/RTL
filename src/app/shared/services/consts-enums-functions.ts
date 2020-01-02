@@ -35,6 +35,13 @@ export const TRANS_TYPES = [
   {id: '2', name: 'Fee'}
 ];
 
+export const FEE_LIMIT_TYPES = [
+  {id: 'none', name: 'No Limit'},
+  {id: 'fixed', name: 'Fixed in Sats'},
+  {id: 'fixed_msat', name: 'Fixed in mSats'},
+  {id: 'percent', name: 'Percentage of Payment Amount'}
+];
+
 export const NODE_SETTINGS = {
   themes: [
     {id: 'purple', name: 'Diogo'}, 
