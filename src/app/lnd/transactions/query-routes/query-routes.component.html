@@ -2,7 +2,7 @@
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" (ngSubmit)="queryRoutesForm.form.valid && onQueryRoutes()" #queryRoutesForm="ngForm">
     <div fxFlex="100" class="alert alert-warn">
       <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
-      <span>The actual fee can be different from the estimate shown on this page.</span>
+      <span>The actual routing fee on a payment can be different from the fee shown on query routes.</span>
     </div>
     <mat-form-field fxFlex="69" fxLayoutAlign="start end">
       <input matInput placeholder="Destination Pubkey" name="destinationPubkey" [(ngModel)]="destinationPubkey" tabindex="1" required #destPubkey="ngModel">

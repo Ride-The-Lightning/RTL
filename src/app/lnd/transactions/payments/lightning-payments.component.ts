@@ -155,7 +155,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPayment({paymentDecoded: this.paymentDecoded, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, zeroAmtInvoice: true}));
+            this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit}));
             this.resetData();
           }
         });
@@ -181,7 +181,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, zeroAmtInvoice: false}));
+          this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit}));
           this.resetData();
         }
       });
@@ -214,14 +214,15 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.selActiveChannel = null;
       this.feeLimit = null;
       this.selFeeLimitType = FEE_LIMIT_TYPES[0];
-      this.feeLimitTypes = FEE_LIMIT_TYPES;
     }
   }  
 
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
-    this.showAdvanced = false;
+    this.selActiveChannel = null;
+    this.feeLimit = null;
+    this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     this.form.reset();
   }
 

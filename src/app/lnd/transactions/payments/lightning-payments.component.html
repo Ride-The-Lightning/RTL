@@ -11,21 +11,20 @@
         <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
       </button>
     </div>
-    <div *ngIf="showDetails && showAdvanced" fxFlex="100"  fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
-        <mat-select tabindex="5" [(value)]="selFeeLimitType">
+    <div *ngIf="showDetails && showAdvanced" fxFlex="100" fxFlex.gt-sm="75" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+        <mat-select tabindex="5" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
           <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
             {{feeLimitType.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="33">
-        <input matInput [(ngModel)]="feeLimit" placeholder="Fee Limit" type="number" name="feeLimit" step="1" min="0" required tabindex="6" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
-        <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">Fees Limit is required.</mat-error>
+      <mat-form-field fxFlex="26">
+        <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="6" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
+        <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
       </mat-form-field>
-      <mat-form-field fxFlex="33" fxLayoutAlign="start end">
-        <mat-select tabindex="7" [(value)]="selActiveChannel">
-          <mat-option [value]="null"></mat-option>
+      <mat-form-field fxFlex="40" fxLayoutAlign="start end">
+        <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel">
           <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
             {{activeChannel.remote_alias || activeChannel.chan_id}}
           </mat-option>

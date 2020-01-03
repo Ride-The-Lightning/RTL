@@ -14,7 +14,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, DataTypeEnum } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -666,20 +666,29 @@ export class LNDEffects implements OnDestroy {
             if (sendRes.payment_error) {
               this.logger.error('Error: ' + sendRes.payment_error);
               const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error.message};
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload[0], myErr);
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload.paymentReq, myErr);
               return of({type: RTLActions.VOID});              
             } else {
-              const confirmationMsg = { 'Destination': action.payload[1].destination, 'Timestamp': action.payload[1].timestamp_str, 'Expiry': action.payload[1].expiry };
-              confirmationMsg['Amount (' + ((undefined === store.nodeData.smaller_currency_unit) ?
-              CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] = action.payload[1].num_satoshis;
-              const msg = [];
-              msg['Total Fee (' + ((undefined === store.nodeData.smaller_currency_unit) ? CurrencyUnitEnum.SATS : store.nodeData.smaller_currency_unit) + ')'] =
-                (sendRes.payment_route.total_fees_msat / 1000);
-              Object.assign(msg, confirmationMsg);
+              let msg = [];
+              if(sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
+                msg = [
+                  [{key: 'destination', value: action.payload.paymentDecoded.destination, title: 'Destination', width: 100, type: DataTypeEnum.STRING}],
+                  [{key: 'num_satoshis', value: action.payload.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING},
+                    {key: 'total_fees_msat', value: (sendRes.payment_route.total_fees_msat / 1000), title: 'Total Fee (mSats)', width: 50, type: DataTypeEnum.STRING}],
+                  [{key: 'timestamp_str', value: action.payload.paymentDecoded.timestamp_str, title: 'Timestamp', width: 50, type: DataTypeEnum.DATE_TIME},
+                    {key: 'expiry', value: action.payload.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.STRING}]
+                ];              
+              } else {
+                msg = [
+                  [{key: 'destination', value: action.payload.paymentDecoded.destination, title: 'Destination', width: 100, type: DataTypeEnum.STRING}],
+                  [{key: 'num_satoshis', value: action.payload.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 32, type: DataTypeEnum.STRING},
+                    {key: 'timestamp_str', value: action.payload.paymentDecoded.timestamp_str, title: 'Timestamp', width: 32, type: DataTypeEnum.DATE_TIME},
+                    {key: 'expiry', value: action.payload.paymentDecoded.expiry, title: 'Expiry', width: 32, type: DataTypeEnum.STRING}]
+                ];              
+              }
               this.store.dispatch(new RTLActions.OpenAlert({ data: {
                 type: AlertTypeEnum.SUCCESS,
                 alertTitle: 'Payment Sent',
-                titleMessage: 'Payment Sent Successfully!',
                 message: msg
               }}));
               this.store.dispatch(new RTLActions.FetchAllChannels());
@@ -692,7 +701,7 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err: any) => {
-            const myErr = {status: err.status, error: typeof(err.error.error) === 'object' ? err.error.error : {error: err.error.error}};
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
             this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
             return of({type: RTLActions.VOID});
           })
@@ -1135,7 +1144,7 @@ export class LNDEffects implements OnDestroy {
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
-        width: '55%', data: {
+        data: {
           type: alertType,
           alertTitle: alertTitle,
           message: { code: err.status, message: err.error.error, URL: errURL },

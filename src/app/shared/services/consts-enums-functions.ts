@@ -36,10 +36,10 @@ export const TRANS_TYPES = [
 ];
 
 export const FEE_LIMIT_TYPES = [
-  {id: 'none', name: 'No Limit'},
-  {id: 'fixed', name: 'Fixed in Sats'},
-  {id: 'fixed_msat', name: 'Fixed in mSats'},
-  {id: 'percent', name: 'Percentage of Payment Amount'}
+  {id: 'none', name: 'No Fee Limit', placeholder: 'No Limit'},
+  {id: 'fixed', name: 'Fixed (Sats)', placeholder: 'Fixed Limit in Sats'},
+  // {id: 'fixed_msat', name: 'Fixed in mSats'},
+  {id: 'percent', name: 'Percentage of Payment Amount', placeholder: 'Percentage Limit'}
 ];
 
 export const NODE_SETTINGS = {

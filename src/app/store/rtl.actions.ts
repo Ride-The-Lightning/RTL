@@ -480,7 +480,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: { paymentReq?: string, paymentDecoded?: PayRequest, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, zeroAmtInvoice: boolean }) {}
+  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number }) {}
 }
 
 export class FetchGraphNode implements Action {

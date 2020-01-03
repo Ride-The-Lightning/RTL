@@ -87,7 +87,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   resetData() {
     this.selectedPeer = '';
     this.fundingAmount = 0;
-    this.showAdvanced = false;
     this.spendUnconfirmed = false;
     this.isPrivate = false;
     this.selTransType = '0';
