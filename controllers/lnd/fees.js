@@ -32,16 +32,15 @@ exports.getFees = (req, res, next) => {
       } else {
         body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
       }
-
-      let startDate = new Date();
-      let day_start_time = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 1);
-      day_start_time = Math.round(day_start_time.getTime() / 1000).toString();
-      let week_start_time = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 7);
-      week_start_time = Math.round(week_start_time.getTime() / 1000).toString();
-      let month_start_time = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 30);
-      return getFwdTransactions(Math.round(month_start_time.getTime() / 1000).toString())
+      let current_time = Math.round((new Date().getTime()) / 1000);
+      let month_start_time = current_time - 2629743;
+      let week_start_time = current_time - 604800;
+      let day_start_time = current_time - 86400;
+      return getFwdTransactions(month_start_time, current_time)
       .then((history) => {
-        let daily_tx_count = history.filter(event => event.timestamp >= day_start_time);
+        let daily_tx_count = history.filter(event => {
+          return event.timestamp >= day_start_time;
+        });
         body.daily_tx_count = daily_tx_count && daily_tx_count.length ? daily_tx_count.length : 0;
         let weekly_tx_count = history.filter(event => event.timestamp >= week_start_time);
         body.weekly_tx_count = weekly_tx_count && weekly_tx_count.length ? weekly_tx_count.length : 0;
@@ -64,18 +63,13 @@ exports.getFees = (req, res, next) => {
   });
 };
 
-getFwdTransactions = (start_time) => {
+getFwdTransactions = (start_time, end_time) => {
   return new Promise(function(resolve, reject) {
     options.url = common.getSelLNServerUrl() + '/switch';
-    options.form = {};
-    let endDate = new Date();
-
-    if (undefined !== start_time) {
-      options.form.start_time = start_time;
-    }
-    end_time = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-    options.form.end_time = Math.round(this.end_time.getTime() / 1000).toString();
-    options.form = JSON.stringify(options.form);
+    options.form = JSON.stringify({
+      start_time: start_time,
+      end_time: end_time
+    });
     logger.info({fileName: 'Fees', msg: 'Switch Post Options: ' + JSON.stringify(options)});
     request.post(options).then((body) => {
       try {
