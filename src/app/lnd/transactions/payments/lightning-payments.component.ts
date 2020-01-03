@@ -226,15 +226,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  onPaymentClick(selRow: Payment, event: any) {
-    const flgExpansionClicked = event.target.className.includes('mat-expansion-panel-header') || event.target.className.includes('mat-expansion-indicator');
-    if (flgExpansionClicked) {
-      return;
-    }
-    const selPayment = this.payments.data.filter(payment => {
-      return payment.payment_hash === selRow.payment_hash;
-    })[0];
-    
+  onPaymentClick(selPayment: Payment, event: any) {
     const reorderedPayment = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],

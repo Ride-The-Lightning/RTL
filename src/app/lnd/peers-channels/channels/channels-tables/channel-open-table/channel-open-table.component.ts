@@ -199,12 +199,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.filter = this.selFilter;
   }
 
-  onChannelClick(selRow: Channel, event: any) {
-    const flgCloseClicked = event.target.className.includes('mat-column-close') || event.target.className.includes('mat-column-update') || event.target.className.includes('mat-icon');
-    if (flgCloseClicked) { return; }
-    const selChannel = this.channels.data.filter(channel => {
-      return channel.chan_id === selRow.chan_id;
-    })[0];
+  onChannelClick(selChannel: Channel, event: any) {
     const reorderedChannel = [
       [{key: 'remote_alias', value: selChannel.remote_alias, title: 'Peer Alias', width: 40},
         {key: 'active', value: selChannel.active, title: 'Active', width: 30, type: DataTypeEnum.BOOLEAN},

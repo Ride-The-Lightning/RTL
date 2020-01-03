@@ -3,6 +3,18 @@ export enum feeRateStyle {
   KW = 'KW'
 }
 
+export interface ChannelStatusCL {
+  channels?: number;
+  capacity?:number;
+}
+
+export interface ChannelsStatusCL {
+  active?: ChannelStatusCL;
+  inactive?: ChannelStatusCL;
+  pending?: ChannelStatusCL;
+  closing?: ChannelStatusCL;
+}
+
 export interface Address {
   type?: string;
   address?: string;
@@ -35,12 +47,12 @@ export interface FeesCL {
 }
 
 export interface BalanceCL {
-  totalBalance?: string;
-  confBalance?: string;
-  unconfBalance?: string;
-  btc_totalBalance?: string;
-  btc_confBalance?: string;
-  btc_unconfBalance?: string;
+  totalBalance?: number;
+  confBalance?: number;
+  unconfBalance?: number;
+  btc_totalBalance?: number;
+  btc_confBalance?: number;
+  btc_unconfBalance?: number;
 }
 
 export interface LocalRemoteBalanceCL {
@@ -87,17 +99,6 @@ export interface OnChainCL {
   satoshis?: number;
   feeRate?: string;
   minconf?: number;
-}
-
-export interface AddressTypeCL {
-  addressId?: string;
-  addressTp?: string;
-  addressDetails?: string;
-}
-
-export interface FeeRateTypeCL {
-  feeRateId?: string;
-  feeRateType?: string;
 }
 
 export interface HopCL {

@@ -50,10 +50,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
     this.loadForwardingEventsTable(this.forwardingHistoryData);
   }
 
-  onForwardingEventClick(selRow: ForwardingEvent, event: any) {
-    const selFEvent = this.forwardingHistoryEvents.data.filter(fhEvent => {
-      return (fhEvent.chan_id_in === selRow.chan_id_in && fhEvent.timestamp === selRow.timestamp);
-    })[0];
+  onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{key: 'timestamp_str', value: selFEvent.timestamp_str, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
         {key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},

@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { DialogConfig } from '../shared/models/alertData';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
@@ -657,7 +657,7 @@ export class SetLocalRemoteBalanceCL implements Action {
 
 export class GetNewAddressCL implements Action {
   readonly type = GET_NEW_ADDRESS_CL;
-  constructor(public payload: AddressTypeCL) {}
+  constructor(public payload: AddressType) {}
 }
 
 export class SetNewAddressCL implements Action {

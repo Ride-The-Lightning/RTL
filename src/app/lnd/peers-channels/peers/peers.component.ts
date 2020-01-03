@@ -17,7 +17,6 @@ import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { ErrorMessageComponent } from '../../../shared/components/data-modal/error-message/error-message.component';
 
 @Component({
   selector: 'rtl-peers',
@@ -128,14 +127,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: true}));
   }
 
-  onPeerClick(selRow: Peer, event: any) {
-    const flgCloseClicked = event.target.className.includes('mat-column-detach') || event.target.className.includes('mat-icon');
-    if (flgCloseClicked) {
-      return;
-    }
-    const selPeer = this.peers.data.filter(peer => {
-      return peer.pub_key === selRow.pub_key;
-    })[0];
+  onPeerClick(selPeer: Peer, event: any) {
     const reorderedPeer = [
       [{key: 'pub_key', value: selPeer.pub_key, title: 'Public Key', width: 100}],
       [{key: 'address', value: selPeer.address, title: 'Address', width: 100}],

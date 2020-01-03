@@ -1,0 +1,10 @@
+<div fxLayout="column" fxFlex="100" class="mt-2 bordered-box">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{openChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+      </ng-template>
+      <rtl-cl-channel-open-table></rtl-cl-channel-open-table>
+    </mat-tab>
+  </mat-tab-group>
+</div>

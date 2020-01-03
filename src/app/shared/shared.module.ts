@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import {
   MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
   MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
@@ -41,12 +42,14 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
+import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { NonNegativeAmountValidator } from './directive/non-negative-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
-import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
-import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
+
+import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { SocketService } from './services/socket.service';
 
 @NgModule({
@@ -56,6 +59,7 @@ import { SocketService } from './services/socket.service';
     ReactiveFormsModule,
     FontAwesomeModule,
     FlexLayoutModule,
+    LayoutModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -97,6 +101,7 @@ import { SocketService } from './services/socket.service';
     ReactiveFormsModule,
     FontAwesomeModule,
     FlexLayoutModule,
+    LayoutModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -187,6 +192,7 @@ import { SocketService } from './services/socket.service';
     ErrorMessageComponent
   ],
   providers: [
+    { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },

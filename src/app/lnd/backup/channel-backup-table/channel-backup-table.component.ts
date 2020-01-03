@@ -96,14 +96,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
 
-  onChannelClick(selRow: Channel, event: any) {
-    const flgButtonsClicked = event.target.className.includes('mat-icon')
-      || event.target.className.includes('mat-column-backup')
-      || event.target.className.includes('mat-column-verify');
-    if (flgButtonsClicked) { return; }
-    const selChannel = this.channels.data.filter(channel => {
-      return channel.chan_id === selRow.chan_id;
-    })[0];
+  onChannelClick(selChannel: Channel, event: any) {
     const reorderedChannel = [
       [{key: 'remote_alias', value: selChannel.remote_alias, title: 'Peer Alias', width: 40},
         {key: 'active', value: selChannel.active, title: 'Active', width: 30, type: DataTypeEnum.BOOLEAN},

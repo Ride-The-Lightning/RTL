@@ -96,10 +96,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
 
   }
 
-  onOpenClick(selRow: any) {
-    const selChannel = this.pendingOpenChannels.data.filter(channel => {
-      return channel.channel.channel_point === selRow.channel.channel_point;
-    })[0];
+  onOpenClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['commit_weight', 'confirmation_height', 'fee_per_kw', 'commit_fee'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
@@ -122,10 +119,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onForceClosingClick(selRow: any) {
-    const selChannel = this.pendingForceClosingChannels.data.filter(channel => {
-      return channel.channel.channel_point === selRow.channel.channel_point;
-    })[0];
+  onForceClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
@@ -149,10 +143,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onClosingClick(selRow: any) {
-    const selChannel = this.pendingClosingChannels.data.filter(channel => {
-      return channel.channel.channel_point === selRow.channel.channel_point;
-    })[0];
+  onClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};
@@ -172,10 +163,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onWaitClosingClick(selRow: any) {
-    const selChannel = this.pendingWaitClosingChannels.data.filter(channel => {
-      return channel.channel.channel_point === selRow.channel.channel_point;
-    })[0];
+  onWaitClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['limbo_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
     const preOrderedChannel: any = {};

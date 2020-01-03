@@ -113,10 +113,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     this.resetData();
   }
 
-  onInvoiceClick(selRow: Invoice, event: any) {
-    const selInvoice = this.invoices.data.filter(invoice => {
-      return invoice.payment_request === selRow.payment_request;
-    })[0];
+  onInvoiceClick(selInvoice: Invoice, event: any) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         invoice: selInvoice,
         newlyAdded: false,

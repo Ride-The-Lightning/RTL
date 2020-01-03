@@ -42,6 +42,13 @@ export const FEE_LIMIT_TYPES = [
   {id: 'percent', name: 'Percentage of Payment Amount', placeholder: 'Percentage Limit'}
 ];
 
+export const FEE_RATE_TYPES = [
+  { feeRateId: 'urgent', feeRateType: 'Urgent'},
+  { feeRateId: 'normal', feeRateType: 'Normal'},
+  { feeRateId: 'slow', feeRateType: 'Slow'},
+]
+
+
 export const NODE_SETTINGS = {
   themes: [
     {id: 'purple', name: 'Diogo'}, 

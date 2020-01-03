@@ -1,67 +1,59 @@
-<div fxLayout="column">
-  <div class="padding-gap">
-    <mat-card>
-      <mat-card-content *ngIf="lookupResult">
-        <div fxLayout="column">
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">ID</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult?.nodeid}}</mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Alias</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult?.alias}}</mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Last Timestamp</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult?.last_timestamp_str}}</mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Color</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start"><span
-                [ngStyle]="{'background-color': '#' + lookupResult.color}">{{lookupResult?.color}}</span></mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Global Features</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult?.globalfeatures}}</mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayoutAlign="start start">
-            <mat-list-item fxFlex="50" fxLayoutAlign="start start">Global_Features</mat-list-item>
-            <mat-list-item fxFlex="40" fxLayoutAlign="start start">{{lookupResult?.global_features}}</mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list fxLayout="column" fxLayoutAlign="start start">
-            <mat-divider></mat-divider>
-            <mat-list-item fxFlex="100" fxLayoutAlign="start start">Addresses</mat-list-item>
-            <mat-table [dataSource]="lookupResult?.addresses" matSort class="mat-elevation-z8 overflow-auto">
-              <ng-container matColumnDef="type">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-                <mat-cell *matCellDef="let address">
-                  <div>{{address?.type}}</div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="address">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
-                <mat-cell *matCellDef="let address">
-                  <div>{{address?.address}}</div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="port">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Port</mat-header-cell>
-                <mat-cell *matCellDef="let address">
-                  <div>{{address?.port}}</div>
-                </mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
-              <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
-          </mat-list>
-        </div>
-      </mat-card-content>
-    </mat-card>
+<div fxLayout="column" *ngIf="lookupResult" class="mt-1">
+  <mat-divider></mat-divider>        
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
+    <h4 fxLayoutAlign="start" class="font-bold-500">Pub Key</h4>
+    <span class="foreground-secondary-text w-100">{{lookupResult.nodeid}}</span>
+    <mat-divider class="my-1"></mat-divider>        
+  </div>
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
+      <span class="foreground-secondary-text">{{lookupResult.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult.color}">{{lookupResult.color}}</span></span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
+      <span class="foreground-secondary-text">{{lookupResult.last_timestamp_str}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+  </div>
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Global Features</h4>
+      <span class="foreground-secondary-text">{{lookupResult.globalfeatures}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Global_Features</h4>
+      <span class="foreground-secondary-text">{{lookupResult.global_features}}</span>
+      <mat-divider class="my-1"></mat-divider>        
+    </div>
+  </div>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start" class="my-1">
+    <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500">Addresses</h4>
+    <div perfectScrollbar class="table-container mt-2" fxFlex="100">    
+      <table mat-table [dataSource]="lookupResult.addresses" matSort class="overflow-auto">
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+          <mat-cell *matCellDef="let address">
+            <div>{{address?.type}}</div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+          <mat-cell *matCellDef="let address">
+            <div>{{address?.address}}</div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="port">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Port</mat-header-cell>
+          <mat-cell *matCellDef="let address">
+            <div>{{address?.port}}</div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
+        <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </table>
+    </div>
   </div>
 </div>

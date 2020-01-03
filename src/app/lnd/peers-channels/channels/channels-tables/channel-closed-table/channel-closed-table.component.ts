@@ -79,10 +79,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
     this.closedChannels.filter = selFilter;
   }
 
-  onClosedChannelClick(selRow: ClosedChannel, event: any) {
-    const selChannel = this.closedChannels.data.filter(closedChannel => {
-      return closedChannel.chan_id === selRow.chan_id;
-    })[0];
+  onClosedChannelClick(selChannel: ClosedChannel, event: any) {
     const reorderedChannel = [
       [{key: 'close_type', value: selChannel.close_type, title: 'Close Type', width: 40, type: DataTypeEnum.STRING},
         {key: 'time_locked_balance', value: selChannel.time_locked_balance, title: 'Time Locked Balance', width: 30, type: DataTypeEnum.NUMBER},

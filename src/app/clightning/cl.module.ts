@@ -6,19 +6,31 @@ import { SharedModule } from '../shared/shared.module';
 
 import { CLRootComponent } from './cl-root.component';
 import { CLHomeComponent } from './home/home.component';
-import { CLFeeRatesComponent } from './home/fee-rates/fee-rates.component';
-import { CLChannelsComponent } from './channels/channels.component';
-import { CLInvoicesComponent } from './invoices/invoices.component';
+import { CLPeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { CLChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
+import { CLPeersComponent } from './peers-channels/peers/peers.component';
+import { CLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
+import { CLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { CLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
+import { CLOnChainComponent } from './on-chain/on-chain.component';
+import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
+import { CLChannelManageComponent } from './peers-channels/channels/channel-manage/channel-manage.component';
+import { CLTransactionsComponent } from './transactions/transactions.component';
 import { CLLookupsComponent } from './lookups/lookups.component';
+import { CLRoutingComponent } from './routing/routing.component';
+import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
-import { CLOnChainComponent } from './on-chain/on-chain.component';
-import { CLQueryRoutesComponent } from './payments/query-routes/query-routes.component';
-import { CLPaymentsComponent } from './payments/send-receive/payments.component';
-import { CLPeersComponent } from './peers/peers.component';
-import { CLForwardingHistoryComponent } from './forwarding-history/forwarding-history.component';
+import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { CLNodeInfoComponent } from './home/node-info/node-info.component';
+import { CLBalancesInfoComponent } from './home/balances-info/balances-info.component';
+import { CLFeeInfoComponent } from './home/fee-info/fee-info.component';
+import { CLChannelStatusInfoComponent } from './home/channel-status-info/channel-status-info.component';
+import { CLChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
+import { CLChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
+import { CLFeeRatesComponent } from './home/fee-rates/fee-rates.component';
 
-import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -30,20 +42,32 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
   declarations: [
     CLRootComponent,
     CLHomeComponent,
-    CLChannelsComponent,
-    CLInvoicesComponent,
+    CLPeersComponent,
+    CLPeersChannelsComponent,
+    CLLightningInvoicesComponent,
+    CLLightningPaymentsComponent,
+    CLChannelManageComponent,
+    CLTransactionsComponent,
     CLLookupsComponent,
+    CLRoutingComponent,
+    CLForwardingHistoryComponent,
     CLChannelLookupComponent,
     CLNodeLookupComponent,
-    CLOnChainComponent,
     CLQueryRoutesComponent,
-    CLPaymentsComponent,
-    CLPeersComponent,
-    CLForwardingHistoryComponent,
+    CLOnChainSendComponent,
+    CLOnChainReceiveComponent,
+    CLOnChainComponent,
+    CLChannelsTablesComponent,
+    CLChannelOpenTableComponent,
+    CLNodeInfoComponent,
+    CLBalancesInfoComponent,
+    CLFeeInfoComponent,
+    CLChannelStatusInfoComponent,
+    CLChannelCapacityInfoComponent,
+    CLChannelLiquidityInfoComponent,
     CLFeeRatesComponent
   ],
   providers: [
-    { provide: LoggerService, useClass: ConsoleLoggerService },
     CLUnlockedGuard
   ],
   bootstrap: [CLRootComponent]

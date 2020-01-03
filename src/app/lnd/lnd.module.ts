@@ -30,9 +30,6 @@ import { BackupComponent } from './backup/backup.component';
 import { ChannelBackupTableComponent } from './backup/channel-backup-table/channel-backup-table.component';
 import { ChannelRestoreTableComponent } from './backup/channel-restore-table/channel-restore-table.component';
 import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
-
-import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
 import { InitializeWalletComponent } from './wallet/initialize/initialize.component';
@@ -41,27 +38,17 @@ import { BalancesInfoComponent } from './home/balances-info/balances-info.compon
 import { FeeInfoComponent } from './home/fee-info/fee-info.component';
 import { ChannelStatusInfoComponent } from './home/channel-status-info/channel-status-info.component';
 import { ChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { LayoutModule } from '@angular/cdk/layout';
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
-import { LoopComponent } from './loop/loop.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
+import { LoopComponent } from './loop/loop.component';
+
+import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
-    LNDRouting,
-    MatGridListModule,
-    MatCardModule,
-    MatMenuModule,
-    MatIconModule,
-    MatButtonModule,
-    LayoutModule
+    LNDRouting
   ],
   declarations: [
     LNDRootComponent,
@@ -103,7 +90,6 @@ import { NetworkInfoComponent } from './network-info/network-info.component';
     NetworkInfoComponent
   ],
   providers: [
-    { provide: LoggerService, useClass: ConsoleLoggerService },
     LNDUnlockedGuard
   ],
   bootstrap: [LNDRootComponent]

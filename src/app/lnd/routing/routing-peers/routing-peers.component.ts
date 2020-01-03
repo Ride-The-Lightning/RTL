@@ -50,19 +50,12 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
     this.loadRoutingPeersTable(this.routingPeersData);
   }
 
-  onRoutingPeerClick(selRow: RoutingPeers, event: any, direction: string) {
-    let selRPeer: RoutingPeers = {};
+  onRoutingPeerClick(selRPeer: RoutingPeers, event: any, direction: string) {
     let alertTitle = ' Routing Information';
     if (direction === 'in') {
       alertTitle = 'Incoming' + alertTitle;
-      selRPeer = this.RoutingPeersIncoming.data.find(rPeer => {
-        return rPeer.chan_id === selRow.chan_id;
-      });
     } else {
       alertTitle = 'Outgoing' + alertTitle;
-      selRPeer = this.RoutingPeersOutgoing.data.find(rPeer => {
-        return rPeer.chan_id === selRow.chan_id;
-      });
     }
     const reorderedRoutingPeer = [
       [{key: 'chan_id', value: selRPeer.chan_id, title: 'Channel ID', width: 50, type: DataTypeEnum.STRING},

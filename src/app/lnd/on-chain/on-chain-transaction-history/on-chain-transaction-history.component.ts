@@ -82,24 +82,16 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     this.listTransactions.filter = selFilter;
   }
 
-  onTransactionClick(selRow: Transaction, event: any) {
-    const flgExpansionClicked = event.target.className.includes('mat-expansion-panel-header') || event.target.className.includes('mat-expansion-indicator');
-    if (flgExpansionClicked) {
-      return;
-    }
-    const selTransaction = this.listTransactions.data.filter(transaction => {
-      return transaction.tx_hash === selRow.tx_hash;
-    })[0];
+  onTransactionClick(selTransaction: Transaction, event: any) {
     const reorderedTransactions = [
       [{key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Address', width: 100, type: DataTypeEnum.ARRAY}],
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
       [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'active', value: selTransaction.active, title: 'Active', width: 50, type: DataTypeEnum.BOOLEAN}]
+      [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 32, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

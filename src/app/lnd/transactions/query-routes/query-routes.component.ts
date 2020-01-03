@@ -78,10 +78,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
     this.flgLoading[0] = false;
   }
 
-  onHopClick(selRow: Hop, event: any) {
-    const selHop = this.qrHops.data.filter(hop => {
-      return hop.hop_sequence === selRow.hop_sequence;
-    })[0];
+  onHopClick(selHop: Hop, event: any) {
     const reorderedHop = [
       [{key: 'hop_sequence', value: selHop.hop_sequence, title: 'Sequence', width: 30, type: DataTypeEnum.NUMBER},
         {key: 'amt_to_forward', value: selHop.amt_to_forward, title: 'Amount To Forward (Sats)', width: 30, type: DataTypeEnum.NUMBER},

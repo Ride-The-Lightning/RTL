@@ -66,7 +66,6 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   onSendFunds() {
-    console.warn('ON SEND');
     if(this.invalidValues) { return true; }
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2])
