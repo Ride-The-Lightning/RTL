@@ -669,28 +669,11 @@ export class LNDEffects implements OnDestroy {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload.paymentReq, myErr);
               return of({type: RTLActions.VOID});              
             } else {
-              let msg = [];
+              let msg = 'Payment Sent Successfully.';
               if(sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
-                msg = [
-                  [{key: 'destination', value: action.payload.paymentDecoded.destination, title: 'Destination', width: 100, type: DataTypeEnum.STRING}],
-                  [{key: 'num_satoshis', value: action.payload.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.STRING},
-                    {key: 'total_fees_msat', value: (sendRes.payment_route.total_fees_msat / 1000), title: 'Total Fee (mSats)', width: 50, type: DataTypeEnum.STRING}],
-                  [{key: 'timestamp_str', value: action.payload.paymentDecoded.timestamp_str, title: 'Timestamp', width: 50, type: DataTypeEnum.DATE_TIME},
-                    {key: 'expiry', value: action.payload.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.STRING}]
-                ];              
-              } else {
-                msg = [
-                  [{key: 'destination', value: action.payload.paymentDecoded.destination, title: 'Destination', width: 100, type: DataTypeEnum.STRING}],
-                  [{key: 'num_satoshis', value: action.payload.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 32, type: DataTypeEnum.STRING},
-                    {key: 'timestamp_str', value: action.payload.paymentDecoded.timestamp_str, title: 'Timestamp', width: 32, type: DataTypeEnum.DATE_TIME},
-                    {key: 'expiry', value: action.payload.paymentDecoded.expiry, title: 'Expiry', width: 32, type: DataTypeEnum.STRING}]
-                ];              
+                msg = 'Payment sent successfully with the total fee (mSat) ' + sendRes.payment_route.total_fees_msat + '.';
               }
-              this.store.dispatch(new RTLActions.OpenAlert({ data: {
-                type: AlertTypeEnum.SUCCESS,
-                alertTitle: 'Payment Sent',
-                message: msg
-              }}));
+              this.store.dispatch(new RTLActions.OpenSnackBar(msg));
               this.store.dispatch(new RTLActions.FetchAllChannels());
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());

@@ -171,9 +171,9 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       ];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Send Payment',
+        alertTitle: 'Confirm Send Payment',
         noBtnText: 'Cancel',
-        yesBtnText: 'Send',
+        yesBtnText: 'Send Payment',
         message: reorderedPaymentDecoded
       }}));
       this.rtlEffects.closeConfirm
