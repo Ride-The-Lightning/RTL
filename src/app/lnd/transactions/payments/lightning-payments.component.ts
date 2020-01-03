@@ -223,7 +223,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.selActiveChannel = null;
     this.feeLimit = null;
     this.selFeeLimitType = FEE_LIMIT_TYPES[0];
-    this.form.reset();
+    this.form.resetForm();
   }
 
   onPaymentClick(selRow: Payment, event: any) {

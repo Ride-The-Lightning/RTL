@@ -88,10 +88,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
         }
+        // START: Workaround to add adjust container width initially
+        this.sideNavigation.toggle();
+        setTimeout(() => { this.sideNavigation.toggle(); }, 50);
         if (this.settings.menuType === 'compact' || this.settings.menuType === 'mini') {
           this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.sideNavigation.toggle(); }, 100);
         }
+        // END: Workaround to add left margin to container initially
       }     
     });
     this.userIdle.startWatching();

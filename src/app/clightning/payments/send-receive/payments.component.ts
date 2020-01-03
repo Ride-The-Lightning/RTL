@@ -165,7 +165,7 @@ export class CLPaymentsComponent implements OnInit, OnDestroy {
   // }
 
   resetData() {
-    this.form.reset();
+    this.form.resetForm();
     this.paymentDecoded = {};
   }
 
