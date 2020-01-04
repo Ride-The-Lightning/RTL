@@ -50,6 +50,7 @@ export interface GetInfoCL {
 export interface FeesCL {
   feeCollected?: number;
   btc_feeCollected?: number;
+  totalTxCount?: number;
 }
 
 export interface BalanceCL {
@@ -195,8 +196,9 @@ export interface ChannelCL {
   channel_id?: string;
   funding_txid?: string;
   private?: boolean;
-  msatoshi_to_us?: string;
-  msatoshi_total?: string;
+  msatoshi_to_us?: number;
+  msatoshi_to_them?: number;
+  msatoshi_total?: number;
   their_channel_reserve_satoshis?: string;
   our_channel_reserve_satoshis?: string;
   spendable_msatoshi?: string;

@@ -17,14 +17,14 @@
       <div *ngFor="let channel of allChannels" class="mt-2">
         <span class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.id}}" matTooltipDisabled="{{(channel.alias || channel.id).length < 26}}">{{(channel.alias || channel.id) | slice:0:24}}{{(channel.alias || channel.id).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-          <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.our_channel_reserve_satoshis || 0 | number}} Sats</mat-hint>
+          <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.msatoshi_to_us/1000 || 0 | number}} Sats</mat-hint>
           <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90 color-primary">
             <fa-icon [icon]="faBalanceScale" class="color-primary mr-3px" matTooltip="Balance Score"></fa-icon>
             ({{channel.balancedness || 0 | number}})
           </mat-hint>
-          <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel.their_channel_reserve_satoshis || 0 | number}} Sats</mat-hint>
+          <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel.msatoshi_to_them/1000 || 0 | number}} Sats</mat-hint>
         </div>
-        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.our_channel_reserve_satoshis && channel.our_channel_reserve_satoshis > 0 ? ((+channel.our_channel_reserve_satoshis/((+channel.our_channel_reserve_satoshis)+(+channel.their_channel_reserve_satoshis)))*100) : 0}}"></mat-progress-bar>
+        <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.msatoshi_to_us && channel.msatoshi_to_us > 0 ? ((+channel.msatoshi_to_us/((+channel.msatoshi_to_us)+(+channel.msatoshi_to_them)))*100) : 0}}"></mat-progress-bar>
       </div>
     </div>
   </div>

@@ -41,22 +41,6 @@ export class CLEffects implements OnDestroy {
         .pipe(
           map((info) => {
             this.logger.info(info);
-            info.lnImplementation = 'C-Lightning';
-            let chainObj = { chain: '', network: '' };
-            if (info.network === 'testnet') {
-              chainObj.chain = 'Bitcoin';
-              chainObj.network = 'Testnet';
-            } else if (info.network === 'bitcoin') {
-              chainObj.chain = 'Bitcoin';
-              chainObj.network = 'Mainnet';
-            } else if (info.network === 'litecoin') {
-              chainObj.chain = 'Litecoin';
-              chainObj.network = 'Mainnet';
-            } else if (info.network === 'litecoin-testnet') {
-              chainObj.chain = 'Litecoin';
-              chainObj.network = 'Testnet';
-            }
-            info.chains = [chainObj];
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: RTLActions.SET_INFO_CL,
@@ -710,6 +694,7 @@ export class CLEffects implements OnDestroy {
       alias: info.alias,
       testnet: (info.network === 'testnet' || info.network === 'litecoin-testnet') ? true : false,
       chains: info.chains,
+      uris: info.uris,      
       version: info.version,
       currency_unit: 'BTC',
       smaller_currency_unit: 'Sats',
@@ -723,6 +708,7 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));
     this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
     this.store.dispatch(new RTLActions.FetchPeersCL());
+    this.store.dispatch(new RTLActions.GetForwardingHistoryCL());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');

@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [

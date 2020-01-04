@@ -10,7 +10,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { ChannelsStatusCL, GetInfoCL, FeesCL, ChannelCL, BalanceCL, LocalRemoteBalanceCL, FeeRatesCL } from '../../shared/models/clModels';
+import { ChannelsStatusCL, GetInfoCL, FeesCL, ChannelCL, BalanceCL, FeeRatesCL } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -63,7 +63,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
@@ -77,7 +77,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
@@ -94,7 +94,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
         { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee Report', cols: 3, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
         { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
@@ -138,12 +138,16 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       }
 
       this.fees = rtlStore.fees;
+      this.fees.totalTxCount = 0;
+      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
+        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
+      }
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = (undefined !== this.fees.feeCollected) ? false : true;
       }
 
       this.totalBalance = rtlStore.balance;
-      this.balances.onchain = rtlStore.balance.confBalance;
+      this.balances.onchain = rtlStore.balance.totalBalance;
       this.balances.lightning = rtlStore.localRemoteBalance.localBalance;
       this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);
@@ -176,11 +180,11 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.totalOutboundLiquidity = 0;
       this.allChannels = rtlStore.allChannels.filter(channel => channel.connected);
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => +channel.their_channel_reserve_satoshis > 0), 'their_channel_reserve_satoshis')));
-      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => +channel.our_channel_reserve_satoshis > 0), 'our_channel_reserve_satoshis')));
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us')));
       this.allChannels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.their_channel_reserve_satoshis;
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.our_channel_reserve_satoshis;
+        this.totalInboundLiquidity = this.totalInboundLiquidity + channel.msatoshi_to_them;
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + channel.msatoshi_to_us;
       });
       if (this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
@@ -212,8 +216,8 @@ export class CLHomeComponent implements OnInit, OnDestroy {
     if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
       this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
-        const x = +a.our_channel_reserve_satoshis + +a.their_channel_reserve_satoshis;
-        const y = +b.their_channel_reserve_satoshis + +b.their_channel_reserve_satoshis;
+        const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
+        const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {
