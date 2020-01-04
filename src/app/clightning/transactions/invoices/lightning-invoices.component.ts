@@ -34,7 +34,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
-  public memo = '';
+  public label = '';
+  public description = '';
   public expiry: number;
   public invoiceValue: number;
   public invoiceValueHint = '';
@@ -62,16 +63,16 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'msatoshi_received', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'paid_at_str', 'label', 'msatoshi', 'msatoshi_received', 'actions'];
     }
   }
 
@@ -104,11 +105,11 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.flgAnimate = true;
-    this.newlyAddedInvoiceMemo = this.memo;
+    this.newlyAddedInvoiceMemo = this.label;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoice({
-      memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize
+    this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
+      label: this.label, amount: this.invoiceValue, description: this.description, expiry: (this.expiry ? this.expiry : 3600), private: this.private
     }));
     this.resetData();
   }
@@ -117,7 +118,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     let reCreatedInvoice = {
       payment_request: selInvoice.bolt11,
       value: selInvoice.amount_msat,
-      memo: selInvoice.description,
+      label: selInvoice.label,
       settle_date_str: selInvoice.paid_at_str,
       expiry: selInvoice.expires_at_str
     };
@@ -142,7 +143,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.memo = '';
+    this.label = '';
+    this.description = '';
     this.invoiceValue = undefined;
     this.private = false;
     this.expiry = undefined;
@@ -165,7 +167,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       reversed = true;
       index_offset = 0;
     }
-    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
+    this.store.dispatch(new RTLActions.FetchInvoicesCL({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
   }
 
   onInvoiceValueChange() {

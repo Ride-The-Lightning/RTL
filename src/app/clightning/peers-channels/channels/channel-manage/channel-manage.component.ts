@@ -60,8 +60,8 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_PEERS))
-    .subscribe((action: RTLActions.SetPeers) => {
+    filter((action) => action.type === RTLActions.SET_PEERS_CL))
+    .subscribe((action: RTLActions.SetPeersCL) => {
       if(this.newlyAddedPeer !== '') {
         this.snackBar.open('Peer added successfully.');
         this.selectedPeer = this.newlyAddedPeer;

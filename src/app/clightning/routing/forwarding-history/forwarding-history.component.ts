@@ -34,13 +34,13 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'fee_msat', 'actions'];
+      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
+      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
+      this.displayedColumns = ['status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }
 

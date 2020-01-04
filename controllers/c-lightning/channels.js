@@ -8,6 +8,12 @@ exports.listChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channel/listChannels';
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'List Channels: ' + JSON.stringify(body)});
+    body.map(channel => {
+      local = (channel.our_channel_reserve_satoshis) ? +channel.our_channel_reserve_satoshis : 0;
+      remote = (channel.their_channel_reserve_satoshis) ? +channel.their_channel_reserve_satoshis : 0;
+      total = local + remote;
+      channel.balancedness = (1 - Math.abs((local-remote)/total)).toFixed(3);
+    })    
     res.status(200).json(body);
   })
   .catch(function (err) {

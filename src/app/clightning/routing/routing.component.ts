@@ -36,8 +36,8 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_LND_STORE))
-    .subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
+    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_CL_STORE))
+    .subscribe((resetClStore: RTLActions.ResetCLStore) => {
       this.onEventsFetch();
     });
     this.store.select('cl')
@@ -45,7 +45,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.errorMessage = '';
       rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistory') {
+        if (effectsErr.action === 'GetForwardingHistoryCL') {
           this.flgLoading[0] = 'error';
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
@@ -72,10 +72,12 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
     if (undefined === this.startDate || this.startDate == null) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
-    this.store.dispatch(new RTLActions.GetForwardingHistory({
-      end_time: Math.round(this.endDate.getTime() / 1000).toString(),
-      start_time: Math.round(this.startDate.getTime() / 1000).toString()
-    }));
+    this.store.dispatch(new RTLActions.GetForwardingHistoryCL(
+      // {
+      //   end_time: Math.round(this.endDate.getTime() / 1000).toString(),
+      //   start_time: Math.round(this.startDate.getTime() / 1000).toString()
+      // }
+    ));
   }
 
   resetData() {
@@ -87,7 +89,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new RTLActions.SetForwardingHistory({}));
+    this.store.dispatch(new RTLActions.SetForwardingHistoryCL({}));
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();

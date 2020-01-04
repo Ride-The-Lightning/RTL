@@ -21,6 +21,11 @@ export interface Address {
   port?: number;
 }
 
+export interface GetInfoChainCL {
+  chain?: string;
+  network?: string;
+}
+
 export interface GetInfoCL {
   id?: string;
   alias?: string;
@@ -34,6 +39,7 @@ export interface GetInfoCL {
   version?: string;
   blockheight?: number;
   network?: string;
+  chains?: GetInfoChainCL[];
   msatoshi_fees_collected?: number;
   fees_collected_msat?: string;
   currency_unit?: string;
@@ -222,7 +228,7 @@ export interface LookupNodeCL {
   last_timestamp?: number;
   last_timestamp_str?: string;
   globalfeatures?: string;
-  global_features?: string;
+  features?: string;
   addresses?: Address[];
 }
 

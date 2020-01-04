@@ -34,7 +34,7 @@ export class OnChainGeneratedAddressComponent implements OnInit {
   }
 
   onCopyAddress(payload: string) {
-    this.snackBar.open('Generated Address copied');
+    this.snackBar.open('Generated address copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 }

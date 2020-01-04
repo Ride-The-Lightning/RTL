@@ -5,7 +5,7 @@ import { DialogConfig } from '../shared/models/alertData';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
 } from '../shared/models/lndModels';
 
@@ -495,7 +495,7 @@ export class SetGraphNode implements Action {
 
 export class GetNewAddress implements Action {
   readonly type = GET_NEW_ADDRESS;
-  constructor(public payload: AddressType) {}
+  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
 }
 
 export class SetNewAddress implements Action {
@@ -657,7 +657,7 @@ export class SetLocalRemoteBalanceCL implements Action {
 
 export class GetNewAddressCL implements Action {
   readonly type = GET_NEW_ADDRESS_CL;
-  constructor(public payload: AddressType) {}
+  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
 }
 
 export class SetNewAddressCL implements Action {

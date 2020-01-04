@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL, GetInfoChainCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -42,6 +42,21 @@ export class CLEffects implements OnDestroy {
           map((info) => {
             this.logger.info(info);
             info.lnImplementation = 'C-Lightning';
+            let chainObj = { chain: '', network: '' };
+            if (info.network === 'testnet') {
+              chainObj.chain = 'Bitcoin';
+              chainObj.network = 'Testnet';
+            } else if (info.network === 'bitcoin') {
+              chainObj.chain = 'Bitcoin';
+              chainObj.network = 'Mainnet';
+            } else if (info.network === 'litecoin') {
+              chainObj.chain = 'Litecoin';
+              chainObj.network = 'Mainnet';
+            } else if (info.network === 'litecoin-testnet') {
+              chainObj.chain = 'Litecoin';
+              chainObj.network = 'Testnet';
+            }
+            info.chains = [chainObj];
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: RTLActions.SET_INFO_CL,
@@ -157,7 +172,7 @@ export class CLEffects implements OnDestroy {
   getNewAddressCL = this.actions$.pipe(
     ofType(RTLActions.GET_NEW_ADDRESS_CL),
     mergeMap((action: RTLActions.GetNewAddressCL) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressTp)
+      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressCode)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
           this.store.dispatch(new RTLActions.CloseSpinner());
@@ -690,25 +705,11 @@ export class CLEffects implements OnDestroy {
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');
-    let chainObj = { chain: '', network: '' };
-    if (info.network === 'testnet') {
-      chainObj.chain = 'Bitcoin';
-      chainObj.network = 'Testnet';
-    } else if (info.network === 'bitcoin') {
-      chainObj.chain = 'Bitcoin';
-      chainObj.network = 'Mainnet';
-    } else if (info.network === 'litecoin') {
-      chainObj.chain = 'Litecoin';
-      chainObj.network = 'Mainnet';
-    } else if (info.network === 'litecoin-testnet') {
-      chainObj.chain = 'Litecoin';
-      chainObj.network = 'Testnet';
-    }
     const node_data = {
       identity_pubkey: info.id,
       alias: info.alias,
       testnet: (info.network === 'testnet' || info.network === 'litecoin-testnet') ? true : false,
-      chains: [chainObj],
+      chains: info.chains,
       version: info.version,
       currency_unit: 'BTC',
       smaller_currency_unit: 'Sats',
@@ -716,6 +717,7 @@ export class CLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new RTLActions.FetchFeesCL());
+    this.store.dispatch(new RTLActions.FetchChannelsCL());
     this.store.dispatch(new RTLActions.FetchBalanceCL());
     this.store.dispatch(new RTLActions.FetchLocalRemoteBalanceCL());
     this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));

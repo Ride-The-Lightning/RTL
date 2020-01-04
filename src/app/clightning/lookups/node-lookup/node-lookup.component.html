@@ -8,7 +8,7 @@
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
-      <span class="foreground-secondary-text">{{lookupResult.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult.color}">{{lookupResult.color}}</span></span>
+      <span class="foreground-secondary-text">{{lookupResult.alias}}<span class="ml-2" [ngStyle]="{'background-color': '#' + lookupResult.color}">#{{lookupResult.color}}</span></span>
       <mat-divider class="my-1"></mat-divider>        
     </div>
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
@@ -24,15 +24,15 @@
       <mat-divider class="my-1"></mat-divider>        
     </div>
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
-      <h4 fxLayoutAlign="start" class="font-bold-500">Global_Features</h4>
-      <span class="foreground-secondary-text">{{lookupResult.global_features}}</span>
+      <h4 fxLayoutAlign="start" class="font-bold-500">Features</h4>
+      <span class="foreground-secondary-text">{{lookupResult.features}}</span>
       <mat-divider class="my-1"></mat-divider>        
     </div>
   </div>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="start" class="my-1">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500">Addresses</h4>
     <div perfectScrollbar class="table-container mt-2" fxFlex="100">    
-      <table mat-table [dataSource]="lookupResult.addresses" matSort class="overflow-auto">
+      <table mat-table [dataSource]="addresses" matSort class="overflow-auto">
         <ng-container matColumnDef="type">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
           <mat-cell *matCellDef="let address">

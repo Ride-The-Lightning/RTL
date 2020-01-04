@@ -29,7 +29,9 @@ exports.listNode = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/network/listNode/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
-    body.last_timestamp_str =  (body.last_timestamp) ? common.convertTimestampToDate(body.last_timestamp) : '';
+    body.forEach(node => {
+      node.last_timestamp_str =  (node.last_timestamp) ? common.convertTimestampToDate(node.last_timestamp) : '';
+    });
     res.status(200).json(body);
   })
   .catch((err) => {

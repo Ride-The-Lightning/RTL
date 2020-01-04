@@ -36,16 +36,16 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['pubkey_alias', 'actions'];
+      this.displayedColumns = ['alias', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'fee_msat', 'actions'];
+      this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
+      this.displayedColumns = ['alias', 'direction', 'msatoshi', 'amount_msat', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['hop_sequence', 'pubkey_alias', 'chan_capacity', 'amt_to_forward_msat', 'fee_msat', 'actions'];
+      this.displayedColumns = ['alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'actions'];
     }
   }
 

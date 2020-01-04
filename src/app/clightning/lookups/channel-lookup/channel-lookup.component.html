@@ -14,7 +14,7 @@
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
         <h4 class="font-bold-500">Active</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0].active}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[0].active ? 'True' : 'False'}}</span>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
@@ -69,7 +69,7 @@
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
         <h4 class="font-bold-500">Public</h4>
-        <span class="foreground-secondary-text">{{lookupResult[0].public}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[0].public ? 'Yes' : 'No'}}</span>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
@@ -95,7 +95,7 @@
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
         <h4 class="font-bold-500">Active</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1].active}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[1].active ? 'True' : 'False'}}</span>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
@@ -150,7 +150,7 @@
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">
         <h4 class="font-bold-500">Public</h4>
-        <span class="foreground-secondary-text">{{lookupResult[1].public}}</span>
+        <span class="foreground-secondary-text">{{lookupResult[1].public ? 'Yes' : 'No'}}</span>
       </div>
       <mat-divider [inset]="true"></mat-divider>
       <div fxLayout="column" fxFlex="10" class="my-1">

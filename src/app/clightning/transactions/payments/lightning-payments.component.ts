@@ -44,12 +44,6 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequestCL = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public showAdvanced = false;
-  public selActiveChannel: ChannelCL = {};
-  public activeChannels = {};
-  public feeLimit = null;
-  public selFeeLimitType = FEE_LIMIT_TYPES[0];
-  public feeLimitTypes = FEE_LIMIT_TYPES;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -64,13 +58,13 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['creation_date', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.displayedColumns = ['created_at', 'msatoshi', 'msatoshi_sent', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
+      this.displayedColumns = ['created_at', 'status', 'msatoshi', 'msatoshi_sent', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
+      this.displayedColumns = ['created_at', 'status', 'payment_hash', 'msatoshi', 'msatoshi_sent', 'actions'];
     }
   }
 
@@ -85,7 +79,6 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
-      this.activeChannels = rtlStore.allChannels.filter(channel => channel.connected);
       this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
@@ -208,21 +201,9 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onShowAdvanced() {
-    this.showAdvanced = !this.showAdvanced;
-    if (!this.showAdvanced) {
-      this.selActiveChannel = null;
-      this.feeLimit = null;
-      this.selFeeLimitType = FEE_LIMIT_TYPES[0];
-    }
-  }  
-
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
-    this.selActiveChannel = null;
-    this.feeLimit = null;
-    this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     this.form.resetForm();
   }
 

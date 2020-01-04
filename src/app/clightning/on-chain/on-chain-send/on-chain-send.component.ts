@@ -112,11 +112,13 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
 
   onAmountUnitChange(event: any) {
     let self = this;
+    let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
+    let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.satoshis, CURRENCY_UNIT_FORMATS.Sats, this.amountUnits[2])
+      this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2])
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe(data => {
-        self.transaction.satoshis = +self.decimalPipe.transform(data[CURRENCY_UNIT_FORMATS.Sats], self.currencyUnitFormats[CURRENCY_UNIT_FORMATS.Sats]).replace(/,/g, '');
+        self.transaction.satoshis = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       });
     }
     this.selAmountUnit = event.value;

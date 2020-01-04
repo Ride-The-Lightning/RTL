@@ -27,7 +27,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   public selectedFieldId = 0;
   public lookupFields = [
     { id: 0, name: 'Node', placeholder: 'Pubkey'},
-    { id: 1, name: 'Channel', placeholder: 'Channel ID'}
+    { id: 1, name: 'Channel', placeholder: 'Short Channel ID'}
   ];
   public flgLoading: Array<Boolean | 'error'> = [true];
   public faSearch = faSearch;
@@ -47,7 +47,16 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     ).subscribe((resLookup: RTLActions.SetLookupCL | RTLActions.EffectErrorCl) => {
       if(resLookup.type === RTLActions.SET_LOOKUP_CL) {
         this.flgLoading[0] = true;
-        this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
+        switch (this.selectedFieldId) {
+          case 0:
+            this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload[0]));
+            break;
+          case 1:
+            this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
+            break;
+          default:
+            break;
+        }
         this.flgSetLookupValue = true;
         this.logger.info(this.lookupValue);
       }

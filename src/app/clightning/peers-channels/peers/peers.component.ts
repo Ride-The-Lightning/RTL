@@ -50,16 +50,16 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'alias', 'actions'];
+      this.displayedColumns = ['id', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'alias', 'sat_sent', 'sat_recv', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'connected', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'connected', 'netaddr', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['alias', 'pub_key', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
     }
   }
 
