@@ -6,5 +6,11 @@
       </ng-template>
       <rtl-cl-channel-open-table></rtl-cl-channel-open-table>
     </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{pendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
+      </ng-template>
+      <rtl-cl-channel-pending-table></rtl-cl-channel-pending-table>
+    </mat-tab>
   </mat-tab-group>
 </div>

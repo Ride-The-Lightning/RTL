@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,7 +6,7 @@ import { Actions } from '@ngrx/effects';
 import { environment } from '../../../../../environments/environment';
 
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
 import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
 import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
@@ -26,6 +26,7 @@ import { AlertTypeEnum, UserPersonaEnum } from '../../../services/consts-enums-f
   styleUrls: ['./side-navigation.component.scss']
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
+  @ViewChild(MatTree, { static: true }) tree: any;
   @Output() ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
   faEye = faEye;
@@ -90,11 +91,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }
-      if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toUpperCase() === 'CLT') {
-        this.navMenus.data = MENU_DATA.CLChildren.filter(navMenuData => navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona );
-      } else {
-        this.navMenus.data = MENU_DATA.LNDChildren.filter(navMenuData => navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona );
-      }
+      this.filterSideMenuNodes();
       this.logger.info(rtlStore);
     });
     this.sessionService.watchSession()
@@ -133,6 +130,24 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.ChildNavClicked.emit(node);
   }
   
+  filterSideMenuNodes() {
+    if(this.selNode && this.selNode.lnImplementation && this.selNode.lnImplementation.toUpperCase() === 'CLT') {
+      this.navMenus.data = MENU_DATA.CLChildren.filter(navMenuData => {
+        if(navMenuData.children && navMenuData.children.length) {
+          navMenuData.children = navMenuData.children.filter(navMenuChild => navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona);
+        }
+        return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
+      });
+    } else {
+      this.navMenus.data = MENU_DATA.LNDChildren.filter(navMenuData => {
+        if(navMenuData.children && navMenuData.children.length) {
+          navMenuData.children = navMenuData.children.filter(navMenuChild => navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona);
+        }
+        return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
+      });
+    }
+  } 
+
   onShowData(node: MenuChildNode) {
     this.store.dispatch(new RTLActions.ShowPubkey());
     this.ChildNavClicked.emit('showData');
@@ -143,6 +158,9 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
     this.ChildNavClicked.emit('selectNode');
+    if(this.tree) {
+      // this.tree.renderNodeChanges(this.navMenus.data);
+    }
   }
 
   ngOnDestroy() {

@@ -4,7 +4,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { ChannelCL, GetInfoCL, ChannelEdgeCL } from '../../../../../shared/models/clModels';
+import { ChannelCL, GetInfoCL } from '../../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -15,14 +15,14 @@ import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-cl-channel-open-table',
-  templateUrl: './channel-open-table.component.html',
-  styleUrls: ['./channel-open-table.component.scss'],
+  selector: 'rtl-cl-channel-pending-table',
+  templateUrl: './channel-pending-table.component.html',
+  styleUrls: ['./channel-pending-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
+export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public totalBalance = 0;
@@ -46,16 +46,16 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'state', 'msatoshi_total', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'state', 'msatoshi_total', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'state', 'msatoshi_total', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_total', 'balancedness', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'state', 'msatoshi_total', 'actions'];
     }
   }
 
@@ -72,130 +72,12 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL'));
+        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state !== 'CHANNELD_NORMAL'));
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
-    });
-  }
-
-  onViewRemotePolicy(selChannel: ChannelCL) {
-    this.store.dispatch(new RTLActions.ChannelLookupCL(selChannel.short_channel_id));
-    this.clEffects.setLookupCL
-    .pipe(take(1))
-    .subscribe((resLookup: ChannelEdgeCL[])  => {
-      let remoteNode: ChannelEdgeCL = {};
-      if(resLookup[0].source !== this.information.id) {
-        remoteNode = resLookup[0];
-      } else {
-        remoteNode = resLookup[1];
-      }
-      const reorderedChannelPolicy = [
-        [{key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'delay', value: remoteNode.delay, title: 'Delay', width: 32, type: DataTypeEnum.NUMBER}]
-      ];      
-      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-        type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'Remote Channel Policy',
-        message: reorderedChannelPolicy
-      }}));
-    });
-
-  }
-
-  onChannelUpdate(channelToUpdate: any) {
-    if (channelToUpdate === 'all') {
-      const confirmationMsg = [];
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Fee Policy for all Channels',
-        noBtnText: 'Cancel',
-        yesBtnText: 'Update All Channels',
-        message: confirmationMsg,
-        flgShowInput: true,
-        getInputs: [
-          {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
-          {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32},
-          {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32}
-        ]
-      }}));
-      this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[2]))
-      .subscribe(confirmRes => {
-        if (confirmRes) {
-          const base_fee = confirmRes[0].inputValue;
-          const fee_rate = confirmRes[1].inputValue;
-          const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
-        }
-      });
-    } else {
-      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
-      this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookupCL(channelToUpdate.chan_id.toString()));
-      this.clEffects.setLookupCL
-      .pipe(take(1))
-      .subscribe(resLookup => {
-        if (resLookup.node1_pub === this.information.id) {
-          this.myChanPolicy = resLookup.node1_policy;
-        } else if (resLookup.node2_pub === this.information.id) {
-          this.myChanPolicy = resLookup.node2_policy;
-        } else {
-          this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
-        }
-        this.logger.info(this.myChanPolicy);
-        this.store.dispatch(new RTLActions.CloseSpinner());
-        const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
-        const confirmationMsg = [];
-        this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-          type: AlertTypeEnum.CONFIRM,
-          alertTitle: 'Update Fee Policy',
-          titleMessage: titleMsg,
-          noBtnText: 'Cancel',
-          yesBtnText: 'Update Channel',
-          message: confirmationMsg,
-          flgShowInput: true,
-          getInputs: [
-            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32},
-            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32},
-            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32}
-          ]
-        }}));
-      });
-      this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[4]))
-      .subscribe(confirmRes => {
-        if (confirmRes) {
-          const base_fee = confirmRes[0].inputValue;
-          const fee_rate = confirmRes[1].inputValue;
-          const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
-        }
-      });
-    }
-    this.applyFilter();
-  }
-
-  onChannelClose(channelToClose: ChannelCL) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channel_id,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
-    }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[5]))
-    .subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new RTLActions.CloseChannelCL({channelId: channelToClose.channel_id}));
-      }
     });
   }
 

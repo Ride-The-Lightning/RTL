@@ -1,0 +1,64 @@
+<div fxLayout="column" class="padding-gap">
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container">
+    <div fxFlex="70"></div>
+    <mat-form-field fxFlex="30">
+      <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
+    </mat-form-field>
+  </div>
+  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <ng-container matColumnDef="short_channel_id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
+        <td mat-cell *matCellDef="let channel"> {{channel?.short_channel_id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="alias">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+        <td mat-cell *matCellDef="let channel">{{channel?.alias}}</td>
+      </ng-container>
+      <ng-container matColumnDef="connected">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Connected </th>
+        <td mat-cell *matCellDef="let channel"> {{(channel?.connected) ? 'Connected' : 'Disconnected'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="private">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Private </th>
+        <td mat-cell *matCellDef="let channel"> {{(channel?.private ? 'Private' : 'Public')}} </td>
+      </ng-container>
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
+        <td mat-cell *matCellDef="let channel"> {{channel?.state}}</td>
+      </ng-container>
+      <ng-container matColumnDef="msatoshi_to_us">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> mSatoshi To Us </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.msatoshi_to_us | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="msatoshi_total">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Total mSatoshis </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.msatoshi_total | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="spendable_msatoshi">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Spendable Satoshi </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.spendable_msatoshi | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>          
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+          <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onChannelClick(channel, $event)">View Info</button>
+        </span></td>
+      </ng-container>
+      <ng-container matColumnDef="no_peer">
+        <td mat-footer-cell *matFooterCellDef colspan="4">
+          <p *ngIf="numPeers<1">No peers connected. Add a peer in order to open a channel.</p>
+          <p *ngIf="numPeers>0 && (!channels.data || channels.data.length<1)">No channels available.</p>
+        </td>
+      </ng-container>
+      <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': numPeers>0 && channels.data && channels.data.length>0}"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+</div>

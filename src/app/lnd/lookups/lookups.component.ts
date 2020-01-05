@@ -75,7 +75,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   onSelectChange(event: any) {
-    this.form.resetForm();
+    this.resetData();
     this.selectedFieldId = event.value;
   }
 

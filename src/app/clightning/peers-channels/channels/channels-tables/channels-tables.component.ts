@@ -13,6 +13,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class CLChannelsTablesComponent implements OnInit, OnDestroy {
   public openChannels = 0;
+  public pendingChannels = 0;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -21,7 +22,20 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      this.openChannels = (rtlStore.allChannels && rtlStore.allChannels.length) ? rtlStore.allChannels.length : 0;
+      if (rtlStore.allChannels && rtlStore.allChannels.length) {
+        this.openChannels = 0;
+        this.pendingChannels = 0;
+        rtlStore.allChannels.forEach(channel => {
+          if(channel.state === 'CHANNELD_NORMAL') {
+            this.openChannels++;
+          } else {
+            this.pendingChannels++;
+          }
+        });
+      } else {
+        this.openChannels = 0;
+        this.pendingChannels = 0;
+      }
       this.logger.info(rtlStore);
     });
   }

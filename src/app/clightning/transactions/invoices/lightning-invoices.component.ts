@@ -14,6 +14,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -59,7 +60,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -77,11 +78,12 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.store.dispatch(new RTLActions.FetchInvoicesCL({num_max_invoices: 100, index_offset: 0, reversed: false}));
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInvoices') {
+        if (effectsErr.action === 'FetchInvoicesCL') {
           this.flgLoading[0] = 'error';
         }
       });
@@ -100,6 +102,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onAddInvoice(form: any) {
+    if(!this.label || !this.invoiceValue) { return true; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
@@ -109,9 +112,23 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
     this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
-      label: this.label, amount: this.invoiceValue, description: this.description, expiry: (this.expiry ? this.expiry : 3600), private: this.private
+      label: this.label, amount: this.invoiceValue, description: this.description, expiry: expiryInSecs, private: this.private
     }));
     this.resetData();
+  }
+
+  onDeleteExpiredInvoices() {
+    this.store.dispatch(new RTLActions.OpenConfirmation({
+      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
+    }}));
+    this.rtlEffects.closeConfirm
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(confirmRes => {
+      if (confirmRes) {
+        this.store.dispatch(new RTLActions.OpenSpinner('Deleting Invoices...'));
+        this.store.dispatch(new RTLActions.DeleteExpiredInvoiceCL());
+      }
+    });    
   }
 
   onInvoiceClick(selInvoice: InvoiceCL, event: any) {
@@ -122,12 +139,17 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       settle_date_str: selInvoice.paid_at_str,
       expiry: selInvoice.expires_at_str
     };
-    // creation_date_str?: string;
-    // r_hash?: string;
-    // r_preimage?: string;
-    // cltv_expiry?: string;
-    // private?: boolean;
-  
+    // msatoshi
+    // label
+    // expires_at
+    // paid_at
+    // bolt11
+    // Advanced:
+    // payment_hash
+    // description
+    // status
+    // msatoshi_received
+      
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         invoice: reCreatedInvoice,
         newlyAdded: false,

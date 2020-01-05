@@ -29,7 +29,8 @@ export const LndRoutes: Routes = [
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },
-    { path: '**', component: NotFoundComponent }
+    { path: '**', component: NotFoundComponent },
+    { path: 'rates', redirectTo: 'network' }
   ]}
 ];
 

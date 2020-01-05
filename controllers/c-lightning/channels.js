@@ -9,9 +9,9 @@ exports.listChannels = (req, res, next) => {
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'List Channels: ' + JSON.stringify(body)});
     body.map(channel => {
-      local = (channel.msatoshi_to_us) ? +channel.msatoshi_to_us : 0;
-      remote = (channel.msatoshi_to_them) ? +msatoshi_to_them : 0;
-      total = channel.msatoshi_total ? +channel.msatoshi_total : 0;
+      local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
+      remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : 0;
+      total = channel.msatoshi_total ? channel.msatoshi_total : 0;
       channel.balancedness = (1 - Math.abs((local-remote)/total)).toFixed(3);
     })    
     res.status(200).json(body);

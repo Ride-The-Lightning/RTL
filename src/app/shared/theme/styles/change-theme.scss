@@ -128,6 +128,9 @@
     .color-primary {
       color:  $primary-darker !important;
     }
+    .mat-expansion-panel {
+
+    }
   }
 
   &.day {
@@ -205,13 +208,6 @@
     .modal-qr-code-container {
       background: $foreground-divider;
     }
-    .mat-expansion-panel.flat-expansion-panel {
-      box-shadow: none;
-      padding: 0;
-      border: 1px solid $foreground-divider;
-      border-radius: 4px;
-      background: none;
-    }
     .mat-tab-label, .mat-tab-link {
       color: $foreground-secondary-text;
     }
@@ -234,8 +230,18 @@
     .color-primary {
       color:  $primary-color !important;
     }
+    .mat-expansion-panel.flat-expansion-panel {
+      border: 1px solid $foreground-divider;
+    }
   }
   
+  .mat-expansion-panel.flat-expansion-panel {
+    box-shadow: none;
+    padding: 0;
+    border-radius: 4px;
+    background: none;
+  }
+
   .mat-progress-bar-buffer {
     background-color: mat-color($primary, 100);
   }

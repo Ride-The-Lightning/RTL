@@ -31,8 +31,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;  
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
-  public activeChannels = 0;
-  public inactiveChannels = 0;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
   public fees: FeesCL;
@@ -169,8 +167,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.flgLoading[4] = (undefined !== this.feeRatesPerKB && undefined !== this.feeRatesPerKW) ? false : true;
       }
 
-      this.activeChannels =  rtlStore.information.num_active_channels;
-      this.inactiveChannels = rtlStore.information.num_inactive_channels;
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: 0 },
         inactive: { channels: rtlStore.information.num_inactive_channels, capacity: 0 },
@@ -186,6 +182,12 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.totalInboundLiquidity = this.totalInboundLiquidity + channel.msatoshi_to_them;
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + channel.msatoshi_to_us;
       });
+      if (this.totalInboundLiquidity>0) {
+        this.totalInboundLiquidity = this.totalInboundLiquidity / 1000;
+      }
+      if (this.totalOutboundLiquidity>0) {
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity / 1000;
+      }
       if (this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
       }      

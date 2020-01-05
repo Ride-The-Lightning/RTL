@@ -23,13 +23,15 @@ import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-looku
 import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { CLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { CLChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { CLNodeInfoComponent } from './home/node-info/node-info.component';
 import { CLBalancesInfoComponent } from './home/balances-info/balances-info.component';
 import { CLFeeInfoComponent } from './home/fee-info/fee-info.component';
 import { CLChannelStatusInfoComponent } from './home/channel-status-info/channel-status-info.component';
 import { CLChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
 import { CLChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
-import { CLFeeRatesComponent } from './home/fee-rates/fee-rates.component';
+import { CLNetworkInfoComponent } from './network-info/network-info.component';
+import { CLFeeRatesComponent } from './network-info/fee-rates/fee-rates.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -59,12 +61,14 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLOnChainComponent,
     CLChannelsTablesComponent,
     CLChannelOpenTableComponent,
+    CLChannelPendingTableComponent,
     CLNodeInfoComponent,
     CLBalancesInfoComponent,
     CLFeeInfoComponent,
     CLChannelStatusInfoComponent,
     CLChannelCapacityInfoComponent,
     CLChannelLiquidityInfoComponent,
+    CLNetworkInfoComponent,
     CLFeeRatesComponent
   ],
   providers: [
