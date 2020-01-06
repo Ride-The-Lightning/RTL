@@ -1,6 +1,7 @@
 var request = require('request-promise');
 var common = require('../../common');
 var logger = require('../logger');
+var swtch = require('./switch');
 var options = {};
 
 exports.getFees = (req, res, next) => {
@@ -32,7 +33,27 @@ exports.getFees = (req, res, next) => {
       } else {
         body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
       }
-      res.status(200).json(body);
+      let current_time = Math.round((new Date().getTime()) / 1000);
+      let month_start_time = current_time - 2629743;
+      let week_start_time = current_time - 604800;
+      let day_start_time = current_time - 86400;
+      return swtch.getAllForwardingEvents(month_start_time, current_time, 0, 1000)
+      .then((history) => {
+        logger.info({fileName: 'Fees', msg: 'Forwarding History Received: ' + JSON.stringify(history)});
+        let daily_tx_count = history.forwarding_events.filter(event => event.timestamp >= day_start_time);
+        body.daily_tx_count = daily_tx_count && daily_tx_count.length ? daily_tx_count.length : 0;
+        let weekly_tx_count = history.forwarding_events.filter(event => event.timestamp >= week_start_time);
+        body.weekly_tx_count = weekly_tx_count && weekly_tx_count.length ? weekly_tx_count.length : 0;
+        body.monthly_tx_count = history.forwarding_events && history.forwarding_events.length ? history.forwarding_events.length : 0;
+        return res.status(200).json(body);
+      })
+      .catch(err => {
+        logger.error({fileName: 'Fees', lineNum: 54, msg: 'Fetch Fee Error: ' + JSON.stringify(err)});
+        return res.status(500).json({
+          message: "Fetching fee failed!",
+          error: err.error
+        });        
+      });
     }
   })
   .catch(function (err) {
