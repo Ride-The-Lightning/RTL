@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL, GetInfoChainCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -669,21 +669,19 @@ export class CLEffects implements OnDestroy {
       mergeMap((action: RTLActions.SetChannelTransactionCL) => {
         this.store.dispatch(new RTLActions.ClearEffectErrorCl('SetChannelTransactionCL'));
         return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
-          .pipe(
-            map((postRes: any) => {
-              this.logger.info(postRes);
-              this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new RTLActions.FetchBalanceCL());
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: { type: AlertTypeEnum.SUCCESS, titleMessage: 'Fund Sent Successfully!' } }
-              };
-            }),
-            catchError((err: any) => {
-              this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'SetChannelTransactionCL', code: err.status, message: err.error.error }));
-              this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
-              return of({type: RTLActions.VOID});
-            }));
+        .pipe(
+        map((postRes: any) => {
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.FetchBalanceCL());
+          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully.'));
+          return { type: RTLActions.VOID };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'SetChannelTransactionCL', code: err.status, message: err.error.error }));
+          this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+          return of({type: RTLActions.VOID});
+        }));
       })
     );
 

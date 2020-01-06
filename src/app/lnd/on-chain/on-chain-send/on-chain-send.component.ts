@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
@@ -24,6 +24,8 @@ import { MessageDataField } from '../../../shared/models/alertData';
   styleUrls: ['./on-chain-send.component.scss']
 })
 export class OnChainSendComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @Input() sweepAll = false;
   private _sweepBalance = 0;
   get sweepBalance() {
@@ -144,6 +146,8 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     this.store.dispatch(new RTLActions.SetChannelTransaction(this.transaction));
     this.transaction = {};
+    if(this.form) { this.form.resetForm(); }
+    if(this.formSweepAll) { this.formSweepAll.resetForm(); }
   }
 
   get invalidValues(): boolean {
