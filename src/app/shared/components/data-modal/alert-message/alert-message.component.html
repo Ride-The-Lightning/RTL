@@ -9,7 +9,7 @@
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px mb-0">
+    <mat-card-content class="mt-5px mb-0 pr-2">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
           <qrcode [qrdata]="showQRField" [size]="210" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
@@ -22,8 +22,8 @@
                 <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
                   <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                   <span *ngIf="obj && obj.value; else emptyField">
-                    <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch">
-                      <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block">{{arrayObj}}</span></ng-container>
+                    <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+                      <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block w-100">{{arrayObj}}</span></ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value === true ? 'True' : 'False'}}</ng-container>
                       <ng-container *ngSwitchDefault>{{obj.value}}</ng-container>

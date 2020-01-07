@@ -12,7 +12,7 @@ import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information/invoice-information.component';
+import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';

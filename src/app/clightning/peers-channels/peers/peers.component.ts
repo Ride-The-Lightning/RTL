@@ -11,7 +11,7 @@ import { PeerCL, GetInfoCL } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { OpenChannelComponent } from '../../../shared/components/data-modal/open-channel/open-channel.component';
+import { OpenChannelComponent } from '../../../lnd/peers-channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -99,6 +99,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer() {
+    if(!this.peerAddress) { return true; }     
     this.flgAnimate = true;
     this.newlyAddedPeer = this.peerAddress;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));

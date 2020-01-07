@@ -960,3 +960,8 @@ table {
 .mat-vertical-content-container {
   margin-left: 2rem !important;
 }
+
+.xs-scroll-y {
+  overflow-y: scroll; 
+  max-height: 600px;
+}

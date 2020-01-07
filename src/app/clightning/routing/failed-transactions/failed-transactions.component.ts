@@ -73,6 +73,10 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEventCL>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.paginator = this.paginator;
+    this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEventCL, fltr: string) => {
+      const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
+      return newEvent.includes(fltr.toLowerCase());
+    };    
     this.logger.info(this.forwardingHistoryEvents);
   }
 

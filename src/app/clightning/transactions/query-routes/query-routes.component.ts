@@ -20,6 +20,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild('queryRoutesForm', { static: false }) form: any;  
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
@@ -42,10 +43,10 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['alias', 'direction', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['alias', 'direction', 'msatoshi', 'amount_msat', 'actions'];
+      this.displayedColumns = ['alias', 'direction', 'delay', 'msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['alias', 'channel', 'direction', 'msatoshi', 'amount_msat', 'actions'];
+      this.displayedColumns = ['alias', 'channel', 'direction', 'delay', 'msatoshi', 'actions'];
     }
   }
 
@@ -69,24 +70,26 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   onQueryRoutes() {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
-    this.store.dispatch(new RTLActions.GetQueryRoutesCL({destPubkey: this.destinationPubkey, amount: this.amount}));
+    this.store.dispatch(new RTLActions.GetQueryRoutesCL({destPubkey: this.destinationPubkey, amount: this.amount*1000}));
   }
 
   resetData() {
     this.destinationPubkey = '';
     this.amount = null;
     this.flgLoading[0] = false;
+    this.qrHops.data = [];
+    this.form.resetForm();
   }
 
   onHopClick(selHop: RoutesCL, event: any) {
     const reorderedHop = [
-      [{key: 'id', value: selHop.id, title: 'ID', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'channel', value: selHop.channel, title: 'Channel', width: 40, type: DataTypeEnum.NUMBER}],
-      [{key: 'direction', value: selHop.direction, title: 'Direction', width: 30, type: DataTypeEnum.STRING},
-        {key: 'msatoshi', value: selHop.msatoshi, title: 'mSatoshi', width: 70, type: DataTypeEnum.STRING}],
-      [{key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.STRING}]
+      [{key: 'id', value: selHop.id, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'channel', value: selHop.channel, title: 'Channel', width: 50, type: DataTypeEnum.STRING},
+        {key: 'alias', value: selHop.alias, title: 'Peer Alias', width: 50, type: DataTypeEnum.STRING}],
+      [{key: 'msatoshi', value: selHop.msatoshi, title: 'mSatoshi', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'amount_msat', value: selHop.amount_msat, title: 'Amount mSat', width: 50, type: DataTypeEnum.STRING}],
+      [{key: 'direction', value: selHop.direction, title: 'Direction', width: 50, type: DataTypeEnum.STRING},
+        {key: 'delay', value: selHop.delay, title: 'Delay', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

@@ -37,7 +37,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
-    // this.onEventsFetch();
+    this.onEventsFetch();
     // this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_CL_STORE))
     // .subscribe((resetClStore: RTLActions.ResetCLStore) => {
     //   this.onEventsFetch();

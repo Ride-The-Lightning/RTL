@@ -13,7 +13,11 @@
       </ng-container>
       <ng-container matColumnDef="received_time_str">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Received Time</th>
-        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.received_time_str}}</td>
+        <td mat-cell *matCellDef="let fhEvent">
+          <!-- <span *ngIf="fhEvent.status === 'settled'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+          <span *ngIf="fhEvent.status !== 'settled'" class="dot yellow" matTooltip="Unsettled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span> -->
+          {{fhEvent?.received_time_str}}
+        </td>
       </ng-container>
       <ng-container matColumnDef="resolved_time_str">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Resolved Time</th>

@@ -15,7 +15,7 @@ import {
 
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -25,7 +25,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollY: false
 };
 
-import { InvoiceInformationComponent } from './components/data-modal/invoice-information/invoice-information.component';
+import { CLInvoiceInformationComponent } from './components/data-modal/invoice-information-cl/invoice-information.component';
+import { InvoiceInformationComponent } from './components/data-modal/invoice-information-lnd/invoice-information.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
 import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
@@ -42,7 +43,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
-import { OpenChannelComponent } from './components/data-modal/open-channel/open-channel.component';
+import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
+import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -134,7 +136,10 @@ import { SocketService } from './services/socket.service';
     MatSnackBarModule,
     AppSettingsComponent,
     SettingsComponent,
+    CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
     OnChainGeneratedAddressComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
@@ -159,6 +164,7 @@ import { SocketService } from './services/socket.service';
   declarations: [
     AppSettingsComponent,
     SettingsComponent,
+    CLInvoiceInformationComponent,
     InvoiceInformationComponent,
     OnChainGeneratedAddressComponent,
     AlertMessageComponent,
@@ -178,12 +184,15 @@ import { SocketService } from './services/socket.service';
     AutoFocusDirective,
     NonNegativeAmountValidator,
     RemoveLeadingZerosPipe,
+    CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent
   ],
   entryComponents: [
+    CLInvoiceInformationComponent,
     InvoiceInformationComponent,
     OnChainGeneratedAddressComponent,
+    CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
     SpinnerDialogComponent,
@@ -196,7 +205,7 @@ import { SocketService } from './services/socket.service';
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    DecimalPipe, SocketService
+    DecimalPipe, TitleCasePipe, SocketService
   ]
 })
 export class SharedModule { }

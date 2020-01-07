@@ -159,6 +159,10 @@ export class CommonService implements OnInit, OnDestroy {
     return value;
   }
 
+  convertTimestampToDate(num: number) {
+    return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
+  };
+  
   ngOnDestroy() {
     this.containerWidthChanged.next();
     this.containerWidthChanged.complete();

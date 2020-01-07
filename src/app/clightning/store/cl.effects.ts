@@ -10,12 +10,14 @@ import { Location } from '@angular/common';
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
+import { CommonService } from '../../shared/services/common.service';
+import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
+import { CLInvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-cl/invoice-information.component';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
-import { AlertTypeEnum, DataTypeEnum } from '../../shared/services/consts-enums-functions';
-import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
+import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -28,6 +30,7 @@ export class CLEffects implements OnDestroy {
     private store: Store<fromRTLReducer.RTLState>,
     private sessionService: SessionService,
     private logger: LoggerService,
+    private commonService: CommonService,
     private router: Router,
     private location: Location) { }
 
@@ -235,7 +238,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Disconnected', titleMessage: 'Peer Disconnected Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully!'));
             return {
               type: RTLActions.REMOVE_PEER_CL,
               payload: { id: action.payload.id }
@@ -304,7 +307,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Channel Updated', titleMessage: 'Channel Updated Successfully!' }}));
+            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };
@@ -405,17 +408,7 @@ export class CLEffects implements OnDestroy {
             if (sendRes.error) {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.status, error: sendRes.error.message });
             } else {
-              const reorderedRes = [
-                [{key: 'status', value: sendRes.status, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
-              ];
-              this.store.dispatch(new RTLActions.OpenAlert({
-                width: '70%',
-                data: {
-                  type: AlertTypeEnum.SUCCESS,
-                  alertTitle: 'Payment Sent',
-                  titleMessage: 'Payment Sent Successfully!',
-                  message: reorderedRes
-              }}));
+              this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
               this.store.dispatch(new RTLActions.FetchChannelsCL());
               this.store.dispatch(new RTLActions.FetchBalanceCL());
               this.store.dispatch(new RTLActions.FetchPaymentsCL());
@@ -426,7 +419,7 @@ export class CLEffects implements OnDestroy {
             }
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
+            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err.error ? err.error : err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -581,10 +574,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({
-              width: '70%',
-              data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Invoice Deleted', titleMessage: 'Invoices Deleted Successfully!' }
-            }));
+            this.store.dispatch(new RTLActions.OpenSnackBar('Invoices Deleted Successfully!'));
             return {
               type: RTLActions.FETCH_INVOICES_CL,
               payload: { num_max_invoices: 100, reversed: true }
@@ -607,25 +597,19 @@ export class CLEffects implements OnDestroy {
       })
         .pipe(
           map((postRes: InvoiceCL) => {
-            postRes.label = action.payload.label;
-            postRes.msatoshi = action.payload.amount;
-            postRes.description = action.payload.description;
-            postRes.expires_at = Math.round(new Date().getTime() / 1000);
-            postRes.expires_at_str = new Date(+postRes.expires_at * 1000).toUTCString();
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            const reorderedRes = [
-              [{key: 'status', value: postRes.bolt11, title: 'Status', width: 100, type: DataTypeEnum.NUMBER}]
-            ];
-            this.store.dispatch(new RTLActions.OpenAlert({
-              width: '70%',
-              data: {
-                type: AlertTypeEnum.SUCCESS,
-                alertTitle: 'Invoice Created',
-                titleMessage: 'Invoice Added Successfully!',
-                message: reorderedRes
-              }
-            }));
+            postRes.msatoshi = action.payload.amount;
+            postRes.label = action.payload.label;
+            postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);
+            postRes.expires_at_str = this.commonService.convertTimestampToDate(+postRes.expires_at);
+            postRes.description = action.payload.description;
+            postRes.status = 'unpaid';
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+                invoice: postRes,
+                newlyAdded: false,
+                component: CLInvoiceInformationComponent
+            }}));
             return {
               type: RTLActions.FETCH_INVOICES_CL,
               payload: { num_max_invoices: 100, reversed: true }
@@ -735,7 +719,6 @@ export class CLEffects implements OnDestroy {
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
-        width: '55%',
         data: {
           type: alerType,
           alertTitle: alertTitle,

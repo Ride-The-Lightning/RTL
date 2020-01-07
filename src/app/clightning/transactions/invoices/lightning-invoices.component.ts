@@ -12,7 +12,7 @@ import { GetInfoCL, InvoiceCL } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information/invoice-information.component';
+import { CLInvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information-cl/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -112,15 +112,15 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
     this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
-      label: this.label, amount: this.invoiceValue, description: this.description, expiry: expiryInSecs, private: this.private
+      label: this.label, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
     this.resetData();
   }
 
   onDeleteExpiredInvoices() {
     this.store.dispatch(new RTLActions.OpenConfirmation({
-      width: '70%', data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices'
-    }}));
+      data: { type: 'CONFIRM', titleMessage: 'Delete Expired Invoices', noBtnText: 'Cancel', yesBtnText: 'Delete Invoices' }
+    }));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(confirmRes => {
@@ -132,28 +132,21 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceClick(selInvoice: InvoiceCL, event: any) {
-    let reCreatedInvoice = {
-      payment_request: selInvoice.bolt11,
-      value: selInvoice.amount_msat,
+    let reCreatedInvoice: InvoiceCL = {
+      msatoshi: selInvoice.msatoshi,
       label: selInvoice.label,
-      settle_date_str: selInvoice.paid_at_str,
-      expiry: selInvoice.expires_at_str
+      expires_at_str: selInvoice.expires_at_str,
+      paid_at_str: selInvoice.paid_at_str,
+      bolt11: selInvoice.bolt11,
+      payment_hash: selInvoice.payment_hash,
+      description: selInvoice.description,
+      status: selInvoice.status,
+      msatoshi_received: selInvoice.msatoshi_received
     };
-    // msatoshi
-    // label
-    // expires_at
-    // paid_at
-    // bolt11
-    // Advanced:
-    // payment_hash
-    // description
-    // status
-    // msatoshi_received
-      
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         invoice: reCreatedInvoice,
         newlyAdded: false,
-        component: InvoiceInformationComponent
+        component: CLInvoiceInformationComponent
     }}));
   }
 

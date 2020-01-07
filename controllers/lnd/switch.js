@@ -22,13 +22,14 @@ exports.getAllForwardingEvents = (start, end, offset, max_events) => {
           error: (undefined === body) ? 'Error From Server!' : body.error
         });
       } else {
-        if (undefined !== body.forwarding_events && body.forwarding_events.length > 0) {
+        logger.info({fileName: 'Switch', msg: 'Forwarding History Received: ' + JSON.stringify(body)});
+        if (body.forwarding_events && body.forwarding_events.length > 0) {
           body.forwarding_events.forEach(event => {
             event.timestamp_str =  (undefined === event.timestamp) ? '' : common.convertTimestampToDate(event.timestamp);
           });
           body.forwarding_events = common.sortDescByKey(body.forwarding_events, 'timestamp');
         }
-        logger.info({fileName: 'Switch', msg: 'Forwarding History Received: ' + JSON.stringify(body)});
+        logger.info({fileName: 'Switch', msg: 'Forwarding History before Resolve: ' + JSON.stringify(body)});
         resolve(body);
       }
     })

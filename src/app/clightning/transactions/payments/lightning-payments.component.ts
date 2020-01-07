@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -51,7 +51,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: CLEffects, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -159,7 +159,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
         [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
         [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
         [{key: 'created_at_str', value: this.paymentDecoded.created_at_str, title: 'Creation Date', width: 50},
-          {key: 'num_satoshis', value: this.paymentDecoded.msatoshi, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
+          {key: 'num_satoshis', value: this.paymentDecoded.msatoshi/1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'min_final_cltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50}]
       ];
@@ -210,21 +210,21 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onPaymentClick(selPayment: PaymentCL, event: any) {
     const reorderedPayment = [
+      [{key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'id', value: selPayment.id, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'destination', value: selPayment.destination, title: 'Destination', width: 50, type: DataTypeEnum.STRING},
-        {key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING}],
+      [{key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING},
+      {key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING}],
       [{key: 'created_at_str', value: selPayment.created_at_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'msatoshi', value: selPayment.msatoshi, title: 'mSatoshi', width: 50, type: DataTypeEnum.STRING},
-        {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Sent mSatoshi', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'amount_msat', value: selPayment.amount_msat, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.STRING},
-        {key: 'amount_sent_msat', value: selPayment.amount_sent_msat, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.STRING}]
+        {key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING}],
+      [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
+      showCopyName: 'Bolt 11',
+      showCopyField: selPayment.bolt11,
       message: reorderedPayment
     }}));
   }

@@ -93,6 +93,7 @@ export interface InvoiceCL {
   expires_at?: number;
   paid_at_str?: string;
   expires_at_str?: string;
+  warning_capacity?: string;
 }
 
 export interface ListInvoicesCL {

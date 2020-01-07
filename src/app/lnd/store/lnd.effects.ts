@@ -10,16 +10,17 @@ import { MatDialog } from '@angular/material';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
+import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
-import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information/invoice-information.component';
-import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel/open-channel.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, DataTypeEnum } from '../../shared/services/consts-enums-functions';
+import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
+import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel-lnd/open-channel.component';
+import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
+import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromLNDReducers from '../store/lnd.reducers';
-import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class LNDEffects implements OnDestroy {
@@ -32,6 +33,7 @@ export class LNDEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
+    private commonService: CommonService,
     private sessionService: SessionService,
     public dialog: MatDialog,
     private router: Router,
@@ -191,15 +193,15 @@ export class LNDEffects implements OnDestroy {
       })
         .pipe(
           map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
             postRes.expiry = action.payload.expiry;
             postRes.cltv_expiry = '144';
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-            postRes.creation_date_str = new Date(+postRes.creation_date * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
-            this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
             this.store.dispatch(new RTLActions.OpenAlert({ data: {
               invoice: postRes,
               newlyAdded: true,

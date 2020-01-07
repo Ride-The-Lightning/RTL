@@ -30,7 +30,7 @@ export class InvoiceInformationComponent implements OnInit {
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
-      this.qrWidth = 140;
+      this.qrWidth = 220;
     }
   }
 
@@ -43,7 +43,7 @@ export class InvoiceInformationComponent implements OnInit {
   }  
 
   onCopyPayment(payload: string) {
-    this.snackBar.open('Payment request copied');
+    this.snackBar.open('Payment request copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 }
