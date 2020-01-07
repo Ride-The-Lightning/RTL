@@ -10,7 +10,7 @@
           <mat-expansion-panel-header>
               <mat-panel-title>{{helpTopic.question}}</mat-panel-title>
             </mat-expansion-panel-header>
-          <mat-panel-description><span class="pre-wrap">{{helpTopic.answer}}</span></mat-panel-description>
+          <mat-panel-description><span class="pre-wrap" [innerHTML]="helpTopic.answer" target></span></mat-panel-description>
         </mat-expansion-panel>
       </div>
     </div>
