@@ -39,7 +39,8 @@ export class HelpComponent implements OnInit {
     'specified while opening a channel. \n' +
     '1. Private Channel - When this option is selected, the channel is opened privately and not broadcast. \n' +
     '2. Priority (advanced option) - Specify either Target confirmation Block or Fee in Sat/Byte. \n' +
-    '3. Spend Unconfirmd Output (advanced option) - Allow channels to be opened with unconfirmed UTXOs.'));
+    '3. Spend Unconfirmd Output (advanced option) - Allow channels to be opened with unconfirmed UTXOs. \n' + 
+    '<a href="http://localhost:4200/rtl/cl/home">TEST</a>.'));
   }
 
 }

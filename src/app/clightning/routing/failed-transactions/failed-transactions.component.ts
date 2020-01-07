@@ -11,17 +11,17 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-cl-forwarding-history',
-  templateUrl: './forwarding-history.component.html',
-  styleUrls: ['./forwarding-history.component.scss'],
+  selector: 'rtl-cl-failed-history',
+  templateUrl: './failed-transactions.component.html',
+  styleUrls: ['./failed-transactions.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLForwardingHistoryComponent implements OnInit, OnChanges {
+export class CLFailedTransactionsComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() successfulEvents: any;
+  @Input() failedEvents: any;
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -34,20 +34,20 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['in_msatoshi', 'out_msatoshi', 'actions'];
+      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['received_time_str', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }
 
   ngOnInit() {}
 
   ngOnChanges() {
-    this.loadForwardingEventsTable(this.successfulEvents);
+    this.loadForwardingEventsTable(this.failedEvents);
   }
 
   onForwardingEventClick(selFEvent: ForwardingEventCL, event: any) {

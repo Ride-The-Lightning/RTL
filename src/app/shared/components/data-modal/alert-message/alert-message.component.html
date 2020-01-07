@@ -22,7 +22,7 @@
                 <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
                   <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                   <span *ngIf="obj && obj.value; else emptyField">
-                    <span [ngSwitch]="obj.type" class="foreground-secondary-text">
+                    <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch">
                       <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block">{{arrayObj}}</span></ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value === true ? 'True' : 'False'}}</ng-container>

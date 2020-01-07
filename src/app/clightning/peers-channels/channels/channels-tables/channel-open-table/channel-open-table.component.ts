@@ -46,16 +46,16 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_total', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_total', 'balancedness', 'actions'];
+      this.displayedColumns = ['short_channel_id', 'alias', 'msatoshi_to_us', 'msatoshi_to_them', 'balancedness', 'actions'];
     }
   }
 
@@ -206,19 +206,20 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onChannelClick(selChannel: ChannelCL, event: any) {
     const reorderedChannel = [
-      [{key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 40},
-        {key: 'connected', value: selChannel.connected, title: 'Connected', width: 30, type: DataTypeEnum.BOOLEAN},
-        {key: 'private', value: selChannel.private, title: 'Private', width: 30, type: DataTypeEnum.BOOLEAN}],
-      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100}],
       [{key: 'short_channel_id', value: selChannel.short_channel_id, title: 'Short Channel ID', width: 100}],
-      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 50},
-        {key: 'state', value: selChannel.state, title: 'State', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve Satoshis', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve Satoshis', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable mSatoshi', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total mSatoshi', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 50, type: DataTypeEnum.NUMBER}]
+      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100}],
+      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 100}],
+      [{key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 66},
+        {key: 'connected', value: selChannel.connected, title: 'Connected', width: 32, type: DataTypeEnum.BOOLEAN}],
+      [{key: 'private', value: selChannel.private, title: 'Private', width: 32, type: DataTypeEnum.BOOLEAN},
+        {key: 'state', value: selChannel.state, title: 'State', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 32, type: DataTypeEnum.NUMBER}],
+      [{key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'msatoshi_to_them', value: selChannel.msatoshi_to_them, title: 'mSatoshi to Us', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total mSatoshi', width: 32, type: DataTypeEnum.NUMBER}],
+      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve Satoshis', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve Satoshis', width: 32, type: DataTypeEnum.NUMBER},
+        {key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable mSatoshi', width: 32, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

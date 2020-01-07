@@ -33,35 +33,35 @@
         </ng-container>
         <ng-container matColumnDef="bolt11">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Bolt11</th>
-          <td mat-cell *matCellDef="let payment">{{payment?.bolt11 | slice:0:10}}...</td>
+          <td mat-cell *matCellDef="let payment">{{payment?.bolt11 | slice:0:25}}...</td>
         </ng-container>
-        <ng-container matColumnDef="created_at">
+        <ng-container matColumnDef="created_at_str">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
-          <td mat-cell *matCellDef="let payment">{{payment?.created_at_str}}</td>
+          <td mat-cell *matCellDef="let payment">
+            <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Incomplete" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            {{payment?.created_at_str}}
+          </td>
         </ng-container>
         <ng-container matColumnDef="destination">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
-          <td mat-cell *matCellDef="let payment">{{payment?.destination | slice:0:10}}...</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-          <td mat-cell *matCellDef="let payment">{{payment?.status}}</td>
-        </ng-container>
-        <ng-container matColumnDef="msatoshi">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">mSatoshi</th>
-          <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi | number}}</span></td>
-        </ng-container>
-        <ng-container matColumnDef="msatoshi_sent">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">mSatoshi Sent</th>
-          <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi_sent | number}}</span></td>
+          <td mat-cell *matCellDef="let payment">{{payment?.destination | slice:0:25}}...</td>
         </ng-container>
         <ng-container matColumnDef="payment_hash">
-          <th mat-header-cell class="pl-4" *matHeaderCellDef mat-sort-header>Payment Hash</th>
-          <td mat-cell class="pl-4" *matCellDef="let payment">
-            <div>{{payment?.payment_hash | slice:0:10}}...</div>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
+          <td mat-cell *matCellDef="let payment">
+            <div>{{payment?.payment_hash}}</div>
           </td>
+        </ng-container>
+        <ng-container matColumnDef="msatoshi_sent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
+          <td mat-cell *matCellDef="let payment"><span
+              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number}}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="msatoshi">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
+          <td mat-cell *matCellDef="let payment"><span
+              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="payment_preimage">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Pre Image</th>
