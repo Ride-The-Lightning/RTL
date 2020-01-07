@@ -52,18 +52,15 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
 
   onForwardingEventClick(selFEvent: ForwardingEventCL, event: any) {
     const reorderedFHEvent = [
+      [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'received_time_str', value: selFEvent.received_time_str, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'resolved_time_str', value: selFEvent.resolved_time_str, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-      [{key: 'status', value: selFEvent.status, title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'in_channel', value: selFEvent.in_channel, title: 'Inbound Channel ID', width: 50, type: DataTypeEnum.STRING},
         {key: 'out_channel', value: selFEvent.out_channel, title: 'Outbound Channel ID', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSatoshi)', width: 50, type: DataTypeEnum.STRING},
-        {key: 'in_msat', value: selFEvent.in_msat, title: 'In (mSats)', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Out (mSatoshi)', width: 50, type: DataTypeEnum.STRING},
-        {key: 'out_msat', value: selFEvent.out_msat, title: 'Out (mSats)', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'fee', value: selFEvent.fee, title: 'Fee', width: 50, type: DataTypeEnum.STRING},
-        {key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.STRING}]
+      [{key: 'status', value: (selFEvent.status=== 'settled' ? 'Settled' : 'Unsettled'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
+        {key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Out (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
