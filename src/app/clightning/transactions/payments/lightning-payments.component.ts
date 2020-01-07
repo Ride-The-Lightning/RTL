@@ -55,20 +55,21 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
+      this.displayedColumns = ['created_at_str', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'msatoshi', 'msatoshi_sent', 'actions'];
+      this.displayedColumns = ['created_at_str', 'msatoshi_sent', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at', 'status', 'msatoshi', 'msatoshi_sent', 'actions'];
+      this.displayedColumns = ['created_at_str', 'msatoshi_sent', 'msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['created_at', 'status', 'payment_hash', 'msatoshi', 'msatoshi_sent', 'actions'];
+      this.displayedColumns = ['created_at_str', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
     }
   }
 
   ngOnInit() {
+    this.store.dispatch(new RTLActions.FetchPaymentsCL());    
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

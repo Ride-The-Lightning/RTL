@@ -19,7 +19,9 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 export class CLRoutingComponent implements OnInit, OnDestroy {
   public faMapSigns = faMapSigns;
   public lastOffsetIndex = 0;
-  public eventsData = [];
+  public successfulData = [];
+  public failedData = [];
+  public filteredData = false;
   public today = new Date(Date.now());
   public lastMonthDay = new Date(
     this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 30,
@@ -35,14 +37,15 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
-    this.onEventsFetch();
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_CL_STORE))
-    .subscribe((resetClStore: RTLActions.ResetCLStore) => {
-      this.onEventsFetch();
-    });
+    // this.onEventsFetch();
+    // this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_CL_STORE))
+    // .subscribe((resetClStore: RTLActions.ResetCLStore) => {
+    //   this.onEventsFetch();
+    // });
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.filteredData = false;
       this.errorMessage = '';
       rtlStore.effectErrorsCl.forEach(effectsErr => {
         if (effectsErr.action === 'GetForwardingHistoryCL') {
@@ -50,13 +53,21 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
+      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
         this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
-        this.eventsData = rtlStore.forwardingHistory.forwarding_events;
+        rtlStore.forwardingHistory.forwarding_events.forEach(event => {
+          if (event.status === 'settled') {
+            this.successfulData.push(event);
+          } else {
+            this.failedData.push(event);
+          }
+        });
+        this.filteredData = true;
       } else {
         // To reset table after other Forwarding history calls
         this.lastOffsetIndex = 0;
-        this.eventsData = [];
+        this.successfulData = [];
+        this.failedData = [];
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
@@ -83,7 +94,8 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   resetData() {
     this.endDate = new Date();
     this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 1);
-    this.eventsData = [];
+    this.successfulData = [];
+    this.failedData = [];
     this.lastOffsetIndex = 0;
   }
 

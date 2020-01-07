@@ -1,4 +1,4 @@
-<form fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="padding-gap overflow-x-hidden">
+<form fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" *ngIf="!sweepAll; else sweepAllBlock;" class="padding-gap overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()" #form="ngForm">
   <mat-form-field fxFlex.gt-sm="55">
     <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #address="ngModel">
     <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
@@ -32,13 +32,13 @@
   </div>
   <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start"></div>
   <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
-    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8" (click)="onSendFunds()">Send Funds</button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset">Clear Fields</button>
+    <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8">Send Funds</button>
   </div>
 </form>
 <ng-template #sweepAllBlock>
   <form fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden">
-    <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start">
+    <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" (submit)="onSendFunds()" (reset)="resetData()" #formSweepAll>
       <mat-form-field fxFlex.gt-sm="55">
         <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #addressSweep="ngModel">
         <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
@@ -61,8 +61,8 @@
     </div>
     <div>
       <div fxFlex="100" fxFlex.gt-sm="30" fxLayout="row" fxLayoutAlign="space-between stretch" class="mt-2">  
-        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
-        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8" (click)="onSendFunds()">Send Funds</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset">Clear Fields</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" type="submit" tabindex="8">Send Funds</button>
       </div>
     </div>
   </form>

@@ -19,6 +19,7 @@ import { CLTransactionsComponent } from './transactions/transactions.component';
 import { CLLookupsComponent } from './lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
 import { CLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
+import { CLFailedTransactionsComponent } from './routing/failed-transactions/failed-transactions.component';
 import { CLChannelLookupComponent } from './lookups/channel-lookup/channel-lookup.component';
 import { CLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { CLQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
@@ -53,6 +54,7 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLLookupsComponent,
     CLRoutingComponent,
     CLForwardingHistoryComponent,
+    CLFailedTransactionsComponent,
     CLChannelLookupComponent,
     CLNodeLookupComponent,
     CLQueryRoutesComponent,

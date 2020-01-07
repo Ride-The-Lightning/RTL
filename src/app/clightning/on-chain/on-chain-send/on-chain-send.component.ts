@@ -1,17 +1,15 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfoCL, BalanceCL, OnChainCL } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, DataTypeEnum, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -24,6 +22,7 @@ import { MessageDataField } from '../../../shared/models/alertData';
   styleUrls: ['./on-chain-send.component.scss']
 })
 export class CLOnChainSendComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: false }) form: any;  
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
@@ -43,7 +42,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -97,6 +96,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
     this.transaction = {};
+    this.form.resetForm();
   }
 
   get invalidValues(): boolean {
