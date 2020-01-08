@@ -28,18 +28,18 @@
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="space-between start" *ngIf="showDetails" class="mt-2">
       <button fxFlex="31" fxLayoutAlign="center center" mat-stroked-button color="warn" tabindex="11" type="button" (click)="onDeleteExpiredInvoices()">Delete Expired</button>
       <button fxFlex="31" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="31" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
+      <button fxFlex="31" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
     </div>
     <div  fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails" class="mt-1">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="10">Create Invoice</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="10">Create Invoice</button>
     </div>
   </form>
   <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
     <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
       <div fxFlex="70">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
-        <span class="page-title">Payments History</span>
+        <span class="page-title">Invoices History</span>
       </div>
       <mat-form-field fxFlex="30">
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">

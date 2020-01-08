@@ -32,7 +32,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '3. Wait for the balance to be confirmed on-chain before proceeding further.\n' +
         '3. Connecting with network peers and opening channels is next.\n',
       link: 'onchain',
-      linkCaption: 'On-Chain page'
+      linkCaption: 'On-Chain page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Connect with peers',
@@ -46,7 +47,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   b. Open Channel - Open channel with the peer.\n' +
         '   c. Disconnect - Disconnect from the peer.\n',
       link: 'peerschannels',
-      linkCaption: 'Peers/Channels page'
+      linkCaption: 'Peers/Channels page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Opening Channels',
@@ -61,7 +63,9 @@ export class HelpComponent implements OnInit, OnDestroy {
         '4. Track the pending open channels under the "Pending" tab . \n' +
         '5. Wait for the channel to be confirmed. Only a confimed channel can be used for payments or routing. \n',
       link: 'peerschannels',
-      linkCaption: 'Peers/Channels page'}));
+      linkCaption: 'Peers/Channels page',
+      lnImplementation: 'ALL'
+    }));
     this.helpTopics.push(new HelpTopic({
       question: 'Channel Management', 
       answer: 'Channel maintenance and balance score.\n' +
@@ -76,7 +80,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   b. A perfectly balanced channel has a score of one, where as a completely lopsided one has a score of zero.\n' +
         '   c. The formula for calculating the score is "1 - abs((local bal - remote bal)/total bal)".\n',
       link: 'peerschannels',
-      linkCaption: 'Peers/Channels page'
+      linkCaption: 'Peers/Channels page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Lightning Transactions - Payments',
@@ -87,7 +92,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   2. Advanced option # 1 (LND only) - Specify a limit on the routing fee which you are willing to pay, for the payment.\n' +
         '   3. Advanced option # 2 (LND only) - Specify the outgoing channel which you want the payment to go through.\n', 
       link: 'transactions',
-      linkCaption: 'Transactions page'
+      linkCaption: 'Transactions page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Lightning Transactions - Invoices',
@@ -98,7 +104,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   2. Expiry - The time period, after which the invoice will be invalid.\n' +
         '   3. Private Routing Hints - Generate an invoice with routing hints for private channels.\n', 
       link: 'transactions',
-      linkCaption: 'Transactions page'
+      linkCaption: 'Transactions page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Lightning Transactions - Query Route', 
@@ -108,10 +115,11 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   1. Destination Pubkey - Pubkey of the node, you want to send the payment to.\n' +
         '   2. Amount - Amount in Sats, which you want to send to the node.\n',
       link: 'transactions',
-      linkCaption: 'Transactions page'
+      linkCaption: 'Transactions page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Channel Backups (LND Only)', 
+      question: 'Channel Backups',
       answer: 'Channel Backups are important to ensure that you have means to recover funds in case of node failures.\n' +
         'Backup folder location can be customized in the RTL config file with the channelBackupPath field.\n' +
         'RTL automatically creates all channel backup on server startup, as well as everytime a channel is opened or closed\n'+
@@ -119,10 +127,11 @@ export class HelpComponent implements OnInit, OnDestroy {
         'You can also backup each channel individually and verify them.\n'+
         '** Keep taking backups of your channels regularly and store them in redundant locations **.\n',
       link: 'backup',
-      linkCaption: 'Channel Backups'
+      linkCaption: 'Channel Backups',
+      lnImplementation: 'LND'
     }));
     this.helpTopics.push(new HelpTopic({
-      question: 'Channel Restore (LND Only)', 
+      question: 'Channel Restore',
       answer: 'Channel Restore is used to recover funds from the channel backup files in case of node failures.\n' +
         'Follow the below steps to perform fund restoration.\n\n' +
         'Prerequisite:\n'+
@@ -140,7 +149,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '9. Once the channel is closed, the corresponding pending on-chain transactions can be viewed on the "On-Chain" page.\n'+
         '10. Once the transactions are confirmed, the channels funds will be restored to your LND Wallet.\n',
       link: 'backup',
-      linkCaption: 'Channel Backups'
+      linkCaption: 'Channel Backups',
+      lnImplementation: 'LND'      
     }));
       this.helpTopics.push(new HelpTopic({
         question: 'Forwarding History', 
@@ -148,7 +158,8 @@ export class HelpComponent implements OnInit, OnDestroy {
           'Go to "Routing" page under the "Lightning" menu :\n' +
           'Transactions routed by the node are listed on this page along with channels and the fee earned by transaction.\n',
         link: 'routing',
-        linkCaption: 'Forwarding History'
+        linkCaption: 'Forwarding History',
+        lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Graph Lookup', 
@@ -159,7 +170,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   1. Node Lookup - Enter the pubkey to perform the lookup.\n' +
         '   2. Channel Lookup - Enter the short channel ID to perform the lookup.\n',
       link: 'lookups',
-      linkCaption: 'Graph Lookup page'
+      linkCaption: 'Graph Lookup page',
+      lnImplementation: 'ALL'
     }));
     this.helpTopics.push(new HelpTopic({
       question: 'Settings', 
@@ -169,7 +181,8 @@ export class HelpComponent implements OnInit, OnDestroy {
         '   1. User Persona - Two options are available to change the dashboard based on the persona.\n' +
         '   2. Currency Unit - You can choose your preferred fiat currency, to view the onchain and channel balances in the choosen fiat currency.\n'+
         '   3. Default Node - If you are managing multiple nodes via RTL UI, you can select the default node to load upon login.\n'+
-        'Other Customizations include day and night mode and a choice of color themes to select from.\n'
+        'Other Customizations include day and night mode and a choice of color themes to select from.\n',
+      lnImplementation: 'ALL'
     }));
   }
 

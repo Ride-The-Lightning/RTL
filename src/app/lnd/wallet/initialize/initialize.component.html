@@ -4,7 +4,7 @@
     <div fxFlex="100" fxLayoutAlign="start">Warning: Your connection is unsecure, it's not safe to generate private keys over this connection.Are you sure you want to proceed?</div>
     <div fxFlex="100" fxFlex.gt-sm="35" fxLayout="row wrap" fxLayoutAlign="space-between start" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" type="reset" (click)="proceed=false;warnRes=true">Do Not Proceed</button>
-      <button mat-raised-button fxFlex="48" color="primary" type="submit" (click)="proceed=true;warnRes=true" tabindex="2">Proceed</button>
+      <button mat-flat-button fxFlex="48" color="primary" type="submit" (click)="proceed=true;warnRes=true" tabindex="2">Proceed</button>
     </div>
   </form>
 </div>
@@ -33,7 +33,7 @@
         <mat-icon class="validation-error-icon red">cancel</mat-icon>Passwords do not match.
       </div>
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="my-2">
-        <button mat-raised-button color="primary" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" tabindex="7" type="submit" matStepperNext>Next</button>
+        <button mat-flat-button color="primary" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" tabindex="7" type="submit" matStepperNext>Next</button>
       </div>
     </form>
   </mat-step>
@@ -50,7 +50,7 @@
       </div>
       <div fxLayout.lt-sm="column" fxLayout="row wrap" fxFlex="100" fxFlex.gt-md="40" fxLayoutAlign="space-between space-between" class="mb-2">
         <button mat-stroked-button color="primary" fxFlex="48" type="reset" tabindex="10" matStepperPrevious class="mt-1">Back</button>
-        <button mat-raised-button color="primary" fxFlex="48" tabindex="11" type="submit" matStepperNext class="mt-1">Next</button>
+        <button mat-flat-button color="primary" fxFlex="48" tabindex="11" type="submit" matStepperNext class="mt-1">Next</button>
       </div>
     </form>
   </mat-step>
@@ -67,7 +67,7 @@
       <div fxLayout.lt-sm="column" fxLayout="row wrap" fxFlex="100" fxFlex.gt-md="40" fxLayoutAlign="space-between space-between" class="mb-2">
         <button fxFlex="48" fxFlex.gt-sm="32" fxLayoutAlign="center center" mat-stroked-button color="warn" tabindex="13" type="reset" (click)="resetData()" class="mt-1">Clear</button>
         <button mat-stroked-button fxFlex="48" fxFlex.gt-sm="32" tabindex="14" color="primary" type="button" matStepperPrevious class="mt-1">Back</button>
-        <button mat-raised-button fxFlex="100" fxFlex.gt-sm="32" color="primary" (click)="onInitWallet()" tabindex="15" type="submit" class="mt-1">Initialize Wallet</button>
+        <button mat-flat-button fxFlex="100" fxFlex.gt-sm="32" color="primary" (click)="onInitWallet()" tabindex="15" type="submit" class="mt-1">Initialize Wallet</button>
       </div>
     </form>
   </mat-step>
@@ -91,7 +91,7 @@
     <div fxFlex="100" fxLayoutAlign="start" class="mt-2">The node will be usable only after LND has synced completely with the network.</div>
     <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Click continue only after writing down the seed.</div>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
-      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-raised-button color="primary" type="submit" (click)="onGoToHome()" tabindex="16">Go To Home</button>
+      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-flat-button color="primary" type="submit" (click)="onGoToHome()" tabindex="16">Go To Home</button>
     </div>
   </form>
 </div>
@@ -108,7 +108,7 @@
     <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Wallet recovery is done.</div>
     <div fxFlex="100" fxLayoutAlign="start" class="mt-2">The node will be usable only after LND has synced completely with the network.</div>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
-      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-raised-button color="primary" type="submit" (click)="onGoToHome()" tabindex="18">Go To Home</button>
+      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-flat-button color="primary" type="submit" (click)="onGoToHome()" tabindex="18">Go To Home</button>
     </div>
   </form>
 </div>

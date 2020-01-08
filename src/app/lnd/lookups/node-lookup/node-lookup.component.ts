@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { MatSnackBar } from '@angular/material';
 
 import { GraphNode } from '../../../shared/models/lndModels';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-node-lookup',
@@ -9,10 +11,14 @@ import { GraphNode } from '../../../shared/models/lndModels';
 })
 export class NodeLookupComponent implements OnInit {
   @Input() lookupResult: GraphNode;
-  public displayedColumns = ['network', 'addr'];
+  public displayedColumns = ['network', 'addr', 'actions'];
 
-  constructor() { }
+  constructor(private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {}
 
+  onCopyNodeURI(payload: string) {
+    this.snackBar.open('Node URI copied.');
+    this.logger.info('Copied Text: ' + payload);    
+  }
 }

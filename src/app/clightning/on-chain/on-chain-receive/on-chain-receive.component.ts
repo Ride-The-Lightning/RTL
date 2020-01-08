@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
@@ -15,11 +14,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']
 })
-export class CLOnChainReceiveComponent implements OnInit, OnDestroy {
+export class CLOnChainReceiveComponent implements OnInit {
   public addressTypes = ADDRESS_TYPES;
   public selectedAddressType = ADDRESS_TYPES[0];
   public newAddress = '';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: CLEffects) {}
 
@@ -29,7 +27,7 @@ export class CLOnChainReceiveComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new RTLActions.GetNewAddressCL(this.selectedAddressType));
     this.lndEffects.setNewAddressCL
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(take(1))
     .subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
@@ -40,13 +38,6 @@ export class CLOnChainReceiveComponent implements OnInit, OnDestroy {
           component: OnChainGeneratedAddressComponent
         }
       }));
-    });
-  }
-
-  ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
-      completeSub.next();
-      completeSub.complete();
     });
   }
 

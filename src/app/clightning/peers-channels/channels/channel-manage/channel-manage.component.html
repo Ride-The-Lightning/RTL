@@ -46,7 +46,7 @@
     <div *ngIf="showAdvanced" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start"></div>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
       <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="11">Open Channel</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="11">Open Channel</button>
     </div>  
   </form>
   <rtl-cl-channels-tables fxLayout="row" fxFlex="100"></rtl-cl-channels-tables>

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Channel } from '../../../shared/models/lndModels';
 
@@ -12,5 +13,9 @@ export class ChannelLiquidityInfoComponent {
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  goToChannels() {
+    this.router.navigateByUrl('/lnd/peerschannels');
+  }
 }

@@ -38,8 +38,8 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
           <button autoFocus mat-stroked-button color="primary" fxFlex="20" type="reset" fxLayoutAlign="center center" class="mr-2" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
-          <button *ngIf="flgShowInput" mat-raised-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
-          <button *ngIf="!flgShowInput" mat-raised-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
+          <button *ngIf="flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
+          <button *ngIf="!flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
         </div>
       </form>
     </mat-card-content>

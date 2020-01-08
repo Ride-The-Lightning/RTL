@@ -14,6 +14,7 @@ import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { ChannelLookupComponent } from '../../../../lookups/channel-lookup/channel-lookup.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -118,7 +119,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         ]
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[2]))
+      .pipe(takeUntil(this.unSubs[1]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -162,7 +163,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }}));
       });
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[4]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
@@ -176,6 +177,24 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.applyFilter();
   }
 
+  // onGraphLookup(channel:Channel) {
+  //   this.store.dispatch(new RTLActions.ChannelLookup(channel.chan_id));
+  //   this.actions$
+  //   .pipe(
+  //     takeUntil(this.unSubs[3]),
+  //     filter((action) => (action.type === RTLActions.SET_LOOKUP))
+  //   ).subscribe((resLookup: RTLActions.SetLookup) => {
+  //     if(resLookup.type === RTLActions.SET_LOOKUP) {
+  //       console.warn(JSON.parse(JSON.stringify(resLookup.payload)));
+  //       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+  //         lookupResult: JSON.parse(JSON.stringify(resLookup.payload)),
+  //         newlyAdded: false,
+  //         component: ChannelLookupComponent
+  //       }}));        
+  //     }
+  //   });
+  // }
+
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
@@ -185,7 +204,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[5]))
+    .pipe(takeUntil(this.unSubs[4]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));

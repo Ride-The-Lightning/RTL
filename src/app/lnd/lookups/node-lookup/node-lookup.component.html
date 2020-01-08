@@ -29,20 +29,28 @@
       <mat-divider class="my-1"></mat-divider>        
     </div>
   </div>
-  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start" class="my-1">
-    <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500">Addresses</h4>
-    <div perfectScrollbar class="table-container mt-2" fxFlex="100">    
-      <table mat-table [dataSource]="lookupResult.node.addresses" matSort class="overflow-auto">
+  <div fxLayout="column" class="mt-2">
+    <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
+    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+      <table mat-table #table [dataSource]="lookupResult.node.addresses" matSort>
         <ng-container matColumnDef="network">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>Network</mat-header-cell>
-          <mat-cell *matCellDef="let address"><div>{{address?.network}}</div></mat-cell>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Network</th>
+          <td mat-cell *matCellDef="let address"> {{address?.network}} </td>
         </ng-container>
         <ng-container matColumnDef="addr">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
-          <mat-cell *matCellDef="let address"><div>{{address?.addr}}</div></mat-cell>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+          <td mat-cell *matCellDef="let address"> {{address?.addr}} </td>
         </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns;"></mat-header-row>
-        <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="pl-1"><span fxLayoutAlign="end center">Actions</span></th>
+          <td mat-cell *matCellDef="let address" class="pl-1">
+            <span fxLayoutAlign="end center">
+              <button mat-stroked-button color="primary" type="button" tabindex="1" rtlClipboard [payload]="lookupResult.node.pub_key + '@' + address.addr" (copied)="onCopyNodeURI($event)">Copy Node URI</button>          
+            </span>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>        
       </table>
     </div>
   </div>

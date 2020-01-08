@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AddressType } from '../../../shared/models/lndModels';
@@ -16,11 +15,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']
 })
-export class OnChainReceiveComponent implements OnInit, OnDestroy {
+export class OnChainReceiveComponent implements OnInit {
   public addressTypes = ADDRESS_TYPES;
   public selectedAddressType: AddressType = ADDRESS_TYPES[0];
   public newAddress = '';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects) {}
 
@@ -30,7 +28,7 @@ export class OnChainReceiveComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new RTLActions.GetNewAddress(this.selectedAddressType));
     this.lndEffects.setNewAddress
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(take(1))
     .subscribe(newAddress => {
       this.newAddress = newAddress;
       this.store.dispatch(new RTLActions.OpenAlert({
@@ -41,13 +39,6 @@ export class OnChainReceiveComponent implements OnInit, OnDestroy {
           component: OnChainGeneratedAddressComponent
         }
       }));
-    });
-  }
-
-  ngOnDestroy() {
-    this.unSubs.forEach(completeSub => {
-      completeSub.next();
-      completeSub.complete();
     });
   }
 

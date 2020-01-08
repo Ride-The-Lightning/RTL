@@ -177,12 +177,6 @@ body {
   overflow-wrap: break-word !important;
 }
 
-.mat-raised-button {
-  width: 100%;
-  margin-top: 0.5rem;
-  max-height: 3.6rem;
-}
-
 .mat-card {
   padding: 0 !important;
   overflow: hidden;
@@ -653,6 +647,11 @@ body {
     padding: 0 1.4rem 0 0.4rem;
   }  
 
+  .mat-flat-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    max-height: 3.6rem;
+  }
 }
 
 .op-image{

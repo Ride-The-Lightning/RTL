@@ -169,8 +169,8 @@ export class CLHomeComponent implements OnInit, OnDestroy {
 
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
-        inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
-        pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
+        pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
+        inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
       };
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;

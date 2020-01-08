@@ -6,7 +6,7 @@
   <div fxLayout="row" fxFlex="100" class="padding-gap-x" fxLayoutAlign="start start">
     <div fxLayout="column" fxFlex="100">
       <div fxFlex="100" *ngFor="let helpTopic of helpTopics">
-        <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px"> 
+        <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px" *ngIf="helpTopic.help.lnImplementation === 'ALL' || helpTopic.help.lnImplementation === selNode.lnImplementation">
           <mat-expansion-panel-header>
               <mat-panel-title>{{helpTopic.help.question}}</mat-panel-title>
             </mat-expansion-panel-header>

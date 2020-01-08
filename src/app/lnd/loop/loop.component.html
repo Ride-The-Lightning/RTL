@@ -8,7 +8,7 @@
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap">
         <div fxFlex="30" fxLayoutAlign="space-between center" class="mt-2">
           <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onStopMonitor()">Stop Monitor</button>
-          <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" (click)="onStartMonitor()">Start Monitor</button>
+          <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" (click)="onStartMonitor()">Start Monitor</button>
         </div>
         <div fxLayout="column" fxLayoutAlign="center start" class="mt-2">
           <span fxFlex="100" fxLayoutAlign="center center" *ngFor="let log of loopMonitorLogs" class="loop-monitor-logs">

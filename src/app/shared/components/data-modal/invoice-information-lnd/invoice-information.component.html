@@ -80,7 +80,7 @@
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus fxFlex="50" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
+          <button autoFocus fxFlex="50" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
         </div>
       </div>
     </mat-card-content>
