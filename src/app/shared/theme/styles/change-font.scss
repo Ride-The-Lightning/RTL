@@ -3,7 +3,7 @@
 
 @mixin change-font($typography) {
   @include mat-core($typography);
-  &.small-font {
+  &.small {
     .mat-header-cell {
       font-weight: 700;
     }
@@ -75,12 +75,12 @@
       max-width: 3.6rem;
     }
   }
-  &.regular-font {
+  &.medium {
     .mat-header-cell {
       font-weight: 700;
     }
     .inner-sidenav-content {
-      padding-top: $regular-font-size;
+      padding-top: $medium-font-size;
     }
     .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
       min-height: $tree-node-height;
@@ -88,71 +88,71 @@
     }
     .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
     .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      font-size: $regular-font-size * 1.1;
+      font-size: $medium-font-size * 1.1;
     }
     .genseed-message, .validation-error-message .validation-error-icon.mat-icon {
-      font-size: $regular-font-size * 1.2;
+      font-size: $medium-font-size * 1.2;
     }
     .page-title-container, .page-sub-title-container {
-      font-size: $regular-font-size * 1.1;
+      font-size: $medium-font-size * 1.1;
     }
     .fa-icon-small, .top-icon-small, .modal-info-header {
-      font-size: $regular-font-size * 1.2;
+      font-size: $medium-font-size * 1.2;
     }
     .top-toolbar-icon.icon-pinned {
-      font-size: $regular-font-size * 1.3;
+      font-size: $medium-font-size * 1.3;
     }
     .top-toolbar-icon .top-toolbar-img, .sidenav-img svg {
-      width: $regular-font-size * 1.8; 
-      height: $regular-font-size * 1.8;
-      font-size: $regular-font-size * 1.3;
+      width: $medium-font-size * 1.8; 
+      height: $medium-font-size * 1.8;
+      font-size: $medium-font-size * 1.3;
     }
     .horizontal-button .sidenav-img svg {
-      width: $regular-font-size * 2.2; 
-      height: $regular-font-size * 2.2;
+      width: $medium-font-size * 2.2; 
+      height: $medium-font-size * 2.2;
       font-size: 2.5rem;
     }
     .material-icons {
-      font-size: $regular-font-size * 2;
+      font-size: $medium-font-size * 2;
     }
     .mat-step-header .mat-step-icon .mat-icon {
       font-size: initial;
     }
     .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
-      font-size: $regular-font-size !important;
+      font-size: $medium-font-size !important;
     }
     .logo {
-      font-size: $regular-font-size * 2;
+      font-size: $medium-font-size * 2;
     }
     .font-60-percent {
-      font-size: $regular-font-size * 0.6;
+      font-size: $medium-font-size * 0.6;
     }
     .fa-icon-regular {
-      font-size: $regular-font-size * 1.75;
+      font-size: $medium-font-size * 1.75;
     }
     .icon-large {
-      font-size: $regular-font-size * 5;
+      font-size: $medium-font-size * 5;
     }
     .icon-small {
-      font-size: $regular-font-size * 1.5 !important;
+      font-size: $medium-font-size * 1.5 !important;
     }
     .icon-smaller {
-      font-size: $regular-font-size * 0.75 !important;
+      font-size: $medium-font-size * 0.75 !important;
     }
     .size-triple {
-      font-size: $regular-font-size * 3;
+      font-size: $medium-font-size * 3;
     }
     .mat-icon-36 {
-      font-size: $regular-font-size * 2;
+      font-size: $medium-font-size * 2;
     }
     .btn-close-x {
-      font-size: $regular-font-size * 1.5;
+      font-size: $medium-font-size * 1.5;
       font-weight: 600;
       min-width: 3.6rem;
       max-width: 3.6rem;
     }
   }
-  &.large-font {
+  &.large {
     .mat-header-cell {
       font-weight: 800;
     }

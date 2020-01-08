@@ -51,21 +51,21 @@ export const FEE_RATE_TYPES = [
 
 export const NODE_SETTINGS = {
   themes: [
-    {id: 'purple', name: 'Diogo'}, 
-    {id: 'teal', name: 'My2Sats'},
-    {id: 'indigo', name: 'RTL'},
-    {id: 'pink', name: 'BK'}
+    {id: 'PURPLE', name: 'Diogo'}, 
+    {id: 'TEAL', name: 'My2Sats'},
+    {id: 'INDIGO', name: 'RTL'},
+    {id: 'PINK', name: 'BK'}
   ],
-  modes: [{id: 'day', name: 'Day'}, {id: 'night', name: 'Night'}],
-  fontSize: [{id: 1, name: 'Small', class: 'small-font'}, {id: 2, name: 'Regular', class: 'regular-font'}, {id: 3, name: 'Large', class: 'large-font'}],
-  menuTypes: [{id: 'regular', name: 'Regular'}, {id: 'compact', name: 'Compact'}, {id: 'mini', name: 'Mini'}],
-  menus: [{id: 'vertical', name: 'Vertical'}, {id: 'horizontal', name: 'Horizontal'}]
+  modes: [{id: 'DAY', name: 'Day'}, {id: 'NIGHT', name: 'Night'}],
+  fontSize: [{id: 1, name: 'Small', class: 'SMALL'}, {id: 2, name: 'Medium', class: 'MEDIUM'}, {id: 3, name: 'Large', class: 'LARGE'}],
+  menuTypes: [{id: 'REGULAR', name: 'Regular'}, {id: 'COMPACT', name: 'Compact'}, {id: 'MINI', name: 'Mini'}],
+  menus: [{id: 'VERTICAL', name: 'Vertical'}, {id: 'HORIZONTAL', name: 'Horizontal'}]
 };
 
 export enum UserPersonaEnum {
-  OPERATOR = 'operator',
-  MERCHANT = 'merchant',
-  ALL = 'all'
+  OPERATOR = 'OPERATOR',
+  MERCHANT = 'MERCHANT',
+  ALL = 'ALL'
 }
 
 export enum AlertTypeEnum {

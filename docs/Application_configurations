@@ -14,23 +14,11 @@ rtlPass=<>
 
 [Settings]
 ;Set by RTL
-userPersona=Operator
+userPersona=OPERATOR
 ;Set by RTL
-flgSidenavOpened=true
+themeMode=DAY
 ;Set by RTL
-flgSidenavPinned=true
-;Set by RTL
-menu=vertical
-;Set by RTL
-menuType=regular
-;Set by RTL
-fontSize=regular-font
-;Set by RTL
-themeMode=night
-;Set by RTL
-themeColor=blue
-;Set by RTL
-satsToBTC=false
+themeColor=PURPLE
 ;Full path of the bitcoin.conf file including the file name
 bitcoindConfigPath=<>
 ;parameter to turn RTL logging off/on. Allowed values - true, false

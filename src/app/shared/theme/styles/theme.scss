@@ -7,9 +7,9 @@
 .rtl-container{
   &.purple {
     @import "../skins/purple";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($purple-day-theme);
       @include change-theme($purple-day-theme);
@@ -21,9 +21,9 @@
   }
   &.blue{
     @import "../skins/blue";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($blue-day-theme);
       @include change-theme($blue-day-theme);
@@ -35,9 +35,9 @@
   }
   &.indigo{
     @import "../skins/indigo";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($indigo-day-theme);
       @include change-theme($indigo-day-theme);
@@ -49,9 +49,9 @@
   }
   &.green{
     @import "../skins/green";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($green-day-theme);
       @include change-theme($green-day-theme);
@@ -63,9 +63,9 @@
   }
   &.teal{
     @import "../skins/teal";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($teal-day-theme);
       @include change-theme($teal-day-theme);
@@ -77,9 +77,9 @@
   }
   &.pink{
     @import "../skins/pink";
-    &.small-font {@include change-font($small-typography);}
-    &.regular-font {@include change-font($regular-typography);}
-    &.large-font {@include change-font($large-typography);}
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
     &.day {
       @include angular-material-theme($pink-day-theme);
       @include change-theme($pink-day-theme);

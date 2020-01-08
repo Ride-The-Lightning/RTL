@@ -91,7 +91,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // START: Workaround to add adjust container width initially
         this.sideNavigation.toggle();
         setTimeout(() => { this.sideNavigation.toggle(); }, 50);
-        if (this.settings.menuType === 'compact' || this.settings.menuType === 'mini') {
+        if (this.settings.menuType === 'COMPACT' || this.settings.menuType === 'MINI') {
           this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
           setTimeout(() => { this.sideNavigation.toggle(); }, 100);
         }
@@ -129,7 +129,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if ((this.settings.menuType.toLowerCase() !== 'regular' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
+    if ((this.settings.menuType !== 'REGULAR' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
       this.sideNavigation.close();
     }
   }

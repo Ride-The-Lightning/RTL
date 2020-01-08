@@ -62,7 +62,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       this.selectedThemeColor = this.selNode.settings.themeColor;
       this.selectedFontSize = this.fontSizes.find(fontSize => fontSize.class === this.selNode.settings.fontSize);
       if (window.innerWidth <= 768) {
-        this.selNode.settings.menu = 'vertical';
+        this.selNode.settings.menu = 'VERTICAL';
         this.selNode.settings.flgSidenavOpened = false;
         this.selNode.settings.flgSidenavPinned = false;
         this.showSettingOption = false;
@@ -95,7 +95,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     if(toggleField === 'menu') {
       this.selNode.settings.flgSidenavOpened = (!event.checked) ? false : true;
       setTimeout(() => {
-        this.selNode.settings.menu = (!event.checked) ? 'horizontal' : 'vertical';
+        this.selNode.settings.menu = (!event.checked) ? 'HORIZONTAL' : 'VERTICAL';
       }, 10);
     } else {
       this.selNode.settings[toggleField] = !this.selNode.settings[toggleField];

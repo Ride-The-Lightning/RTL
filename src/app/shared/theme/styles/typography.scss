@@ -14,7 +14,7 @@ $small-typography: mat-typography-config(
     $input: (font-size: inherit, line-height: 1.125, font-weight: 400)
 );
 
-$regular-typography: mat-typography-config(
+$medium-typography: mat-typography-config(
     $display-4: (font-size: 112px, line-height: 112px, font-weight: 300),
     $display-3: (font-size: 56px, line-height: 56px, font-weight: 400), 
     $display-2: (font-size: 45px, line-height: 48px, font-weight: 400), 

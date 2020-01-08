@@ -25,7 +25,7 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1">
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1;else emptyBlock">
         <mat-label>Default Node</mat-label>
         <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
           <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
@@ -54,7 +54,7 @@
             <h4>Themes</h4>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <span *ngFor="let themeColor of themeColors" fxLayout="row">
-                <div [class]="themeColor.id" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+                <div [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
                 {{themeColor.name}}
               </span>
             </div>
@@ -70,3 +70,4 @@
     </div>
   </div>
 </div>
+<ng-template #emptyBlock><div fxLayout="row" fxFlex="32" fxLayoutAlign="start end"></div></ng-template>

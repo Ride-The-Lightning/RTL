@@ -17,41 +17,32 @@
         "lndConfigPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
       "Settings": {
-        "userPersona": "Operator",
-        "flgSidenavOpened": "true",
-        "flgSidenavPinned": "true",
-        "menu": "vertical",
-        "menuType": "regular",
-        "themeMode": "night",
-        "themeColor": "blue",
-        "fontSize":"regular-font",
-        "satsToBTC": "false",
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
         "channelBackupPath": "C:\\RTL\\backup\\node-1",
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
-        "enableLogging": "true",
+        "enableLogging": true,
+        "currencyUnit": "USD",
         "lndServerUrl": "<Service url for LND REST APIs for node # 1 e.g. https://192.168.0.1:8080/v1"
       }
     },
     {
       "index": 2,
-      "lnNode": "LND Mainnet",
-      "lnImplementation": "LND",
+      "lnNode": "C Lighting Testnet",
+      "lnImplementation": "CLT",
       "Authentication": {
         "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 2>"
       },
       "Settings": {
-        "userPersona": "Merchant",
-        "flgSidenavOpened": "true",
-        "flgSidenavPinned": "true",
-        "menu": "vertical",
-        "menuType": "regular",
-        "themeMode": "day",
-        "themeColor": "teal",
-        "satsToBTC": "false",
+        "userPersona": "MERCHANT",
+        "themeMode": "NIGHT",
+        "themeColor": "TEAL",
         "channelBackupPath": "C:\\RTL\\backup\\node-2",
         "bitcoindConfigPath": "",
-        "enableLogging": "true",
-        "lndServerUrl": "<Service url for LND REST APIs for node # 2 e.g. https://192.168.0.6:8080/v1"
+        "enableLogging": true,
+        "currencyUnit": "GBP",
+        "lnServerUrl": "<Service url for C Lightning REST APIs for node # 2 e.g. https://192.168.0.2:3001/v1"
       }
     }
   ]
