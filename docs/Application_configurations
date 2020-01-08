@@ -30,6 +30,8 @@ port=3000
 lndServerUrl=https://localhost:8080/v1
 ;Channel backup folder
 channelBackupPath=<>
+;Set by RTL
+currencyUnit=USD
 
 [SSO]
 ;Single Sign On control
@@ -60,3 +62,4 @@ RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authenti
 RTL_COOKIE_PATH (Full path of the cookie file including the file name)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
 CHANNEL_BACKUP_PATH (folder location for saving the channel backup files)
+CURRENCY_UNIT (Fiat currency unit for fiat conversion, Default 'USD')
