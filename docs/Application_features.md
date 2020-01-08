@@ -10,7 +10,6 @@
 - Fee Report
 - Channel Status
 - Channel Balance comparison (aggregate local vs remote)
-- Network Info
 
 ### Settings
 - Current Unit Toggle (Sats to BTC)
