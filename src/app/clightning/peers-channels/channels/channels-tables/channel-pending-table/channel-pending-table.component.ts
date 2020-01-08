@@ -72,7 +72,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state !== 'CHANNELD_NORMAL'));
+        this.loadChannelsTable(rtlStore.allChannels.filter(channel => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)));
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;

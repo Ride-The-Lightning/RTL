@@ -17,7 +17,8 @@ export class CLNodeLookupComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.addresses = new MatTableDataSource<any>([...this.lookupResult.addresses]);
+    this.addresses = this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
+    this.addresses.data = this.lookupResult.addresses ? this.lookupResult.addresses : [];
     this.addresses.sort = this.sort;
   }
 

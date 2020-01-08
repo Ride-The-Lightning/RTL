@@ -4,9 +4,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatTableDataSource, MatSort, MatPaginatorIntl } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfoCL, InvoiceCL } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -30,6 +30,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() showDetails = true;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -43,6 +44,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public invoicePaymentReq = '';
   public invoices: any;
+  public invoiceJSONArr: InvoiceCL[] = [];  
   public information: GetInfoCL = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
@@ -54,8 +56,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public timeUnitEnum = TimeUnitEnum;
   public timeUnits = TIME_UNITS;
   public selTimeUnit = TimeUnitEnum.SECS;
-  private firstOffset = -1;
-  private lastOffset = -1;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -90,10 +90,15 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.totalInvoices = rtlStore.totalInvoices;
-      this.firstOffset = +rtlStore.invoices.first_index_offset;
-      this.lastOffset = +rtlStore.invoices.last_index_offset;
       this.logger.info(rtlStore);
-      this.loadInvoicesTable(rtlStore.invoices.invoices ? rtlStore.invoices.invoices : []);
+      this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
+      this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<InvoiceCL>([...this.invoiceJSONArr]);
+      this.invoices.data = this.invoiceJSONArr;
+      this.invoices.sort = this.sort;
+      this.invoices.paginator = this.paginator;    
+      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      this.logger.info(this.invoices);
+  
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
       }
@@ -150,13 +155,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  loadInvoicesTable(invoices) {
-    this.invoices = new MatTableDataSource<InvoiceCL>([...invoices]);
-    this.invoices.sort = this.sort;
-    setTimeout(() => { this.flgAnimate = false; }, 5000);
-    this.logger.info(this.invoices);
-  }
-
   resetData() {
     this.label = '';
     this.description = '';
@@ -169,20 +167,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.invoices.filter = selFilter;
-  }
-
-  onPageChange(event: any) {
-    let reversed = true;
-    let index_offset = this.firstOffset;
-    if (event.pageIndex < event.previousPageIndex) {
-      reversed = false;
-      index_offset = this.lastOffset;
-    }
-    if (event.pageIndex === event.previousPageIndex) {
-      reversed = true;
-      index_offset = 0;
-    }
-    this.store.dispatch(new RTLActions.FetchInvoicesCL({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
   }
 
   onInvoiceValueChange() {

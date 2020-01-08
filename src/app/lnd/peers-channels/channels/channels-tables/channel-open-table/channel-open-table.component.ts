@@ -84,8 +84,9 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
-      .pipe(take(1))
-      .subscribe(resLookup => {
+    .pipe(take(1))
+    .subscribe(resLookup => {
+      if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }        
       const reorderedChannelPolicy = [
         [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
           {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 33, type: DataTypeEnum.NUMBER},

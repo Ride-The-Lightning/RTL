@@ -140,20 +140,20 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
     case RTLActions.SET_ALL_CHANNELS:
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
-        action.payload.filter(channel => {
-          if (channel.local_balance) {
-            localBal = +localBal + +channel.local_balance;
-          } else {
-            channel.local_balance = 0;
-          }
-          if (channel.remote_balance) {
-            remoteBal = +remoteBal + +channel.remote_balance;
-          } else {
-            channel.remote_balance = 0;
-          }
+        action.payload.forEach(channel => {
           if (channel.active === true) {
             totalCapacityActive = totalCapacityActive + +channel.local_balance;
             activeChannels = activeChannels + 1;
+            if (channel.local_balance) {
+              localBal = +localBal + +channel.local_balance;
+            } else {
+              channel.local_balance = 0;
+            }
+            if (channel.remote_balance) {
+              remoteBal = +remoteBal + +channel.remote_balance;
+            } else {
+              channel.remote_balance = 0;
+            }
           } else {
             totalCapacityInactive = totalCapacityInactive + +channel.local_balance;
             inactiveChannels = inactiveChannels + 1;

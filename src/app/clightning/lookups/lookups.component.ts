@@ -20,7 +20,8 @@ import { CommonService } from '../../shared/services/common.service';
 export class CLLookupsComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;
   public lookupKey = '';
-  public lookupValue = {};
+  public nodeLookupValue = {nodeid: ''};
+  public channelLookupValue = [];
   public flgSetLookupValue = false;
   public temp: any;
   public messageObj = [];
@@ -49,16 +50,17 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = true;
         switch (this.selectedFieldId) {
           case 0:
-            this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload[0]));
+            this.nodeLookupValue = resLookup.payload[0] ? JSON.parse(JSON.stringify(resLookup.payload[0])) : {nodeid: ''};
             break;
           case 1:
-            this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
+            this.channelLookupValue = resLookup.payload ? JSON.parse(JSON.stringify(resLookup.payload)) : [];
             break;
           default:
             break;
         }
         this.flgSetLookupValue = true;
-        this.logger.info(this.lookupValue);
+        this.logger.info(this.nodeLookupValue);
+        this.logger.info(this.channelLookupValue);
       }
       if (resLookup.type === RTLActions.EFFECT_ERROR_CL && resLookup.payload.action === 'LookupCL') {
         this.flgLoading[0] = 'error';
@@ -69,14 +71,15 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   onLookup() {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
-    this.lookupValue = {};
+    this.nodeLookupValue = {nodeid: ''};
+    this.channelLookupValue = [];
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
     switch (this.selectedFieldId) {
       case 0:
         this.store.dispatch(new RTLActions.PeerLookupCL(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new RTLActions.ChannelLookupCL(this.lookupKey.trim()));
+        this.store.dispatch(new RTLActions.ChannelLookupCL({shortChannelID: this.lookupKey.trim(), showError: false}));
         break;
       default:
         break;
@@ -89,18 +92,16 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.form.resetForm();
     this.flgSetLookupValue = false;
     this.selectedFieldId = 0;
-    this.lookupKey = '';
-    this.lookupValue = {};
-    this.flgLoading.forEach((flg, i) => {
-      this.flgLoading[i] = true;
-    });
+    this.nodeLookupValue = {nodeid: ''};
+    this.channelLookupValue = [];
+    this.form.resetForm();
   }
 
   clearLookupValue() {
-    this.lookupValue = {};
+    this.nodeLookupValue = {nodeid: ''};
+    this.channelLookupValue = [];
     this.flgSetLookupValue = false;
   }
 

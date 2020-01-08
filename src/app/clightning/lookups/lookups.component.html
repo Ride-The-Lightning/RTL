@@ -23,13 +23,13 @@
             <button fxFlex="48" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
           </div>
         </form>     
-        <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="lookupValue && flgSetLookupValue" class="w-100 mt-2">
+        <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="flgSetLookupValue" class="w-100 mt-2">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
             <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
           </div>
           <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <span fxFlex="100" *ngSwitchCase="0"><rtl-cl-node-lookup [lookupResult]="lookupValue"></rtl-cl-node-lookup></span>
-            <span fxFlex="100" *ngSwitchCase="1"><rtl-cl-channel-lookup [lookupResult]="lookupValue"></rtl-cl-channel-lookup></span>
+            <span fxFlex="100" *ngSwitchCase="0"><div *ngIf="nodeLookupValue.nodeid !== ''; else errorBlock"><rtl-cl-node-lookup [lookupResult]="nodeLookupValue"></rtl-cl-node-lookup></div></span>
+            <span fxFlex="100" *ngSwitchCase="1"><div *ngIf="channelLookupValue.length>0; else errorBlock"><rtl-cl-channel-lookup [lookupResult]="channelLookupValue"></rtl-cl-channel-lookup></div></span>
             <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
           </div>
         </div>      
@@ -37,3 +37,6 @@
     </mat-card>
   </div>
 </div>
+<ng-template #errorBlock>
+  <h3>Error! Unable to find details!</h3>
+</ng-template>

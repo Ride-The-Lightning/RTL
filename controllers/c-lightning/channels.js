@@ -12,7 +12,7 @@ exports.listChannels = (req, res, next) => {
       local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
       remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : 0;
       total = channel.msatoshi_total ? channel.msatoshi_total : 0;
-      channel.balancedness = (1 - Math.abs((local-remote)/total)).toFixed(3);
+      channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local-remote)/total)).toFixed(3);
     })    
     res.status(200).json(body);
   })

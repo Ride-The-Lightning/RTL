@@ -72,7 +72,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL'));
+        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected));
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -82,10 +82,11 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onViewRemotePolicy(selChannel: ChannelCL) {
-    this.store.dispatch(new RTLActions.ChannelLookupCL(selChannel.short_channel_id));
+    this.store.dispatch(new RTLActions.ChannelLookupCL({shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
     .subscribe((resLookup: ChannelEdgeCL[])  => {
+      if(resLookup.length === 0) { return false; }
       let remoteNode: ChannelEdgeCL = {};
       if(resLookup[0].source !== this.information.id) {
         remoteNode = resLookup[0];

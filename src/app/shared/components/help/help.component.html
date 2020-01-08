@@ -8,9 +8,12 @@
       <div fxFlex="100" *ngFor="let helpTopic of helpTopics">
         <mat-expansion-panel class="flat-expansion-panel help-expansion mb-2px"> 
           <mat-expansion-panel-header>
-              <mat-panel-title>{{helpTopic.question}}</mat-panel-title>
+              <mat-panel-title>{{helpTopic.help.question}}</mat-panel-title>
             </mat-expansion-panel-header>
-          <mat-panel-description><span class="pre-wrap" [innerHTML]="helpTopic.answer" target></span></mat-panel-description>
+          <mat-panel-description fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
+            <span class="pre-wrap" [innerHTML]="helpTopic.help.answer"></span>
+            <a class="mt-2" [routerLink]="flgLoggedIn ? LNPLink + helpTopic.help.link : '/login'">{{!flgLoggedIn ? 'Login to go to the page' : helpTopic.help.linkCaption}}</a>
+          </mat-panel-description>
         </mat-expansion-panel>
       </div>
     </div>

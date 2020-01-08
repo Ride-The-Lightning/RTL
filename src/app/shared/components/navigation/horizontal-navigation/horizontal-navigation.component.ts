@@ -28,8 +28,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
   public information: GetInfoRoot = {};
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {
-  }
+  constructor(private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) {}
 
   ngOnInit() {
     this.store.select('root')

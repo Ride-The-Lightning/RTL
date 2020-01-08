@@ -54,7 +54,7 @@
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel.balancedness || 0 | number}}</mat-hint>
           </div>
-          <mat-progress-bar mode="determinate" value="{{channel.local_balance && channel.local_balance > 0 ? ((+channel.local_balance/((+channel.local_balance)+(+channel.remote_balance)))*100) : 0}}"></mat-progress-bar>
+          <mat-progress-bar mode="determinate" value="{{channel.msatoshi_to_us && channel.msatoshi_to_us > 0 ? ((+channel.msatoshi_to_us/((+channel.msatoshi_to_us)+(+channel.msatoshi_to_them)))*100) : 0}}"></mat-progress-bar>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

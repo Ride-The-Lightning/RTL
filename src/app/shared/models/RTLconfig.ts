@@ -72,3 +72,7 @@ export interface SelNodeChild {
   selCurrencyUnit?: string;  
   currencyUnits?: string[];
 }
+
+export class HelpTopic {
+  constructor(public help: {question: string, answer: string, link?: string, linkCaption?: string}) { }
+}

@@ -511,7 +511,7 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.CHANNEL_LOOKUP_CL),
     mergeMap((action: RTLActions.ChannelLookupCL) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorCl('LookupCL'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload.shortChannelID)
         .pipe(
           map((resChannel) => {
             this.logger.info(resChannel);
@@ -522,8 +522,13 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'LookupCL', code: err.status, message: err.error.message }));
-            this.handleErrorWithAlert('ERROR', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload, err);
+            if(action.payload.showError) {
+              this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'LookupCL', code: err.status, message: err.error.message }));
+              this.handleErrorWithAlert('ERROR', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload.shortChannelID, err);
+            } else {
+              this.store.dispatch(new RTLActions.CloseSpinner());
+            }
+            this.store.dispatch(new RTLActions.SetLookupCL([]));
             return of({type: RTLActions.VOID});
           })
         );

@@ -26,7 +26,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
         this.openChannels = 0;
         this.pendingChannels = 0;
         rtlStore.allChannels.forEach(channel => {
-          if(channel.state === 'CHANNELD_NORMAL') {
+          if(channel.state === 'CHANNELD_NORMAL' && channel.connected) {
             this.openChannels++;
           } else {
             this.pendingChannels++;

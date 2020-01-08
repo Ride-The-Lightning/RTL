@@ -65,8 +65,12 @@ export interface BalanceCL {
 export interface LocalRemoteBalanceCL {
   localBalance: number;
   remoteBalance: number;
+  pendingBalance?: number;
+  inactiveBalance?: number;
   btc_localBalance?: number;
   btc_remoteBalance?: number;
+  btc_pendingBalance?: number;
+  btc_inactiveBalance?: number;
 }
 
 export interface PeerCL {

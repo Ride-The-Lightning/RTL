@@ -764,7 +764,7 @@ export class PeerLookupCL implements Action {
 
 export class ChannelLookupCL implements Action {
   readonly type = CHANNEL_LOOKUP_CL;
-  constructor(public payload: string) {} // payload = channel_short_id
+  constructor(public payload: {shortChannelID: string, showError: boolean}) {}
 }
 
 export class InvoiceLookupCL implements Action {

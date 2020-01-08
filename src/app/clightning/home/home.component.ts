@@ -168,26 +168,20 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       }
 
       this.channelsStatus = {
-        active: { channels: rtlStore.information.num_active_channels, capacity: 0 },
-        inactive: { channels: rtlStore.information.num_inactive_channels, capacity: 0 },
-        pending: { channels:  rtlStore.information.num_pending_channels, capacity: 0 }
+        active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
+        inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
+        pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
       };
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;
-      this.allChannels = rtlStore.allChannels.filter(channel => channel.connected);
+      this.allChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
       this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them')));
       this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us')));
       this.allChannels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + channel.msatoshi_to_them;
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + channel.msatoshi_to_us;
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them/1000);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us/1000);
       });
-      if (this.totalInboundLiquidity>0) {
-        this.totalInboundLiquidity = this.totalInboundLiquidity / 1000;
-      }
-      if (this.totalOutboundLiquidity>0) {
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity / 1000;
-      }
       if (this.flgLoading[5] !== 'error') {
         this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
       }      

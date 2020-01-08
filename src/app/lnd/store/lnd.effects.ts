@@ -991,6 +991,7 @@ export class LNDEffects implements OnDestroy {
           catchError((err: any) => {
             this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'Lookup', code: err.status, message: err.error.message }));
             this.handleErrorWithAlert('ERROR', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload, err);
+            this.store.dispatch(new RTLActions.SetLookup({}));
             return of({type: RTLActions.VOID});
           })
         );
