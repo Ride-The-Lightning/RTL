@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
     <mat-form-field fxFlex="40" fxFlex.gt-sm="30" fxLayoutAlign="start end">
       <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required name="selPeer" #selPeer="ngModel">
         <mat-option (click)="addNewPeer()" [value]="'new'">
@@ -22,7 +22,7 @@
       <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
     </div>
     <div fxFlex="100" fxFlex.gt-sm="17" fxLayoutAlign="start center" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-      <button fxFlex="48" fxFlex.gt-sm="100" fxLayoutAlign="center center" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="4">
+      <button fxFlex="48" fxFlex.gt-sm="100" fxLayoutAlign="center center" mat-stroked-button color="primary" type="button" (click)="onShowAdvanced()" tabindex="4">
         <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
         <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
       </button>

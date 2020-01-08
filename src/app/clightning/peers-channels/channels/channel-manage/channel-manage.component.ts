@@ -22,6 +22,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class CLChannelManageComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild('form', {static: true}) form: any;
   public totalBalance = 0;
   public selectedPeer = '';
   public fundingAmount: number;
@@ -33,7 +34,7 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
   public showAdvanced = false;
   public peerAddress = '';
   public newlyAddedPeer = '';
-  public selFeeRate = '';
+  public selFeeRate = null;
   public flgMinConf = false;
   public minConfValue = null;
   public moreOptions = false;
@@ -60,12 +61,17 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_PEERS_CL))
-    .subscribe((action: RTLActions.SetPeersCL) => {
-      if(this.newlyAddedPeer !== '') {
-        this.snackBar.open('Peer added successfully. Proceed to open the channel.');
-        this.selectedPeer = this.newlyAddedPeer;
-        this.newlyAddedPeer = '';
+    filter((action) => action.type === RTLActions.SET_PEERS_CL || action.type === RTLActions.FETCH_CHANNELS_CL))
+    .subscribe((action: RTLActions.SetPeersCL | RTLActions.FetchChannelsCL) => {
+      if(action.type === RTLActions.SET_PEERS_CL) {
+        if(this.newlyAddedPeer !== '') {
+          this.snackBar.open('Peer added successfully. Proceed to open the channel.');
+          this.selectedPeer = this.newlyAddedPeer;
+          this.newlyAddedPeer = '';
+        }
+      }
+      if(action.type === RTLActions.FETCH_CHANNELS_CL) {
+        this.form.resetForm();
       }
     });
   }
@@ -84,16 +90,17 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
     this.moreOptions = false;
     this.flgMinConf = false;
     this.isPrivate = false;
-    this.selFeeRate = '';
+    this.selFeeRate = null;
     this.minConfValue = null;
+    this.showAdvanced = false;
+    this.form.resetForm();
   }
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
     if (!this.showAdvanced) {    
       this.flgMinConf = false;
-      this.isPrivate = false;
-      this.selFeeRate = '';
+      this.selFeeRate = null;
       this.minConfValue = null;
     }
   }
@@ -115,9 +122,10 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.peerAddress = confirmRes[0].inputValue;
-        this.newlyAddedPeer = this.peerAddress;
+        const deviderIndex = this.peerAddress.search('@');
+        this.newlyAddedPeer = (deviderIndex<0) ? 'none' : this.peerAddress.substring(0, deviderIndex);
         this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-        this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerAddress}));
+        this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerAddress, showOpenChannelModal: false}));
       } else {
         this.selectedPeer = '';
       }

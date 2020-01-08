@@ -10,7 +10,7 @@
         <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'w-100 error-border bordered-box': flgLoading[0]==='error','bordered-box w-100': true}">
           <ng-container matColumnDef="channel_point">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-            <mat-cell *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="commit_fee">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats) </mat-header-cell>
@@ -50,7 +50,7 @@
         <mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="channel_point">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-            <mat-cell *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="recovered_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </mat-header-cell>
@@ -91,7 +91,7 @@
           [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="channel_point">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-            <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+            <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="local_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
@@ -138,7 +138,7 @@
           [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="channel_point">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Channel Point </mat-header-cell>
-            <mat-cell class="pl-2" *matCellDef="let channel">{{channel.channel.channel_point}}</mat-cell>
+            <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.channel_point}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">

@@ -1,7 +1,7 @@
 import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
 import { GetInfo, Invoice } from './lndModels';
-import { InvoiceCL } from './clModels';
+import { InvoiceCL, GetInfoCL } from './clModels';
 
 export interface MessageErrorField {
   code: number;
@@ -31,6 +31,14 @@ export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
   message?: { peer: any, information: GetInfo, balance: number };
+  newlyAdded?: boolean;
+  component?: any;
+}
+
+export interface CLOpenChannelAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { peer: any, information: GetInfoCL, balance: number };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -93,5 +101,5 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | InvoiceInformation | CLInvoiceInformation | OnChainAddressInformation | ShowPubkeyData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | OnChainAddressInformation | ShowPubkeyData;
 }

@@ -58,7 +58,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['created_at_str', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['created_at_str', 'msatoshi_sent', 'msatoshi', 'actions'];
+      this.displayedColumns = ['created_at_str', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at_str', 'msatoshi_sent', 'msatoshi', 'actions'];

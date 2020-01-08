@@ -11,25 +11,25 @@
         <mat-expansion-panel class="flat-expansion-panel">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
+              <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.id}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="column">
             <div fxLayout="row">
               <div fxFlex="100">
                 <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
-                <span class="foreground-secondary-text">{{peer.pub_key}}</span>
+                <span class="foreground-secondary-text">{{peer.id}}</span>
               </div>
             </div>
             <mat-divider class="w-100 my-1"></mat-divider>
             <div fxLayout="row">
               <div fxFlex="50">
                 <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-                <span class="overflow-wrap foreground-secondary-text">{{peer.address}}</span>
+                <span class="overflow-wrap foreground-secondary-text">{{peer.netaddr}}</span>
               </div>
               <div fxFlex="50">
-                  <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
-                  <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'True' : 'False'}}</span>
+                  <h4 fxLayoutAlign="start" class="font-bold-500">Connected</h4>
+                  <span class="overflow-wrap foreground-secondary-text">{{peer.connected ? 'True' : 'False'}}</span>
                 </div>
               </div>
           </div>
@@ -46,38 +46,31 @@
             Available balance: {{totalBalance | number}} {{information.smaller_currency_unit}}
           </div>
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-            <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
-              <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
-              <span matSuffix> {{information?.smaller_currency_unit}} </span>
+            <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
+              <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
+              <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
               <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
               <mat-error *ngIf="amount.errors?.negative">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
-            <div fxFlex="35" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+            <div fxFlex="48" fxLayoutAlign="start center">
+              <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
             </div>
           </div>
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-            <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-              <mat-select tabindex="3" [(value)]="selTransType">
-                <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
-                  {{transType.name}}
+            <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+              <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate">
+                <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+                  {{feeRateType.feeRateType}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='0'">
-              <input matInput placeholder="Default" disabled>
-            </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='1'">
-              <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="4" #blocks="ngModel">
-              <mat-error *ngIf="!transTypeValue.blocks">Target confirmation block is required.</mat-error>
-            </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='2'">
-              <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="5" #fees="ngModel">
-              <mat-error *ngIf="!transTypeValue.fees">Fee is required.</mat-error>
-            </mat-form-field>
-            <div fxFlex="35" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+            <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+              <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
+              <mat-form-field fxFlex="98">
+                <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
+                <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
+              </mat-form-field>
             </div>
           </div>
         </div>

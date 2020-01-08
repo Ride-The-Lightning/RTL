@@ -22,6 +22,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class ChannelManageComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild('form', {static: true}) form: any;
   public totalBalance = 0;
   public selectedPeer = '';
   public fundingAmount: number;
@@ -59,12 +60,17 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_PEERS))
-    .subscribe((action: RTLActions.SetPeers) => {
-      if(this.newlyAddedPeer !== '') {
-        this.snackBar.open('Peer added successfully. Proceed to open the channel.');
-        this.selectedPeer = this.newlyAddedPeer;
-        this.newlyAddedPeer = '';
+    filter((action) => action.type === RTLActions.SET_PEERS || action.type === RTLActions.FETCH_ALL_CHANNELS))
+    .subscribe((action: RTLActions.SetPeers | RTLActions.FetchAllChannels) => {
+      if(action.type === RTLActions.SET_PEERS) {
+        if(this.newlyAddedPeer !== '') {
+          this.snackBar.open('Peer added successfully. Proceed to open the channel.');
+          this.selectedPeer = this.newlyAddedPeer;
+          this.newlyAddedPeer = '';
+        }
+      }
+      if(action.type === RTLActions.FETCH_ALL_CHANNELS) {
+        this.form.resetForm();
       }
     });
   }
@@ -91,6 +97,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.selTransType = '0';
     this.transTypeValue = {blocks: '', fees: ''};
+    this.form.resetForm();
   }
 
   onShowAdvanced() {

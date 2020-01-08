@@ -2,9 +2,9 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Store } from '@ngrx/store';
 
-import { Peer, GetInfo } from '../../../models/lndModels';
-import { OpenChannelAlert } from '../../../models/alertData';
-import { TRANS_TYPES } from '../../../services/consts-enums-functions';
+import { PeerCL, GetInfoCL } from '../../../models/clModels';
+import { CLOpenChannelAlert } from '../../../models/alertData';
+import { FEE_RATE_TYPES } from '../../../services/consts-enums-functions';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -16,18 +16,20 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class CLOpenChannelComponent implements OnInit {
   public alertTitle: string;
-  public peer: Peer;
-  public information: GetInfo;
-  public totalBalance = 0;
+  public peer: PeerCL;
+  public information: GetInfoCL;
   public fundingAmount: number;
+  public myChanPolicy: any = {};
   public isPrivate = false;
-  public selTransType = '0';
+  public feeRateTypes = FEE_RATE_TYPES;
+  public totalBalance = 0;
   public newlyAdded = false;
-  public spendUnconfirmed = false;
-  public transTypeValue = {blocks: '', fees: ''};
-  public transTypes = TRANS_TYPES;
+  public selFeeRate = '';
+  public flgMinConf = false;
+  public minConfValue = null;
+  public moreOptions = false;
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>) { }
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.peer = this.data.message.peer;
@@ -42,25 +44,19 @@ export class CLOpenChannelComponent implements OnInit {
   }
 
   resetData() {
-    this.fundingAmount = null;
+    this.fundingAmount = 0;
+    this.moreOptions = false;
+    this.flgMinConf = false;
     this.isPrivate = false;
-    this.spendUnconfirmed = false;
-    this.selTransType = '0';
-    this.transTypeValue = {blocks: '', fees: ''};
+    this.selFeeRate = '';
+    this.minConfValue = null;
   }
 
   onOpenChannel() {
-    if (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.selTransType === '1' && !this.transTypeValue.blocks) || (this.selTransType === '2' && !this.transTypeValue.fees)) { return true; }
-    let transTypeValue = '0';
-    if (this.selTransType === '1') {
-      transTypeValue = this.transTypeValue.blocks;
-    } else if (this.selTransType === '2') {
-      transTypeValue = this.transTypeValue.fees;
-    }
+    if (!this.fundingAmount || (this.totalBalance - ((this.fundingAmount) ? this.fundingAmount : 0) < 0)) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    this.store.dispatch(new RTLActions.SaveNewChannel({
-      selectedPeerPubkey: this.peer.pub_key, fundingAmount: this.fundingAmount, private: this.isPrivate,
-      transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+    this.store.dispatch(new RTLActions.SaveNewChannelCL({
+      peerId: this.peer.id, satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
     }));
     this.dialogRef.close(false);
   }

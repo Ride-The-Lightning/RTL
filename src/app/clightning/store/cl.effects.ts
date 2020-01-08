@@ -14,10 +14,12 @@ import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-cl/invoice-information.component';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
+import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import * as fromCLReducers from '../store/cl.reducers';
+import { CLOpenChannelComponent } from '../../shared/components/data-modal/open-channel-cl/open-channel.component';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -209,17 +211,35 @@ export class CLEffects implements OnDestroy {
   @Effect()
   saveNewPeerCL = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_PEER_CL),
-    mergeMap((action: RTLActions.SaveNewPeerCL) => {
+    withLatestFrom(this.store.select('cl')),
+    mergeMap(([action, clData]: [RTLActions.SaveNewPeerCL, fromCLReducers.CLState]) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id })
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenAlert({ data: { type: AlertTypeEnum.SUCCESS, alertTitle: 'Peer Connected', titleMessage: 'Peer Added Successfully!' }}));
-            return {
-              type: RTLActions.SET_PEERS_CL,
-              payload: (postRes && postRes.length > 0) ? postRes : []
-            };
+            this.store.dispatch(new RTLActions.SetPeersCL((postRes && postRes.length > 0) ? postRes : []));
+            if(action.payload.showOpenChannelModal) {
+              const peerToAddChannelMessage = {
+                peer: postRes[0], 
+                information: clData.information,
+                balance: clData.balance.totalBalance || 0
+              };
+              return {
+                type: RTLActions.OPEN_ALERT,
+                payload: { width: '50%', data: { 
+                  type: AlertTypeEnum.INFORMATION,
+                  alertTitle: 'Peer Connected',
+                  message: peerToAddChannelMessage,
+                  newlyAdded: true,
+                  component: CLOpenChannelComponent
+                }}
+              };
+            } else {
+              return {
+                type: RTLActions.VOID
+              }
+            }
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
@@ -285,6 +305,7 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };
@@ -307,7 +328,11 @@ export class CLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+            if(action.payload.channelId === 'all') {
+              this.store.dispatch(new RTLActions.OpenSnackBar('All Channels Updated Successfully.'));
+            } else {
+              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+            }
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };
@@ -331,6 +356,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.FetchChannelsCL());
+            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
             return {
               type: RTLActions.REMOVE_CHANNEL_CL,
               payload: { channelId: action.payload.channelId }

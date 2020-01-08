@@ -34,9 +34,9 @@
             {{channel?.msatoshi_to_us | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Total mSatoshis </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Total (Sats) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_total | number}} </span></td>
+            {{channel?.msatoshi_total/1000 | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="spendable_msatoshi">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Spendable Satoshi </th>

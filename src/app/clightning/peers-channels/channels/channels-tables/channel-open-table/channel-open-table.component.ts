@@ -93,9 +93,9 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
         remoteNode = resLookup[1];
       }
       const reorderedChannelPolicy = [
-        [{key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'delay', value: remoteNode.delay, title: 'Delay', width: 32, type: DataTypeEnum.NUMBER}]
+        [{key: 'base_fee_millisatoshi', value: remoteNode.base_fee_millisatoshi, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
+          {key: 'fee_per_millionth', value: remoteNode.fee_per_millionth, title: 'Fee/Millionth', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'delay', value: remoteNode.delay, title: 'Delay', width: 33, type: DataTypeEnum.NUMBER}]
       ];      
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         type: AlertTypeEnum.INFORMATION,
@@ -107,49 +107,50 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelUpdate(channelToUpdate: any) {
+    if(channelToUpdate !== 'all' && channelToUpdate.state === 'ONCHAIN') {
+      return;
+    }
     if (channelToUpdate === 'all') {
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Fee Policy for all Channels',
+        alertTitle: 'Update fee policy for all Channels',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,
         flgShowInput: true,
         getInputs: [
-          {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
-          {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32},
-          {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32}
+          {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48},
+          {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48}
         ]
       }}));
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[2]))
+      .pipe(takeUntil(this.unSubs[1]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
           this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
         }
       });
     } else {
-      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
+      this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookupCL(channelToUpdate.chan_id.toString()));
+      this.store.dispatch(new RTLActions.ChannelLookupCL(channelToUpdate.short_channel_id));
       this.clEffects.setLookupCL
       .pipe(take(1))
-      .subscribe(resLookup => {
-        if (resLookup.node1_pub === this.information.id) {
-          this.myChanPolicy = resLookup.node1_policy;
-        } else if (resLookup.node2_pub === this.information.id) {
-          this.myChanPolicy = resLookup.node2_policy;
+      .subscribe((resLookup: ChannelEdgeCL[]) => {
+        if (resLookup.length > 0 && resLookup[0].destination === this.information.id) {
+          this.myChanPolicy = {fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth};
+        } else if (resLookup.length > 1 && resLookup[1].destination === this.information.id) {
+          this.myChanPolicy = {fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth};
         } else {
-          this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
+          this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
         }
         this.logger.info(this.myChanPolicy);
         this.store.dispatch(new RTLActions.CloseSpinner());
-        const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
+        const titleMsg = 'Update fee policy for Channel: ' + channelToUpdate.channel_id;
         const confirmationMsg = [];
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
@@ -160,19 +161,17 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
           message: confirmationMsg,
           flgShowInput: true,
           getInputs: [
-            {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32},
-            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32},
-            {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32}
+            {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48},
+            {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48}
           ]
         }}));
       });
       this.rtlEffects.closeConfirm
-      .pipe(takeUntil(this.unSubs[4]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(confirmRes => {
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
           this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
         }
@@ -190,7 +189,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       yesBtnText: 'Close Channel'
     }}));
     this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[5]))
+    .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
@@ -206,20 +205,19 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onChannelClick(selChannel: ChannelCL, event: any) {
     const reorderedChannel = [
-      [{key: 'short_channel_id', value: selChannel.short_channel_id, title: 'Short Channel ID', width: 100}],
-      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100}],
-      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 100}],
-      [{key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 66},
-        {key: 'connected', value: selChannel.connected, title: 'Connected', width: 32, type: DataTypeEnum.BOOLEAN}],
-      [{key: 'private', value: selChannel.private, title: 'Private', width: 32, type: DataTypeEnum.BOOLEAN},
-        {key: 'state', value: selChannel.state, title: 'State', width: 32, type: DataTypeEnum.NUMBER},
-        {key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 32, type: DataTypeEnum.NUMBER}],
-      [{key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 32, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_to_them', value: selChannel.msatoshi_to_them, title: 'mSatoshi to Us', width: 32, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total mSatoshi', width: 32, type: DataTypeEnum.NUMBER}],
-      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve Satoshis', width: 32, type: DataTypeEnum.NUMBER},
-        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve Satoshis', width: 32, type: DataTypeEnum.NUMBER},
-        {key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable mSatoshi', width: 32, type: DataTypeEnum.NUMBER}]
+      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'short_channel_id', value: selChannel.short_channel_id, title: 'Short Channel ID', width: 34, type: DataTypeEnum.STRING},
+        {key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 66, type: DataTypeEnum.STRING}],
+      [{key: 'connected', value: selChannel.connected, title: 'Connected', width: 34, type: DataTypeEnum.BOOLEAN},
+        {key: 'private', value: selChannel.private, title: 'Private', width: 33, type: DataTypeEnum.BOOLEAN},
+        {key: 'state', value: selChannel.state, title: 'State', width: 33, type: DataTypeEnum.STRING}],
+      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve (Sats)', width: 34, type: DataTypeEnum.NUMBER},
+        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+        {key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 33, type: DataTypeEnum.NUMBER}],
+      [{key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable (mSats)', width: 34, type: DataTypeEnum.NUMBER},
+        {key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total (mSats)', width: 66, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

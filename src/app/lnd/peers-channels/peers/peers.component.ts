@@ -30,6 +30,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class PeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild('peersForm', {static: true}) form: any;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -95,6 +96,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     ).subscribe((setPeers: RTLActions.SetPeers) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;
+      this.form.resetForm();
     });
   }
 
@@ -146,6 +148,7 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.peerAddress = '';
+    this.form.resetForm();
   }
 
   onOpenChannel(peerToAddChannel: Peer) {

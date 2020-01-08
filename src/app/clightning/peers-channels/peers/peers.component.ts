@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
 import { Subject } from 'rxjs';
-import { takeUntil, filter, take } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { PeerCL, GetInfoCL } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { OpenChannelComponent } from '../../../lnd/peers-channels/open-channel-modal/open-channel.component';
+import { CLOpenChannelComponent } from '../../../shared/components/data-modal/open-channel-cl/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -30,6 +30,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLPeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild('peersForm', {static: true}) form: any;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -50,16 +51,16 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'actions'];
+      this.displayedColumns = ['alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'alias', 'connected', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'netaddr', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'alias', 'connected', 'netaddr', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['id', 'alias', 'connected', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
+      this.displayedColumns = ['id', 'alias', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
     }
   }
 
@@ -95,6 +96,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     ).subscribe((setPeers: RTLActions.SetPeersCL) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;
+      this.form.resetForm();
     });
   }
 
@@ -103,16 +105,17 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.flgAnimate = true;
     this.newlyAddedPeer = this.peerAddress;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerAddress}));
+    this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerAddress, showOpenChannelModal: true}));
   }
 
   onPeerClick(selPeer: PeerCL, event: any) {
     const reorderedPeer = [
       [{key: 'id', value: selPeer.id, title: 'Public Key', width: 100}],
       [{key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100}],
-      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 50}, {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}],
-      [{key: 'globalfeatures', value: selPeer.globalfeatures, title: 'Global Features', width: 100}],
-      [{key: 'localfeatures', value: selPeer.localfeatures, title: 'Local Features', width: 100}]
+      [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 50},
+        {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}],
+      [{key: 'globalfeatures', value: selPeer.globalfeatures, title: 'Global Features', width: 50},
+        {key: 'localfeatures', value: selPeer.localfeatures, title: 'Local Features', width: 50}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -125,6 +128,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.peerAddress = '';
+    this.form.resetForm();
   }
 
   onOpenChannel(peerToAddChannel: PeerCL) {
@@ -137,7 +141,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,
-      component: OpenChannelComponent
+      component: CLOpenChannelComponent
     }}));
   }
 

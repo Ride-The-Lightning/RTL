@@ -676,7 +676,7 @@ export class SetPeersCL implements Action {
 
 export class SaveNewPeerCL implements Action {
   readonly type = SAVE_NEW_PEER_CL;
-  constructor(public payload: {id: string}) {}
+  constructor(public payload: {id: string, showOpenChannelModal: boolean}) {}
 }
 
 export class AddPeerCL implements Action {

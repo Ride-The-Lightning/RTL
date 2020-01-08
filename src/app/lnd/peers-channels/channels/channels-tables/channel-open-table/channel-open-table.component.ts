@@ -82,15 +82,14 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    console.warn(selChannel);
     this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
       .pipe(take(1))
       .subscribe(resLookup => {
       const reorderedChannelPolicy = [
-        [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 32, type: DataTypeEnum.NUMBER},
-          {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 32, type: DataTypeEnum.NUMBER}]
+        [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
+          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 33, type: DataTypeEnum.NUMBER}]
       ];      
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         type: AlertTypeEnum.INFORMATION,
@@ -106,7 +105,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update Fee Policy for all Channels',
+        alertTitle: 'Update fee policy for all Channels',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,

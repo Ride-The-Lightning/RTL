@@ -5,14 +5,10 @@
   text-overflow: ellipsis;
 }
 
-.mat-column-pub_key {
-  flex: 1 1 20%;
+.mat-column-id {
+  flex: 1 1 10%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 2rem;
-}
-
-.mat-column-ping_time {
-  padding-right: 2rem;
 }
