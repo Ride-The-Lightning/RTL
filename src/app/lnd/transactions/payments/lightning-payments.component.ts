@@ -239,8 +239,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
-      showCopyName: 'Payment Hash',
-      showCopyField: selPayment.payment_hash,
       message: reorderedPayment
     }}));
   }

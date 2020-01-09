@@ -141,6 +141,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
         action.payload.forEach(channel => {
+          if(!channel.local_balance) { channel.local_balance = 0; }
           if (channel.active === true) {
             totalCapacityActive = totalCapacityActive + +channel.local_balance;
             activeChannels = activeChannels + 1;

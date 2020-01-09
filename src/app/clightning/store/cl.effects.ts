@@ -306,6 +306,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
+            this.store.dispatch(new RTLActions.FetchBalanceCL());
             return {
               type: RTLActions.FETCH_CHANNELS_CL
             };

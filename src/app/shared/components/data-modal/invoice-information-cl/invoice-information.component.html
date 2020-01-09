@@ -45,7 +45,7 @@
         <mat-divider class="w-100 my-1"></mat-divider>   
         <div fxLayout="row">
           <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Bolt11</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Invoice</h4>
             <span class="overflow-wrap foreground-secondary-text">{{invoice.bolt11}}</span>
           </div>
         </div>
@@ -82,7 +82,7 @@
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus fxFlex="50" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.bolt11" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Bolt11' : 'Copy Bolt11'}}</button>
+          <button autoFocus fxFlex="50" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.bolt11" (copied)="onCopyPayment($event)">Copy Invoice</button>
         </div>
       </div>
       </mat-card-content>

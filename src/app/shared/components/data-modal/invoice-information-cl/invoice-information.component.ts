@@ -44,7 +44,7 @@ export class CLInvoiceInformationComponent implements OnInit {
   }  
 
   onCopyPayment(payload: string) {
-    this.snackBar.open('Bolt11 copied.');
+    this.snackBar.open('Invoice copied.');
     this.logger.info('Copied Text: ' + payload);
   }
 }

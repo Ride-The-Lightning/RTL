@@ -223,8 +223,6 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
-      showCopyName: 'Bolt 11',
-      showCopyField: selPayment.bolt11,
       message: reorderedPayment
     }}));
   }
