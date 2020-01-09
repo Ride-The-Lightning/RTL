@@ -1,4 +1,4 @@
-![](../screenshots/RTL-CLT-Home.png)
+![](../screenshots/RTL-CLT-Dashboard.png)
 
 ## RTL C-lightning setup
 
