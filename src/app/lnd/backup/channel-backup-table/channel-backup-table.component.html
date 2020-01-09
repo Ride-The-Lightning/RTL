@@ -1,0 +1,56 @@
+<div fxLayout="column">
+  <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+    <div fxFlex="100" class="alert alert-warn">
+      <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+      <span>Save your backup files in a redundant location.</span>
+    </div>
+    <div fxFlex="100" class="alert alert-info">
+      <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+      <span><strong>Backup Folder Location: </strong>{{selNode.channelBackupPath}}.</span>
+    </div>
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
+    </div>
+  </div>
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
+    <div fxFlex="70">
+      <fa-icon [icon]="faArchive" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Backups</span>
+    </div>
+    <mat-form-field fxFlex="30">
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+  </div>
+  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+      <ng-container matColumnDef="channel_point">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel Point </th>
+        <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{channel?.channel_point}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
+        <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
+          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+            <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+              <mat-select-trigger></mat-select-trigger>
+              <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
+              <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
+              <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
+            </mat-select>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="no_channel">
+        <td mat-footer-cell *matFooterCellDef colspan="4">
+          <p *ngIf="!channels.data || channels.data.length<1">No channels available.</p>
+        </td>
+      </ng-container>
+      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels.data && channels.data.length>0}"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+</div>

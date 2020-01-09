@@ -26,6 +26,28 @@ exports.getInfo = (req, res, next) => {
     } else {
       body.currency_unit = 'BTC';
       body.smaller_currency_unit = 'Sats';
+      body.lnImplementation = 'C-Lightning';
+      let chainObj = { chain: '', network: '' };
+      if (body.network === 'testnet') {
+        chainObj.chain = 'Bitcoin';
+        chainObj.network = 'Testnet';
+      } else if (body.network === 'bitcoin') {
+        chainObj.chain = 'Bitcoin';
+        chainObj.network = 'Mainnet';
+      } else if (body.network === 'litecoin') {
+        chainObj.chain = 'Litecoin';
+        chainObj.network = 'Mainnet';
+      } else if (body.network === 'litecoin-testnet') {
+        chainObj.chain = 'Litecoin';
+        chainObj.network = 'Testnet';
+      }
+      body.chains = [chainObj];
+      body.uris = [];
+      if (body.address && body.address.length>0) {
+        body.address.forEach(addr => {
+          body.uris.push(body.id + '@' + addr.address + ':' + addr.port);
+        });
+      }
       res.status(200).json(body);
     }
   })

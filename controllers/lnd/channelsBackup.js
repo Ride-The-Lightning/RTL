@@ -32,11 +32,13 @@ exports.getBackup = (req, res, next) => {
   let message = '';
   if (req.params.channelPoint === 'ALL') {
     channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
-    message = 'All Channels Backup Successful at: ' + channel_backup_file + ' !';
+    message = 'All Channels Backup Successful.';
+    // message = 'All Channels Backup Successful at: ' + channel_backup_file + ' !';
     options.url = common.getSelLNServerUrl() + '/channels/backup';
   } else {
     channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
-    message = 'Channel Backup Successful at: ' + channel_backup_file + ' !';
+    message = 'Channel Backup Successful.';
+    // message = 'Channel Backup Successful at: ' + channel_backup_file + ' !';
     let channelpoint = req.params.channelPoint.replace(':', '/');
     options.url = common.getSelLNServerUrl() + '/channels/backup/' + channelpoint;
     let exists = fs.existsSync(channel_backup_file);
@@ -78,7 +80,7 @@ exports.postBackupVerify = (req, res, next) => {
   let message = '';
   let verify_backup = '';
   if (req.params.channelPoint === 'ALL') {
-    message = 'All Channels Verify Successful!';
+    message = 'All Channels Verify Successful.';
     channel_verify_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
@@ -95,7 +97,8 @@ exports.postBackupVerify = (req, res, next) => {
       res.status(404).json({ message: 'Channels backup to verify does not Exist!' });
     }
   } else {
-    message = 'Channel ' + req.params.channelPoint + ' Verify Successful!';
+    message = 'Channel Verify Successful.';
+    // message = 'Channel ' + req.params.channelPoint + ' Verify Successful!';
     channel_verify_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
@@ -128,7 +131,7 @@ exports.postRestore = (req, res, next) => {
   let message = '';
   let restore_backup = '';
   if (req.params.channelPoint === 'ALL') {
-    message = 'All Channels Restore Successful!';
+    message = 'All Channels Restore Successful.';
     channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'restore' + common.path_separator + 'channel-all.bak';
     let exists = fs.existsSync(channel_restore_file);
     if (exists) {
@@ -144,7 +147,8 @@ exports.postRestore = (req, res, next) => {
       res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
     }
   } else {
-    message = 'Channel ' + req.params.channelPoint + ' Restore Successful!';
+    message = 'Channel Restore Successful.';
+    // message = 'Channel ' + req.params.channelPoint + ' Restore Successful!';
     channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'restore' + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     let exists = fs.existsSync(channel_restore_file);
     if (exists) {

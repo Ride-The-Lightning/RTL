@@ -1,0 +1,36 @@
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Daily</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.day_fee_sum | number}} Sats</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Weekly</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.week_fee_sum | number}} Sats</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Monthly</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.month_fee_sum | number}} Sats</div>
+  </div>
+  <div fxFlex="20">
+    <h4 class="dashboard-info-title"></h4>
+    <span class="overflow-wrap dashboard-info-value"></span>
+  </div>  
+</div>
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.daily_tx_count | number}}</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.weekly_tx_count | number}}</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Transactions</h4>
+    <div class="overflow-wrap dashboard-info-value">{{fees?.monthly_tx_count | number}}</div>
+  </div>
+  <div fxFlex="20">
+    <h4 class="dashboard-info-title"></h4>
+    <span class="overflow-wrap dashboard-info-value"></span>
+  </div>  
+</div>

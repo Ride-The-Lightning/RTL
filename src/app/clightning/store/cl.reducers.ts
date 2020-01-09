@@ -1,7 +1,8 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, AddressTypeCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL, FeeRateTypeCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as RTLActions from '../../store/rtl.actions';
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 export interface CLState {
   effectErrorsCl: ErrorPayload[];
@@ -18,13 +19,11 @@ export interface CLState {
   forwardingHistory: ForwardingHistoryResCL;
   invoices: ListInvoicesCL;
   totalInvoices: number;
-  addressTypes: AddressTypeCL[];
-  feeRateTypes: FeeRateTypeCL[];
 }
 
 export const initCLState: CLState = {
   effectErrorsCl: [],
-  nodeSettings: { channelBackupPath: '', satsToBTC: false },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
   information: {},
   fees: {},
   feeRatesPerKB: {},
@@ -36,16 +35,7 @@ export const initCLState: CLState = {
   payments: [],
   forwardingHistory: {},
   invoices: { invoices: [] },
-  totalInvoices: -1,
-  addressTypes: [
-    { addressId: '0', addressTp: 'bech32', addressDetails: 'bech32' },
-    { addressId: '1', addressTp: 'p2sh-segwit', addressDetails: 'p2sh-segwit (default)' }
-  ],
-  feeRateTypes: [
-    { feeRateId: 'urgent', feeRateType: 'Urgent'},
-    { feeRateId: 'normal', feeRateType: 'Normal'},
-    { feeRateId: 'slow', feeRateType: 'Slow'},
-  ]
+  totalInvoices: -1
 }
 
 export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {

@@ -1,26 +1,31 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { formatDate } from '@angular/common';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatSort, MatSnackBar } from '@angular/material';
 
 import { LookupNodeCL } from '../../../shared/models/clModels';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-cl-node-lookup',
   templateUrl: './node-lookup.component.html',
-  styleUrls: ['./node-lookup.component.css']
+  styleUrls: ['./node-lookup.component.scss']
 })
 export class CLNodeLookupComponent implements OnInit {
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   @Input() lookupResult: LookupNodeCL;
-  public displayedColumns = ['type', 'address', 'port'];
+  public addresses: any;
+  public displayedColumns = ['type', 'address', 'port', 'actions'];
 
-  constructor(private logger: LoggerService) { }
+  constructor(private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.logger.info(this.lookupResult);
-    if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_timestamp_str) {
-      this.lookupResult.last_timestamp_str = (this.lookupResult.last_timestamp_str === '') ?
-        '' : formatDate(this.lookupResult.last_timestamp_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-    }
+    this.addresses = this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
+    this.addresses.data = this.lookupResult.addresses ? this.lookupResult.addresses : [];
+    this.addresses.sort = this.sort;
+  }
+
+  onCopyNodeURI(payload: string) {
+    this.snackBar.open('Node URI copied.');
+    this.logger.info('Copied Text: ' + payload);    
   }
 
 }

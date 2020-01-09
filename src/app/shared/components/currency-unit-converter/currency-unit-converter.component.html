@@ -1,0 +1,12 @@
+<mat-tab-group>
+  <mat-tab *ngFor="let currencyUnit of currencyUnits" label="{{ currencyUnit }}">
+    <div fxLayout="row" fxFlex="100">
+      <div fxLayout="column" *ngFor="let value of values" [matTooltip]="value.tooltip" [matTooltipPosition]="'below'" class="cc-data-block">
+        <div class="cc-data-title">{{value.title}}</div>
+        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.SATS">{{value.dataValue | number}}</span>
+        <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.BTC">{{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}</span>
+        <span class="cc-data-value" *ngIf="currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC">{{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}</span>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

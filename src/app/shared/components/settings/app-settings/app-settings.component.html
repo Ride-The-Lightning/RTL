@@ -1,0 +1,73 @@
+<div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
+  <div fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
+    <div fxFlex="100" class="mb-1">
+      <fa-icon [icon]="faWrench" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Node Layout</span>
+    </div>
+    <div fxFlex="100" class="alert alert-info">
+      <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+      <span>Application layout will be tailored based upon user persona.</span>
+    </div>
+    <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="space-between stretch">
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
+        <mat-label>User Persona</mat-label>
+        <mat-select [(ngModel)]="selNode.settings.userPersona" tabindex="1" name="userPersona">
+          <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
+            {{userPersona | titlecase}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
+        <mat-label>Currency Unit</mat-label>
+        <mat-select [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="1" name="currencyUnit">
+          <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+            {{currencyUnit.id}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1;else emptyBlock">
+        <mat-label>Default Node</mat-label>
+        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
+          <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
+            {{node.lnNode}} ({{node.lnImplementation}})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="start stretch" class="mt-1">
+      <mat-divider class="w-100"></mat-divider>
+      <div fxLayout="column" fxLayoutAlign="space-between stretch" class="settings-container page-sub-title-container mt-1 w-100">
+        <div fxFlex="100" class="my-1">
+          <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
+          <span class="page-title">Customization</span>
+        </div>
+        <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
+          <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
+            <h4>Mode</h4>
+            <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
+              <mat-radio-button *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div fxLayout="column" fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayoutAlign="space-between stretch"></div>
+          <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="30" fxLayoutAlign="space-between stretch">
+            <h4>Themes</h4>
+            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+              <span *ngFor="let themeColor of themeColors" fxLayout="row">
+                <div [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+                {{themeColor.name}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div fxLayout="row" fxFlex="100" class="mt-2">
+      <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch">
+        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12">Reset</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #emptyBlock><div fxLayout="row" fxFlex="32" fxLayoutAlign="start end"></div></ng-template>

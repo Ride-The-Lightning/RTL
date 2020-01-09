@@ -1,0 +1,90 @@
+<div fxLayout="column" fxLayoutAlign="start stretch">
+  <div fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x page-sub-title-container">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
+        <div fxFlex="70">Incoming</div>
+        <mat-form-field fxFlex="30">
+          <input matInput (keyup)="applyIncomingFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+      </div>
+      <div perfectScrollbar fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="table-container w-100">
+        <table mat-table #tableIn [dataSource]="RoutingPeersIncoming" matSort fxFlex="100" class="overflow-auto incoming-table">
+          <ng-container matColumnDef="chan_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
+            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{rPeer.chan_id}}</td>
+          </ng-container>
+          <ng-container matColumnDef="alias">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
+            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{rPeer.alias}}</td>
+          </ng-container>
+          <ng-container matColumnDef="events">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Events</th>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.events | number}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="total_amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Total Amount (Sats)</th>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_amount | number}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+            <td mat-cell *matCellDef="let rPeer" class="pl-2">
+              <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onRoutingPeerClick(rPeer, $event, 'in')">View Info</button>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_incoming_event">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!RoutingPeersIncoming.data || RoutingPeersIncoming.data.length<1">No incoming routing peer available.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming.data && RoutingPeersIncoming.data.length>0}"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
+        <div fxFlex="70">Outgoing</div>
+        <mat-form-field fxFlex="30">
+          <input matInput (keyup)="applyOutgoingFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+      </div>
+      <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+        <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort fxFlex="100" class="overflow-auto outgoing-table">
+          <ng-container matColumnDef="chan_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
+            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{rPeer.chan_id}}</td>
+          </ng-container>
+          <ng-container matColumnDef="alias">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Peer Alias</th>
+            <td mat-cell *matCellDef="let rPeer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '28rem'}">{{rPeer.alias}}</td>
+          </ng-container>
+          <ng-container matColumnDef="events">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Events</th>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.events | number}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="total_amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Total Amount (Sats)</th>
+            <td mat-cell *matCellDef="let rPeer"><span fxLayoutAlign="end center">{{rPeer.total_amount | number}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
+            <td mat-cell *matCellDef="let rPeer" class="pl-2">
+              <button mat-stroked-button color="primary" type="button" tabindex="5" (click)="onRoutingPeerClick(rPeer, $event, 'out')">View Info</button>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_outgoing_event">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!RoutingPeersOutgoing.data || RoutingPeersOutgoing.data.length<1">No outgoing routing peer available.</p>
+            </td>
+          </ng-container>
+          <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing.data && RoutingPeersOutgoing.data.length>0}"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

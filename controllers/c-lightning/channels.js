@@ -8,6 +8,12 @@ exports.listChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channel/listChannels';
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'List Channels: ' + JSON.stringify(body)});
+    body.map(channel => {
+      local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
+      remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : 0;
+      total = channel.msatoshi_total ? channel.msatoshi_total : 0;
+      channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local-remote)/total)).toFixed(3);
+    })    
     res.status(200).json(body);
   })
   .catch(function (err) {
@@ -23,7 +29,7 @@ exports.openChannel = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channel/openChannel';
   options.body = req.body;
-  logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {
@@ -48,7 +54,7 @@ exports.setChannelFee = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channel/setChannelFee';
   options.body = req.body;
-  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

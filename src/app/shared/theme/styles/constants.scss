@@ -1,11 +1,35 @@
 $font-family: 'Roboto', sans-serif;
-$font-size: 14px;
-$toolbar-height: 46px; 
-$regular-sidenav-width: 250px;
-$compact-sidenav-width: 185px;
+$small-font-size: 1.2rem;
+$medium-font-size: 1.4rem;
+$large-font-size: 1.6rem;
+
+$nodes-toolbar-height: 52px;
+$horizontal-toolbar-height: 60px;
+
+$font-family: 'Roboto', sans-serif;
+$font-size: 1.4rem;
+$toolbar-height: 48px; 
+$regular-sidenav-width: 220px;
+$compact-sidenav-width: 200px;
 $mini-sidenav-width: 100px;
 $sidenav-info-height: 90px;
 $settings-nav-width: 150px;
 $gap: 8px;
-$icon-size: 36px;
+$icon-size: 3.6rem;
 $pubkey-info-height: 15px;
+$tree-node-height:44px;
+$fa-icon-small-size: 2rem;
+$fa-icon-regular-size: 4rem;
+
+$yellow-color: #ffbd2e;
+$yellow-alert-color: #856404;
+$yellow-background-color: #fff3cd;
+$green-color: #28ca43;
+$green-background-color: #d4edda;;
+$red-color: #c62828;
+$red-background-color: #f8d7da;
+$blue-color: #004085;
+$blue-background-color: #cce5ff;
+$grey-color: #AAAAAA;
+$tiny-dot-size: 0.8rem;
+$dot-size: 1.2rem;

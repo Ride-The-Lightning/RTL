@@ -1,0 +1,15 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faDownload" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Channels Backup</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <mat-tab-group>
+        <mat-tab label="Backup"><rtl-channel-backup-table></rtl-channel-backup-table></mat-tab>
+        <mat-tab label="Restore"><rtl-channel-restore-table></rtl-channel-restore-table></mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+  

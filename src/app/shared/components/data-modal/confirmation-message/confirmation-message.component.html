@@ -1,0 +1,47 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose(false)" mat-button>X</button>
+    </mat-card-header>    
+    <mat-card-content class="mt-5px">
+      <form fxLayout="column">
+        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+        <div *ngIf="flgShowInput" fxLayoutAlign="space-between center" class="mb-2">
+          <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="getInput.width">
+            <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [type]="getInput.inputType" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
+            <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
+          </mat-form-field>
+        </div>        
+        <div *ngIf="messageObjs?.length>0">
+          <div *ngFor="let objs of messageObjs; index as i;">
+            <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
+              <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
+                <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
+                <span *ngIf="obj && obj.value; else emptyField">
+                  <span [ngSwitch]="obj.type" class="foreground-secondary-text">
+                    <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block">{{arrayObj}}</span></ng-container>
+                    <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
+                    <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value === true ? 'True' : 'False'}}</ng-container>
+                    <ng-container *ngSwitchDefault>{{obj.value}}</ng-container>
+                  </span>
+                </span>
+                <ng-template #emptyField>
+                  <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
+                </ng-template>
+                <mat-divider class="w-100 my-1"></mat-divider>
+              </div>                
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button autoFocus mat-stroked-button color="primary" fxFlex="20" type="reset" fxLayoutAlign="center center" class="mr-2" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
+          <button *ngIf="flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
+          <button *ngIf="!flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="25" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>

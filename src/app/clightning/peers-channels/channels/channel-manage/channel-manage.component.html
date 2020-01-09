@@ -1,0 +1,54 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
+    <mat-form-field fxFlex="40" fxFlex.gt-sm="30" fxLayoutAlign="start end">
+      <mat-select [(ngModel)]="selectedPeer" placeholder="Alias" name="peer_alias" tabindex="1" required name="selPeer" #selPeer="ngModel">
+        <mat-option (click)="addNewPeer()" [value]="'new'">
+          ADD PEER
+        </mat-option>
+        <mat-option *ngFor="let peer of peers" [value]="peer.id">
+          {{peer.alias}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="!selectedPeer">Alias is required.</mat-error>
+    </mat-form-field>
+    <mat-form-field fxFlex="25" fxFlex.gt-sm="30" fxLayoutAlign="start end">
+      <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
+      <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
+      <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
+      <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
+      <mat-error *ngIf="amount.errors?.negative">Amount must be less than or equal to {{totalBalance}}.</mat-error>
+    </mat-form-field>
+    <div fxFlex="15" fxFlex.gt-sm="20" fxLayoutAlign="start center" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+      <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+    </div>
+    <div fxFlex="100" fxFlex.gt-sm="17" fxLayoutAlign="start center" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+      <button fxFlex="48" fxFlex.gt-sm="100" fxLayoutAlign="center center" mat-stroked-button color="primary" type="button" (click)="onShowAdvanced()" tabindex="4">
+        <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
+        <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
+      </button>
+    </div>
+    <div *ngIf="showAdvanced" fxFlex="60" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+      <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+        <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate">
+          <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
+            {{feeRateType.feeRateType}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+        <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
+        <mat-form-field fxFlex="98">
+          <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
+          <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div *ngIf="showAdvanced" fxLayout="column" fxFlex="100" fxFlex.gt-sm="40" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start"></div>
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="10" type="reset" (click)="resetData()">Clear Field</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="11">Open Channel</button>
+    </div>  
+  </form>
+  <rtl-cl-channels-tables fxLayout="row" fxFlex="100"></rtl-cl-channels-tables>
+</div>
+  

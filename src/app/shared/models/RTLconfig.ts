@@ -1,10 +1,5 @@
 import { GetInfoChain } from './lndModels';
 
-export enum AuthenticateWith {
-  TOKEN = 'TOKEN',
-  PASSWORD = 'PASSWORD'
-}
-
 export class SSO {
   constructor(
     public rtlSSO: number,
@@ -14,16 +9,21 @@ export class SSO {
 
 export class Settings {
   constructor(
+    public userPersona: string,
     public flgSidenavOpened: boolean,
     public flgSidenavPinned: boolean,
     public menu: string,
     public menuType: string,
-    public theme: string,
+    public fontSize: string,
+    public themeMode: string,
+    public themeColor: string,
     public satsToBTC: boolean,
+    public currencyUnits: Array<string>,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
-    public channelBackupPath?: string
+    public channelBackupPath?: string,
+    public currencyUnit?: string,
   ) { }
 }
 
@@ -47,6 +47,7 @@ export class LightningNode {
 
 export class RTLConfiguration {
   constructor(
+    public defaultNodeIndex: number,
     public selectedNodeIndex: number,
     public sso: SSO,
     public nodes: LightningNode[]
@@ -58,13 +59,20 @@ export interface GetInfoRoot {
   alias?: string;
   testnet?: boolean;
   chains?: GetInfoChain[] | string[];
+  uris?: string[];  
   version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;  
-  numberOfPendingChannels?: number;
 }
 
 export interface SelNodeChild {
+  userPersona?: string;
   channelBackupPath?: string;
   satsToBTC?: boolean;
+  selCurrencyUnit?: string;  
+  currencyUnits?: string[];
+}
+
+export class HelpTopic {
+  constructor(public help: {question: string, answer: string, link?: string, linkCaption?: string, lnImplementation?: string}) { }
 }

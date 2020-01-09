@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -10,7 +9,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-channel-lookup',
   templateUrl: './channel-lookup.component.html',
-  styleUrls: ['./channel-lookup.component.css']
+  styleUrls: ['./channel-lookup.component.scss']
 })
 export class ChannelLookupComponent implements OnInit {
   @Input() lookupResult: ChannelEdge;
@@ -21,10 +20,6 @@ export class ChannelLookupComponent implements OnInit {
   constructor(private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    if (undefined !== this.lookupResult && undefined !== this.lookupResult.last_update_str) {
-      this.lookupResult.last_update_str = (this.lookupResult.last_update_str === '') ?
-        '' : formatDate(this.lookupResult.last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-    }
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

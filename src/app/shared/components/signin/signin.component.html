@@ -1,22 +1,21 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faUnlockAlt" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Signin to RTL</span>
+</div>
 <div fxLayout="column">
   <div class="padding-gap">
     <mat-card>
-      <mat-card-header>
-        <mat-card-subtitle>
-          <h2>Login to RTL</h2>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <form (ngSubmit)="onSignin()" #signinForm="ngForm">
-          <mat-form-field fxFlex="50" fxLayoutAlign="start">
-            <input matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password"
-              tabindex="1" required>
+      <mat-card-content class="card-content-gap">
+        <form (ngSubmit)="onSignin()" #signinForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+          <mat-form-field fxFlex="100" fxLayoutAlign="start">
+            <input matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
             <mat-hint>{{hintStr}}</mat-hint>
+            <mat-error *ngIf="!password">Password is required.</mat-error>
           </mat-form-field>
-          <button fxFlex="10" class="mr-2" fxLayoutAlign="center center" mat-raised-button color="primary" tabindex="2"
-            type="submit" [disabled]="!password">Login</button>
-          <button fxFlex="10" fxLayoutAlign="center center" mat-raised-button color="accent" tabindex="3" type="reset"
-            (click)="resetData()">Clear</button>
+          <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="3" type="submit">Login</button>
+          </div> 
         </form>
       </mat-card-content>
     </mat-card>

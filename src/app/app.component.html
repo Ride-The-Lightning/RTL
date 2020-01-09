@@ -1,48 +1,51 @@
-<div fxLayout="column" id="rtl-container" class="rtl-container" [ngClass]="settings.theme" [class.horizontal]="settings.menu === 'Horizontal'" [class.compact]="settings.menuType === 'Compact'" [class.mini]="settings.menuType === 'Mini'">
+<!-- <div fxLayout="column" id="rtl-container" class="rtl-container" [ngClass]="[settings.themeColor, settings.themeMode]" [class.horizontal]="settings.menu === 'HORIZONTAL'" [class.compact]="settings.menuType === 'COMPACT'" [class.mini]="settings.menuType === 'MINI'"  [style.fontSize.px]="getFontSize()"> -->
+<div fxLayout="column" id="rtl-container" class="rtl-container" [ngClass]="[settings.themeColor | lowercase, settings.themeMode | lowercase, settings.fontSize | lowercase]" [class.horizontal]="settings.menu === 'HORIZONTAL'" [class.compact]="settings.menuType === 'COMPACT'" [class.mini]="settings.menuType === 'MINI'">
+  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar" *ngIf="settings.menu === 'VERTICAL'">
+    <div>
+      <button *ngIf="settings.menu === 'VERTICAL'" class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
+        <mat-icon class="mr-5px">menu</mat-icon>
+      </button>
+      <button *ngIf="settings.fontSize === 'SMALL' && settings.menu === 'VERTICAL' && !smallScreen" mat-icon-button (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
+        <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 42 42">
+          <path fill="currentColor" *ngIf="!settings.flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+          <path fill="currentColor" *ngIf="settings.flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+        </svg>
+      </button>
+      <button *ngIf="settings.fontSize === 'MEDIUM' && settings.menu === 'VERTICAL' && !smallScreen" mat-icon-button (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
+        <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 32 32">
+          <path fill="currentColor" *ngIf="!settings.flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+          <path fill="currentColor" *ngIf="settings.flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+        </svg>
+      </button>
+      <button *ngIf="settings.fontSize === 'LARGE' && settings.menu === 'VERTICAL' && !smallScreen" mat-icon-button (click)="settings.flgSidenavPinned = !settings.flgSidenavPinned">
+        <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 24 24">
+          <path fill="currentColor" *ngIf="!settings.flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+          <path fill="currentColor" *ngIf="settings.flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+        </svg>
+      </button>
+    </div>
+    <div>
+      <span *ngIf="xSmallScreen">RTL</span>
+      <span *ngIf="!xSmallScreen">Ride The Lightning</span>
+    </div>
+    <div>
+      <rtl-top-menu></rtl-top-menu>
+    </div>
+  </mat-toolbar>
+  <mat-toolbar color="primary" *ngIf="settings.menu === 'HORIZONTAL'" class="padding-gap-x horizontal-nav">
+    <rtl-horizontal-navigation fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="h-100"></rtl-horizontal-navigation>
+  </mat-toolbar>
   <mat-sidenav-container>
-    <mat-sidenav perfectScrollbar *ngIf="settings.menu === 'Vertical'" [opened]="settings.flgSidenavOpened" [mode]="(settings.flgSidenavPinned) ? 'side' : 'over'"
-      #sideNavigation class="sidenav mat-elevation-z6 overflow-auto">
-      <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)"></rtl-side-navigation>
+    <mat-sidenav perfectScrollbar *ngIf="settings.menu === 'VERTICAL'" [opened]="settings.flgSidenavOpened" [mode]="(settings.flgSidenavPinned && !smallScreen) ? 'side' : 'over'" #sideNavigation class="sidenav mat-elevation-z6">
+      <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
-    <mat-sidenav-content perfectScrollbar class="overflow-auto">
-      <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" color="primary" class="padding-gap-x">
-        <div fxLayoutAlign="center center">
-          <button *ngIf="settings.menu === 'Vertical'" mat-icon-button (click)="sideNavToggle()">
-            <mat-icon>menu</mat-icon>
-          </button>
-        </div>
-        <div>
-          <h2>Ride The Lightning <span class="font-60-percent">(Beta)</span></h2>
-        </div>
-        <div fxLayoutAlign="space-between center">
-          <rtl-top-menu></rtl-top-menu>
-        </div>
-      </mat-toolbar>
-      <div matTooltip="Copy public key" matTooltipPosition="above" fxLayout="row" fxLayoutAlign="center center" class="bg-primary flex-wrap pubkey-info-top" rtlClipboard [payload]="information?.identity_pubkey" (copied)="copiedText($event)">
-        <mat-icon [ngClass]="{'icon-smaller': smallScreen}">vpn_key</mat-icon>
-        <div [ngClass]="{'word-break font-9px': smallScreen, 'word-break': !smallScreen}">&nbsp;{{information?.identity_pubkey}}
-          <mat-spinner [diameter]="20" *ngIf="flgLoading[0]" class="inline-spinner foreground"></mat-spinner>
-          <fa-icon [icon]="faCopy"></fa-icon>
-          <span [hidden]="!flgCopied">Copied</span>
-        </div>
-      </div>
-      <mat-toolbar color="primary" *ngIf="settings.menu === 'Horizontal'" class="padding-gap-x horizontal-nav">
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="center center" class="h-100">
-          <rtl-horizontal-navigation></rtl-horizontal-navigation>
-        </div>
-      </mat-toolbar>
+    <mat-sidenav-content perfectScrollbar>
       <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
         <router-outlet></router-outlet>
       </div>
-      <div fxLayout="row" fxLayoutAlign="center center" class="bg-primary settings-icon" (click)="settingSidenav.toggle()">
-        <mat-icon class="animate-settings">settings</mat-icon>
-      </div>
-    </mat-sidenav-content>
-    <mat-sidenav #settingSidenav position="end" class="settings mat-elevation-z6" mode="side">
-      <rtl-settings-nav (done)="settingSidenav.toggle()"></rtl-settings-nav>
-    </mat-sidenav>  
+    </mat-sidenav-content>>
   </mat-sidenav-container>
-  <div class="rtl-spinner" *ngIf="undefined === settings.theme">
+  <div class="rtl-spinner" *ngIf="undefined === settings.themeColor">
     <mat-spinner color="accent"></mat-spinner>
     <h4>Loading RTL...</h4>
   </div>

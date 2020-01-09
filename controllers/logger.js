@@ -6,7 +6,7 @@ exports.info = (msgJSON, selNode = common.selectedNode) => {
   if (msgJSON.fileName !== 'Config Setup Variable') {
     console.log('Console: ' + msgStr);
   }
-  if(selNode.enable_logging) {
+  if(selNode && selNode.enable_logging) {
     fs.appendFile(selNode.log_file, msgStr, function(err) {
       if (err) {
         return ({ error: 'Updating Log Failed!' });
@@ -20,7 +20,7 @@ exports.info = (msgJSON, selNode = common.selectedNode) => {
 exports.error = (msgJSON, selNode = common.selectedNode) => {
   const msgStr = '\r\nERROR: ' +  msgJSON.fileName + '(' + msgJSON.lineNum + ') => ' + msgJSON.msg;
   console.error('Console: ' + msgStr);
-  if(selNode.enable_logging) {
+  if(selNode && selNode.enable_logging) {
     fs.appendFile(selNode.log_file, msgStr, function(err) {
       if (err) {
         return ({ error: 'Updating Log Failed!' });

@@ -157,3 +157,44 @@ exports.getQueryRoutes = (req, res, next) => {
     });
   });
 };
+
+exports.getRemoteFeePolicy = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/graph/edge/' + req.params.chanid;
+  request(options).then((body) => {
+    logger.info({fileName: 'Graph', msg: 'Edge Info Received: ' + JSON.stringify(body)});
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Fetching Edge Info Failed!",
+        error: (undefined === body) ? 'Error From Server!' : body.error
+      });
+    }
+    if (undefined !== body) {
+      body.last_update_str =  (undefined === body.last_update) ? '' : common.convertTimestampToDate(body.last_update);
+    }
+
+    remoteNodeFee = {};
+    if(body.node1_pub === req.params.localPubkey){
+      remoteNodeFee = {
+        time_lock_delta: body.node2_policy.time_lock_delta,
+        fee_base_msat: body.node2_policy.fee_base_msat,
+        fee_rate_milli_msat: body.node2_policy.fee_rate_milli_msat
+      };
+    }
+    else if(body.node2_pub === req.params.localPubkey) {
+      remoteNodeFee = {
+        time_lock_delta: body.node1_policy.time_lock_delta,
+        fee_base_msat: body.node1_policy.fee_base_msat,
+        fee_rate_milli_msat: body.node1_policy.fee_rate_milli_msat
+      };
+    }
+
+    res.status(200).json(remoteNodeFee);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Fetching Edge Info Failed!",
+      error: err.error
+    });
+  });
+};

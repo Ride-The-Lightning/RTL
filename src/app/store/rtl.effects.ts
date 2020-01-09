@@ -3,28 +3,35 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of, Subject } from 'rxjs';
+import { of, Subject, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
-import { Location } from '@angular/common';
 
 import { MatDialog } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
-import { Settings, RTLConfiguration, AuthenticateWith } from '../shared/models/RTLconfig';
+import { CommonService } from '../shared/services/common.service';
+import { Settings, RTLConfiguration, LightningNode } from '../shared/models/RTLconfig';
+import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
-import { SpinnerDialogComponent } from '../shared/components/spinner-dialog/spinner-dialog.component';
-import { AlertMessageComponent } from '../shared/components/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from '../shared/components/confirmation-message/confirmation-message.component';
+import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from '../shared/components/data-modal/confirmation-message/confirmation-message.component';
+import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
+import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
   dialogRef: any;
   CHILD_API_URL = API_URL + '/lnd';
+  screenSize = '';
+  alertWidth = '55%';
+  confirmWidth = '70%';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -33,9 +40,18 @@ export class RTLEffects implements OnDestroy {
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
     private sessionService: SessionService,
+    private commonService: CommonService,
     public dialog: MatDialog,
-    private router: Router,
-    private location: Location) { }
+    private snackBar: MatSnackBar,
+    private router: Router) {}
+
+  @Effect({ dispatch: false })
+  openSnackBar = this.actions$.pipe(
+    ofType(RTLActions.OPEN_SNACK_BAR),
+    map((action: RTLActions.OpenSnackBar) => {
+      this.snackBar.open(action.payload);
+    }
+  ));
 
   @Effect({ dispatch: false })
   openSpinner = this.actions$.pipe(
@@ -57,7 +73,12 @@ export class RTLEffects implements OnDestroy {
   openAlert = this.actions$.pipe(
     ofType(RTLActions.OPEN_ALERT),
     map((action: RTLActions.OpenAlert) => {
-      this.dialogRef = this.dialog.open(AlertMessageComponent, action.payload);
+      action.payload.width = this.alertWidth;
+      if(action.payload.data.component) {
+        this.dialogRef = this.dialog.open(action.payload.data.component, action.payload);
+      } else {
+        this.dialogRef = this.dialog.open(AlertMessageComponent, action.payload);
+      }
     }
   ));
 
@@ -73,6 +94,7 @@ export class RTLEffects implements OnDestroy {
   openConfirm = this.actions$.pipe(
     ofType(RTLActions.OPEN_CONFIRMATION),
     map((action: RTLActions.OpenConfirmation) => {
+      action.payload.width = this.confirmWidth;
       this.dialogRef = this.dialog.open(ConfirmationMessageComponent, action.payload);
     })
   );
@@ -89,33 +111,92 @@ export class RTLEffects implements OnDestroy {
   ));
 
   @Effect()
+  showNodePubkey = this.actions$.pipe(
+  ofType(RTLActions.SHOW_PUBKEY),
+  withLatestFrom(this.store.select('root')),
+  mergeMap(([action, rootData]: [RTLActions.ShowPubkey, fromRTLReducer.RootState]) => {
+    if (!this.sessionService.getItem('token') || !rootData.nodeData.identity_pubkey) {
+      this.snackBar.open('Node Pubkey does not exist.');
+    } else {
+      this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
+        information: rootData.nodeData,
+        component: ShowPubkeyComponent
+      }}));
+    }
+    return of({type: RTLActions.VOID});
+  }));
+
+  @Effect()
   appConfigFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_RTL_CONFIG),
     mergeMap((action: RTLActions.FetchRTLConfig) => {
+      this.screenSize = this.commonService.getScreenSize();
+      if(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM) {
+        this.alertWidth = '95%';
+        this.confirmWidth = '95%';
+      } else if(this.screenSize === ScreenSizeEnum.MD) {
+        this.alertWidth = '80%';
+        this.confirmWidth = '80%';
+      } else {
+        this.alertWidth = '55%';
+        this.confirmWidth = '60%';
+      }
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('FetchRTLConfig'));
       return this.httpClient.get(environment.CONF_API + '/rtlconf');
     }),
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
-      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rtlConfig.nodes.find(node => +node.index === rtlConfig.selectedNodeIndex), isInitialSetup: true}))
-      return {
-        type: RTLActions.SET_RTL_CONFIG,
-        payload: rtlConfig
-      };
+      let searchNode: LightningNode;
+      rtlConfig.nodes.forEach(node => {
+        node.settings.currencyUnits = [...CURRENCY_UNITS, node.settings.currencyUnit];
+        if(+node.index === rtlConfig.selectedNodeIndex) { searchNode = node; }
+      });
+      if(searchNode) {
+        this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: searchNode, isInitialSetup: true}))
+        return {
+          type: RTLActions.SET_RTL_CONFIG,
+          payload: rtlConfig
+        };
+      } else {
+        return {
+          type: RTLActions.VOID
+        }
+      }
     },
     catchError((err) => {
-      this.logger.error(err);
-      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'FetchRTLConfig', code: err.status, message: err.error.error }));
-      return of();
+      this.handleErrorWithoutAlert('FetchRTLConfig', err);
+      return of({type: RTLActions.VOID});
     })
   ));
 
-  @Effect({ dispatch: false })
+  @Effect()
   settingSave = this.actions$.pipe(
     ofType(RTLActions.SAVE_SETTINGS),
     mergeMap((action: RTLActions.SaveSettings) => {
-      return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload });
-    }
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSettings'));
+      if(action.payload.settings && action.payload.defaultNodeIndex) {
+        let settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+        let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+        return forkJoin([settingsRes, defaultNodeRes]);      
+      } else if(action.payload.settings && !action.payload.defaultNodeIndex) {
+        return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+      } else if(!action.payload.settings && action.payload.defaultNodeIndex) {
+        return this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
+      }
+    }),
+    map((updateStatus: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.info(updateStatus);
+      return {
+        type: RTLActions.OPEN_SNACK_BAR,
+        payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
+      };
+    },
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSettings', code: (!err.length) ? err.status : err[0].status, message: (!err.length) ? err.error.error : err[0].error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
+      return of({type: RTLActions.VOID});
+    })
   ));
 
   @Effect()
@@ -133,16 +214,9 @@ export class RTLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          this.logger.error(err);
           this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'fetchConfig', code: err.status, message: err.error.error }));
-          return of(
-            {
-              type: RTLActions.OPEN_ALERT,
-              payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Fetch Config Failed!',
-              message: JSON.stringify({Code: err.status, Message: err.error.error})}}
-            }
-          );
+          this.handleErrorWithAlert('ERROR', 'Fetch Config Failed!', environment.CONF_API + '/config/' + action.payload, err);
+          return of({type: RTLActions.VOID});
         }
       ));
     })
@@ -176,10 +250,8 @@ export class RTLEffects implements OnDestroy {
         };
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', titleMessage: 'Authorization Failed',
-         message: JSON.stringify({Code: err.status, Message: err.error.error})}}));
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'IsAuthorized', code: err.status, message: err.error.message }));
-        this.logger.error(err.error);
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed', environment.AUTHENTICATE_API, err);
         return of({
           type: RTLActions.IS_AUTHORIZED_RES,
           payload: 'ERROR'
@@ -201,6 +273,8 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.SIGNIN),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
+    this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
+    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -211,19 +285,19 @@ export class RTLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
+        rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '70%', data: {type: 'ERROR', message: JSON.stringify(err.error)}}));
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Signin', code: err.status, message: err.error.message }));
-        this.logger.error(err.error);
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err.error);
         this.logger.info('Redirecting to Signin Error Page');
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {
           this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
         }
-        return of();
+        return of({type: RTLActions.VOID});
       })
     );
   }));
@@ -245,8 +319,9 @@ export class RTLEffects implements OnDestroy {
     return of();
   }));
 
- @Effect()
- setSelectedNode = this.actions$.pipe(
+
+  @Effect()
+  setSelectedNode = this.actions$.pipe(
    ofType(RTLActions.SET_SELECTED_NODE),
    mergeMap((action: RTLActions.SetSelelectedNode) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
@@ -259,17 +334,9 @@ export class RTLEffects implements OnDestroy {
         return { type: RTLActions.VOID };
        }),
        catchError((err: any) => {
-         this.store.dispatch(new RTLActions.CloseSpinner());
-         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
-         this.logger.error(err);
-         return of(
-           {
-             type: RTLActions.OPEN_ALERT,
-             payload: { width: '70%', data: {type: 'ERROR', titleMessage: 'Update Selected Node Failed!',
-               message: JSON.stringify({code: err.status, Message: err.error.error})
-             }}
-           }
-         );
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
+        this.handleErrorWithAlert('ERROR', 'Update Selected Node Failed!', environment.CONF_API + '/updateSelNode', err);
+        return of({type: RTLActions.VOID});
        })
      );
    }
@@ -277,7 +344,7 @@ export class RTLEffects implements OnDestroy {
 
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = { channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC };
+    let selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
@@ -299,6 +366,34 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.sessionService.removeItem('lndUnlocked');
       this.sessionService.removeItem('token');
+    }
+  }
+
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      this.store.dispatch(new RTLActions.Signout());
+    } else {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
+    }
+  }
+
+  handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+    this.logger.error(err);
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Signin');
+      this.store.dispatch(new RTLActions.Signout());
+    } else {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({
+        width: '55%', data: {
+          type: alertType,
+          alertTitle: alertTitle,
+          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },
+          component: ErrorMessageComponent
+        }
+      }));
     }
   }
 

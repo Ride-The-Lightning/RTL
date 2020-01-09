@@ -1,0 +1,27 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{data.alertTitle || 'ERROR'}}</span>
+      </div>
+      <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px mb-0 error-alert-block">
+      <div fxLayout="column">
+        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+        <h4 fxLayoutAlign="start" class="font-bold-500">Error Code</h4>
+        <span>{{data.message.code}}</span>
+        <mat-divider class="w-100 my-1"></mat-divider>
+        <h4 fxLayoutAlign="start" class="font-bold-500">Error Message</h4>
+        <span class="word-break">{{errorMessage}}</span>
+        <mat-divider class="w-100 my-1"></mat-divider>
+        <h4 fxLayoutAlign="start" class="font-bold-500">API URL</h4>
+        <span class="word-break">{{data.message.URL}}</span>
+        <mat-divider class="w-100 my-1"></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button fxLayoutAlign="center center" tabindex="1" autoFocus mat-flat-button color="primary" fxFlex="20" type="submit" [mat-dialog-close]="false" default>OK</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </div>
+</div>

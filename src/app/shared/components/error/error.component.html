@@ -1,15 +1,17 @@
-<div fxLayout="column" fxLayoutAlign="center center">
-  <mat-card class="mat-elevation-z24 not-found-box">
-    <div fxLayout="column" fxLayoutAlign="center center" class="bg-primary py-2">
-      <button mat-fab color="accent" class="mat-elevation-z12">
-        <mat-icon>error</mat-icon>
-      </button>
-      <h1 class="error">{{error.errorCode}}</h1>
-    </div>
-    <mat-card-content fxLayout="row" fxLayoutAlign="center center">
-      <mat-card fxLayout="column" fxLayoutAlign="center center" class="mat-elevation-z12 w-100">
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faTimes" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Error {{error.errorCode}}</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column" class="padding-gap-large">
+      <div fxLayout="column" fxLayoutAlign="start start">
         <div class="box-text">{{error.errorMessage}}</div>
-      </mat-card>
+        <span fxLayout="row" fxLayoutAlign="center" fxFlex="80">
+          <button mat-flat-button color="primary" class="mt-2" type="button" (click)="goToHelp()">Go To Help</button>
+        </span>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>
+    

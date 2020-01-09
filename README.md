@@ -1,7 +1,7 @@
 ## Ride The Lightning (RTL)
 ![](screenshots/RTL_Home.png)
 
-<a href="https://snyk.io/test/github/ShahanaFarooqui/RTL"><img src="https://snyk.io/test/github/ShahanaFarooqui/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ShahanaFarooqui/RTL" style="max-width:100%;"></a>
+<a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 ### Stable Release: v0.5.4
 
@@ -73,7 +73,7 @@ $ npm install
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL.conf`, to start the server and provide user authentication on the app.
 
-*Advanced users can refer to [this page](docs/Multi-LND-Node-setup.md), for config settings required to manage multiple LND nodes*
+*Advanced users can refer to [this page](docs/Multi-Node-setup.md), for config settings required to manage multiple nodes*
 
 * Rename `sample-RTL.conf` file to `RTL.conf`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
@@ -93,16 +93,15 @@ rtlCookiePath=C:\RTL\cookies\auth.cookie
 logoutRedirectLink=/login
 
 [Settings]
-flgSidenavOpened=true
-flgSidenavPinned=true
-menu=Vertical
-menuType=Regular
-theme=dark-blue
-satsToBTC=false
-lndServerUrl=https://192.168.0.0:8080/v1
-bitcoindConfigPath=
-enableLogging=false
+userPersona=OPERATOR
+themeMode=DAY
+themeColor=PURPLE
+channelBackupPath=C:\Users\shaha\backup\node-0
+bitcoindConfigPath=C:/Bitcoin/bitcoin.conf
+enableLogging=true
 port=3000
+lndServerUrl=https://192.168.1.16:8080/v1
+currencyUnit=USD
 ```
 For details on all the configuration options refer to [this page](./docs/Application_configurations).
 

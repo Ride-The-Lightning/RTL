@@ -3,10 +3,27 @@ export enum feeRateStyle {
   KW = 'KW'
 }
 
+export interface ChannelStatusCL {
+  channels?: number;
+  capacity?:number;
+}
+
+export interface ChannelsStatusCL {
+  active?: ChannelStatusCL;
+  inactive?: ChannelStatusCL;
+  pending?: ChannelStatusCL;
+  closing?: ChannelStatusCL;
+}
+
 export interface Address {
   type?: string;
   address?: string;
   port?: number;
+}
+
+export interface GetInfoChainCL {
+  chain?: string;
+  network?: string;
 }
 
 export interface GetInfoCL {
@@ -22,31 +39,38 @@ export interface GetInfoCL {
   version?: string;
   blockheight?: number;
   network?: string;
+  chains?: GetInfoChainCL[];
   msatoshi_fees_collected?: number;
   fees_collected_msat?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;
+  lnImplementation?: string;
 }
 
 export interface FeesCL {
   feeCollected?: number;
   btc_feeCollected?: number;
+  totalTxCount?: number;
 }
 
 export interface BalanceCL {
-  totalBalance?: string;
-  confBalance?: string;
-  unconfBalance?: string;
-  btc_totalBalance?: string;
-  btc_confBalance?: string;
-  btc_unconfBalance?: string;
+  totalBalance?: number;
+  confBalance?: number;
+  unconfBalance?: number;
+  btc_totalBalance?: number;
+  btc_confBalance?: number;
+  btc_unconfBalance?: number;
 }
 
 export interface LocalRemoteBalanceCL {
   localBalance: number;
   remoteBalance: number;
+  pendingBalance?: number;
+  inactiveBalance?: number;
   btc_localBalance?: number;
   btc_remoteBalance?: number;
+  btc_pendingBalance?: number;
+  btc_inactiveBalance?: number;
 }
 
 export interface PeerCL {
@@ -73,6 +97,7 @@ export interface InvoiceCL {
   expires_at?: number;
   paid_at_str?: string;
   expires_at_str?: string;
+  warning_capacity?: string;
 }
 
 export interface ListInvoicesCL {
@@ -86,17 +111,6 @@ export interface OnChainCL {
   satoshis?: number;
   feeRate?: string;
   minconf?: number;
-}
-
-export interface AddressTypeCL {
-  addressId?: string;
-  addressTp?: string;
-  addressDetails?: string;
-}
-
-export interface FeeRateTypeCL {
-  feeRateId?: string;
-  feeRateType?: string;
 }
 
 export interface HopCL {
@@ -187,8 +201,9 @@ export interface ChannelCL {
   channel_id?: string;
   funding_txid?: string;
   private?: boolean;
-  msatoshi_to_us?: string;
-  msatoshi_total?: string;
+  msatoshi_to_us?: number;
+  msatoshi_to_them?: number;
+  msatoshi_total?: number;
   their_channel_reserve_satoshis?: string;
   our_channel_reserve_satoshis?: string;
   spendable_msatoshi?: string;
@@ -220,7 +235,7 @@ export interface LookupNodeCL {
   last_timestamp?: number;
   last_timestamp_str?: string;
   globalfeatures?: string;
-  global_features?: string;
+  features?: string;
   addresses?: Address[];
 }
 

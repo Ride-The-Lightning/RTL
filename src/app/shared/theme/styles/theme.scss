@@ -1,96 +1,92 @@
 @import '~@angular/material/theming';
-@include mat-core();
+@import 'change-font';
 @import 'change-theme';
+@import 'typography';
+@include mat-core();
 
 .rtl-container{
-  &.light-blue{
-      @import "../skins/light-blue";
-      @include angular-material-theme($blue-light-theme);
-      @include change-theme($blue-light-theme);
+  &.purple {
+    @import "../skins/purple";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($purple-day-theme);
+      @include change-theme($purple-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($purple-night-theme);
+      @include change-theme($purple-night-theme);
+    }
   }
-  &.light-teal{
-      @import "../skins/light-teal";
-      @include angular-material-theme($teal-light-theme);
-      @include change-theme($teal-light-theme);
+  &.blue{
+    @import "../skins/blue";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($blue-day-theme);
+      @include change-theme($blue-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($blue-night-theme);
+      @include change-theme($blue-night-theme);
+    }
   }
-    &.light-blue-gray{
-      @import "../skins/light-bluegray";
-      @include angular-material-theme($blue-gray-light-theme);
-      @include change-theme($blue-gray-light-theme);
+  &.indigo{
+    @import "../skins/indigo";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($indigo-day-theme);
+      @include change-theme($indigo-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($indigo-night-theme);
+      @include change-theme($indigo-night-theme);
+    }
   }
-  &.dark-blue{
-      @import "../skins/dark-blue";
-      @include angular-material-theme($blue-dark-theme);
-      @include change-theme($blue-dark-theme);
+  &.green{
+    @import "../skins/green";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($green-day-theme);
+      @include change-theme($green-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($green-night-theme);
+      @include change-theme($green-night-theme);
+    }
   }
-  &.dark-green{
-      @import "../skins/dark-green";
-      @include angular-material-theme($green-dark-theme);
-      @include change-theme($green-dark-theme);
+  &.teal{
+    @import "../skins/teal";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($teal-day-theme);
+      @include change-theme($teal-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($teal-night-theme);
+      @include change-theme($teal-night-theme);
+    }
   }
-  &.dark-pink{
-      @import "../skins/dark-pink";
-      @include angular-material-theme($pink-dark-theme);
-      @include change-theme($pink-dark-theme);
-  }
-  &.gray-blue{
-    @import "../skins/gray-blue";
-    @include angular-material-theme($blue-gray-theme);
-    @include change-theme($blue-gray-theme);
-  }
-  &.gray-lime{
-    @import "../skins/gray-lime";
-    @include angular-material-theme($lime-gray-theme);
-    @include change-theme($lime-gray-theme);
-  }
-  &.gray-purple{
-    @import "../skins/gray-purple";
-    @include angular-material-theme($purple-gray-theme);
-    @include change-theme($purple-gray-theme);
-  }
-  &.bluegray-amber{
-    @import "../skins/bluegray-amber";
-    @include angular-material-theme($amber-bluegray-theme);
-    @include change-theme($amber-bluegray-theme);
-  }
-  &.bluegray-deeppurple{
-    @import "../skins/bluegray-deeppurple";
-    @include angular-material-theme($deeppurple-bluegray-theme);
-    @include change-theme($deeppurple-bluegray-theme);
-  }
-  &.bluegray-lightgreen{
-    @import "../skins/bluegray-lightgreen";
-    @include angular-material-theme($lightgreen-bluegray-theme);
-    @include change-theme($lightgreen-bluegray-theme);
-  }
-  &.self-gray{
-    @import "../skins/self-gray";
-    @include angular-material-theme($gray-theme);
-    @include change-theme($gray-theme);
-  }
-  &.self-green{
-    @import "../skins/self-green";
-    @include angular-material-theme($green-theme);
-    @include change-theme($green-theme);
-  }
-  &.self-yellow{
-    @import "../skins/self-yellow";
-    @include angular-material-theme($yellow-theme);
-    @include change-theme($yellow-theme);
-  }
-  &.self-blue{
-    @import "../skins/self-blue";
-    @include angular-material-theme($blue-theme);
-    @include change-theme($blue-theme);
-  }
-  &.self-brown{
-    @import "../skins/self-brown";
-    @include angular-material-theme($brown-theme);
-    @include change-theme($brown-theme);
-  }
-  &.self-pink{
-    @import "../skins/self-pink";
-    @include angular-material-theme($pink-theme);
-    @include change-theme($pink-theme);
+  &.pink{
+    @import "../skins/pink";
+    &.small {@include change-font($small-typography);}
+    &.medium {@include change-font($medium-typography);}
+    &.large {@include change-font($large-typography);}
+    &.day {
+      @include angular-material-theme($pink-day-theme);
+      @include change-theme($pink-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($pink-night-theme);
+      @include change-theme($pink-night-theme);
+    }
   }
 }

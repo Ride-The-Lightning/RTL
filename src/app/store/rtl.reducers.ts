@@ -10,16 +10,17 @@ export interface RootState {
   effectErrorsRoot: ErrorPayload[];
   selNode: LightningNode;
   appConfig: RTLConfiguration;
-  nodeData: GetInfoRoot
+  nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { flgSidenavOpened: true, flgSidenavPinned: true, menu: 'Vertical', menuType: 'Regular', theme: 'dark-blue', satsToBTC: false, channelBackupPath: '' };
+const initNodeSettings = { userPersona: 'OPERATOR', flgSidenavOpened: true, flgSidenavPinned: true, menu: 'VERTICAL', menuType: 'REGULAR', fontSize: 'MEDIUM', themeMode: 'DAY', themeColor: 'PURPLE', satsToBTC: false, channelBackupPath: '', selCurrencyUnit: 'USD', currencyUnits: ['Sats', 'BTC', 'USD'] };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {
   effectErrorsRoot: [],
-  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication},
+  selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
   appConfig: {
+    defaultNodeIndex: -1,
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
@@ -61,13 +62,6 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
       return {
         ...state,
         nodeData: action.payload
-      };
-    case RTLActions.SET_NODE_PENDING_CHANNELS_DATA:
-      const newNodeData = state.nodeData;
-      newNodeData.numberOfPendingChannels = action.payload;
-      return {
-        ...state,
-        nodeData: newNodeData
       };
     case RTLActions.SET_RTL_CONFIG:
       return {

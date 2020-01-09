@@ -1,12 +1,12 @@
-import { MatDialogConfig } from '@angular/material';
 import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
+import { DialogConfig } from '../shared/models/alertData';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, AddressTypeCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
+import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode, AddressType,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -14,12 +14,14 @@ export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
 export const OPEN_ALERT = 'OPEN_ALERT';
 export const CLOSE_ALERT = 'CLOSE_ALERT';
 export const OPEN_CONFIRMATION = 'OPEN_CONFIRMATION';
 export const CLOSE_CONFIRMATION = 'CLOSE_CONFIRMATION';
+export const SHOW_PUBKEY = 'SHOW_PUBKEY';
 export const FETCH_STORE = 'FETCH_STORE';
 export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
@@ -27,7 +29,6 @@ export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
-export const SET_NODE_PENDING_CHANNELS_DATA = 'SET_NODE_PENDING_CHANNELS_DATA';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
@@ -49,11 +50,13 @@ export const FETCH_BALANCE = 'FETCH_BALANCE';
 export const SET_BALANCE = 'SET_BALANCE';
 export const FETCH_NETWORK = 'FETCH_NETWORK';
 export const SET_NETWORK = 'SET_NETWORK';
-export const FETCH_CHANNELS = 'FETCH_CHANNELS';
-export const SET_CHANNELS = 'SET_CHANNELS';
-export const UPDATE_CHANNELS = 'UPDATE_CHANNELS';
+export const FETCH_ALL_CHANNELS = 'FETCH_ALL_CHANNELS';
+export const FETCH_PENDING_CHANNELS = 'FETCH_PENDING_CHANNELS';
+export const FETCH_CLOSED_CHANNELS = 'FETCH_CLOSED_CHANNELS';
+export const SET_ALL_CHANNELS = 'SET_ALL_CHANNELS';
 export const SET_PENDING_CHANNELS = 'SET_PENDING_CHANNELS';
 export const SET_CLOSED_CHANNELS = 'SET_CLOSED_CHANNELS';
+export const UPDATE_CHANNELS = 'UPDATE_CHANNELS';
 export const SAVE_NEW_CHANNEL = 'SAVE_NEW_CHANNEL';
 export const CLOSE_CHANNEL = 'CLOSE_CHANNEL';
 export const REMOVE_CHANNEL = 'REMOVE_CHANNEL';
@@ -183,6 +186,11 @@ export class EffectErrorCl implements Action {
   constructor(public payload: ErrorPayload) {}
 }
 
+export class OpenSnackBar implements Action {
+  readonly type = OPEN_SNACK_BAR;
+  constructor(public payload: string) {}
+}
+
 export class OpenSpinner implements Action {
   readonly type = OPEN_SPINNER;
   constructor(public payload: string) {} // payload = titleMessage
@@ -194,7 +202,7 @@ export class CloseSpinner implements Action {
 
 export class OpenAlert implements Action {
   readonly type = OPEN_ALERT;
-  constructor(public payload: MatDialogConfig) {}
+  constructor(public payload: DialogConfig) {}
 }
 
 export class CloseAlert implements Action {
@@ -203,12 +211,17 @@ export class CloseAlert implements Action {
 
 export class OpenConfirmation implements Action {
   readonly type = OPEN_CONFIRMATION;
-  constructor(public payload: MatDialogConfig) {}
+  constructor(public payload: DialogConfig) {}
 }
 
 export class CloseConfirmation implements Action {
   readonly type = CLOSE_CONFIRMATION;
   constructor(public payload: boolean) {}
+}
+
+export class ShowPubkey implements Action {
+  readonly type = SHOW_PUBKEY;
+  constructor() {}
 }
 
 export class UpdateSelectedNodeOptions implements Action {
@@ -241,7 +254,7 @@ export class SetRTLConfig implements Action {
 
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
-  constructor(public payload: Settings) {}
+  constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
 }
 
 export class SetSelelectedNode implements Action {
@@ -252,11 +265,6 @@ export class SetSelelectedNode implements Action {
 export class SetNodeData implements Action {
   readonly type = SET_NODE_DATA;
   constructor(public payload: GetInfoRoot) {}
-}
-
-export class SetNodePendingChannelsData implements Action {
-  readonly type = SET_NODE_PENDING_CHANNELS_DATA;
-  constructor(public payload: number) {}
 }
 
 export class SetChildNodeSettings implements Action {
@@ -285,7 +293,7 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
+  constructor(public payload: {pubkey: string, host: string, perm: boolean, showOpenChannelModal: boolean}) {}
 }
 
 export class AddPeer implements Action {
@@ -341,29 +349,36 @@ export class SetNetwork implements Action {
   constructor(public payload: NetworkInfo) {}
 }
 
-export class FetchChannels implements Action {
-  readonly type = FETCH_CHANNELS;
-  constructor(public payload: {routeParam: string}) {}
+export class FetchAllChannels implements Action {
+  readonly type = FETCH_ALL_CHANNELS;
 }
 
-export class SetChannels implements Action {
-  readonly type = SET_CHANNELS;
+export class SetAllChannels implements Action {
+  readonly type = SET_ALL_CHANNELS;
   constructor(public payload: Channel[]) {}
 }
 
-export class UpdateChannels implements Action {
-  readonly type = UPDATE_CHANNELS;
-  constructor(public payload: any) {}
+export class FetchPendingChannels implements Action {
+  readonly type = FETCH_PENDING_CHANNELS;
 }
 
 export class SetPendingChannels implements Action {
   readonly type = SET_PENDING_CHANNELS;
-  constructor(public payload: {channels: PendingChannels, pendingChannels: number}) {}
+  constructor(public payload: {channels: PendingChannels, pendingChannels: PendingChannelsGroup}) {}
+}
+
+export class FetchClosedChannels implements Action {
+  readonly type = FETCH_CLOSED_CHANNELS;
 }
 
 export class SetClosedChannels implements Action {
   readonly type = SET_CLOSED_CHANNELS;
   constructor(public payload: ClosedChannel[]) {}
+}
+
+export class UpdateChannels implements Action {
+  readonly type = UPDATE_CHANNELS;
+  constructor(public payload: any) {}
 }
 
 export class SaveNewChannel implements Action {
@@ -465,7 +480,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: [string, PayRequest, boolean]) {} // payload = [paymentReqStr, paymentDecoded, EmptyAmtInvoice]
+  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number }) {}
 }
 
 export class FetchGraphNode implements Action {
@@ -480,7 +495,7 @@ export class SetGraphNode implements Action {
 
 export class GetNewAddress implements Action {
   readonly type = GET_NEW_ADDRESS;
-  constructor(public payload: AddressType) {}
+  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
 }
 
 export class SetNewAddress implements Action {
@@ -642,7 +657,7 @@ export class SetLocalRemoteBalanceCL implements Action {
 
 export class GetNewAddressCL implements Action {
   readonly type = GET_NEW_ADDRESS_CL;
-  constructor(public payload: AddressTypeCL) {}
+  constructor(public payload: { addressId?: string, addressCode?: string, addressTp?: string, addressDetails?: string}) {}
 }
 
 export class SetNewAddressCL implements Action {
@@ -661,7 +676,7 @@ export class SetPeersCL implements Action {
 
 export class SaveNewPeerCL implements Action {
   readonly type = SAVE_NEW_PEER_CL;
-  constructor(public payload: {id: string}) {}
+  constructor(public payload: {id: string, showOpenChannelModal: boolean}) {}
 }
 
 export class AddPeerCL implements Action {
@@ -749,7 +764,7 @@ export class PeerLookupCL implements Action {
 
 export class ChannelLookupCL implements Action {
   readonly type = CHANNEL_LOOKUP_CL;
-  constructor(public payload: string) {} // payload = channel_short_id
+  constructor(public payload: {shortChannelID: string, showError: boolean}) {}
 }
 
 export class InvoiceLookupCL implements Action {
@@ -809,16 +824,16 @@ export class SetChannelTransactionCL implements Action {
 
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  VoidAction | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
-  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation |
+  VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
-  SetSelelectedNode | SetNodeData | SetNodePendingChannelsData | SetChildNodeSettings | FetchInfo | SetInfo |
+  SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
   FetchBalance | SetBalance |
   FetchNetwork | SetNetwork |
-  FetchChannels | SetChannels | SetPendingChannels | SetClosedChannels | UpdateChannels |
+  FetchAllChannels | SetAllChannels | FetchPendingChannels | SetPendingChannels | FetchClosedChannels | SetClosedChannels | UpdateChannels |
   SaveNewChannel | CloseChannel | RemoveChannel |
   BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
   RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |

@@ -9,6 +9,7 @@ common.node_auth_type = 'DEFAULT';
 common.rtl_pass = '';
 common.rtl_sso = 0;
 common.port = 3000;
+common.currency_unit = 'USD';
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
@@ -25,6 +26,9 @@ common.getOptions = () => {
 };
 
 common.updateSelectedNodeOptions = () => {
+  if (!common.selectedNode) {
+    common.selectedNode = {};
+  }
   common.selectedNode.options = {
     url: '',
     rejectUnauthorized: false,
@@ -89,19 +93,19 @@ common.convertToBTC = (num) => {
 };
 
 common.convertTimestampToDate = (num) => {
-  return new Date(+num * 1000).toUTCString();
+  return new Date(+num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
 };
 
 common.sortAscByKey = (array, key) => {
   return array.sort(function (a, b) {
-    var x = a[key]; var y = b[key];
+    var x = +a[key]; var y = +b[key];
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   });
 }
 
 common.sortDescByKey = (array, key) => {
   const temp = array.sort(function (a, b) {
-    var x = a[key]; var y = b[key];
+    var x = +a[key]; var y = +b[key];
     return ((x > y) ? -1 : ((x < y) ? 1 : 0));
   });
   return temp;

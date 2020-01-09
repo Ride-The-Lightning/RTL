@@ -1,0 +1,114 @@
+<div fxLayout="column" class="padding-gap mb-4">
+<div *ngIf="insecureLND && !warnRes">
+  <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+    <div fxFlex="100" fxLayoutAlign="start">Warning: Your connection is unsecure, it's not safe to generate private keys over this connection.Are you sure you want to proceed?</div>
+    <div fxFlex="100" fxFlex.gt-sm="35" fxLayout="row wrap" fxLayoutAlign="space-between start" class="mt-2">
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" type="reset" (click)="proceed=false;warnRes=true">Do Not Proceed</button>
+      <button mat-flat-button fxFlex="48" color="primary" type="submit" (click)="proceed=true;warnRes=true" tabindex="2">Proceed</button>
+    </div>
+  </form>
+</div>
+<div *ngIf="warnRes && !proceed" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="stretch stretch">
+  <div fxFlex="100" class="mt-2">Please re-configure & re-start RTL after securing your LND connction. You can close this window now.</div>
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
+    <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="warnRes=false">Go Back</button>
+  </div>
+</div>
+<mat-vertical-stepper *ngIf="(!insecureLND || (warnRes && proceed)) && genSeedResponse.length <= 0 && initWalletResponse === ''" [linear]="true" #stepper>
+  <mat-step [stepControl]="passwordFormGroup" label="Wallet Password" state="password">
+    <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-1">
+      <mat-form-field fxFlex="49" fxLayoutAlign="start">
+        <input matInput type="password" placeholder="Password" name="initWalletPassword" formControlName="initWalletPassword" tabindex="5" required>
+        <mat-hint>Enter Wallet Password</mat-hint>
+        <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.required">Password is required.</mat-error>
+        <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.minlength">Password must be at least 8 characters in length.</mat-error>
+      </mat-form-field>
+      <mat-form-field fxFlex="49" fxLayoutAlign="start">
+        <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" formControlName="initWalletConfirmPassword" tabindex="6" required>
+        <mat-hint>Confirm Wallet Password ({{passwordFormGroup.errors?.unmatchedPasswords}})</mat-hint>
+        <mat-error *ngIf="passwordFormGroup.controls.initWalletConfirmPassword.errors?.required">Confirm password is required.</mat-error>
+        <mat-error *ngIf="passwordFormGroup.controls.initWalletConfirmPassword.errors?.minlength">Confirm password must be at least 8 characters in length.</mat-error>
+      </mat-form-field>
+      <div *ngIf="passwordFormGroup.errors?.unmatchedPasswords && (passwordFormGroup.controls.initWalletPassword.touched || passwordFormGroup.controls.initWalletPassword.dirty) && (passwordFormGroup.controls.initWalletConfirmPassword.touched || passwordFormGroup.controls.initWalletConfirmPassword.dirty)" class="validation-error-message">
+        <mat-icon class="validation-error-icon red">cancel</mat-icon>Passwords do not match.
+      </div>
+      <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="my-2">
+        <button mat-flat-button color="primary" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" tabindex="7" type="submit" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="cipherFormGroup" label="Cipher" state="cipher">
+    <form [formGroup]="cipherFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1">
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-slide-toggle [labelPosition]="'before'" fxFlex="20" tabindex="8" color="primary" class="chkbox-wallet" formControlName="existingCipher" name="existingCipher">Existing Cipher</mat-slide-toggle>
+        <mat-form-field fxFlex="75" fxLayoutAlign="start" class="my-1">
+          <input autofocus matInput type="input" placeholder="Comma separated array of 24 words cipher seed" name="cipherSeed" formControlName="cipherSeed" tabindex="9" required>
+          <mat-hint>Cipher Seed</mat-hint>
+          <mat-error *ngIf="cipherFormGroup.controls.cipherSeed.errors?.required">Cipher seed is required.</mat-error>
+          <mat-error *ngIf="!cipherFormGroup.controls.cipherSeed.errors?.required && cipherFormGroup.controls.cipherSeed.errors?.invalidCipher">Invalid Cipher. Enter comma separated 24 words cipher seed.</mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout.lt-sm="column" fxLayout="row wrap" fxFlex="100" fxFlex.gt-md="40" fxLayoutAlign="space-between space-between" class="mb-2">
+        <button mat-stroked-button color="primary" fxFlex="48" type="reset" tabindex="10" matStepperPrevious class="mt-1">Back</button>
+        <button mat-flat-button color="primary" fxFlex="48" tabindex="11" type="submit" matStepperNext class="mt-1">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="passphraseFormGroup" label="Passphrase" state="passphrase">
+    <form [formGroup]="passphraseFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" class="mt-1">
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-slide-toggle [labelPosition]="'before'" fxFlex="20" tabindex="10" color="primary" class="chkbox-wallet" formControlName="enterPassphrase" name="enterPassphrase">Existing Passphrase</mat-slide-toggle>
+        <mat-form-field fxFlex="75" fxLayoutAlign="start">
+          <input matInput type="input" type="password" placeholder="Passphrase" name="passphrase" formControlName="passphrase" tabindex="12" required>
+          <mat-hint>Enter Passphrase</mat-hint>
+          <mat-error *ngIf="passphraseFormGroup.controls.passphrase.errors?.required">Passphrase is required.</mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout.lt-sm="column" fxLayout="row wrap" fxFlex="100" fxFlex.gt-md="40" fxLayoutAlign="space-between space-between" class="mb-2">
+        <button fxFlex="48" fxFlex.gt-sm="32" fxLayoutAlign="center center" mat-stroked-button color="warn" tabindex="13" type="reset" (click)="resetData()" class="mt-1">Clear</button>
+        <button mat-stroked-button fxFlex="48" fxFlex.gt-sm="32" tabindex="14" color="primary" type="button" matStepperPrevious class="mt-1">Back</button>
+        <button mat-flat-button fxFlex="100" fxFlex.gt-sm="32" color="primary" (click)="onInitWallet()" tabindex="15" type="submit" class="mt-1">Initialize Wallet</button>
+      </div>
+    </form>
+  </mat-step>
+  <ng-template matStepperIcon="password">
+    <mat-icon>vpn_key</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="cipher">
+    <mat-icon>swap_calls</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="passphrase">
+    <mat-icon>fingerprint</mat-icon>
+  </ng-template>
+</mat-vertical-stepper>
+<div *ngIf="genSeedResponse.length > 0 && initWalletResponse !== ''">
+  <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+    <div fxFlex="100" fxLayoutAlign="start" class="blinker">YOU MUST WRITE DOWN THIS SEED TO BE ABLE TO RESTORE THE WALLET!</div>
+    <div fxFlex="40" fxLayout="row wrap" class="mt-2">
+      <span *ngFor="let genSeed of genSeedResponse; index as i;" fxFlex="25" fxLayoutAlign="start" class="genseed-message">{{genSeed}}</span>
+    </div>
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Wallet initialization is done.</div>
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">The node will be usable only after LND has synced completely with the network.</div>
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Click continue only after writing down the seed.</div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
+      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-flat-button color="primary" type="submit" (click)="onGoToHome()" tabindex="16">Go To Home</button>
+    </div>
+  </form>
+</div>
+<div *ngIf="genSeedResponse.length > 0 && initWalletResponse === ''">
+  <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Something went wrong! Unable to initialize wallet!</div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
+      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="17" type="reset" (click)="resetData()">Restart</button>
+    </div>
+  </form>
+</div>
+<div *ngIf="genSeedResponse.length <= 0 && initWalletResponse !== ''">
+  <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-2">
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">Wallet recovery is done.</div>
+    <div fxFlex="100" fxLayoutAlign="start" class="mt-2">The node will be usable only after LND has synced completely with the network.</div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-2">
+      <button fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-md="25" mat-flat-button color="primary" type="submit" (click)="onGoToHome()" tabindex="18">Go To Home</button>
+    </div>
+  </form>
+</div>

@@ -4,10 +4,12 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const common = require("./common");
 const app = express();
+
 const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
 const apiLNDRoot = baseHref + "api/lnd/";
 const apiCLRoot = baseHref + "api/cl/";
+const apiLoopRoot = baseHref + "api/loop";
 
 const authenticateRoutes = require("./routes/authenticate");
 const RTLConfRoutes = require("./routes/RTLConf");
@@ -35,6 +37,8 @@ const onChainCLRoutes = require("./routes/c-lightning/onchain");
 const paymentsCLRoutes = require("./routes/c-lightning/payments");
 const peersCLRoutes = require("./routes/c-lightning/peers");
 const networkCLRoutes = require("./routes/c-lightning/network");
+
+const loopRoutes = require('./routes/loopd/loop');
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -82,6 +86,8 @@ app.use(apiCLRoot + "onchain", onChainCLRoutes);
 app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
+
+app.use(apiLoopRoot, loopRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

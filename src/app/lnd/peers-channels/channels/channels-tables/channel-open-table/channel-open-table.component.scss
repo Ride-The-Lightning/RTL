@@ -1,0 +1,28 @@
+.mat-column-remote_alias {
+  flex: 0 0 20%;
+  width: 20%;
+  & .ellipsis-parent {
+    display: flex;
+  }
+}
+
+.mat-column-balancedness {
+  padding-left: 3rem;
+  flex: 0 0 25%;
+  width: 25%;
+}
+
+.mat-column-local_balance, .mat-column-remote_balance, .mat-column-total_satoshis_sent, .mat-column-total_satoshis_received {
+  flex: 0 0 10%;
+  width: 10%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mat-column-actions {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

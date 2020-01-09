@@ -1,8 +1,8 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
@@ -10,7 +10,9 @@ import { UserIdleService } from 'angular-user-idle';
 import * as sha256 from 'sha256';
 
 import { LoggerService } from './shared/services/logger.service';
+import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
+import { AlertTypeEnum, ScreenSizeEnum, NODE_SETTINGS } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
@@ -23,8 +25,6 @@ import * as fromRTLReducer from './store/rtl.reducers';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
-  @ViewChild('settingSidenav', { static: true }) settingSidenav: any;
-  faCopy = faCopy;
   public selNode: LightningNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
@@ -32,38 +32,52 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public flgCopied = false;
   public appConfig: RTLConfiguration;
   public accessKey = '';
+  public xSmallScreen = false;
   public smallScreen = false;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
-    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
+    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium])
+    .pipe(takeUntil(this.unSubs[5]))
+    .subscribe((matches) => {
+      if(matches.breakpoints[Breakpoints.XSmall]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.XS);
+        this.xSmallScreen = true;
+        this.smallScreen = true;
+      } else if(matches.breakpoints[Breakpoints.TabletPortrait]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.SM);
+        this.xSmallScreen = false;
+        this.smallScreen = true;
+      } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.MD);
+        this.xSmallScreen = false;
+        this.smallScreen = false;
+      } else {
+        this.commonService.setScreenSize(ScreenSizeEnum.LG);
+        this.xSmallScreen = false;
+        this.smallScreen = false;
+      }
+    });
+    
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')
-    .pipe(takeUntil(this.unsubs[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.nodeData;
       this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
-      if (window.innerWidth <= 768) {
-        this.settings.menu = 'Vertical';
-        this.settings.flgSidenavOpened = false;
-        this.settings.flgSidenavPinned = false;
-      }
-      if (window.innerWidth <= 414) {
-        this.smallScreen = true;
-      }
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
         this.flgLoading[0] = false;
       }
     });
-
-    this.actions$.pipe(takeUntil(this.unsubs[1]),
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
     .subscribe((action: (RTLActions.SetRTLConfig)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
@@ -74,26 +88,37 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
         }
-        if (
-          this.settings.menu === 'Horizontal' ||
-          this.settings.menuType === 'Compact' ||
-          this.settings.menuType === 'Mini') {
-          this.settingSidenav.toggle(); // To dynamically update the width to 100% after side nav is closed
-          setTimeout(() => { this.settingSidenav.toggle(); }, 100);
+        // START: Workaround to add adjust container width initially
+        this.sideNavigation.toggle();
+        setTimeout(() => { this.sideNavigation.toggle(); }, 500);
+        if (this.settings.menuType === 'COMPACT' || this.settings.menuType === 'MINI') {
+          this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
+          setTimeout(() => { this.sideNavigation.toggle(); }, 100);
         }
+        // END: Workaround to add left margin to container initially
       }     
     });
     this.userIdle.startWatching();
-    this.userIdle.onTimerStart().subscribe(count => {});
-    this.userIdle.onTimeout().subscribe(() => {
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[2])).subscribe(count => {});
+    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
-        this.logger.warn('Time limit exceeded for session inactivity! Logging out!');
-        this.store.dispatch(new RTLActions.OpenAlert({ width: '75%', data: {
-          type: 'WARN',
-          titleMessage: 'Time limit exceeded for session inactivity! Logging out!'
+        this.logger.warn('Time limit exceeded for session inactivity.');
+        this.store.dispatch(new RTLActions.OpenAlert({ data: {
+          type: AlertTypeEnum.WARNING,
+          alertTitle: 'Logging out',
+          titleMessage: 'Time limit exceeded for session inactivity.'
         }}));
         this.store.dispatch(new RTLActions.Signout());
         this.userIdle.resetTimer();
+      }
+    });
+    this.commonService.containerWidthChanged.pipe(takeUntil(this.unSubs[4]))
+    .subscribe((fieldType: string) => {
+      if(fieldType !== 'menuType') {
+        this.sideNavToggle();
+      } else {
+        this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
+        setTimeout(() => { this.sideNavigation.toggle(); }, 0);
       }
     });
   }
@@ -104,31 +129,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (!this.settings.flgSidenavPinned) {
+    if ((this.settings.menuType !== 'REGULAR' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
       this.sideNavigation.close();
-      this.settingSidenav.toggle();
-    }
-    if (window.innerWidth <= 768) {
-      this.sideNavigation.close();
-      this.settingSidenav.toggle();
-    }
-  }
-
-  @HostListener('window:resize')
-  public onWindowResize(): void {
-    if (window.innerWidth <= 768) {
-      this.settings.menu = 'Vertical';
-      this.settings.flgSidenavOpened = false;
-      this.settings.flgSidenavPinned = false;
     }
   }
 
   sideNavToggle() {
+    this.settings.flgSidenavOpened = !this.settings.flgSidenavOpened;
     this.sideNavigation.toggle();
   }
 
   onNavigationClicked(event: any) {
-    if (window.innerWidth <= 414) {
+    if (this.smallScreen) {
       this.sideNavigation.close();
     }
   }
@@ -139,8 +151,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Copied Text: ' + payload);
   }
 
+  getFontSize() {
+    return (this.settings.fontSize === NODE_SETTINGS.fontSize[0].class) ? 14 : 
+      (this.settings.fontSize === NODE_SETTINGS.fontSize[2].class) ? 18 : 16;
+  }
+
   ngOnDestroy() {
-    this.unsubs.forEach(unsub => {
+    this.unSubs.forEach(unsub => {
       unsub.next();
       unsub.complete();
     });

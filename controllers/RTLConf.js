@@ -2,11 +2,13 @@ var ini = require('ini');
 var fs = require('fs');
 var logger = require('./logger');
 var common = require('../common');
+var request = require('request-promise');
+var options = {};
 
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
-  const responseVal = common.selectedNode.ln_node ? common.selectedNode.ln_node : common.selectedNode.ln_server_url;
+  const responseVal = !common.selectedNode ? '' : (common.selectedNode.ln_node ? common.selectedNode.ln_node : common.selectedNode.ln_server_url);
   logger.info({fileName: 'RTLConf', msg: 'Selected Node Updated To: ' + JSON.stringify(responseVal)});
   res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
@@ -31,7 +33,15 @@ exports.getRTLConfig = (req, res, next) => {
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
         jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
-        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
+        jsonConfig.Settings.flgSidenavOpened = (undefined !== jsonConfig.Settings.flgSidenavOpened) ? jsonConfig.Settings.flgSidenavOpened : true;
+        jsonConfig.Settings.flgSidenavPinned = (undefined !== jsonConfig.Settings.flgSidenavPinned) ? jsonConfig.Settings.flgSidenavPinned : true;
+        jsonConfig.Settings.menu = (undefined !== jsonConfig.Settings.menu) ? jsonConfig.Settings.menu : 'VERTICAL';
+        jsonConfig.Settings.menuType = (undefined !== jsonConfig.Settings.menuType) ? jsonConfig.Settings.menuType : 'REGULAR';
+        jsonConfig.Settings.fontSize = (undefined !== jsonConfig.Settings.fontSize) ? jsonConfig.Settings.fontSize : 'MEDIUM';
+        jsonConfig.Settings.themeMode = (undefined !== jsonConfig.Settings.themeMode) ? jsonConfig.Settings.themeMode : 'DAY';
+        jsonConfig.Settings.themeColor = (undefined !== jsonConfig.Settings.themeColor) ? jsonConfig.Settings.themeColor : 'PURPLE';
+        jsonConfig.Settings.satsToBTC = (undefined !== jsonConfig.Settings.satsToBTC) ? jsonConfig.Settings.satsToBTC : false;
+        res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
           lnImplementation: '',
@@ -46,7 +56,7 @@ exports.getRTLConfig = (req, res, next) => {
       if (err) {
         if (err.code === 'ENOENT') {
           logger.error({fileName: 'RTLConf', lineNum: 46, msg: 'Multi Node Config does not exist!'});
-          res.status(200).json({ selectedNodeIndex: {}, sso: {}, nodes: [] });
+          res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
         } else {
           logger.error({fileName: 'RTLConf', lineNum: 49, msg: 'Getting Multi Node Config Failed!'});
           res.status(500).json({
@@ -69,11 +79,18 @@ exports.getRTLConfig = (req, res, next) => {
             } else {
               authentication.configPath = '';
             }
-  
-            if(node.Settings.bitcoindConfigPath) {
+              if(node.Settings.bitcoindConfigPath) {
               authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
             }
             node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
+            node.Settings.flgSidenavOpened = (undefined !== node.Settings.flgSidenavOpened) ? node.Settings.flgSidenavOpened : true;
+            node.Settings.flgSidenavPinned = (undefined !== node.Settings.flgSidenavPinned) ? node.Settings.flgSidenavPinned : true;
+            node.Settings.menu = (undefined !== node.Settings.menu) ? node.Settings.menu : 'VERTICAL';
+            node.Settings.menuType = (undefined !== node.Settings.menuType) ? node.Settings.menuType : 'REGULAR';
+            node.Settings.fontSize = (undefined !== node.Settings.fontSize) ? node.Settings.fontSize : 'MEDIUM';
+            node.Settings.themeMode = (undefined !== node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
+            node.Settings.themeColor = (undefined !== node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
+            node.Settings.satsToBTC = (undefined !== node.Settings.satsToBTC) ? node.Settings.satsToBTC : false;
             nodesArr.push({
               index: node.index,
               lnNode: node.lnNode,
@@ -82,7 +99,7 @@ exports.getRTLConfig = (req, res, next) => {
               authentication: authentication})
           });
         }
-        res.status(200).json({ selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
+        res.status(200).json({ defaultNodeIndex: multiNodeConfig.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
       }
     });
   }
@@ -95,49 +112,75 @@ exports.updateUISettings = (req, res, next) => {
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.find(node => {
       if(node.index == common.selectedNode.index) {
-        node.Settings.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
-        node.Settings.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
-        node.Settings.menu = req.body.updatedSettings.menu;
-        node.Settings.menuType = req.body.updatedSettings.menuType;
-        node.Settings.theme = req.body.updatedSettings.theme;
-        node.Settings.satsToBTC = req.body.updatedSettings.satsToBTC;
+        node.Settings.userPersona = req.body.updatedSettings.userPersona;
+        node.Settings.themeMode = req.body.updatedSettings.themeMode;
+        node.Settings.themeColor = req.body.updatedSettings.themeColor;
+        node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit;
+        node.Settings.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
+        node.Settings.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
+        node.Settings.menu = 'VERTICAL'; // req.body.updatedSettings.menu;
+        node.Settings.menuType = 'REGULAR'; // req.body.updatedSettings.menuType;
+        node.Settings.fontSize = 'MEDIUM'; // req.body.updatedSettings.fontSize;
+        node.Settings.satsToBTC = false; // req.body.updatedSettings.satsToBTC;
       }
     });
     try {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-      logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
-      res.status(201).json({message: 'UI Settings Updated Successfully'});
+      logger.info({fileName: 'RTLConf', msg: 'Updating Application Node Settings Succesful!'});
+      res.status(201).json({message: 'Application Node Settings Updated Successfully'});
     }
     catch (err) {
-      logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating UI Settings Failed!'});
+      logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Application Node Settings Failed!'});
       res.status(500).json({
-        message: "Updating UI Settings Failed!",
-        error: 'Updating UI Settings Failed!'
+        message: "Updating Application Node Settings Failed!",
+        error: 'Updating Application Node Settings Failed!'
       });
     }
   } else {
     RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
     var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     const settingsTemp = config.Settings;
-    settingsTemp.flgSidenavOpened = req.body.updatedSettings.flgSidenavOpened;
-    settingsTemp.flgSidenavPinned = req.body.updatedSettings.flgSidenavPinned;
-    settingsTemp.menu = req.body.updatedSettings.menu;
-    settingsTemp.menuType = req.body.updatedSettings.menuType;
-    settingsTemp.theme = req.body.updatedSettings.theme;
-    settingsTemp.satsToBTC = req.body.updatedSettings.satsToBTC;
+    settingsTemp.userPersona = req.body.updatedSettings.userPersona;
+    settingsTemp.themeMode = req.body.updatedSettings.themeMode;
+    settingsTemp.themeColor = req.body.updatedSettings.themeColor;
+    settingsTemp.currencyUnit = req.body.updatedSettings.currencyUnit;
+    settingsTemp.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
+    settingsTemp.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
+    settingsTemp.menu = 'VERTICAL'; // req.body.updatedSettings.menu;
+    settingsTemp.menuType = 'REGULAR'; // req.body.updatedSettings.menuType;
+    settingsTemp.fontSize = 'MEDIUM'; // req.body.updatedSettings.fontSize;
+    settingsTemp.satsToBTC = false; // req.body.updatedSettings.satsToBTC;
     delete config.Settings;
     fs.writeFileSync(RTLConfFile, ini.stringify(config));
     fs.appendFile(RTLConfFile, ini.stringify(settingsTemp, { section: 'Settings' }), function(err) {
       if (err) {
-        logger.error({fileName: 'Conf', lineNum: 122, msg:'Updating UI Settings Failed!'});
+        logger.error({fileName: 'Conf', lineNum: 122, msg:'Updating Application Node Settings Failed!'});
         res.status(500).json({
-          message: "Updating UI Settings Failed!",
-          error: 'Updating UI Settings Failed!'
+          message: "Updating Application Node Settings Failed!",
+          error: 'Updating Application Node Settings Failed!'
         });
       } else {
-        logger.info({fileName: 'RTLConf', msg: 'Updating UI Settings Succesful!'});
-        res.status(201).json({message: 'UI Settings Updated Successfully'});
+        logger.info({fileName: 'RTLConf', msg: 'Updating Application Node Settings Succesful!'});
+        res.status(201).json({message: 'Application Node Settings Updated Successfully'});
       }
+    });
+  }
+};
+
+exports.updateDefaultNode = (req, res, next) => {
+  RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  config.defaultNodeIndex = req.body.defaultNodeIndex;
+  try {
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    logger.info({fileName: 'RTLConf', msg: 'Updating Default Node Succesful!'});
+    res.status(201).json({message: 'Default Node Updated Successfully'});
+  }
+  catch (err) {
+    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Default Node Failed!'});
+    res.status(500).json({
+      message: "Updating Default Node Failed!",
+      error: 'Updating Default Node Failed!'
     });
   }
 };
@@ -191,5 +234,27 @@ exports.getConfig = (req, res, next) => {
       const responseJSON = (JSONFormat) ? jsonConfig : ini.stringify(jsonConfig);
       res.status(200).json({format: (JSONFormat) ? 'JSON' : 'INI', data: responseJSON});
     }
+  });
+};
+
+exports.getCurrencyRates = (req, res, next) => {
+  options.url = 'https://blockchain.info/ticker';
+  request(options).then((body) => {
+    if(undefined === body || body.error) {
+      res.status(500).json({
+        message: "Fetching Rates Failed!",
+        error: (undefined === body) ? 'Error From External Server!' : body.error
+      });
+    } else {
+      res.status(200).json(body);
+      body = JSON.parse(body);
+    }
+  })
+  .catch(function (err) {
+    logger.error({fileName: 'Conf', lineNum: 241, msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Fetching Rates Failed!",
+      error: err.error
+    });
   });
 };

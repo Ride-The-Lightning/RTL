@@ -1,0 +1,16 @@
+@import './color-swatches/light-dull-theme.scss';
+@import './color-swatches/dark-bright-theme.scss';
+@import './color-swatches/purple-primary.swatch.scss';
+@import './color-swatches/red-warn.swatch.scss';
+@import './color-swatches/white.swatch.scss';
+@import '~@angular/material/theming';
+@include mat-core();
+
+$purple-primary: mat-palette($purple-primary, 500, 300, A200);
+$purple-accent:  mat-palette($mat-gray, 800, 600, 900);
+$purple-accent-night:  mat-palette($mat-white, 300, 600, 900);
+$purple-warn:    mat-palette($red-warn, 500);
+
+$purple-night-theme: create-dark-bright-theme($purple-primary, $purple-accent-night, $purple-warn);
+
+$purple-day-theme: mat-light-theme($purple-primary, $purple-accent, $purple-warn);

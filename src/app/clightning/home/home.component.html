@@ -1,155 +1,84 @@
-<div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="20" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[2]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center end">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Wallet Balance</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
-        <mat-card-content class="mt-1">
-          <mat-icon class="icon-large">account_balance_wallet</mat-icon>
-        </mat-card-content>
-        <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit1">{{totalBalance.btc_confBalance | number}}
-            {{information?.currency_unit}}</h3>
-          <ng-template #smallerUnit1>
-            <h3>{{totalBalance.confBalance | number}} {{information?.smaller_currency_unit}}</h3>
-          </ng-template>
-        </span>
-      </mat-card-content>
-      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[2]===true" mode="indeterminate"></mat-progress-bar>
-      <mat-divider></mat-divider>
-    </mat-card>
+<div fxLayout="column" *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR; else merchantDashboard">
+  <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container mb-0">
+    <fa-icon [icon]="!flgLoading[0] ? faSmile : faFrown" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">{{!flgLoading[0] ? 'Welcome! Your node is up and running.' : 'Error! Please check the server connection.'}}</span>
   </div>
-  <div fxFlex="20" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[0]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Peers</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
-        <mat-card-content class="mt-1">
-          <mat-icon class="icon-large">group</mat-icon>
-        </mat-card-content>
-        <h3 *ngIf="information.num_peers; else zeroPeers">{{information?.num_peers | number}}</h3>
-        <ng-template #zeroPeers>
-          <h3>0</h3>
-        </ng-template>
-      </mat-card-content>
-      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-      <mat-divider></mat-divider>
-    </mat-card>
-  </div>
-  <div fxFlex="20" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Channel Balance</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
-        <mat-card-content class="mt-1">
-          <mat-icon class="icon-large">linear_scale</mat-icon>
-        </mat-card-content>
-        <span *ngIf="information?.currency_unit; else withoutData">
-          <h3 *ngIf="selNode?.satsToBTC; else smallerUnit2">{{lrBalance.btc_localBalance | number}}
-            {{information?.currency_unit}}</h3>
-          <ng-template #smallerUnit2>
-            <h3>{{lrBalance.localBalance | number}} {{information?.smaller_currency_unit}}</h3>
-          </ng-template>
-        </span>
-      </mat-card-content>
-      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[3]===true || flgLoading[0]===true" mode="indeterminate">
-      </mat-progress-bar>
-      <mat-divider></mat-divider>
-    </mat-card>
-  </div>
-  <div fxFlex="20" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[1]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Fee Report</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content fxLayout="column" fxLayoutAlign="center center">
-        <mat-card-content class="mt-1">
-          <mat-icon class="icon-large">redeem</mat-icon>
-        </mat-card-content>
-        <h3>{{fees?.feeCollected | number}} (mSats)</h3>
-      </mat-card-content>
-      <mat-progress-bar class="mt-minus-5" *ngIf="flgLoading[1]===true || flgLoading[0]===true" mode="indeterminate">
-      </mat-progress-bar>
-      <mat-divider></mat-divider>
-    </mat-card>
-  </div>
-  <div fxFlex="20" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[0]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Channel Status</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div fxLayout="column" class="pl-4">
-          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Active</mat-list-item>
-            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
-              <p class="mat-button-text">{{information?.num_active_channels}}</p>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Inactive</mat-list-item>
-            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
-              <p class="mat-button-text">{{information?.num_inactive_channels}}</p>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-          <mat-list class="channel-status-list" fxFlex="100" fxLayoutAlign="start start">
-            <mat-list-item fxFlex="65" fxLayoutAlign="start start">Pending</mat-list-item>
-            <mat-list-item fxFlex="25" fxLayoutAlign="start start">
-              <p class="mat-button-text">{{information?.num_pending_channels}}</p>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-          </mat-list>
-        </div>
-        <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
-        <mat-divider></mat-divider>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
-<div fxLayout="column" fxLayout.gt-sm="row wrap">
-  <div fxFlex="40" class="padding-gap">
-    <mat-card [ngClass]="{'custom-card error-border': flgLoading[3]==='error','custom-card': true}">
-      <mat-card-header class="bg-primary" fxLayoutAlign="center center">
-        <mat-card-title class="m-0 pt-2">
-          <h5>Local-Remote Channel Capacity</h5>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div fxLayout="row" class="card-chnl-balances">
-          <div fxFlex="100" fxLayoutAlign="center center">
-            <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="lrBalances"
-              [yAxisLabel]="yAxisLabel" [yScaleMax]="maxBalanceValue" xAxis="false" yAxis="true" showYAxis="true"
-              showDataLabel="true" tooltipDisabled="true">
-            </ngx-charts-bar-vertical>
+  <mat-grid-list cols="10" [rowHeight]="operatorCardHeight">
+    <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows">
+      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-24">
+        <mat-card-header>
+          <mat-card-title>
+            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+            <span>{{card.title}}</span>
+            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuOperator" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
+              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+              <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
+            </mat-menu>            
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
+          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
+            <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
+            <rtl-cl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-cl-balances-info>
+            <rtl-cl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-cl-channel-capacity-info>
+            <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
+            <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
+            <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
-        </div>
-        <mat-progress-bar *ngIf="flgLoading[5]===true" mode="indeterminate" class="mt-minus-5"></mat-progress-bar>
-        <mat-divider></mat-divider>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div fxFlex="30" class="padding-gap">
-    <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'"></rtl-cl-fee-rates>
-  </div>
-  <div fxFlex="30" class="padding-gap">
-    <rtl-cl-fee-rates [flgLoading]="flgLoading[4]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'"></rtl-cl-fee-rates>
-  </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
 </div>
-<ng-template #withoutData>
-  <h3>Sats</h3>
+<ng-template #merchantDashboard>
+  <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container mb-0">
+    <fa-icon [icon]="faSmile" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Welcome! Your node is up and running.</span>
+  </div>
+  <mat-grid-list cols="6" [rowHeight]="merchantCardHeight">
+    <mat-grid-tile *ngFor="let card of merchantCards" [colspan]="card.cols" [rowspan]="card.rows">
+      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card" [ngClass]="{'p-24': card.id !== 'transactions'}">
+        <mat-card-header *ngIf="card.id !== 'transactions'">
+          <mat-card-title>
+            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+            <span>{{card.title}}</span>
+            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuMerchant" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
+              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+            </mat-menu>            
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
+          <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
+            <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
+            <rtl-cl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-cl-balances-info>
+            <rtl-cl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-cl-channel-liquidity-info>
+            <rtl-cl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-cl-channel-liquidity-info>
+            <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
+              <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
+                <mat-tab label="Receive"><rtl-cl-lightning-invoices class="h-100" [showDetails]="false"></rtl-cl-lightning-invoices></mat-tab>
+                <mat-tab label="Pay"><rtl-cl-lightning-payments [showDetails]="false"></rtl-cl-lightning-payments></mat-tab>
+                <mat-tab [disabled]="true">
+                  <ng-template mat-tab-label>
+                    <button mat-icon-button class="more-button" [matMenuTriggerFor]="menuTransactions" aria-label="Toggle menu" style="max-width: 20px;">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
+                      <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                    </mat-menu>            
+                  </ng-template>
+                </mat-tab>                
+              </mat-tab-group>
+            </span>
+            <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
 </ng-template>

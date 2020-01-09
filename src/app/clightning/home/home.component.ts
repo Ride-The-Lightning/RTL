@@ -1,15 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
+import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
+import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, FeeRatesCL } from '../../shared/models/clModels';
+import { CommonService } from '../../shared/services/common.service';
+import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { ChannelsStatusCL, GetInfoCL, FeesCL, ChannelCL, BalanceCL, FeeRatesCL } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-cl-home',
@@ -17,55 +21,94 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
   styleUrls: ['./home.component.scss']
 })
 export class CLHomeComponent implements OnInit, OnDestroy {
+  public faSmile = faSmile;
+  public faFrown = faFrown;
+  public faAngleDoubleDown = faAngleDoubleDown;
+  public faAngleDoubleUp = faAngleDoubleUp;
+  public faChartPie = faChartPie;
+  public faBolt = faBolt;
+  public faServer = faServer;
+  public faNetworkWired = faNetworkWired;  
+  public flgChildInfoUpdated = false;
+  public userPersonaEnum = UserPersonaEnum;
+  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
   public fees: FeesCL;
   public information: GetInfoCL = {};
   public totalBalance: BalanceCL = {};
-  public lrBalance: LocalRemoteBalanceCL = { localBalance: 0, remoteBalance: 0 };
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true];
+  public balances = { onchain: -1, lightning: -1, total: 0 };
+  public allChannels: ChannelCL[] = [];
+  public channelsStatus: ChannelsStatusCL = {};
+  public allChannelsCapacity: ChannelCL[] = [];
+  public allInboundChannels: ChannelCL[] = [];
+  public allOutboundChannels: ChannelCL[] = [];
+  public totalInboundLiquidity = 0;
+  public totalOutboundLiquidity = 0;
+  public feeRatesPerKB: FeeRatesCL = {};
+  public feeRatesPerKW: FeeRatesCL = {};
+  public operatorCards = [];
+  public merchantCards = [];
+  public screenSize = '';
+  public operatorCardHeight = '330px';
+  public merchantCardHeight = '65px';
+  public sortField = 'Balance Score';
+  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
-  public position = 'below';
-  barPadding = 0;
-  maxBalanceValue = 0;
-  lrBalances = [{'name': 'Local Balance', 'value': 0}, {'name': 'Remote Balance', 'value': 0}];
-  flgTotalCalculated = false;
-  view = [];
-  yAxisLabel = 'Balance';
-  colorScheme = {domain: ['#FF0000']};
-  feeRatesPerKB: FeeRatesCL = {};
-  feeRatesPerKW: FeeRatesCL = {};
-
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
-    switch (true) {
-      case (window.innerWidth <= 730):
-        this.view = [250, 352];
-        break;
-      case (window.innerWidth > 415 && window.innerWidth <= 730):
-        this.view = [280, 352];
-        break;
-      case (window.innerWidth > 730 && window.innerWidth <= 1024):
-        this.view = [300, 352];
-        break;
-      case (window.innerWidth > 1024 && window.innerWidth <= 1280):
-        this.view = [350, 352];
-        break;
-      default:
-        this.view = [300, 352];
-        break;
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private router: Router) {
+    this.screenSize = this.commonService.getScreenSize();
+    if(this.screenSize === ScreenSizeEnum.XS) {
+      this.operatorCards = [
+        { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+      ];
+      this.merchantCards = [
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 6, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+      ];
+    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+      this.operatorCards = [
+        { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+      ];
+      this.merchantCards = [
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 3, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+      ];
+    } else {
+      this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
+      this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
+      this.operatorCards = [
+        { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+      ];
+      this.merchantCards = [
+        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 2, rows: 5 }
+      ];
     }
-    Object.assign(this, this.lrBalances);
   }
 
   ngOnInit() {
-    this.actions$.pipe(takeUntil(this.unsub[0]),
-    filter(action => action.type === RTLActions.SET_SELECTED_NODE))
-    .subscribe((data) => {
-      this.flgTotalCalculated = false;
-    });
     this.store.select('cl')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
+      this.flgLoading = [true, true, true, true, true, true, true, true];
       rtlStore.effectErrorsCl.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfoCL') {
           this.flgLoading[0] = 'error';
@@ -82,29 +125,40 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         if (effectsErr.action === 'FetchFeeRatesCL') {
           this.flgLoading[4] = 'error';
         }
+        if (effectsErr.action === 'FetchChannelsCL') {
+          this.flgLoading[5] = 'error';
+        }
       });
       this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information
-
+      this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (undefined !== this.information.id) ? false : true;
       }
 
       this.fees = rtlStore.fees;
+      this.fees.totalTxCount = 0;
+      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
+        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
+      }
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = (undefined !== this.fees.feeCollected) ? false : true;
       }
 
       this.totalBalance = rtlStore.balance;
+      this.balances.onchain = rtlStore.balance.totalBalance;
+      this.balances.lightning = rtlStore.localRemoteBalance.localBalance;
+      this.balances.total = this.balances.lightning + this.balances.onchain;
+      this.balances = Object.assign({}, this.balances);
       if (this.flgLoading[2] !== 'error') {
         this.flgLoading[2] = ('' !== this.totalBalance) ? false : true;
       }
 
-      this.lrBalance = rtlStore.localRemoteBalance;
-      this.maxBalanceValue = (rtlStore.localRemoteBalance.localBalance > rtlStore.localRemoteBalance.remoteBalance) ? rtlStore.localRemoteBalance.localBalance : rtlStore.localRemoteBalance.remoteBalance;
-      this.lrBalances = [{'name': 'Local Balance', 'value': +rtlStore.localRemoteBalance.localBalance}, {'name': 'Remote Balance', 'value': +rtlStore.localRemoteBalance.remoteBalance}];
+      let local = (rtlStore.localRemoteBalance.localBalance) ? +rtlStore.localRemoteBalance.localBalance : 0;
+      let remote = (rtlStore.localRemoteBalance.remoteBalance) ? +rtlStore.localRemoteBalance.remoteBalance : 0;
+      let total = local + remote;
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
       if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = (this.lrBalance.localBalance >= 0) ? false : true;
+        this.flgLoading[3] = (rtlStore.localRemoteBalance.localBalance) ? false : true;
       }
 
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;
@@ -113,12 +167,63 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.flgLoading[4] = (undefined !== this.feeRatesPerKB && undefined !== this.feeRatesPerKW) ? false : true;
       }
 
+      this.channelsStatus = {
+        active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
+        pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
+        inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
+      };
+      this.totalInboundLiquidity = 0;
+      this.totalOutboundLiquidity = 0;
+      this.allChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us')));
+      this.allChannels.forEach(channel => {
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them/1000);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us/1000);
+      });
+      if (this.flgLoading[5] !== 'error') {
+        this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
+      }      
+      if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.feeCollected >= 0) {
+        this.flgChildInfoUpdated = true;
+      } else {
+        this.flgChildInfoUpdated = false;
+      }
       this.logger.info(rtlStore);
+    });
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    filter((action) => action.type === RTLActions.FETCH_FEES_CL || action.type === RTLActions.SET_FEES_CL))
+    .subscribe(action => {
+      if(action.type === RTLActions.FETCH_FEES_CL) {
+        this.flgChildInfoUpdated = false;
+      }
+      if(action.type === RTLActions.SET_FEES_CL) {
+        this.flgChildInfoUpdated = true;
+      }
     });
   }
 
+  onNavigateTo(link: string) {
+    this.router.navigateByUrl(link);
+  }
+
+  onsortChannelsBy() {
+    if (this.sortField === 'Balance Score') {
+      this.sortField =  'Capacity';
+      this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
+        const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
+        const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
+        return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+      });
+    } else {
+      this.sortField =  'Balance Score';
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
+    }
+  }
+
   ngOnDestroy() {
-    this.unsub.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });

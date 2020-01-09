@@ -28,7 +28,7 @@ Follow the below steps to install and setup RTL to run on c-lightning.
 #### First time setup
 * Fetch sources from RTL git repository, by executing the below on the command prompt:
 
-`$ git clone https://github.com/ShahanaFarooqui/RTL.git`
+`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
 * Change directory to RTL folder:
 
 `$ cd RTL`
@@ -75,14 +75,12 @@ Ensure that the follow values are correct per your config:
         "configPath": "<Optional - Config file path for c-lightning>"
       },
       "Settings": {
-        "flgSidenavOpened": false,
-        "flgSidenavPinned": true,
-        "menu": "Vertical",
-        "menuType": "Regular",
-        "theme": "dark-pink",
-        "satsToBTC": false,
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
         "bitcoindConfigPath": "",
-        "enableLogging": "true",
+        "enableLogging": true,
+        "currencyUnit": "USD",
         "lnServerUrl": "https://<cl-rest api server ip address>:3001/v1"
       }
     }

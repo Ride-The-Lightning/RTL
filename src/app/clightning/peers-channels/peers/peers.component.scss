@@ -1,0 +1,14 @@
+.mat-column-alias {
+  flex: 1 1 10%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}
+
+.mat-column-id {
+  flex: 1 1 10%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2rem;
+}

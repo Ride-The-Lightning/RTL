@@ -1,0 +1,52 @@
+<div fxLayout="column" fxLayoutAlign="space-between stretch" class="mb-4">
+  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.OPERATOR" cols="6" rowHeight="110px">
+    <mat-grid-tile class="node-grid-tile" *ngFor="let card of nodeCardsOperator" [colspan]="card.cols" [rowspan]="card.rows">
+      <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
+        <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
+          <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container pl-2">
+            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+            <span>{{card.title}}</span>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
+          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
+            <mat-card-content fxFlex="100" class="dashboard-card-content">
+              <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>          
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list *ngIf="selNode.userPersona === userPersonaEnum.MERCHANT" cols="6" rowHeight="110px">
+    <mat-grid-tile class="node-grid-tile" *ngFor="let card of nodeCardsMerchant" [colspan]="card.cols" [rowspan]="card.rows">
+      <div fxLayout="column" fxLayoutAlign="stretch start" fxFlex="100" class="h-100">
+        <div fxLayout="row" fxLayoutAlign="start start" class="w-100">
+          <div fxLayout="row" fxLayoutAlign="start start" class="page-title-container pl-15px">
+            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+            <span>{{card.title}}</span>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
+          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
+            <mat-card-content fxFlex="100" class="dashboard-card-content">
+              <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>          
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

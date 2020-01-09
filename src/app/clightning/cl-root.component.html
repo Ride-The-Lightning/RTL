@@ -1,1 +1,2 @@
-<router-outlet></router-outlet>
+<mat-progress-bar *ngIf="loading" color="primary" mode="indeterminate"></mat-progress-bar>
+<router-outlet *ngIf="!loading"></router-outlet>

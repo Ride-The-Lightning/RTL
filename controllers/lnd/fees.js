@@ -48,11 +48,11 @@ exports.getFees = (req, res, next) => {
         return res.status(200).json(body);
       })
       .catch(err => {
-        logger.error({fileName: 'Fees', lineNum: 54, msg: 'Fetch Fee Error: ' + JSON.stringify(err)});
-        return res.status(500).json({
-          message: "Fetching fee failed!",
-          error: err.error
-        });        
+        logger.error({fileName: 'Fees', lineNum: 54, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(err)});
+        body.daily_tx_count = 0;
+        body.weekly_tx_count = 0;
+        body.monthly_tx_count = 0;
+        return res.status(200).json(body);
       });
     }
   })

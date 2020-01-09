@@ -21,7 +21,7 @@ exports.onChainWithdraw = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/withdraw';
   options.body = req.body;
-  logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Options: ' + JSON.stringify(options)});
+  logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Response: ' + JSON.stringify(body)});
     if(undefined === body || body.error) {

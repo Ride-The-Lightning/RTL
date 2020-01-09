@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -10,7 +9,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-cl-channel-lookup',
   templateUrl: './channel-lookup.component.html',
-  styleUrls: ['./channel-lookup.component.css']
+  styleUrls: ['./channel-lookup.component.scss']
 })
 export class CLChannelLookupComponent implements OnInit {
   @Input() lookupResult: ChannelEdgeCL[];
@@ -21,14 +20,6 @@ export class CLChannelLookupComponent implements OnInit {
   constructor(private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
-    if (this.lookupResult.length > 0 && undefined !== this.lookupResult[0].last_update_str) {
-      this.lookupResult[0].last_update_str = (this.lookupResult[0].last_update_str === '') ?
-        '' : formatDate(this.lookupResult[0].last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-    }
-    if (this.lookupResult.length > 1 && undefined !== this.lookupResult[1].last_update_str) {
-      this.lookupResult[1].last_update_str = (this.lookupResult[1].last_update_str === '') ?
-        '' : formatDate(this.lookupResult[1].last_update_str, 'MMM/dd/yy HH:mm:ss', 'en-US');
-    }
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

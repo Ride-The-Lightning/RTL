@@ -5,141 +5,207 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import {
-    MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
-    MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
-    MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
-    MatPaginatorModule, MatStepperModule
+  MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
+  MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
+  MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
+  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material';
 
 import { QRCodeModule } from 'angularx-qrcode';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
-import { AlertMessageComponent } from './components/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from './components/confirmation-message/confirmation-message.component';
-import { SpinnerDialogComponent } from './components/spinner-dialog/spinner-dialog.component';
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: false,
+  suppressScrollY: false
+};
+
+import { CLInvoiceInformationComponent } from './components/data-modal/invoice-information-cl/invoice-information.component';
+import { InvoiceInformationComponent } from './components/data-modal/invoice-information-lnd/invoice-information.component';
+import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
+import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
+import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
+import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
+import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/spinner-dialog.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
 import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
-import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
-import { ServerConfigComponent } from './components/server-config/server-config.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
+import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
+import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
+import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
-import { RemoveLeadingZerosPipe } from './pipes/remove-leading-zero.pipe';
+import { AutoFocusDirective } from './directive/auto-focus.directive';
+import { NonNegativeAmountValidator } from './directive/non-negative-amount.directive';
+import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
+
+import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        FontAwesomeModule,
-        FlexLayoutModule,
-        MatButtonModule,
-        MatButtonToggleModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatExpansionModule,
-        MatGridListModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatIconModule,
-        MatInputModule,
-        MatListModule,
-        MatMenuModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        MatRadioModule,
-        MatTreeModule,
-        MatSelectModule,
-        MatSidenavModule,
-        MatSlideToggleModule,
-        MatSortModule,
-        MatTableModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        MatBadgeModule,
-        MatPaginatorModule,
-        MatStepperModule,
-        QRCodeModule,
-        NgxChartsModule,
-        RouterModule,
-        HttpClientModule
-    ],
-    exports: [
-        FormsModule,
-        ReactiveFormsModule,
-        FontAwesomeModule,
-        FlexLayoutModule,
-        MatButtonModule,
-        MatButtonToggleModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatExpansionModule,
-        MatGridListModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatIconModule,
-        MatInputModule,
-        MatListModule,
-        MatMenuModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        MatRadioModule,
-        MatTreeModule,
-        MatSelectModule,
-        MatSidenavModule,
-        MatSlideToggleModule,
-        MatSortModule,
-        MatTableModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        MatBadgeModule,
-        MatPaginatorModule,
-        MatStepperModule,
-        AlertMessageComponent,
-        ConfirmationMessageComponent,
-        SpinnerDialogComponent,
-        NotFoundComponent,
-        SettingsNavComponent,
-        SideNavigationComponent,
-        TopMenuComponent,
-        HorizontalNavigationComponent,
-        SigninComponent,
-        HelpComponent,
-        ServerConfigComponent,
-        ClipboardDirective,
-        QRCodeModule,
-        NgxChartsModule,
-        RemoveLeadingZerosPipe
-    ],
-    declarations: [
-        AlertMessageComponent,
-        ConfirmationMessageComponent,
-        SpinnerDialogComponent,
-        NotFoundComponent,
-        SettingsNavComponent,
-        SideNavigationComponent,
-        TopMenuComponent,
-        HorizontalNavigationComponent,
-        SigninComponent,
-        HelpComponent,
-        ServerConfigComponent,
-        ClipboardDirective,
-        ErrorComponent,
-        RemoveLeadingZerosPipe
-    ],
-    entryComponents: [
-        AlertMessageComponent,
-        SpinnerDialogComponent,
-        ConfirmationMessageComponent
-    ],
-    providers: [
-        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '700px' } }
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    FlexLayoutModule,
+    LayoutModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatGridListModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatTreeModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatSortModule,
+    MatTableModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatBadgeModule,
+    MatPaginatorModule,
+    MatStepperModule,
+    MatSliderModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    QRCodeModule,
+    NgxChartsModule,
+    RouterModule,
+    HttpClientModule,
+    PerfectScrollbarModule
+  ],
+  exports: [
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    FlexLayoutModule,
+    LayoutModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatGridListModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatTreeModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatSortModule,
+    MatTableModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatBadgeModule,
+    MatPaginatorModule,
+    MatStepperModule,
+    MatSliderModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    AppSettingsComponent,
+    SettingsComponent,
+    CLInvoiceInformationComponent,
+    InvoiceInformationComponent,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
+    OnChainGeneratedAddressComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    SpinnerDialogComponent,
+    NotFoundComponent,
+    SideNavigationComponent,
+    TopMenuComponent,
+    HorizontalNavigationComponent,
+    SigninComponent,
+    HelpComponent,
+    ServerConfigComponent,
+    CurrencyUnitConverterComponent,
+    ClipboardDirective,
+    AutoFocusDirective,
+    NonNegativeAmountValidator,
+    QRCodeModule,
+    NgxChartsModule,
+    RemoveLeadingZerosPipe,
+    PerfectScrollbarModule
+  ],
+  declarations: [
+    AppSettingsComponent,
+    SettingsComponent,
+    CLInvoiceInformationComponent,
+    InvoiceInformationComponent,
+    OnChainGeneratedAddressComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    SpinnerDialogComponent,
+    NotFoundComponent,
+    SideNavigationComponent,
+    TopMenuComponent,
+    HorizontalNavigationComponent,
+    SigninComponent,
+    HelpComponent,
+    ServerConfigComponent,
+    CurrencyUnitConverterComponent,
+    ErrorComponent,
+    ClipboardDirective,
+    AutoFocusDirective,
+    NonNegativeAmountValidator,
+    RemoveLeadingZerosPipe,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
+    ShowPubkeyComponent
+  ],
+  entryComponents: [
+    CLInvoiceInformationComponent,
+    InvoiceInformationComponent,
+    OnChainGeneratedAddressComponent,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
+    ShowPubkeyComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent
+  ],
+  providers: [
+    { provide: LoggerService, useClass: ConsoleLoggerService },
+    { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
+    DecimalPipe, TitleCasePipe, SocketService
+  ]
 })
 export class SharedModule { }

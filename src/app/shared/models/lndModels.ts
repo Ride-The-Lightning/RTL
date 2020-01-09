@@ -1,3 +1,15 @@
+export interface ChannelStatus {
+  channels?: number;
+  capacity?:number;
+}
+
+export interface ChannelsStatus {
+  active?: ChannelStatus;
+  inactive?: ChannelStatus;
+  pending?: ChannelStatus;
+  closing?: ChannelStatus;
+}
+
 export interface AddressType {
   addressId?: string;
   addressTp?: string;
@@ -29,7 +41,7 @@ export interface Channel {
   remote_pubkey?: string;
   remote_alias?: string;
   channel_point?: string;
-  chan_id?: number;
+  chan_id?: string;
   capacity?: number;
   local_balance?: number;
   remote_balance?: number;
@@ -43,6 +55,7 @@ export interface Channel {
   private?: boolean;
   pending_htlcs?: HTLC[];
   csv_delay?: number;
+  balancedness?: number; // Between -1 to +1
 }
 
 export interface PendingChannels {
@@ -132,6 +145,9 @@ export interface Fees {
   btc_day_fee_sum?: number;
   btc_week_fee_sum?: number;
   btc_month_fee_sum?: number;
+  daily_tx_count?: number;
+  weekly_tx_count?: number;
+  monthly_tx_count?: number;
 }
 
 export interface GetInfoChain {
@@ -142,6 +158,7 @@ export interface GetInfoChain {
 export interface GetInfo {
   identity_pubkey?: string;
   alias?: string;
+  color?: string;
   num_pending_channels?: number;
   num_active_channels?: number;
   num_peers?: number;
@@ -155,6 +172,7 @@ export interface GetInfo {
   version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;
+  lnImplementation?: string;
 }
 
 export interface GraphNode {
@@ -278,6 +296,7 @@ export interface Peer {
   sat_recv?: string;
   inbound?: boolean;
   ping_time?: number;
+  sync_type?: string;
 }
 
 export interface QueryRoutes {
@@ -358,6 +377,7 @@ export interface ForwardingEvent {
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;
+  fee_msat?: string;
 }
 
 export interface RoutingPeers {
@@ -370,4 +390,18 @@ export interface RoutingPeers {
 export interface SwitchRes {
   last_offset_index?: number;
   forwarding_events?: ForwardingEvent[];
+}
+
+export interface PendingChannelsGroup {
+  open?: PendingChannelsData;
+  closing?: PendingChannelsData;
+  force_closing?: PendingChannelsData;
+  waiting_close?: PendingChannelsData;
+  total_channels?: number;
+  total_limbo_balance?: number;
+}
+
+export interface PendingChannelsData {
+  num_channels: number;
+  limbo_balance: number;
 }

@@ -1,0 +1,47 @@
+$small-typography: mat-typography-config(
+    $display-4: (font-size: 100px, line-height: 105px, font-weight: 300),
+    $display-3: (font-size: 50px, line-height: 54px, font-weight: 400), 
+    $display-2: (font-size: 40px, line-height: 45px, font-weight: 400), 
+    $display-1: (font-size: 30px, line-height: 35px, font-weight: 400), 
+    $headline: (font-size: 20px, line-height: 28px, font-weight: 400), 
+    $title: (font-size: 16px, line-height: 28px, font-weight: 500), 
+    $subheading-2: (font-size: 14px, line-height: 25px, font-weight: 400), 
+    $subheading-1: (font-size: 13px, line-height: 23px, font-weight: 400), 
+    $body-2: (font-size: 12px, line-height: 20px, font-weight: 500), 
+    $body-1: (font-size: 12px, line-height: 18px, font-weight: 400), 
+    $caption: (font-size: 10px, line-height: 18px, font-weight: 400), 
+    $button: (font-size: 11px, line-height: 12px, font-weight: 500), 
+    $input: (font-size: inherit, line-height: 1.125, font-weight: 400)
+);
+
+$medium-typography: mat-typography-config(
+    $display-4: (font-size: 112px, line-height: 112px, font-weight: 300),
+    $display-3: (font-size: 56px, line-height: 56px, font-weight: 400), 
+    $display-2: (font-size: 45px, line-height: 48px, font-weight: 400), 
+    $display-1: (font-size: 34px, line-height: 40px, font-weight: 400), 
+    $headline: (font-size: 24px, line-height: 32px, font-weight: 400), 
+    $title: (font-size: 20px, line-height: 32px, font-weight: 500), 
+    $subheading-2: (font-size: 16px, line-height: 28px, font-weight: 400), 
+    $subheading-1: (font-size: 15px, line-height: 24px, font-weight: 400), 
+    $body-2: (font-size: 14px, line-height: 24px, font-weight: 500), 
+    $body-1: (font-size: 14px, line-height: 20px, font-weight: 400), 
+    $caption: (font-size: 12px, line-height: 20px, font-weight: 400), 
+    $button: (font-size: 13px, line-height: 14px, font-weight: 500), 
+    $input: (font-size: inherit, line-height: 1.125, font-weight: 400)
+);
+
+$large-typography: mat-typography-config(
+    $display-4: (font-size: 124px, line-height: 124px, font-weight: 300),
+    $display-3: (font-size: 62px, line-height: 62px, font-weight: 400), 
+    $display-2: (font-size: 54px, line-height: 60px, font-weight: 400), 
+    $display-1: (font-size: 40px, line-height: 46px, font-weight: 400), 
+    $headline: (font-size: 30px, line-height: 36px, font-weight: 400), 
+    $title: (font-size: 26px, line-height: 38px, font-weight: 500), 
+    $subheading-2: (font-size: 20px, line-height: 32px, font-weight: 400), 
+    $subheading-1: (font-size: 18px, line-height: 28px, font-weight: 400), 
+    $body-2: (font-size: 16px, line-height: 26px, font-weight: 500), 
+    $body-1: (font-size: 16px, line-height: 22px, font-weight: 400), 
+    $caption: (font-size: 14px, line-height: 22px, font-weight: 400), 
+    $button: (font-size: 15px, line-height: 16px, font-weight: 500), 
+    $input: (font-size: inherit, line-height: 1.125, font-weight: 400)
+);

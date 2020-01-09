@@ -3,9 +3,10 @@ const express = require("express");
 const router = express.Router();
 const authCheck = require("../authCheck");
 
-router.get("/", authCheck, ChannelsController.getChannels);
+router.get("/", authCheck, ChannelsController.getAllChannels);
+router.get("/pending", authCheck, ChannelsController.getPendingChannels);
+router.get("/closed", authCheck, ChannelsController.getClosedChannels);
 router.post("/", authCheck, ChannelsController.postChannel);
-router.get("/:channelType", authCheck, ChannelsController.getChannels);
 router.post("/transactions", authCheck, ChannelsController.postTransactions);
 router.delete("/:channelPoint", authCheck, ChannelsController.closeChannel);
 router.post("/chanPolicy", authCheck, ChannelsController.postChanPolicy);

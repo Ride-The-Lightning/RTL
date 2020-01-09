@@ -1,0 +1,11 @@
+.mat-column-actions {
+  flex: 0 0 5%;
+  width: 5%;
+}
+
+.mat-column-pubkey_alias {
+  flex: 1 1 25%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
