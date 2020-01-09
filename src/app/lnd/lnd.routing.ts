@@ -10,7 +10,6 @@ import { LookupsComponent } from './lookups/lookups.component';
 import { RoutingComponent } from './routing/routing.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
-import { LoopComponent } from './loop/loop.component';
 
 import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -28,7 +27,6 @@ export const LndRoutes: Routes = [
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },
     { path: '**', component: NotFoundComponent },
     { path: 'rates', redirectTo: 'network' }
   ]}

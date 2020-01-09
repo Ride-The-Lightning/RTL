@@ -149,7 +149,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue}));
+            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000}));
             this.resetData();
           }
         });
