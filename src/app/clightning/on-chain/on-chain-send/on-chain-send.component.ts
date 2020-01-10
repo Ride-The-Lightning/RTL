@@ -35,6 +35,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public transaction: OnChainCL = {};
   public feeRateTypes = FEE_RATE_TYPES;
   public flgMinConf = false;
+  public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
   public currConvertorRate = {};
@@ -48,6 +49,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rootStore) => {
+      this.fiatConversion = rootStore.selNode.settings.fiatConversion;
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
@@ -58,7 +60,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   onSendFunds() {
     if(this.invalidValues) { return true; }
     if(this.transaction.satoshis && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2])
+      this.commonService.convertCurrency(this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
         this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
@@ -116,7 +118,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2])
+      this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe(data => {
         self.transaction.satoshis = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');

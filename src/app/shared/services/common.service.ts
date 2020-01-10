@@ -49,11 +49,9 @@ export class CommonService implements OnInit, OnDestroy {
     this.containerWidthChanged.next(fieldType);
   }
 
-  convertCurrency(value: number, from: string, otherCurrencyUnit: string): Observable<any> {
+  convertCurrency(value: number, from: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(!otherCurrencyUnit) {
-      return of(this.convertWithoutFiat(value, from));
-    } else {
+    if(fiatConversion && otherCurrencyUnit) {
       if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
@@ -65,6 +63,8 @@ export class CommonService implements OnInit, OnDestroy {
           return this.convertWithFiat(value, from, otherCurrencyUnit);
         }));
       }
+    } else {
+      return of(this.convertWithoutFiat(value, from));
     }
   }
 

@@ -345,8 +345,8 @@ export class RTLEffects implements OnDestroy {
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
-    if(node.settings.currencyUnit) {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
+    if(node.settings.fiatConversion && node.settings.currencyUnit) {
+        selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
     } else {
       selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion };
     }

@@ -47,6 +47,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   public transaction: ChannelsTransaction = {};
   public transTypes = [{id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
   public selTransType = '1';
+  public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
   public currConvertorRate = {};
@@ -60,6 +61,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rootStore) => {
+      this.fiatConversion = rootStore.selNode.settings.fiatConversion;
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
@@ -70,7 +72,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   onSendFunds() {
     if(this.invalidValues) { return true; }
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2])
+      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
@@ -176,7 +178,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.amount && this.selAmountUnit !== event.value) {
       let amount = (this.sweepAll) ? this.sweepBalance : this.transaction.amount;
-      this.commonService.convertCurrency(amount, prevSelectedUnit, this.amountUnits[2])
+      this.commonService.convertCurrency(amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe(data => {
         self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');

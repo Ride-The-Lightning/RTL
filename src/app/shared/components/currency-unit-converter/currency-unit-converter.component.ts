@@ -55,7 +55,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   getCurrencyValues(values) {
     values.forEach(value => {
       if(value.dataValue > 0) {
-        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2])
+        this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, this.currencyUnits[2], this.fiatConversion)
         .pipe(takeUntil(this.unSubs[1]))
         .subscribe(data => {
           value[CurrencyUnitEnum.BTC] = data.BTC;
