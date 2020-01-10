@@ -80,7 +80,7 @@ Ensure that the follow values are correct per your config:
         "themeColor": "PURPLE",
         "bitcoindConfigPath": "",
         "enableLogging": true,
-        "currencyUnit": "USD",
+        "fiatConversion": false,
         "lnServerUrl": "https://<cl-rest api server ip address>:3001/v1"
       }
     }

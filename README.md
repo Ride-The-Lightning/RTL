@@ -101,7 +101,7 @@ bitcoindConfigPath=C:/Bitcoin/bitcoin.conf
 enableLogging=true
 port=3000
 lndServerUrl=https://192.168.1.16:8080/v1
-currencyUnit=USD
+fiatConversion=false
 ```
 For details on all the configuration options refer to [this page](./docs/Application_configurations).
 

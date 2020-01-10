@@ -74,6 +74,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.confirmSend();
       });
     } else {

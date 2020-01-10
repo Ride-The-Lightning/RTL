@@ -62,6 +62,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
         this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.confirmSend();
       });
     } else {

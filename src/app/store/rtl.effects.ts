@@ -13,7 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
-import { Settings, RTLConfiguration, LightningNode } from '../shared/models/RTLconfig';
+import { Settings, RTLConfiguration, ConfigSettingsNode } from '../shared/models/RTLconfig';
 import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
@@ -146,7 +146,7 @@ export class RTLEffects implements OnDestroy {
     }),
     map((rtlConfig: RTLConfiguration) => {
       this.logger.info(rtlConfig);
-      let searchNode: LightningNode;
+      let searchNode: ConfigSettingsNode;
       rtlConfig.nodes.forEach(node => {
         node.settings.currencyUnits = [...CURRENCY_UNITS, node.settings.currencyUnit];
         if(+node.index === rtlConfig.selectedNodeIndex) { searchNode = node; }
@@ -344,7 +344,12 @@ export class RTLEffects implements OnDestroy {
 
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
-    let selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit] };
+    let selNode = {};
+    if(node.settings.currencyUnit) {
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
+    } else {
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion };
+    }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));

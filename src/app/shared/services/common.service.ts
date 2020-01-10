@@ -51,20 +51,43 @@ export class CommonService implements OnInit, OnDestroy {
 
   convertCurrency(value: number, from: string, otherCurrencyUnit: string): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
-      return of(this.convert(value, from, otherCurrencyUnit));
+    if(!otherCurrencyUnit) {
+      return of(this.convertWithoutFiat(value, from));
     } else {
-      return this.httpClient.get(environment.CONF_API + '/rates')
-      .pipe(take(1),
-      map((data: any) => {
-        this.conversionData.data = data ? JSON.parse(data) : {};
-        this.conversionData.last_fetched = latest_date;
-        return this.convert(value, from, otherCurrencyUnit);
-      }));
+      if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
+        return of(this.convertWithFiat(value, from, otherCurrencyUnit));
+      } else {
+        return this.httpClient.get(environment.CONF_API + '/rates')
+        .pipe(take(1),
+        map((data: any) => {
+          this.conversionData.data = data ? JSON.parse(data) : {};
+          this.conversionData.last_fetched = latest_date;
+          return this.convertWithFiat(value, from, otherCurrencyUnit);
+        }));
+      }
     }
   }
 
-  convert(value: number, from: string, otherCurrencyUnit: string) {
+  convertWithoutFiat(value: number, from: string) {
+    let returnValue = {};
+    returnValue[CurrencyUnitEnum.SATS] = 0;
+    returnValue[CurrencyUnitEnum.BTC] = 0;
+    switch (from) {
+      case CurrencyUnitEnum.SATS:
+        returnValue[CurrencyUnitEnum.SATS] = value;
+        returnValue[CurrencyUnitEnum.BTC] = value * 0.00000001;
+        break;
+      case CurrencyUnitEnum.BTC:
+        returnValue[CurrencyUnitEnum.SATS] = value * 100000000;
+        returnValue[CurrencyUnitEnum.BTC] = value;
+        break;
+      default:
+        break;
+    }
+    return returnValue;
+  }
+
+  convertWithFiat(value: number, from: string, otherCurrencyUnit: string) {
     let returnValue = {unit: otherCurrencyUnit, symbol: this.conversionData.data[otherCurrencyUnit].symbol};
     returnValue[CurrencyUnitEnum.SATS] = 0;
     returnValue[CurrencyUnitEnum.BTC] = 0;

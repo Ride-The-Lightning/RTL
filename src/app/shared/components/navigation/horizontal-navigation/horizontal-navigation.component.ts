@@ -10,7 +10,7 @@ import { MENU_DATA } from '../../../models/navMenu';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { GetInfoRoot, LightningNode, RTLConfiguration } from '../../../models/RTLconfig';
+import { GetInfoRoot, ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
@@ -24,7 +24,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
   public showLogout = false;
   public numPendingChannels = 0;
   public appConfig: RTLConfiguration;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public information: GetInfoRoot = {};
   private unSubs = [new Subject(), new Subject(), new Subject()];
 
@@ -87,7 +87,7 @@ export class HorizontalNavigationComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.ShowPubkey());
   }  
 
-  onNodeSelectionChange(selNodeValue: LightningNode) {
+  onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));

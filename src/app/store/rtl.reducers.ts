@@ -1,6 +1,6 @@
 import { ActionReducerMap } from '@ngrx/store';
 import { ErrorPayload } from '../shared/models/errorPayload';
-import { RTLConfiguration, LightningNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import * as fromCL from '../clightning/store/cl.reducers';
 import * as fromLND from '../lnd/store/lnd.reducers';
@@ -8,12 +8,12 @@ import * as RTLActions from './rtl.actions';
 
 export interface RootState {
   effectErrorsRoot: ErrorPayload[];
-  selNode: LightningNode;
+  selNode: ConfigSettingsNode;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { userPersona: 'OPERATOR', flgSidenavOpened: true, flgSidenavPinned: true, menu: 'VERTICAL', menuType: 'REGULAR', fontSize: 'MEDIUM', themeMode: 'DAY', themeColor: 'PURPLE', satsToBTC: false, channelBackupPath: '', selCurrencyUnit: 'USD', currencyUnits: ['Sats', 'BTC', 'USD'] };
+const initNodeSettings = { userPersona: 'OPERATOR', flgSidenavOpened: true, flgSidenavPinned: true, menu: 'VERTICAL', menuType: 'REGULAR', fontSize: 'MEDIUM', themeMode: 'DAY', themeColor: 'PURPLE', satsToBTC: false, channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'] };
 const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {

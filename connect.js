@@ -71,7 +71,7 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           enableLogging: "true",
           lndServerUrl: "https://localhost:8080/v1",
-          currencyUnit: "USD"
+          fiatConversion: false
         }
       }
     ]
@@ -272,12 +272,18 @@ connect.validateSingleNodeConfig = (config) => {
 		}
 	}
 
-  if (undefined !== process.env.CURRENCY_UNIT) {
-		common.nodes[0].currency_unit = process.env.CURRENCY_UNIT;
-	} else if (undefined !== config.Settings.currencyUnit) {
-		common.nodes[0].currency_unit = config.Settings.currencyUnit;
+  if (process.env.FIAT_CONVERSION) {
+		common.nodes[0].fiat_conversion = process.env.FIAT_CONVERSION;
+	} else if (undefined !== config.Settings.fiatConversion) {
+		common.nodes[0].fiat_conversion = config.Settings.fiatConversion;
 	} else {
-    common.nodes[0].currency_unit = 'USD';
+    common.nodes[0].fiat_conversion = false;
+  }
+
+  if (process.env.FIAT_CONVERSION && process.env.CURRENCY_UNIT) {
+		common.nodes[0].currency_unit = process.env.CURRENCY_UNIT;
+	} else if (config.Settings.fiatConversion && config.Settings.currencyUnit) {
+		common.nodes[0].currency_unit = config.Settings.currencyUnit;
   }
 
   if (undefined !== process.env.PORT) {
@@ -328,7 +334,10 @@ connect.validateMultiNodeConfig = (config) => {
       common.nodes[idx].index = node.index;
       common.nodes[idx].ln_node = node.lnNode;
       common.nodes[idx].ln_implementation = node.lnImplementation;
-      common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';  
+      common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? node.Settings.fiatConversion : false;
+      if(common.nodes[idx].fiat_conversion) {
+        common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
+      }
 
       if (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) {
         common.nodes[idx].config_path = node.Authentication.lndConfigPath;
@@ -475,15 +484,18 @@ connect.logEnvVariables = () => {
       logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.currency_unit, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT_CONVERSION: ' + node.fiatConversion, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + node.currency_unit, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + node.ln_server_url, node});
     });  
   } else {
     if (!common.nodes[0].enable_logging) { return; }
     logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: SINGLE'});
     logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
-    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.currency_unit});
+    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.nodes[0].currency_unit});
     logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + common.nodes[0].ln_server_url});
+    logger.info({fileName: 'Config Setup Variable', msg: 'FIAT_CONVERSION: ' + common.nodes[0].fiat_conversion});
+    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.nodes[0].currency_unit});
     logger.info({fileName: 'Config Setup Variable', msg: 'RTL_SSO: ' + common.rtl_sso});
     logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link});
   }

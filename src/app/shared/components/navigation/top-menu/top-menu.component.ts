@@ -4,7 +4,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
-import { GetInfoRoot, LightningNode } from '../../../models/RTLconfig';
+import { GetInfoRoot, ConfigSettingsNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -22,7 +22,7 @@ import { AlertTypeEnum } from '../../../services/consts-enums-functions';
   styleUrls: ['./top-menu.component.scss']
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public faCodeBranch = faCodeBranch;
   public faCog = faCog;
   public faLifeRing = faLifeRing;

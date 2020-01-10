@@ -5,7 +5,7 @@
         <div class="cc-data-title">{{value.title}}</div>
         <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.SATS">{{value.dataValue | number}}</span>
         <span class="cc-data-value" *ngIf="currencyUnit === currencyUnitEnum.BTC">{{value[currencyUnitEnum.BTC] | number:currencyUnitFormats.BTC}}</span>
-        <span class="cc-data-value" *ngIf="currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC">{{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}</span>
+        <span class="cc-data-value" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC">{{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}</span>
       </div>
     </div>
   </mat-tab>

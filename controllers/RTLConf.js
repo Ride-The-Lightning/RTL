@@ -115,7 +115,12 @@ exports.updateUISettings = (req, res, next) => {
         node.Settings.userPersona = req.body.updatedSettings.userPersona;
         node.Settings.themeMode = req.body.updatedSettings.themeMode;
         node.Settings.themeColor = req.body.updatedSettings.themeColor;
-        node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit;
+        node.Settings.fiatConversion = req.body.updatedSettings.fiatConversion;
+        if(req.body.updatedSettings.fiatConversion) {
+          node.Settings.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+        } else {
+          delete node.Settings.currencyUnit;
+        }
         node.Settings.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
         node.Settings.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
         node.Settings.menu = 'VERTICAL'; // req.body.updatedSettings.menu;
@@ -143,7 +148,10 @@ exports.updateUISettings = (req, res, next) => {
     settingsTemp.userPersona = req.body.updatedSettings.userPersona;
     settingsTemp.themeMode = req.body.updatedSettings.themeMode;
     settingsTemp.themeColor = req.body.updatedSettings.themeColor;
-    settingsTemp.currencyUnit = req.body.updatedSettings.currencyUnit;
+    settingsTemp.fiatConversion = req.body.updatedSettings.fiatConversion;
+    if(req.body.updatedSettings.fiatConversion) {
+      settingsTemp.currencyUnit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+    }
     settingsTemp.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
     settingsTemp.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
     settingsTemp.menu = 'VERTICAL'; // req.body.updatedSettings.menu;

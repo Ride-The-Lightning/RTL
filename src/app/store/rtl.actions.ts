@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { DialogConfig } from '../shared/models/alertData';
-import { RTLConfiguration, Settings, LightningNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
@@ -230,7 +230,7 @@ export class UpdateSelectedNodeOptions implements Action {
 
 export class ResetRootStore implements Action {
   readonly type = RESET_ROOT_STORE;
-  constructor(public payload: LightningNode) {}
+  constructor(public payload: ConfigSettingsNode) {}
 }
 
 export class ResetLNDStore implements Action {
@@ -259,7 +259,7 @@ export class SaveSettings implements Action {
 
 export class SetSelelectedNode implements Action {
   readonly type = SET_SELECTED_NODE;
-  constructor(public payload: { lnNode: LightningNode, isInitialSetup: boolean }) {}
+  constructor(public payload: { lnNode: ConfigSettingsNode, isInitialSetup: boolean }) {}
 }
 
 export class SetNodeData implements Action {

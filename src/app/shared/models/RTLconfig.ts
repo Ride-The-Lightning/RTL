@@ -19,6 +19,7 @@ export class Settings {
     public themeColor: string,
     public satsToBTC: boolean,
     public currencyUnits: Array<string>,
+    public fiatConversion: boolean,
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
@@ -35,7 +36,7 @@ export class Authentication {
   ) { }
 }
 
-export class LightningNode {
+export class ConfigSettingsNode {
   constructor(
     public settings: Settings,
     public authentication: Authentication,
@@ -50,7 +51,7 @@ export class RTLConfiguration {
     public defaultNodeIndex: number,
     public selectedNodeIndex: number,
     public sso: SSO,
-    public nodes: LightningNode[]
+    public nodes: ConfigSettingsNode[]
   ) { }
 }
 
@@ -71,6 +72,7 @@ export interface SelNodeChild {
   satsToBTC?: boolean;
   selCurrencyUnit?: string;  
   currencyUnits?: string[];
+  fiatConversion?: boolean;
 }
 
 export class HelpTopic {

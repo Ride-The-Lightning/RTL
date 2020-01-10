@@ -9,7 +9,6 @@ common.node_auth_type = 'DEFAULT';
 common.rtl_pass = '';
 common.rtl_sso = 0;
 common.port = 3000;
-common.currency_unit = 'USD';
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';

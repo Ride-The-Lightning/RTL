@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { LightningNode } from '../../models/RTLconfig';
+import { ConfigSettingsNode } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -18,7 +18,7 @@ import * as RTLActions from '../../../store/rtl.actions';
 })
 export class SigninComponent implements OnInit, OnDestroy {
   public faUnlockAlt = faUnlockAlt;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public password = '';
   public nodeAuthType = '';
   public rtlSSO = 0;

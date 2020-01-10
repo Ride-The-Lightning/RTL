@@ -13,7 +13,7 @@ import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { AlertTypeEnum, ScreenSizeEnum, NODE_SETTINGS } from './shared/services/consts-enums-functions';
-import { RTLConfiguration, Settings, LightningNode, GetInfoRoot } from './shared/models/RTLconfig';
+import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
@@ -25,7 +25,7 @@ import * as fromRTLReducer from './store/rtl.reducers';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info

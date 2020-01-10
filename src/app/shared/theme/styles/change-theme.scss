@@ -589,6 +589,9 @@
       & .alert-icon.ng-fa-icon {
         color: $yellow-alert-color;
       }
+      & a {
+        color: $yellow-alert-color;
+      }
     }
   
     &.alert-danger {

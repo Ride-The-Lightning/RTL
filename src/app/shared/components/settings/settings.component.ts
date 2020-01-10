@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { LightningNode } from '../../models/RTLconfig';
+import { ConfigSettingsNode } from '../../models/RTLconfig';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -16,7 +16,7 @@ export class SettingsComponent implements OnInit, OnDestroy{
   public faTools = faTools;
   public showLnConfig = false;
   public showBitcoind = false;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public lnImplementationStr = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 

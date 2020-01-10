@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faWrench, faPaintBrush, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faWrench, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../services/consts-enums-functions';
-import { LightningNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
+import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
 
@@ -18,10 +18,11 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./app-settings.component.scss']
 })
 export class AppSettingsComponent implements OnInit, OnDestroy {
+  public faExclamationTriangle = faExclamationTriangle;
   public faWrench = faWrench;
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public information: GetInfoRoot = {};
   public userPersonas = [UserPersonaEnum.OPERATOR, UserPersonaEnum.MERCHANT];
   public currencyUnits = FIAT_CURRENCY_UNITS;
@@ -43,7 +44,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   public previousDefaultNode = 0;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  unsubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
   @Output('done') done: EventEmitter<void> = new EventEmitter();
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -52,7 +53,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.select('root')
-    .pipe(takeUntil(this.unsubs[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
@@ -70,6 +71,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.nodeData;
       this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
       this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
+      if(!this.selNode.settings.fiatConversion) {
+        this.selNode.settings.currencyUnit = null;
+      }
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
       this.previousDefaultNode = this.appConfig.defaultNodeIndex;
       this.logger.info(rtlStore);
@@ -78,8 +82,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   onCurrencyChange(event: any) {
     this.selNode.settings.currencyUnits = [...CURRENCY_UNITS, event.value];
-    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
   }
 
   chooseMenuType() {
@@ -119,8 +123,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
     this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings, defaultNodeIndex: defaultNodeIndex}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, satsToBTC: this.selNode.settings.satsToBTC, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
     this.done.emit();
   }
 
@@ -135,7 +139,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }  
 
   ngOnDestroy() {
-    this.unsubs.forEach(unsub => {
+    this.unSubs.forEach(unsub => {
       unsub.next();
       unsub.complete();
     });

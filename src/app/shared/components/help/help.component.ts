@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
-import { HelpTopic, LightningNode } from '../../models/RTLconfig';
+import { HelpTopic, ConfigSettingsNode } from '../../models/RTLconfig';
 import { SessionService } from '../../services/session.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -17,7 +17,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class HelpComponent implements OnInit, OnDestroy {
   public helpTopics: Array<HelpTopic> = [];
   public faQuestion = faQuestion;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public LNPLink = '/lnd/';
   public flgLoggedIn = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];

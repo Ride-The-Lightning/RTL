@@ -29,7 +29,7 @@ exports.getAllChannels = (req, res, next) => {
           local = (channel.local_balance) ? +channel.local_balance : 0;
           remote = (channel.remote_balance) ? +channel.remote_balance : 0;
           total = local + remote;
-          channel.balancedness = (total === 0) ? 1 : (1 - Math.abs((local-remote)/total)).toFixed(3);
+          channel.balancedness = (total == 0) ? 1 : (1 - Math.abs((local-remote)/total)).toFixed(3);
           return getAliasForChannel(channel);
         })
       )

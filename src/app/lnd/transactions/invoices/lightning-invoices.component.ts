@@ -156,7 +156,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceValueChange() {
-    if(this.invoiceValue > 99) {
+    if(this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2])
       .pipe(takeUntil(this.unSubs[1]))

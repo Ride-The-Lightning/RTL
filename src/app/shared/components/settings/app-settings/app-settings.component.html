@@ -4,12 +4,16 @@
       <fa-icon [icon]="faWrench" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Node Layout</span>
     </div>
+    <div fxFlex="100" class="alert alert-warn">
+      <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+      <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">https://blockchain.info/ticker</a></strong> API to get conversion rates.</span>
+    </div>
     <div fxFlex="100" class="alert alert-info">
       <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
       <span>Application layout will be tailored based upon user persona.</span>
     </div>
     <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="space-between stretch">
-      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
         <mat-label>User Persona</mat-label>
         <mat-select [(ngModel)]="selNode.settings.userPersona" tabindex="1" name="userPersona">
           <mat-option *ngFor="let userPersona of userPersonas" [value]="userPersona">
@@ -17,17 +21,20 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field fxFlex="32" fxLayoutAlign="start end">
-        <mat-label>Currency Unit</mat-label>
-        <mat-select [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="1" name="currencyUnit">
-          <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
-            {{currencyUnit.id}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field fxFlex="32" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1;else emptyBlock">
+      <div fxFlex="30" fxLayoutAlign="start center" [matTooltip]="'Calls https://blockchain.info/ticker API to get conversion rates'" [matTooltipPosition]="'below'">
+        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" name="fiatConversion">Fiat Conversion</mat-slide-toggle>
+        <mat-form-field>
+          <mat-label>Currency Unit</mat-label>
+          <mat-select [disabled]="!selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="3" name="currencyUnit">
+            <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+              {{currencyUnit.id}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1;else emptyBlock">
         <mat-label>Default Node</mat-label>
-        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
+        <mat-select [(ngModel)]="appConfig.defaultNodeIndex" tabindex="4" name="defaultNode">
           <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
             {{node.lnNode}} ({{node.lnImplementation}})
           </mat-option>
@@ -45,7 +52,7 @@
           <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
             <h4>Mode</h4>
             <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
-              <mat-radio-button *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
+              <mat-radio-button tabindex="5" *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
               </mat-radio-button>
             </mat-radio-group>
           </div>
@@ -54,7 +61,7 @@
             <h4>Themes</h4>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
               <span *ngFor="let themeColor of themeColors" fxLayout="row">
-                <div [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+                <div tabindex="9" [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
                 {{themeColor.name}}
               </span>
             </div>
@@ -64,10 +71,10 @@
     </div>
     <div fxLayout="row" fxFlex="100" class="mt-2">
       <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch">
-        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="12">Reset</button>
-        <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="13">Update</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="10">Reset</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="11">Update</button>
       </div>
     </div>
   </div>
 </div>
-<ng-template #emptyBlock><div fxLayout="row" fxFlex="32" fxLayoutAlign="start end"></div></ng-template>
+<ng-template #emptyBlock><div fxLayout="row" fxFlex="30" fxLayoutAlign="start end"></div></ng-template>

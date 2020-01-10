@@ -9,7 +9,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource, MatTree } from '@angular/material/tree';
 import { faEject, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import { RTLConfiguration, LightningNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
+import { RTLConfiguration, ConfigSettingsNode, Settings, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
@@ -31,7 +31,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   faEject = faEject;
   faEye = faEye;
   public appConfig: RTLConfiguration;
-  public selNode: LightningNode;
+  public selNode: ConfigSettingsNode;
   public settings: Settings;
   public version = '';
   public information: GetInfoRoot = {};
@@ -153,7 +153,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.ChildNavClicked.emit('showData');
   }
 
-  onNodeSelectionChange(selNodeValue: LightningNode) {
+  onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
     this.selNode = selNodeValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));

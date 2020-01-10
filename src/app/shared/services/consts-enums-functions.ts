@@ -9,11 +9,11 @@ export function getPaginatorLabel(field: string) {
 export const CURRENCY_UNITS = [ 'Sats', 'BTC' ];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 export const FIAT_CURRENCY_UNITS = [
-  {id: 'USD', name: 'United States Dollar'}, 
+  {id: 'USD', name: 'USD'}, 
   {id: 'AUD', name: 'AUD'}, {id: 'BRL', name: 'BRL'}, {id: 'CAD', name: 'CAD'}, 
   {id: 'CHF', name: 'CHF'}, {id: 'CLP', name: 'CLP'}, {id: 'CNY', name: 'CNY'}, 
-  {id: 'DKK', name: 'DKK'}, {id: 'EUR', name: 'EUR'}, {id: 'GBP', name: 'Pound'},
-  {id: 'HKD', name: 'HKD'}, {id: 'INR', name: 'Indian Rupee'}, {id: 'ISK', name: 'ISK'}, 
+  {id: 'DKK', name: 'DKK'}, {id: 'EUR', name: 'EUR'}, {id: 'GBP', name: 'GBP'},
+  {id: 'HKD', name: 'HKD'}, {id: 'INR', name: 'INR'}, {id: 'ISK', name: 'ISK'}, 
   {id: 'JPY', name: 'JPY'}, {id: 'KRW', name: 'KRW'}, {id: 'NZD', name: 'NZD'}, 
   {id: 'PLN', name: 'PLN'}, {id: 'RUB', name: 'RUB'}, {id: 'SEK', name: 'SEK'}, 
   {id: 'SGD', name: 'SGD'}, {id: 'THB', name: 'THB'}, {id: 'TWD', name: 'TWD'}
