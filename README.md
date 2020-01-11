@@ -58,17 +58,17 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 * Change directory to RTL folder:
 
 `$ cd RTL`
-* Fetch the dependencies and build the application by running:
 
-`$ npm install`
+* Fetch the production dependencies by running:
+`$ npm install --only=prod`
 
-#### Or: Update existing build
+#### Or: Update existing dependencies
 ```
 $ cd RTL
 $ git reset --hard HEAD
 $ git clean -f -d
 $ git pull
-$ npm install
+$ npm install --only=prod
 ```
 ### <a name="prep"></a>Prep for Execution
 RTL requires its own config file `RTL.conf`, to start the server and provide user authentication on the app.

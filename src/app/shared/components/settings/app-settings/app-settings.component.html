@@ -6,7 +6,7 @@
     </div>
     <div fxFlex="100" class="alert alert-warn">
       <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
-      <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">https://blockchain.info/ticker</a></strong> API to get conversion rates.</span>
+      <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">blockchain</a></strong> API to get conversion rates.</span>
     </div>
     <div fxFlex="100" class="alert alert-info">
       <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
@@ -21,7 +21,7 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <div fxFlex="30" fxLayoutAlign="start center" [matTooltip]="'Calls https://blockchain.info/ticker API to get conversion rates'" [matTooltipPosition]="'below'">
+      <div fxFlex="30" fxLayoutAlign="start center">
         <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" name="fiatConversion">Fiat Conversion</mat-slide-toggle>
         <mat-form-field>
           <mat-label>Currency Unit</mat-label>

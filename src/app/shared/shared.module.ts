@@ -14,7 +14,6 @@ import {
 } from '@angular/material';
 
 import { QRCodeModule } from 'angularx-qrcode';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -92,7 +91,6 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     MatTabsModule,
     MatSnackBarModule,
     QRCodeModule,
-    NgxChartsModule,
     RouterModule,
     HttpClientModule,
     PerfectScrollbarModule
@@ -156,7 +154,6 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     AutoFocusDirective,
     NonNegativeAmountValidator,
     QRCodeModule,
-    NgxChartsModule,
     RemoveLeadingZerosPipe,
     PerfectScrollbarModule
   ],
