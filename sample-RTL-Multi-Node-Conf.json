@@ -33,7 +33,7 @@
       "lnNode": "C Lighting Testnet",
       "lnImplementation": "CLT",
       "Authentication": {
-        "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 2>"
+        "macaroonPath": "<Complete path of the folder containing access.macaroon of CL REST for the node # 2>"
       },
       "Settings": {
         "userPersona": "MERCHANT",
