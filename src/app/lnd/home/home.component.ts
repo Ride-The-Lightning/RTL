@@ -181,6 +181,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.totalInboundLiquidity = this.totalInboundLiquidity + +channel.remote_balance;
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + +channel.local_balance;
       });
+
       if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.month_fee_sum >= 0) {
         this.flgChildInfoUpdated = true;
       } else {

@@ -22,7 +22,7 @@
         </mat-select>
       </mat-form-field>
       <div fxFlex="30" fxLayoutAlign="start center">
-        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" name="fiatConversion">Fiat Conversion</mat-slide-toggle>
+        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit" name="fiatConversion">Fiat Conversion</mat-slide-toggle>
         <mat-form-field>
           <mat-label>Currency Unit</mat-label>
           <mat-select [disabled]="!selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="3" name="currencyUnit" [required]="selNode.settings.fiatConversion">
