@@ -119,6 +119,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateSettings() {
+    if(this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) { return true; }
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));

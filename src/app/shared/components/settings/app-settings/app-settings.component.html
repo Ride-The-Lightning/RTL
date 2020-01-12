@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
-  <div fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1">
+  <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxFlex="100" class="mb-1">
       <fa-icon [icon]="faWrench" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Node Layout</span>
@@ -25,11 +25,12 @@
         <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" name="fiatConversion">Fiat Conversion</mat-slide-toggle>
         <mat-form-field>
           <mat-label>Currency Unit</mat-label>
-          <mat-select [disabled]="!selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="3" name="currencyUnit">
+          <mat-select [disabled]="!selNode.settings.fiatConversion" [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" tabindex="3" name="currencyUnit" [required]="selNode.settings.fiatConversion">
             <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
               {{currencyUnit.id}}
             </mat-option>
           </mat-select>
+          <mat-error *ngIf="selNode.settings.fiatConversion && !selNode.settings.currencyUnit">Currency unit is required.</mat-error>
         </mat-form-field>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1;else emptyBlock">
@@ -51,7 +52,7 @@
         <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
           <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
             <h4>Mode</h4>
-            <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()">
+            <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()" name="themeMode">
               <mat-radio-button tabindex="5" *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
               </mat-radio-button>
             </mat-radio-group>
@@ -75,6 +76,6 @@
         <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="11">Update</button>
       </div>
     </div>
-  </div>
+  </form>
 </div>
 <ng-template #emptyBlock><div fxLayout="row" fxFlex="30" fxLayoutAlign="start end"></div></ng-template>
