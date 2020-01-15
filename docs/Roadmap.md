@@ -21,8 +21,8 @@ LND's Loop-Out and Loop-In are important tools for channel re-balancing and will
 
 ![](../screenshots/Loop-In-info.png)
 
-### Multi-Language Support
-We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support
+### Eclair
+Support Eclair implementation.
 
 ### Advanced Node Monitoring
 Active node monitoring may be required to ensure reliability of routing nodes. Monitoring can include generating alerts for out-of-balance channels, inactive channels, disconnected peers, low activity channels etc. This feature will be required for professional node operaters running commercial routing nodes with a need to react to signals, requiring specific action to be taken.
@@ -32,3 +32,7 @@ RTL currently allows managing multiple nodes (LND or C-Lightning), via single UI
 
 ### RTL installer
 Automate RTL setup so that installation process is simpler than the current method of following the steps provided in the Readme file. This should also help with configuration of nginx and letsencrypt, to enable access via https. Contribution on this is more than welcome.
+
+### Multi-Language Support
+We can provide a customizable framework for multi-language support. But to extend support for other languages would require contribution from the development community, to use the framework and create multi-language support
+
