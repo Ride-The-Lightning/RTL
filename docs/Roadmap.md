@@ -22,7 +22,7 @@ LND's Loop-Out and Loop-In are important tools for channel re-balancing and will
 ![](../screenshots/Loop-In-info.png)
 
 ### Eclair
-Support Eclair implementation.
+Support [Eclair](https://github.com/ACINQ/eclair) implementation.
 
 ### Advanced Node Monitoring
 Active node monitoring may be required to ensure reliability of routing nodes. Monitoring can include generating alerts for out-of-balance channels, inactive channels, disconnected peers, low activity channels etc. This feature will be required for professional node operaters running commercial routing nodes with a need to react to signals, requiring specific action to be taken.
