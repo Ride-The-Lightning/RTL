@@ -45,3 +45,4 @@ RTL-Multi-Node-Conf-1.json
 /backup/*
 cookies
 sample-RTL-SSO.conf
+.env

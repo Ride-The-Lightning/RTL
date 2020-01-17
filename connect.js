@@ -92,21 +92,21 @@ connect.normalizePort = val => {
 connect.setMacaroonPath = (clArgs, config) => {
   common.nodes[0] = {};
   common.nodes[0].index = 1;
-  if(undefined !== clArgs.lndir) {
+  if(clArgs.lndir) {
     common.nodes[0].macaroon_path = clArgs.lndir;
-  } else if (undefined !== process.env.MACAROON_PATH) {
+  } else if (process.env.MACAROON_PATH) {
     common.nodes[0].macaroon_path = process.env.MACAROON_PATH;
   } else {
-    if(undefined !== config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
+    if(config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
       common.nodes[0].macaroon_path = config.Authentication.macroonPath;
-    } else if(undefined !== config.Authentication.macaroonPath && config.Authentication.macaroonPath !== '') {
+    } else if(config.Authentication.macaroonPath && config.Authentication.macaroonPath !== '') {
       common.nodes[0].macaroon_path = config.Authentication.macaroonPath;
     }
   }
 }
 
 connect.convertCustomToHash = (nodeSetupType) => {
-  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
+  common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   if(nodeSetupType === 'SINGLE') {
     try {
       RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
@@ -117,7 +117,7 @@ connect.convertCustomToHash = (nodeSetupType) => {
       delete config.Authentication;
       fs.writeFileSync(RTLConfFile, ini.stringify(config));
       fs.appendFileSync(RTLConfFile, ini.stringify(authTemp, { section: 'Authentication' }));
-      console.log('Please note that RTL has encrypted the plaintext password into its corresponding hash.');
+      console.log('Please note that RTL has hashed the plaintext password into its corresponding hash.');
       return authTemp.rtlPassHashed;
     } catch (err) {
       errMsg = errMsg + '\nrtlPass hash conversion failed!';
@@ -139,13 +139,63 @@ connect.convertCustomToHash = (nodeSetupType) => {
 }
 
 connect.validateSingleNodeConfig = (config) => {
+  connect.setSSOParams(config);
+
+  if(process.env.LN_IMPLEMENTATION) {
+    common.nodes[0].ln_implementation = process.env.LN_IMPLEMENTATION;
+  } else if (config.Settings.lnImplementation && config.Settings.lnImplementation !== '') {
+    common.nodes[0].ln_implementation = config.Settings.lnImplementation;
+  } else {
+    common.nodes[0].ln_implementation = 'LND';
+  }
+  if(!+common.rtl_sso) {
+    if(process.env.NODE_AUTH_TYPE) {
+      common.node_auth_type = process.env.NODE_AUTH_TYPE;
+    } else {
+      if(config.Authentication.nodeAuthType === '' ||  undefined === config.Authentication.nodeAuthType) {
+        errMsg = errMsg + '\nPlease set Node Auth Type through environment or RTL.conf!';
+      } else {
+        common.node_auth_type = config.Authentication.nodeAuthType;
+      }
+    }
+
+    if (process.env.RTL_PASS) {
+      common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
+    } else if (config.Authentication.rtlPassHashed !== '' && config.Authentication.rtlPassHashed) {
+      common.rtl_pass = config.Authentication.rtlPassHashed;
+    } else if (config.Authentication.rtlPass !== '' && config.Authentication.rtlPass) {
+      common.rtl_pass = connect.convertCustomToHash('SINGLE');
+    }
+    
+    if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
+      errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment or RTL.conf';
+    }
+
+    if(process.env.LND_CONFIG_PATH) {
+      common.nodes[0].config_path = process.env.LND_CONFIG_PATH;
+    } else if (process.env.CONFIG_PATH) {
+      common.nodes[0].config_path = process.env.CONFIG_PATH;
+    } else {
+      if(config.Authentication.lndConfigPath !== '' &&  config.Authentication.lndConfigPath) {
+        common.nodes[0].config_path = config.Authentication.lndConfigPath;
+      } else if(config.Authentication.ConfigPath !== '' &&  config.Authentication.ConfigPath) {
+        common.nodes[0].config_path = config.Authentication.ConfigPath;
+      } else {
+        if(upperCase(common.node_auth_type) === 'DEFAULT') {
+          errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment or RTL.conf!';
+        }    
+      }
+    }
+
+  }
+
   if(common.nodes[0].macaroon_path === '' || undefined === common.nodes[0].macaroon_path) {
     errMsg = 'Please set macaroon path through environment or RTL.conf!';
   }
   
-  if(undefined !== process.env.LND_SERVER_URL) {
+  if(process.env.LND_SERVER_URL) {
     common.nodes[0].ln_server_url = process.env.LND_SERVER_URL;
-  } else if(undefined !== process.env.LN_SERVER_URL) {
+  } else if(process.env.LN_SERVER_URL) {
     common.nodes[0].ln_server_url = process.env.LN_SERVER_URL;
   } else {
     if(
@@ -155,103 +205,55 @@ connect.validateSingleNodeConfig = (config) => {
     ) {
       errMsg = errMsg + '\nPlease set Server URL through environment or RTL.conf!';
     } else {
-      if (config.Settings.lndServerUrl !== '' &&  undefined !== config.Settings.lndServerUrl) {
+      if (config.Settings.lndServerUrl !== '' &&  config.Settings.lndServerUrl) {
         common.nodes[0].ln_server_url = config.Settings.lndServerUrl;
-      } else if (config.Authentication.lndServerUrl !== '' &&  undefined !== config.Authentication.lndServerUrl) {
+      } else if (config.Authentication.lndServerUrl !== '' &&  config.Authentication.lndServerUrl) {
         common.nodes[0].ln_server_url = config.Authentication.lndServerUrl;
-      } else if (config.Settings.lnServerUrl !== '' &&  undefined !== config.Settings.lnServerUrl) {
+      } else if (config.Settings.lnServerUrl !== '' &&  config.Settings.lnServerUrl) {
         common.nodes[0].ln_server_url = config.Settings.lnServerUrl;
       } 
     }
   }
 
-  if(undefined !== process.env.NODE_AUTH_TYPE) {
-    common.node_auth_type = process.env.NODE_AUTH_TYPE;
-  } else {
-    if(config.Authentication.nodeAuthType === '' ||  undefined === config.Authentication.nodeAuthType) {
-      errMsg = errMsg + '\nPlease set Node Auth Type through environment or RTL.conf!';
-    } else {
-      common.node_auth_type = config.Authentication.nodeAuthType;
-    }
-  }
-
-  if(undefined !== process.env.LND_CONFIG_PATH) {
-    common.nodes[0].config_path = process.env.LND_CONFIG_PATH;
-  } else if (undefined !== process.env.CONFIG_PATH) {
-    common.nodes[0].config_path = process.env.CONFIG_PATH;
-  } else {
-    if(config.Authentication.lndConfigPath !== '' &&  undefined !== config.Authentication.lndConfigPath) {
-      common.nodes[0].config_path = config.Authentication.lndConfigPath;
-    } else if(config.Authentication.ConfigPath !== '' &&  undefined !== config.Authentication.ConfigPath) {
-      common.nodes[0].config_path = config.Authentication.ConfigPath;
-    } else {
-      if(upperCase(common.node_auth_type) === 'DEFAULT') {
-        errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment or RTL.conf!';
-      }    
-    }
-  }
-
-  if(undefined !== process.env.BITCOIND_CONFIG_PATH) {
+  if(process.env.BITCOIND_CONFIG_PATH) {
     common.nodes[0].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH;
   } else {
-    if(config.Settings.bitcoindConfigPath !== '' &&  undefined !== config.Settings.bitcoindConfigPath) {
+    if(config.Settings.bitcoindConfigPath !== '' &&  config.Settings.bitcoindConfigPath) {
       common.nodes[0].bitcoind_config_path = config.Settings.bitcoindConfigPath;
-    } else if(config.Authentication.bitcoindConfigPath !== '' &&  undefined !== config.Authentication.bitcoindConfigPath) {
+    } else if(config.Authentication.bitcoindConfigPath !== '' &&  config.Authentication.bitcoindConfigPath) {
       common.nodes[0].bitcoind_config_path = config.Authentication.bitcoindConfigPath;
     }
   }
 
-  if(undefined !== process.env.CHANNEL_BACKUP_PATH) {
-    common.nodes[0].channel_backup_path = process.env.CHANNEL_BACKUP_PATH;
-  } else {
-    if(config.Settings.channelBackupPath !== '' &&  undefined !== config.Settings.channelBackupPath) {
-      common.nodes[0].channel_backup_path = config.Settings.channelBackupPath;
+  if(common.ln_implementation === 'LND') {
+    if(process.env.CHANNEL_BACKUP_PATH) {
+      common.nodes[0].channel_backup_path = process.env.CHANNEL_BACKUP_PATH;
     } else {
-      common.nodes[0].channel_backup_path = common.rtl_conf_file_path + common.path_separator + 'backup';
-    }
-    try {
-      connect.createDirectory(common.nodes[0].channel_backup_path);
-      let exists = fs.existsSync(common.nodes[0].channel_backup_path + common.path_separator + 'channel-all.bak');
-      if (!exists) {
-        try {
-          var createStream = fs.createWriteStream(common.nodes[0].channel_backup_path + common.path_separator + 'channel-all.bak');
-          createStream.end();
-        } catch (err) {
-          console.error('Something went wrong while creating backup file: \n' + err);
-        }
-      }    
-    } catch (err) {
-      console.error('Something went wrong while creating backup file: \n' + err);
+      if(config.Settings.channelBackupPath !== '' &&  config.Settings.channelBackupPath) {
+        common.nodes[0].channel_backup_path = config.Settings.channelBackupPath;
+      } else {
+        common.nodes[0].channel_backup_path = common.rtl_conf_file_path + common.path_separator + 'backup';
+      }
+      try {
+        connect.createDirectory(common.nodes[0].channel_backup_path);
+        let exists = fs.existsSync(common.nodes[0].channel_backup_path + common.path_separator + 'channel-all.bak');
+        if (!exists) {
+          try {
+            var createStream = fs.createWriteStream(common.nodes[0].channel_backup_path + common.path_separator + 'channel-all.bak');
+            createStream.end();
+          } catch (err) {
+            console.error('Something went wrong while creating backup file: \n' + err);
+          }
+        }    
+      } catch (err) {
+        console.error('Something went wrong while creating backup file: \n' + err);
+      }
     }
   }
 
-  if(undefined !== process.env.LN_IMPLEMENTATION) {
-    common.ln_implementation = process.env.LN_IMPLEMENTATION;
-  } else if (config.lnImplementation && config.lnImplementation !== '') {
-    common.ln_implementation = config.lnImplementation;
-  } else {
-    common.ln_implementation = 'LND';
-  }
-
-  if(!+config.SSO.rtlSSO) {
-    if (undefined !== process.env.RTL_PASS) {
-      common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
-    } else if (config.Authentication.rtlPassHashed !== '' && undefined !== config.Authentication.rtlPassHashed) {
-      common.rtl_pass = config.Authentication.rtlPassHashed;
-    } else if (config.Authentication.rtlPass !== '' && undefined !== config.Authentication.rtlPass) {
-      common.rtl_pass = connect.convertCustomToHash('SINGLE');
-    }
-  }
-  
-	if (upperCase(common.node_auth_type) === 'CUSTOM' && (common.rtl_pass === '' || undefined === common.rtl_pass)) {
-		errMsg = errMsg + '\nCustom Node Authentication can be set with RTL password only. Please set RTL Password through environment or RTL.conf';
-	}
-
-	if (undefined !== process.env.ENABLE_LOGGING) {
-		common.nodes[0].enable_logging = process.env.ENABLE_LOGGING;
-	} else if (undefined !== config.Settings.enableLogging) {
+  if (config.Settings.enableLogging) {
 		common.nodes[0].enable_logging = config.Settings.enableLogging;
-	} else if (undefined !== config.Authentication.enableLogging) {
+	} else if (config.Authentication.enableLogging) {
 		common.nodes[0].enable_logging = config.Authentication.enableLogging;
 	}
 	if (common.nodes[0].enable_logging) {
@@ -272,27 +274,22 @@ connect.validateSingleNodeConfig = (config) => {
 		}
 	}
 
-  if (process.env.FIAT_CONVERSION) {
-		common.nodes[0].fiat_conversion = process.env.FIAT_CONVERSION;
-	} else if (undefined !== config.Settings.fiatConversion) {
+  if (config.Settings.fiatConversion) {
 		common.nodes[0].fiat_conversion = config.Settings.fiatConversion;
 	} else {
     common.nodes[0].fiat_conversion = false;
   }
 
-  if (process.env.FIAT_CONVERSION && process.env.CURRENCY_UNIT) {
-		common.nodes[0].currency_unit = process.env.CURRENCY_UNIT;
-	} else if (config.Settings.fiatConversion && config.Settings.currencyUnit) {
+  if (config.Settings.fiatConversion && config.Settings.currencyUnit) {
 		common.nodes[0].currency_unit = config.Settings.currencyUnit;
   }
 
-  if (undefined !== process.env.PORT) {
+  if (process.env.PORT) {
 		common.port = connect.normalizePort(process.env.PORT);
-	} else if (undefined !== config.Settings.port) {
+	} else if (config.Settings.port) {
 		common.port = connect.normalizePort(config.Settings.port);
 	}
 
-  connect.setSSOParams(config);
 	if (errMsg !== '') {
 		throw new Error(errMsg);
   }
@@ -302,17 +299,17 @@ connect.validateSingleNodeConfig = (config) => {
 connect.validateMultiNodeConfig = (config) => {
   if(!+config.SSO.rtlSSO) {
     common.node_auth_type = 'CUSTOM';
-    if (undefined !== process.env.RTL_PASS) {
+    if (process.env.RTL_PASS) {
       common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
-    } else if (config.multiPassHashed !== '' && undefined !== config.multiPassHashed) {
+    } else if (config.multiPassHashed !== '' && config.multiPassHashed) {
       common.rtl_pass = config.multiPassHashed;
-    } else if (config.multiPass !== '' && undefined !== config.multiPass) {
+    } else if (config.multiPass !== '' && config.multiPass) {
       common.rtl_pass = connect.convertCustomToHash('MULTI');
     } else {
       errMsg = errMsg + '\nMulti Node Authentication can be set with multiPass only. Please set MultiPass in RTL-Multi-Node-Conf.json';
     }
   }
-  common.port = (undefined !== config.port) ? connect.normalizePort(config.port) : 3000;
+  common.port = (config.port) ? connect.normalizePort(config.port) : 3000;
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
       common.nodes[idx] = {};
@@ -339,16 +336,16 @@ connect.validateMultiNodeConfig = (config) => {
         common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
       }
 
-      if (undefined !== node.Authentication && undefined !== node.Authentication.lndConfigPath) {
+      if (node.Authentication && node.Authentication.lndConfigPath) {
         common.nodes[idx].config_path = node.Authentication.lndConfigPath;
-      } else if (undefined !== node.Authentication && undefined !== node.Authentication.configPath) {
+      } else if (node.Authentication && node.Authentication.configPath) {
         common.nodes[idx].config_path = node.Authentication.configPath;
       } else {
         common.nodes[idx].config_path = '';
       }
-      common.nodes[idx].bitcoind_config_path = (undefined !== node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-      common.nodes[idx].enable_logging = (undefined !== node.Settings.enableLogging) ? node.Settings.enableLogging : false;
-      common.nodes[idx].channel_backup_path = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
+      common.nodes[idx].bitcoind_config_path = (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
+      common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? node.Settings.enableLogging : false;
+      common.nodes[idx].channel_backup_path = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
@@ -389,22 +386,22 @@ connect.validateMultiNodeConfig = (config) => {
 }
 
 connect.setSSOParams = (config) => {
-	if (undefined !== process.env.RTL_SSO) {
+	if (process.env.RTL_SSO) {
 		common.rtl_sso = process.env.RTL_SSO;
-	} else if (undefined !== config.SSO && undefined !== config.SSO.rtlSSO) {
+	} else if (config.SSO && config.SSO.rtlSSO) {
 		common.rtl_sso = config.SSO.rtlSSO;
 	}
 
 	if (+common.rtl_sso) {
-    if (undefined !== process.env.LOGOUT_REDIRECT_LINK) {
+    if (process.env.LOGOUT_REDIRECT_LINK) {
       common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
-    } else if (undefined !== config.SSO && undefined !== config.SSO.logoutRedirectLink) {
+    } else if (config.SSO && config.SSO.logoutRedirectLink) {
       common.logout_redirect_link = config.SSO.logoutRedirectLink;
     }
     
-    if (undefined !== process.env.RTL_COOKIE_PATH) {
+    if (process.env.RTL_COOKIE_PATH) {
       common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
-    } else if (undefined !== config.SSO && undefined !== config.SSO.rtlCookiePath) {
+    } else if (config.SSO && config.SSO.rtlCookiePath) {
       common.rtl_cookie_path = config.SSO.rtlCookiePath;
     } else {
       common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
@@ -476,28 +473,26 @@ connect.logEnvVariables = () => {
   if (common.multi_node_setup && common.nodes && common.nodes.length > 0) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
-      logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT_NODE_INDEX: ' + common.selectedNode.index});
+      logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
       logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: MULTI', node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'RTL_SSO: ' + common.rtl_sso, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link + '\r\n', node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
       logger.info({fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT_CONVERSION: ' + node.fiatConversion, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + node.currency_unit, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + node.ln_server_url, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiatConversion, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'LND SERVER URL: ' + node.ln_server_url, node});
     });  
   } else {
     if (!common.nodes[0].enable_logging) { return; }
     logger.info({fileName: 'Config Setup Variable', msg: 'NODE_SETUP: SINGLE'});
     logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port});
-    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.nodes[0].currency_unit});
-    logger.info({fileName: 'Config Setup Variable', msg: 'LND_SERVER_URL: ' + common.nodes[0].ln_server_url});
-    logger.info({fileName: 'Config Setup Variable', msg: 'FIAT_CONVERSION: ' + common.nodes[0].fiat_conversion});
-    logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY_UNIT: ' + common.nodes[0].currency_unit});
-    logger.info({fileName: 'Config Setup Variable', msg: 'RTL_SSO: ' + common.rtl_sso});
-    logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT_REDIRECT_LINK: ' + common.logout_redirect_link});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + common.nodes[0].ln_implementation});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + common.nodes[0].ln_server_url});
+    logger.info({fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso});
+    logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link});
   }
 }
 
@@ -570,19 +565,15 @@ connect.setMultiNodeConfiguration = (multiNodeFilePath) => {
 }
 
 connect.setSelectedNode = (config) => {
-  if(undefined !== process.env.DEFAULT_NODE_INDEX) {
-    common.selectedNode = common.findNode(process.env.DEFAULT_NODE_INDEX);
+  if(config.defaultNodeIndex) {
+    common.selectedNode = common.findNode(config.defaultNodeIndex);
   } else {
-    if(undefined !== config.defaultNodeIndex) {
-      common.selectedNode = common.findNode(config.defaultNodeIndex);
-    } else {
-      common.selectedNode = common.findNode(common.nodes[0].index);
-    }
-  }    
+    common.selectedNode = common.findNode(common.nodes[0].index);
+  }
 }
 
 connect.setServerConfiguration = () => {
-  common.rtl_conf_file_path = (undefined !== process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
+  common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH.substring(0, process.env.RTL_CONFIG_PATH.length - 9) : path.normalize(__dirname);
   singleNodeConfFile = common.rtl_conf_file_path + '/RTL.conf';
   multiNodeConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
   const singleNodeExists = fs.existsSync(singleNodeConfFile);

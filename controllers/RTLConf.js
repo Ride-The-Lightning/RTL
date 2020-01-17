@@ -32,19 +32,20 @@ exports.getRTLConfig = (req, res, next) => {
           configPath: common.nodes[0].config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
-        jsonConfig.Settings.channelBackupPath = (undefined !== jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
-        jsonConfig.Settings.flgSidenavOpened = (undefined !== jsonConfig.Settings.flgSidenavOpened) ? jsonConfig.Settings.flgSidenavOpened : true;
-        jsonConfig.Settings.flgSidenavPinned = (undefined !== jsonConfig.Settings.flgSidenavPinned) ? jsonConfig.Settings.flgSidenavPinned : true;
-        jsonConfig.Settings.menu = (undefined !== jsonConfig.Settings.menu) ? jsonConfig.Settings.menu : 'VERTICAL';
-        jsonConfig.Settings.menuType = (undefined !== jsonConfig.Settings.menuType) ? jsonConfig.Settings.menuType : 'REGULAR';
-        jsonConfig.Settings.fontSize = (undefined !== jsonConfig.Settings.fontSize) ? jsonConfig.Settings.fontSize : 'MEDIUM';
-        jsonConfig.Settings.themeMode = (undefined !== jsonConfig.Settings.themeMode) ? jsonConfig.Settings.themeMode : 'DAY';
-        jsonConfig.Settings.themeColor = (undefined !== jsonConfig.Settings.themeColor) ? jsonConfig.Settings.themeColor : 'PURPLE';
-        jsonConfig.Settings.satsToBTC = (undefined !== jsonConfig.Settings.satsToBTC) ? jsonConfig.Settings.satsToBTC : false;
+        jsonConfig.Settings.lnImplementation = (jsonConfig.Settings.lnImplementation) ? jsonConfig.Settings.lnImplementation : common.nodes[0].ln_implementation;
+        jsonConfig.Settings.channelBackupPath = (jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
+        jsonConfig.Settings.flgSidenavOpened = (jsonConfig.Settings.flgSidenavOpened) ? jsonConfig.Settings.flgSidenavOpened : true;
+        jsonConfig.Settings.flgSidenavPinned = (jsonConfig.Settings.flgSidenavPinned) ? jsonConfig.Settings.flgSidenavPinned : true;
+        jsonConfig.Settings.menu = (jsonConfig.Settings.menu) ? jsonConfig.Settings.menu : 'VERTICAL';
+        jsonConfig.Settings.menuType = (jsonConfig.Settings.menuType) ? jsonConfig.Settings.menuType : 'REGULAR';
+        jsonConfig.Settings.fontSize = (jsonConfig.Settings.fontSize) ? jsonConfig.Settings.fontSize : 'MEDIUM';
+        jsonConfig.Settings.themeMode = (jsonConfig.Settings.themeMode) ? jsonConfig.Settings.themeMode : 'DAY';
+        jsonConfig.Settings.themeColor = (jsonConfig.Settings.themeColor) ? jsonConfig.Settings.themeColor : 'PURPLE';
+        jsonConfig.Settings.satsToBTC = (jsonConfig.Settings.satsToBTC) ? jsonConfig.Settings.satsToBTC : false;
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: [{
           index: common.nodes[0].index,
           lnNode: 'SingleNode',
-          lnImplementation: '',
+          lnImplementation: jsonConfig.Settings.lnImplementation,
           settings: jsonConfig.Settings,
           authentication: authentication}] });
       }
@@ -82,15 +83,15 @@ exports.getRTLConfig = (req, res, next) => {
               if(node.Settings.bitcoindConfigPath) {
               authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
             }
-            node.Settings.channelBackupPath = (undefined !== node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
-            node.Settings.flgSidenavOpened = (undefined !== node.Settings.flgSidenavOpened) ? node.Settings.flgSidenavOpened : true;
-            node.Settings.flgSidenavPinned = (undefined !== node.Settings.flgSidenavPinned) ? node.Settings.flgSidenavPinned : true;
-            node.Settings.menu = (undefined !== node.Settings.menu) ? node.Settings.menu : 'VERTICAL';
-            node.Settings.menuType = (undefined !== node.Settings.menuType) ? node.Settings.menuType : 'REGULAR';
-            node.Settings.fontSize = (undefined !== node.Settings.fontSize) ? node.Settings.fontSize : 'MEDIUM';
-            node.Settings.themeMode = (undefined !== node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
-            node.Settings.themeColor = (undefined !== node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
-            node.Settings.satsToBTC = (undefined !== node.Settings.satsToBTC) ? node.Settings.satsToBTC : false;
+            node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
+            node.Settings.flgSidenavOpened = (node.Settings.flgSidenavOpened) ? node.Settings.flgSidenavOpened : true;
+            node.Settings.flgSidenavPinned = (node.Settings.flgSidenavPinned) ? node.Settings.flgSidenavPinned : true;
+            node.Settings.menu = (node.Settings.menu) ? node.Settings.menu : 'VERTICAL';
+            node.Settings.menuType = (node.Settings.menuType) ? node.Settings.menuType : 'REGULAR';
+            node.Settings.fontSize = (node.Settings.fontSize) ? node.Settings.fontSize : 'MEDIUM';
+            node.Settings.themeMode = (node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
+            node.Settings.themeColor = (node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
+            node.Settings.satsToBTC = (node.Settings.satsToBTC) ? node.Settings.satsToBTC : false;
             nodesArr.push({
               index: node.index,
               lnNode: node.lnNode,
@@ -224,19 +225,19 @@ exports.getConfig = (req, res, next) => {
       });
     } else {
       const jsonConfig = (JSONFormat) ? JSON.parse(data) : ini.parse(data);
-      if (undefined !== jsonConfig.Authentication && undefined !== jsonConfig.Authentication.rtlPass) {
+      if (jsonConfig.Authentication && jsonConfig.Authentication.rtlPass) {
         jsonConfig.Authentication.rtlPass = jsonConfig.Authentication.rtlPass.replace(/./g, '*');
       }
-      if (undefined !== jsonConfig.Bitcoind && undefined !== jsonConfig.Bitcoind['bitcoind.rpcpass']) {
+      if (jsonConfig.Bitcoind && jsonConfig.Bitcoind['bitcoind.rpcpass']) {
         jsonConfig.Bitcoind['bitcoind.rpcpass'] = jsonConfig.Bitcoind['bitcoind.rpcpass'].replace(/./g, '*');
       }
-      if (undefined !== jsonConfig['bitcoind.rpcpass']) {
+      if (jsonConfig['bitcoind.rpcpass']) {
         jsonConfig['bitcoind.rpcpass'] = jsonConfig['bitcoind.rpcpass'].replace(/./g, '*');
       }
-      if (undefined !== jsonConfig['rpcpassword']) {
+      if (jsonConfig['rpcpassword']) {
         jsonConfig['rpcpassword'] = jsonConfig['rpcpassword'].replace(/./g, '*');
       }
-      if (undefined !== jsonConfig.multiPass) {
+      if (jsonConfig.multiPass) {
         jsonConfig.multiPass = jsonConfig.multiPass.replace(/./g, '*');
       }
       const responseJSON = (JSONFormat) ? jsonConfig : ini.stringify(jsonConfig);
