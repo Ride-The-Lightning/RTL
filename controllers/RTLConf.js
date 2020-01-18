@@ -32,8 +32,8 @@ exports.getRTLConfig = (req, res, next) => {
           configPath: common.nodes[0].config_path,
           bitcoindConfigPath: common.nodes[0].bitcoind_config_path
         };
-        jsonConfig.Settings.lnImplementation = (jsonConfig.Settings.lnImplementation) ? jsonConfig.Settings.lnImplementation : common.nodes[0].ln_implementation;
-        jsonConfig.Settings.channelBackupPath = (jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
+        jsonConfig.Settings.lnImplementation = (common.nodes[0].ln_implementation) ? common.nodes[0].ln_implementation : (jsonConfig.Settings.lnImplementation ? jsonConfig.Settings.lnImplementation : 'LND');
+        jsonConfig.Settings.channelBackupPath = common.nodes[0].channel_backup_path ? common.nodes[0].channel_backup_path : (jsonConfig.Settings.channelBackupPath) ? jsonConfig.Settings.channelBackupPath : common.nodes[0].channel_backup_path;
         jsonConfig.Settings.flgSidenavOpened = (jsonConfig.Settings.flgSidenavOpened) ? jsonConfig.Settings.flgSidenavOpened : true;
         jsonConfig.Settings.flgSidenavPinned = (jsonConfig.Settings.flgSidenavPinned) ? jsonConfig.Settings.flgSidenavPinned : true;
         jsonConfig.Settings.menu = (jsonConfig.Settings.menu) ? jsonConfig.Settings.menu : 'VERTICAL';
