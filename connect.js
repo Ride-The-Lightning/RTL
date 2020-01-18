@@ -41,40 +41,27 @@ connect.setDefaultConfig = () => {
       break;
   }  
   return {
-    port: "3000",
-    defaultNodeIndex: 1,
-    multiPass: "password",
     SSO: {
       rtlSSO: 0,
       rtlCookiePath: "",
       logoutRedirectLink: ""
     },
-    nodes: [
-      {
-        index: 1,
-        lnNode: "LND Testnet",
-        lnImplementation: "LND",
-        Authentication: {
-          macaroonPath: macaroonPath,
-          configPath: configPath,
-        },
-        Settings: {
-          userPersona: 'OPERATOR',
-          flgSidenavOpened: true,
-          flgSidenavPinned: true,
-          menu: "VERTICAL",
-          menuType: "REGULAR",
-          fontSize: "MEDIUM",
-          themeMode: "DAY",
-          themeColor: "PURPLE",
-          satsToBTC: false,
-          channelBackupPath: channelBackupPath,
-          enableLogging: "true",
-          lndServerUrl: "https://localhost:8080/v1",
-          fiatConversion: false
-        }
-      }
-    ]
+    Authentication: {
+      macaroonPath: macaroonPath,
+      configPath: configPath,
+      nodeAuthType:"CUSTOM",
+      rtlPass:"password"
+    },
+    Settings: {
+      port: "3000",
+      lnImplementation: "LND",      
+      userPersona: 'MERCHANT',
+      themeMode: "DAY",
+      themeColor: "PURPLE",
+      enableLogging: false,
+      lnServerUrl: "https://localhost:8080/v1",
+      fiatConversion: false
+    }
   };
 }
 
@@ -178,8 +165,8 @@ connect.validateSingleNodeConfig = (config) => {
     } else {
       if(config.Authentication.lndConfigPath !== '' &&  config.Authentication.lndConfigPath) {
         common.nodes[0].config_path = config.Authentication.lndConfigPath;
-      } else if(config.Authentication.ConfigPath !== '' &&  config.Authentication.ConfigPath) {
-        common.nodes[0].config_path = config.Authentication.ConfigPath;
+      } else if(config.Authentication.configPath && config.Authentication.configPath.trim() !== '') {
+        common.nodes[0].config_path = config.Authentication.configPath;
       } else {
         if(upperCase(common.node_auth_type) === 'DEFAULT') {
           errMsg = errMsg + '\nDefault Node Authentication can be set with LND Config Path only. Please set LND Config Path through environment or RTL.conf!';
