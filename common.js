@@ -16,6 +16,10 @@ common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
 
+common.getSelLoopServerUrl = () => {
+  return common.selectedNode.loop_server_url;
+};
+
 common.getSelLNServerUrl = () => {
   return common.selectedNode.ln_server_url;
 };
@@ -54,7 +58,7 @@ common.updateSelectedNodeOptions = () => {
 }
 
 common.setOptions = () => {
-  if (undefined !== common.nodes[0].options && undefined !== common.nodes[0].options.headers) { return; }
+  if ( common.nodes[0].options &&  common.nodes[0].options.headers) { return; }
   if (common.nodes && common.nodes.length > 0) {
     common.nodes.forEach(node => {
       node.options = {

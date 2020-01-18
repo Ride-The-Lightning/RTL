@@ -57,7 +57,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
       });
       this.channels = new MatTableDataSource([]);
       this.channels.data = [];
-      if (undefined !== rtlStore.allChannels) {
+      if ( rtlStore.allChannels) {
         this.channels = new MatTableDataSource<Channel>([...rtlStore.allChannels]);
         this.channels.data = rtlStore.allChannels;
       }

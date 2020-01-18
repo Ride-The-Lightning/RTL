@@ -86,14 +86,14 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
-      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
+      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
+        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -102,7 +102,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   onSendPayment() {
     if(!this.paymentRequest) { return true; } 
-    if (undefined !== this.paymentDecoded.timestamp_str) {
+    if ( this.paymentDecoded.timestamp_str) {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
@@ -111,8 +111,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if (undefined !== this.paymentDecoded.timestamp_str) {
-          if (undefined === this.paymentDecoded.num_satoshis) {
+        if ( this.paymentDecoded.timestamp_str) {
+          if (!this.paymentDecoded.num_satoshis) {
             this.paymentDecoded.num_satoshis = '0';
           }
           this.sendPayment();
@@ -127,7 +127,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   sendPayment() {
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
-    if (undefined === this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
+    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
         const reorderedPaymentDecoded = [
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100}],

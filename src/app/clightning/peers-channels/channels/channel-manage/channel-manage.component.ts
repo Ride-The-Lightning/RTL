@@ -53,7 +53,7 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.peers = rtlStore.peers;
       this.peers.forEach(peer => {
-        if (undefined === peer.alias || peer.alias === '') {
+        if (!peer.alias || peer.alias === '') {
           peer.alias = peer.id.substring(0, 15) + '...';
         }
       });

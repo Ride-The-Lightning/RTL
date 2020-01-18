@@ -71,7 +71,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.nodeData;
-      this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+      this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
         this.flgLoading[0] = false;

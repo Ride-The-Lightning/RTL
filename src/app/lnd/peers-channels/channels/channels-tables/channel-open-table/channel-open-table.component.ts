@@ -72,11 +72,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if (undefined !== rtlStore.allChannels) {
+      if ( rtlStore.allChannels) {
         this.loadChannelsTable(rtlStore.allChannels);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.allChannels) ? false : true;
+        this.flgLoading[0] = ( rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });

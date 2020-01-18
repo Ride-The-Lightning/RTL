@@ -52,7 +52,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.peers = rtlStore.peers;
       this.peers.forEach(peer => {
-        if (undefined === peer.alias || peer.alias === '') {
+        if (!peer.alias || peer.alias === '') {
           peer.alias = peer.pub_key.substring(0, 15) + '...';
         }
       });
@@ -141,7 +141,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
           this.lndEffects.setGraphNode
           .pipe(take(1))
           .subscribe(graphNode => {
-            host = (undefined === graphNode.node.addresses || undefined === graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+            host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
             this.connectPeerWithParams(pubkey, host);
           });
         }

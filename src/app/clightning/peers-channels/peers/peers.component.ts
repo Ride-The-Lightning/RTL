@@ -77,7 +77,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.balance.totalBalance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if (undefined !== rtlStore.peers) {
+      if ( rtlStore.peers) {
         this.peers = new MatTableDataSource<PeerCL>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);

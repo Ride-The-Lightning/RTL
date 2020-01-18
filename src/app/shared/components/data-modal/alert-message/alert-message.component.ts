@@ -34,7 +34,7 @@ export class AlertMessageComponent implements OnInit {
     this.showCopyField = this.data.showCopyField ? this.data.showCopyField : '';
 
     if (this.data.type === AlertTypeEnum.ERROR) {
-      if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObjs.length <= 0) {
+      if (!this.data.message && !this.data.titleMessage && this.messageObjs.length <= 0) {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }

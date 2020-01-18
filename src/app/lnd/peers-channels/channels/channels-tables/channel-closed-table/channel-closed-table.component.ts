@@ -63,11 +63,11 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      if (undefined !== rtlStore.closedChannels) {
+      if ( rtlStore.closedChannels) {
         this.loadClosedChannelsTable(rtlStore.closedChannels);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.closedChannels) ? false : true;
+        this.flgLoading[0] = ( rtlStore.closedChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });

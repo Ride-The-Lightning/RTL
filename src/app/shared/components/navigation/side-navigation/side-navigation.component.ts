@@ -73,8 +73,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
       this.information = rtlStore.nodeData;
-      if (undefined !== this.information.identity_pubkey) {
-        if (undefined !== this.information.chains && typeof this.information.chains[0] === 'string') {
+      if ( this.information.identity_pubkey) {
+        if ( this.information.chains && typeof this.information.chains[0] === 'string') {
           this.informationChain.chain = this.information.chains[0].toString();
           this.informationChain.network = (this.information.testnet) ? 'Testnet' : 'Mainnet';
         } else if (typeof this.information.chains[0] === 'object' && this.information.chains[0].hasOwnProperty('chain')) {
@@ -87,7 +87,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         this.informationChain.network = '';
       }
 
-      this.flgLoading = (undefined !== this.information.identity_pubkey) ? false : true;
+      this.flgLoading = ( this.information.identity_pubkey) ? false : true;
       if (window.innerWidth <= 414) {
         this.smallScreen = true;
       }

@@ -10,7 +10,7 @@ function getFilesList(callback) {
   let response = {all_restore_exists: false, files: []};
   fs.readdir(common.selectedNode.channel_backup_path + common.path_separator + 'restore', function (err, files) {
     if (err && err.code !== 'ENOENT' && err.errno !== -4058) { response = { message: 'Channels Restore List Failed!', error: err } }
-    if(undefined !== files && files.length > 0) {
+    if( files && files.length > 0) {
       files.forEach(file => {
         if (!file.includes('.restored')) {
           if (file === 'channel-all.bak') {

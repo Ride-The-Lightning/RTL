@@ -10,7 +10,7 @@ exports.getBalance = (req, res, next) => {
   options.qs = req.query;
   request(options).then((body) => {
     logger.info({fileName: 'Balance', msg: 'Request params: ' + JSON.stringify(req.params) + 'Request Query: ' + JSON.stringify(req.query) + ' Balance Received: ' + JSON.stringify(body)});
-    if(undefined !== body) {
+    if( body) {
       if (upperCase(req.params.source) === 'BLOCKCHAIN') {
         if (!body.total_balance) { body.total_balance = 0; }
         if (!body.confirmed_balance) { body.confirmed_balance = 0; }

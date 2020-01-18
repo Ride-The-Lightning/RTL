@@ -49,7 +49,7 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((info) => {
             this.logger.info(info);
-            if (undefined === info.identity_pubkey) {
+            if (!info.identity_pubkey) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
@@ -1065,6 +1065,29 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
+  @Effect()
+  getLoopInTerms = this.actions$.pipe(
+    ofType(RTLActions.GET_LOOP_IN_TERMS),
+    mergeMap((action: RTLActions.GetLoopInTerms) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopInTerms'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/in/terms')
+        .pipe(
+          map((terms: any) => {
+            this.logger.info(terms);
+            console.warn(terms);
+            return {
+              type: RTLActions.SET_LOOP_IN_TERMS,
+              payload: terms
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('LoopInTerms', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+      }
+    ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (info.chains) {
@@ -1076,11 +1099,11 @@ export class LNDEffects implements OnDestroy {
         info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
         info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
       }
-      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+      info.version = (!info.version) ? '' : info.version.split(' ')[0];
     } else {
       info.smaller_currency_unit = CurrencyUnitEnum.SATS;
       info.currency_unit = CurrencyUnitEnum.BTC;
-      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+      info.version = (!info.version) ? '' : info.version.split(' ')[0];
     }
     const node_data = {
       identity_pubkey: info.identity_pubkey,

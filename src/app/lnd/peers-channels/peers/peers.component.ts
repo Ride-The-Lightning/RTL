@@ -77,7 +77,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if (undefined !== rtlStore.peers) {
+      if ( rtlStore.peers) {
         this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);
@@ -117,7 +117,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       this.lndEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
-        host = (undefined === graphNode.node.addresses || undefined === graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
         this.connectPeerWithParams(pubkey, host);
       });
     }

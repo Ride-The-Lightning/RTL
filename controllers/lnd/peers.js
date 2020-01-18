@@ -20,13 +20,13 @@ exports.getPeers = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/peers';
   request(options).then(function (body) {
-    let peers = (undefined === body.peers) ? [] : body.peers;
+    let peers = (!body.peers) ? [] : body.peers;
     Promise.all(
       peers.map(peer => {
         return getAliasForPeers(peer);
       }))
     .then(function(values) {
-      if (undefined !== body.peers) {
+      if ( body.peers) {
         body.peers = common.sortDescByKey(body.peers, 'alias');
       }
       logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(body)});
@@ -50,21 +50,21 @@ exports.postPeer = (req, res, next) => {
   });
   request.post(options, (error, response, body) => {
     logger.info({fileName: 'Peers', msg: 'Peer Added: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Adding peer failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       options.url = common.getSelLNServerUrl() + '/peers';
       request(options).then(function (body) {
-        let peers = (undefined === body.peers) ? [] : body.peers;
+        let peers = (!body.peers) ? [] : body.peers;
         Promise.all(
           peers.map(peer => {
             return getAliasForPeers(peer);
           }))
         .then(function(values) {
-          if (undefined !== body.peers) {
+          if ( body.peers) {
             body.peers = common.sortDescByKey(body.peers, 'alias');
             logger.info({fileName: 'Peers', msg: 'Peer with Alias: ' + JSON.stringify(body)});
             body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
@@ -89,10 +89,10 @@ exports.deletePeer = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/peers/' + req.params.peerPubKey;
   request.delete(options).then((body) => {
     logger.info({fileName: 'Peers', msg: 'Detach Peer Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Detach peer failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       logger.info({fileName: 'Peers', msg: 'Peer Detached: ' + req.params.peerPubKey});

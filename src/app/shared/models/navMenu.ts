@@ -1,4 +1,4 @@
-import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faTools, faProjectDiagram, faDownload, faServer, faPercentage } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faLink, faBolt, faExchangeAlt, faUsers, faMapSigns, faQuestion, faSearch, faTools, faProjectDiagram, faDownload, faServer, faPercentage, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { UserPersonaEnum } from '../services/consts-enums-functions';
 
 export const MENU_DATA: MenuRootNode = {
@@ -14,8 +14,9 @@ export const MENU_DATA: MenuRootNode = {
     ]},
     {id: 5, parentId: 0, name: 'Network', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/network', userPersona: UserPersonaEnum.OPERATOR},
     {id: 6, parentId: 0, name: 'Node/Network', iconType: 'FA', icon: faServer, link: '/lnd/network', userPersona: UserPersonaEnum.MERCHANT},
-    {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
-    {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+    {id: 7, parentId: 0, name: 'Loop', iconType: 'FA', icon: faCircleNotch, link: '/lnd/loop', userPersona: UserPersonaEnum.ALL},
+    {id: 8, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
+    {id: 9, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}
   ],
   CLChildren: [
     {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/cl/home', userPersona: UserPersonaEnum.ALL},

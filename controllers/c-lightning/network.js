@@ -8,10 +8,10 @@ exports.getRoute = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/network/getRoute/' + req.params.destPubkey + '/' + req.params.amount;
   request(options).then((body) => {
     logger.info({fileName: 'Network', msg: 'Query Routes Received: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Fetching Query Routes Failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     }
     res.status(200).json({routes: body});

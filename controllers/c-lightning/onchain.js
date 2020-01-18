@@ -24,10 +24,10 @@ exports.onChainWithdraw = (req, res, next) => {
   logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'OnChain Withdraw Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);

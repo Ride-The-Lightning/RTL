@@ -40,6 +40,7 @@ import { ChannelStatusInfoComponent } from './home/channel-status-info/channel-s
 import { ChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
+import { LoopComponent } from './loop/loop.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -85,7 +86,8 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelStatusInfoComponent,
     ChannelCapacityInfoComponent,
     ChannelLiquidityInfoComponent,
-    NetworkInfoComponent
+    NetworkInfoComponent,
+    LoopComponent
   ],
   providers: [
     LNDUnlockedGuard

@@ -23,8 +23,9 @@ export class Settings {
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
+    public loopServerUrl?: string,
     public channelBackupPath?: string,
-    public currencyUnit?: string,
+    public currencyUnit?: string
   ) { }
 }
 

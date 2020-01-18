@@ -237,8 +237,8 @@ export class RTLEffects implements OnDestroy {
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
       map((postRes: any) => {
@@ -277,8 +277,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
       map((postRes: any) => {

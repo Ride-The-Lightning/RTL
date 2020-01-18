@@ -100,7 +100,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.logger.info(this.invoices);
   
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
+        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
     });
 

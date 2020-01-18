@@ -92,7 +92,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
       this.loadInvoicesTable(rtlStore.invoices.invoices ? rtlStore.invoices.invoices : []);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
+        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
     });
 

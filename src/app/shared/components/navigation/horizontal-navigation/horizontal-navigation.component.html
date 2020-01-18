@@ -1,10 +1,10 @@
 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
   <div fxFlex="70" fxLayoutAlign="start start">
     <div *ngFor="let menuNode of menuNodes">
-      <button mat-button *ngIf="undefined === menuNode.children" fxLayoutAlign="center center" class="horizontal-button" routerLinkActive="h-active-link" [routerLinkActiveOptions]="{exact: true}" routerLink="{{menuNode.link}}" (click)="onClick(menuNode)">
+      <button mat-button *ngIf="!menuNode.children" fxLayoutAlign="center center" class="horizontal-button" routerLinkActive="h-active-link" [routerLinkActiveOptions]="{exact: true}" routerLink="{{menuNode.link}}" (click)="onClick(menuNode)">
         <fa-icon *ngIf="menuNode.iconType === 'FA'" matTooltip="{{menuNode.name}}" [icon]="menuNode.icon" class="fa-icon-small"></fa-icon>
       </button>
-      <div *ngIf="undefined !== menuNode.children" fxLayoutAlign="start start" [matMenuTriggerFor]="childMenu">
+      <div *ngIf=" menuNode.children" fxLayoutAlign="start start" [matMenuTriggerFor]="childMenu">
         <button mat-button class="horizontal-button" fxLayoutAlign="center center">
           <fa-icon *ngIf="menuNode.iconType === 'FA'" matTooltip="{{menuNode.name}}" [icon]="menuNode.icon" class="fa-icon-small"></fa-icon>
         </button>

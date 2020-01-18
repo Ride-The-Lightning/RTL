@@ -26,6 +26,7 @@ const payReqRoutes = require("./routes/lnd/payReq");
 const paymentsRoutes = require("./routes/lnd/payments");
 const invoiceRoutes = require("./routes/lnd/invoices");
 const switchRoutes = require("./routes/lnd/switch");
+const loopRoutes = require('./routes/lnd/loop');
 
 const infoCLRoutes = require("./routes/c-lightning/getInfo");
 const feesCLRoutes = require("./routes/c-lightning/fees");
@@ -73,6 +74,7 @@ app.use(apiLNDRoot + "payreq", payReqRoutes);
 app.use(apiLNDRoot + "payments", paymentsRoutes);
 app.use(apiLNDRoot + "invoices", invoiceRoutes);
 app.use(apiLNDRoot + "switch", switchRoutes);
+app.use(apiLNDRoot + "loop", loopRoutes);
 
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);

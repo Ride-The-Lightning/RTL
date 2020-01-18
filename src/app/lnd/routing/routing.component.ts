@@ -50,7 +50,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      if (undefined !== rtlStore.forwardingHistory && undefined !== rtlStore.forwardingHistory.forwarding_events) {
+      if ( rtlStore.forwardingHistory &&  rtlStore.forwardingHistory.forwarding_events) {
         this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
         this.eventsData = rtlStore.forwardingHistory.forwarding_events;
       } else {
@@ -59,17 +59,17 @@ export class RoutingComponent implements OnInit, OnDestroy {
         this.eventsData = [];
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
+        this.flgLoading[0] = ( rtlStore.forwardingHistory) ? false : true;
       }
       this.logger.info(rtlStore);
     });
   }
 
   onEventsFetch() {
-    if (undefined === this.endDate || this.endDate == null) {
+    if (!this.endDate) {
       this.endDate = new Date();
     }
-    if (undefined === this.startDate || this.startDate == null) {
+    if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
     this.store.dispatch(new RTLActions.GetForwardingHistory({

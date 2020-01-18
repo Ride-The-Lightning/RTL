@@ -249,10 +249,10 @@ exports.getConfig = (req, res, next) => {
 exports.getCurrencyRates = (req, res, next) => {
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Fetching Rates Failed!",
-        error: (undefined === body) ? 'Error From External Server!' : body.error
+        error: (!body) ? 'Error From External Server!' : body.error
       });
     } else {
       res.status(200).json(body);

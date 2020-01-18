@@ -45,7 +45,7 @@
       </div>
     </mat-sidenav-content>>
   </mat-sidenav-container>
-  <div class="rtl-spinner" *ngIf="undefined === settings.themeColor">
+  <div class="rtl-spinner" *ngIf="!settings.themeColor">
     <mat-spinner color="accent"></mat-spinner>
     <h4>Loading RTL...</h4>
   </div>

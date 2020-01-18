@@ -15,17 +15,17 @@ exports.getAllForwardingEvents = (start, end, offset, max_events) => {
     options.form = JSON.stringify(options.form);
     logger.info({fileName: 'Switch', msg: 'Forwarding History Params: ' + options.form});
     request.post(options).then((body) => {
-      if(undefined === body || body.error) {
-        logger.error({fileName: 'Switch', lineNum: 31, msg: 'Forwarding History Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
+      if(!body || body.error) {
+        logger.error({fileName: 'Switch', lineNum: 31, msg: 'Forwarding History Error: ' + JSON.stringify((!body) ? 'Error From Server!' : body.error)});
         res.status(500).json({
           message: "Switch post failed!",
-          error: (undefined === body) ? 'Error From Server!' : body.error
+          error: (!body) ? 'Error From Server!' : body.error
         });
       } else {
         logger.info({fileName: 'Switch', msg: 'Forwarding History Received: ' + JSON.stringify(body)});
         if (body.forwarding_events && body.forwarding_events.length > 0) {
           body.forwarding_events.forEach(event => {
-            event.timestamp_str =  (undefined === event.timestamp) ? '' : common.convertTimestampToDate(event.timestamp);
+            event.timestamp_str =  (!event.timestamp) ? '' : common.convertTimestampToDate(event.timestamp);
           });
           body.forwarding_events = common.sortDescByKey(body.forwarding_events, 'timestamp');
         }

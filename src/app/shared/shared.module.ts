@@ -51,6 +51,7 @@ import { NonNegativeAmountValidator } from './directive/non-negative-amount.dire
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
   imports: [
@@ -201,7 +202,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    DecimalPipe, TitleCasePipe
+    DecimalPipe, TitleCasePipe, SocketService
   ]
 })
 export class SharedModule { }

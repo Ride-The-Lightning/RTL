@@ -131,12 +131,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+        this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       }
 
       this.fees = rtlStore.fees;
       if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (undefined !== this.fees.day_fee_sum) ? false : true;
+        this.flgLoading[1] = ( this.fees.day_fee_sum) ? false : true;
       }
       this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;
       if (this.flgLoading[2] !== 'error') {

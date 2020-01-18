@@ -8,19 +8,19 @@ exports.getBalance = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/getBalance';
   request(options).then((body) => {
     logger.info({fileName: 'Balance', msg: ' Balance Received: ' + JSON.stringify(body)});
-    if(undefined === body.totalBalance) {
+    if(!body.totalBalance) {
       body.totalBalance = 0;
       body.btc_totalBalance = 0;
     } else {
       body.btc_totalBalance = common.convertToBTC(body.totalBalance);
     }
-    if(undefined === body.confBalance) {
+    if(!body.confBalance) {
       body.confBalance = 0;
       body.btc_confBalance = 0;
     } else {
       body.btc_confBalance = common.convertToBTC(body.confBalance);
     }
-    if(undefined === body.unconfBalance) {
+    if(!body.unconfBalance) {
       body.unconfBalance = 0;
       body.btc_unconfBalance = 0;
     } else {

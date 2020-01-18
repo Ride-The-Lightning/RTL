@@ -69,8 +69,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
         this.showSettingOption = false;
       }
       this.information = rtlStore.nodeData;
-      this.smallerCurrencyUnit = (undefined !== this.information && undefined !== this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
-      this.currencyUnit = (undefined !== this.information && undefined !== this.information.currency_unit) ? this.information.currency_unit : 'BTC';
+      this.smallerCurrencyUnit = ( this.information &&  this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
+      this.currencyUnit = ( this.information &&  this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       if(!this.selNode.settings.fiatConversion) {
         this.selNode.settings.currencyUnit = null;
       }
