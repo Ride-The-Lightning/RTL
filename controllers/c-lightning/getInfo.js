@@ -1,18 +1,13 @@
 var request = require('request-promise');
 var common = require('../../common');
 var logger = require('../logger');
-var connect = require('../../connect');
 var options = {};
 
 exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
-  if(common.multi_node_setup) {
-    logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
-  } else {
-    logger.info({fileName:'GetInfo', msg: 'Single Node Setup!'});
-  }
+  logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   logger.info({fileName: 'GetInfo', msg: 'Calling getinfo from c-lightning server url: ' + options.url});
   request(options).then((body) => {
     logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});

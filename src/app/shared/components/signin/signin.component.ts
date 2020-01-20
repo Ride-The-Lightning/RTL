@@ -20,10 +20,8 @@ export class SigninComponent implements OnInit, OnDestroy {
   public faUnlockAlt = faUnlockAlt;
   public selNode: ConfigSettingsNode;
   public password = '';
-  public nodeAuthType = '';
   public rtlSSO = 0;
   public rtlCookiePath = '';
-  public hintStr = '';
   public accessKey = '';
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -38,13 +36,7 @@ export class SigninComponent implements OnInit, OnDestroy {
         this.logger.error(effectsErr);
       });
       this.selNode = rtlStore.selNode;
-      this.nodeAuthType = this.selNode.authentication.nodeAuthType;
       this.logger.info(rtlStore);
-      if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
-        this.hintStr = 'Enter RPC password';
-      } else {
-        this.hintStr = ''; // Do not remove, initial passowrd 'DEFAULT' is initilizing its value
-      }
     });
   }
 

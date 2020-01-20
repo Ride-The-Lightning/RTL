@@ -37,12 +37,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
-RTL.conf
 /logs/*
 /cookies/*
-RTL-Multi-Node-Conf.json
-RTL-Multi-Node-Conf-1.json
+RTL-Config.json
 /backup/*
 cookies
-sample-RTL-SSO.conf
 .env

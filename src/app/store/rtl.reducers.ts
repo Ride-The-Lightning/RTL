@@ -14,7 +14,7 @@ export interface RootState {
 }
 
 const initNodeSettings = { userPersona: 'OPERATOR', flgSidenavOpened: true, flgSidenavPinned: true, menu: 'VERTICAL', menuType: 'REGULAR', fontSize: 'MEDIUM', themeMode: 'DAY', themeColor: 'PURPLE', satsToBTC: false, channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'] };
-const initNodeAuthentication = { nodeAuthType: 'CUSTOM', configPath: '', bitcoindConfigPath: '' };
+const initNodeAuthentication = { configPath: '', bitcoindConfigPath: '' };
 
 const initRootState: RootState = {
   effectErrorsRoot: [],

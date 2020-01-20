@@ -8,11 +8,7 @@ exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
-  if(common.multi_node_setup) {
-    logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
-  } else {
-    logger.info({fileName:'GetInfo', msg: 'Single Node Setup!'});
-  }
+  logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
     logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'Get info failed due to bad or missing macaroon!'});
     res.status(502).json({

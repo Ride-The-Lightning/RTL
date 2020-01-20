@@ -3,9 +3,7 @@ var crypto = require('crypto');
 var path = require('path');
 var common = {};
 
-common.multi_node_setup = false;
 common.rtl_conf_file_path = '';
-common.node_auth_type = 'DEFAULT';
 common.rtl_pass = '';
 common.rtl_sso = 0;
 common.port = 3000;

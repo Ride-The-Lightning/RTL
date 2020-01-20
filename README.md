@@ -71,46 +71,53 @@ $ git pull
 $ npm install --only=prod
 ```
 ### <a name="prep"></a>Prep for Execution
-RTL requires its own config file `RTL.conf`, to start the server and provide user authentication on the app.
+RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app.
 
 *Advanced users can refer to [this page](docs/Multi-Node-setup.md), for config settings required to manage multiple nodes*
 
-* Rename `sample-RTL.conf` file to `RTL.conf`.
+* Rename `sample-RTL-Config.json` file to `RTL-Config.json`.
 * Locate the complete path of the readable macroon file (admin.macroon) on your node and the lnd.conf file.
-* Modify the `RTL.conf` file per the example file below
+* Modify the `RTL-Config.json` file per the example file below
 
-Example RTL.conf:
+Example RTL-Config.json:
 ```
-[Authentication]
-macaroonPath=C:\Users\<user>\AppData\Local\Lnd\data\chain\bitcoin\testnet
-nodeAuthType=CUSTOM
-lndConfigPath=C:\Users\<user>\AppData\Local\Lnd\lnd.conf
-rtlPass=***
-
-[SSO]
-rtlSSO=0
-rtlCookiePath=C:\RTL\cookies\auth.cookie
-logoutRedirectLink=/login
-
-[Settings]
-userPersona=OPERATOR
-themeMode=DAY
-themeColor=PURPLE
-channelBackupPath=C:\Users\shaha\backup\node-0
-bitcoindConfigPath=C:/Bitcoin/bitcoin.conf
-enableLogging=true
-port=3000
-lndServerUrl=https://192.168.1.16:8080/v1
-fiatConversion=false
+{
+  "multiPass": "password",
+  "port": "3000",
+  "defaultNodeIndex": 1,
+  "SSO": {
+    "rtlSSO": 0,
+    "rtlCookiePath": "",
+    "logoutRedirectLink": ""
+  },
+  "nodes": [
+    {
+      "index": 1,
+      "lnNode": "LND Testnet",
+      "lnImplementation": "LND",
+      "Authentication": {
+        "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 1>",
+        "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
+      },
+      "Settings": {
+        "userPersona": "OPERATOR",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "channelBackupPath": "C:\\RTL\\backup\\node-1",
+        "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
+        "enableLogging": true,
+        "fiatConversion": false,
+        "lnServerUrl": "<Service url for LND REST APIs for node # 1 e.g. https://192.168.0.1:8080/v1"
+      }
+    }
+  ]
+}
 ```
 For details on all the configuration options refer to [this page](./docs/Application_configurations).
 
 #### User Authentication on RTL
 RTL requires the user to be authenticated by the application first, before allowing access to LND functions.
-There are two options to configure authentication on RTL, depending on the `nodeAuthtype` value provided in RTL.conf.
-
-* Option 1: `nodeAuthType=DEFAULT`; Password provided in lnd.conf for the rpc setting for bitcoind will be used for authentication.
-* Option 2: `nodeAuthType=CUSTOM`; Specific password must be provided in RTL.conf (in plain text) for authentication. Password should be set with `rtlPass=<user defined>` in the [Authentication] section of RTL.conf
+Specific password must be provided in RTL-Config.json (in plain text) for authentication. Password should be set with `multiPass:<user defined>` in the `Authentication` section of RTL-Config.json. Default initial password is `password`.
 
 ### <a name="start"></a>Start the Server
 Run the following command:

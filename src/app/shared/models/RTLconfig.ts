@@ -30,7 +30,6 @@ export class Settings {
 
 export class Authentication {
   constructor(
-    public nodeAuthType?: string,
     public configPath?: string,
     public bitcoindConfigPath?: string
   ) { }
