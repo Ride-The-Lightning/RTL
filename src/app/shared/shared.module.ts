@@ -37,7 +37,6 @@ import { SigninComponent } from './components/signin/signin.component';
 import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
-import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
@@ -145,7 +144,6 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
-    HorizontalNavigationComponent,
     SigninComponent,
     HelpComponent,
     ServerConfigComponent,
@@ -170,7 +168,6 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
-    HorizontalNavigationComponent,
     SigninComponent,
     HelpComponent,
     ServerConfigComponent,

@@ -39,7 +39,10 @@ Thumbs.db
 
 /logs/*
 /cookies/*
-RTL-Config.json
 /backup/*
 cookies
 .env
+RTL-Config.json
+RTL-Config-1.json
+RTL-Multi-Node-Conf.json
+RTL.conf

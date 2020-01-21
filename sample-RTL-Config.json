@@ -10,7 +10,7 @@
   "nodes": [
     {
       "index": 1,
-      "lnNode": "LND Node 1",
+      "lnNode": "Node 1",
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",

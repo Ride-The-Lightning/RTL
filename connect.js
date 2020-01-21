@@ -9,12 +9,14 @@ var logger = require('./controllers/logger');
 var connect = {};
 var errMsg = '';
 var request = require('request');
+var ini = require('ini');
 common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 connect.setDefaultConfig = () => {
   var homeDir = os.userInfo().homedir;
   var macaroonPath = '';
   var configPath = '';
+  var channelBackupPath = '';
   switch (platform) {
     case 'win32':
       macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
@@ -49,7 +51,7 @@ connect.setDefaultConfig = () => {
     nodes: [
       {
         index: 1,
-        lnNode: "LND Node 1",
+        lnNode: "Node 1",
         lnImplementation: "LND",    
         Authentication: {
           macaroonPath: macaroonPath,
@@ -127,15 +129,15 @@ connect.validateNodeConfig = (config) => {
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
       common.nodes[idx] = {};
-      if(node.Authentication.macaroonPath === '' || undefined === node.Authentication.macaroonPath) {
+      if(node.Authentication.macaroonPath === '' || !node.Authentication.macaroonPath) {
         errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
       } else {
         common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
       }
 
       if(
-        (node.Settings.lndServerUrl === '' ||  undefined === node.Settings.lndServerUrl)
-        && (node.Settings.lnServerUrl === '' ||  undefined === node.Settings.lnServerUrl)
+        (node.Settings.lndServerUrl === '' ||  !node.Settings.lndServerUrl)
+        && (node.Settings.lnServerUrl === '' ||  !node.Settings.lnServerUrl)
       ) {
         errMsg = errMsg + '\nPlease set server URL for node index ' + node.index + ' in RTL-Config.json!';
       } else {
@@ -158,7 +160,7 @@ connect.validateNodeConfig = (config) => {
         common.nodes[idx].config_path = '';
       }
       common.nodes[idx].bitcoind_config_path = (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-      common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? node.Settings.enableLogging : false;
+      common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
@@ -172,7 +174,7 @@ connect.validateNodeConfig = (config) => {
           }
         }    
       } catch (err) {
-        console.error('Something went wrong while creating backup file: \n' + err);
+        console.error('Something went wrong while creating the backup directory: \n' + err);
       }
 
       if (common.nodes[idx].enable_logging) {
@@ -230,9 +232,8 @@ connect.setSSOParams = (config) => {
 
 connect.createDirectory = (dirname) => {
   try {
-    const sep = path.sep;
-    const initDir = path.isAbsolute(dirname) ? sep : '';
-    dirname.split(sep).reduce((parentDir, childDir) => {
+    const initDir = path.isAbsolute(dirname) ? path.sep : '';
+    dirname.split(path.sep).reduce((parentDir, childDir) => {
       const curDir = path.resolve(parentDir, childDir);
       if (!fs.existsSync(curDir)) {
         fs.mkdirSync(curDir);
@@ -244,7 +245,7 @@ connect.createDirectory = (dirname) => {
       return dirname;
     }
     if (err.code === 'ENOENT') {
-      throw new Error(`EACCES: permission denied, mkdir '${dirname}'`);
+      throw new Error(`ENOENT: No such file or directory, mkdir '${dirname}'. Ensure that channel backup path separator is '${(platform === 'win32') ? '\\\\' : '/'}'`);
     }
   }
 }
@@ -340,12 +341,170 @@ connect.setSelectedNode = (config) => {
   }
 }
 
+connect.modifyJsonForNewUX = (confFileFullPath) => {
+  RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  if (!config.SSO) { config.SSO = {}; }
+  var newConfig = {
+    port: config.port ? config.port : 3000,
+    defaultNodeIndex: config.defaultNodeIndex ? config.defaultNodeIndex : 1,
+    SSO: {
+      rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
+      rtlCookiePath: config.SSO.rtlCookiePath ? config.SSO.rtlCookiePath : "",
+      logoutRedirectLink: config.SSO.logoutRedirectLink ? config.SSO.logoutRedirectLink : ""
+    },
+    nodes: []
+  };
+
+  if(config.nodes && config.nodes.length > 0) {
+    let newNode = {};
+    config.nodes.forEach((node, idx) => {
+      newNode = {
+        index: node.index ? node.index : (idx + 1),
+        lnNode: node.lnNode ? node.lnNode : "Node " + (idx + 1),
+        lnImplementation: node.lnImplementation ? node.lnImplementation : "LND",    
+        Authentication: {
+          macaroonPath: node.Authentication.macaroonPath ? node.Authentication.macaroonPath : ''
+        },
+        Settings: {
+          userPersona: node.Settings.userPersona ? node.Settings.userPersona : "MERCHANT",
+          enableLogging: node.Settings.enableLogging ? !!node.Settings.enableLogging : false,
+          fiatConversion: node.Settings.fiatConversion ? node.Settings.fiatConversion : false
+        }
+      };
+
+      if (node.Authentication.configPath) {
+        newNode.Authentication.configPath = node.Authentication.configPath;
+      } else if (node.Authentication.lndConfigPath) {
+        newNode.Authentication.configPath = node.Authentication.lndConfigPath;
+      }
+
+      if (node.Settings.theme) {
+        var themeArr = node.Settings.theme.split("-");
+        if (themeArr[2]) { themeArr[1] = themeArr[1] + themeArr[2]; } // For light-blue-gray
+        newNode.Settings.themeMode = (themeArr[0] === "dark") ? "NIGHT" : "DAY";
+        newNode.Settings.themeColor = (themeArr[1] === "blue") ? "INDIGO" : (themeArr[1] === "pink") ? "PINK" : (themeArr[1] === "green" || themeArr[1] === "teal") ? "TEAL" : "PURPLE";
+      } else {
+        newNode.Settings.themeMode = node.Settings.themeMode ? node.Settings.themeMode : "DAY";
+        newNode.Settings.themeColor = node.Settings.themeColor ? node.Settings.themeColor : "PURPLE";
+      }
+      if (node.Settings.currencyUnit) {
+        newNode.Settings.currencyUnit = node.Settings.currencyUnit;
+      }
+      if (node.Settings.bitcoindConfigPath) {
+        newNode.Settings.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
+      }
+      if (node.Settings.channelBackupPath) {
+        newNode.Settings.channelBackupPath = node.Settings.channelBackupPath;
+      }
+      if (node.Settings.lnServerUrl) {
+        newNode.Settings.lnServerUrl = node.Settings.lnServerUrl;
+      } else if (node.Settings.lndServerUrl) {
+        newNode.Settings.lnServerUrl = node.Settings.lndServerUrl;
+      }
+      newConfig.nodes.push(newNode);
+    });
+  }
+  if(config.multiPass) {
+    newConfig.multiPass = config.multiPass;
+  } else if(config.multiPassHashed) {
+    newConfig.multiPassHashed = config.multiPassHashed;
+  }
+  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig));
+}
+
+connect.upgradeIniToJson = (confFileFullPath) => {
+  RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
+  var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  if (!config.SSO) { config.SSO = {}; }
+  if (!config.Authentication) { config.Authentication = {}; }
+  if (!config.Settings) { config.Settings = {}; }
+  var newConfig = {
+    port: config.Settings.port ? config.Settings.port : 3000,
+    defaultNodeIndex: 1,
+    SSO: {
+      rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
+      rtlCookiePath: config.SSO.rtlCookiePath ? config.SSO.rtlCookiePath : "",
+      logoutRedirectLink: config.SSO.logoutRedirectLink ? config.SSO.logoutRedirectLink : ""
+    },
+    nodes: [
+      {
+        index: 1,
+        lnNode: "Node 1",
+        lnImplementation: config.Settings.lnImplementation ? config.Settings.lnImplementation : "LND",    
+        Authentication: {
+          macaroonPath: config.Authentication.macaroonPath ? config.Authentication.macaroonPath : (config.Authentication.macroonPath ? config.Authentication.macroonPath : ''),
+          configPath: config.Authentication.configPath ? config.Authentication.configPath : (config.Authentication.lndConfigPath ? config.Authentication.lndConfigPath : ''),
+        },
+        Settings: {
+          userPersona: config.Settings.userPersona ? config.Settings.userPersona : "MERCHANT",
+          enableLogging: config.Settings.enableLogging ? !!config.Settings.enableLogging : (config.Authentication.enableLogging ? !!config.Authentication.enableLogging : false),
+          fiatConversion: config.Settings.fiatConversion ? config.Settings.fiatConversion : false
+        }
+      }
+    ]
+  };
+  if (config.Settings.theme) {
+    var themeArr = config.Settings.theme.split("-");
+    if (themeArr[2]) { themeArr[1] = themeArr[1] + themeArr[2]; } // For light-blue-gray
+    newConfig.nodes[0].Settings.themeMode = (themeArr[0] === "dark") ? "NIGHT" : "DAY";
+    newConfig.nodes[0].Settings.themeColor = (themeArr[1] === "blue") ? "INDIGO" : (themeArr[1] === "pink") ? "PINK" : (themeArr[1] === "green" || themeArr[1] === "teal") ? "TEAL" : "PURPLE";
+  } else {
+    newConfig.nodes[0].Settings.themeMode = config.Settings.themeMode ? config.Settings.themeMode : "DAY";
+    newConfig.nodes[0].Settings.themeColor = config.Settings.themeColor ? config.Settings.themeColor : "PURPLE";
+  }
+  if (config.Settings.currencyUnit) {
+    newConfig.nodes[0].Settings.currencyUnit = config.Settings.currencyUnit;
+  }
+  if (config.Settings.bitcoindConfigPath) {
+    newConfig.nodes[0].Settings.bitcoindConfigPath = config.Settings.bitcoindConfigPath;
+  }
+  if (config.Settings.channelBackupPath) {
+    newConfig.nodes[0].Settings.channelBackupPath = config.Settings.channelBackupPath;
+  }
+  if (config.Settings.lnServerUrl) {
+    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl;
+  } else if (config.Settings.lndServerUrl) {
+    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lndServerUrl;
+  } else if (config.Authentication.lndServerUrl) {
+    newConfig.nodes[0].Settings.lnServerUrl = config.Authentication.lndServerUrl;
+  }
+  
+  if(config.Authentication.rtlPass) {
+    newConfig.multiPass = config.Authentication.rtlPass;
+  } else if(config.Authentication.rtlPassHashed) {
+    newConfig.multiPassHashed = config.Authentication.rtlPassHashed;
+  }
+  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig));
+}
+
+connect.upgradeConfig = (confFileFullPath) => {
+  try {
+    singleNodeConfFile = common.rtl_conf_file_path + '/RTL.conf';
+    multiNodeConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
+    const singleNodeExists = fs.existsSync(singleNodeConfFile);
+    const multiNodeExists = fs.existsSync(multiNodeConfFile);
+    if ((singleNodeExists && multiNodeExists) || (!singleNodeExists && multiNodeExists)) {
+      connect.modifyJsonForNewUX(confFileFullPath);
+    } else if (singleNodeExists && !multiNodeExists) {
+      connect.upgradeIniToJson(confFileFullPath);
+    } else if (!singleNodeExists && !multiNodeExists) {
+      if (!fs.existsSync(confFileFullPath)) {
+        fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig()));
+      }
+    }
+  } catch(err) {
+    console.error('Something went wrong while upgrading the RTL config file: \n' + err);
+    throw new Error(err);
+  }
+}
+
 connect.setServerConfiguration = () => {
   try {
     common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
     confFileFullPath = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
-    if (!fs.existsSync(confFileFullPath)) {
-      fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig()));
+    if(!fs.existsSync(confFileFullPath)) {
+      connect.upgradeConfig(confFileFullPath);
     }
     var config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
     connect.validateNodeConfig(config);

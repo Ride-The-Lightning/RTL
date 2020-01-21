@@ -14,7 +14,7 @@ The parameters can be configured via RTL-Config.json file or through environment
   "nodes": [
     {
       "index": <Incrimental Node indices starting from 1>,
-      "lnNode": "<Node name to uniquely identify the node in the UI, Default 'LND Node 1'>",
+      "lnNode": "<Node name to uniquely identify the node in the UI, Default 'Node 1'>",
       "lnImplementation": "<LNP implementation, Allowed values LND/CLT. Default 'LND'>",
       "Authentication": {
         "macaroonPath": "<Path for the folder containing 'admin.macaroon' file>",

@@ -34,6 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public accessKey = '';
   public xSmallScreen = false;
   public smallScreen = false;
+  public flgSidenavPinned = true;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
@@ -91,11 +92,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // START: Workaround to add adjust container width initially
         this.sideNavigation.toggle();
         setTimeout(() => { this.sideNavigation.toggle(); }, 500);
-        if (this.settings.menuType === 'COMPACT' || this.settings.menuType === 'MINI') {
-          this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
-          setTimeout(() => { this.sideNavigation.toggle(); }, 100);
-        }
-        // END: Workaround to add left margin to container initially
+        // END: Workaround to add left margin to container initially        
       }     
     });
     this.userIdle.startWatching();
@@ -129,13 +126,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if ((this.settings.menuType !== 'REGULAR' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
+    if (this.smallScreen) {
       this.sideNavigation.close();
     }
   }
 
   sideNavToggle() {
-    this.settings.flgSidenavOpened = !this.settings.flgSidenavOpened;
     this.sideNavigation.toggle();
   }
 
@@ -149,11 +145,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
-  }
-
-  getFontSize() {
-    return (this.settings.fontSize === NODE_SETTINGS.fontSize[0].class) ? 14 : 
-      (this.settings.fontSize === NODE_SETTINGS.fontSize[2].class) ? 18 : 16;
   }
 
   ngOnDestroy() {

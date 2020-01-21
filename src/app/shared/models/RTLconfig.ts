@@ -10,14 +10,8 @@ export class SSO {
 export class Settings {
   constructor(
     public userPersona: string,
-    public flgSidenavOpened: boolean,
-    public flgSidenavPinned: boolean,
-    public menu: string,
-    public menuType: string,
-    public fontSize: string,
     public themeMode: string,
     public themeColor: string,
-    public satsToBTC: boolean,
     public currencyUnits: Array<string>,
     public fiatConversion: boolean,
     public bitcoindConfigPath?: string,
@@ -68,7 +62,6 @@ export interface GetInfoRoot {
 export interface SelNodeChild {
   userPersona?: string;
   channelBackupPath?: string;
-  satsToBTC?: boolean;
   selCurrencyUnit?: string;  
   currencyUnits?: string[];
   fiatConversion?: boolean;

@@ -46,14 +46,8 @@ exports.getRTLConfig = (req, res, next) => {
             authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
           }
           node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
-          node.Settings.flgSidenavOpened = (node.Settings.flgSidenavOpened) ? node.Settings.flgSidenavOpened : true;
-          node.Settings.flgSidenavPinned = (node.Settings.flgSidenavPinned) ? node.Settings.flgSidenavPinned : true;
-          node.Settings.menu = (node.Settings.menu) ? node.Settings.menu : 'VERTICAL';
-          node.Settings.menuType = (node.Settings.menuType) ? node.Settings.menuType : 'REGULAR';
-          node.Settings.fontSize = (node.Settings.fontSize) ? node.Settings.fontSize : 'MEDIUM';
           node.Settings.themeMode = (node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
           node.Settings.themeColor = (node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
-          node.Settings.satsToBTC = (node.Settings.satsToBTC) ? node.Settings.satsToBTC : false;
           nodesArr.push({
             index: node.index,
             lnNode: node.lnNode,
@@ -81,12 +75,6 @@ exports.updateUISettings = (req, res, next) => {
       } else {
         delete node.Settings.currencyUnit;
       }
-      node.Settings.flgSidenavOpened = true; // req.body.updatedSettings.flgSidenavOpened;
-      node.Settings.flgSidenavPinned = true; // req.body.updatedSettings.flgSidenavPinned;
-      node.Settings.menu = 'VERTICAL'; // req.body.updatedSettings.menu;
-      node.Settings.menuType = 'REGULAR'; // req.body.updatedSettings.menuType;
-      node.Settings.fontSize = 'MEDIUM'; // req.body.updatedSettings.fontSize;
-      node.Settings.satsToBTC = false; // req.body.updatedSettings.satsToBTC;
     }
   });
   try {
