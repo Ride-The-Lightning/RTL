@@ -123,6 +123,8 @@ connect.validateNodeConfig = (config) => {
 
       if(process.env.LN_SERVER_URL && process.env.LN_SERVER_URL.trim() !== '') {
         common.nodes[idx].ln_server_url = process.env.LN_SERVER_URL;
+      } else if(process.env.LND_SERVER_URL && process.env.LND_SERVER_URL.trim() !== '') {
+        common.nodes[idx].ln_server_url = process.env.LND_SERVER_URL;
       } else if(node.Settings.lnServerUrl && node.Settings.lnServerUrl.trim() !== '') {
         common.nodes[idx].ln_server_url = node.Settings.lnServerUrl;
       } else if(node.Settings.lndServerUrl && node.Settings.lndServerUrl.trim() !== '') {
@@ -143,6 +145,8 @@ connect.validateNodeConfig = (config) => {
       }
       if (process.env.CONFIG_PATH) {
         common.nodes[idx].config_path = process.env.CONFIG_PATH;
+      } else if (process.env.LND_CONFIG_PATH) {
+        common.nodes[idx].config_path = process.env.LND_CONFIG_PATH;
       } else if (node.Authentication && node.Authentication.lndConfigPath) {
         common.nodes[idx].config_path = node.Authentication.lndConfigPath;
       } else if (node.Authentication && node.Authentication.configPath) {
