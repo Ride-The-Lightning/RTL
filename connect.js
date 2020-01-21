@@ -405,12 +405,8 @@ connect.modifyJsonForNewUX = (confFileFullPath) => {
       newConfig.nodes.push(newNode);
     });
   }
-  if(config.multiPass) {
-    newConfig.multiPass = config.multiPass;
-  } else if(config.multiPassHashed) {
-    newConfig.multiPassHashed = config.multiPassHashed;
-  }
-  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig));
+  newConfig.multiPassHashed = config.multiPassHashed ? config.multiPassHashed : config.multiPass ? hash.update(config.multiPass).digest('hex') : '';
+  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');
 }
 
 connect.upgradeIniToJson = (confFileFullPath) => {
@@ -469,13 +465,8 @@ connect.upgradeIniToJson = (confFileFullPath) => {
   } else if (config.Authentication.lndServerUrl) {
     newConfig.nodes[0].Settings.lnServerUrl = config.Authentication.lndServerUrl;
   }
-  
-  if(config.Authentication.rtlPass) {
-    newConfig.multiPass = config.Authentication.rtlPass;
-  } else if(config.Authentication.rtlPassHashed) {
-    newConfig.multiPassHashed = config.Authentication.rtlPassHashed;
-  }
-  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig));
+  newConfig.multiPassHashed = config.Authentication.rtlPassHashed ? config.Authentication.rtlPassHashed : config.Authentication.rtlPass ? hash.update(config.Authentication.rtlPass).digest('hex') : '';
+  fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');
 }
 
 connect.upgradeConfig = (confFileFullPath) => {
@@ -490,7 +481,7 @@ connect.upgradeConfig = (confFileFullPath) => {
       connect.upgradeIniToJson(confFileFullPath);
     } else if (!singleNodeExists && !multiNodeExists) {
       if (!fs.existsSync(confFileFullPath)) {
-        fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig()));
+        fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig(), null, 2), 'utf-8');
       }
     }
   } catch(err) {

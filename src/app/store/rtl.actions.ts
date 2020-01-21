@@ -92,8 +92,8 @@ export const FETCH_CONFIG = 'FETCH_CONFIG';
 export const SHOW_CONFIG = 'SHOW_CONFIG';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
-export const SIGNIN = 'SIGNIN';
-export const SIGNOUT = 'SIGNOUT';
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -593,13 +593,13 @@ export class IsAuthorizedRes implements Action {
   constructor(public payload: any) {} // payload = token/error
 }
 
-export class Signin implements Action {
-  readonly type = SIGNIN;
+export class Login implements Action {
+  readonly type = LOGIN;
   constructor(public payload: string) {} // payload = password
 }
 
-export class Signout implements Action {
-  readonly type = SIGNOUT;
+export class Logout implements Action {
+  readonly type = LOGOUT;
   constructor() {}
 }
 
@@ -845,7 +845,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  IsAuthorized | IsAuthorizedRes | Signin | Signout |
+  IsAuthorized | IsAuthorizedRes | Login | Logout |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

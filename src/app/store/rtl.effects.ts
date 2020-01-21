@@ -269,13 +269,13 @@ export class RTLEffects implements OnDestroy {
   );
 
   @Effect({ dispatch: false })
-  authSignin = this.actions$.pipe(
-  ofType(RTLActions.SIGNIN),
+  authLogin = this.actions$.pipe(
+  ofType(RTLActions.LOGIN),
   withLatestFrom(this.store.select('root')),
-  mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
+  mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
     this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
-    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
       authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
@@ -289,9 +289,9 @@ export class RTLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Signin', code: err.status, message: err.error.message }));
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.message }));
         this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err.error);
-        this.logger.info('Redirecting to Signin Error Page');
+        this.logger.info('Redirecting to Login Error Page');
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {
@@ -303,8 +303,8 @@ export class RTLEffects implements OnDestroy {
   }));
 
   @Effect({ dispatch: false })
-  signOut = this.actions$.pipe(
-  ofType(RTLActions.SIGNOUT),
+  logOut = this.actions$.pipe(
+  ofType(RTLActions.LOGOUT),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, store]) => {
     if (+store.appConfig.sso.rtlSSO) {
@@ -377,8 +377,8 @@ export class RTLEffects implements OnDestroy {
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
@@ -387,8 +387,8 @@ export class RTLEffects implements OnDestroy {
   handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({

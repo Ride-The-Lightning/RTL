@@ -12,11 +12,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
-  selector: 'rtl-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.scss']
+  selector: 'rtl-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class SigninComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   public faUnlockAlt = faUnlockAlt;
   public selNode: ConfigSettingsNode;
   public password = '';
@@ -40,9 +40,9 @@ export class SigninComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSignin() {
+  onLogin() {
     if(!this.password) { return true; }
-    this.store.dispatch(new RTLActions.Signin(sha256(this.password)));
+    this.store.dispatch(new RTLActions.Login(sha256(this.password)));
   }
 
   resetData() {

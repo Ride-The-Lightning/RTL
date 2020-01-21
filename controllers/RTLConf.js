@@ -42,7 +42,7 @@ exports.getRTLConfig = (req, res, next) => {
           } else {
             authentication.configPath = '';
           }
-            if(node.Settings.bitcoindConfigPath) {
+          if(node.Settings.bitcoindConfigPath) {
             authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
           }
           node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;

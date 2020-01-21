@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
-import { AlertTypeEnum, ScreenSizeEnum, NODE_SETTINGS } from './shared/services/consts-enums-functions';
+import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
@@ -41,6 +41,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+    this.router.events.subscribe((evt) => {
+      if (!(evt instanceof NavigationEnd)) { return; }
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0);
+    });    
     this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium])
     .pipe(takeUntil(this.unSubs[5]))
     .subscribe((matches) => {
@@ -84,7 +88,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
+            this.store.dispatch(new RTLActions.Login(sha256(this.accessKey)));
           } else {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
@@ -105,7 +109,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           alertTitle: 'Logging out',
           titleMessage: 'Time limit exceeded for session inactivity.'
         }}));
-        this.store.dispatch(new RTLActions.Signout());
+        this.store.dispatch(new RTLActions.Logout());
         this.userIdle.resetTimer();
       }
     });
