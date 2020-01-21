@@ -10,7 +10,7 @@ exports.getInfo = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/getinfo';
   logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
-    logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'Get info failed due to bad or missing macaroon!'});
+    logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'LND Get info failed due to bad or missing macaroon!'});
     res.status(502).json({
       message: "Fetching Info Failed!",
       error: "Bad Macaroon"

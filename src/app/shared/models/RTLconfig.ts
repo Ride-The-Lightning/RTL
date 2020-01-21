@@ -24,8 +24,7 @@ export class Settings {
 
 export class Authentication {
   constructor(
-    public configPath?: string,
-    public bitcoindConfigPath?: string
+    public configPath?: string
   ) { }
 }
 

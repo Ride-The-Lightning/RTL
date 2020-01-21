@@ -82,22 +82,6 @@ connect.normalizePort = val => {
   return false;
 };
 
-connect.setMacaroonPath = (clArgs, config) => {
-  common.nodes[0] = {};
-  common.nodes[0].index = 1;
-  if(clArgs.lndir) {
-    common.nodes[0].macaroon_path = clArgs.lndir;
-  } else if (process.env.MACAROON_PATH) {
-    common.nodes[0].macaroon_path = process.env.MACAROON_PATH;
-  } else {
-    if(config.Authentication.macroonPath && config.Authentication.macroonPath !== '') {
-      common.nodes[0].macaroon_path = config.Authentication.macroonPath;
-    } else if(config.Authentication.macaroonPath && config.Authentication.macaroonPath !== '') {
-      common.nodes[0].macaroon_path = config.Authentication.macaroonPath;
-    }
-  }
-}
-
 connect.convertCustomToHash = () => {
   common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
   try {
@@ -125,43 +109,50 @@ connect.validateNodeConfig = (config) => {
       errMsg = errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
     }
   }
-  common.port = (config.port) ? connect.normalizePort(config.port) : 3000;
+  common.port = (process.env.PORT) ? connect.normalizePort(process.env.PORT) : (config.port) ? connect.normalizePort(config.port) : 3000;
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
       common.nodes[idx] = {};
-      if(node.Authentication.macaroonPath === '' || !node.Authentication.macaroonPath) {
-        errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
-      } else {
+      if (process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
+        common.nodes[idx].macaroon_path = process.env.MACAROON_PATH;
+      } else if(node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
         common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
+      } else {
+        errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
       }
 
-      if(
-        (node.Settings.lndServerUrl === '' ||  !node.Settings.lndServerUrl)
-        && (node.Settings.lnServerUrl === '' ||  !node.Settings.lnServerUrl)
-      ) {
-        errMsg = errMsg + '\nPlease set server URL for node index ' + node.index + ' in RTL-Config.json!';
+      if(process.env.LN_SERVER_URL && process.env.LN_SERVER_URL.trim() !== '') {
+        common.nodes[idx].ln_server_url = process.env.LN_SERVER_URL;
+      } else if(node.Settings.lnServerUrl && node.Settings.lnServerUrl.trim() !== '') {
+        common.nodes[idx].ln_server_url = node.Settings.lnServerUrl;
+      } else if(node.Settings.lndServerUrl && node.Settings.lndServerUrl.trim() !== '') {
+        common.nodes[idx].ln_server_url = node.Settings.lndServerUrl;
       } else {
-        common.nodes[idx].ln_server_url = node.Settings.lndServerUrl ? node.Settings.lndServerUrl : node.Settings.lnServerUrl;
+        errMsg = errMsg + '\nPlease set LN Server URL for node index ' + node.index + ' in RTL-Config.json!';
       }
 
       common.nodes[idx].index = node.index;
       common.nodes[idx].ln_node = node.lnNode;
-      common.nodes[idx].ln_implementation = node.lnImplementation;
-      common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? node.Settings.fiatConversion : false;
+      common.nodes[idx].ln_implementation = (process.env.LN_IMPLEMENTATION) ? process.env.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
+      common.nodes[idx].user_persona = node.Settings.userPersona ? node.Settings.userPersona : 'MERCHANT';
+      common.nodes[idx].theme_mode = node.Settings.themeMode ? node.Settings.themeMode : 'DAY';
+      common.nodes[idx].theme_color = node.Settings.themeColor ? node.Settings.themeColor : 'PURPLE';
+      common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? !!node.Settings.fiatConversion : false;
       if(common.nodes[idx].fiat_conversion) {
         common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
       }
-
-      if (node.Authentication && node.Authentication.lndConfigPath) {
+      if (process.env.CONFIG_PATH) {
+        common.nodes[idx].config_path = process.env.CONFIG_PATH;
+      } else if (node.Authentication && node.Authentication.lndConfigPath) {
         common.nodes[idx].config_path = node.Authentication.lndConfigPath;
       } else if (node.Authentication && node.Authentication.configPath) {
         common.nodes[idx].config_path = node.Authentication.configPath;
       } else {
         common.nodes[idx].config_path = '';
       }
-      common.nodes[idx].bitcoind_config_path = (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
+      common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
-      common.nodes[idx].channel_backup_path = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
+      common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
@@ -295,7 +286,7 @@ connect.logEnvVariables = () => {
       logger.info({fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiatConversion, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node});
     });  
@@ -452,9 +443,13 @@ connect.upgradeIniToJson = (confFileFullPath) => {
   if (config.Settings.currencyUnit) {
     newConfig.nodes[0].Settings.currencyUnit = config.Settings.currencyUnit;
   }
+
   if (config.Settings.bitcoindConfigPath) {
     newConfig.nodes[0].Settings.bitcoindConfigPath = config.Settings.bitcoindConfigPath;
+  } else if(config.Authentication.bitcoindConfigPath) {
+    newConfig.nodes[0].Settings.bitcoindConfigPath = config.Authentication.bitcoindConfigPath;
   }
+
   if (config.Settings.channelBackupPath) {
     newConfig.nodes[0].Settings.channelBackupPath = config.Settings.channelBackupPath;
   }

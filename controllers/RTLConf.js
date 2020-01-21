@@ -8,7 +8,7 @@ var options = {};
 exports.updateSelectedNode = (req, res, next) => {
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
-  const responseVal = !common.selectedNode ? '' : (common.selectedNode.ln_node ? common.selectedNode.ln_node : common.selectedNode.ln_server_url);
+  const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';
   logger.info({fileName: 'RTLConf', msg: 'Selected Node Updated To: ' + JSON.stringify(responseVal)});
   res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
@@ -32,27 +32,53 @@ exports.getRTLConfig = (req, res, next) => {
       const nodeConfData = JSON.parse(data);
       const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
       var nodesArr = [];
-      if (nodeConfData.nodes && nodeConfData.nodes.length > 0) {
-        nodeConfData.nodes.forEach((node, i) => {
+      // if (nodeConfData.nodes && nodeConfData.nodes.length > 0) {
+      //   nodeConfData.nodes.forEach((node, i) => {
+      //     const authentication = {};
+      //     if(node.Authentication && node.Authentication.lndConfigPath) {
+      //       authentication.configPath = node.Authentication.lndConfigPath;
+      //     } else if(node.Authentication && node.Authentication.configPath) {
+      //       authentication.configPath = node.Authentication.configPath;
+      //     } else {
+      //       authentication.configPath = '';
+      //     }
+      //     if(node.Settings.bitcoindConfigPath) {
+      //       authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
+      //     }
+      //     node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
+      //     node.Settings.themeMode = (node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
+      //     node.Settings.themeColor = (node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
+      //     nodesArr.push({
+      //       index: node.index,
+      //       lnNode: node.lnNode,
+      //       lnImplementation: node.lnImplementation,
+      //       settings: node.Settings,
+      //       authentication: authentication})
+      //   });
+      // }
+      if (common.nodes && common.nodes.length > 0) {
+        common.nodes.forEach((node, i) => {
           const authentication = {};
-          if(node.Authentication && node.Authentication.lndConfigPath) {
-            authentication.configPath = node.Authentication.lndConfigPath;
-          } else if(node.Authentication && node.Authentication.configPath) {
-            authentication.configPath = node.Authentication.configPath;
+          if(node.config_path) {
+            authentication.configPath = node.config_path;
           } else {
             authentication.configPath = '';
           }
-          if(node.Settings.bitcoindConfigPath) {
-            authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
-          }
-          node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
-          node.Settings.themeMode = (node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
-          node.Settings.themeColor = (node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
+          const settings = {};
+          settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
+          settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
+          settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
+          settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
+          settings.bitcoindConfigPath = node.bitcoind_config_path;
+          settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
+          settings.lnServerUrl = node.ln_server_url;
+          settings.channelBackupPath = node.channel_backup_path;
+          settings.currencyUnit = node.currency_unit;
           nodesArr.push({
             index: node.index,
-            lnNode: node.lnNode,
-            lnImplementation: node.lnImplementation,
-            settings: node.Settings,
+            lnNode: node.ln_node,
+            lnImplementation: node.ln_implementation,
+            settings: settings,
             authentication: authentication})
         });
       }

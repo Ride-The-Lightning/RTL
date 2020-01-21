@@ -39,15 +39,14 @@ The parameters can be configured via RTL-Config.json file or through environment
 ;The environment variable can also be used for all of the above configurations except the UI settings.
 ;If the environment variables are set, it will take precedence over the parameters in the RTL-Config.json file.
 PORT (port number for the rtl node server, default 3000)
-NODE_AUTH_TYPE (For stand alone RTL authentication allowed value - CUSTOM)
 RTL_PASS (Password for RTL custom authentication)
 LN_IMPLEMENTATION (LND, CLT. Default 'LND')
 LN_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1) OR LN_SERVER_URL (LN server URL for LNP REST APIs)
-LN_CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name)
+CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name)
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' file)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
-RTL_CONFIG_PATH (Full path of the RTL-Config.json file including the file name)
+RTL_CONFIG_PATH (Path for the folder containing 'RTL-Config.json' file)
 BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file name)
 CHANNEL_BACKUP_PATH (folder location for saving the channel backup files, valid for LND implementation only)
