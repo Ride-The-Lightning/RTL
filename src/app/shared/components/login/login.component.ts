@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onLogin() {
     if(!this.password) { return true; }
-    this.store.dispatch(new RTLActions.Login(sha256(this.password)));
+    this.store.dispatch(new RTLActions.Login({password: sha256(this.password), initialPass: this.password === 'password'}));
   }
 
   resetData() {

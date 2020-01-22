@@ -11,7 +11,7 @@ exports.authenticateUser = (req, res, next) => {
     } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
-        { user: 'Custom_User', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
+        { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
       res.status(200).json({ token: token });
@@ -25,7 +25,7 @@ exports.authenticateUser = (req, res, next) => {
   } else {
     const password = req.body.authenticationValue;
     if (common.rtl_pass === password) {
-      var rpcUser = 'Node_User';
+      var rpcUser = 'NODE_USER';
       const token = jwt.sign(
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
@@ -36,6 +36,33 @@ exports.authenticateUser = (req, res, next) => {
       res.status(401).json({
         message: "Authentication Failed!",
         error: "Password Validation Failed!"
+      });
+    }
+  }
+};
+
+exports.resetPassword = (req, res, next) => {
+  if(+common.rtl_sso) {
+    logger.error({fileName: 'Authenticate', lineNum: 46, msg: 'Password Reset Failed!'});
+    res.status(402).json({
+      message: "Password Reset Failure!",
+      error: "Password cannot be reset for SSO authentication!"
+    });
+  } else {
+    const oldPassword = req.body.oldPassword;
+    if (common.rtl_pass === oldPassword) {
+      common.rtl_pass = connect.replacePasswordWithHash(req.body.newPassword);
+      var rpcUser = 'NODE_USER';
+      const token = jwt.sign(
+        { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
+        common.secret_key
+      );
+      res.status(200).json({ token: token });
+    } else {
+      logger.error({fileName: 'Authenticate', lineNum: 62, msg: 'Password Reset Failed!'});
+      res.status(402).json({
+        message: "Password Reset Failed!",
+        error: "Old password is not correct!"
       });
     }
   }

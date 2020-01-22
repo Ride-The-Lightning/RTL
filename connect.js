@@ -82,12 +82,12 @@ connect.normalizePort = val => {
   return false;
 };
 
-connect.convertCustomToHash = () => {
+connect.replacePasswordWithHash = (multiPassHashed) => {
   common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
   try {
     RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    config.multiPassHashed = hash.update(config.multiPass).digest('hex');
+    config.multiPassHashed = multiPassHashed;
     delete config.multiPass;
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     console.log('Please note that, RTL has encrypted the plaintext password into its corresponding hash.');
@@ -104,7 +104,7 @@ connect.validateNodeConfig = (config) => {
     } else if (config.multiPassHashed !== '' && config.multiPassHashed) {
       common.rtl_pass = config.multiPassHashed;
     } else if (config.multiPass !== '' && config.multiPass) {
-      common.rtl_pass = connect.convertCustomToHash();
+      common.rtl_pass = connect.replacePasswordWithHash(hash.update(config.multiPass).digest('hex'));
     } else {
       errMsg = errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
     }

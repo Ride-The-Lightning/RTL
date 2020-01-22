@@ -277,8 +277,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password
     })
     .pipe(
       map((postRes: any) => {
@@ -287,6 +287,10 @@ export class RTLEffects implements OnDestroy {
         this.SetToken(postRes.token);
         rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
+        if(action.payload.initialPass) {
+          this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password before moving forward.'));
+          this.router.navigate(['/settings'], { state: { loadTab: 'authSettings' }});
+        }
       }),
       catchError((err) => {
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.message }));
@@ -319,6 +323,31 @@ export class RTLEffects implements OnDestroy {
     return of();
   }));
 
+
+  @Effect({ dispatch: false })
+  resetPassword = this.actions$.pipe(
+  ofType(RTLActions.RESET_PASSWORD),
+  withLatestFrom(this.store.select('root')),
+  mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('ResetPassword'));
+    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { 
+      oldPassword: action.payload.oldPassword,
+      newPassword: action.payload.newPassword
+    })
+    .pipe(
+      map((postRes: any) => {
+        this.logger.info(postRes);
+        this.logger.info('Password Reset Successful!');
+        this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
+        this.SetToken(postRes.token);
+      }),
+      catchError((err) => {
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
+        this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err.error);
+        return of({type: RTLActions.VOID});
+      })
+    );
+  }));
 
   @Effect()
   setSelectedNode = this.actions$.pipe(

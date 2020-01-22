@@ -50,6 +50,7 @@ import { NonNegativeAmountValidator } from './directive/non-negative-amount.dire
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 
 @NgModule({
   imports: [
@@ -179,7 +180,8 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     RemoveLeadingZerosPipe,
     CLOpenChannelComponent,
     OpenChannelComponent,
-    ShowPubkeyComponent
+    ShowPubkeyComponent,
+    AuthSettingsComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,

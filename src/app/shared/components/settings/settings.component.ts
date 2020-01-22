@@ -6,6 +6,7 @@ import { faTools } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode } from '../../models/RTLconfig';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'rtl-settings',
@@ -18,13 +19,19 @@ export class SettingsComponent implements OnInit, OnDestroy{
   public showBitcoind = false;
   public selNode: ConfigSettingsNode;
   public lnImplementationStr = '';
+  public loadTab = 'appSettings';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.store.select('root')
+    this.activatedRoute.paramMap
     .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(data => {
+      this.loadTab = window.history.state.loadTab ? window.history.state.loadTab : 'appSettings';
+    });    
+    this.store.select('root')
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.showLnConfig = false;
       this.showBitcoind = false;
