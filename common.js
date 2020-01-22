@@ -85,6 +85,11 @@ common.findNode = (selNodeIndex) => {
   return common.nodes.find(node => node.index == selNodeIndex);
 }
 
+common.replaceNode = (selNodeIndex, newNode) => {
+  common.nodes.splice(common.nodes.findIndex((node) => {node.index == selNodeIndex}), 1, newNode);
+  common.selectedNode = common.findNode(selNodeIndex);
+}
+
 common.convertToBTC = (num) => {
   return (num / 100000000).toFixed(6);
 };

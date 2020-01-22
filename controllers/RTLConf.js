@@ -32,30 +32,6 @@ exports.getRTLConfig = (req, res, next) => {
       const nodeConfData = JSON.parse(data);
       const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
       var nodesArr = [];
-      // if (nodeConfData.nodes && nodeConfData.nodes.length > 0) {
-      //   nodeConfData.nodes.forEach((node, i) => {
-      //     const authentication = {};
-      //     if(node.Authentication && node.Authentication.lndConfigPath) {
-      //       authentication.configPath = node.Authentication.lndConfigPath;
-      //     } else if(node.Authentication && node.Authentication.configPath) {
-      //       authentication.configPath = node.Authentication.configPath;
-      //     } else {
-      //       authentication.configPath = '';
-      //     }
-      //     if(node.Settings.bitcoindConfigPath) {
-      //       authentication.bitcoindConfigPath = node.Settings.bitcoindConfigPath;
-      //     }
-      //     node.Settings.channelBackupPath = (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.nodes[i].channel_backup_path;
-      //     node.Settings.themeMode = (node.Settings.themeMode) ? node.Settings.themeMode : 'DAY';
-      //     node.Settings.themeColor = (node.Settings.themeColor) ? node.Settings.themeColor : 'PURPLE';
-      //     nodesArr.push({
-      //       index: node.index,
-      //       lnNode: node.lnNode,
-      //       lnImplementation: node.lnImplementation,
-      //       settings: node.Settings,
-      //       authentication: authentication})
-      //   });
-      // }
       if (common.nodes && common.nodes.length > 0) {
         common.nodes.forEach((node, i) => {
           const authentication = {};
@@ -101,6 +77,17 @@ exports.updateUISettings = (req, res, next) => {
       } else {
         delete node.Settings.currencyUnit;
       }
+      const selectedNode = common.findNode(common.selectedNode.index);
+      selectedNode.user_persona = req.body.updatedSettings.userPersona;
+      selectedNode.theme_mode = req.body.updatedSettings.themeMode;
+      selectedNode.theme_color = req.body.updatedSettings.themeColor;
+      selectedNode.fiat_conversion = req.body.updatedSettings.fiatConversion;
+      if(req.body.updatedSettings.fiatConversion) {
+        selectedNode.currency_unit = req.body.updatedSettings.currencyUnit ? req.body.updatedSettings.currencyUnit : 'USD';
+      } else {
+        delete selectedNode.currency_unit;
+      }
+      common.replaceNode(common.selectedNode.index, selectedNode);
     }
   });
   try {
