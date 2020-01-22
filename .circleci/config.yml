@@ -75,19 +75,19 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /v[0-9]+(\.[0-9]+)(\-RC\[0-9])*/
+              only: /v(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?:([A-Za-z1-9])*))?)$/
       - publish_docker_linuxarm32v7:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /v[0-9]+(\.[0-9]+)(\-RC\[0-9])*/
+              only: /v(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?:([A-Za-z1-9])*))?)$/
       - publish_docker_linuxarm64v8:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /v[0-9]+(\.[0-9]+)(\-RC\[0-9])*/
+              only: /v(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?:([A-Za-z1-9])*))?)$/
       - publish_docker_multiarch:
           requires:
             - publish_docker_linuxamd64
@@ -97,4 +97,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /v[0-9]+(\.[0-9]+)(\-RC\[0-9])*/
+              only: /v(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?:([A-Za-z1-9])*))?)$/
