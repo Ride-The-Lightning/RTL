@@ -39,7 +39,6 @@ The parameters can be configured via RTL-Config.json file or through environment
 ;The environment variable can also be used for all of the above configurations except the UI settings.
 ;If the environment variables are set, it will take precedence over the parameters in the RTL-Config.json file.
 PORT (port number for the rtl node server, default 3000)
-RTL_PASS (Password for RTL custom authentication)
 LN_IMPLEMENTATION (LND, CLT. Default 'LND')
 LN_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1) OR LN_SERVER_URL (LN server URL for LNP REST APIs)
 CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name)

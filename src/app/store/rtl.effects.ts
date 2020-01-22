@@ -288,7 +288,7 @@ export class RTLEffects implements OnDestroy {
         rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
         this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
         if(action.payload.initialPass) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password before moving forward.'));
+          this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
           this.router.navigate(['/settings'], { state: { loadTab: 'authSettings' }});
         }
       }),

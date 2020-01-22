@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { faInfoCircle, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faKey } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -13,7 +13,6 @@ import * as RTLActions from '../../../../store/rtl.actions';
 })
 export class AuthSettingsComponent implements OnInit {
   public faKey = faKey;
-  public faInfoCircle = faInfoCircle;
   public oldPassword = '';
   public newPassword = '';
   public confirmPassword = '';

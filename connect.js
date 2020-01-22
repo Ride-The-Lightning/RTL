@@ -99,9 +99,7 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 
 connect.validateNodeConfig = (config) => {
   if(!+config.SSO.rtlSSO) {
-    if (process.env.RTL_PASS) {
-      common.rtl_pass = hash.update(process.env.RTL_PASS).digest('hex');
-    } else if (config.multiPassHashed !== '' && config.multiPassHashed) {
+    if (config.multiPassHashed !== '' && config.multiPassHashed) {
       common.rtl_pass = config.multiPassHashed;
     } else if (config.multiPass !== '' && config.multiPass) {
       common.rtl_pass = connect.replacePasswordWithHash(hash.update(config.multiPass).digest('hex'));
