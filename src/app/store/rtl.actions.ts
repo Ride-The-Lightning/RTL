@@ -92,8 +92,9 @@ export const FETCH_CONFIG = 'FETCH_CONFIG';
 export const SHOW_CONFIG = 'SHOW_CONFIG';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
-export const SIGNIN = 'SIGNIN';
-export const SIGNOUT = 'SIGNOUT';
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
+export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -652,14 +653,19 @@ export class IsAuthorizedRes implements Action {
   constructor(public payload: any) {} // payload = token/error
 }
 
-export class Signin implements Action {
-  readonly type = SIGNIN;
-  constructor(public payload: string) {} // payload = password
+export class Login implements Action {
+  readonly type = LOGIN;
+  constructor(public payload: {password: string, initialPass: boolean}) {}
 }
 
-export class Signout implements Action {
-  readonly type = SIGNOUT;
+export class Logout implements Action {
+  readonly type = LOGOUT;
   constructor() {}
+}
+
+export class ResetPassword implements Action {
+  readonly type = RESET_PASSWORD;
+  constructor(public payload: {oldPassword: string, newPassword: string}) {}
 }
 
 export class SetChildNodeSettingsCL implements Action {
@@ -906,7 +912,7 @@ export type RTLActions =
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   LoopIn | GetLoopInTerms | SetLoopInTerms | GetLoopInQuote | SetLoopInQuote |
   LoopOut | GetLoopOutTerms | SetLoopOutTerms | GetLoopOutQuote | SetLoopOutQuote |
-  IsAuthorized | IsAuthorizedRes | Signin | Signout |
+  IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

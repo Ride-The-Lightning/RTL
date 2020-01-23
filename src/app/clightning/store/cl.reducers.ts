@@ -23,7 +23,7 @@ export interface CLState {
 
 export const initCLState: CLState = {
   effectErrorsCl: [],
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', satsToBTC: false, currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
   feeRatesPerKB: {},

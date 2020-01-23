@@ -1,68 +1,51 @@
 RTL allows the user to configure and control specific application parameters for app customization and integration.
-The parameters can be configured via RTL.conf file or through environment variables defined at the OS level.
+The parameters can be configured via RTL-Config.json file or through environment variables defined at the OS level.
 
-#### RTL.conf
-[Authentication]
-;Path for the folder containing 'admin.macaroon' file
-macaroonPath=<>
-;For stand alone RTL authentication. Allowed values - CUSTOM, DEFAULT
-nodeAuthType=<>
-;Full path of the lnd.conf file including the file name
-lndConfigPath=<>
-;For 'nodeAuthType=CUSTOM', the password in plain text
-rtlPass=<>
-
-[Settings]
-;Set by RTL
-userPersona=OPERATOR
-;Set by RTL
-themeMode=DAY
-;Set by RTL
-themeColor=PURPLE
-;Full path of the bitcoin.conf file including the file name
-bitcoindConfigPath=<>
-;parameter to turn RTL logging off/on. Allowed values - true, false
-enableLogging=<>
-;port number for the rtl node server, default 3000
-port=3000
-;<LND server URL for REST APIs.
-;Default is 'https://localhost:8080/v1'
-lndServerUrl=https://localhost:8080/v1
-;Channel backup folder
-channelBackupPath=<>
-;Set by RTL
-fiatConversion=false
-;Set by RTL, dafault 'USD' If fiatConversion is true
-currencyUnit=USD
-
-[SSO]
-;Single Sign On control
-;Allowed values - 1,0
-;1-single sign on via an external cookie
-;0-stand alone RTL authentication
-rtlSSO=0
-;Required if 'rtlSSO=1'
-;Full path of the cookie file including the file name
-;The application url needs to pass the value from this cookie file as query param 'access-key'
-;for the SSO authentication to work
-rtlCookiePath=<>
-;Required if 'rtlSSO=1'
-;URL to re-direct to after logout/timeout from RTL
-logoutRedirectLink=/login
+#### RTL-Config.json
+{
+  "multiPass": "<The password in plain text, default 'password'>",
+  "port": "<port number for the rtl node server, default '3000'>",
+  "defaultNodeIndex": <Default index to load when rtl server starts, default 1>,
+  "SSO": {
+    "rtlSSO": <parameter to turn SSO off/on. Allowed values - 1 (single sign on via an external cookie), 0 (stand alone RTL authentication), default 0>,
+    "rtlCookiePath": "<Full path of the cookie file including the file name. The application url needs to pass the value from this cookie file as query param 'access-key' for the SSO authentication to work, Required if SSO=1 else empty>",
+    "logoutRedirectLink": "<URL to re-direct to after logout/timeout from RTL, Required if SSO=1 else empty>"
+  },
+  "nodes": [
+    {
+      "index": <Incrimental Node indices starting from 1>,
+      "lnNode": "<Node name to uniquely identify the node in the UI, Default 'Node 1'>",
+      "lnImplementation": "<LNP implementation, Allowed values LND/CLT. Default 'LND'>",
+      "Authentication": {
+        "macaroonPath": "<Path for the folder containing 'admin.macaroon' file>",
+        "configPath": "<Optional:Full path of the lnd.conf file including the file name, if present locally or empty>"
+      },
+      "Settings": {
+        "userPersona": "<User persona to tailor the data on UI. Allowed values MERCHANT, OPERATOR. Default MERCHANT>",
+        "themeMode": "<Theme modes, Allowed values DAY, NIGHT. Default DAY>",
+        "themeColor": "<Theme colors, Allowed values PURPLE, TEAL, INDIGO, PINK. Default PURPLE>",
+        "channelBackupPath": "<Optional: Path to save channel backup file. Only for LND implementation, Default <RTL root>\backup\node-1>",
+        "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
+        "enableLogging": <parameter to turn RTL logging off/on. Allowed values - true, false, default false>,
+        "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false>,
+        "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true>",
+        "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080/v1 OR https://192.168.0.1:3001/v1. Default 'https://localhost:8080/v1'"
+      }
+    }
+  ]
+}
 
 #### Environment variables
 ;The environment variable can also be used for all of the above configurations except the UI settings.
-;If the environment variables are set, it will take precedence over the parameters in the RTL.conf file.
+;If the environment variables are set, it will take precedence over the parameters in the RTL-Config.json file.
 PORT (port number for the rtl node server, default 3000)
-NODE_AUTH_TYPE (For stand alone RTL authentication allowed values - CUSTOM, DEFAULT)
-RTL_PASS (Password for RTL custom authentication)
 LN_IMPLEMENTATION (LND, CLT. Default 'LND')
-LND_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1) OR LN_SERVER_URL (LN server URL for LNP REST APIs)
-LND_CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name)
+LN_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1) OR LN_SERVER_URL (LN server URL for LNP REST APIs)
+CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name)
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' file)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL)
-RTL_CONFIG_PATH (Full path of the RTL.conf file including the file name)
+RTL_CONFIG_PATH (Path for the folder containing 'RTL-Config.json' file)
 BITCOIND_CONFIG_PATH (Full path of the bitcoind.conf file including the file name)
 CHANNEL_BACKUP_PATH (folder location for saving the channel backup files, valid for LND implementation only)

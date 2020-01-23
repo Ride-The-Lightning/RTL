@@ -101,8 +101,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.flgLoading = session.token ? true : false;
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.SIGNOUT))
-    .subscribe((action: RTLActions.Signout) => {
+    filter((action) => action.type === RTLActions.LOGOUT))
+    .subscribe((action: RTLActions.Logout) => {
       this.showLogout = false;
     });
   }
@@ -119,7 +119,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.showLogout = false;
-          this.store.dispatch(new RTLActions.Signout());
+          this.store.dispatch(new RTLActions.Logout());
         }
       });
     }

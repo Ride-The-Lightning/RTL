@@ -56,10 +56,7 @@ export const NODE_SETTINGS = {
     {id: 'INDIGO', name: 'RTL'},
     {id: 'PINK', name: 'BK'}
   ],
-  modes: [{id: 'DAY', name: 'Day'}, {id: 'NIGHT', name: 'Night'}],
-  fontSize: [{id: 1, name: 'Small', class: 'SMALL'}, {id: 2, name: 'Medium', class: 'MEDIUM'}, {id: 3, name: 'Large', class: 'LARGE'}],
-  menuTypes: [{id: 'REGULAR', name: 'Regular'}, {id: 'COMPACT', name: 'Compact'}, {id: 'MINI', name: 'Mini'}],
-  menus: [{id: 'VERTICAL', name: 'Vertical'}, {id: 'HORIZONTAL', name: 'Horizontal'}]
+  modes: [{id: 'DAY', name: 'Day'}, {id: 'NIGHT', name: 'Night'}]
 };
 
 export enum UserPersonaEnum {

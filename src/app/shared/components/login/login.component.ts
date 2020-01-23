@@ -12,18 +12,16 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
-  selector: 'rtl-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.scss']
+  selector: 'rtl-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class SigninComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   public faUnlockAlt = faUnlockAlt;
   public selNode: ConfigSettingsNode;
   public password = '';
-  public nodeAuthType = '';
   public rtlSSO = 0;
   public rtlCookiePath = '';
-  public hintStr = '';
   public accessKey = '';
 
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -38,19 +36,13 @@ export class SigninComponent implements OnInit, OnDestroy {
         this.logger.error(effectsErr);
       });
       this.selNode = rtlStore.selNode;
-      this.nodeAuthType = this.selNode.authentication.nodeAuthType;
       this.logger.info(rtlStore);
-      if (this.nodeAuthType.toUpperCase() === 'DEFAULT') {
-        this.hintStr = 'Enter RPC password';
-      } else {
-        this.hintStr = ''; // Do not remove, initial passowrd 'DEFAULT' is initilizing its value
-      }
     });
   }
 
-  onSignin() {
+  onLogin() {
     if(!this.password) { return true; }
-    this.store.dispatch(new RTLActions.Signin(sha256(this.password)));
+    this.store.dispatch(new RTLActions.Login({password: sha256(this.password), initialPass: this.password === 'password'}));
   }
 
   resetData() {

@@ -4,7 +4,7 @@ Static Channel Backup APIs of LND has been leveraged to provide channel backup f
 #### Backup folder location
 Default location: If no folder location is specified in the RTL conf files (single or mult-node setup), RTL will create a folder `backup` on the RTL root. If multiple nodes are being managed via RTL, multiple node sub-folders will be created in the `backup` folder.
 
-User defined: User can specify the folder where channel backups should be created, by setting a config variable `channelBackupPath` in the `RTL.conf` or `RTL-Multi-Node-Conf.json` files. Please ensure that RTL has the permission to write in the specified folder location.
+User defined: User can specify the folder where channel backups should be created, by setting a config variable `channelBackupPath` in the `RTL-Config.json` file. Please ensure that RTL has the permission to write in the specified folder location.
 
 Environment variable: Channel backup folder location can also be controlled via an environment variable `CHANNEL_BACKUP_PATH`
 

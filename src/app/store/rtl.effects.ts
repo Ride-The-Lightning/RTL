@@ -269,16 +269,16 @@ export class RTLEffects implements OnDestroy {
   );
 
   @Effect({ dispatch: false })
-  authSignin = this.actions$.pipe(
-  ofType(RTLActions.SIGNIN),
+  authLogin = this.actions$.pipe(
+  ofType(RTLActions.LOGIN),
   withLatestFrom(this.store.select('root')),
-  mergeMap(([action, rootStore]: [RTLActions.Signin, fromRTLReducer.RootState]) => {
+  mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
     this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
-    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Signin'));
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password
     })
     .pipe(
       map((postRes: any) => {
@@ -286,12 +286,17 @@ export class RTLEffects implements OnDestroy {
         this.logger.info('Successfully Authorized!');
         this.SetToken(postRes.token);
         rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
-        this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}))
+        if(action.payload.initialPass) {
+          this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
+          this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
+        } else {
+          this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
+        }
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Signin', code: err.status, message: err.error.message }));
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.message }));
         this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err.error);
-        this.logger.info('Redirecting to Signin Error Page');
+        this.logger.info('Redirecting to Login Error Page');
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {
@@ -303,8 +308,8 @@ export class RTLEffects implements OnDestroy {
   }));
 
   @Effect({ dispatch: false })
-  signOut = this.actions$.pipe(
-  ofType(RTLActions.SIGNOUT),
+  logOut = this.actions$.pipe(
+  ofType(RTLActions.LOGOUT),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, store]) => {
     if (+store.appConfig.sso.rtlSSO) {
@@ -319,6 +324,31 @@ export class RTLEffects implements OnDestroy {
     return of();
   }));
 
+
+  @Effect({ dispatch: false })
+  resetPassword = this.actions$.pipe(
+  ofType(RTLActions.RESET_PASSWORD),
+  withLatestFrom(this.store.select('root')),
+  mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('ResetPassword'));
+    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { 
+      oldPassword: action.payload.oldPassword,
+      newPassword: action.payload.newPassword
+    })
+    .pipe(
+      map((postRes: any) => {
+        this.logger.info(postRes);
+        this.logger.info('Password Reset Successful!');
+        this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
+        this.SetToken(postRes.token);
+      }),
+      catchError((err) => {
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
+        this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err.error);
+        return of({type: RTLActions.VOID});
+      })
+    );
+  }));
 
   @Effect()
   setSelectedNode = this.actions$.pipe(
@@ -346,9 +376,9 @@ export class RTLEffects implements OnDestroy {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
     if(node.settings.fiatConversion && node.settings.currencyUnit) {
-        selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
+        selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
     } else {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, satsToBTC: node.settings.satsToBTC, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
@@ -377,8 +407,8 @@ export class RTLEffects implements OnDestroy {
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
@@ -387,8 +417,8 @@ export class RTLEffects implements OnDestroy {
   handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({

@@ -69,7 +69,7 @@ services:
 
   rtl:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
-    image: shahanafarooqui/rtl:0.2.16
+    image: shahanafarooqui/rtl:0.6.4
     restart: unless-stopped
     depends_on:
       - lnd
@@ -80,7 +80,6 @@ services:
     environment:
       PORT: ${RTL_PORT}
       MACAROON_PATH: /shared
-      LND_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}/v1
-      LND_CONFIG_PATH: ''
-      NODE_AUTH_TYPE: ${RTL_NODE_AUTH_TYPE}
+      LN_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}/v1
+      CONFIG_PATH: ''
       RTL_PASS: ${RTL_PASS}

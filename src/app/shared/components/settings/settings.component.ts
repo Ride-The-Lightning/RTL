@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faTools } from '@fortawesome/free-solid-svg-icons';
 
-import { ConfigSettingsNode } from '../../models/RTLconfig';
+import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-settings',
@@ -17,29 +19,42 @@ export class SettingsComponent implements OnInit, OnDestroy{
   public showLnConfig = false;
   public showBitcoind = false;
   public selNode: ConfigSettingsNode;
+  public appConfig: RTLConfiguration;
   public lnImplementationStr = '';
+  public loadTab = 'appSettings';
+  public initializeNodeData = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.store.select('root')
+    this.activatedRoute.paramMap
     .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(data => {
+      this.loadTab = window.history.state.loadTab ? window.history.state.loadTab : 'appSettings';
+      this.initializeNodeData = window.history.state.initializeNodeData ? window.history.state.initializeNodeData : false;
+    });    
+    this.store.select('root')
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.showLnConfig = false;
       this.showBitcoind = false;
+      this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.lnImplementationStr = this.selNode.lnImplementation.toUpperCase() === 'CLT' ? 'C-Lightning Config' : 'LND Config';
-      if ( this.selNode.authentication &&  this.selNode.authentication.configPath && this.selNode.authentication.configPath !== '') {
+      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
         this.showLnConfig = true;
       }
-      if ( this.selNode.authentication &&  this.selNode.authentication.bitcoindConfigPath && this.selNode.authentication.bitcoindConfigPath !== '') {
+      if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
         this.showBitcoind = true;
       }
     });
   }
 
   ngOnDestroy() {
+    if(this.initializeNodeData) {
+      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: this.selNode, isInitialSetup: true}));
+    }
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();

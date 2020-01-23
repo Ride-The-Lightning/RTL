@@ -71,7 +71,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[2]),
-      filter((action) => action.type === RTLActions.SIGNOUT)
+      filter((action) => action.type === RTLActions.LOGOUT)
     ).subscribe(() => {
       this.showLogout = false;
     });
@@ -86,7 +86,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.showLogout = false;
-        this.store.dispatch(new RTLActions.Signout());
+        this.store.dispatch(new RTLActions.Logout());
       }
     });
   }
