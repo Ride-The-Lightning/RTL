@@ -25,7 +25,7 @@ export class AuthSettingsComponent implements OnInit {
   ngOnInit() {}
 
   onResetPassword() {
-    if(!this.oldPassword || !this.newPassword || !this.confirmPassword || this.oldPassword === this.newPassword) { return true; }
+    if(!this.oldPassword || !this.newPassword || !this.confirmPassword || this.oldPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({oldPassword: sha256(this.oldPassword), newPassword: sha256(this.newPassword)}));
   }
 
