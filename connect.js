@@ -334,7 +334,7 @@ connect.setSelectedNode = (config) => {
   }
 }
 
-connect.modifyJsonForNewUX = (confFileFullPath) => {
+connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
   RTLConfFile = common.rtl_conf_file_path + '/RTL-Multi-Node-Conf.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   if (!config.SSO) { config.SSO = {}; }
@@ -402,7 +402,7 @@ connect.modifyJsonForNewUX = (confFileFullPath) => {
   fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');
 }
 
-connect.upgradeIniToJson = (confFileFullPath) => {
+connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
   RTLConfFile = common.rtl_conf_file_path + '/RTL.conf';
   var config = ini.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   if (!config.SSO) { config.SSO = {}; }
@@ -473,12 +473,18 @@ connect.upgradeConfig = (confFileFullPath) => {
     const singleNodeExists = fs.existsSync(singleNodeConfFile);
     const multiNodeExists = fs.existsSync(multiNodeConfFile);
     if ((singleNodeExists && multiNodeExists) || (!singleNodeExists && multiNodeExists)) {
-      connect.modifyJsonForNewUX(confFileFullPath);
+      console.log('Start...config migration for file ' + multiNodeConfFile);
+      connect.modifyJsonMultiNodeConfig(confFileFullPath);
+      console.log('End...config migration.');
     } else if (singleNodeExists && !multiNodeExists) {
-      connect.upgradeIniToJson(confFileFullPath);
+      console.log('Start...config migration for file ' + singleNodeConfFile);
+      connect.modifyIniSingleNodeConfig(confFileFullPath);
+      console.log('End...config migration.');
     } else if (!singleNodeExists && !multiNodeExists) {
       if (!fs.existsSync(confFileFullPath)) {
+        console.log('Start...config creation at: ' + confFileFullPath);
         fs.writeFileSync(confFileFullPath, JSON.stringify(connect.setDefaultConfig(), null, 2), 'utf-8');
+        console.log('End...config creation.');
       }
     }
   } catch(err) {
