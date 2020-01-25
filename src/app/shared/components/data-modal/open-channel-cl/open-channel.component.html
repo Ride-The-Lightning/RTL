@@ -47,11 +47,11 @@
           </div>
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
             <mat-form-field fxFlex="48" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel" nonNegativeAmount="{{totalBalance}}">
+              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" tabindex="2" required name="amount" #amount="ngModel" max="{{totalBalance}}">
               <mat-hint>(Wallet Bal: {{totalBalance}}, Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
               <span matSuffix> {{information?.smaller_currency_unit | titlecase}} </span>
               <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
-              <mat-error *ngIf="amount.errors?.negative">Amount must be less than or equal to {{totalBalance}}.</mat-error>
+              <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
             </mat-form-field>
             <div fxFlex="48" fxLayoutAlign="start center">
               <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>

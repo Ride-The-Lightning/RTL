@@ -1,6 +1,6 @@
 var request = require('request-promise');
-var options = require("../../connect");
 var common = require('../../common');
+var options = {};
 
 exports.getGraphInfo = (req, res, next) => {
   options = common.getOptions();

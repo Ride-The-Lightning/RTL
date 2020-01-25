@@ -11,7 +11,7 @@
         <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="flgShowInput" fxLayoutAlign="space-between center" class="mb-2">
           <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="getInput.width">
-            <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [type]="getInput.inputType" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
+            <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
             <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
           </mat-form-field>
         </div>        

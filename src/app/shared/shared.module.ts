@@ -45,13 +45,14 @@ import { ChannelRebalanceComponent } from './components/data-modal/channel-rebal
 import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
+import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
-import { NonNegativeAmountValidator } from './directive/non-negative-amount.directive';
+import { MaxValidator } from './directive/max-amount.directive';
+import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 
 @NgModule({
   imports: [
@@ -153,7 +154,8 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
     CurrencyUnitConverterComponent,
     ClipboardDirective,
     AutoFocusDirective,
-    NonNegativeAmountValidator,
+    MaxValidator,
+    MinValidator,
     QRCodeModule,
     RemoveLeadingZerosPipe,
     PerfectScrollbarModule
@@ -179,7 +181,8 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,
-    NonNegativeAmountValidator,
+    MaxValidator,
+    MinValidator,
     RemoveLeadingZerosPipe,
     CLOpenChannelComponent,
     OpenChannelComponent,
