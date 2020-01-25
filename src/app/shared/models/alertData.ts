@@ -2,6 +2,7 @@ import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
 import { GetInfo, Invoice } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
+import { LoopOutTerms, LoopOutQuote } from './loopModels';
 
 export interface MessageErrorField {
   code: number;
@@ -67,6 +68,13 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
+export interface LoopOutAlert {
+  channelId: string;
+  outQuote1: LoopOutQuote;
+  outQuote2: LoopOutQuote;
+  component?: any;
+}
+
 export interface AlertData {
   type: string; // INFORMATION/WARNING/SUCCESS/ERROR
   alertTitle?: string;
@@ -101,5 +109,5 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | OnChainAddressInformation | ShowPubkeyData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | OnChainAddressInformation | ShowPubkeyData | LoopOutAlert;
 }

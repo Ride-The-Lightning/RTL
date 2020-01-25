@@ -1065,30 +1065,53 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  @Effect()
-  getLoopInTerms = this.actions$.pipe(
-    ofType(RTLActions.GET_LOOP_IN_TERMS),
-    mergeMap((action: RTLActions.GetLoopInTerms) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopInTerms'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/in/terms')
-        .pipe(
-          map((terms: any) => {
-            this.logger.info(terms);
-            console.warn(terms);
-            return {
-              type: RTLActions.SET_LOOP_IN_TERMS,
-              payload: terms
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('LoopInTerms', err);
-            return of({type: RTLActions.VOID});
-          })
-        );
-      }
-    ));
+  // @Effect()
+  // getLoopOutTerms = this.actions$.pipe(
+  //   ofType(RTLActions.GET_LOOP_OUT_TERMS),
+  //   mergeMap((action: RTLActions.GetLoopOutTerms) => {
+  //     this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopOutTerms'));
+  //     return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/out/terms')
+  //       .pipe(
+  //         map((terms: any) => {
+  //           this.logger.info(terms);
+  //           console.warn(terms);
+  //           return {
+  //             type: RTLActions.SET_LOOP_OUT_TERMS,
+  //             payload: terms
+  //           };
+  //         }),
+  //         catchError((err: any) => {
+  //           this.handleErrorWithoutAlert('LoopOutTerms', err);
+  //           return of({type: RTLActions.VOID});
+  //         })
+  //       );
+  //     }
+  //   ));
 
-  initializeRemainingData(info: any, landingPage: string) {
+    // @Effect()
+    // getLoopOutQuote = this.actions$.pipe(
+    // ofType(RTLActions.GET_LOOP_OUT_QUOTE),
+    // mergeMap((action: RTLActions.GetLoopOutQuote) => {
+    //   this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopOutQuote'));
+    //   return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/out/quote/' + action.payload.amount)
+    //     .pipe(
+    //       map((terms: any) => {
+    //         this.logger.info(terms);
+    //         console.warn(terms);
+    //         return {
+    //           type: RTLActions.SET_LOOP_OUT_QUOTE,
+    //           payload: terms
+    //         };
+    //       }),
+    //       catchError((err: any) => {
+    //         this.handleErrorWithoutAlert('LoopOutQuote', err);
+    //         return of({type: RTLActions.VOID});
+    //       })
+    //     );
+    //   }
+    // ));
+
+    initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (info.chains) {
       if (typeof info.chains[0] === 'string') {

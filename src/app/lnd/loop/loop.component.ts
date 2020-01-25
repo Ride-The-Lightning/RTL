@@ -39,7 +39,7 @@ export class LoopComponent implements OnInit, OnDestroy {
   }
 
   onLoopInTerms() {
-    this.store.dispatch(new RTLActions.GetLoopInTerms());
+    // this.store.dispatch(new RTLActions.GetLoopInTerms());
   }
 
   ngOnDestroy() {

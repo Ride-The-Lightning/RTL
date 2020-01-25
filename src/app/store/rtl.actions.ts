@@ -104,16 +104,16 @@ export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 
-export const LOOP_IN = 'LOOP_IN';
-export const GET_LOOP_IN_TERMS = 'GET_LOOP_IN_TERMS';
-export const SET_LOOP_IN_TERMS = 'SET_LOOP_IN_TERMS';
-export const GET_LOOP_IN_QUOTE = 'GET_LOOP_IN_QUOTE';
-export const SET_LOOP_IN_QUOTE = 'SET_LOOP_IN_QUOTE';
-export const LOOP_OUT = 'LOOP_OUT';
-export const GET_LOOP_OUT_TERMS = 'GET_LOOP_OUT_TERMS';
-export const SET_LOOP_OUT_TERMS = 'SET_LOOP_OUT_TERMS';
-export const GET_LOOP_OUT_QUOTE = 'GET_LOOP_OUT_QUOTE';
-export const SET_LOOP_OUT_QUOTE = 'SET_LOOP_OUT_QUOTE';
+// export const LOOP_IN = 'LOOP_IN';
+// export const GET_LOOP_IN_TERMS = 'GET_LOOP_IN_TERMS';
+// export const SET_LOOP_IN_TERMS = 'SET_LOOP_IN_TERMS';
+// export const GET_LOOP_IN_QUOTE = 'GET_LOOP_IN_QUOTE';
+// export const SET_LOOP_IN_QUOTE = 'SET_LOOP_IN_QUOTE';
+// export const LOOP_OUT = 'LOOP_OUT';
+// export const GET_LOOP_OUT_TERMS = 'GET_LOOP_OUT_TERMS';
+// export const SET_LOOP_OUT_TERMS = 'SET_LOOP_OUT_TERMS';
+// export const GET_LOOP_OUT_QUOTE = 'GET_LOOP_OUT_QUOTE';
+// export const SET_LOOP_OUT_QUOTE = 'SET_LOOP_OUT_QUOTE';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -595,53 +595,53 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
-export class LoopIn implements Action {
-  readonly type = LOOP_IN;
-  constructor(public payload: any) {}
-}
+// export class LoopIn implements Action {
+//   readonly type = LOOP_IN;
+//   constructor(public payload: any) {}
+// }
 
-export class GetLoopInTerms implements Action {
-  readonly type = GET_LOOP_IN_TERMS;
-}
+// export class GetLoopInTerms implements Action {
+//   readonly type = GET_LOOP_IN_TERMS;
+// }
 
-export class SetLoopInTerms implements Action {
-  readonly type = SET_LOOP_IN_TERMS;
-  constructor(public payload: any) {}
-}
+// export class SetLoopInTerms implements Action {
+//   readonly type = SET_LOOP_IN_TERMS;
+//   constructor(public payload: any) {}
+// }
 
-export class GetLoopInQuote implements Action {
-  readonly type = GET_LOOP_IN_QUOTE;
-  constructor(public payload: any) {}
-}
+// export class GetLoopInQuote implements Action {
+//   readonly type = GET_LOOP_IN_QUOTE;
+//   constructor(public payload: {amount: number}) {}
+// }
 
-export class SetLoopInQuote implements Action {
-  readonly type = SET_LOOP_IN_QUOTE;
-  constructor(public payload: any) {}
-}
+// export class SetLoopInQuote implements Action {
+//   readonly type = SET_LOOP_IN_QUOTE;
+//   constructor(public payload: any) {}
+// }
 
-export class LoopOut implements Action {
-  readonly type = LOOP_OUT;
-  constructor(public payload: any) {}
-}
+// export class LoopOut implements Action {
+//   readonly type = LOOP_OUT;
+//   constructor(public payload: any) {}
+// }
 
-export class GetLoopOutTerms implements Action {
-  readonly type = GET_LOOP_OUT_TERMS;
-}
+// export class GetLoopOutTerms implements Action {
+//   readonly type = GET_LOOP_OUT_TERMS;
+// }
 
-export class SetLoopOutTerms implements Action {
-  readonly type = SET_LOOP_OUT_TERMS;
-  constructor(public payload: any) {}
-}
+// export class SetLoopOutTerms implements Action {
+//   readonly type = SET_LOOP_OUT_TERMS;
+//   constructor(public payload: any) {}
+// }
 
-export class GetLoopOutQuote implements Action {
-  readonly type = GET_LOOP_OUT_QUOTE;
-  constructor(public payload: any) {}
-}
+// export class GetLoopOutQuote implements Action {
+//   readonly type = GET_LOOP_OUT_QUOTE;
+//   constructor(public payload: {amount: number}) {}
+// }
 
-export class SetLoopOutQuote implements Action {
-  readonly type = SET_LOOP_OUT_QUOTE;
-  constructor(public payload: any) {}
-}
+// export class SetLoopOutQuote implements Action {
+//   readonly type = SET_LOOP_OUT_QUOTE;
+//   constructor(public payload: any) {}
+// }
 
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
@@ -910,8 +910,8 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  LoopIn | GetLoopInTerms | SetLoopInTerms | GetLoopInQuote | SetLoopInQuote |
-  LoopOut | GetLoopOutTerms | SetLoopOutTerms | GetLoopOutQuote | SetLoopOutQuote |
+  // LoopIn | GetLoopInTerms | SetLoopInTerms | GetLoopInQuote | SetLoopInQuote |
+  // LoopOut | GetLoopOutTerms | SetLoopOutTerms | GetLoopOutQuote | SetLoopOutQuote |
   IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |

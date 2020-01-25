@@ -463,6 +463,12 @@
     overflow: hidden;
   }
 
+  .mat-icon-button {
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
   .balances-info-pie-chart {
     & .legend-label:nth-child(1) .legend-label-color {
       background-color: mat-color($primary, 200) !important;

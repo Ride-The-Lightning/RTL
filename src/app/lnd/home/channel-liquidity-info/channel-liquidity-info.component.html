@@ -7,14 +7,17 @@
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
   <div fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
     <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
-      <div *ngFor="let channel of allChannels" class="mt-2">
+      <div *ngFor="let channel of allChannels" [ngClass]="{'mt-2': direction === 'In', 'mt-1': direction === 'Out'}">
         <span class="dashboard-capacity-header" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
           <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
           <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
         </div>
-        <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
-        <mat-progress-bar *ngIf="direction === 'Out'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+        <span *ngIf="direction === 'In'"><mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar></span>
+        <span *ngIf="direction === 'Out'" fxFlexLayout="row" fxLayoutAlign="space-between center">
+          <mat-progress-bar fxFlex="90" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+          <button fxFlex="9" mat-icon-button aria-label="Loop Out" color="primary" matTooltip="Loop Out" (click)="onLoopOut(channel)"><mat-icon>loop</mat-icon></button>
+        </span>
       </div>
     </div>
   </div>

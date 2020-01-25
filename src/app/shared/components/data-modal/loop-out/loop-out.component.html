@@ -1,0 +1,76 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">Loop Out Terms and Quotes</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <form fxLayout="column" #loopOutForm="ngForm">
+        <div fxLayout="column">
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Minimum Term Amount</h4>
+              <span class="foreground-secondary-text">{{outQuote1.amount | number}} Sats</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Maximum Term Amount</h4>
+              <span class="foreground-secondary-text">{{outQuote2.amount | number}} Sats</span>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
+              <span class="foreground-secondary-text">{{outQuote1.swap_fee | number}} Sats</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
+              <span class="foreground-secondary-text">{{outQuote2.swap_fee | number}} Sats</span>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
+              <span class="foreground-secondary-text">{{outQuote1.prepay_amt | number}} Sats</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
+              <span class="foreground-secondary-text">{{outQuote2.prepay_amt | number}} Sats</span>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
+              <span class="foreground-secondary-text">{{outQuote1.miner_fee | number}} Sats</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
+              <span class="foreground-secondary-text">{{outQuote2.miner_fee | number}} Sats</span>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="column" class="bordered-box mt-2 open-inputs-box">
+          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
+            <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+              <input matInput autoFocus [(ngModel)]="outAmount" placeholder="Loop Out Amount" type="number" step="1000" min="{{outQuote1.amount}}" tabindex="1" required name="amount" #outAmt="ngModel" max="{{outQuote2.amount}}">
+              <span matSuffix> Sats </span>
+              <mat-error *ngIf="outAmt.errors?.required">Amount is required.</mat-error>
+              <mat-error *ngIf="outAmt.errors?.min">Amount must be greater than or equal to {{outQuote1.amount | number}}.</mat-error>
+              <mat-error *ngIf="outAmt.errors?.max">Amount must be less than or equal to {{outQuote2.amount | number}}.</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <div fxLayoutAlign="space-between center" fxFlex="30">
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onClose()" tabindex="7">Do It Later</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onLoopOut()" type="button" tabindex="9">Loop Out</button>
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>
