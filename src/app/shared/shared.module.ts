@@ -45,7 +45,7 @@ import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
-import { LoopOutComponent } from './components/data-modal/loop-out/loop-out.component';
+import { LoopOutModalComponent } from './components/data-modal/loop-out-modal/loop-out-modal.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MaxValidator } from './directive/max-amount.directive';
@@ -186,7 +186,7 @@ import { SocketService } from './services/socket.service';
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
-    LoopOutComponent,
+    LoopOutModalComponent,
     AuthSettingsComponent
   ],
   entryComponents: [
@@ -196,7 +196,7 @@ import { SocketService } from './services/socket.service';
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
-    LoopOutComponent,
+    LoopOutModalComponent,
     SpinnerDialogComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,

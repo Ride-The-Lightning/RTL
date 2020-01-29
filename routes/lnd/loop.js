@@ -4,7 +4,8 @@ const router = express.Router();
 const authCheck = require("../authCheck");
 
 router.get("/in/terms", authCheck, LoopController.loopInTerms);
-router.get("/in/quote", authCheck, LoopController.loopInQuote);
+router.get("/in/quote/:amount", authCheck, LoopController.loopInQuote);
+router.get("/in/termsAndQuotes", authCheck, LoopController.loopInTermsAndQuotes);
 router.post("/in", authCheck, LoopController.loopIn);
 router.get("/out/terms", authCheck, LoopController.loopOutTerms);
 router.get("/out/quote/:amount", authCheck, LoopController.loopOutQuote);

@@ -40,6 +40,29 @@ export class LoopService {
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
   }
 
+  loopIn(amount: number, chanId: string) {
+    const requestBody = { amount: amount, chanId: chanId };
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in';
+    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
+  getLoopInTerms() {
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/terms';
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
+  getLoopInQuote(amount: number, targetConf: string) {
+    const params = new HttpParams().set('targetConf', targetConf);
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/quote/' + amount;
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
+  getLoopInTermsAndQuotes(targetConf: number) {
+    const params = new HttpParams().set('targetConf', targetConf.toString());
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/termsAndQuotes';
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
   handleErrorWithAlert(err: any, errURL: string) {
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner())

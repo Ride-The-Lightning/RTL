@@ -2,7 +2,7 @@ import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
 import { GetInfo, Invoice } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
-import { LoopOutTerms, LoopOutQuote } from './loopModels';
+import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
   code: number;
@@ -70,8 +70,8 @@ export interface ShowPubkeyData {
 
 export interface LoopOutAlert {
   channelId: string;
-  outQuote1: LoopOutQuote;
-  outQuote2: LoopOutQuote;
+  outQuote1: LoopQuote;
+  outQuote2: LoopQuote;
   component?: any;
 }
 

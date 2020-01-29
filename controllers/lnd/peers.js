@@ -20,20 +20,23 @@ exports.getPeers = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/peers';
   request(options).then(function (body) {
-    let peers = (!body.peers) ? [] : body.peers;
+    logger.info({fileName: 'Peers', msg: 'Peers Received: ' + JSON.stringify(body)});
+    let peers = !body.peers ? [] : body.peers;
     Promise.all(
       peers.map(peer => {
         return getAliasForPeers(peer);
       }))
     .then(function(values) {
-      if ( body.peers) {
+      logger.info({fileName: 'Peers', msg: 'Peers with Alias before Sort: ' + JSON.stringify(body)});
+      if (body.peers) {
         body.peers = common.sortDescByKey(body.peers, 'alias');
       }
-      logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(body)});
+      logger.info({fileName: 'Peers', msg: 'Peers with Alias after Sort: ' + JSON.stringify(body)});
       res.status(200).json(body.peers);
     });
   })
   .catch((err) => {
+    logger.error({fileName: 'Peers', lineNum: 39, msg: 'Peers List Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Peers Fetched Failed!",
       error: err.error

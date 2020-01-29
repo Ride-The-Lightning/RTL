@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { LoopOutTerms, LoopOutQuote } from '../../../models/loopModels';
+import { LoopQuote } from '../../../models/loopModels';
 import { LoopOutAlert } from '../../../models/alertData';
 import { LoopService } from '../../../services/loop.service';
 import { takeUntil } from 'rxjs/operators';
@@ -12,18 +12,18 @@ import { Subject } from 'rxjs';
 import { DataTypeEnum, AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
-  selector: 'rtl-loop-out',
-  templateUrl: './loop-out.component.html',
-  styleUrls: ['./loop-out.component.scss']
+  selector: 'rtl-loop-out-modal',
+  templateUrl: './loop-out-modal.component.html',
+  styleUrls: ['./loop-out-modal.component.scss']
 })
-export class LoopOutComponent implements OnInit, OnDestroy {
+export class LoopOutModalComponent implements OnInit, OnDestroy {
   public outAmount: number = 250000;
   public channelId: string;
-  public outQuote1: LoopOutQuote;
-  public outQuote2: LoopOutQuote;
+  public outQuote1: LoopQuote;
+  public outQuote2: LoopQuote;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopOutComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopOutAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService) { }
+  constructor(public dialogRef: MatDialogRef<LoopOutModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopOutAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService) { }
 
   ngOnInit() {
     this.channelId = this.data.channelId;

@@ -43,6 +43,8 @@ import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
+import { LoopOutComponent } from './loop/loop-out/loop-out.component';
+import { LoopInComponent } from './loop/loop-in/loop-in.component';
 
 @NgModule({
   imports: [
@@ -87,7 +89,9 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelCapacityInfoComponent,
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
-    LoopComponent
+    LoopComponent,
+    LoopOutComponent,
+    LoopInComponent
   ],
   providers: [
     LNDUnlockedGuard

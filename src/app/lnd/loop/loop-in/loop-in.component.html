@@ -1,0 +1,59 @@
+<div fxLayout="column">
+  <div fxLayout="row">
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Minimum Term Amount</h4>
+      <span class="foreground-secondary-text">{{quotes[0]?.amount | number}} Sats</span>
+    </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Maximum Term Amount</h4>
+      <span class="foreground-secondary-text">{{quotes[1]?.amount | number}} Sats</span>
+    </div>
+  </div>
+  <mat-divider *ngIf="quotes[0]?.swap_fee && quotes[1]?.swap_fee" [inset]="true" class="my-1 w-100"></mat-divider>
+  <div *ngIf="quotes[0]?.swap_fee && quotes[1]?.swap_fee" fxLayout="row">
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
+      <span class="foreground-secondary-text">{{quotes[0]?.swap_fee | number}} Sats</span>
+    </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
+      <span class="foreground-secondary-text">{{quotes[1]?.swap_fee | number}} Sats</span>
+    </div>
+  </div>
+  <mat-divider *ngIf="quotes[0]?.prepay_amt && quotes[1]?.prepay_amt" [inset]="true" class="my-1 w-100"></mat-divider>
+  <div *ngIf="quotes[0]?.prepay_amt && quotes[1]?.prepay_amt" fxLayout="row">
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
+      <span class="foreground-secondary-text">{{quotes[0]?.prepay_amt | number}} Sats</span>
+    </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
+      <span class="foreground-secondary-text">{{quotes[1]?.prepay_amt | number}} Sats</span>
+    </div>
+  </div>
+  <mat-divider *ngIf="quotes[0]?.miner_fee && quotes[1]?.miner_fee" [inset]="true" class="my-1 w-100"></mat-divider>
+  <div *ngIf="quotes[0]?.miner_fee && quotes[1]?.miner_fee" fxLayout="row">
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
+      <span class="foreground-secondary-text">{{quotes[0]?.miner_fee | number}} Sats</span>
+    </div>
+    <div fxFlex="50">
+      <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
+      <span class="foreground-secondary-text">{{quotes[1]?.miner_fee | number}} Sats</span>
+    </div>
+  </div>
+</div>
+<div fxLayout="column" class="mt-2">
+  <div fxLayout="row" fxFlex="100">
+    <mat-form-field fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="start end">
+      <input matInput autoFocus [(ngModel)]="inAmount" placeholder="Loop In Amount" type="number" step="1000" min="{{quotes[0]?.amount}}" tabindex="1" required name="amount" #inAmt="ngModel" max="{{quotes[1]?.amount}}">
+      <span matSuffix> Sats </span>
+      <mat-error *ngIf="inAmt.errors?.required">Amount is required.</mat-error>
+      <mat-error *ngIf="inAmt.errors?.min">Amount must be greater than or equal to {{quotes[0]?.amount | number}}.</mat-error>
+      <mat-error *ngIf="inAmt.errors?.max">Amount must be less than or equal to {{quotes[1]?.amount | number}}.</mat-error>
+    </mat-form-field>
+  </div>
+  <div fxLayout="row" fxFlex="100" class="mt-1">
+    <button fxFlex="100" fxFlex.gt-sm="15" mat-flat-button color="primary" (click)="onLoopIn()" type="button" tabindex="2">Loop In</button>
+  </div>
+</div>

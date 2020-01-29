@@ -1,4 +1,4 @@
-<div fxLayout="column">
+<!-- <div fxLayout="column">
   <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
     <fa-icon [icon]="faCircleNotch" class="page-title-img mr-1"></fa-icon>
     <span class="page-title">Loop Monitor</span>
@@ -20,4 +20,19 @@
       </mat-card-content>
     </mat-card>
   </div>
+</div> -->
+
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faCircleNotch" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Loop Monitor</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <mat-tab-group>
+        <mat-tab label="Loop Out"><rtl-loop-out></rtl-loop-out></mat-tab>
+        <mat-tab label="Loop In"><rtl-loop-in></rtl-loop-in></mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
 </div>
