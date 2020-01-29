@@ -111,8 +111,10 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if (undefined !== this.paymentDecoded.timestamp_str) {
-          if (undefined === this.paymentDecoded.num_satoshis) {
+        if (this.paymentDecoded.timestamp_str) {
+          if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
+            this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
+          } else {
             this.paymentDecoded.num_satoshis = '0';
           }
           this.sendPayment();
@@ -127,7 +129,10 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   sendPayment() {
     this.flgAnimate = true;
     this.newlyAddedPayment = this.paymentDecoded.payment_hash;
-    if (undefined === this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
+    if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
+      this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
+    }
+    if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
         const reorderedPaymentDecoded = [
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100}],
@@ -195,6 +200,9 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.DecodePayment(this.paymentRequest));
       this.lndEffects.setDecodedPayment.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
+        if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
+          this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
+        }
         if(this.paymentDecoded.num_satoshis) {
           this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[1]))

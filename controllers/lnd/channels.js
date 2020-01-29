@@ -23,6 +23,7 @@ exports.getAllChannels = (req, res, next) => {
   let remote = 0;
   let total = 0;
   request(options).then(function (body) {
+    logger.info({fileName: 'Channels', msg: 'All Channels Received: ' + JSON.stringify(body)});    
     if(body.channels) {
       Promise.all(
         body.channels.map(channel => {
