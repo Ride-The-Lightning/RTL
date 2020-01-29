@@ -1,6 +1,6 @@
 <div perfectScrollbar fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode [qrdata]="showQRField" [size]="210" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+    <qrcode [qrdata]="showQRField" [margin]="2" [width]="210" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
   <div [fxFlex]="showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '100' : '70'" class="padding-gap-large pl-3">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -12,7 +12,7 @@
     <mat-card-content class="mt-5px mb-0 pr-2">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
-          <qrcode [qrdata]="showQRField" [size]="210" [level]="'L'" [allowEmptyString]="true" class="qr-border"></qrcode>
+          <qrcode [qrdata]="showQRField" [margin]="2" [width]="210" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
         <div fxLayout="row" fxFlex="100">
           <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
