@@ -1,0 +1,30 @@
+<div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
+  <form (ngSubmit)="onResetPassword()" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #authForm="ngForm">
+    <div fxFlex="100" class="mb-1">
+      <fa-icon [icon]="faKey" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Reset Password</span>
+    </div>
+    <div fxLayout="row">
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxLayoutAlign="space-between stretch" class="mt-2">
+        <mat-form-field>
+          <input matInput placeholder="Old Password" type="password" id="oldpassword" name="oldpassword" [(ngModel)]="oldPassword" tabindex="1" required>
+          <mat-error *ngIf="!oldPassword">Old password is required.</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="2" required>
+          <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="3" required>
+          <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div fxLayout="row">
+      <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
+        <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="5" type="submit">Reset Password</button>
+      </div> 
+    </div> 
+  </form>
+</div>

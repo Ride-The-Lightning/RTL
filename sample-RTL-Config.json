@@ -1,0 +1,30 @@
+{
+  "multiPass": "password",
+  "port": "3000",
+  "defaultNodeIndex": 1,
+  "SSO": {
+    "rtlSSO": 0,
+    "rtlCookiePath": "",
+    "logoutRedirectLink": ""
+  },
+  "nodes": [
+    {
+      "index": 1,
+      "lnNode": "Node 1",
+      "lnImplementation": "LND",
+      "Authentication": {
+        "macaroonPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
+        "configPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\lnd.conf"
+      },
+      "Settings": {
+        "userPersona": "MERCHANT",
+        "themeMode": "DAY",
+        "themeColor": "PURPLE",
+        "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
+        "enableLogging": false,
+        "lnServerUrl": "https://localhost:8080/v1",
+        "fiatConversion": false
+      }
+    }
+  ]
+}

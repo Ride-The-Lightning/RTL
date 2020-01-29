@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import * as sha256 from 'sha256';
 import { LoggerService } from './shared/services/logger.service';
 import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
-import { AlertTypeEnum, ScreenSizeEnum, NODE_SETTINGS } from './shared/services/consts-enums-functions';
+import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
 
 import * as RTLActions from './store/rtl.actions';
@@ -34,12 +34,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public accessKey = '';
   public xSmallScreen = false;
   public smallScreen = false;
+  public flgSidenavPinned = true;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+    this.router.events.subscribe((evt) => {
+      if (!(evt instanceof NavigationEnd)) { return; }
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0);
+    });    
     this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium])
     .pipe(takeUntil(this.unSubs[5]))
     .subscribe((matches) => {
@@ -83,7 +88,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Signin(sha256(this.accessKey)));
+            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), initialPass: false}));
           } else {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
@@ -91,11 +96,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // START: Workaround to add adjust container width initially
         this.sideNavigation.toggle();
         setTimeout(() => { this.sideNavigation.toggle(); }, 500);
-        if (this.settings.menuType === 'COMPACT' || this.settings.menuType === 'MINI') {
-          this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
-          setTimeout(() => { this.sideNavigation.toggle(); }, 100);
-        }
-        // END: Workaround to add left margin to container initially
+        // END: Workaround to add left margin to container initially        
       }     
     });
     this.userIdle.startWatching();
@@ -108,7 +109,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           alertTitle: 'Logging out',
           titleMessage: 'Time limit exceeded for session inactivity.'
         }}));
-        this.store.dispatch(new RTLActions.Signout());
+        this.store.dispatch(new RTLActions.Logout());
         this.userIdle.resetTimer();
       }
     });
@@ -129,13 +130,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if ((this.settings.menuType !== 'REGULAR' || !this.settings.flgSidenavPinned) || (this.smallScreen)) {
+    if (this.smallScreen) {
       this.sideNavigation.close();
     }
   }
 
   sideNavToggle() {
-    this.settings.flgSidenavOpened = !this.settings.flgSidenavOpened;
     this.sideNavigation.toggle();
   }
 
@@ -149,11 +149,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);
-  }
-
-  getFontSize() {
-    return (this.settings.fontSize === NODE_SETTINGS.fontSize[0].class) ? 14 : 
-      (this.settings.fontSize === NODE_SETTINGS.fontSize[2].class) ? 18 : 16;
   }
 
   ngOnDestroy() {

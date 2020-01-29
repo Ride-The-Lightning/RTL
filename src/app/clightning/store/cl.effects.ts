@@ -736,8 +736,8 @@ export class CLEffects implements OnDestroy {
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
@@ -746,8 +746,8 @@ export class CLEffects implements OnDestroy {
   handleErrorWithAlert(alerType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
-      this.logger.info('Redirecting to Signin');
-      this.store.dispatch(new RTLActions.Signout());
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({

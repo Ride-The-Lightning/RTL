@@ -45,8 +45,8 @@ $ git pull
 $ npm install --only=prod
 ```
 ### <a name="prep"></a>Prep for Execution
-RTL requires its own config file `RTL-Multi-Node-Conf.json`, to start the server and provide user authentication on the app. 
-* Rename `sample-RTL-Multi-Node-Conf.json` file to `RTL-Multi-Node-Conf.json`.
+RTL requires its own config file `RTL-Config.json`, to start the server and provide user authentication on the app. 
+* Rename `sample-RTL-Config.json` file to `RTL-Config.json`.
 * Locate the complete path of the readable `access.macaroon` from `cl-rest` on your node.
 * Modify the RTL conf file per the example file below
 
@@ -84,7 +84,7 @@ Ensure that the follow values are correct per your config:
         "lnServerUrl": "https://<cl-rest api server ip address>:3001/v1"
       }
     }
-    ],
+  ],
   "multiPass": <password required for accessing RTL>
 }
 ```

@@ -3,9 +3,7 @@ var crypto = require('crypto');
 var path = require('path');
 var common = {};
 
-common.multi_node_setup = false;
 common.rtl_conf_file_path = '';
-common.node_auth_type = 'DEFAULT';
 common.rtl_pass = '';
 common.rtl_sso = 0;
 common.port = 3000;
@@ -85,6 +83,11 @@ common.setOptions = () => {
 
 common.findNode = (selNodeIndex) => {
   return common.nodes.find(node => node.index == selNodeIndex);
+}
+
+common.replaceNode = (selNodeIndex, newNode) => {
+  common.nodes.splice(common.nodes.findIndex((node) => {node.index == selNodeIndex}), 1, newNode);
+  common.selectedNode = common.findNode(selNodeIndex);
 }
 
 common.convertToBTC = (num) => {

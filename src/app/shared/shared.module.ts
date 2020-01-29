@@ -33,11 +33,10 @@ import { ConfirmationMessageComponent } from './components/data-modal/confirmati
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
 import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/spinner-dialog.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import { SigninComponent } from './components/signin/signin.component';
+import { LoginComponent } from './components/login/login.component';
 import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
-import { HorizontalNavigationComponent } from './components/navigation/horizontal-navigation/horizontal-navigation.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
@@ -51,6 +50,7 @@ import { NonNegativeAmountValidator } from './directive/non-negative-amount.dire
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 
 @NgModule({
   imports: [
@@ -145,8 +145,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
-    HorizontalNavigationComponent,
-    SigninComponent,
+    LoginComponent,
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
@@ -170,8 +169,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
-    HorizontalNavigationComponent,
-    SigninComponent,
+    LoginComponent,
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
@@ -182,7 +180,8 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     RemoveLeadingZerosPipe,
     CLOpenChannelComponent,
     OpenChannelComponent,
-    ShowPubkeyComponent
+    ShowPubkeyComponent,
+    AuthSettingsComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
