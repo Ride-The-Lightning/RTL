@@ -51,7 +51,7 @@ exports.getAllChannels = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get All Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 54, msg: 'Get All Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching All Channels Failed!',
       error: err.error
@@ -75,7 +75,7 @@ exports.getPendingChannels = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Pending Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 78, msg: 'Get Pending Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching Pending Channels Failed!',
       error: err.error
@@ -99,7 +99,7 @@ exports.getClosedChannels = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Closed Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 102, msg: 'Get Closed Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching Closed Channels Failed!',
       error: err.error

@@ -938,7 +938,7 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.CloseSpinner());
               this.logger.info('Successfully Initialized!');
               this.store.dispatch(new RTLActions.FetchInfo({loadPage: 'HOME'}));
-            }, 1000 * 90);
+            }, 1000 * 5);
             return { type: RTLActions.VOID };
           }),
           catchError((err) => {
