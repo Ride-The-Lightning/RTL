@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
 export class CommonService implements OnInit, OnDestroy {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
-  containerWidthChanged = new Subject<string>();
   conversionData = { data: null, last_fetched: null };
   private screenSize = ScreenSizeEnum.MD;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -44,10 +43,6 @@ export class CommonService implements OnInit, OnDestroy {
   titleCase(str) {
     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
   } 
-
-  changeContainerWidth(fieldType: string) {
-    this.containerWidthChanged.next(fieldType);
-  }
 
   convertCurrency(value: number, from: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
@@ -187,8 +182,6 @@ export class CommonService implements OnInit, OnDestroy {
   };
   
   ngOnDestroy() {
-    this.containerWidthChanged.next();
-    this.containerWidthChanged.complete();
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
