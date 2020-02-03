@@ -282,6 +282,7 @@ export interface PayRequest {
   destination?: string;
   expiry?: number;
   description?: string;
+  num_msat?: string;
   num_satoshis?: string;
   btc_num_satoshis?: string;
 }

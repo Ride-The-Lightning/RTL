@@ -62,12 +62,17 @@ exports.listInvoices = (req, res, next) => {
 exports.addInvoice = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/invoices';
-  options.form = JSON.stringify({ 
+  options.form = { 
     memo: req.body.memo,
-    value: req.body.amount,
     private: req.body.private,
     expiry: req.body.expiry
-  });
+  };
+  if (req.body.amount > 0 && req.body.amount < 1) {
+    options.form.value_msat = req.body.amount * 1000;
+  } else {
+    options.form.value = req.body.amount;
+  }
+  options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(!body || body.error) {
