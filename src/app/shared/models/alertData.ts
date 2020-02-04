@@ -55,6 +55,11 @@ export interface CLInvoiceInformation {
   component?: any;
 }
 
+export interface ChannelRebalanceInformation {
+  channel: Invoice;
+  component?: any;
+}
+
 export interface OnChainAddressInformation {
   alertTitle?: string;
   address: string;
@@ -101,5 +106,5 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | OnChainAddressInformation | ShowPubkeyData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelRebalanceInformation | OnChainAddressInformation | ShowPubkeyData;
 }

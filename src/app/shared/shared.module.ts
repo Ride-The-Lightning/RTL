@@ -41,6 +41,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { ChannelRebalanceComponent } from './components/data-modal/channel-rebalance/channel-rebalance.component';
 import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
@@ -135,6 +136,7 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,
     OnChainGeneratedAddressComponent,
@@ -161,6 +163,7 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
@@ -186,6 +189,7 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
   entryComponents: [
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,

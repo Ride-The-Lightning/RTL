@@ -1,0 +1,34 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
+    <mat-form-field fxFlex="100">
+      <input matInput placeholder="Rebalance Amount" name="rebalanceAmount" [(ngModel)]="rebalanceAmount" tabindex="1" required #rebalanceAmt="ngModel">
+      <mat-error *ngIf="!rebalanceAmount">Rebalance Amount is required.</mat-error>
+    </mat-form-field>
+    <div fxFlex="100" fxFlex.gt-sm="75" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+        <mat-select tabindex="5" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
+          <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
+            {{feeLimitType.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field fxFlex="26">
+        <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit"
+          step="1" min="0" required tabindex="6" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
+        <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is
+          required.</mat-error>
+      </mat-form-field>
+      <mat-form-field fxFlex="40" fxLayoutAlign="start end">
+        <mat-select tabindex="7" [(value)]="selRebalanceChannel" placeholder="Rebalancing Channel">
+          <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
+            {{activeChannel.remote_alias || activeChannel.chan_id}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="8" type="reset" (click)="resetData()">Clear Field</button>
+      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onRebalance()" tabindex="9">Rebalance</button>
+    </div>
+  </form>
+</div>
