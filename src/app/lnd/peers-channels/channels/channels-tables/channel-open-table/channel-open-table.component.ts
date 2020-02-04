@@ -9,12 +9,12 @@ import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
+import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { ChannelLookupComponent } from '../../../../lookups/channel-lookup/channel-lookup.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -41,6 +41,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public versionsArr = [];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
@@ -70,13 +71,14 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if (undefined !== rtlStore.allChannels) {
+      if (rtlStore.allChannels) {
         this.loadChannelsTable(rtlStore.allChannels);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.allChannels) ? false : true;
+        this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -100,6 +102,13 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       }}));
     });
 
+  }
+
+  onLocalRebalance(selChannel: any) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      channel: selChannel,
+      component: ChannelRebalanceComponent
+    }}));
   }
 
   onChannelUpdate(channelToUpdate: any) {
