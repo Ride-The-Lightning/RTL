@@ -195,6 +195,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
             postRes.expiry = action.payload.expiry;
@@ -202,15 +203,21 @@ export class LNDEffects implements OnDestroy {
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
-            this.store.dispatch(new RTLActions.OpenAlert({ data: {
-              invoice: postRes,
-              newlyAdded: true,
-              component: InvoiceInformationComponent
-            }}));            
-            return {
-              type: RTLActions.FETCH_INVOICES,
-              payload: { num_max_invoices: action.payload.pageSize, reversed: true }
-            };
+            if (action.payload.openModal) {
+              return {
+                type: RTLActions.OPEN_ALERT,
+                payload: { data: {
+                  invoice: postRes,
+                  newlyAdded: true,
+                  component: InvoiceInformationComponent
+                }}
+              }
+            } else {
+              return {
+                type: RTLActions.NEWLY_SAVED_INVOICE,
+                payload: { paymentRequest: postRes.payment_request }
+              }
+            }
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
@@ -648,12 +655,12 @@ export class LNDEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
       let queryHeaders = {};
+      if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
+      if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; }
+      if (action.payload.lastHopPubkey) { queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey; }
       if(action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
         queryHeaders['feeLimit'] = {};
         queryHeaders['feeLimit'][action.payload.feeLimitType.id] = action.payload.feeLimit;
-      }
-      if(action.payload.outgoingChannel) {
-        queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id;
       }
       if (action.payload.zeroAmtInvoice) {
         queryHeaders['paymentDecoded'] = action.payload.paymentDecoded;

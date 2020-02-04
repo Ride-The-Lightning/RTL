@@ -157,25 +157,23 @@ exports.postTransactions = (req, res, next) => {
       dest_string: req.body.paymentDecoded.destination
     };
   }
-  if(req.body.feeLimit) {
-    options.form.fee_limit = req.body.feeLimit;
-  }
-  if(req.body.outgoingChannel) {
-    options.form.outgoing_chan_id = req.body.outgoingChannel;
-  }
+  if (req.body.feeLimit) { options.form.fee_limit = req.body.feeLimit; }
+  if (req.body.outgoingChannel) { options.form.outgoing_chan_id = req.body.outgoingChannel; }
+  if (req.body.allowSelfPayment) { options.form.allow_self_payment = req.body.allowSelfPayment; }
+  if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = req.body.lastHopPubkey; }
   options.form = JSON.stringify(options.form);
   logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Send Payment Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else if (body.payment_error) {
       res.status(500).json({
         message: 'Send Payment Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.payment_error
+        error: (!body) ? 'Error From Server!' : body.payment_error
       });
     } else {
       res.status(201).json(body);
