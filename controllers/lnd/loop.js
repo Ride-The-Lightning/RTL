@@ -204,3 +204,20 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     });
   });
 };
+
+exports.loopMonitor = (req, res, next) => {
+  loopServerUrl = common.getSelLoopServerUrl();  
+  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Monitor Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = loopServerUrl + '/loop/in/monitor';
+  console.warn('I AM MONITORING');
+  request(options).then(function (body) {
+    logger.info({fileName: 'Loop', msg: 'Loop Monitor: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Loop Monitor Failed!",
+      error: err.error
+    });
+  });
+};

@@ -9,7 +9,6 @@
         <div fxFlex="40" fxLayoutAlign="space-between center" class="mt-2">
           <button fxFlex="30" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onStopMonitor()">Stop Monitor</button>
           <button fxFlex="30" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" (click)="onStartMonitor()">Start Monitor</button>
-          <button fxFlex="30" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="3" (click)="onLoopInTerms()">Loop In Terms</button>
         </div>
         <div fxLayout="column" fxLayoutAlign="center start" class="mt-2">
           <span fxFlex="100" fxLayoutAlign="center center" *ngFor="let log of loopMonitorLogs" class="loop-monitor-logs">
@@ -29,10 +28,19 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Loop Out"><rtl-loop-out></rtl-loop-out></mat-tab>
-        <mat-tab label="Loop In"><rtl-loop-in></rtl-loop-in></mat-tab>
-      </mat-tab-group>
+      <div fxLayout="row" fxLayoutAlign="space-between stretch">
+        <mat-tab-group fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
+          <mat-tab label="Loop Out"><rtl-loop-out></rtl-loop-out></mat-tab>
+          <mat-tab label="Loop In"><rtl-loop-in></rtl-loop-in></mat-tab>
+        </mat-tab-group>
+        <div fxLayout="column" fxFlex="50" fxLayoutAlign="end stretch" class="padding-gap-x">
+          <span fxFlex="100" fxLayoutAlign="center center" *ngFor="let log of loopMonitorLogs" class="loop-monitor-logs">
+            <mat-divider class="w-100 mt-2"></mat-divider>
+            <h5>{{log | json}}</h5>
+          </span>
+          <button mat-flat-button color="primary" tabindex="2" (click)="onStartMonitor()" class="mb-1">Start Monitor</button>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

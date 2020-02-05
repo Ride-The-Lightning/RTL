@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
+import { LoopService } from '../../shared/services/loop.service';
 import { SocketService } from '../../shared/services/socket.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { LNDEffects } from '../store/lnd.effects';
@@ -22,15 +23,20 @@ export class LoopComponent implements OnInit, OnDestroy {
   loopMonitorLogs = [];
   sub: Subscription; //convert to unSubs: Array<Subject> after testing
 
-  constructor(private socketService: SocketService, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private actions$: Actions) { }
+  constructor(private socketService: SocketService, private loopService: LoopService, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private actions$: Actions) { }
 
   ngOnInit() {}
 
   onStartMonitor() {
-    this.sub = this.socketService.startLoopMonitor().subscribe(log => {
-      this.loopMonitorLogs.push(log);
-      console.warn(log);
-    });
+    // this.sub = this.socketService.startLoopMonitor().subscribe(log => {
+    //   this.loopMonitorLogs.push(log);
+    //   console.warn(log);
+    // });
+    // this.loopService.monitorLoop().subscribe(log => {
+    //   this.loopMonitorLogs.push(log);
+    //   console.warn(log);
+    // });
+    this.loopService.monitorLoop();
   }
 
   onStopMonitor() {

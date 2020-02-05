@@ -11,5 +11,6 @@ router.get("/out/terms", authCheck, LoopController.loopOutTerms);
 router.get("/out/quote/:amount", authCheck, LoopController.loopOutQuote);
 router.get("/out/termsAndQuotes", authCheck, LoopController.loopOutTermsAndQuotes);
 router.post("/out", authCheck, LoopController.loopOut);
+router.get("/monitor", authCheck, LoopController.loopMonitor);
 
 module.exports = router;
