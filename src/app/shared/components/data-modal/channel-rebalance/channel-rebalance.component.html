@@ -23,17 +23,15 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="15" fxLayoutAlign="start end">
-            <mat-select tabindex="3" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
+            <mat-select tabindex="3" [(value)]="selFeeLimitType" Placeholder="Fee Limits" required>
               <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
                 {{feeLimitType.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field fxFlex="20">
-            <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit"
-              step="1" min="0" required tabindex="4" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
-            <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is
-              required.</mat-error>
+            <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="4" #feeLmt="ngModel">
+            <mat-error *ngIf="!feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
           </mat-form-field>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">

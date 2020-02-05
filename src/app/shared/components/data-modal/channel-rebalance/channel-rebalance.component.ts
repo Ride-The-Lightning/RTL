@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -19,19 +19,19 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./channel-rebalance.component.scss']
 })
 export class ChannelRebalanceComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: false }) form: any;  
   public selChannel: Channel = {};
-  public rebalanceAmount = 0;
+  public rebalanceAmount = null;
   public selRebalancePeer: Channel = {};
   public activeChannels = [];
   public feeLimit = null;
-  public selFeeLimitType = FEE_LIMIT_TYPES[0];
-  public feeLimitTypes = FEE_LIMIT_TYPES;
+  public selFeeLimitType = FEE_LIMIT_TYPES[1];
+  public feeLimitTypes = FEE_LIMIT_TYPES.splice(1);
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) { }
 
   ngOnInit() {
-    console.warn(this.data);
     this.selChannel = this.data.channel;
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
@@ -42,6 +42,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onRebalance() {
+    if (!this.rebalanceAmount || this.rebalanceAmount <= 0 || this.rebalanceAmount > this.selChannel.local_balance || !this.feeLimit || !this.selRebalancePeer) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice to Rebalance...'));
     this.store.dispatch(new RTLActions.SaveNewInvoice({
       memo: 'Local-Rebalance-' + this.rebalanceAmount + '-Sats', invoiceValue: this.rebalanceAmount, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
@@ -61,9 +62,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.rebalanceAmount = 0;
-    this.feeLimit = null;
-    this.selFeeLimitType = FEE_LIMIT_TYPES[0];
+    this.form.resetForm();
+    this.selFeeLimitType = this.feeLimitTypes[0];
+    this.selRebalancePeer = null; 
   }
 
   onClose() {

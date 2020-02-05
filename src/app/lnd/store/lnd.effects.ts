@@ -681,7 +681,7 @@ export class LNDEffects implements OnDestroy {
             } else {
               let msg = 'Payment Sent Successfully.';
               if(sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
-                msg = 'Payment sent successfully with the total fee (mSat) ' + sendRes.payment_route.total_fees_msat + '.';
+                msg = 'Payment sent successfully with the total fee ' + sendRes.payment_route.total_fees_msat + ' (mSats).';
               }
               this.store.dispatch(new RTLActions.OpenSnackBar(msg));
               this.store.dispatch(new RTLActions.FetchAllChannels());
