@@ -160,7 +160,7 @@ exports.postTransactions = (req, res, next) => {
   if (req.body.feeLimit) { options.form.fee_limit = req.body.feeLimit; }
   if (req.body.outgoingChannel) { options.form.outgoing_chan_id = req.body.outgoingChannel; }
   if (req.body.allowSelfPayment) { options.form.allow_self_payment = req.body.allowSelfPayment; }
-  if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = req.body.lastHopPubkey; }
+  if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = Buffer.from(req.body.lastHopPubkey, 'hex').toString('base64'); }
   options.form = JSON.stringify(options.form);
   logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
   request.post(options).then((body) => {

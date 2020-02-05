@@ -20,7 +20,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
 })
 export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public selChannel: Channel = {};
-  public rebalanceAmount = 100;
+  public rebalanceAmount = 0;
   public selRebalancePeer: Channel = {};
   public activeChannels = [];
   public feeLimit = null;
@@ -61,7 +61,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.rebalanceAmount = 100;
+    this.rebalanceAmount = 0;
     this.feeLimit = null;
     this.selFeeLimitType = FEE_LIMIT_TYPES[0];
   }

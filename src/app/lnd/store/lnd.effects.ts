@@ -16,7 +16,7 @@ import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, 
 import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
 import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel-lnd/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -687,6 +687,9 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.FetchAllChannels());
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());
+              if (action.payload.allowSelfPayment) { 
+                this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
+              }
               return {
                 type: RTLActions.SET_DECODED_PAYMENT,
                 payload: {}
