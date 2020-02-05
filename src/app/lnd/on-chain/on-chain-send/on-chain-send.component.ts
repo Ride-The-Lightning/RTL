@@ -27,14 +27,6 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @Input() sweepAll = false;
-  private _sweepBalance = 0;
-  get sweepBalance() {
-    return this._sweepBalance;
-  }
-  @Input() set sweepBalance(bal) {
-    this._sweepBalance = bal;
-    this.transaction.amount = this._sweepBalance;
-  }
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
@@ -154,8 +146,12 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   }
 
   get invalidValues(): boolean {
-    return (!this.transaction.address || this.transaction.address === '') || (!this.transaction.amount || this.transaction.amount <= 0)
-    || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
+    if (this.sweepAll) {
+      return (!this.transaction.address || this.transaction.address === '') || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
+    } else {
+      return (!this.transaction.address || this.transaction.address === '') || (!this.transaction.amount || this.transaction.amount <= 0)
+      || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
+    }
   }
 
   resetData() {
@@ -177,7 +173,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     let prevSelectedUnit = (this.sweepAll) ? CurrencyUnitEnum.SATS : (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.amount && this.selAmountUnit !== event.value) {
-      let amount = (this.sweepAll) ? this.sweepBalance : this.transaction.amount;
+      let amount = this.transaction.amount ? this.transaction.amount : 0;
       this.commonService.convertCurrency(amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe(data => {
