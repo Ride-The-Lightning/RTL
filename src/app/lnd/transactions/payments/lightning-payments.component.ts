@@ -193,6 +193,11 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onPasteInvoice(event: any) {
+    this.paymentRequest = event.clipboardData.getData('Text');
+    this.onPaymentRequestEntry();
+  }
+
   onPaymentRequestEntry() {
     this.paymentDecodedHint = '';
     if(this.paymentRequest.length > 100) {
