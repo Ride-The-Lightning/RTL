@@ -227,11 +227,11 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
           if (storedChannels) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
-                event.alias_in = storedChannels[idx].remote_alias;
+                event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
                 if (event.alias_out) { return; }
               }
               if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
-                event.alias_out = storedChannels[idx].remote_alias;
+                event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
                 if (event.alias_in) { return; }
               }
             }

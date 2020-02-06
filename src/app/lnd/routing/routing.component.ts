@@ -36,8 +36,8 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_LND_STORE))
-    .subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
+    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_LND_STORE || action.type === RTLActions.SET_ALL_CHANNELS))
+    .subscribe((action: RTLActions.ResetLNDStore | RTLActions.SetAllChannels) => {
       this.onEventsFetch();
     });
     this.store.select('lnd')
@@ -66,10 +66,8 @@ export class RoutingComponent implements OnInit, OnDestroy {
   }
 
   onEventsFetch() {
-    if (undefined === this.endDate || this.endDate == null) {
-      this.endDate = new Date();
-    }
-    if (undefined === this.startDate || this.startDate == null) {
+    if (!this.endDate) { this.endDate = new Date(); }
+    if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
     this.store.dispatch(new RTLActions.GetForwardingHistory({
