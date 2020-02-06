@@ -55,6 +55,14 @@ export interface Channel {
   private?: boolean;
   pending_htlcs?: HTLC[];
   csv_delay?: number;
+  initiator?: boolean;
+  chan_status_flags?: string;
+  close_address?: string;
+  remote_chan_reserve_sat?: string;
+  local_chan_reserve_sat?: string;
+  uptime?: string;
+  lifetime?: string;
+  static_remote_key?: boolean; 
   balancedness?: number; // Between -1 to +1
 }
 
