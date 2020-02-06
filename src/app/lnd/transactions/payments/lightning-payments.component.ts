@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { Subject, forkJoin, of } from 'rxjs';
+import { takeUntil, take, filter, concatAll, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
@@ -10,6 +11,7 @@ import { GetInfo, Payment, PayRequest, Channel } from '../../../shared/models/ln
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -57,7 +59,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -97,7 +99,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-
   }
 
   onSendPayment() {
@@ -210,7 +211,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
         }
         if(this.paymentDecoded.num_satoshis) {
           this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-          .pipe(takeUntil(this.unSubs[1]))
+          .pipe(takeUntil(this.unSubs[2]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
@@ -244,10 +245,26 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onPaymentClick(selPayment: Payment, event: any) {
+    let pathAliases = '';
+    if (selPayment.path && selPayment.path.length > 0) {
+      forkJoin(this.dataService.getAliasesFromPubkeys(selPayment.path))
+      .pipe(takeUntil(this.unSubs[3]))
+      .subscribe((nodes: any) => {
+        nodes.forEach(node => {
+          pathAliases = pathAliases === '' ? node.node.alias : pathAliases + '\n' + node.node.alias;
+        });
+        this.openPaymentInModal(selPayment, pathAliases);
+      });
+    } else {
+      this.openPaymentInModal(selPayment, pathAliases);
+    }
+  }
+
+  openPaymentInModal(selPayment: Payment, pathAliases: string) {
     const reorderedPayment = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'path', value: selPayment.path, title: 'Path', width: 100, type: DataTypeEnum.ARRAY}],
+      [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'creation_date_str', value: selPayment.creation_date_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'fee', value: selPayment.fee, title: 'Fee', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},

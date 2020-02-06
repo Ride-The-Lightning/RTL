@@ -17,6 +17,7 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { SessionService } from './shared/services/session.service';
 import { CommonService } from './shared/services/common.service';
+import { DataService } from './shared/services/data.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
@@ -56,7 +57,7 @@ import { LayoutModule } from '@angular/cdk/layout';
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
-    CommonService, AuthGuard, SessionService
+    CommonService, AuthGuard, SessionService, DataService
   ],
   bootstrap: [AppComponent]
 })
