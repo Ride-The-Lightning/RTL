@@ -65,6 +65,7 @@ export class DataService implements OnInit, OnDestroy {
   }
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.store.dispatch(new RTLActions.CloseSpinner());      
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -76,11 +77,11 @@ export class DataService implements OnInit, OnDestroy {
 
   handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
+    this.store.dispatch(new RTLActions.CloseSpinner());
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: alertType,
