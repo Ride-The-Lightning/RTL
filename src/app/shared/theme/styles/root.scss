@@ -961,3 +961,11 @@ table {
   overflow-y: scroll; 
   max-height: 600px;
 }
+
+.border-valid {
+  border: 1px solid $green-color !important;
+}
+
+.border-invalid {
+  border: 1px solid $red-color !important;
+}

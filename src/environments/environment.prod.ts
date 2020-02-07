@@ -22,5 +22,6 @@ export const environment = {
   INVOICES_API: '/invoices',
   SWITCH_API: '/switch',
   ON_CHAIN_API: '/onchain',
+  MESSAGE_API: '/message',
   VERSION: VERSION
 };

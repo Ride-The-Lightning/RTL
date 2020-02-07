@@ -2,14 +2,21 @@ import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
 import { take, map, takeUntil, catchError } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+
+import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
+
+import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
+import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
   private CHILD_API_URL = API_URL + '/lnd';
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService,) {}
 
   ngOnInit() {}
 
@@ -27,6 +34,62 @@ export class DataService implements OnInit, OnDestroy {
       );
     });
     return nodes$;
+  }
+
+  signMessage(msg: string) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Signing Message...'));    
+    return this.httpClient.post(this.CHILD_API_URL + environment.MESSAGE_API + '/sign', {message: msg})
+    .pipe(takeUntil(this.unSubs[1]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());      
+      return res.signature;
+    }),
+    catchError(err => {
+      this.handleErrorWithAlert('ERROR', 'Sign Message Failed', this.CHILD_API_URL + environment.MESSAGE_API + '/sign', err);
+      throw err;
+    }));
+  }
+
+  verifyMessage(msg: string, sign: string) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Verifying Message...'));    
+    return this.httpClient.post(this.CHILD_API_URL + environment.MESSAGE_API + '/verify', {message: msg, signature: sign})
+    .pipe(takeUntil(this.unSubs[2]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());      
+      return res;
+    }),
+    catchError(err => {
+      this.handleErrorWithAlert('ERROR', 'Verify Message Failed', this.CHILD_API_URL + environment.MESSAGE_API + '/verify', err);
+      throw err;
+    }));    
+  }
+
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
+    } else {
+      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: err.error.error }));
+    }
+  }
+
+  handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+    this.logger.error(err);
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
+    } else {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
+          type: alertType,
+          alertTitle: alertTitle,
+          message: { code: err.status, message: err.error.error, URL: errURL },
+          component: ErrorMessageComponent
+        }
+      }));
+    }
   }
 
   ngOnDestroy() {
