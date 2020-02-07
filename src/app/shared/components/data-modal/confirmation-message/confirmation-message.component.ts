@@ -29,11 +29,11 @@ export class ConfirmationMessageComponent implements OnInit {
   ngOnInit() {
     this.flgShowInput = this.data.flgShowInput;
     this.getInputs = this.data.getInputs;
-    this.noBtnText = (undefined !== this.data.noBtnText) ? this.data.noBtnText : 'No';
-    this.yesBtnText = (undefined !== this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
+    this.noBtnText = (this.data.noBtnText) ? this.data.noBtnText : 'No';
+    this.yesBtnText = (this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
     this.messageObjs = this.data.message;
     if (this.data.type === AlertTypeEnum.ERROR) {
-      if (undefined === this.data.message && undefined === this.data.titleMessage && this.messageObjs.length <= 0) {
+      if (!this.data.message && !this.data.titleMessage && this.messageObjs.length <= 0) {
         this.data.titleMessage = 'Please Check Server Connection';
       }
     }

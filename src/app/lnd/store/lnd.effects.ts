@@ -286,7 +286,10 @@ export class LNDEffects implements OnDestroy {
   closeChannel = this.actions$.pipe(
     ofType(RTLActions.CLOSE_CHANNEL),
     mergeMap((action: RTLActions.CloseChannel) => {
-      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly)
+      let reqUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly;
+      if(action.payload.targetConf) { reqUrl = reqUrl + '&target_conf=' + action.payload.targetConf; }
+      if(action.payload.satPerByte) { reqUrl = reqUrl + '&sat_per_byte=' + action.payload.satPerByte; }
+      return this.httpClient.delete(reqUrl)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);

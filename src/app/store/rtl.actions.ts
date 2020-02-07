@@ -395,7 +395,7 @@ export class SaveNewChannel implements Action {
 
 export class CloseChannel implements Action {
   readonly type = CLOSE_CHANNEL;
-  constructor(public payload: {channelPoint: string, forcibly: boolean}) {}
+  constructor(public payload: {channelPoint: string, forcibly: boolean, targetConf?: number, satPerByte?: number}) {}
 }
 
 export class RemoveChannel implements Action {

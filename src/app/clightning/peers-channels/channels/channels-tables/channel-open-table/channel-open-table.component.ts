@@ -115,10 +115,11 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update fee policy for all Channels',
+        alertTitle: 'Update Fee Policy',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,
+        titleMessage: 'Update fee policy for all channels',
         flgShowInput: true,
         getInputs: [
           {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48},
@@ -156,10 +157,10 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Update Fee Policy',
-          titleMessage: titleMsg,
           noBtnText: 'Cancel',
           yesBtnText: 'Update Channel',
           message: confirmationMsg,
+          titleMessage: titleMsg,
           flgShowInput: true,
           getInputs: [
             {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48},

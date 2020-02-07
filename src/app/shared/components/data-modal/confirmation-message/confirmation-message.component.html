@@ -8,13 +8,7 @@
     </mat-card-header>    
     <mat-card-content class="mt-5px">
       <form fxLayout="column">
-        <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
-        <div *ngIf="flgShowInput" fxLayoutAlign="space-between center" class="mb-2">
-          <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="getInput.width">
-            <input matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
-            <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
-          </mat-form-field>
-        </div>        
+        <p *ngIf="data.titleMessage && !flgShowInput" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="messageObjs?.length>0">
           <div *ngFor="let objs of messageObjs; index as i;">
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
@@ -36,8 +30,18 @@
             </div>
           </div>
         </div>
+        <div *ngIf="flgShowInput" fxLayout="column" class="bordered-box my-2 p-2">
+          <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+          <div fxLayoutAlign="space-between center">
+            <mat-form-field *ngFor="let getInput of getInputs; index as i" [fxFlex]="getInput.width">
+              <input *ngIf="i === 0" autoFocus matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
+              <input *ngIf="i !== 0" matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
+              <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
+            </mat-form-field>
+          </div>        
+        </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button autoFocus mat-stroked-button color="primary" fxFlex="48" fxFlex.gt-sm="20" type="reset" fxLayoutAlign="center center" class="mr-2" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
+          <button mat-stroked-button color="primary" fxFlex="48" fxFlex.gt-sm="20" type="reset" fxLayoutAlign="center center" class="mr-2" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
           <button *ngIf="flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="48" fxFlex.gt-sm="25" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
           <button *ngIf="!flgShowInput" mat-flat-button color="primary" fxLayoutAlign="center center" fxFlex="48" fxFlex.gt-sm="25" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
         </div>

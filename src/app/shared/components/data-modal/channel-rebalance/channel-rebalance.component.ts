@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 
-import { ChannelRebalanceInformation } from '../../../models/alertData';
+import { ChannelInformation } from '../../../models/alertData';
 import { LoggerService } from '../../../services/logger.service';
 import { Channel } from '../../../models/lndModels';
 import { FEE_LIMIT_TYPES, PAGE_SIZE } from '../../../services/consts-enums-functions';
@@ -25,13 +25,19 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public selRebalancePeer: Channel = {};
   public activeChannels = [];
   public feeLimit = null;
-  public selFeeLimitType = FEE_LIMIT_TYPES[1];
-  public feeLimitTypes = FEE_LIMIT_TYPES.splice(1);
+  public selFeeLimitType = {id:'', name: '', placeholder: ''};
+  public feeLimitTypes = [];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelRebalanceInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) { }
 
   ngOnInit() {
+    FEE_LIMIT_TYPES.forEach((FEE_LIMIT_TYPE, i) => {
+      if(i > 0) {
+        this.feeLimitTypes.push(FEE_LIMIT_TYPE);
+      }
+    });
+    this.selFeeLimitType = this.feeLimitTypes[0];
     this.selChannel = this.data.channel;
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))

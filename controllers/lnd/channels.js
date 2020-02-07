@@ -193,6 +193,8 @@ exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.getSelLNServerUrl() + '/channels/' + channelpoint + '?force=' + req.query.force;
+  if(req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
+  if(req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});

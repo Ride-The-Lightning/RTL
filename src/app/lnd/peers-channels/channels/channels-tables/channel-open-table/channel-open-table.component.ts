@@ -15,6 +15,7 @@ import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -116,10 +117,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update fee policy for all Channels',
+        alertTitle: 'Update Fee Policy',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,
+        titleMessage: 'Update fee policy for all channels',
         flgShowInput: true,
         getInputs: [
           {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
@@ -187,21 +189,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channel_point,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
-    }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[4]))
-    .subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new RTLActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: !channelToClose.active}));
-      }
-    });
+    this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
+      channel: channelToClose,
+      component: CloseChannelLndComponent
+    }}));    
   }
 
   applyFilter() {

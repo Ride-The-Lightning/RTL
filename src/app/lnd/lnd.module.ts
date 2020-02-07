@@ -85,7 +85,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelStatusInfoComponent,
     ChannelCapacityInfoComponent,
     ChannelLiquidityInfoComponent,
-    NetworkInfoComponent
+    NetworkInfoComponent,
   ],
   providers: [
     LNDUnlockedGuard

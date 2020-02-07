@@ -5,34 +5,36 @@
       <button tabindex="7" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.chan_id}}</p>
       <form fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch" #form="ngForm">
-        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-          <mat-form-field fxFlex="30">
-            <input autoFocus matInput [(ngModel)]="rebalanceAmount" (change)="filterActiveChannels()" placeholder="Amount" type="number" step="100" min="1" tabindex="1" required name="amount" #amount="ngModel" max="{{selChannel?.local_balance}}">
-            <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((rebalanceAmount) ? rebalanceAmount : 0)}})</mat-hint>
-            <span matSuffix>Sats</span>
-            <mat-error *ngIf="!rebalanceAmount">Amount is required.</mat-error>
-            <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
-          </mat-form-field>
-          <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-            <mat-select tabindex="2" [(value)]="selRebalancePeer" placeholder="Rebalancing Channel">
-              <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
-                {{activeChannel.remote_alias || activeChannel.chan_id}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field fxFlex="15" fxLayoutAlign="start end">
-            <mat-select tabindex="3" [(value)]="selFeeLimitType" Placeholder="Fee Limits" required>
-              <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
-                {{feeLimitType.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field fxFlex="20">
-            <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="4" #feeLmt="ngModel">
-            <mat-error *ngIf="!feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
-          </mat-form-field>
+        <div fxLayout="column" class="bordered-box p-2">
+          <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.chan_id}}</p>
+          <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+            <mat-form-field fxFlex="30">
+              <input autoFocus matInput [(ngModel)]="rebalanceAmount" (change)="filterActiveChannels()" placeholder="Amount" type="number" step="100" min="1" tabindex="1" required name="amount" #amount="ngModel" max="{{selChannel?.local_balance}}">
+              <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((rebalanceAmount) ? rebalanceAmount : 0)}})</mat-hint>
+              <span matSuffix>Sats</span>
+              <mat-error *ngIf="!rebalanceAmount">Amount is required.</mat-error>
+              <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+              <mat-select tabindex="2" [(value)]="selRebalancePeer" placeholder="Rebalancing Channel">
+                <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
+                  {{activeChannel.remote_alias || activeChannel.chan_id}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="15" fxLayoutAlign="start end">
+              <mat-select tabindex="3" [(value)]="selFeeLimitType" Placeholder="Fee Limits" required>
+                <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
+                  {{feeLimitType.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="20">
+              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType?.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="4" #feeLmt="ngModel">
+              <mat-error *ngIf="!feeLimit">{{selFeeLimitType?.placeholder}} is required.</mat-error>
+            </mat-form-field>
+          </div>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
           <button fxFlex="48" fxFlex.gt-sm="20" fxLayoutAlign="center center" mat-stroked-button class="mr-2" color="primary" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>

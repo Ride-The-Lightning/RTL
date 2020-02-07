@@ -53,6 +53,7 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @NgModule({
   imports: [
@@ -187,7 +188,8 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
-    AuthSettingsComponent
+    AuthSettingsComponent,
+    CloseChannelLndComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -200,7 +202,8 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     SpinnerDialogComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    CloseChannelLndComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
