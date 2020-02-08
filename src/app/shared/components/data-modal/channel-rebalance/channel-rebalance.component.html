@@ -17,7 +17,7 @@
               <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-              <mat-select tabindex="2" [(value)]="selRebalancePeer" placeholder="Rebalancing Channel">
+              <mat-select tabindex="2" [(value)]="selRebalancePeer" placeholder="Receive from Peer">
                 <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
                   {{activeChannel.remote_alias || activeChannel.chan_id}}
                 </mat-option>

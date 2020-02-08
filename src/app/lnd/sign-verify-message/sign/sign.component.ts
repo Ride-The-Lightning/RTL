@@ -13,6 +13,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 })
 export class SignComponent implements OnInit, OnDestroy {
   public message = '';
+  public signedMessage = '';
   public signature = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
@@ -22,7 +23,10 @@ export class SignComponent implements OnInit, OnDestroy {
 
   onSign() {
     if (!this.message || this.message === '') { return true; }
-    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { this.signature = res; });
+    this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { 
+      this.signedMessage = this.message;
+      this.signature = res; 
+    });
   } 
 
   onCopyField(payload: string) {

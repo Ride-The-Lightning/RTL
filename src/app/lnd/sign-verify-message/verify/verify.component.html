@@ -1,15 +1,15 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <textarea autoFocus matInput [(ngModel)]="message" rows="5" (focus)="verifyRes=null" placeholder="Message" required tabindex="1" name="message"></textarea>
+      <textarea autoFocus matInput [(ngModel)]="message" rows="5" placeholder="Message" required tabindex="1" name="message"></textarea>
       <mat-error *ngIf="!message">Message is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <input matInput placeholder="Signature" name="signature" [(ngModel)]="signature" (focus)="verifyRes=null" tabindex="2" required #sign="ngModel">
+      <input matInput placeholder="Signature" name="signature" [(ngModel)]="signature" tabindex="2" required #sign="ngModel">
       <mat-error *ngIf="!signature">Signature is required.</mat-error>
     </mat-form-field>
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large" [ngClass]="{'border-valid': verifyRes?.valid, 'border-invalid': verifyRes?.pubkey && !verifyRes?.valid}">
-      <p>{{!verifyRes?.pubkey ? '' : (verifyRes?.pubkey && verifyRes?.valid) ? 'Valid: ' : 'Invalid: '}}{{verifyRes?.pubkey}}</p> 
+    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large h-6" [ngClass]="{'border-valid': verifyRes?.valid, 'border-invalid': verifyRes?.pubkey && !verifyRes?.valid}">
+      <p>{{verifyRes?.pubkey}}</p> 
     </div>
     <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
       <button fxFlex="48" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()" type="reset">Clear Field</button>
