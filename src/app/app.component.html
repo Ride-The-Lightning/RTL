@@ -1,8 +1,8 @@
 <div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[settings.themeColor | lowercase, settings.themeMode | lowercase]">
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar">
     <div>
-      <button class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()" [matTooltip]="flgSideNavOpened ? 'Hide Navigation Menu' : 'Show Navigation Menu'" [matTooltipDisabled]="smallScreen">
-        <mat-icon class="mr-5px">menu</mat-icon>
+      <button class="top-toolbar-icon mr-1" mat-icon-button (click)="sideNavToggle()" [matTooltip]="flgSideNavOpened ? 'Hide Navigation Menu' : 'Show Navigation Menu'" [matTooltipDisabled]="smallScreen">
+        <mat-icon>menu</mat-icon>
       </button>
       <button *ngIf="!smallScreen" mat-icon-button (click)="flgSidenavPinned = !flgSidenavPinned" [matTooltip]="flgSidenavPinned ? 'Unpin Navigation Menu' : 'Pin Navigation Menu'">
         <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 32 32">
@@ -16,7 +16,7 @@
       <span *ngIf="!xSmallScreen">Ride The Lightning</span>
     </div>
     <div>
-      <rtl-top-menu></rtl-top-menu>
+      <rtl-top-menu class="mr-1"></rtl-top-menu>
     </div>
   </mat-toolbar>
   <mat-sidenav-container>
@@ -29,7 +29,7 @@
       </div>
     </mat-sidenav-content>>
   </mat-sidenav-container>
-  <div class="rtl-spinner" *ngIf="undefined === settings.themeColor">
+  <div class="rtl-spinner" *ngIf="!settings.themeColor">
     <mat-spinner color="accent"></mat-spinner>
     <h4>Loading RTL...</h4>
   </div>

@@ -9,7 +9,7 @@
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2 h-40rem">
+    <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.alertTitle === 'Channel Information'}">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
           <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
