@@ -272,6 +272,10 @@ body {
   margin-bottom: 2px !important;
 }
 
+.mb-5px {
+  margin-bottom: 5px !important;
+}
+
 .mb-1 {
   margin-bottom: 1rem !important;
 }
@@ -759,7 +763,11 @@ body {
 }
 
 .h-6 {
-  height: 6rem;
+  height: 6rem !important;
+}
+
+.h-35px {
+  height: 3.5rem !important;
 }
 
 a {
@@ -972,4 +980,8 @@ table {
 
 .border-invalid {
   border: 1px solid $red-color !important;
+}
+
+.icon-green {
+  fill: $green-color;
 }

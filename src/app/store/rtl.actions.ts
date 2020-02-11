@@ -78,6 +78,7 @@ export const FETCH_PAYMENTS = 'FETCH_PAYMENTS';
 export const SET_PAYMENTS = 'SET_PAYMENTS';
 export const DECODE_PAYMENT = 'DECODE_PAYMENT';
 export const SEND_PAYMENT = 'SEND_PAYMENT';
+export const SEND_PAYMENT_STATUS = 'SEND_PAYMENT_STATUS';
 export const SET_DECODED_PAYMENT = 'SET_DECODED_PAYMENT';
 export const FETCH_GRAPH_NODE = 'FETCH_GRAPH_NODE';
 export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
@@ -490,6 +491,11 @@ export class SendPayment implements Action {
   constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
+export class SendPaymentStatus implements Action {
+  readonly type = SEND_PAYMENT_STATUS;
+  constructor(public payload: any) {}
+}
+
 export class FetchGraphNode implements Action {
   readonly type = FETCH_GRAPH_NODE;
   constructor(public payload: string) {} // payload = pubkey
@@ -582,7 +588,7 @@ export class SetForwardingHistory implements Action {
 
 export class GetQueryRoutes implements Action {
   readonly type = GET_QUERY_ROUTES;
-  constructor(public payload: {destPubkey: string, amount: number}) {}
+  constructor(public payload: {destPubkey: string, amount: number, outgoingChanId?: string}) {}
 }
 
 export class SetQueryRoutes implements Action {
@@ -851,7 +857,7 @@ export type RTLActions =
   RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
   FetchTransactions | SetTransactions |
   FetchInvoices | SetInvoices | SetTotalInvoices |
-  FetchPayments | SetPayments | SendPayment |
+  FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
   GetNewAddress | SetNewAddress | SetChannelTransaction |

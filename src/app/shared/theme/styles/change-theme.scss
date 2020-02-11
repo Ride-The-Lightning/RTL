@@ -514,14 +514,18 @@
   }
 
   .alert {
+    border: 1px solid $foreground-secondary-text;
+    color: $foreground-secondary-text;
+    background-color: $hover-background;
+
     &.alert-info {
-    border: 1px solid $blue-color;
-    background-color: $blue-background-color;
-    color: $blue-color;
-      & .alert-icon.ng-fa-icon {
-        color: $blue-color;
+      border: 1px solid $blue-color;
+      background-color: $blue-background-color;
+      color: $blue-color;
+        & .alert-icon.ng-fa-icon {
+          color: $blue-color;
+        }
       }
-    }
   
     &.alert-warn {
       border: 1px solid $yellow-alert-color; 

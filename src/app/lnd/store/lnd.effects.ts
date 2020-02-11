@@ -195,7 +195,6 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
@@ -205,6 +204,7 @@ export class LNDEffects implements OnDestroy {
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
             if (action.payload.openModal) {
+              this.store.dispatch(new RTLActions.CloseSpinner());
               return {
                 type: RTLActions.OPEN_ALERT,
                 payload: { data: {
@@ -660,7 +660,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
       let queryHeaders = {};
       if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
-      if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; }
+      if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; } // Channel Rebalancing
       if (action.payload.lastHopPubkey) { queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey; }
       if(action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
         queryHeaders['feeLimit'] = {};
@@ -675,34 +675,52 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
             if (sendRes.payment_error) {
-              this.logger.error('Error: ' + sendRes.payment_error);
-              const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error.message};
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload.paymentReq, myErr);
-              return of({type: RTLActions.VOID});              
-            } else {
-              let msg = 'Payment Sent Successfully.';
-              if(sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
-                msg = 'Payment sent successfully with the total fee ' + sendRes.payment_route.total_fees_msat + ' (mSats).';
+              if (action.payload.allowSelfPayment) { 
+                this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
+                return {
+                  type: RTLActions.SEND_PAYMENT_STATUS,
+                  payload: sendRes
+                };
+              } else {
+                this.logger.error('Error: ' + sendRes.payment_error);
+                const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error.message};
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload.paymentReq, myErr);
+                return of({type: RTLActions.VOID});              
               }
-              this.store.dispatch(new RTLActions.OpenSnackBar(msg));
+            } else {
+              this.store.dispatch(new RTLActions.SetDecodedPayment({}));
               this.store.dispatch(new RTLActions.FetchAllChannels());
               this.store.dispatch(new RTLActions.FetchBalance('channels'));
               this.store.dispatch(new RTLActions.FetchPayments());
               if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
+              } else {
+                this.store.dispatch(new RTLActions.CloseSpinner());
+                let msg = 'Payment Sent Successfully.';
+                if(sendRes.payment_route && sendRes.payment_route.total_fees_msat) {
+                  msg = 'Payment sent successfully with the total fee ' + sendRes.payment_route.total_fees_msat + ' (mSats).';
+                }
+                this.store.dispatch(new RTLActions.OpenSnackBar(msg));
               }
               return {
-                type: RTLActions.SET_DECODED_PAYMENT,
-                payload: {}
+                type: RTLActions.SEND_PAYMENT_STATUS,
+                payload: sendRes
               };
             }
           }),
           catchError((err: any) => {
-            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
-            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
-            return of({type: RTLActions.VOID});
+            if (action.payload.allowSelfPayment) { 
+              this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
+              return of({
+                type: RTLActions.SEND_PAYMENT_STATUS,
+                payload: err
+              });
+            } else {
+              const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              return of({type: RTLActions.VOID});
+            }
           })
         );
     })
@@ -822,7 +840,9 @@ export class LNDEffects implements OnDestroy {
   queryRoutesFetch = this.actions$.pipe(
     ofType(RTLActions.GET_QUERY_ROUTES),
     mergeMap((action: RTLActions.GetQueryRoutes) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount)
+      let url = this.CHILD_API_URL + environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount;
+      if (action.payload.outgoingChanId) { url = url + '?outgoing_chan_id=' + action.payload.outgoingChanId; }
+      return this.httpClient.get(url)
         .pipe(
           map((qrRes: any) => {
             this.logger.info(qrRes);
