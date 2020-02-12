@@ -115,6 +115,16 @@ export class LoopService {
     // this.websocket.onerror = function(evt) { self.onError(evt) };    
   }
 
+  listSwaps() {
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swaps';
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
+  getSwap(id: string) {
+    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swap/' + id;
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
   handleErrorWithAlert(err: any, errURL: string) {
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner())

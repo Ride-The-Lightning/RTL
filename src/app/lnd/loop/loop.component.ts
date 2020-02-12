@@ -36,7 +36,12 @@ export class LoopComponent implements OnInit, OnDestroy {
     //   this.loopMonitorLogs.push(log);
     //   console.warn(log);
     // });
-    this.loopService.monitorLoop();
+
+    // this.loopService.monitorLoop();
+
+    // this.loopService.listSwaps().subscribe(data => console.warn(data));
+    this.loopService.getSwap('SAUZul5aQB9xyyH5omWs5bxSsmUubL+MCA4XK2%2F%2FpV4=').subscribe(data => console.warn(data));
+
   }
 
   onStopMonitor() {

@@ -205,6 +205,38 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
   });
 };
 
+exports.swaps = (req, res, next) => {
+  loopServerUrl = common.getSelLoopServerUrl();  
+  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = loopServerUrl + '/loop/swaps';
+  request(options).then(function (body) {
+    logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Loop Swaps Failed!",
+      error: err.error
+    });
+  });
+};
+
+exports.swap = (req, res, next) => {
+  loopServerUrl = common.getSelLoopServerUrl();  
+  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = loopServerUrl + '/loop/swap/' + req.params.id;
+  request(options).then(function (body) {
+    logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch((err) => {
+    return res.status(500).json({
+      message: "Loop Swap Failed!",
+      error: err.error
+    });
+  });
+};
+
 exports.loopMonitor = (req, res, next) => {
   loopServerUrl = common.getSelLoopServerUrl();  
   if(loopServerUrl === '') { return res.status(500).json({message: "Loop Monitor Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
@@ -221,3 +253,4 @@ exports.loopMonitor = (req, res, next) => {
     });
   });
 };
+
