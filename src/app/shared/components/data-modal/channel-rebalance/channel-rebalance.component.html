@@ -7,10 +7,10 @@
     <mat-card-content class="mt-5px">
       <div fxLayout="column" class="bordered-box p-2">
         <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.chan_id}}</p>
-        <mat-vertical-stepper [linear]="true" #stepper>
+        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="inputFormGroup">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>Enter info to rebalance</ng-template>
+              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">              
                 <mat-form-field fxFlex="48">
                   <input autoFocus matInput (change)="filterActiveChannels()" placeholder="Amount" type="number" step="100" tabindex="1" formControlName="rebalanceAmount" required>
@@ -35,7 +35,7 @@
           </mat-step>
           <mat-step [stepControl]="feeFormGroup">
             <form [formGroup]="feeFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>Select rebalance fee</ng-template>
+              <ng-template matStepLabel>{{feeFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                   <div fxFlex="75" class="alert">
@@ -45,7 +45,7 @@
                       <strong>Number of Hops: </strong>{{queryRoute && queryRoute.routes && queryRoute.routes.length > 0 && queryRoute.routes[0].hops && queryRoute.routes[0].hops.length ? queryRoute.routes[0].hops.length : 0}}
                     </span>
                   </div>
-                  <button mat-stroked-button type="button" tabindex="4" (click)="onEstimateFee()" class="h-35px" matTooltip="Estimate Fee"><mat-icon class="mb-5px">loop</mat-icon></button>
+                  <button mat-stroked-button type="button" tabindex="4" (click)="onEstimateFee()" class="h-35px" matTooltip="Re-estimate Fee"><mat-icon class="mb-5px">loop</mat-icon></button>
                   <button fxFlex="15" mat-stroked-button type="button" tabindex="5" class="h-35px" (click)="onUseEstimate()">Use Estimate</button>
                 </div>
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
@@ -82,17 +82,18 @@
                   <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="flgInvoiceGenerated && !flgPaymentSent" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="flgInvoiceGenerated && flgPaymentSent">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment and Rebalancing successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <div fxLayout="column" *ngIf="!paymentStatus; else paymentStatusBlock"></div>
                 </mat-expansion-panel>
               </div>
-              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" type="button" (click)="stepper.reset()" class="mr-1">Clear Field</button>
+              <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
+              <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()" class="mr-1">Clear Fields</button>
                 <button mat-flat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
               </div>
             </form>

@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material';
 
 import { DataService } from '../../../shared/services/data.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-verify',
@@ -11,23 +13,42 @@ import { DataService } from '../../../shared/services/data.service';
 })
 export class VerifyComponent implements OnInit, OnDestroy {
   public message = '';
+  public verifiedMessage = '';
   public signature = '';
+  public verifiedSignature = '';
+  public showVerifyStatus = false;
   public verifyRes = {pubkey: '', valid: null};
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
 
   ngOnInit() {}
 
   onVerify() {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
+    this.showVerifyStatus = true;
+    this.verifiedMessage = this.message;
+    this.verifiedSignature = this.signature;
     this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0])).subscribe(res => { this.verifyRes = res; });
   } 
+
+  onChange() {
+    if (this.verifiedMessage !== this.message || this.verifiedSignature !== this.signature) { 
+      this.showVerifyStatus = false;
+      this.verifyRes = {pubkey: '', valid: null}; 
+    }
+  }
 
   resetData() {
     this.message = '';
     this.signature = '';
     this.verifyRes = null;
+    this.showVerifyStatus = false;
+  }
+
+  onCopyField(payload: string) {
+    this.snackBar.open('Pubkey copied.');
+    this.logger.info('Copied Text: ' + payload);
   }
 
   ngOnDestroy() {

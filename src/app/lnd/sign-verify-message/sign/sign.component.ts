@@ -29,6 +29,10 @@ export class SignComponent implements OnInit, OnDestroy {
     });
   } 
 
+  onMessageChange() {
+    if (this.signedMessage !== this.message) { this.signature = ''; }
+  }
+
   onCopyField(payload: string) {
     this.snackBar.open('Signature copied.');
     this.logger.info('Copied Text: ' + payload);
@@ -37,6 +41,7 @@ export class SignComponent implements OnInit, OnDestroy {
   resetData() {
     this.message = '';
     this.signature = '';
+    this.signedMessage = '';
   }
 
   ngOnDestroy() {

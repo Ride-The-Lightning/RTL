@@ -391,6 +391,9 @@
     border: 1px solid $foreground-divider;
     border-radius: 4px;
     background: none;
+    &.read-only {
+      background-color: $hover-background;
+    }
   }
 
   .mat-expansion-panel {
@@ -513,6 +516,14 @@
     }
   }
 
+  .color-warn {
+    color: $warn-color;
+  }
+  
+  .fill-warn {
+    fill: $warn-color;
+  }
+
   .alert {
     border: 1px solid $foreground-secondary-text;
     color: $foreground-secondary-text;
@@ -567,4 +578,5 @@
       color: $foreground-secondary-text;
     }
   }  
+
 }

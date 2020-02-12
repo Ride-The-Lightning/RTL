@@ -1,9 +1,10 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { Actions, act } from '@ngrx/effects';
+import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -31,13 +32,15 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public paymentStatus: any = null;
   public flgInvoiceGenerated = false;
   public flgPaymentSent = false;
+  public inputFormLabel = 'Enter info to rebalance';
+  public feeFormLabel = 'Select rebalance fee';
   isLinear = false;
   inputFormGroup: FormGroup;
   feeFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private lndEffects: LNDEffects, private formBuilder: FormBuilder) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     this.selChannel = this.data.channel;
@@ -87,6 +90,42 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
     this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id}));
+  }
+
+  stepSelectionChanged(event: any) {
+    switch (event.selectedIndex) {
+      case 0:
+        this.inputFormLabel = 'Enter info to rebalance';
+        this.feeFormLabel = 'Select rebalance fee';
+        break;
+    
+      case 1:
+        if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
+          this.inputFormLabel = 'Rebalancing Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
+        } else {
+          this.inputFormLabel = 'Enter info to rebalance';
+        }
+        this.feeFormLabel = 'Select rebalance fee';
+        break;
+
+      case 2:
+        if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
+          this.inputFormLabel = 'Rebalancing Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
+        } else {
+          this.inputFormLabel = 'Enter info to rebalance';
+        }
+        if (this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && (this.queryRoute.routes[0].total_fees_msat || (this.queryRoute.routes[0].hops && this.queryRoute.routes[0].hops.length))) {
+          this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) + ' | Hops: ' + this.queryRoute.routes[0].hops.length;
+        } else {
+          this.feeFormLabel = 'Select rebalance fee';
+        }
+        break;
+
+      default:
+        this.inputFormLabel = 'Enter info to rebalance';
+        this.feeFormLabel = 'Select rebalance fee';
+        break;
+    }
   }
 
   onUseEstimate() {
