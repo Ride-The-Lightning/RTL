@@ -102,17 +102,17 @@ export class LoopService {
     // this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/monitor';
     // return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
 
-    // this.loopUrl = 'http://localhost:8081/v1/loop/monitor';
-    // this.httpClient.get(this.loopUrl).subscribe(log => {
-    //   console.warn(log);
-    // });
+    this.loopUrl = 'http://localhost:8081/v1/loop/monitor';
+    this.httpClient.get(this.loopUrl).subscribe(log => {
+      console.warn(log);
+    });
 
-    let self = this;
-    this.websocket = new WebSocket('wss://echo.websocket.org/'); // 'ws://localhost:8081/v1/loop/monitor'
-    this.websocket.onopen = function(evt) { self.onOpen(evt) };
-    this.websocket.onclose = function(evt) { self.onClose(evt) };
-    this.websocket.onmessage = function(evt) { self.onMessage(evt) };
-    this.websocket.onerror = function(evt) { self.onError(evt) };    
+    // let self = this;
+    // this.websocket = new WebSocket('wss://echo.websocket.org/'); // 'ws://localhost:8081/v1/loop/monitor'
+    // this.websocket.onopen = function(evt) { self.onOpen(evt) };
+    // this.websocket.onclose = function(evt) { self.onClose(evt) };
+    // this.websocket.onmessage = function(evt) { self.onMessage(evt) };
+    // this.websocket.onerror = function(evt) { self.onError(evt) };    
   }
 
   handleErrorWithAlert(err: any, errURL: string) {
