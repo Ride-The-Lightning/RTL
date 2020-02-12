@@ -93,8 +93,9 @@
               </div>
               <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()" class="mr-1">Clear Fields</button>
-                <button mat-flat-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+                <button *ngIf="!paymentStatus || !paymentStatus.error" mat-flat-button color="primary" tabindex="9" type="button" [mat-dialog-close]="false" default>Close</button>
+                <button *ngIf="paymentStatus && paymentStatus.error" mat-stroked-button color="primary" tabindex="10" type="button" class="mr-1" [mat-dialog-close]="false" default>Close</button>
+                <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>

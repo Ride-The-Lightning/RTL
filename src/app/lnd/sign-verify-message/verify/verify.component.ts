@@ -26,10 +26,13 @@ export class VerifyComponent implements OnInit, OnDestroy {
 
   onVerify() {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
-    this.showVerifyStatus = true;
-    this.verifiedMessage = this.message;
-    this.verifiedSignature = this.signature;
-    this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0])).subscribe(res => { this.verifyRes = res; });
+    this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0]))
+    .subscribe(res => { 
+      this.verifyRes = res; 
+      this.showVerifyStatus = true;
+      this.verifiedMessage = this.message;
+      this.verifiedSignature = this.signature;
+    });
   } 
 
   onChange() {
