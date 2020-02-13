@@ -63,7 +63,7 @@
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
               <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
-              <mat-option (click)="onLocalRebalance(channel)" *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9">Local-Rebalance</mat-option>
+              <mat-option (click)="onCircularRebalance(channel)" *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9">Circular Rebalance</mat-option>
               <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
             </mat-select>
           </div>

@@ -105,7 +105,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   }
 
-  onLocalRebalance(selChannel: any) {
+  onCircularRebalance(selChannel: any) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       channel: selChannel,
       component: ChannelRebalanceComponent
