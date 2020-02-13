@@ -156,6 +156,7 @@ export interface Fees {
   daily_tx_count?: number;
   weekly_tx_count?: number;
   monthly_tx_count?: number;
+  forwarding_events_history?: SwitchRes;
 }
 
 export interface GetInfoChain {

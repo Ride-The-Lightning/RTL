@@ -466,12 +466,6 @@
     overflow: hidden;
   }
 
-  .mat-icon-button {
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
-  }
-
   .balances-info-pie-chart {
     & .legend-label:nth-child(1) .legend-label-color {
       background-color: mat-color($primary, 200) !important;
@@ -579,4 +573,9 @@
     }
   }  
 
+  .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon,
+  .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
+    width: 1.8rem; 
+  }
+  
 }

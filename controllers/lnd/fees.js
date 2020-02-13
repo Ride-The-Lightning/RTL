@@ -37,23 +37,17 @@ exports.getFees = (req, res, next) => {
       let month_start_time = current_time - 2629743;
       let week_start_time = current_time - 604800;
       let day_start_time = current_time - 86400;
-      return swtch.getAllForwardingEvents(month_start_time, current_time, 0, 1000)
-      .then((history) => {
+      swtch.getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
         logger.info({fileName: 'Fees', msg: 'Forwarding History Received: ' + JSON.stringify(history)});
         let daily_tx_count = history.forwarding_events.filter(event => event.timestamp >= day_start_time);
         body.daily_tx_count = daily_tx_count && daily_tx_count.length ? daily_tx_count.length : 0;
         let weekly_tx_count = history.forwarding_events.filter(event => event.timestamp >= week_start_time);
         body.weekly_tx_count = weekly_tx_count && weekly_tx_count.length ? weekly_tx_count.length : 0;
         body.monthly_tx_count = history.forwarding_events && history.forwarding_events.length ? history.forwarding_events.length : 0;
-        return res.status(200).json(body);
+        body.forwarding_events_history = history;
+        if (history.error) { logger.error({fileName: 'Fees', lineNum: 48, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(err)}); }
+        res.status(200).json(body);
       })
-      .catch(err => {
-        logger.error({fileName: 'Fees', lineNum: 54, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(err)});
-        body.daily_tx_count = 0;
-        body.weekly_tx_count = 0;
-        body.monthly_tx_count = 0;
-        return res.status(200).json(body);
-      });
     }
   })
   .catch(function (err) {

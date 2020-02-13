@@ -401,6 +401,10 @@ export class LNDEffects implements OnDestroy {
     }),
     map((fees) => {
       this.logger.info(fees);
+      if(fees.forwarding_events_history) {
+        this.store.dispatch(new RTLActions.SetForwardingHistory(fees.forwarding_events_history));
+        delete fees.forwarding_events_history;
+      }
       return {
         type: RTLActions.SET_FEES,
         payload: fees ? fees : {}
@@ -1127,7 +1131,7 @@ export class LNDEffects implements OnDestroy {
       smaller_currency_unit: info.smaller_currency_unit
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new RTLActions.FetchFees());
+    this.store.dispatch(new RTLActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     this.store.dispatch(new RTLActions.FetchPeers());
     this.store.dispatch(new RTLActions.FetchBalance('channels'));
     this.store.dispatch(new RTLActions.FetchNetwork());
