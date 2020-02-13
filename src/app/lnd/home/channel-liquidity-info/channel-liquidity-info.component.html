@@ -13,7 +13,7 @@
           <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
           <mat-hint *ngIf="direction === 'Out'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
         </div>
-        <span *ngIf="direction === 'In'" fxFlexLayout="row" fxLayoutAlign="space-between center" class="h-20">
+        <span *ngIf="direction === 'In'" fxFlexLayout="row" fxLayoutAlign="space-between center" class="h-2">
           <mat-progress-bar fxFlex="90" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
         </span>
         <span *ngIf="direction === 'Out'" fxFlexLayout="row" fxLayoutAlign="space-between center">
