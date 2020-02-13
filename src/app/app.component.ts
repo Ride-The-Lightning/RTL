@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, Renderer2 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -25,10 +25,12 @@ import * as fromRTLReducer from './store/rtl.reducers';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
+  @ViewChild('sideNavContent', { static: false }) sideNavContent: any;
   public selNode: ConfigSettingsNode;
   public settings: Settings;
   public information: GetInfoRoot = {};
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: Info
+  public flgSideNavOpened = true;
   public flgCopied = false;
   public appConfig: RTLConfiguration;
   public accessKey = '';
@@ -38,7 +40,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
-    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver) {}
+    private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
 
   ngOnInit() {
     this.router.events.subscribe((evt) => {
@@ -93,10 +95,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }
         }
-        // START: Workaround to add adjust container width initially
-        this.sideNavigation.toggle();
-        setTimeout(() => { this.sideNavigation.toggle(); }, 500);
-        // END: Workaround to add left margin to container initially        
       }     
     });
     this.userIdle.startWatching();
@@ -113,15 +111,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.resetTimer();
       }
     });
-    this.commonService.containerWidthChanged.pipe(takeUntil(this.unSubs[4]))
-    .subscribe((fieldType: string) => {
-      if(fieldType !== 'menuType') {
-        this.sideNavToggle();
-      } else {
-        this.sideNavigation.toggle(); // To dynamically update the width to 100% after side nav is closed
-        setTimeout(() => { this.sideNavigation.toggle(); }, 0);
-      }
-    });
   }
 
   private readAccessKey() {
@@ -132,10 +121,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     if (this.smallScreen) {
       this.sideNavigation.close();
+    } else {
+      setTimeout(() => {
+        this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width
+      }, 100);
     }
   }
 
   sideNavToggle() {
+    this.flgSideNavOpened = !this.flgSideNavOpened;
     this.sideNavigation.toggle();
   }
 

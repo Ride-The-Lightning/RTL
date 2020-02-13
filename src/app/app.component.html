@@ -1,10 +1,10 @@
 <div fxLayout="column" id="rtl-container" class="rtl-container medium" [ngClass]="[settings.themeColor | lowercase, settings.themeMode | lowercase]">
   <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="padding-gap-x bg-primary rtl-top-toolbar">
     <div>
-      <button class="top-toolbar-icon" mat-icon-button (click)="sideNavToggle()">
-        <mat-icon class="mr-5px">menu</mat-icon>
+      <button class="top-toolbar-icon mr-1" mat-icon-button (click)="sideNavToggle()" [matTooltip]="flgSideNavOpened ? 'Hide Navigation Menu' : 'Show Navigation Menu'" [matTooltipDisabled]="smallScreen">
+        <mat-icon>menu</mat-icon>
       </button>
-      <button *ngIf="!smallScreen" mat-icon-button (click)="flgSidenavPinned = !flgSidenavPinned">
+      <button *ngIf="!smallScreen" mat-icon-button (click)="flgSidenavPinned = !flgSidenavPinned" [matTooltip]="flgSidenavPinned ? 'Unpin Navigation Menu' : 'Pin Navigation Menu'">
         <svg class="top-toolbar-icon icon-pinned" viewBox="0 0 32 32">
           <path fill="currentColor" *ngIf="!flgSidenavPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
           <path fill="currentColor" *ngIf="flgSidenavPinned" d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
@@ -20,10 +20,10 @@
     </div>
   </mat-toolbar>
   <mat-sidenav-container>
-    <mat-sidenav perfectScrollbar [opened]="true" [mode]="(flgSidenavPinned && !smallScreen) ? 'side' : 'over'" #sideNavigation class="sidenav mat-elevation-z6">
+    <mat-sidenav perfectScrollbar [opened]="flgSideNavOpened" [mode]="(flgSidenavPinned && !smallScreen) ? 'side' : 'over'" #sideNavigation class="sidenav mat-elevation-z6">
       <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
-    <mat-sidenav-content perfectScrollbar>
+    <mat-sidenav-content perfectScrollbar #sideNavContent>
       <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
         <router-outlet></router-outlet>
       </div>

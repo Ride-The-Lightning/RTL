@@ -272,6 +272,10 @@ body {
   margin-bottom: 2px !important;
 }
 
+.mb-5px {
+  margin-bottom: 5px !important;
+}
+
 .mb-1 {
   margin-bottom: 1rem !important;
 }
@@ -754,6 +758,18 @@ body {
   height: 93% !important;
 }
 
+.h-40 {
+  height: 40rem !important;
+}
+
+.h-4 {
+  height: 4rem !important;
+}
+
+.h-35px {
+  height: 3.5rem !important;
+}
+
 a {
   outline: none;
   text-decoration: none;
@@ -958,6 +974,17 @@ table {
   max-height: 600px;
 }
 
-.h-20 {
+.h-2 {
   min-height: 2rem !important;
+}
+.border-valid {
+  border: 1px solid $green-color !important;
+}
+
+.border-invalid {
+  border: 1px solid $red-color !important;
+}
+
+.icon-green {
+  fill: $green-color;
 }

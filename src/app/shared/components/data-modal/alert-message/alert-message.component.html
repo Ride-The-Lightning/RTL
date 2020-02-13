@@ -1,4 +1,4 @@
-<div perfectScrollbar fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': showQRField === '' || screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
   </div>
@@ -9,7 +9,7 @@
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px mb-0 pr-2">
+    <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.alertTitle === 'Channel Information'}">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
           <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
@@ -38,14 +38,14 @@
             </div>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="end center">
-          <button *ngIf="(!showQRField || showQRField == '') && (showCopyName === '')" fxFlex="20" fxLayoutAlign="center center" tabindex="1" autoFocus mat-flat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
-          <button *ngIf="showCopyName !== ''" fxFlex="20" class="mr-2" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-          <button *ngIf="showCopyName !== ''" fxFlex="30" fxLayoutAlign="center center" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
-          <button *ngIf="showQRField !== ''" fxFlex="20" class="mr-2" fxLayoutAlign="center center" tabindex="1" class="mr-2" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
-          <button *ngIf="showQRField !== ''" fxFlex="30" fxLayoutAlign="center center" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
-        </div>
       </div>
     </mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <button *ngIf="(!showQRField || showQRField == '') && (showCopyName === '')" fxFlex="30" fxFlex.gt-sm="20" fxLayoutAlign="center center" tabindex="1" autoFocus mat-flat-button color="primary" type="submit" [mat-dialog-close]="false" default>OK</button>
+      <button *ngIf="showCopyName !== ''" fxFlex="30" fxFlex.gt-sm="20" class="mr-2" fxLayoutAlign="center center" tabindex="1" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showCopyName !== ''" fxFlex="30" fxFlex.gt-sm="30" fxLayoutAlign="center center" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showCopyField" (copied)="onCopyField($event)">Copy {{showCopyName}}</button>
+      <button *ngIf="showQRField !== ''" fxFlex="30" fxFlex.gt-sm="20" class="mr-2" fxLayoutAlign="center center" tabindex="1" class="mr-2" mat-stroked-button color="primary" type="button" [mat-dialog-close]="false" default>Close</button>
+      <button *ngIf="showQRField !== ''" fxFlex="30" fxFlex.gt-sm="30" fxLayoutAlign="center center" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="showQRField" (copied)="onCopyField($event)">Copy {{showQRName}}</button>
+    </div>
   </div>
 </div>

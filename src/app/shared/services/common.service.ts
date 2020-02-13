@@ -1,21 +1,20 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take, map, takeUntil, catchError } from 'rxjs/operators';
 
+import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
-import { environment } from '../../../environments/environment';
+import { environment, API_URL } from '../../../environments/environment';
 
 @Injectable()
-export class CommonService implements OnInit, OnDestroy {
+export class CommonService implements OnInit {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
-  containerWidthChanged = new Subject<string>();
   conversionData = { data: null, last_fetched: null };
   private screenSize = ScreenSizeEnum.MD;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private dataService: DataService) {}
 
   ngOnInit() {}
 
@@ -45,17 +44,13 @@ export class CommonService implements OnInit, OnDestroy {
     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
   } 
 
-  changeContainerWidth(fieldType: string) {
-    this.containerWidthChanged.next(fieldType);
-  }
-
   convertCurrency(value: number, from: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
     if(fiatConversion && otherCurrencyUnit) {
       if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
-        return this.httpClient.get(environment.CONF_API + '/rates')
+        return this.dataService.getFiatRates()
         .pipe(take(1),
         map((data: any) => {
           this.conversionData.data = data ? JSON.parse(data) : {};
@@ -185,13 +180,5 @@ export class CommonService implements OnInit, OnDestroy {
   convertTimestampToDate(num: number) {
     return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
   };
-  
-  ngOnDestroy() {
-    this.containerWidthChanged.next();
-    this.containerWidthChanged.complete();
-    this.unSubs.forEach(completeSub => {
-      completeSub.next();
-      completeSub.complete();
-    });
-  }
+
 }

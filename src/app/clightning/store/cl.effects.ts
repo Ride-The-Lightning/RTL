@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
-import { map, mergeMap, catchError, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, catchError, withLatestFrom, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
@@ -44,6 +44,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));
       return this.httpClient.get<GetInfoCL>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
+          takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
             this.initializeRemainingData(info, action.payload.loadPage);

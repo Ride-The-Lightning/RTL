@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field [fxFlex]="showDetails ? '82' : '100'">
-      <input matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" required #paymentReq="ngModel">
+      <input matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" required #paymentReq="ngModel">
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>

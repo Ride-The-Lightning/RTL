@@ -38,7 +38,7 @@ exports.getPeers = (req, res, next) => {
   .catch((err) => {
     logger.error({fileName: 'Peers', lineNum: 39, msg: 'Peers List Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: "Peers Fetched Failed!",
+      message: "Peers List Failed!",
       error: err.error
     });
   });

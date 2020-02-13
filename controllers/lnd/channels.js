@@ -51,7 +51,7 @@ exports.getAllChannels = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get All Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 54, msg: 'Get All Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching All Channels Failed!',
       error: err.error
@@ -75,7 +75,7 @@ exports.getPendingChannels = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Pending Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 78, msg: 'Get Pending Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching Pending Channels Failed!',
       error: err.error
@@ -99,7 +99,7 @@ exports.getClosedChannels = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 68, msg: 'Get Closed Channel: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Channels', lineNum: 102, msg: 'Get Closed Channel: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: 'Fetching Closed Channels Failed!',
       error: err.error
@@ -157,12 +157,10 @@ exports.postTransactions = (req, res, next) => {
       dest_string: req.body.paymentDecoded.destination
     };
   }
-  if(req.body.feeLimit) {
-    options.form.fee_limit = req.body.feeLimit;
-  }
-  if(req.body.outgoingChannel) {
-    options.form.outgoing_chan_id = req.body.outgoingChannel;
-  }
+  if (req.body.feeLimit) { options.form.fee_limit = req.body.feeLimit; }
+  if (req.body.outgoingChannel) { options.form.outgoing_chan_id = req.body.outgoingChannel; }
+  if (req.body.allowSelfPayment) { options.form.allow_self_payment = req.body.allowSelfPayment; }
+  if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = Buffer.from(req.body.lastHopPubkey, 'hex').toString('base64'); }
   options.form = JSON.stringify(options.form);
   logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
   request.post(options).then((body) => {
@@ -195,6 +193,8 @@ exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.getSelLNServerUrl() + '/channels/' + channelpoint + '?force=' + req.query.force;
+  if(req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
+  if(req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});

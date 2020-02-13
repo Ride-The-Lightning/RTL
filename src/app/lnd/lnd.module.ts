@@ -29,6 +29,9 @@ import { NodeLookupComponent } from './lookups/node-lookup/node-lookup.component
 import { BackupComponent } from './backup/backup.component';
 import { ChannelBackupTableComponent } from './backup/channel-backup-table/channel-backup-table.component';
 import { ChannelRestoreTableComponent } from './backup/channel-restore-table/channel-restore-table.component';
+import { SignVerifyMessageComponent } from './sign-verify-message/sign-verify-message.component';
+import { SignComponent } from './sign-verify-message/sign/sign.component';
+import { VerifyComponent } from './sign-verify-message/verify/verify.component';
 import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
 import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
@@ -72,8 +75,11 @@ import { LoopInComponent } from './loop/loop-in/loop-in.component';
     NodeLookupComponent,
     BackupComponent,
     ChannelBackupTableComponent,
-    QueryRoutesComponent,
     ChannelRestoreTableComponent,
+    SignVerifyMessageComponent,
+    SignComponent,
+    VerifyComponent,
+    QueryRoutesComponent,
     OnChainSendComponent,
     OnChainReceiveComponent,
     OnChainComponent,

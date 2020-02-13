@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-
 import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -102,16 +101,15 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   onConnectPeer() {
     if(!this.peerAddress) { return true; }
-    const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
     const deviderIndex = this.peerAddress.search('@');
     let pubkey = '';
     let host = '';
-    if (new RegExp(pattern).test(this.peerAddress)) {
+    if (deviderIndex > -1) {
       pubkey = this.peerAddress.substring(0, deviderIndex);
       host = this.peerAddress.substring(deviderIndex + 1);
       this.connectPeerWithParams(pubkey, host);
     } else {
-      pubkey = (deviderIndex > -1) ? this.peerAddress.substring(0, deviderIndex) : this.peerAddress;
+      pubkey = this.peerAddress;
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
       this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
       this.lndEffects.setGraphNode

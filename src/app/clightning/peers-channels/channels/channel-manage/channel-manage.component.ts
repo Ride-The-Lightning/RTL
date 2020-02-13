@@ -113,6 +113,7 @@ export class CLChannelManageComponent implements OnInit, OnDestroy {
       noBtnText: 'Do it Later',
       yesBtnText: 'Add Peer',
       flgShowInput: true,
+      titleMessage: 'Enter Lightning Address',
       getInputs: [
         {placeholder: 'Lightning Address (pubkey OR pubkey@ip:port)', inputType: DataTypeEnum.STRING, inputValue: '', width: 100}
       ]

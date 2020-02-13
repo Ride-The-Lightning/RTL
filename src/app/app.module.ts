@@ -18,6 +18,7 @@ import { environment } from '../environments/environment';
 import { SessionService } from './shared/services/session.service';
 import { CommonService } from './shared/services/common.service';
 import { LoopService } from './shared/services/loop.service';
+import { DataService } from './shared/services/data.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
@@ -26,11 +27,6 @@ import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { LayoutModule } from '@angular/cdk/layout';
 
 @NgModule({
@@ -43,11 +39,6 @@ import { LayoutModule } from '@angular/cdk/layout';
     StoreModule.forRoot(RTLReducer),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    MatGridListModule,
-    MatCardModule,
-    MatMenuModule,
-    MatIconModule,
-    MatButtonModule,
     LayoutModule
   ],
   declarations: [
@@ -57,7 +48,8 @@ import { LayoutModule } from '@angular/cdk/layout';
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    CommonService, AuthGuard, SessionService, LoopService
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
+    CommonService, AuthGuard, SessionService, LoopService, DataService
   ],
   bootstrap: [AppComponent]
 })

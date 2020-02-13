@@ -116,6 +116,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
       message: '',
       noBtnText: 'Do it Later',
       yesBtnText: 'Add Peer',
+      titleMessage: 'Enter Lightning Address',
       flgShowInput: true,
       getInputs: [
         {placeholder: 'Lightning Address (pubkey OR pubkey@ip:port)', inputType: DataTypeEnum.STRING, inputValue: '', width: 100}

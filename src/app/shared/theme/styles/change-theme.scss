@@ -391,6 +391,9 @@
     border: 1px solid $foreground-divider;
     border-radius: 4px;
     background: none;
+    &.read-only {
+      background-color: $hover-background;
+    }
   }
 
   .mat-expansion-panel {
@@ -513,15 +516,27 @@
     }
   }
 
+  .color-warn {
+    color: $warn-color;
+  }
+  
+  .fill-warn {
+    fill: $warn-color;
+  }
+
   .alert {
+    border: 1px solid $foreground-secondary-text;
+    color: $foreground-secondary-text;
+    background-color: $hover-background;
+
     &.alert-info {
-    border: 1px solid $blue-color;
-    background-color: $blue-background-color;
-    color: $blue-color;
-      & .alert-icon.ng-fa-icon {
-        color: $blue-color;
+      border: 1px solid $blue-color;
+      background-color: $blue-background-color;
+      color: $blue-color;
+        & .alert-icon.ng-fa-icon {
+          color: $blue-color;
+        }
       }
-    }
   
     &.alert-warn {
       border: 1px solid $yellow-alert-color; 
@@ -563,4 +578,10 @@
       color: $foreground-secondary-text;
     }
   }  
+
+  .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon,
+  .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
+    width: 1.8rem; 
+  }
+  
 }

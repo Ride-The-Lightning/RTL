@@ -29,8 +29,8 @@ export class ConfirmationMessageComponent implements OnInit {
   ngOnInit() {
     this.flgShowInput = this.data.flgShowInput;
     this.getInputs = this.data.getInputs;
-    this.noBtnText = ( this.data.noBtnText) ? this.data.noBtnText : 'No';
-    this.yesBtnText = ( this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
+    this.noBtnText = (this.data.noBtnText) ? this.data.noBtnText : 'No';
+    this.yesBtnText = (this.data.yesBtnText) ? this.data.yesBtnText : 'Yes';
     this.messageObjs = this.data.message;
     if (this.data.type === AlertTypeEnum.ERROR) {
       if (!this.data.message && !this.data.titleMessage && this.messageObjs.length <= 0) {

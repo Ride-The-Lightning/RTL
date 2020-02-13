@@ -120,6 +120,9 @@ exports.getGraphEdge = (req, res, next) => {
 exports.getQueryRoutes = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
+  if(req.query.outgoingChanId) {
+    options.url = options.url + '?outgoing_chan_id=' + req.query.outgoingChanId;
+  }
   request(options).then((body) => {
     logger.info({fileName: 'Graph', msg: 'Query Routes Received: ' + JSON.stringify(body)});
     if(!body || body.error) {

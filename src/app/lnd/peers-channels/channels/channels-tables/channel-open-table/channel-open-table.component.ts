@@ -9,12 +9,13 @@ import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
+import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { ChannelLookupComponent } from '../../../../lookups/channel-lookup/channel-lookup.component';
+import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -41,6 +42,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public versionsArr = [];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
@@ -53,10 +55,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['remote_alias', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
+      this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
   }
 
@@ -70,13 +72,14 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if ( rtlStore.allChannels) {
+      if (rtlStore.allChannels) {
         this.loadChannelsTable(rtlStore.allChannels);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.allChannels) ? false : true;
+        this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -102,15 +105,23 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   }
 
+  onCircularRebalance(selChannel: any) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      channel: selChannel,
+      component: ChannelRebalanceComponent
+    }}));
+  }
+
   onChannelUpdate(channelToUpdate: any) {
     if (channelToUpdate === 'all') {
       const confirmationMsg = [];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Update fee policy for all Channels',
+        alertTitle: 'Update Fee Policy',
         noBtnText: 'Cancel',
         yesBtnText: 'Update All Channels',
         message: confirmationMsg,
+        titleMessage: 'Update fee policy for all channels',
         flgShowInput: true,
         getInputs: [
           {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
@@ -178,21 +189,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: Channel) {
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channel_point,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
-    }}));
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[4]))
-    .subscribe(confirmRes => {
-      if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new RTLActions.CloseChannel({channelPoint: channelToClose.channel_point, forcibly: !channelToClose.active}));
-      }
-    });
+    this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
+      channel: channelToClose,
+      component: CloseChannelLndComponent
+    }}));    
   }
 
   applyFilter() {
@@ -217,9 +217,17 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         {key: 'unsettled_balance', value: selChannel.unsettled_balance, title: 'Unsettled Balance', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'total_satoshis_sent', value: selChannel.total_satoshis_sent, title: 'Total Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'total_satoshis_received', value: selChannel.total_satoshis_received, title: 'Total Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'chan_status_flags', value: selChannel.chan_status_flags, title: 'Channel Status Flags', width: 50, type: DataTypeEnum.STRING},
+        {key: 'close_address', value: selChannel.close_address, title: 'Close Address', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'num_updates', value: selChannel.num_updates, title: 'Number of Updates', width: 40, type: DataTypeEnum.NUMBER},
         {key: 'pending_htlcs', value: selChannel.pending_htlcs, title: 'Pending HTLCs', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'csv_delay', value: selChannel.csv_delay, title: 'CSV Delay', width: 30, type: DataTypeEnum.NUMBER}]
+        {key: 'csv_delay', value: selChannel.csv_delay, title: 'CSV Delay', width: 30, type: DataTypeEnum.NUMBER}],
+      [{key: 'initiator', value: selChannel.initiator, title: 'Initiator', width: 40, type: DataTypeEnum.BOOLEAN},
+        {key: 'uptime', value: selChannel.uptime, title: 'Uptime (Seconds)', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'lifetime', value: selChannel.lifetime, title: 'Lifetime (Seconds)', width: 30, type: DataTypeEnum.NUMBER}],
+      [{key: 'static_remote_key', value: selChannel.static_remote_key, title: 'Static Remote Key', width: 40, type: DataTypeEnum.BOOLEAN},
+        {key: 'local_chan_reserve_sat', value: selChannel.local_chan_reserve_sat, title: 'Local Chan Reserve (Sats)', width: 30, type: DataTypeEnum.NUMBER},
+        {key: 'remote_chan_reserve_sat', value: selChannel.remote_chan_reserve_sat, title: 'Remote Chan Reserve (Sats)', width: 30, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

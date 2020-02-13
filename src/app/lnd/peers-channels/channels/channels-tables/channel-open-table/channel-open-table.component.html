@@ -18,13 +18,9 @@
           </div>            
         </td>
       </ng-container>
-      <ng-container matColumnDef="local_balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance </th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_balance | number}} </span></td>
-      </ng-container>
-      <ng-container matColumnDef="remote_balance">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance </th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
+      <ng-container matColumnDef="uptime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime (Secs)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime | number}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent </th>
@@ -34,9 +30,17 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.total_satoshis_received | number}} </span></td>
       </ng-container>
+      <ng-container matColumnDef="local_balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Local Balance </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.local_balance | number}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="remote_balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Remote Balance </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.remote_balance | number}} </span></td>
+      </ng-container>
       <ng-container matColumnDef="balancedness">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-3">Balance Score </th>
-        <td mat-cell *matCellDef="let channel" class="pl-3">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-2">Balance Score </th>
+        <td mat-cell *matCellDef="let channel" class="pl-2">
           <div fxLayout="row">
             <mat-hint fxFlex="100" fxLayoutAlign="center center" class="font-size-80">{{channel.balancedness || 0 | number}}</mat-hint>
           </div>
@@ -59,6 +63,7 @@
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onViewRemotePolicy(channel)">View Remote Fee </mat-option>
               <mat-option (click)="onChannelUpdate(channel)">Update Fee Policy</mat-option>
+              <mat-option (click)="onCircularRebalance(channel)" *ngIf="+versionsArr[0] > 0 || +versionsArr[1] >= 9">Circular Rebalance</mat-option>
               <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
             </mat-select>
           </div>

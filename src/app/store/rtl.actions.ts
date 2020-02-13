@@ -43,6 +43,7 @@ export const ADD_PEER = 'ADD_PEER';
 export const DETACH_PEER = 'DETACH_PEER';
 export const REMOVE_PEER = 'REMOVE_PEER';
 export const SAVE_NEW_INVOICE = 'SAVE_NEW_INVOICE';
+export const NEWLY_SAVED_INVOICE = 'NEWLY_SAVED_INVOICE';
 export const ADD_INVOICE = 'ADD_INVOICE';
 export const FETCH_FEES = 'FETCH_FEES';
 export const SET_FEES = 'SET_FEES';
@@ -77,6 +78,7 @@ export const FETCH_PAYMENTS = 'FETCH_PAYMENTS';
 export const SET_PAYMENTS = 'SET_PAYMENTS';
 export const DECODE_PAYMENT = 'DECODE_PAYMENT';
 export const SEND_PAYMENT = 'SEND_PAYMENT';
+export const SEND_PAYMENT_STATUS = 'SEND_PAYMENT_STATUS';
 export const SET_DECODED_PAYMENT = 'SET_DECODED_PAYMENT';
 export const FETCH_GRAPH_NODE = 'FETCH_GRAPH_NODE';
 export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
@@ -325,7 +327,12 @@ export class RemovePeer implements Action {
 
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE;
-  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number}) {}
+  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
+}
+
+export class NewlySavedInvoice implements Action {
+  readonly type = NEWLY_SAVED_INVOICE;
+  constructor(public payload: { paymentRequest: string}) {}
 }
 
 export class AddInvoice implements Action {
@@ -400,7 +407,7 @@ export class SaveNewChannel implements Action {
 
 export class CloseChannel implements Action {
   readonly type = CLOSE_CHANNEL;
-  constructor(public payload: {channelPoint: string, forcibly: boolean}) {}
+  constructor(public payload: {channelPoint: string, forcibly: boolean, targetConf?: number, satPerByte?: number}) {}
 }
 
 export class RemoveChannel implements Action {
@@ -492,7 +499,12 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number }) {}
+  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+}
+
+export class SendPaymentStatus implements Action {
+  readonly type = SEND_PAYMENT_STATUS;
+  constructor(public payload: any) {}
 }
 
 export class FetchGraphNode implements Action {
@@ -587,7 +599,7 @@ export class SetForwardingHistory implements Action {
 
 export class GetQueryRoutes implements Action {
   readonly type = GET_QUERY_ROUTES;
-  constructor(public payload: {destPubkey: string, amount: number}) {}
+  constructor(public payload: {destPubkey: string, amount: number, outgoingChanId?: string}) {}
 }
 
 export class SetQueryRoutes implements Action {
@@ -894,7 +906,7 @@ export type RTLActions =
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
   FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
-  AddInvoice | SaveNewInvoice | GetForwardingHistory | SetForwardingHistory |
+  AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
   FetchBalance | SetBalance |
   FetchNetwork | SetNetwork |
@@ -904,7 +916,7 @@ export type RTLActions =
   RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
   FetchTransactions | SetTransactions |
   FetchInvoices | SetInvoices | SetTotalInvoices |
-  FetchPayments | SetPayments | SendPayment |
+  FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
   GetNewAddress | SetNewAddress | SetChannelTransaction |

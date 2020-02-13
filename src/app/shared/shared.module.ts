@@ -41,6 +41,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { ChannelRebalanceComponent } from './components/data-modal/channel-rebalance/channel-rebalance.component';
 import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
@@ -54,6 +55,7 @@ import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { SocketService } from './services/socket.service';
+import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @NgModule({
   imports: [
@@ -138,6 +140,7 @@ import { SocketService } from './services/socket.service';
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,
     OnChainGeneratedAddressComponent,
@@ -165,6 +168,7 @@ import { SocketService } from './services/socket.service';
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
@@ -187,11 +191,13 @@ import { SocketService } from './services/socket.service';
     OpenChannelComponent,
     ShowPubkeyComponent,
     LoopOutModalComponent,
-    AuthSettingsComponent
+    AuthSettingsComponent,
+    CloseChannelLndComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
+    ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,
@@ -200,7 +206,8 @@ import { SocketService } from './services/socket.service';
     SpinnerDialogComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    CloseChannelLndComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

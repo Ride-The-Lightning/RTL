@@ -37,7 +37,7 @@
   </div>
 </form>
 <ng-template #sweepAllBlock>
-  <form fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden">
+  <form fxLayout="column" fxFlex="100" class="padding-gap overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()" #formSweepAll="ngForm">
     <div fxLayout="column" fxFlex="98" fxLayout.gt-sm="row wrap" fxLayoutAlign="start stretch" fxLayoutAlign.gt-sm="space-between start" (submit)="onSendFunds()" (reset)="resetData()" #formSweepAll>
       <mat-form-field fxFlex.gt-sm="55">
         <input matInput [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #addressSweep="ngModel">

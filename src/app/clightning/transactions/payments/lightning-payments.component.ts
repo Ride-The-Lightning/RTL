@@ -134,11 +134,11 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Enter Amount and Confirm Send Payment',
-          titleMessage: titleMsg,
           message: reorderedPaymentDecoded,
           noBtnText: 'Cancel',
           yesBtnText: 'Send Payment',
           flgShowInput: true,
+          titleMessage: titleMsg,
           getInputs: [
             {placeholder: 'Amount (Sats)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: '', width: 30}
           ]

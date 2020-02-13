@@ -40,7 +40,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
       this.displayedColumns = ['timestamp', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'chan_id_in', 'chan_id_out', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
+      this.displayedColumns = ['timestamp', 'alias_in', 'alias_out', 'amt_in', 'amt_out', 'fee_msat', 'actions'];
     }
   }
 
