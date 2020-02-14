@@ -1103,51 +1103,27 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  // @Effect()
-  // getLoopOutTerms = this.actions$.pipe(
-  //   ofType(RTLActions.GET_LOOP_OUT_TERMS),
-  //   mergeMap((action: RTLActions.GetLoopOutTerms) => {
-  //     this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopOutTerms'));
-  //     return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/out/terms')
-  //       .pipe(
-  //         map((terms: any) => {
-  //           this.logger.info(terms);
-  //           console.warn(terms);
-  //           return {
-  //             type: RTLActions.SET_LOOP_OUT_TERMS,
-  //             payload: terms
-  //           };
-  //         }),
-  //         catchError((err: any) => {
-  //           this.handleErrorWithoutAlert('LoopOutTerms', err);
-  //           return of({type: RTLActions.VOID});
-  //         })
-  //       );
-  //     }
-  //   ));
-
-    // @Effect()
-    // getLoopOutQuote = this.actions$.pipe(
-    // ofType(RTLActions.GET_LOOP_OUT_QUOTE),
-    // mergeMap((action: RTLActions.GetLoopOutQuote) => {
-    //   this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopOutQuote'));
-    //   return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/out/quote/' + action.payload.amount)
-    //     .pipe(
-    //       map((terms: any) => {
-    //         this.logger.info(terms);
-    //         console.warn(terms);
-    //         return {
-    //           type: RTLActions.SET_LOOP_OUT_QUOTE,
-    //           payload: terms
-    //         };
-    //       }),
-    //       catchError((err: any) => {
-    //         this.handleErrorWithoutAlert('LoopOutQuote', err);
-    //         return of({type: RTLActions.VOID});
-    //       })
-    //     );
-    //   }
-    // ));
+  @Effect()
+  getLoopSwaps = this.actions$.pipe(
+    ofType(RTLActions.FETCH_LOOP_SWAPS),
+    mergeMap((action: RTLActions.FetchLoopSwaps) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopSwaps'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/swaps')
+        .pipe(
+          map((swaps: any) => {
+            this.logger.info(swaps);
+            return {
+              type: RTLActions.SET_LOOP_SWAPS,
+              payload: swaps
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('LoopSwaps', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+      }
+    ));
 
     initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');

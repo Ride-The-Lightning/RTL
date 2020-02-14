@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { webSocket } from 'rxjs/webSocket'; 
 
 import { environment, API_URL } from '../../../environments/environment';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
@@ -16,12 +15,11 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 export class LoopService {
   private CHILD_API_URL = API_URL + '/lnd';
   private loopUrl = '';
-  public websocket:any;
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
-  loopOut(amount: number, chanId: string) {
-    const requestBody = { amount: amount, chanId: chanId };
+  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number) {
+    const requestBody = { amount: amount, chanId: chanId, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee };
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out';
     return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
   }
@@ -31,8 +29,8 @@ export class LoopService {
     return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
   }
 
-  getLoopOutQuote(amount: number, targetConf: string) {
-    const params = new HttpParams().set('targetConf', targetConf);
+  getLoopOutQuote(amount: number, targetConf: number) {
+    const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/quote/' + amount;
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
   }
@@ -63,66 +61,22 @@ export class LoopService {
   getLoopInTermsAndQuotes(targetConf: number) {
     const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/termsAndQuotes';
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
-  }
-
-  onOpen(evt) {
-    this.writeToScreen("CONNECTED");
-    this.doSend("WebSocket rocks 1");
-    this.doSend("WebSocket rocks 2");
-  }
-
-  onClose(evt)
-  {
-    this.writeToScreen("DISCONNECTED");
-  }
-
-  onMessage(evt)
-  {
-    this.writeToScreen('RECEIVED: ' + evt.data);
-    // this.websocket.close();
-  }
-
-  onError(evt)
-  {
-    this.writeToScreen(evt);
-  }
-
-  doSend(message)
-  {
-    this.writeToScreen("SENT: " + message);
-    this.websocket.send(message);
-  }
-
-  writeToScreen(message) {
-    console.warn(message);
-  }
-
-  monitorLoop() {
-    // this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/monitor';
-    // return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
-
-    this.loopUrl = 'http://localhost:8081/v1/loop/monitor';
-    this.httpClient.get(this.loopUrl).subscribe(log => {
-      console.warn(log);
-    });
-
-    // let self = this;
-    // this.websocket = new WebSocket('wss://echo.websocket.org/'); // 'ws://localhost:8081/v1/loop/monitor'
-    // this.websocket.onopen = function(evt) { self.onOpen(evt) };
-    // this.websocket.onclose = function(evt) { self.onClose(evt) };
-    // this.websocket.onmessage = function(evt) { self.onMessage(evt) };
-    // this.websocket.onerror = function(evt) { self.onError(evt) };    
-  }
-
-  listSwaps() {
-    this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swaps';
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Terms and Quotes', err)));
   }
 
   getSwap(id: string) {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swap/' + id;
     return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+  }
+
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+    this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
+    this.store.dispatch(new RTLActions.CloseSpinner())
+    if (err.status === 401) {
+      this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.Logout());
+    }
+    return throwError(err);
   }
 
   handleErrorWithAlert(err: any, errURL: string) {
@@ -132,7 +86,6 @@ export class LoopService {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '55%', data: {
           type: AlertTypeEnum.ERROR,

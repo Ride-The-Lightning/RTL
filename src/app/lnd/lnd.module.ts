@@ -48,6 +48,7 @@ import { LoopComponent } from './loop/loop.component';
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 import { LoopOutComponent } from './loop/loop-out/loop-out.component';
 import { LoopInComponent } from './loop/loop-in/loop-in.component';
+import { SwapsComponent } from './loop/swaps/swaps.component';
 
 @NgModule({
   imports: [
@@ -97,7 +98,8 @@ import { LoopInComponent } from './loop/loop-in/loop-in.component';
     NetworkInfoComponent,
     LoopComponent,
     LoopOutComponent,
-    LoopInComponent
+    LoopInComponent,
+    SwapsComponent
   ],
   providers: [
     LNDUnlockedGuard

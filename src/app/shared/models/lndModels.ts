@@ -415,3 +415,34 @@ export interface PendingChannelsData {
   num_channels: number;
   limbo_balance: number;
 }
+
+export enum SwapStateEnum {
+  INITIATED	= '0',
+  PREIMAGE_REVEALED	= '1',
+  HTLC_PUBLISHED	= '2',
+  SUCCESS	= '3',
+  FAILED	= '4',
+  INVOICE_SETTLED	= '5'
+}
+
+export enum SwapTypeEnum {
+  LOOP_OUT = '0',
+  LOOP_IN = '1'
+}
+
+export interface SwapStatus {
+  type?: SwapTypeEnum;
+  cost_server?: string;
+  cost_offchain?: string;
+  htlc_address?: string;
+  state?: SwapStateEnum;
+  amt?: string;
+  cost_onchain?: string;
+  initiation_time?: string;
+  initiation_time_str?: string;
+  id_bytes?: string;
+  last_update_time?: string;
+  last_update_time_str?: string;
+  id?: string;
+}
+

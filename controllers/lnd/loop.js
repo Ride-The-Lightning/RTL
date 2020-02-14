@@ -11,12 +11,12 @@ exports.loopOut = (req, res, next) => {
   options.body = JSON.stringify({
     amt: req.body.amount,
     loop_out_channel: req.body.chanId,
-    sweep_conf_target: 2,
-    max_swap_routing_fee: 5010,
-    max_miner_fee: 447,
-    max_prepay_routing_fee: 36,
-    max_prepay_amt: 1337,
-    max_swap_fee: 350
+    sweep_conf_target: req.body.targetConf,
+    max_swap_routing_fee: req.body.swapRoutingFee,
+    max_miner_fee: req.body.minerFee,
+    max_prepay_routing_fee: req.body.prepayRoutingFee,
+    max_prepay_amt: req.body.prepayAmt,
+    max_swap_fee: req.body.swapFee
   });
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out: ' + JSON.stringify(body)});
@@ -57,10 +57,11 @@ exports.loopOutTerms = (req, res, next) => {
 exports.loopOutQuote = (req, res, next) => {
   loopServerUrl = common.getSelLoopServerUrl();  
   if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + req.query.targetConf ? req.query.targetConf : '2';
+  options.url = loopServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+  logger.info({fileName: 'Loop', msg: 'Loop Out Quote URL: ' + options.url});
   request(options).then(function (body) {
-    logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + body});
+    res.status(200).json(JSON.parse(body));
   })
   .catch((err) => {
     return res.status(500).json({
@@ -210,8 +211,17 @@ exports.swaps = (req, res, next) => {
   if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = loopServerUrl + '/loop/swaps';
   request(options).then(function (body) {
-    logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + body});
+    body = JSON.parse(body);
+    if (body.swaps && body.swaps.length > 0) {
+      body.swaps.forEach(swap => {
+        swap.initiation_time_str =  (!swap.initiation_time) ? '' : common.convertTimestampToDate(Math.round(swap.initiation_time/1000000000));
+        swap.last_update_time_str =  (!swap.last_update_time) ? '' : common.convertTimestampToDate(Math.round(swap.last_update_time/1000000000));
+      });
+      body.swaps = common.sortDescByKey(body.swaps, 'initiation_time');
+      logger.info({fileName: 'Loop', msg: 'Loop Swaps after Sort: ' + JSON.stringify(body)});
+    }
+    res.status(200).json(body.swaps);
   })
   .catch((err) => {
     return res.status(500).json({
@@ -232,23 +242,6 @@ exports.swap = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Swap Failed!",
-      error: err.error
-    });
-  });
-};
-
-exports.loopMonitor = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Monitor Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/in/monitor';
-  console.warn('I AM MONITORING');
-  request(options).then(function (body) {
-    logger.info({fileName: 'Loop', msg: 'Loop Monitor: ' + JSON.stringify(body)});
-    res.status(200).json(body);
-  })
-  .catch((err) => {
-    return res.status(500).json({
-      message: "Loop Monitor Failed!",
       error: err.error
     });
   });

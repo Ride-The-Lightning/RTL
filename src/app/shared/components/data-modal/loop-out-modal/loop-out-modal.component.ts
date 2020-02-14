@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Store } from '@ngrx/store';
 
@@ -17,7 +17,11 @@ import { DataTypeEnum, AlertTypeEnum } from '../../../services/consts-enums-func
   styleUrls: ['./loop-out-modal.component.scss']
 })
 export class LoopOutModalComponent implements OnInit, OnDestroy {
-  public outAmount: number = 250000;
+  @ViewChild('loopOutForm', { static: true }) form:  any;
+  public outAmount = 250000;
+  public targetConf = 6;
+  public fast = false;
+  public quote: LoopQuote;
   public channelId: string;
   public outQuote1: LoopQuote;
   public outQuote2: LoopQuote;
@@ -32,8 +36,9 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   }
 
   onLoopOut() {
+    if(!this.outAmount || this.outAmount < 250000 || !this.targetConf || this.targetConf < 2) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Looping Out...'));
-    this.loopService.loopOut(this.outAmount, this.channelId).pipe(takeUntil(this.unSubs[0]))
+    this.loopService.loopOut(this.outAmount, this.channelId, this.targetConf, 5010, +this.quote.miner_fee, 36, +this.quote.prepay_amt, +this.quote.swap_fee).pipe(takeUntil(this.unSubs[0]))
     .subscribe((data: any) => {
       data = JSON.parse(data);
       this.store.dispatch(new RTLActions.CloseSpinner());
@@ -51,6 +56,24 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
       this.dialogRef.close(true);
       console.error(err);
     });
+  }
+
+  onGetQuote() {
+    if(!this.outAmount || this.outAmount < 250000 || !this.targetConf || this.targetConf < 2) { return true; }
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
+    this.loopService.getLoopOutQuote(this.outAmount, this.targetConf)
+    .pipe(takeUntil(this.unSubs[1]))
+    .subscribe(response => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.quote = response;
+    });
+  }
+
+  onReset() {
+    this.form.resetForm();
+    // this.targetConf = 6;
+    // this.outAmount = 250000;
+    // this.fast = false;
   }
 
   onClose() {

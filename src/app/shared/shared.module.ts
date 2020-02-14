@@ -47,6 +47,7 @@ import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/o
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { LoopOutModalComponent } from './components/data-modal/loop-out-modal/loop-out-modal.component';
+import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MaxValidator } from './directive/max-amount.directive';
@@ -54,8 +55,6 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { SocketService } from './services/socket.service';
-import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @NgModule({
   imports: [
@@ -214,7 +213,7 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    DecimalPipe, TitleCasePipe, SocketService
+    DecimalPipe, TitleCasePipe
   ]
 })
 export class SharedModule { }

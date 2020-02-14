@@ -13,6 +13,5 @@ router.get("/out/termsAndQuotes", authCheck, LoopController.loopOutTermsAndQuote
 router.post("/out", authCheck, LoopController.loopOut);
 router.get("/swaps", authCheck, LoopController.swaps);
 router.get("/swap/:id", authCheck, LoopController.swap);
-router.get("/monitor", authCheck, LoopController.loopMonitor);
 
 module.exports = router;

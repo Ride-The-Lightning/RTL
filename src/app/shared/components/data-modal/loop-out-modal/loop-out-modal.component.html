@@ -55,19 +55,31 @@
         </div>
         <div fxLayout="column" class="bordered-box mt-2 open-inputs-box">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-            <mat-form-field fxFlex="50" fxLayoutAlign="start end">
-              <input matInput autoFocus [(ngModel)]="outAmount" placeholder="Loop Out Amount" type="number" step="1000" min="{{outQuote1.amount}}" tabindex="1" required name="amount" #outAmt="ngModel" max="{{outQuote2.amount}}">
+            <mat-form-field fxFlex="40" fxLayoutAlign="start center">
+              <input matInput autoFocus [(ngModel)]="targetConf" placeholder="Target Confirmation Blocks" type="number" step="1" min="2" tabindex="1" required name="targetConf" #targetConfBlocks="ngModel">
+              <mat-error *ngIf="targetConfBlocks.errors?.required">Target confirmation blocks is required.</mat-error>
+              <mat-error *ngIf="targetConfBlocks.errors?.min">Target confirmation blocks must be greater than or equal to 2.</mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="58" fxLayoutAlign="start center">
+              <input matInput [(ngModel)]="outAmount" placeholder="Loop Out Amount" type="number" step="1000" min="{{outQuote1.amount}}" tabindex="2" required name="amount" #outAmt="ngModel" max="{{outQuote2.amount}}">
               <span matSuffix> Sats </span>
               <mat-error *ngIf="outAmt.errors?.required">Amount is required.</mat-error>
               <mat-error *ngIf="outAmt.errors?.min">Amount must be greater than or equal to {{outQuote1.amount | number}}.</mat-error>
               <mat-error *ngIf="outAmt.errors?.max">Amount must be less than or equal to {{outQuote2.amount | number}}.</mat-error>
             </mat-form-field>
+            <!-- <div fxFlex="10" fxLayoutAlign="start center">
+              <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="fast" name="fast">Fast</mat-slide-toggle>
+            </div> -->
+          </div>
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
+            {{quote | json}}
           </div>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <div fxLayoutAlign="space-between center" fxFlex="30">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onClose()" tabindex="7">Do It Later</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onLoopOut()" type="button" tabindex="9">Loop Out</button>
+          <div fxLayoutAlign="space-between center" fxFlex="45">
+            <button fxFlex="30" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onReset()" type="reset" tabindex="4">Clear Fields</button>
+            <button fxFlex="30" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onGetQuote()" type="button" tabindex="5">Quote</button>
+            <button fxFlex="30" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onLoopOut()" type="button" tabindex="6">Loop Out</button>
           </div>
         </div>
       </form>

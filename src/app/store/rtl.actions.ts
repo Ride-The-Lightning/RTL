@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChi
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, SwapStatus
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -105,17 +105,8 @@ export const GET_FORWARDING_HISTORY = 'GET_FORWARDING_HISTORY';
 export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
-
-// export const LOOP_IN = 'LOOP_IN';
-// export const GET_LOOP_IN_TERMS = 'GET_LOOP_IN_TERMS';
-// export const SET_LOOP_IN_TERMS = 'SET_LOOP_IN_TERMS';
-// export const GET_LOOP_IN_QUOTE = 'GET_LOOP_IN_QUOTE';
-// export const SET_LOOP_IN_QUOTE = 'SET_LOOP_IN_QUOTE';
-// export const LOOP_OUT = 'LOOP_OUT';
-// export const GET_LOOP_OUT_TERMS = 'GET_LOOP_OUT_TERMS';
-// export const SET_LOOP_OUT_TERMS = 'SET_LOOP_OUT_TERMS';
-// export const GET_LOOP_OUT_QUOTE = 'GET_LOOP_OUT_QUOTE';
-// export const SET_LOOP_OUT_QUOTE = 'SET_LOOP_OUT_QUOTE';
+export const FETCH_LOOP_SWAPS = 'FETCH_LOOP_SWAPS';
+export const SET_LOOP_SWAPS = 'SET_LOOP_SWAPS';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -607,53 +598,15 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
-// export class LoopIn implements Action {
-//   readonly type = LOOP_IN;
-//   constructor(public payload: any) {}
-// }
+export class FetchLoopSwaps implements Action {
+  readonly type = FETCH_LOOP_SWAPS;
+  constructor() {}
+}
 
-// export class GetLoopInTerms implements Action {
-//   readonly type = GET_LOOP_IN_TERMS;
-// }
-
-// export class SetLoopInTerms implements Action {
-//   readonly type = SET_LOOP_IN_TERMS;
-//   constructor(public payload: any) {}
-// }
-
-// export class GetLoopInQuote implements Action {
-//   readonly type = GET_LOOP_IN_QUOTE;
-//   constructor(public payload: {amount: number}) {}
-// }
-
-// export class SetLoopInQuote implements Action {
-//   readonly type = SET_LOOP_IN_QUOTE;
-//   constructor(public payload: any) {}
-// }
-
-// export class LoopOut implements Action {
-//   readonly type = LOOP_OUT;
-//   constructor(public payload: any) {}
-// }
-
-// export class GetLoopOutTerms implements Action {
-//   readonly type = GET_LOOP_OUT_TERMS;
-// }
-
-// export class SetLoopOutTerms implements Action {
-//   readonly type = SET_LOOP_OUT_TERMS;
-//   constructor(public payload: any) {}
-// }
-
-// export class GetLoopOutQuote implements Action {
-//   readonly type = GET_LOOP_OUT_QUOTE;
-//   constructor(public payload: {amount: number}) {}
-// }
-
-// export class SetLoopOutQuote implements Action {
-//   readonly type = SET_LOOP_OUT_QUOTE;
-//   constructor(public payload: any) {}
-// }
+export class SetLoopSwaps implements Action {
+  readonly type = SET_LOOP_SWAPS;
+  constructor(public payload: SwapStatus[]) {}
+}
 
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
@@ -922,9 +875,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  // LoopIn | GetLoopInTerms | SetLoopInTerms | GetLoopInQuote | SetLoopInQuote |
-  // LoopOut | GetLoopOutTerms | SetLoopOutTerms | GetLoopOutQuote | SetLoopOutQuote |
-  IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

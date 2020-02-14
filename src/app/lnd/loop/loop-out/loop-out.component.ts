@@ -39,7 +39,7 @@ export class LoopOutComponent implements OnInit, OnDestroy {
   onLoopOut() {
     if(this.outAmount < this.quotes[0].amount || this.outAmount > this.quotes[1].amount) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('All Channels Looping Out...'));
-    this.loopService.loopOut(this.outAmount, null)
+    this.loopService.loopOut(this.outAmount, null, 2, 5010, 447, 36, 1337, 350)
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((data: any) => {
       data = JSON.parse(data);
