@@ -1177,7 +1177,6 @@ export class LNDEffects implements OnDestroy {
       smaller_currency_unit: info.smaller_currency_unit
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new RTLActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     this.store.dispatch(new RTLActions.FetchPeers());
     this.store.dispatch(new RTLActions.FetchBalance('channels'));
     this.store.dispatch(new RTLActions.FetchNetwork());
@@ -1186,6 +1185,7 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.FetchClosedChannels());
     this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new RTLActions.FetchPayments());
+    this.store.dispatch(new RTLActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     let newRoute = this.location.path();
     if(newRoute.includes('/cl/')) {
       newRoute = newRoute.replace('/cl/', '/lnd/');

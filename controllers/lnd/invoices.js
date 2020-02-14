@@ -38,7 +38,7 @@ exports.listInvoices = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      if ( body.invoices && body.invoices.length > 0) {
+      if (body.invoices && body.invoices.length > 0) {
         body.invoices.forEach(invoice => {
           invoice.creation_date_str =  (!invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
           invoice.settle_date_str =  (!invoice.settle_date) ? '' : common.convertTimestampToDate(invoice.settle_date);
