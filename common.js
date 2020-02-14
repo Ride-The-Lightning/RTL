@@ -20,7 +20,7 @@ common.getSelLNServerUrl = () => {
 
 common.getOptions = () => {
   common.selectedNode.options.method = 'GET';
-  common.selectedNode.options.form = {};
+  // common.selectedNode.options.form = {};
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
 };
