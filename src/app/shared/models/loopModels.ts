@@ -11,3 +11,10 @@ export interface LoopQuote {
   cltv_delta?: number;
   swap_payment_dest?: string;
 }
+
+export interface LoopStatus {
+  htlc_address?: string;
+  id_bytes?: string;
+  id?: string;
+  error?: any;
+}

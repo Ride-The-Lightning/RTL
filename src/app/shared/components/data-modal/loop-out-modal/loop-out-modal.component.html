@@ -1,88 +1,188 @@
 <div fxLayout="row">
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Loop Out Terms and Quotes</span>
-      </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title">Channel Loopout</span></div>
+      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <form fxLayout="column" #loopOutForm="ngForm">
-        <div fxLayout="column">
-          <div fxLayout="row">
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Minimum Term Amount</h4>
-              <span class="foreground-secondary-text">{{outQuote1.amount | number}} Sats</span>
-            </div>
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Maximum Term Amount</h4>
-              <span class="foreground-secondary-text">{{outQuote2.amount | number}} Sats</span>
-            </div>
-          </div>
-          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
-          <div fxLayout="row">
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
-              <span class="foreground-secondary-text">{{outQuote1.swap_fee | number}} Sats</span>
-            </div>
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee</h4>
-              <span class="foreground-secondary-text">{{outQuote2.swap_fee | number}} Sats</span>
-            </div>
-          </div>
-          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
-          <div fxLayout="row">
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
-              <span class="foreground-secondary-text">{{outQuote1.prepay_amt | number}} Sats</span>
-            </div>
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Pre-pay Amount</h4>
-              <span class="foreground-secondary-text">{{outQuote2.prepay_amt | number}} Sats</span>
-            </div>
-          </div>
-          <mat-divider [inset]="true" class="my-1 w-100"></mat-divider>
-          <div fxLayout="row">
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
-              <span class="foreground-secondary-text">{{outQuote1.miner_fee | number}} Sats</span>
-            </div>
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee</h4>
-              <span class="foreground-secondary-text">{{outQuote2.miner_fee | number}} Sats</span>
-            </div>
-          </div>
-        </div>
-        <div fxLayout="column" class="bordered-box mt-2 open-inputs-box">
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-            <mat-form-field fxFlex="40" fxLayoutAlign="start center">
-              <input matInput autoFocus [(ngModel)]="targetConf" placeholder="Target Confirmation Blocks" type="number" step="1" min="2" tabindex="1" required name="targetConf" #targetConfBlocks="ngModel">
-              <mat-error *ngIf="targetConfBlocks.errors?.required">Target confirmation blocks is required.</mat-error>
-              <mat-error *ngIf="targetConfBlocks.errors?.min">Target confirmation blocks must be greater than or equal to 2.</mat-error>
-            </mat-form-field>
-            <mat-form-field fxFlex="58" fxLayoutAlign="start center">
-              <input matInput [(ngModel)]="outAmount" placeholder="Loop Out Amount" type="number" step="1000" min="{{outQuote1.amount}}" tabindex="2" required name="amount" #outAmt="ngModel" max="{{outQuote2.amount}}">
-              <span matSuffix> Sats </span>
-              <mat-error *ngIf="outAmt.errors?.required">Amount is required.</mat-error>
-              <mat-error *ngIf="outAmt.errors?.min">Amount must be greater than or equal to {{outQuote1.amount | number}}.</mat-error>
-              <mat-error *ngIf="outAmt.errors?.max">Amount must be less than or equal to {{outQuote2.amount | number}}.</mat-error>
-            </mat-form-field>
-            <!-- <div fxFlex="10" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="3" color="primary" [(ngModel)]="fast" name="fast">Fast</mat-slide-toggle>
-            </div> -->
-          </div>
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-            {{quote | json}}
-          </div>
-        </div>
-        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <div fxLayoutAlign="space-between center" fxFlex="45">
-            <button fxFlex="30" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onReset()" type="reset" tabindex="4">Clear Fields</button>
-            <button fxFlex="30" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="onGetQuote()" type="button" tabindex="5">Quote</button>
-            <button fxFlex="30" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onLoopOut()" type="button" tabindex="6">Loop Out</button>
-          </div>
-        </div>
-      </form>
+      <div fxLayout="column" class="bordered-box p-2">
+        <p fxLayoutAlign="start center" class="pb-1">Loopout for Channel: {{channel.remote_alias}}-{{channel.chan_id}}</p>
+        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+          <mat-step [stepControl]="inputFormGroup">
+            <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+              <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">              
+                <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="false">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">Quotes for Minimum Term - {{outQuote1.amount | number}} Sats</span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="column">
+                    <div fxLayout="row">
+                      <div fxFlex="25">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote1.swap_fee | number}}</span>
+                      </div>
+                      <div fxFlex="25">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote1.miner_fee | number}}</span>
+                      </div>
+                      <div fxFlex="30">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote1.prepay_amt | number}}</span>
+                      </div>
+                      <div fxFlex="20">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">CLTV Delta</h4>
+                        <span class="foreground-secondary-text">{{outQuote1.cltv_delta | number}}</span>
+                      </div>
+                    </div>
+                    <mat-divider class="w-100 my-1"></mat-divider>        
+                    <div fxLayout="row">
+                      <div fxFlex="100">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Payment Destination</h4>
+                        <span class="foreground-secondary-text">{{outQuote1.swap_payment_dest}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="false">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">Quotes for Maximum Term - {{outQuote2.amount | number}} Sats</span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="column">
+                    <div fxLayout="row">
+                      <div fxFlex="25">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote2.swap_fee | number}}</span>
+                      </div>
+                      <div fxFlex="25">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote2.miner_fee | number}}</span>
+                      </div>
+                      <div fxFlex="30">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
+                        <span class="foreground-secondary-text">{{outQuote2.prepay_amt | number}}</span>
+                      </div>
+                      <div fxFlex="20">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">CLTV Delta</h4>
+                        <span class="foreground-secondary-text">{{outQuote2.cltv_delta | number}}</span>
+                      </div>
+                    </div>
+                    <mat-divider class="w-100 my-1"></mat-divider>        
+                    <div fxLayout="row">
+                      <div fxFlex="100">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Payment Destination</h4>
+                        <span class="foreground-secondary-text">{{outQuote2.swap_payment_dest}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              </div>
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">              
+                <mat-form-field fxFlex="48">
+                  <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
+                  <mat-hint>Amount Range: {{outQuote1.amount | number}}-{{outQuote2.amount | number}}</mat-hint>
+                  <span matSuffix>Sats</span>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{outQuote1.amount | number}}.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{outQuote2.amount | number}}.</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="48">
+                  <input matInput placeholder="Target Confirmation Blocks" type="number" step="1" tabindex="2" formControlName="targetConf" required>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation blocks is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation blocks must be a positive number.</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-flat-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()" matStepperNext>Estimate Quote</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="quoteFormGroup">
+            <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
+              <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <div fxLayout="row">
+                    <div fxFlex="25">
+                      <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
+                      <span class="foreground-secondary-text">{{quote?.swap_fee | number}}</span>
+                    </div>
+                    <div fxFlex="25">
+                      <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
+                      <span class="foreground-secondary-text">{{quote?.miner_fee | number}}</span>
+                    </div>
+                    <div fxFlex="30">
+                      <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
+                      <span class="foreground-secondary-text">{{quote?.prepay_amt | number}}</span>
+                    </div>
+                    <div fxFlex="20">
+                      <h4 fxLayoutAlign="start" class="font-bold-500">CLTV Delta</h4>
+                      <span class="foreground-secondary-text">{{quote?.cltv_delta | number}}</span>
+                    </div>
+                  </div>
+                  <mat-divider class="w-100 my-1"></mat-divider>        
+                  <div fxLayout="row">
+                    <div fxFlex="100">
+                      <h4 fxLayoutAlign="start" class="font-bold-500">Swap Payment Destination</h4>
+                      <span class="foreground-secondary-text">{{quote?.swap_payment_dest}}</span>
+                    </div>
+                  </div>
+                </div>                  
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="7" type="button" class="mr-1" [mat-dialog-close]="false" default>Close</button>
+                <button mat-flat-button color="primary" tabindex="8" type="button" (click)="onLoopOut()" matStepperNext>Loop Out</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="statusFormGroup">
+            <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>LoopOut</ng-template>
+              <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!loopOutStatus?.error; else loopoutFailedBlock">
+                  <div fxLayout="column">
+                    <div fxLayout="row">
+                      <div fxFlex="100">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">ID (Bytes)</h4>
+                        <span class="foreground-secondary-text">{{loopOutStatus?.id_bytes}}</span>
+                      </div>
+                    </div>
+                    <mat-divider class="w-100 my-1"></mat-divider>        
+                    <div fxLayout="row">
+                      <div fxFlex="100">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
+                        <span class="foreground-secondary-text">{{loopOutStatus?.id}}</span>
+                      </div>
+                    </div>
+                    <mat-divider class="w-100 my-1"></mat-divider>        
+                    <div fxLayout="row">
+                      <div fxFlex="100">
+                        <h4 fxLayoutAlign="start" class="font-bold-500">HTLC Address</h4>
+                        <span class="foreground-secondary-text">{{loopOutStatus?.htlc_address}}</span>
+                      </div>
+                    </div>
+                  </div>                  
+                </div>
+              </div>
+              <h4 *ngIf="loopOutStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{loopOutStatus && loopOutStatus?.id_bytes ? 'Loopout Request Successful. Go to Loop for the Status.' : 'Loopout Failed.'}}</h4>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button *ngIf="!loopOutStatus || !loopOutStatus?.error" mat-stroked-button color="primary" tabindex="9" type="button" class="mr-1" [mat-dialog-close]="false" default>Close</button>
+                <button *ngIf="!loopOutStatus || !loopOutStatus?.error" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Go To Loop</button>
+                <button *ngIf="loopOutStatus && loopOutStatus?.error" mat-stroked-button color="primary" tabindex="11" type="button" class="mr-1" [mat-dialog-close]="false" default>Close</button>
+                <button *ngIf="loopOutStatus && loopOutStatus?.error" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-vertical-stepper>
+      </div>
     </mat-card-content>
   </div>
 </div>
+<ng-template #loopoutFailedBlock>
+  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (loopOutStatus?.error.error.error ? loopOutStatus?.error.error.error : loopOutStatus?.error.error ? loopOutStatus?.error.error : loopOutStatus?.error ? loopOutStatus?.error : 'Unknown')}}</span></div>
+</ng-template>

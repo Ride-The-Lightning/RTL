@@ -21,41 +21,41 @@ export class LoopService {
   loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number) {
     const requestBody = { amount: amount, chanId: chanId, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee };
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out';
-    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out for Channel: ' + chanId, err)));
   }
 
   getLoopOutTerms() {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/terms';
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Terms', err)));
   }
 
   getLoopOutQuote(amount: number, targetConf: number) {
     const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/quote/' + amount;
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Quote', err)));
   }
 
   getLoopOutTermsAndQuotes(targetConf: number) {
     const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/termsAndQuotes';
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Terms and Quotes', err)));
   }
 
   loopIn(amount: number, chanId: string) {
     const requestBody = { amount: amount, chanId: chanId };
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in';
-    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In', err)));
   }
 
   getLoopInTerms() {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/terms';
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Terms', err)));
   }
 
   getLoopInQuote(amount: number, targetConf: string) {
     const params = new HttpParams().set('targetConf', targetConf);
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/quote/' + amount;
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Qoute', err)));
   }
 
   getLoopInTermsAndQuotes(targetConf: number) {
@@ -66,7 +66,7 @@ export class LoopService {
 
   getSwap(id: string) {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swap/' + id;
-    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithAlert(err, this.loopUrl)));
+    return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Get Swap for ID: ' + id, err)));
   }
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {

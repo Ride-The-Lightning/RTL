@@ -721,6 +721,7 @@ export class LNDEffects implements OnDestroy {
                 payload: err
               });
             } else {
+              this.logger.error('Error: ' + JSON.stringify(err));
               const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
               return of({type: RTLActions.VOID});
@@ -1193,7 +1194,7 @@ export class LNDEffects implements OnDestroy {
         data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status, message: err.error.error.error.error ? err.error.error.error.error : err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

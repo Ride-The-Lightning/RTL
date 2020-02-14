@@ -1,6 +1,6 @@
 import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
-import { GetInfo, Invoice } from './lndModels';
+import { GetInfo, Invoice, Channel } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 import { LoopQuote } from './loopModels';
 
@@ -74,7 +74,7 @@ export interface ShowPubkeyData {
 }
 
 export interface LoopOutAlert {
-  channelId: string;
+  channel: Channel;
   outQuote1: LoopQuote;
   outQuote2: LoopQuote;
   component?: any;

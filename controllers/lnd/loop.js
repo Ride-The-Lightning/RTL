@@ -61,7 +61,9 @@ exports.loopOutQuote = (req, res, next) => {
   logger.info({fileName: 'Loop', msg: 'Loop Out Quote URL: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + body});
-    res.status(200).json(JSON.parse(body));
+    body = JSON.parse(body);
+    body.amount = +req.params.amount;
+    res.status(200).json(body);
   })
   .catch((err) => {
     return res.status(500).json({
@@ -236,7 +238,10 @@ exports.swap = (req, res, next) => {
   if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = loopServerUrl + '/loop/swap/' + req.params.id;
   request(options).then(function (body) {
-    logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + JSON.stringify(body)});
+    logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + body});
+    body = JSON.parse(body);
+    body.initiation_time_str =  (!body.initiation_time) ? '' : common.convertTimestampToDate(Math.round(body.initiation_time/1000000000));
+    body.last_update_time_str =  (!body.last_update_time) ? '' : common.convertTimestampToDate(Math.round(body.last_update_time/1000000000));
     res.status(200).json(body);
   })
   .catch((err) => {

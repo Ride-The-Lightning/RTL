@@ -6,7 +6,7 @@
     </mat-card-header>
     <mat-card-content class="mt-5px">
       <div fxLayout="column" class="bordered-box p-2">
-        <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.chan_id}}</p>
+        <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.remote_alias}}</p>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="inputFormGroup">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
@@ -108,7 +108,7 @@
   <ng-container *ngTemplateOutlet="paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>
 </ng-template>
 <ng-template #paymentFailedBlock>
-  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (paymentStatus.error.error ? paymentStatus.error.error : paymentStatus.error ? paymentStatus.error : 'Unknown')}}</span></div>
+  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (paymentStatus.error.error.error ? paymentStatus.error.error.error : paymentStatus.error.error ? paymentStatus.error.error : paymentStatus.error ? paymentStatus.error : 'Unknown')}}</span></div>
 </ng-template>
 <ng-template #paymentSuccessfulBlock>
   <div fxLayout="column">

@@ -13,7 +13,6 @@ import { LoggerService } from '../../../services/logger.service';
 import { Channel, QueryRoutes } from '../../../models/lndModels';
 import { FEE_LIMIT_TYPES, PAGE_SIZE } from '../../../services/consts-enums-functions';
 
-import { LNDEffects } from '../../../../lnd/store/lnd.effects';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
 
@@ -34,13 +33,12 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public flgPaymentSent = false;
   public inputFormLabel = 'Enter info to rebalance';
   public feeFormLabel = 'Select rebalance fee';
-  isLinear = false;
   inputFormGroup: FormGroup;
   feeFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     this.selChannel = this.data.channel;
@@ -57,9 +55,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       selFeeLimitType: [this.feeLimitTypes[0], Validators.required],
       feeLimit: ['', [Validators.required, Validators.min(0)]]
     });    
-    this.statusFormGroup = this.formBuilder.group({
-      thirdCtrl: ['', Validators.required]
-    }); 
+    this.statusFormGroup = this.formBuilder.group({}); 
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
