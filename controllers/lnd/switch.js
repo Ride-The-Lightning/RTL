@@ -7,7 +7,6 @@ var num_max_events = 100;
 var responseData = { forwarding_events: [], last_offset_index: 0 };
 
 exports.forwardingHistory = (req, res, next) => {
-  responseData = { forwarding_events: [], last_offset_index: 0 };
   this.getAllForwardingEvents(req.body.start_time, req.body.end_time, 0, (eventsResponse) => {
     if (eventsResponse.error) {
       res.status(500).json(eventsResponse);
@@ -18,6 +17,7 @@ exports.forwardingHistory = (req, res, next) => {
 };
 
 exports.getAllForwardingEvents = (start, end, offset, callback) => {
+  if (offset === 0) { responseData = { forwarding_events: [], last_offset_index: 0 }; }
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/switch';
   options.form = {};
