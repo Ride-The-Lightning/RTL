@@ -68,7 +68,7 @@
         </ng-container>
         <ng-container matColumnDef="no_swap">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listSwaps.data || listSwaps.data.length<1">No Swaps available.</p>
+            <p *ngIf="!listSwaps.data || listSwaps.data.length<1">No swaps available.</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_swap']" [ngClass]="{'display-none': listSwaps.data && listSwaps.data.length>0}"></tr>

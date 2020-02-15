@@ -21,8 +21,9 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
+  @Input() showLoop: boolean;
   public faCircleNotch = faCircleNotch;
-  private targetConf = 2;
+  private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private router: Router, private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}

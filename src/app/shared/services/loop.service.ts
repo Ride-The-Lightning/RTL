@@ -75,6 +75,15 @@ export class LoopService {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
+    } else if (err.error.error.error.errno === 'ECONNREFUSED') {
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
+          type: 'ERROR',
+          alertTitle: 'Loop Not Connect',
+          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: actionName },
+          component: ErrorMessageComponent
+        }
+      }));
     }
     return throwError(err);
   }
@@ -85,6 +94,15 @@ export class LoopService {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
+    } else if (err.error.error.error.errno === 'ECONNREFUSED') {
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
+          type: 'ERROR',
+          alertTitle: 'Loop Not Connect',
+          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: errURL },
+          component: ErrorMessageComponent
+        }
+      }));
     } else {
       this.store.dispatch(new RTLActions.OpenAlert({
         width: '55%', data: {

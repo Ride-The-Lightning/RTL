@@ -17,8 +17,8 @@
           <mat-progress-bar fxFlex="90" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
         </span>
         <span *ngIf="direction === 'Out'" fxFlexLayout="row" fxLayoutAlign="space-between center">
-          <mat-progress-bar fxFlex="90" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
-          <button fxFlex="9" mat-icon-button aria-label="Loop Out" class="mat-fa-icon-button" matTooltip="Loop Out" (click)="onLoopOut(channel)">
+          <mat-progress-bar [fxFlex]="showLoop ? '90' : '100'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
+          <button *ngIf="showLoop" fxFlex="9" mat-icon-button aria-label="Loop Out" class="mat-fa-icon-button" matTooltip="Loop Out" (click)="onLoopOut(channel)">
             <fa-icon [icon]="faCircleNotch" class="fa-icon-small color-primary"></fa-icon>
           </button>
         </span>

@@ -1,21 +1,23 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
-import { Actions } from '@ngrx/effects';
+import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+
+import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
+import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
+import { LoopOutModalComponent } from '../../../../../shared/components/data-modal/loop-out-modal/loop-out-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -28,6 +30,8 @@ import { CloseChannelLndComponent } from '../../../../../shared/components/data-
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public userPersonaEnum = UserPersonaEnum;
+  public selNode: SelNodeChild = {};
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
@@ -43,9 +47,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public versionsArr = [];
+  private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -71,6 +76,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
+      this.selNode = rtlStore.nodeSettings;
+      this.selNode.userPersona
       this.information = rtlStore.information;
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
@@ -255,6 +262,21 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
+  }
+
+  onLoopOut(selChannel: Channel) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
+    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(response => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
+        channel: selChannel,
+        outQuote1: response[0],
+        outQuote2: response[1],
+        component: LoopOutModalComponent
+      }}));    
+    });
   }
 
   ngOnDestroy() {

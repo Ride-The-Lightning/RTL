@@ -66,6 +66,7 @@ export interface SelNodeChild {
   currencyUnits?: string[];
   fiatConversion?: boolean;
   lnImplementation?: string;
+  loopServerUrl?: string;
 }
 
 export class HelpTopic {

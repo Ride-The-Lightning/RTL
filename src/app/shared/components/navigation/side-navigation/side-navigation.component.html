@@ -6,7 +6,7 @@
       </mat-option>
     </mat-select>
     <mat-divider class="w-100"></mat-divider>
-    <mat-tree #tree [dataSource]="navMenus" [treeControl]="treeControlNested">
+    <mat-tree #tree [dataSource]="navMenus" [treeControl]="treeControlNested" *ngIf="settings.lnServerUrl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle routerLinkActive="active-link" routerLink="{{node.link}}">
         <div (click)="onChildNavClicked(node)">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
