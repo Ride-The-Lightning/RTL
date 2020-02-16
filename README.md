@@ -107,7 +107,7 @@ Example RTL-Config.json:
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "enableLogging": true,
         "fiatConversion": false,
-        "lnServerUrl": "<Service url for LND REST APIs for node # 1 e.g. https://192.168.0.1:8080/v1"
+        "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080/v1>"
       }
     }
   ]
