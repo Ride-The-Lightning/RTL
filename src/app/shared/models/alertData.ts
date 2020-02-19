@@ -73,10 +73,10 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
-export interface LoopOutAlert {
+export interface LoopAlert {
   channel: Channel;
-  outQuote1: LoopQuote;
-  outQuote2: LoopQuote;
+  minQuote: LoopQuote;
+  maxQuote: LoopQuote;
   component?: any;
 }
 
@@ -91,6 +91,7 @@ export interface AlertData {
   showCopyName?: string;
   showCopyField?: string;
   component?: any;
+  openedBy?: string;
 }
 
 export interface ConfirmationData {
@@ -114,5 +115,5 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopOutAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert;
 }

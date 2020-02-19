@@ -128,7 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       });
       this.selNode = rtlStore.nodeSettings;
-      this.showLoop = (this.selNode.loopServerUrl && this.selNode.loopServerUrl.trim() !== '') ? true : false;
+      this.showLoop = (this.selNode.swapServerUrl && this.selNode.swapServerUrl.trim() !== '') ? true : false;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;

@@ -14,8 +14,8 @@ common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
 
-common.getSelLoopServerUrl = () => {
-  return common.selectedNode.loop_server_url;
+common.getSelSwapServerUrl = () => {
+  return common.selectedNode.swap_server_url;
 };
 
 common.getSelLNServerUrl = () => {

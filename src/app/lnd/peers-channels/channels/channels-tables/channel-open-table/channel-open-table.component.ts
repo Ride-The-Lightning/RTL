@@ -272,8 +272,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({ data: {
         channel: selChannel,
-        outQuote1: response[0],
-        outQuote2: response[1],
+        minQuote: response[0],
+        maxQuote: response[1],
         component: LoopOutModalComponent
       }}));    
     });

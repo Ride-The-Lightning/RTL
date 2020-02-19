@@ -417,17 +417,17 @@ export interface PendingChannelsData {
 }
 
 export enum SwapStateEnum {
-  INITIATED	= '0',
-  PREIMAGE_REVEALED	= '1',
-  HTLC_PUBLISHED	= '2',
-  SUCCESS	= '3',
-  FAILED	= '4',
-  INVOICE_SETTLED	= '5'
+  INITIATED	= 'Initiated',
+  PREIMAGE_REVEALED	= 'Preimage Revealed',
+  HTLC_PUBLISHED	= 'HTLC Published',
+  SUCCESS	= 'Successful',
+  FAILED	= 'Failed',
+  INVOICE_SETTLED	= 'Invoice Settled'
 }
 
 export enum SwapTypeEnum {
-  LOOP_OUT = '0',
-  LOOP_IN = '1'
+  LOOP_OUT = 'LOOP_OUT',
+  LOOP_IN = 'LOOP_IN'
 }
 
 export interface SwapStatus {

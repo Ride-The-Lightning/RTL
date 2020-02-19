@@ -46,6 +46,7 @@ import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
+import { LoopInModalComponent } from './components/data-modal/loop-in-modal/loop-in-modal.component';
 import { LoopOutModalComponent } from './components/data-modal/loop-out-modal/loop-out-modal.component';
 import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
@@ -189,6 +190,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
+    LoopInModalComponent,
     LoopOutModalComponent,
     AuthSettingsComponent,
     CloseChannelLndComponent
@@ -201,6 +203,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
+    LoopInModalComponent,
     LoopOutModalComponent,
     SpinnerDialogComponent,
     AlertMessageComponent,

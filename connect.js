@@ -64,7 +64,7 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080/v1",
-          loopServerUrl: "https://localhost:8081/v1",
+          swapServerUrl: "https://localhost:8081/v1",
           fiatConversion: false
         }
       }
@@ -153,7 +153,7 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].config_path = '';
       }
-      common.nodes[idx].loop_server_url = process.env.LOOP_SERVER_URL ? process.env.LOOP_SERVER_URL : (node.Settings.loopServerUrl) ? node.Settings.loopServerUrl.trim() : '';
+      common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL ? process.env.SWAP_SERVER_URL : (node.Settings.swapServerUrl) ? node.Settings.swapServerUrl.trim() : '';
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;

@@ -23,10 +23,8 @@
             <mat-icon *ngIf="!node.iconType" class="mat-icon-36">{{node.icon}}</mat-icon>
             <span>{{node.name}}</span>
           </div>
-          <button fxFlex="11" fxLayoutAlign="end center" mat-icon-button [attr.aria-label]="'toggle ' + node.name"
-            fxLayoutAlign="end center">
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+          <button fxFlex="11" mat-icon-button [attr.aria-label]="'toggle ' + node.name" fxLayoutAlign="end center">
+            <mat-icon class="mat-icon-rtl-mirror">{{treeControlNested.isExpanded(node) ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
           </button>
         </div>
         <div [class.tree-children-invisible]="!treeControlNested.isExpanded(node)" class="mat-nested-tree-node-child">

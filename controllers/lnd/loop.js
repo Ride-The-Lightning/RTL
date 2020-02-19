@@ -2,22 +2,37 @@ var request = require('request-promise');
 var common = require('../../common');
 var logger = require('../logger');
 var options = {};
-var loopServerUrl = '';
+var swapServerUrl = '';
 
 exports.loopOut = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/out';
-  options.body = JSON.stringify({
-    amt: req.body.amount,
-    loop_out_channel: req.body.chanId,
-    sweep_conf_target: req.body.targetConf,
-    max_swap_routing_fee: req.body.swapRoutingFee,
-    max_miner_fee: req.body.minerFee,
-    max_prepay_routing_fee: req.body.prepayRoutingFee,
-    max_prepay_amt: req.body.prepayAmt,
-    max_swap_fee: req.body.swapFee
-  });
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/out';
+  let body = {};
+  if (req.body.chanId !== '') {
+    body = {
+      amt: req.body.amount,
+      loop_out_channel: req.body.chanId,
+      sweep_conf_target: req.body.targetConf,
+      max_swap_routing_fee: req.body.swapRoutingFee,
+      max_miner_fee: req.body.minerFee,
+      max_prepay_routing_fee: req.body.prepayRoutingFee,
+      max_prepay_amt: req.body.prepayAmt,
+      max_swap_fee: req.body.swapFee
+    };
+  } else {
+    body = {
+      amt: req.body.amount,
+      sweep_conf_target: req.body.targetConf,
+      max_swap_routing_fee: req.body.swapRoutingFee,
+      max_miner_fee: req.body.minerFee,
+      max_prepay_routing_fee: req.body.prepayRoutingFee,
+      max_prepay_amt: req.body.prepayAmt,
+      max_swap_fee: req.body.swapFee
+    };
+  }
+  options.body = JSON.stringify(body);
+  logger.info({fileName: 'Loop', msg: 'Loop Out Body: ' + options.body});
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -33,15 +48,15 @@ exports.loopOut = (req, res, next) => {
     logger.error({fileName: 'Loop Out', lineNum: 33, msg: 'Loop Out Failed: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: "Loop Out Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopOutTerms = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/out/terms';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/out/terms';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -49,15 +64,15 @@ exports.loopOutTerms = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopOutQuote = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
   logger.info({fileName: 'Loop', msg: 'Loop Out Quote URL: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + body});
@@ -68,21 +83,21 @@ exports.loopOutQuote = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Out Quote Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopOutTermsAndQuotes = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/out/terms';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/out/terms';
   request(options).then(function(terms) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
-    options1.url = loopServerUrl + '/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
-    options2.url = loopServerUrl + '/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+    options1.url = swapServerUrl + '/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+    options2.url = swapServerUrl + '/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
     Promise.all([request(options1), request(options2)]).then(function(values) {
       values[0] = JSON.parse(values[0]);
       values[1] = JSON.parse(values[1]);
@@ -95,32 +110,28 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
     .catch((err) => {
       return res.status(500).json({
         message: "Loop Out Quotes Failed!",
-        error: err
+        error: err.error.error ? err.error.error : err.error
       });
     });
   })
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
-      error: err
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopIn = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  // max_prepay_routing_fee: 36,
-  // max_prepay_amt: 1337,
-  // sweep_conf_target: 2,
-  // max_swap_routing_fee: 5010,
-  options.url = loopServerUrl + '/loop/in';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/in';
   options.body = JSON.stringify({
     amt: req.body.amount,
-    loop_in_channel: req.body.chanId,
-    max_miner_fee: 447,
-    max_swap_fee: 350,
-    external_htlc: false
+    max_swap_fee: req.body.swapFee,
+    max_miner_fee: req.body.minerFee,
+    last_hop: req.body.lastHop,
+    external_htlc: req.body.externalHtlc
   });
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In: ' + JSON.stringify(body)});
@@ -137,15 +148,15 @@ exports.loopIn = (req, res, next) => {
     logger.error({fileName: 'Loop In', lineNum: 134, msg: 'Loop In Failed: ' + JSON.stringify(err.error)});
     return res.status(500).json({
       message: "Loop In Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopInTerms = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/in/terms';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/in/terms';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -153,15 +164,15 @@ exports.loopInTerms = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop In Terms Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopInQuote = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/in/quote';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/in/quote';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In Quote: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -169,21 +180,21 @@ exports.loopInQuote = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop In Quote Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.loopInTermsAndQuotes = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/in/terms';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/in/terms';
   request(options).then(function(terms) {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
-    options1.url = loopServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
-    options2.url = loopServerUrl + '/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+    options1.url = swapServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+    options2.url = swapServerUrl + '/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
     Promise.all([request(options1), request(options2)]).then(function(values) {
       values[0] = JSON.parse(values[0]);
       values[1] = JSON.parse(values[1]);
@@ -196,22 +207,22 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     .catch((err) => {
       return res.status(500).json({
         message: "Loop In Quotes Failed!",
-        error: err
+        error: err.error.error ? err.error.error : err.error
       });
     });
   })
   .catch((err) => {
     return res.status(500).json({
       message: "Loop In Terms Failed!",
-      error: err
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.swaps = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/swaps';
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/swaps';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + body});
     body = JSON.parse(body);
@@ -228,15 +239,15 @@ exports.swaps = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Swaps Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };
 
 exports.swap = (req, res, next) => {
-  loopServerUrl = common.getSelLoopServerUrl();  
-  if(loopServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = loopServerUrl + '/loop/swap/' + req.params.id;
+  swapServerUrl = common.getSelSwapServerUrl();  
+  if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
+  options.url = swapServerUrl + '/loop/swap/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + body});
     body = JSON.parse(body);
@@ -247,7 +258,7 @@ exports.swap = (req, res, next) => {
   .catch((err) => {
     return res.status(500).json({
       message: "Loop Swap Failed!",
-      error: err.error
+      error: err.error.error ? err.error.error : err.error
     });
   });
 };

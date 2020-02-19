@@ -5,6 +5,7 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../services/consts-enums-functions';
+import { SwapStateEnum } from '../../../models/lndModels';
 
 @Component({
   selector: 'rtl-alert-message',
@@ -12,6 +13,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../services/c
   styleUrls: ['./alert-message.component.scss']
 })
 export class AlertMessageComponent implements OnInit {
+  public swapStateEnum = SwapStateEnum;
   public showQRField = '';
   public showQRName = '';  
   public showCopyName = '';
@@ -32,7 +34,6 @@ export class AlertMessageComponent implements OnInit {
     this.showQRName = this.data.showQRName ? this.data.showQRName : '';
     this.showCopyName = this.data.showCopyName ? this.data.showCopyName : '';
     this.showCopyField = this.data.showCopyField ? this.data.showCopyField : '';
-
     if (this.data.type === AlertTypeEnum.ERROR) {
       if (!this.data.message && !this.data.titleMessage && this.messageObjs.length <= 0) {
         this.data.titleMessage = 'Please Check Server Connection';

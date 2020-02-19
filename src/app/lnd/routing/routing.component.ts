@@ -10,7 +10,6 @@ import { LoggerService } from '../../shared/services/logger.service';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
-
 @Component({
   selector: 'rtl-routing',
   templateUrl: './routing.component.html',
@@ -35,6 +34,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
+    this.onEventsFetch();
     this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_LND_STORE || action.type === RTLActions.SET_ALL_CHANNELS))
     .subscribe((action: RTLActions.ResetLNDStore | RTLActions.SetAllChannels) => {
       if (action.type === RTLActions.RESET_LND_STORE && action.payload.lnImplementation === 'LND') {
@@ -78,15 +78,14 @@ export class RoutingComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.endDate = new Date();
-    this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 1);
-    this.eventsData = [];
+    this.endDate = this.today;
+    this.startDate = this.lastMonthDay;
     this.lastOffsetIndex = 0;
   }
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new RTLActions.SetForwardingHistory({}));
+    this.store.dispatch(new RTLActions.SetForwardingHistory({}));    
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();

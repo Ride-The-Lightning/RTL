@@ -42,6 +42,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
 PORT (port number for the rtl node server, default 3000, Required)
 LN_IMPLEMENTATION (LND, CLT. Default 'LND', Required)
 LN_SERVER_URL (LND server URL for REST APIs, default https://localhost:8080/v1) OR LN_SERVER_URL (LN server URL for LNP REST APIs) (Required)
+SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081/v1) (Optional)
 CONFIG_PATH (Full path of the lnd.conf file including the file name) OR CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional)
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' file, Required)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Optional)

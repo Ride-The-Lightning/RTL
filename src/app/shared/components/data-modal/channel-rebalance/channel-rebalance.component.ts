@@ -25,13 +25,14 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public selChannel: Channel = {};
   public activeChannels = [];
+  public filteredActiveChannels = [];
   public feeLimitTypes = [];
   public queryRoute: QueryRoutes = {};
   public paymentRequest = '';
   public paymentStatus: any = null;
   public flgInvoiceGenerated = false;
   public flgPaymentSent = false;
-  public inputFormLabel = 'Enter info to rebalance';
+  public inputFormLabel = 'Amount to rebalance';
   public feeFormLabel = 'Select rebalance fee';
   inputFormGroup: FormGroup;
   feeFormGroup: FormGroup;  
@@ -91,7 +92,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   stepSelectionChanged(event: any) {
     switch (event.selectedIndex) {
       case 0:
-        this.inputFormLabel = 'Enter info to rebalance';
+        this.inputFormLabel = 'Amount to rebalance';
         this.feeFormLabel = 'Select rebalance fee';
         break;
     
@@ -99,7 +100,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
           this.inputFormLabel = 'Rebalancing Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
         } else {
-          this.inputFormLabel = 'Enter info to rebalance';
+          this.inputFormLabel = 'Amount to rebalance';
         }
         this.feeFormLabel = 'Select rebalance fee';
         break;
@@ -108,7 +109,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         if (this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.selRebalancePeer.value.remote_alias) {
           this.inputFormLabel = 'Rebalancing Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.rebalanceAmount.value ? this.inputFormGroup.controls.rebalanceAmount.value : 0)) + ' Sats | Peer: ' + (this.inputFormGroup.controls.selRebalancePeer.value.remote_alias ? this.inputFormGroup.controls.selRebalancePeer.value.remote_alias : (this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey.substring(0, 15) + '...'));
         } else {
-          this.inputFormLabel = 'Enter info to rebalance';
+          this.inputFormLabel = 'Amount to rebalance';
         }
         if (this.queryRoute && this.queryRoute.routes && this.queryRoute.routes.length > 0 && (this.queryRoute.routes[0].total_fees_msat || (this.queryRoute.routes[0].hops && this.queryRoute.routes[0].hops.length))) {
           this.feeFormLabel = this.feeFormGroup.controls.selFeeLimitType.value.placeholder + ': ' + this.decimalPipe.transform(this.feeFormGroup.controls.feeLimit.value ? this.feeFormGroup.controls.feeLimit.value : 0) + ' | Hops: ' + this.queryRoute.routes[0].hops.length;
@@ -118,7 +119,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         break;
 
       default:
-        this.inputFormLabel = 'Enter info to rebalance';
+        this.inputFormLabel = 'Amount to rebalance';
         this.feeFormLabel = 'Select rebalance fee';
         break;
     }
@@ -126,7 +127,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
 
   onUseEstimate() {
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees) ? this.queryRoute.routes[0].total_fees : 0);
+    this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat/1000) : 0);
   }
 
   onRebalance() {
@@ -141,7 +142,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   filterActiveChannels() {
-    this.activeChannels = this.activeChannels.filter(channel => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
+    this.filteredActiveChannels = this.activeChannels.filter(channel => channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
   }
 
   onClose() {

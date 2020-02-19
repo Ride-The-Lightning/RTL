@@ -583,5 +583,21 @@
   .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
     width: 1.8rem; 
   }
-  
+
+  .button-link-dashboard {
+    line-height: 0px;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .failed-status {
+    color: $warn-color;
+  }
+
+  .material-icons.icon-failed-status {
+    font-size: 1.8rem;
+    fill: $warn-color;
+    height: 2rem;
+  }
 }

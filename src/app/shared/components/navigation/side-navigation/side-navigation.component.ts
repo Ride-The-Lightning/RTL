@@ -147,7 +147,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
         if(navMenuData.children && navMenuData.children.length) {
           navMenuData.children = navMenuData.children.filter(navMenuChild => {
             return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/lnd/loop')
-            || (navMenuChild.link === '/lnd/loop' && this.settings.loopServerUrl && this.settings.loopServerUrl.trim() !== '');
+            || (navMenuChild.link === '/lnd/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '');
           });
         }
         return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;

@@ -2,7 +2,7 @@
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
     <div fxFlex="70">
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
-      <span class="page-title">Swap History</span>
+      <span class="page-title">{{swapCaption}} History</span>
     </div>
     <mat-form-field fxFlex="30">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -12,10 +12,6 @@
     <div perfectScrollbar class="table-container" fxFlex="100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listSwaps" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-          <td mat-cell *matCellDef="let swap">{{swap.type}}</td>
-        </ng-container>
         <ng-container matColumnDef="initiation_time_str">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiation Time </th>
           <td mat-cell *matCellDef="let swap">{{swap.initiation_time_str}}</td>
@@ -34,7 +30,7 @@
         </ng-container>
         <ng-container matColumnDef="state">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
-          <td mat-cell *matCellDef="let swap">{{swap.state}}</td>
+          <td mat-cell *matCellDef="let swap">{{swapStateEnum[swap.state]}}</td>
         </ng-container>
         <ng-container matColumnDef="htlc_address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> HTLC Address </th>
@@ -68,7 +64,7 @@
         </ng-container>
         <ng-container matColumnDef="no_swap">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listSwaps.data || listSwaps.data.length<1">No swaps available.</p>
+            <p *ngIf="!listSwaps.data || listSwaps.data.length<1">No {{swapCaption | lowercase}} swaps available.</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_swap']" [ngClass]="{'display-none': listSwaps.data && listSwaps.data.length>0}"></tr>

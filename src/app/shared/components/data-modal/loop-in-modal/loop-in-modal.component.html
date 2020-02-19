@@ -1,16 +1,11 @@
 <div fxLayout="row">
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? 'Channel Loop-out' : 'Loop-out'}}</span></div>
+      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Loop-in</span></div>
       <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
-        <div *ngIf="channel" class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
-          <p fxFlex="30"><strong>Channel Peer:&nbsp;</strong>{{channel.remote_alias | titlecase}}</p>
-          <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{channel.chan_id}}</p>
-          <p fxFlex="30"></p>
-        </div>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="inputFormGroup">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
@@ -138,7 +133,7 @@
                 </div>                  
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopOut()" matStepperNext>Loop Out</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()" matStepperNext>Loop Out</button>
               </div>
             </form>
           </mat-step>
@@ -146,20 +141,19 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>Loop-Out</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar fxFlex="100" *ngIf="!loopInStatus" color="primary" mode="indeterminate"></mat-progress-bar>
                 <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{!loopOutStatus ? 'Waiting for Loop-out request...' : loopOutStatus.id_bytes ? 'Loop-out request details' : 'Loop-out error details'}}<mat-icon *ngIf="loopOutStatus" class="ml-1 icon-small">{{(loopOutStatus && loopOutStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!loopInStatus ? 'Waiting for Loop-in request...' : loopInStatus.id_bytes ? 'Loop-in request details' : 'Loop-in error details'}}<mat-icon *ngIf="loopInStatus" class="ml-1 icon-small">{{(loopInStatus && loopInStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
-                  <div fxLayout="column" *ngIf="!loopOutStatus; else loopoutStatusBlock"></div>
+                  <div fxLayout="column" *ngIf="!loopInStatus; else loopinStatusBlock"></div>
                 </mat-expansion-panel>
               </div>
-              <h4 *ngIf="loopOutStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopOutStatus && loopOutStatus.error) ? 'Loop-out failed.' : (loopOutStatus && loopOutStatus.id_bytes && channel) ? 'Loop-out request placed successfully. Go to loop to check it\'s status.' : 'Loop-out request placed successfully.'}}</h4>
+              <h4 *ngIf="loopInStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopInStatus && loopInStatus.error) ? 'Loop-in failed.' : 'Loop-in request placed successfully.'}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="loopOutStatus && loopOutStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopOutStatus && (loopOutStatus.error || !loopOutStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="loopInStatus && (loopInStatus.error || !loopInStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>
@@ -171,32 +165,32 @@
     </mat-card-content>
   </div>
 </div>
-<ng-template #loopoutStatusBlock>
-  <ng-container *ngTemplateOutlet="loopOutStatus.error ? loopoutFailedBlock : loopoutSuccessfulBlock"></ng-container>
+<ng-template #loopinStatusBlock>
+  <ng-container *ngTemplateOutlet="loopInStatus.error ? loopinFailedBlock : loopinSuccessfulBlock"></ng-container>
 </ng-template>
-<ng-template #loopoutFailedBlock>
-  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (loopOutStatus?.error?.error?.error ? loopOutStatus.error.error.error : loopOutStatus?.error?.error ? loopOutStatus.error.error : loopOutStatus?.error ? loopOutStatus.error : 'Unknown')}}</span></div>
+<ng-template #loopinFailedBlock>
+  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (loopInStatus?.error?.error?.error ? loopInStatus.error.error.error : loopInStatus?.error?.error ? loopInStatus.error.error : loopInStatus?.error ? loopInStatus.error : 'Unknown')}}</span></div>
 </ng-template>
-<ng-template #loopoutSuccessfulBlock>
+<ng-template #loopinSuccessfulBlock>
   <div fxLayout="column">
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">ID (Bytes)</h4>
-        <span class="foreground-secondary-text">{{loopOutStatus?.id_bytes}}</span>
+        <span class="foreground-secondary-text">{{loopInStatus?.id_bytes}}</span>
       </div>
     </div>
     <mat-divider class="w-100 my-1"></mat-divider>        
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">ID (Deprecated)</h4>
-        <span class="foreground-secondary-text">{{loopOutStatus?.id}}</span>
+        <span class="foreground-secondary-text">{{loopInStatus?.id}}</span>
       </div>
     </div>
     <mat-divider class="w-100 my-1"></mat-divider>        
     <div fxLayout="row">
       <div fxFlex="100">
         <h4 fxLayoutAlign="start" class="font-bold-500">HTLC Address</h4>
-        <span class="foreground-secondary-text">{{loopOutStatus?.htlc_address}}</span>
+        <span class="foreground-secondary-text">{{loopInStatus?.htlc_address}}</span>
       </div>
     </div>
   </div>                  

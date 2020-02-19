@@ -19,7 +19,12 @@ export class LoopService {
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number) {
-    const requestBody = { amount: amount, chanId: chanId, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee };
+    let requestBody = {};
+    if (chanId !== '') {
+      requestBody = {amount: amount, chanId: chanId, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee};
+    } else {
+      requestBody = {amount: amount, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee};
+    }
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out';
     return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out for Channel: ' + chanId, err)));
   }
@@ -38,11 +43,13 @@ export class LoopService {
   getLoopOutTermsAndQuotes(targetConf: number) {
     const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/termsAndQuotes';
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Terms and Quotes', err)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => {
+      return this.handleErrorWithAlert('Loop Out Terms and Quotes', err);
+    }));
   }
 
-  loopIn(amount: number, chanId: string) {
-    const requestBody = { amount: amount, chanId: chanId };
+  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) {
+    const requestBody = { amount: amount, swapFee: swapFee, minerFee: minerFee, lastHop: lastHop, externalHtlc: externalHtlc };
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in';
     return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In', err)));
   }
@@ -61,7 +68,9 @@ export class LoopService {
   getLoopInTermsAndQuotes(targetConf: number) {
     const params = new HttpParams().set('targetConf', targetConf.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/termsAndQuotes';
-    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Terms and Quotes', err)));
+    return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => {
+      return this.handleErrorWithAlert('Loop In Terms and Quotes', err);
+    }));
   }
 
   getSwap(id: string) {
@@ -75,11 +84,11 @@ export class LoopService {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
-          alertTitle: 'Loop Not Connect',
+          alertTitle: 'Loop Not Connected',
           message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: actionName },
           component: ErrorMessageComponent
         }
@@ -88,17 +97,24 @@ export class LoopService {
     return throwError(err);
   }
 
-  handleErrorWithAlert(err: any, errURL: string) {
+  handleErrorWithAlert(errURL: string, err: any) {
+    if (typeof err.error.error === 'string') {
+      try {
+        err = JSON.parse(err.error.error);
+      } catch(err) {}
+    } else {
+      err = err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : { code : 500, message: 'Unknown Error' };
+    }
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner())
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.errno === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
-          alertTitle: 'Loop Not Connect',
+          alertTitle: 'Loop Not Connected',
           message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Loop Server', URL: errURL },
           component: ErrorMessageComponent
         }
@@ -108,7 +124,7 @@ export class LoopService {
         width: '55%', data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
-          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },
+          message: { code: err.code ? err.code : err.status, message: err.message ? err.message : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

@@ -5,11 +5,11 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+      <mat-tab-group fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" (selectedIndexChange)="onSelectedIndexChange($event)">
         <mat-tab label="Loop Out"><rtl-loop-out></rtl-loop-out></mat-tab>
         <mat-tab label="Loop In"><rtl-loop-in></rtl-loop-in></mat-tab>
       </mat-tab-group>
-      <rtl-swaps fxLayout="row" fxFlex="100"></rtl-swaps>
+      <rtl-swaps fxLayout="row" fxFlex="100" [selectedSwapType]="selectedSwapType"></rtl-swaps>
     </mat-card-content>
   </mat-card>
 </div>

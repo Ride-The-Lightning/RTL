@@ -1,12 +1,16 @@
 <div fxLayout="row">
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title">Channel Rebalance</span></div>
+      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Channel Rebalance</span></div>
       <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <div fxLayout="column" class="bordered-box p-2">
-        <p fxLayoutAlign="start center" class="pb-1">Rebalancing for Channel: {{selChannel.remote_alias}}</p>
+      <div fxLayout="column">
+        <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+          <p fxFlex="30"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
+          <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
+          <p fxFlex="30"></p>
+        </div>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="inputFormGroup">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
@@ -22,14 +26,14 @@
                 </mat-form-field>
                 <mat-form-field fxFlex="48" fxLayoutAlign="start end">
                   <mat-select tabindex="2" formControlName="selRebalancePeer" placeholder="Receive from Peer" required>
-                    <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
+                    <mat-option *ngFor="let activeChannel of filteredActiveChannels" [value]="activeChannel">
                       {{activeChannel.remote_alias || activeChannel.chan_id}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-flat-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()" matStepperNext>Estimate Fee</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()" matStepperNext>Estimate Fee</button>
               </div>
             </form>
           </mat-step>
@@ -64,14 +68,14 @@
                 </div>                
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-flat-button color="primary" tabindex="8" type="button" (click)="onRebalance()" matStepperNext>Rebalance</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onRebalance()" matStepperNext>Rebalance</button>
               </div>
             </form>
           </mat-step>
           <mat-step [stepControl]="statusFormGroup">
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>Invoice/Payment</ng-template>
-              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <mat-progress-bar fxFlex="100" *ngIf="!flgInvoiceGenerated" color="primary" mode="indeterminate"></mat-progress-bar>
                 <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                   <mat-expansion-panel-header>
@@ -93,13 +97,14 @@
               </div>
               <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="!paymentStatus || !paymentStatus.error" mat-flat-button color="primary" tabindex="9" type="button" [mat-dialog-close]="false" default>Close</button>
-                <button *ngIf="paymentStatus && paymentStatus.error" mat-stroked-button color="primary" tabindex="10" type="button" class="mr-1" [mat-dialog-close]="false" default>Close</button>
                 <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>
         </mat-vertical-stepper>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
+        </div>
       </div>
     </mat-card-content>
   </div>

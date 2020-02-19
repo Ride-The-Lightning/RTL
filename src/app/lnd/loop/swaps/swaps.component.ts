@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,7 +6,7 @@ import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { SwapStatus } from '../../../shared/models/lndModels';
+import { SwapStatus, SwapTypeEnum, SwapStateEnum } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -23,12 +23,17 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class SwapsComponent implements OnInit, OnDestroy {
+export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  faHistory = faHistory;
+  public swapStateEnum = SwapStateEnum;
+  public faHistory = faHistory;
+  public swapCaption = 'Loop Out';
   public displayedColumns = [];
   public listSwaps: any;
+  public storedSwaps: SwapStatus[] = [];
+  public filteredSwaps: SwapStatus[] = [];
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -41,16 +46,16 @@ export class SwapsComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['type', 'state', 'amt', 'actions'];
+      this.displayedColumns = ['state', 'amt', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['type', 'state', 'amt', 'actions'];
+      this.displayedColumns = ['state', 'amt', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['type', 'state', 'initiation_time_str', 'amt', 'actions'];
+      this.displayedColumns = ['state', 'initiation_time_str', 'amt', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['type', 'state', 'initiation_time_str', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
+      this.displayedColumns = ['state', 'initiation_time_str', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
     }
   }
 
@@ -67,7 +72,9 @@ export class SwapsComponent implements OnInit, OnDestroy {
         if (effectsErr.action === 'FetchSwaps') { this.flgLoading[0] = 'error'; }
       });
       if (rtlStore.loopSwaps) {
-        this.loadSwapsTable(rtlStore.loopSwaps);
+        this.storedSwaps = rtlStore.loopSwaps;
+        this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === SwapTypeEnum.LOOP_OUT);
+        this.loadSwapsTable(this.filteredSwaps);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( rtlStore.transactions) ? false : true;
@@ -77,6 +84,12 @@ export class SwapsComponent implements OnInit, OnDestroy {
 
   }
 
+  ngOnChanges() {
+    this.swapCaption = (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out'
+    this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
+    this.loadSwapsTable(this.filteredSwaps);
+  }
+    
   applyFilter(selFilter: string) {
     this.listSwaps.filter = selFilter;
   }
@@ -85,22 +98,22 @@ export class SwapsComponent implements OnInit, OnDestroy {
     this.loopService.getSwap(selSwap.id_bytes.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[2]))
     .subscribe((fetchedSwap: SwapStatus) => {
       const reorderedSwap = [
-        [{key: 'type', value: fetchedSwap.type, title: 'Type', width: 33, type: DataTypeEnum.STRING},
-          {key: 'state', value: fetchedSwap.state, title: 'State', width: 33, type: DataTypeEnum.STRING},
-          {key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
-        [{key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
+        [{key: 'state', value: SwapStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING},
+          {key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'initiation_time_str', value: fetchedSwap.initiation_time_str, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME},
           {key: 'last_update_time_str', value: fetchedSwap.last_update_time_str, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME}],
+        [{key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+          {key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER}],
         [{key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID Bytes', width: 100, type: DataTypeEnum.STRING}],
         [{key: 'id', value: fetchedSwap.id, title: 'ID (Deprecated)', width: 100, type: DataTypeEnum.STRING}],
         [{key: 'htlc_address', value: fetchedSwap.htlc_address, title: 'HTLC Address', width: 100, type: DataTypeEnum.STRING}]
       ];
       this.store.dispatch(new RTLActions.OpenAlert({ data: {
         type: AlertTypeEnum.INFORMATION,
-        alertTitle: 'Swap Information',
+        alertTitle: this.swapCaption + ' Status',
         message: reorderedSwap,
+        openedBy: 'SWAP'
       }}));
     });
   }
