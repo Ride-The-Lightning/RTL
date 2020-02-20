@@ -32,7 +32,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      console.warn(rtlStore.nodeSettings.swapServerUrl);
       this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
     });
   }

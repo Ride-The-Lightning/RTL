@@ -73,7 +73,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
       });
       if (rtlStore.loopSwaps) {
         this.storedSwaps = rtlStore.loopSwaps;
-        this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === SwapTypeEnum.LOOP_OUT);
+        this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
         this.loadSwapsTable(this.filteredSwaps);
       }
       if (this.flgLoading[0] !== 'error') {

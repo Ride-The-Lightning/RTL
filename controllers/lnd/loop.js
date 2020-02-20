@@ -172,9 +172,12 @@ exports.loopInTerms = (req, res, next) => {
 exports.loopInQuote = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/in/quote';
+  options.url = swapServerUrl + '/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+  logger.info({fileName: 'Loop', msg: 'Loop In Quote Options: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In Quote: ' + JSON.stringify(body)});
+    body = JSON.parse(body);
+    body.amount = +req.params.amount;
     res.status(200).json(body);
   })
   .catch((err) => {
@@ -193,6 +196,11 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
+
+    //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
+    terms.max_swap_amount = '600000';
+    //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
+
     options1.url = swapServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
     options2.url = swapServerUrl + '/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
     Promise.all([request(options1), request(options2)]).then(function(values) {
