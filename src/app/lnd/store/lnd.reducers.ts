@@ -36,7 +36,7 @@ export interface LNDState {
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
   fees: {},

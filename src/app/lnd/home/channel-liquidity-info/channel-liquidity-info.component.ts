@@ -21,14 +21,21 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
-  @Input() showLoop: boolean;
+  public showLoop: boolean;
   public faCircleNotch = faCircleNotch;
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private router: Router, private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('lnd')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      console.warn(rtlStore.nodeSettings.swapServerUrl);
+      this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
+    });
+  }
 
   goToChannels() {
     this.router.navigateByUrl('/lnd/peerschannels');
@@ -37,7 +44,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   onLoopOut(channel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe(response => {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({ data: {

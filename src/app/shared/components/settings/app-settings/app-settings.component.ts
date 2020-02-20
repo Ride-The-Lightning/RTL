@@ -90,8 +90,8 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.logger.info(this.selNode.settings);
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
     this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings, defaultNodeIndex: defaultNodeIndex}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
-    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl}));
+    this.store.dispatch(new RTLActions.SetChildNodeSettingsCL({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl}));
     this.done.emit();
   }
 
