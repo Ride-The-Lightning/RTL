@@ -61,6 +61,7 @@ export interface Channel {
   remote_chan_reserve_sat?: string;
   local_chan_reserve_sat?: string;
   uptime?: string;
+  uptime_str?: string;
   lifetime?: string;
   static_remote_key?: boolean; 
   balancedness?: number; // Between -1 to +1
@@ -415,6 +416,15 @@ export interface PendingChannelsGroup {
 export interface PendingChannelsData {
   num_channels: number;
   limbo_balance: number;
+}
+
+export enum ChannelCloseSummaryClosureType {
+  COOPERATIVE_CLOSE = 'Both peers closed the channel cooperatively',
+  LOCAL_FORCE_CLOSE = 'Local node forced close the channel',
+  REMOTE_FORCE_CLOSE = 'Remote node forced close the channel',
+  BREACH_CLOSE = 'Breach closed',
+  FUNDING_CANCELED = 'Funding Cancled',
+  ABANDONED = 'Abandoned'
 }
 
 export enum SwapStateEnum {

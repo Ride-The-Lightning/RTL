@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil, sampleTime } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 
@@ -30,6 +31,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild = {};
   public totalBalance = 0;
@@ -50,7 +52,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -83,7 +85,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
       if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels);
+        this.loadChannelsTable(this.calculateUptime(rtlStore.allChannels));
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -245,7 +247,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  loadChannelsTable(mychannels) {
+  loadChannelsTable(mychannels: Channel[]) {
     mychannels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
@@ -262,6 +264,62 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
+  }
+
+  calculateUptime(channels: Channel[]) {
+    let minutesDivider = 60;
+    let hoursDivider = minutesDivider * 60;
+    let daysDivider = hoursDivider * 24;
+    let yearsDivider = daysDivider * 365;
+    let max_uptime = 0;
+    channels.forEach(channel => {
+      if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }
+    });
+    switch (true) {
+      case max_uptime < hoursDivider:
+        this.timeUnit = 'mins:secs';
+        break;
+
+      case max_uptime >= hoursDivider && max_uptime < daysDivider:
+        this.timeUnit = 'hrs:mins';
+        break;
+
+      case max_uptime >= daysDivider && max_uptime < yearsDivider:
+        this.timeUnit = 'days:hrs';
+        break;
+  
+      case max_uptime > yearsDivider:
+        this.timeUnit = 'yrs:days';
+        break;
+  
+      default:
+        this.timeUnit = '';
+        break;
+    }
+    channels.forEach(channel => {
+      switch (this.timeUnit) {
+        case 'mins:secs':
+          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / minutesDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round(+channel.uptime % minutesDivider), '2.0-0');
+          break;
+      
+        case 'hrs:mins':
+          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / hoursDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % hoursDivider) / minutesDivider), '2.0-0');
+          break;
+  
+        case 'days:hrs':
+          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / daysDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % daysDivider) / hoursDivider), '2.0-0');
+          break;
+  
+        case 'yrs:days':
+          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / yearsDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % yearsDivider) / daysDivider), '2.0-0');
+          break;
+    
+        default:
+          channel.uptime_str = channel.uptime;
+          break;
+      }
+    });
+    return channels;
   }
 
   onLoopOut(selChannel: Channel) {

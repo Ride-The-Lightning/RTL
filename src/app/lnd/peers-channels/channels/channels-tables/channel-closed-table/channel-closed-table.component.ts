@@ -6,7 +6,7 @@ import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { ClosedChannel } from '../../../../../shared/models/lndModels';
+import { ClosedChannel, ChannelCloseSummaryClosureType } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -25,7 +25,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  faHistory = faHistory;
+  public channelCloseSummaryClosureType = ChannelCloseSummaryClosureType;
+  public faHistory = faHistory;
   public displayedColumns = [];
   public closedChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];

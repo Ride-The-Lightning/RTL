@@ -10,7 +10,7 @@
     <table mat-table #table [dataSource]="closedChannels" matSort [ngClass]="{'error-border': flgLoading[0]==='error'}">
       <ng-container matColumnDef="close_type">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Close Type </th>
-        <td mat-cell *matCellDef="let channel"> {{channel.close_type}} </td>
+        <td mat-cell *matCellDef="let channel" [matTooltip]="channelCloseSummaryClosureType[channel.close_type]"> {{channel.close_type}} </td>
       </ng-container>
       <ng-container matColumnDef="chan_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Channel ID </th>

@@ -19,8 +19,11 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="uptime">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime (Secs)</th>
-        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime | number}} </span></td>
+        <!-- <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime (Approx. Hrs.)</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime / 3600 | number:'1.0-0'}} </span></td> -->
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Uptime ({{timeUnit}})</th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">{{channel.uptime_str}} </span></td>
       </ng-container>
       <ng-container matColumnDef="total_satoshis_sent">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent </th>
