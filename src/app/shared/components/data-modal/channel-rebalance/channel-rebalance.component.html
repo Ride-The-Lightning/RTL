@@ -7,7 +7,7 @@
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
         <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
-          <p fxFlex="30"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
+          <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
           <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
           <p fxFlex="30"></p>
         </div>
@@ -80,7 +80,7 @@
                 <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{flgInvoiceGenerated ? 'Invoice generated' : 'Generating invoice...'}}<mat-icon *ngIf="flgInvoiceGenerated" class="ml-1 icon-small">check</mat-icon></span>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated ? 'Generating invoice...' : flgReusingInvoice ? 'Invoice re-used' : 'Invoice generated'}}<mat-icon *ngIf="flgInvoiceGenerated" class="ml-1 icon-small">check</mat-icon></span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>

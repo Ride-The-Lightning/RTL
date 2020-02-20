@@ -222,6 +222,7 @@ export interface Invoice {
   expiry?: string;
   fallback_addr?: string;
   cltv_expiry?: string;
+  state?: string;
   route_hints?: RouteHint[];
   private?: boolean;
   add_index?: string;

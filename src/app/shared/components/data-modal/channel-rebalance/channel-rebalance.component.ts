@@ -10,7 +10,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelInformation } from '../../../models/alertData';
 import { LoggerService } from '../../../services/logger.service';
-import { Channel, QueryRoutes } from '../../../models/lndModels';
+import { Channel, QueryRoutes, ListInvoices } from '../../../models/lndModels';
 import { FEE_LIMIT_TYPES, PAGE_SIZE } from '../../../services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -23,6 +23,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
 })
 export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
+  public invoices: ListInvoices = {};
   public selChannel: Channel = {};
   public activeChannels = [];
   public filteredActiveChannels = [];
@@ -30,6 +31,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public queryRoute: QueryRoutes = {};
   public paymentRequest = '';
   public paymentStatus: any = null;
+  public flgReusingInvoice = false;
   public flgInvoiceGenerated = false;
   public flgPaymentSent = false;
   public inputFormLabel = 'Amount to rebalance';
@@ -61,6 +63,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active && channel.remote_balance >= this.inputFormGroup.controls.rebalanceAmount.value && channel.chan_id !== this.selChannel.chan_id);
+      this.invoices = rtlStore.invoices;
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
@@ -74,9 +77,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       }
       if (action.type === RTLActions.NEWLY_SAVED_INVOICE) { 
         this.logger.info(action.payload);
-        this.flgInvoiceGenerated = true;
-        this.paymentRequest = action.payload.paymentRequest;
-        this.store.dispatch(new RTLActions.SendPayment({paymentReq: action.payload.paymentRequest, paymentDecoded: {}, zeroAmtInvoice: false, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey}));
+        this.sendPayment(action.payload.paymentRequest);
       }
     });
   }
@@ -134,11 +135,28 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
     this.paymentRequest = '';
     this.paymentStatus = null;
+    this.flgReusingInvoice = false;
     this.flgInvoiceGenerated = false;
-    this.flgPaymentSent = false;      
-    this.store.dispatch(new RTLActions.SaveNewInvoice({
-      memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
-    }));
+    this.flgPaymentSent = false;
+    let unsettledInvoice = this.findUnsettledInvoice();
+    if (unsettledInvoice) {
+      this.flgReusingInvoice = true;
+      this.sendPayment(unsettledInvoice.payment_request);
+    } else {
+      this.store.dispatch(new RTLActions.SaveNewInvoice({
+        memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
+      }));
+    }
+  }
+
+  findUnsettledInvoice() {
+    return this.invoices.invoices.find(invoice => invoice.settle_date_str === '' && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
+  }
+
+  sendPayment(payReq: string) {
+    this.flgInvoiceGenerated = true;
+    this.paymentRequest = payReq;
+    this.store.dispatch(new RTLActions.SendPayment({paymentReq: payReq, paymentDecoded: {}, zeroAmtInvoice: false, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey}));
   }
 
   filterActiveChannels() {
