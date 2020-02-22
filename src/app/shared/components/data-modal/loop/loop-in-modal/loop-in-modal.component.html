@@ -1,0 +1,76 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Loop-in</span></div>
+      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <div fxLayout="column">
+        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+          <mat-step [stepControl]="inputFormGroup">
+            <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+              <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">              
+                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+              </div>
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">              
+                <mat-form-field fxFlex="48">
+                  <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
+                  <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
+                  <span matSuffix>Sats</span>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="48">
+                  <input matInput placeholder="Target Confirmation Blocks" type="number" step="1" tabindex="2" formControlName="targetConf" required>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation blocks is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation blocks must be a positive number.</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()" matStepperNext>Estimate Quote</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="quoteFormGroup">
+            <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
+              <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()" matStepperNext>Loop In</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="statusFormGroup">
+            <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>Loop-In</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-progress-bar fxFlex="100" *ngIf="!loopInStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!loopInStatus ? 'Waiting for Loop-in request...' : loopInStatus.id_bytes ? 'Loop-in request details' : 'Loop-in error details'}}<mat-icon *ngIf="loopInStatus" class="ml-1 icon-small">{{(loopInStatus && loopInStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="column" *ngIf="!loopInStatus; else loopInStatusBlock"></div>
+                </mat-expansion-panel>
+              </div>
+              <h4 *ngIf="loopInStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopInStatus && loopInStatus.error) ? 'Loop-in failed.' : 'Loop-in request placed successfully.'}}</h4>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button *ngIf="loopInStatus && (loopInStatus.error || !loopInStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-vertical-stepper>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+          <button mat-stroked-button color="primary" tabindex="13" type="button" [mat-dialog-close]="false" default>Close</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </div>
+</div>
+<ng-template #loopInStatusBlock>
+  <rtl-loop-status fxLayout="column" [loopStatus]="loopInStatus"></rtl-loop-status>
+</ng-template>

@@ -13,7 +13,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
 import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
-import { LoopOutModalComponent } from '../../../../../shared/components/data-modal/loop-out-modal/loop-out-modal.component';
+import { LoopOutModalComponent } from '../../../../../shared/components/data-modal/loop/loop-out-modal/loop-out-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';

@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { LoopOutModalComponent } from '../../../shared/components/data-modal/loop-out-modal/loop-out-modal.component';
+import { LoopOutModalComponent } from '../../../shared/components/data-modal/loop/loop-out-modal/loop-out-modal.component';
 import { LoopQuote } from '../../../shared/models/loopModels';
 import { LoopService } from '../../../shared/services/loop.service';
 

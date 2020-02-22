@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 import { Channel } from '../../../shared/models/lndModels';
-import { LoopOutModalComponent } from '../../../shared/components/data-modal/loop-out-modal/loop-out-modal.component';
+import { LoopOutModalComponent } from '../../../shared/components/data-modal/loop/loop-out-modal/loop-out-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';

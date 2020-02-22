@@ -46,8 +46,9 @@ import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/
 import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
-import { LoopInModalComponent } from './components/data-modal/loop-in-modal/loop-in-modal.component';
-import { LoopOutModalComponent } from './components/data-modal/loop-out-modal/loop-out-modal.component';
+import { LoopInModalComponent } from './components/data-modal/loop/loop-in-modal/loop-in-modal.component';
+import { LoopOutModalComponent } from './components/data-modal/loop/loop-out-modal/loop-out-modal.component';
+import { LoopQuoteComponent } from './components/data-modal/loop/loop-quote/loop-quote.component';
 import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -56,6 +57,7 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { LoopStatusComponent } from './components/data-modal/loop/loop-status/loop-status.component';
 
 @NgModule({
   imports: [
@@ -193,7 +195,9 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     LoopInModalComponent,
     LoopOutModalComponent,
     AuthSettingsComponent,
-    CloseChannelLndComponent
+    CloseChannelLndComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,

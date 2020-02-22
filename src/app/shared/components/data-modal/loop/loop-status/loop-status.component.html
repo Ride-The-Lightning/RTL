@@ -1,0 +1,30 @@
+<ng-container *ngTemplateOutlet="loopStatus?.error ? loopFailedBlock : loopSuccessfulBlock"></ng-container>
+<ng-template #loopFailedBlock>
+  <div fxLayout="column"><span
+      class="foreground-secondary-text">{{'Error: ' + (loopStatus?.error?.error?.error ? loopStatus.error.error.error : loopStatus?.error?.error ? loopStatus.error.error : loopStatus?.error ? loopStatus.error : 'Unknown')}}</span>
+  </div>
+</ng-template>
+<ng-template #loopSuccessfulBlock>
+  <div fxLayout="column">
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">ID (Bytes)</h4>
+        <span class="foreground-secondary-text">{{loopStatus?.id_bytes}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">ID (Deprecated)</h4>
+        <span class="foreground-secondary-text">{{loopStatus?.id}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">HTLC Address</h4>
+        <span class="foreground-secondary-text">{{loopStatus?.htlc_address}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
