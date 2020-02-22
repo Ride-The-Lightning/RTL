@@ -187,6 +187,12 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.selTimeUnit = event.value;
   }
 
+  onDownloadCSV() {
+    if(this.invoices.data && this.invoices.data.length > 0) {
+      this.commonService.downloadCSV(this.invoices.data, 'Invoices');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

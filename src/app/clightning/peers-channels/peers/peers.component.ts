@@ -168,6 +168,12 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.peers.filter = selFilter;
   }
 
+  onDownloadCSV() {
+    if(this.peers.data && this.peers.data.length > 0) {
+      this.commonService.downloadCSV(this.peers.data, 'Peers');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

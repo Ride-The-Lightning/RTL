@@ -107,6 +107,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     this.logger.info(this.listTransactions);
   }
 
+  onDownloadCSV() {
+    if(this.listTransactions.data && this.listTransactions.data.length > 0) {
+      this.commonService.downloadCSV(this.listTransactions.data, 'Transactions');
+    }
+  }
+
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {
       completeSub.next();

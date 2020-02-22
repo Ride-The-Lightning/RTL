@@ -79,7 +79,6 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         }
       });
       this.selNode = rtlStore.nodeSettings;
-      this.selNode.userPersona
       this.information = rtlStore.information;
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
@@ -267,57 +266,47 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   calculateUptime(channels: Channel[]) {
-    let minutesDivider = 60;
-    let hoursDivider = minutesDivider * 60;
-    let daysDivider = hoursDivider * 24;
-    let yearsDivider = daysDivider * 365;
+    const minutesDivider = 60;
+    const hoursDivider = minutesDivider * 60;
+    const daysDivider = hoursDivider * 24;
+    const yearsDivider = daysDivider * 365;
+    let maxDivider = minutesDivider;
+    let minDivider = 1;
     let max_uptime = 0;
-    channels.forEach(channel => {
-      if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }
-    });
+    channels.forEach(channel => { if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
     switch (true) {
       case max_uptime < hoursDivider:
-        this.timeUnit = 'mins:secs';
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
         break;
 
       case max_uptime >= hoursDivider && max_uptime < daysDivider:
-        this.timeUnit = 'hrs:mins';
+        this.timeUnit = 'Hrs:Mins';
+        maxDivider = hoursDivider;
+        minDivider = minutesDivider;
         break;
 
       case max_uptime >= daysDivider && max_uptime < yearsDivider:
-        this.timeUnit = 'days:hrs';
+        this.timeUnit = 'Days:Hrs';
+        maxDivider = daysDivider;
+        minDivider = hoursDivider;
         break;
   
       case max_uptime > yearsDivider:
-        this.timeUnit = 'yrs:days';
+        this.timeUnit = 'Yrs:Days';
+        maxDivider = yearsDivider;
+        minDivider = daysDivider;
         break;
   
       default:
-        this.timeUnit = '';
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
         break;
     }
     channels.forEach(channel => {
-      switch (this.timeUnit) {
-        case 'mins:secs':
-          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / minutesDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round(+channel.uptime % minutesDivider), '2.0-0');
-          break;
-      
-        case 'hrs:mins':
-          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / hoursDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % hoursDivider) / minutesDivider), '2.0-0');
-          break;
-  
-        case 'days:hrs':
-          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / daysDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % daysDivider) / hoursDivider), '2.0-0');
-          break;
-  
-        case 'yrs:days':
-          channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / yearsDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % yearsDivider) / daysDivider), '2.0-0');
-          break;
-    
-        default:
-          channel.uptime_str = channel.uptime;
-          break;
-      }
+      channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0');
     });
     return channels;
   }
@@ -335,6 +324,12 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         component: LoopOutModalComponent
       }}));    
     });
+  }
+
+  onDownloadCSV() {
+    if(this.channels.data && this.channels.data.length > 0) {
+      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+    }
   }
 
   ngOnDestroy() {

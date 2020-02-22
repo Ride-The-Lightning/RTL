@@ -437,22 +437,12 @@
   .table-actions-select {
     padding: 0.5rem 1rem;
     margin: 0.7rem 0;
+    width: 10rem;
+    float: right;
     & .mat-select-placeholder {
       color: $foreground-text;
     }
   }
-
-  // .rtl-snack-bar {
-  //   &.mat-snack-bar-container {
-  //     background-color: $warn-color;
-  //   }
-  //   & .mat-simple-snackbar {
-  //     justify-content: center;
-  //     align-content: center;
-  //     align-items: center;
-  //     background-color: $warn-color;
-  //   }    
-  // }
 
   .mat-select-panel .mat-option.mat-active {
     background: none;

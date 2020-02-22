@@ -181,4 +181,65 @@ export class CommonService implements OnInit {
     return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
   };
 
+  downloadCSV(data: any[], filename: string) {
+    let blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
+    let downloadUrl = document.createElement("a");
+    let url = URL.createObjectURL(blob);
+    let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
+    if (isSafariBrowser) {
+      downloadUrl.setAttribute("target", "_blank");
+    }
+    downloadUrl.setAttribute("href", url);
+    downloadUrl.setAttribute("download", filename + ".csv");
+    downloadUrl.style.visibility = "hidden";
+    document.body.appendChild(downloadUrl);
+    downloadUrl.click();
+    document.body.removeChild(downloadUrl);
+  }
+
+  convertToCSV(objArray: any[]) {
+    let keys = [];
+    let dataRow = '';
+    let arrayField = '';
+    let csvStrArray = '';
+    if (typeof objArray !== 'object') { objArray = JSON.parse(objArray); }
+    objArray.forEach((obj, i) => {
+      for(var key in obj) {
+        if (keys.findIndex(keyEle => keyEle === key) < 0) {
+          keys.push(key); 
+        }
+      }
+    });
+    let header = keys.join(',');
+    csvStrArray = header + '\r\n';
+    objArray.forEach(obj => {
+      dataRow = '';
+      keys.forEach(key => {
+        if (obj.hasOwnProperty(key)) { 
+          if (Array.isArray(obj[key])) {
+            arrayField = '';
+            obj[key].forEach((arrEl, i) => {
+              if(typeof arrEl === 'object') {
+                arrayField += '(' + JSON.stringify(arrEl).replace(/\,/g, ';') + ')';
+              } else {
+                arrayField += '(' + arrEl + ')';
+              }
+            });
+            dataRow += arrayField + ',';
+          } else {
+            if(typeof obj[key] === 'object') {
+              dataRow += JSON.stringify(obj[key]).replace(/\,/g, ';') + ','; 
+            } else {
+              dataRow += obj[key] + ','; 
+            }
+          }
+        } else {
+          dataRow += ','; 
+        }
+      });
+      csvStrArray += dataRow.slice(0, -1) + '\r\n';
+    });
+    return csvStrArray;
+  }
+
 }

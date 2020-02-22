@@ -31,6 +31,7 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   public loopOutStatus: LoopStatus = null;
   public inputFormLabel = 'Amount to loop-out';
   public quoteFormLabel = 'Confirm Quote';
+  public prepayRoutingFee = 36;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
@@ -52,7 +53,8 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
 
   onLoopOut() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2) { return true; }
-    this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, 5010, +this.quote.miner_fee, 36, +this.quote.prepay_amt, +this.quote.swap_fee).pipe(takeUntil(this.unSubs[0]))
+    const swapRoutingFee = this.inputFormGroup.controls.amount.value * 0.02;
+    this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee).pipe(takeUntil(this.unSubs[0]))
     .subscribe((loopOutStatus: any) => {
       this.loopOutStatus = JSON.parse(loopOutStatus);
       this.store.dispatch(new RTLActions.FetchLoopSwaps());

@@ -125,6 +125,12 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
     this.logger.info(this.listSwaps);
   }
 
+  onDownloadCSV() {
+    if(this.listSwaps.data && this.listSwaps.data.length > 0) {
+      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop-in' : 'Loop-out');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

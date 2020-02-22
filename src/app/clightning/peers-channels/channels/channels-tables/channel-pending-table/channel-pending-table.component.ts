@@ -130,6 +130,12 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     this.logger.info(this.channels);
   }
 
+  onDownloadCSV() {
+    if(this.channels.data && this.channels.data.length > 0) {
+      this.commonService.downloadCSV(this.channels.data, 'Pending-inactive-channels');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

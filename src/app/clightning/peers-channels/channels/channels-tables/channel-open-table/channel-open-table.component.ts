@@ -249,6 +249,12 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.logger.info(this.channels);
   }
 
+  onDownloadCSV() {
+    if(this.channels.data && this.channels.data.length > 0) {
+      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

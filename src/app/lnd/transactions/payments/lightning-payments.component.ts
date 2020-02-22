@@ -280,6 +280,12 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.payments.filter = selFilter;
   }
 
+  onDownloadCSV() {
+    if(this.payments.data && this.payments.data.length > 0) {
+      this.commonService.downloadCSV(this.payments.data, 'Payments');
+    }
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

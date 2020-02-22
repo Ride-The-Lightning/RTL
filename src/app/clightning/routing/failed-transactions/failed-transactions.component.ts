@@ -80,6 +80,12 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     this.logger.info(this.forwardingHistoryEvents);
   }
 
+  onDownloadCSV() {
+    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+      this.commonService.downloadCSV(this.forwardingHistoryEvents.data, 'Failed-transactions');
+    }
+  }
+
   applyFilter(selFilter: string) {
     this.forwardingHistoryEvents.filter = selFilter;
   }

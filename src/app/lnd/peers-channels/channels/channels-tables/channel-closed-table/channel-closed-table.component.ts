@@ -110,6 +110,12 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
     this.selectedFilter = '';
   }
 
+  onDownloadCSV() {
+    if(this.closedChannels.data && this.closedChannels.data.length > 0) {
+      this.commonService.downloadCSV(this.closedChannels.data, 'Closed-channels');
+    }
+  }
+
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {
       completeSub.next();
