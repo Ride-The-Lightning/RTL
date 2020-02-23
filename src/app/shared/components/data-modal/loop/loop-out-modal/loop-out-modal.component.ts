@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,6 +15,7 @@ import { LoopService } from '../../../../services/loop.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 import { Channel } from '../../../../models/lndModels';
+import { opacityAnimation } from '../../../../../shared/animation/opacity-animation';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
@@ -24,23 +24,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   selector: 'rtl-loop-out-modal',
   templateUrl: './loop-out-modal.component.html',
   styleUrls: ['./loop-out-modal.component.scss'],
-  animations: [
-    trigger('showHideAnimation', [
-      // transition(':enter', [
-      //   style({opacity: 0}),
-      //   animate('1000ms ease-in', style({opacity: 1}))
-      // ]),
-      // transition(':leave', [
-      //   animate('0ms', style({opacity: 0}))
-      // ])      
-      transition(':enter', [
-        style({transform: 'translateX(100%)'}),
-        animate('1000ms ease-in', style({transform: 'translateX(0%)'}))
-      ]),
-      transition(':leave', [
-        animate('0ms ease-in', style({transform: 'translateX(100%)'}))
-      ])      
-    ])]
+  animations: [opacityAnimation]
 })
 export class LoopOutModalComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
@@ -53,6 +37,8 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   public quoteFormLabel = 'Confirm Quote';
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
+  public stepNumber = 1;
+  public stepDirection = 'NEXT';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   inputFormGroup: FormGroup;
@@ -146,6 +132,20 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
 
   showInfo() {
     this.flgShowInfo = true;
+  }
+
+  onBack() {
+    if(this.stepNumber > 1) {
+      this.stepDirection = 'BACK';
+      this.stepNumber--;
+    }
+  }
+  
+  onNext() {
+    if(this.stepNumber < 5) {
+      this.stepDirection = 'NEXT';
+      this.stepNumber++;
+    }
   }
 
   ngOnDestroy() {
