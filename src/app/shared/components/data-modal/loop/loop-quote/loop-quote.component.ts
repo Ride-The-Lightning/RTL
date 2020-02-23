@@ -11,9 +11,12 @@ export class LoopQuoteComponent implements OnInit {
   @Input() termCaption = '';
   @Input() showPanel = true;
   @Input() panelExpanded = false;
+  public flgShowPanel = false;
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    setTimeout(() => { this.flgShowPanel = true; }, 1200);
+  }
 
 }

@@ -317,7 +317,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(response => {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '52rem', data: {
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],

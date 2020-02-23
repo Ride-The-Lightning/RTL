@@ -115,5 +115,6 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
+  minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert;
 }

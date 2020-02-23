@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,10 +9,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
+import { ScreenSizeEnum } from '../../../../services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../../models/loopModels';
 import { LoopAlert } from '../../../../models/alertData';
 import { LoopService } from '../../../../services/loop.service';
 import { LoggerService } from '../../../../services/logger.service';
+import { CommonService } from '../../../../services/common.service';
 import { Channel } from '../../../../models/lndModels';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
@@ -20,7 +23,24 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-loop-out-modal',
   templateUrl: './loop-out-modal.component.html',
-  styleUrls: ['./loop-out-modal.component.scss']
+  styleUrls: ['./loop-out-modal.component.scss'],
+  animations: [
+    trigger('showHideAnimation', [
+      // transition(':enter', [
+      //   style({opacity: 0}),
+      //   animate('1000ms ease-in', style({opacity: 1}))
+      // ]),
+      // transition(':leave', [
+      //   animate('0ms', style({opacity: 0}))
+      // ])      
+      transition(':enter', [
+        style({transform: 'translateX(100%)'}),
+        animate('1000ms ease-in', style({transform: 'translateX(0%)'}))
+      ]),
+      transition(':leave', [
+        animate('0ms ease-in', style({transform: 'translateX(100%)'}))
+      ])      
+    ])]
 })
 export class LoopOutModalComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
@@ -32,14 +52,18 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   public inputFormLabel = 'Amount to loop-out';
   public quoteFormLabel = 'Confirm Quote';
   public prepayRoutingFee = 36;
+  public flgShowInfo = false;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopOutModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router) { }
+  constructor(public dialogRef: MatDialogRef<LoopOutModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
+    this.screenSize = this.commonService.getScreenSize();
     this.channel = this.data.channel;
     this.minQuote = this.data.minQuote ? this.data.minQuote : {};
     this.maxQuote = this.data.maxQuote ? this.data.maxQuote : {};
@@ -118,6 +142,10 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
 
   onClose() {
     this.dialogRef.close(true);
+  }
+
+  showInfo() {
+    this.flgShowInfo = true;
   }
 
   ngOnDestroy() {

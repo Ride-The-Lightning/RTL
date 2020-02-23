@@ -242,6 +242,7 @@ body {
 
 .mat-dialog-container {
   padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .mt-1px {
@@ -987,4 +988,16 @@ table {
 
 .icon-green {
   fill: $green-color;
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+.h-5 {
+  height: 5rem;
 }

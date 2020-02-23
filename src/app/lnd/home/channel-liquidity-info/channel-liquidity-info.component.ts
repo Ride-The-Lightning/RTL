@@ -46,7 +46,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(response => {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '52rem', data: {
         channel: channel,
         minQuote: response[0],
         maxQuote: response[1],

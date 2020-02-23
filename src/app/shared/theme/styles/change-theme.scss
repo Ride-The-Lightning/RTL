@@ -128,8 +128,14 @@
     .color-primary {
       color:  $primary-darker !important;
     }
-    .mat-expansion-panel {
-
+    .dot-primary {
+      background-color:  $primary-darker !important;
+    }
+    .dot-primary-lighter {
+      background-color:  $primary-color !important;
+    }
+    .mat-stepper-vertical {
+      background-color: mat-color($background, dialog);
     }
   }
 
@@ -229,6 +235,12 @@
     }
     .color-primary {
       color:  $primary-color !important;
+    }
+    .dot-primary {
+      background-color:  $primary-color !important;
+    }
+    .dot-primary-lighter {
+      background-color:  $primary-lighter !important;
     }
     .mat-expansion-panel.flat-expansion-panel {
       border: 1px solid $foreground-divider;
@@ -590,4 +602,13 @@
     fill: $warn-color;
     height: 2rem;
   }
+
+  .svg-fill-primary {
+    fill: $primary-color;
+  }
+
+  .svg-fill-primary-lighter {
+    fill: $primary-lighter;
+  }
+
 }

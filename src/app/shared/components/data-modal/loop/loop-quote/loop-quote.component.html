@@ -1,6 +1,6 @@
 <ng-container *ngTemplateOutlet="showPanel ? expansionPanelBlock : quoteDetailsBlock"></ng-container>
 <ng-template #expansionPanelBlock>
-  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded">
+  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
     <mat-expansion-panel-header>
       <mat-panel-title>
         <span fxLayoutAlign="start center" fxFlex="100">Quote for {{termCaption}} amount ({{quote.amount | number}} Sats)</span>
