@@ -2,7 +2,7 @@
   *ngTemplateOutlet="stepNumber === 1 ? loopStepBlock1: stepNumber === 2 ? loopStepBlock2 : stepNumber === 3 ? loopStepBlock3 : stepNumber === 4 ? loopStepBlock4 : loopStepBlock5">
 </ng-container>
 <ng-template #loopStepBlock1>
-  <div fxLayout="column" fxFlex="100" [@sliderAnimation] class="step-container">
+  <div fxLayout="column" fxFlex="100" [@sliderAnimation]="animationDirection" class="step-container">
     <svg viewBox="0 0 108 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <title>Loop_Step01</title>
@@ -62,7 +62,7 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock2>
-  <div fxLayout="column" fxFlex="100" [@sliderAnimation] class="step-container">
+  <div fxLayout="column" fxFlex="100" [@sliderAnimation]="animationDirection" class="step-container">
     <svg viewBox="0 0 205 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <title>Loop_Step02</title>
@@ -160,7 +160,7 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock3>
-  <div fxLayout="column" fxFlex="100" [@sliderAnimation] class="step-container">
+  <div fxLayout="column" fxFlex="100" [@sliderAnimation]="animationDirection" class="step-container">
     <svg viewBox="0 0 373 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <title>Loop_Step03</title>
@@ -315,7 +315,7 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock4>
-  <div fxLayout="column" fxFlex="100" [@sliderAnimation] class="step-container">
+  <div fxLayout="column" fxFlex="100" [@sliderAnimation]="animationDirection" class="step-container">
     <svg viewBox="0 0 278 118" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <title>Loop_Step04</title>
@@ -426,7 +426,7 @@
   </div>
 </ng-template>
 <ng-template #loopStepBlock5>
-  <div fxLayout="column" fxFlex="100" [@sliderAnimation] class="step-container">
+  <div fxLayout="column" fxFlex="100" [@sliderAnimation]="animationDirection" class="step-container">
     <svg viewBox="0 0 200 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <title>Loop_Step05</title>

@@ -1,11 +1,9 @@
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Subject, of, Observable } from 'rxjs';
-import { take, map, takeUntil, catchError } from 'rxjs/operators';
+import { Injectable, OnInit } from '@angular/core';
+import { of, Observable } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 
 import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
-import { environment, API_URL } from '../../../environments/environment';
 
 @Injectable()
 export class CommonService implements OnInit {

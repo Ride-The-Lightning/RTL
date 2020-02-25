@@ -92,10 +92,10 @@
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="90" fxLayoutAlign="space-between center">
-      <rtl-info-graphics [stepNumber]="stepNumber" style="height: 36rem;min-height: 36rem;"></rtl-info-graphics>
+      <rtl-info-graphics [stepNumber]="stepNumber" [animationDirection]="animationDirection" style="height: 36rem;min-height: 36rem;"></rtl-info-graphics>
     </mat-card-content>
     <div class="my-4" fxLayout="row" fxFlex="100" fxLayoutAlign="center end">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click)="stepNumber=i;" class="dots-stepper-block">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" class="dots-stepper-block">
         <p class="dot tiny-dot" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
@@ -103,7 +103,7 @@
       <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="12" type="button" (click)="onReadMore()">Read More</button>
       <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
       <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="14" type="button" (click)="onNext()">Next</button>
+      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="14" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
     </div>
   </div>
 </div>

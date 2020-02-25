@@ -17,7 +17,6 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { Channel } from '../../../shared/models/lndModels';
 
-
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -39,9 +38,9 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
   public stepNumber = 1;
-  public stepDirection = 'NEXT';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public animationDirection = 'farward';
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
@@ -135,21 +134,12 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
     this.flgShowInfo = true;
   }
 
-  onBack() {
-    if(this.stepNumber > 1) {
-      this.stepDirection = 'BACK';
-      this.stepNumber--;
-    }
-  }
-  
-  onNext() {
-    if(this.stepNumber < 5) {
-      this.stepDirection = 'NEXT';
-      this.stepNumber++;
-    }
-  }
-
   onReadMore() {}
+
+  onStepChanged(index: number) {
+    this.animationDirection = index < this.stepNumber ? 'backward' : 'forward';
+    this.stepNumber = index;
+  }  
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

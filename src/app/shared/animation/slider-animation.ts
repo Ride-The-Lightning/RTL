@@ -1,13 +1,19 @@
-import { animate, style, transition, trigger } from '@angular/animations';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 export const sliderAnimation = [
   trigger('sliderAnimation', [
-    transition(':enter', [
-      style({ transform: 'translateX(100%)' }),
-      animate('1000ms ease-in', style({ transform: 'translateX(0%)' }))
+    state('*', style({ transform: 'translateX(0)' })),
+    transition('void => backward', [
+      style({ transform: 'translateX(-100%' }), animate('800ms')
     ]),
-    transition(':leave', [
+    transition('backward => void', [
       animate('0ms', style({ transform: 'translateX(100%)' }))
+    ]),
+    transition('void => forward', [
+      style({ transform: 'translateX(100%' }), animate('800ms')
+    ]),
+    transition('forward => void', [
+      animate('0ms', style({ transform: 'translateX(-100%)' }))
     ])
   ])
 ];
