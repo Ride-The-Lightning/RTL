@@ -100,7 +100,7 @@ import { SwapsComponent } from './loop/swaps/swaps.component';
     LoopOutComponent,
     LoopInComponent,
     SwapsComponent
-  ],
+  ],  
   providers: [
     LNDUnlockedGuard
   ],

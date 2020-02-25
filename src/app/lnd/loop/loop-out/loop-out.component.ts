@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { LoopOutModalComponent } from '../../../shared/components/data-modal/loop/loop-out-modal/loop-out-modal.component';
+import { LoopOutModalComponent } from '../loop-out-modal/loop-out-modal.component';
 import { LoopQuote } from '../../../shared/models/loopModels';
 import { LoopService } from '../../../shared/services/loop.service';
 
@@ -32,7 +32,7 @@ export class LoopOutComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(response => {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '52rem', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
         channel: null,
         minQuote: response[0],
         maxQuote: response[1],

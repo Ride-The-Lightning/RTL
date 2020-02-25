@@ -1,0 +1,109 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="!flgShowInfo" [@opacityAnimation]>
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? 'Channel Loop-out' : 'Loop-out'}}</span></div>
+      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
+        <button tabindex="15" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
+        <button tabindex="16" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+      </div>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <div fxLayout="column">
+        <div *ngIf="channel" class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+          <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{channel.remote_alias | titlecase}}</p>
+          <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{channel.chan_id}}</p>
+          <p fxFlex="30"></p>
+        </div>
+        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+          <mat-step [stepControl]="inputFormGroup">
+            <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+              <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+              </div>
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">              
+                <mat-form-field fxFlex="48">
+                  <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
+                  <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
+                  <span matSuffix>Sats</span>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="48">
+                  <input matInput placeholder="Target Confirmation Blocks" type="number" step="1" tabindex="2" formControlName="targetConf" required>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation blocks is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation blocks must be a positive number.</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()" matStepperNext>Estimate Quote</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="quoteFormGroup">
+            <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
+              <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopOut()" matStepperNext>Loop Out</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="statusFormGroup">
+            <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>Loop-Out</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!loopOutStatus ? 'Waiting for Loop-out request...' : loopOutStatus.id_bytes ? 'Loop-out request details' : 'Loop-out error details'}}<mat-icon *ngIf="loopOutStatus" class="ml-1 icon-small">{{(loopOutStatus && loopOutStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div  *ngIf="!loopOutStatus; else loopOutStatusBlock"></div>
+                </mat-expansion-panel>
+              </div>
+              <h4 *ngIf="loopOutStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopOutStatus && loopOutStatus.error) ? 'Loop-out failed.' : (loopOutStatus && loopOutStatus.id_bytes && channel) ? 'Loop-out request placed successfully. Go to loop to check it\'s status.' : 'Loop-out request placed successfully.'}}</h4>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button *ngIf="loopOutStatus && loopOutStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Check Status</button>
+                <button *ngIf="loopOutStatus && (loopOutStatus.error || !loopOutStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-vertical-stepper>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
+          <button mat-stroked-button color="primary" tabindex="13" type="button" [mat-dialog-close]="false" default>Close</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </div>
+</div>
+<ng-template #loopOutStatusBlock>
+  <rtl-loop-status fxLayout="column" [loopStatus]="loopOutStatus"></rtl-loop-status>
+</ng-template>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="flgShowInfo" [@opacityAnimation] class="info-graphics-container">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title"></span></div>
+      <div fxFlex="8" fxLayoutAlign="end center">
+        <button tabindex="17" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
+      </div>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxFlex="90" fxLayoutAlign="space-between center">
+      <rtl-info-graphics [stepNumber]="stepNumber" style="height: 36rem;min-height: 36rem;"></rtl-info-graphics>
+    </mat-card-content>
+    <div class="my-4" fxLayout="row" fxFlex="100" fxLayoutAlign="center end">
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click)="stepNumber=i;" class="dots-stepper-block">
+        <p class="dot tiny-dot" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
+      </span>
+    </div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
+      <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="12" type="button" (click)="onReadMore()">Read More</button>
+      <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="14" type="button" (click)="onNext()">Next</button>
+    </div>
+  </div>
+</div>

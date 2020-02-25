@@ -7,6 +7,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material';
 import { UserIdleModule } from 'angular-user-idle';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { routing } from './app.routing';
@@ -28,6 +29,20 @@ import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
 import { LayoutModule } from '@angular/cdk/layout';
+import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
+import { CLInvoiceInformationComponent } from './clightning/transactions/invoice-information-modal/invoice-information.component';
+import { InvoiceInformationComponent } from './lnd/transactions/invoice-information-modal/invoice-information.component';
+import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
+import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
+import { LoopInModalComponent } from './lnd/loop/loop-in-modal/loop-in-modal.component';
+import { LoopOutModalComponent } from './lnd/loop/loop-out-modal/loop-out-modal.component';
+import { ShowPubkeyComponent } from './shared/components/data-modal/show-pubkey/show-pubkey.component';
+import { OnChainGeneratedAddressComponent } from './shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
+import { SpinnerDialogComponent } from './shared/components/data-modal/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from './shared/components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from './shared/components/data-modal/confirmation-message/confirmation-message.component';
+import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
 
 @NgModule({
   imports: [
@@ -39,16 +54,48 @@ import { LayoutModule } from '@angular/cdk/layout';
     StoreModule.forRoot(RTLReducer),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    LayoutModule
+    LayoutModule,
+    MatDialogModule
   ],
   declarations: [
-    AppComponent
+    AppComponent,
+    CLInvoiceInformationComponent,
+    InvoiceInformationComponent,
+    ChannelRebalanceComponent,
+    OnChainGeneratedAddressComponent,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
+    ShowPubkeyComponent,
+    LoopInModalComponent,
+    LoopOutModalComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    CloseChannelComponent
   ],
+  entryComponents: [
+    CLInvoiceInformationComponent,
+    InvoiceInformationComponent,
+    ChannelRebalanceComponent,
+    OnChainGeneratedAddressComponent,
+    CLOpenChannelComponent,
+    OpenChannelComponent,
+    ShowPubkeyComponent,
+    LoopInModalComponent,
+    LoopOutModalComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    CloseChannelComponent
+  ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: OverlayContainer, useClass: ThemeOverlay },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },    
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     CommonService, AuthGuard, SessionService, LoopService, DataService
   ],
   bootstrap: [AppComponent]

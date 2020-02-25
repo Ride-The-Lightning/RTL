@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, sampleTime } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+
 
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
@@ -11,9 +12,9 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
-import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
-import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
-import { LoopOutModalComponent } from '../../../../../shared/components/data-modal/loop/loop-out-modal/loop-out-modal.component';
+import { ChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
+import { CloseChannelComponent } from '../../close-channel-modal/close-channel.component';
+import { LoopOutModalComponent } from '../../../../loop/loop-out-modal/loop-out-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -199,7 +200,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
       channel: channelToClose,
-      component: CloseChannelLndComponent
+      component: CloseChannelComponent
     }}));    
   }
 
@@ -317,7 +318,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(response => {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '52rem', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],

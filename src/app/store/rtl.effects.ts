@@ -315,7 +315,7 @@ export class RTLEffects implements OnDestroy {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
-      this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+      this.router.navigate(['/login']);
     }
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');

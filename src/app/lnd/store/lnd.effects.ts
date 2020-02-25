@@ -13,8 +13,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
-import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
-import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel-lnd/open-channel.component';
+import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
+import { OpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
