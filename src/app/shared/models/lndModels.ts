@@ -1,3 +1,5 @@
+import { SwapStateEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+
 export interface ChannelStatus {
   channels?: number;
   capacity?:number;
@@ -416,29 +418,6 @@ export interface PendingChannelsGroup {
 export interface PendingChannelsData {
   num_channels: number;
   limbo_balance: number;
-}
-
-export enum ChannelCloseSummaryClosureType {
-  COOPERATIVE_CLOSE = 'Channel closed cooperatively',
-  LOCAL_FORCE_CLOSE = 'Channel force-closed by the local node',
-  REMOTE_FORCE_CLOSE = 'Channel force-closed by the remote node',
-  BREACH_CLOSE = 'Remote node attempted to broadcast a prior revoked channel state',
-  FUNDING_CANCELED = 'Channel never fully opened',
-  ABANDONED = 'Channel abandoned by the local node'
-}
-
-export enum SwapStateEnum {
-  INITIATED	= 'Initiated',
-  PREIMAGE_REVEALED	= 'Preimage Revealed',
-  HTLC_PUBLISHED	= 'HTLC Published',
-  SUCCESS	= 'Successful',
-  FAILED	= 'Failed',
-  INVOICE_SETTLED	= 'Invoice Settled'
-}
-
-export enum SwapTypeEnum {
-  LOOP_OUT = 'LOOP_OUT',
-  LOOP_IN = 'LOOP_IN'
 }
 
 export interface SwapStatus {

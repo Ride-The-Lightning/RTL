@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { SwapTypeEnum } from '../../shared/models/lndModels';
+import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-loop',

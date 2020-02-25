@@ -4,8 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatSnackBar } from '@angular/material';
 import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../services/consts-enums-functions';
-import { SwapStateEnum } from '../../../models/lndModels';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapStateEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-alert-message',

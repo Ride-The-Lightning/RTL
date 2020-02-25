@@ -39,13 +39,13 @@
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()" matStepperNext>Loop In</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()" matStepperNext>Initiate Loop-In</button>
               </div>
             </form>
           </mat-step>
           <mat-step [stepControl]="statusFormGroup">
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>Loop-In</ng-template>
+              <ng-template matStepLabel>Loop-In Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <mat-progress-bar fxFlex="100" *ngIf="!loopInStatus" color="primary" mode="indeterminate"></mat-progress-bar>
                 <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
