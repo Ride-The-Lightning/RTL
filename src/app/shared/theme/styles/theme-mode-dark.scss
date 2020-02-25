@@ -162,10 +162,11 @@
       & .fill-color-28 { fill: #313131; }
       & .fill-color-29 { fill: #E7E7E7; }
       & .fill-color-30 { fill: #FFFFFF; }
-      & .fill-color-green-light { fill: 6ECB48; }
+      & .fill-color-31 { fill: $primary-color; }
+      & .fill-color-green-light { fill: #6ECB48; }
       & .fill-color-primary { fill: $primary-color; }
       & .fill-color-primary-lighter { fill: $primary-lighter; }
-      & .fill-color-primary-dark { fill: $primary-darker; }
+      & .fill-color-primary-darker { fill: $primary-darker; }
     }
   }
 
