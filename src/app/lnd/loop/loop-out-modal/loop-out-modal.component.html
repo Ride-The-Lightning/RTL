@@ -55,8 +55,7 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>Loop-Out Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopOutStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{!loopOutStatus ? 'Waiting for Loop-out request...' : loopOutStatus.id_bytes ? 'Loop-out request details' : 'Loop-out error details'}}<mat-icon *ngIf="loopOutStatus" class="ml-1 icon-small">{{(loopOutStatus && loopOutStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
@@ -64,6 +63,7 @@
                   </mat-expansion-panel-header>
                   <div  *ngIf="!loopOutStatus; else loopOutStatusBlock"></div>
                 </mat-expansion-panel>
+                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
               <h4 *ngIf="loopOutStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopOutStatus && loopOutStatus.error) ? 'Loop-out failed.' : (loopOutStatus && loopOutStatus.id_bytes && channel) ? 'Loop-out request placed successfully. Go to loop to check it\'s status.' : 'Loop-out request placed successfully.'}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

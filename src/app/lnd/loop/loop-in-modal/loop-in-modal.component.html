@@ -47,8 +47,7 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>Loop-In Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-progress-bar fxFlex="100" *ngIf="!loopInStatus" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="true">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopInStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{!loopInStatus ? 'Waiting for Loop-in request...' : loopInStatus.id_bytes ? 'Loop-in request details' : 'Loop-in error details'}}<mat-icon *ngIf="loopInStatus" class="ml-1 icon-small">{{(loopInStatus && loopInStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
@@ -56,6 +55,7 @@
                   </mat-expansion-panel-header>
                   <div fxLayout="column" *ngIf="!loopInStatus; else loopInStatusBlock"></div>
                 </mat-expansion-panel>
+                <mat-progress-bar fxFlex="100" *ngIf="!loopInStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
               <h4 *ngIf="loopInStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopInStatus && loopInStatus.error) ? 'Loop-in failed.' : 'Loop-in request placed successfully.'}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">

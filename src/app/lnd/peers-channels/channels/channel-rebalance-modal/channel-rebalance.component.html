@@ -76,7 +76,6 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>Invoice/Payment</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-progress-bar fxFlex="100" *ngIf="!flgInvoiceGenerated" color="primary" mode="indeterminate"></mat-progress-bar>
                 <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -85,7 +84,7 @@
                   </mat-expansion-panel-header>
                   <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
                 </mat-expansion-panel>
-                <mat-progress-bar fxFlex="100" *ngIf="flgInvoiceGenerated && !flgPaymentSent" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar fxFlex="100" *ngIf="!flgInvoiceGenerated" color="primary" mode="indeterminate"></mat-progress-bar>
                 <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="flgInvoiceGenerated && flgPaymentSent">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -94,6 +93,7 @@
                   </mat-expansion-panel-header>
                   <div fxLayout="column" *ngIf="!paymentStatus; else paymentStatusBlock"></div>
                 </mat-expansion-panel>
+                <mat-progress-bar fxFlex="100" *ngIf="flgInvoiceGenerated && !flgPaymentSent" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
               <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
