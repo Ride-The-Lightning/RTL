@@ -127,11 +127,10 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.peerAddress = confirmRes[0].inputValue;
-        const pattern = '^([a-zA-Z0-9]){1,66}@(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$';
         const deviderIndex = this.peerAddress.search('@');
         let pubkey = '';
         let host = '';
-        if (new RegExp(pattern).test(this.peerAddress)) {
+        if (deviderIndex > -1) {
           pubkey = this.peerAddress.substring(0, deviderIndex);
           host = this.peerAddress.substring(deviderIndex + 1);
           this.connectPeerWithParams(pubkey, host);
