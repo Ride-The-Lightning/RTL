@@ -754,7 +754,7 @@ export class CLEffects implements OnDestroy {
         data: {
           type: alerType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status, message: (err.error && err.error.error && err.error.error.error && err.error.error.error.error) ? err.error.error.error.error : (err.error && err.error.error && err.error.error.error) ? err.error.error.error : (err.error && err.error.error) ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
           component: ErrorMessageComponent          
         }
       }));
