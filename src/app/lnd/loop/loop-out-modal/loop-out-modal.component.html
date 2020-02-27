@@ -15,7 +15,7 @@
           <p fxFlex="30"></p>
         </div>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
-          <mat-step [stepControl]="inputFormGroup">
+          <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
@@ -38,16 +38,16 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()" matStepperNext>Estimate Quote</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="quoteFormGroup">
+          <mat-step [stepControl]="quoteFormGroup" [editable]="flgEditable">
             <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopOut()" matStepperNext>Initiate Loop-Out</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopOut()">Initiate Loop-Out</button>
               </div>
             </form>
           </mat-step>
@@ -95,8 +95,8 @@
       <rtl-info-graphics [stepNumber]="stepNumber" [animationDirection]="animationDirection" style="height: 36rem;min-height: 36rem;"></rtl-info-graphics>
     </mat-card-content>
     <div class="my-4" fxLayout="row" fxFlex="100" fxLayoutAlign="center end">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" class="dots-stepper-block">
-        <p class="dot tiny-dot" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
+      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
+        <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        

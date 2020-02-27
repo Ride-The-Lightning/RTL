@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 import { Channel } from '../../../shared/models/lndModels';
 import { LoopOutModalComponent } from '../../loop/loop-out-modal/loop-out-modal.component';
@@ -22,7 +21,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
   public showLoop: boolean;
-  public faCircleNotch = faCircleNotch;
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 

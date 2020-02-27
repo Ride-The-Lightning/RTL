@@ -140,7 +140,7 @@ export class LNDEffects implements OnDestroy {
               };
               return {
                 type: RTLActions.OPEN_ALERT,
-                payload: { width: '50%', data: { 
+                payload: { data: { 
                   type: AlertTypeEnum.INFORMATION,
                   alertTitle: 'Peer Connected',
                   message: peerToAddChannelMessage,

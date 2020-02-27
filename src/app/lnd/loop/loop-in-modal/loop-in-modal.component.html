@@ -7,7 +7,7 @@
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
-          <mat-step [stepControl]="inputFormGroup">
+          <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">              
@@ -30,16 +30,16 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()" matStepperNext>Estimate Quote</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="quoteFormGroup">
+          <mat-step [stepControl]="quoteFormGroup" [editable]="flgEditable">
             <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()" matStepperNext>Initiate Loop-In</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopIn()">Initiate Loop-In</button>
               </div>
             </form>
           </mat-step>

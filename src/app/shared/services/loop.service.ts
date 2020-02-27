@@ -120,8 +120,7 @@ export class LoopService {
         }
       }));
     } else {
-      this.store.dispatch(new RTLActions.OpenAlert({
-        width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
           message: { code: err.code ? err.code : err.status, message: err.message ? err.message : 'Unknown Error', URL: errURL },

@@ -104,7 +104,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_CONFIRMATION),
     take(1),
     map((action: RTLActions.CloseConfirmation) => {
-      this.dialogRef.close();
+      if (this.dialogRef) { this.dialogRef.close(); }
       this.logger.info(action.payload);
       return action.payload;
     }
@@ -421,8 +421,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({
-        width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: alertType,
           alertTitle: alertTitle,
           message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },

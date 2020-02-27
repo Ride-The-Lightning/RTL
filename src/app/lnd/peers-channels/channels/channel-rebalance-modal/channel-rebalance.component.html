@@ -12,7 +12,7 @@
           <p fxFlex="30"></p>
         </div>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
-          <mat-step [stepControl]="inputFormGroup">
+          <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">              
@@ -33,13 +33,13 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()" matStepperNext>Estimate Fee</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()">Estimate Fee</button>
               </div>
             </form>
           </mat-step>
-          <mat-step [stepControl]="feeFormGroup">
+          <mat-step [stepControl]="feeFormGroup" [editable]="flgEditable">
             <form [formGroup]="feeFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>{{feeFormLabel}}</ng-template>
+              <ng-template matStepLabel disabled="true">{{feeFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                   <div fxFlex="75" class="alert">
@@ -68,7 +68,7 @@
                 </div>                
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onRebalance()" matStepperNext>Rebalance</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onRebalance()">Rebalance</button>
               </div>
             </form>
           </mat-step>

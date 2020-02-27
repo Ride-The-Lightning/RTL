@@ -102,8 +102,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity.');
-        this.store.dispatch(new  RTLActions.CloseAlert());
-        this.store.dispatch(new  RTLActions.CloseConfirmation(false));
+        this.store.dispatch(new RTLActions.CloseAlert());
+        this.store.dispatch(new RTLActions.CloseConfirmation(false));
         this.store.dispatch(new RTLActions.OpenAlert({ data: {
           type: AlertTypeEnum.WARNING,
           alertTitle: 'Logging out',

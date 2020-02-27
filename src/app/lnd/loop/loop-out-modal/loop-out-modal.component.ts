@@ -1,10 +1,10 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,7 +26,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./loop-out-modal.component.scss'],
   animations: [opacityAnimation]
 })
-export class LoopOutModalComponent implements OnInit, OnDestroy {
+export class LoopOutModalComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faInfoCircle = faInfoCircle;
   public quote: LoopQuote;
   public channel: Channel;
@@ -41,6 +42,7 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'farward';
+  public flgEditable = true;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
@@ -61,21 +63,33 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
     this.statusFormGroup = this.formBuilder.group({}); 
   }
 
+  ngAfterViewInit() {
+    this.inputFormGroup.setErrors({'Invalid': true});
+    this.quoteFormGroup.setErrors({'Invalid': true});
+  }
+
   onLoopOut() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2) { return true; }
+    this.flgEditable = false;
+    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.next();
     const swapRoutingFee = this.inputFormGroup.controls.amount.value * 0.02;
     this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee).pipe(takeUntil(this.unSubs[0]))
     .subscribe((loopOutStatus: any) => {
       this.loopOutStatus = JSON.parse(loopOutStatus);
       this.store.dispatch(new RTLActions.FetchLoopSwaps());
+      this.flgEditable = true;
     }, (err) => {
       this.loopOutStatus.error = err.error;
+      this.flgEditable = true;
       this.logger.error(err);
     });
   }
 
   onEstimateQuote() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2) { return true; }
+    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.next();
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
     this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value)
     .pipe(takeUntil(this.unSubs[1]))
@@ -119,6 +133,9 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
         this.quoteFormLabel = 'Confirm Quote';
         break;
     }
+    if (event.selectedIndex < event.previouslySelectedIndex) {
+      event.selectedStep.stepControl.setErrors({'Invalid': true});
+    }
   }
 
   goToLoop() {
@@ -134,7 +151,10 @@ export class LoopOutModalComponent implements OnInit, OnDestroy {
     this.flgShowInfo = true;
   }
 
-  onReadMore() {}
+  onReadMore() {
+    window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank');
+    this.onClose();
+  }
 
   onStepChanged(index: number) {
     this.animationDirection = index < this.stepNumber ? 'backward' : 'forward';

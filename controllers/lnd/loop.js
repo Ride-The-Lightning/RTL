@@ -198,7 +198,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     terms = JSON.parse(terms);
 
     //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
-    terms.max_swap_amount = '600000';
+    terms.max_swap_amount = '280000';
     //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
 
     options1.url = swapServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faInfinity } from '@fortawesome/free-solid-svg-icons';
 import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
@@ -8,7 +8,7 @@ import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
   styleUrls: ['./loop.component.scss']
 })
 export class LoopComponent implements OnInit {
-  faCircleNotch = faCircleNotch;
+  faInfinity = faInfinity;
   selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
 
   constructor() {}

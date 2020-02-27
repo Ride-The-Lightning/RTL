@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
@@ -21,7 +21,8 @@ import * as RTLActions from '../../../../store/rtl.actions';
   templateUrl: './channel-rebalance.component.html',
   styleUrls: ['./channel-rebalance.component.scss']
 })
-export class ChannelRebalanceComponent implements OnInit, OnDestroy {
+export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faInfoCircle = faInfoCircle;
   public invoices: ListInvoices = {};
   public selChannel: Channel = {};
@@ -36,6 +37,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   public flgPaymentSent = false;
   public inputFormLabel = 'Amount to rebalance';
   public feeFormLabel = 'Select rebalance fee';
+  public flgEditable = true;
   inputFormGroup: FormGroup;
   feeFormGroup: FormGroup;  
   statusFormGroup: FormGroup;  
@@ -74,6 +76,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         this.logger.info(action.payload);
         this.flgPaymentSent = true;
         this.paymentStatus = action.payload;
+        this.flgEditable = true;        
       }
       if (action.type === RTLActions.NEWLY_SAVED_INVOICE) { 
         this.logger.info(action.payload);
@@ -82,8 +85,17 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    this.inputFormGroup.setErrors({'Invalid': true});
+    this.feeFormGroup.setErrors({'Invalid': true});
+  }
+
   onEstimateFee() {
     if(!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
+    if (this.stepper.selectedIndex === 0) {
+      this.inputFormGroup.setErrors(null);
+      this.stepper.next();
+    }
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
@@ -124,6 +136,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
         this.feeFormLabel = 'Select rebalance fee';
         break;
     }
+    if (event.selectedIndex < event.previouslySelectedIndex) {
+      event.selectedStep.stepControl.setErrors({'Invalid': true});
+    }    
   }
 
   onUseEstimate() {
@@ -133,6 +148,9 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
 
   onRebalance() {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
+    this.flgEditable = false;
+    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.next();
     this.paymentRequest = '';
     this.paymentStatus = null;
     this.flgReusingInvoice = false;
