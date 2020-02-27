@@ -13,6 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
+import { DataService } from '../shared/services/data.service';
 import { Settings, RTLConfiguration, ConfigSettingsNode } from '../shared/models/RTLconfig';
 import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
@@ -41,6 +42,7 @@ export class RTLEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     private commonService: CommonService,
+    private dataService: DataService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router) {}
@@ -384,7 +386,9 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
     if(this.sessionService.getItem('token')) {
-      if(node.lnImplementation.toUpperCase() === 'CLT') {
+      node.lnImplementation = node.lnImplementation.toUpperCase();
+      this.dataService.setChildAPIUrl(node.lnImplementation);
+      if(node.lnImplementation === 'CLT') {
         this.CHILD_API_URL = API_URL + '/cl';
         this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
       } else {

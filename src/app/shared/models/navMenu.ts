@@ -27,8 +27,9 @@ export const MENU_DATA: MenuRootNode = {
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/cl/transactions', userPersona: UserPersonaEnum.ALL},
       {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/cl/routing', userPersona: UserPersonaEnum.ALL},
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/cl/lookups', userPersona: UserPersonaEnum.ALL},
-      {id: 36, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cl/rates', userPersona: UserPersonaEnum.OPERATOR},
-      {id: 37, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cl/rates', userPersona: UserPersonaEnum.MERCHANT}
+      {id: 36, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/cl/signverify', userPersona: UserPersonaEnum.ALL},
+      {id: 37, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cl/rates', userPersona: UserPersonaEnum.OPERATOR},
+      {id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cl/rates', userPersona: UserPersonaEnum.MERCHANT}
       ]},
     {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
     {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    

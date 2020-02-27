@@ -126,8 +126,6 @@ exports.updateDefaultNode = (req, res, next) => {
 exports.getConfig = (req, res, next) => {
   let confFile = '';
   let JSONFormat = false;
-  console.warn('\n\n\nHERE');
-  console.warn(common.selectedNode);
   switch (req.params.nodeType) {
     case 'ln':
       JSONFormat = false;

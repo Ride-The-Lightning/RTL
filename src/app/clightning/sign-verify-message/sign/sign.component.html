@@ -1,0 +1,18 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #form="ngForm">
+    <mat-form-field fxLayout="row" fxFlex="100" fxLayoutAlign="start end">
+      <textarea autoFocus matInput [(ngModel)]="message" rows="1" placeholder="Message to sign" required tabindex="1" (keyup)="onMessageChange()" name="message"></textarea>
+      <mat-error *ngIf="!message">Message is required.</mat-error>
+    </mat-form-field>
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="my-1">
+      <button fxFlex="48" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()" type="reset">Clear Field</button>
+      <button fxFlex="48" mat-flat-button color="primary" (click)="onSign()" tabindex="3" type="submit">Sign</button>
+    </div>
+    <mat-divider [inset]="true" class="my-2"></mat-divider>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center"><p>Generated Signature</p></div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center" class="bordered-box read-only h-4 padding-gap">{{signature}}</div>
+    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
+      <button fxFlex="48" mat-stroked-button color="primary" tabindex="4" rtlClipboard [payload]="signature" (copied)="onCopyField($event)" type="button">Copy Signature</button>
+    </div>
+  </form> 
+</div>

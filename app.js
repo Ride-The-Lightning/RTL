@@ -38,6 +38,7 @@ const onChainCLRoutes = require("./routes/c-lightning/onchain");
 const paymentsCLRoutes = require("./routes/c-lightning/payments");
 const peersCLRoutes = require("./routes/c-lightning/peers");
 const networkCLRoutes = require("./routes/c-lightning/network");
+const messageCLRoutes = require("./routes/c-lightning/message");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -87,6 +88,7 @@ app.use(apiCLRoot + "onchain", onChainCLRoutes);
 app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
+app.use(apiCLRoot + "message", messageCLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

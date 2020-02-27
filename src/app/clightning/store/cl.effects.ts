@@ -710,6 +710,7 @@ export class CLEffects implements OnDestroy {
       chains: info.chains,
       uris: info.uris,      
       version: info.version,
+      api_version: info.api_version,
       currency_unit: 'BTC',
       smaller_currency_unit: 'Sats',
       numberOfPendingChannels: info.num_pending_channels
