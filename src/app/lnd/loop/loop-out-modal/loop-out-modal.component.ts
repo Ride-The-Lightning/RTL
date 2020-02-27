@@ -41,7 +41,7 @@ export class LoopOutModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public stepNumber = 1;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  public animationDirection = 'farward';
+  public animationDirection = 'forward';
   public flgEditable = true;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;  

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
@@ -21,7 +21,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   templateUrl: './channel-rebalance.component.html',
   styleUrls: ['./channel-rebalance.component.scss']
 })
-export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faInfoCircle = faInfoCircle;
   public invoices: ListInvoices = {};
@@ -52,13 +52,17 @@ export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestr
         this.feeLimitTypes.push(FEE_LIMIT_TYPE);
       }
     });
+    // hiddenAmount & hiddenFeeLimit are temporary hacks to overcome material steppers stepChanged event shortcoming.
+    // User should be able to go to next step only by clicking the action button on the step.
     this.inputFormGroup = this.formBuilder.group({
+      hiddenAmount: ['', [Validators.required]],
       rebalanceAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.selChannel.local_balance)]],
       selRebalancePeer: [null, Validators.required]
     });
     this.feeFormGroup = this.formBuilder.group({
       selFeeLimitType: [this.feeLimitTypes[0], Validators.required],
-      feeLimit: ['', [Validators.required, Validators.min(0)]]
+      feeLimit: ['', [Validators.required, Validators.min(0)]],
+      hiddenFeeLimit: ['', [Validators.required]]
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
     this.store.select('lnd')
@@ -85,15 +89,10 @@ export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
-  ngAfterViewInit() {
-    this.inputFormGroup.setErrors({'Invalid': true});
-    this.feeFormGroup.setErrors({'Invalid': true});
-  }
-
   onEstimateFee() {
     if(!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
     if (this.stepper.selectedIndex === 0) {
-      this.inputFormGroup.setErrors(null);
+      this.inputFormGroup.controls.hiddenAmount.setValue(this.inputFormGroup.controls.rebalanceAmount.value);
       this.stepper.next();
     }
     this.queryRoute = null;
@@ -137,7 +136,11 @@ export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestr
         break;
     }
     if (event.selectedIndex < event.previouslySelectedIndex) {
-      event.selectedStep.stepControl.setErrors({'Invalid': true});
+      if (event.selectedIndex === 0) {
+        this.inputFormGroup.controls.hiddenAmount.setValue('');
+      } else if (event.selectedIndex === 1) {
+        this.feeFormGroup.controls.hiddenFeeLimit.setValue('');
+      }
     }    
   }
 
@@ -148,9 +151,9 @@ export class ChannelRebalanceComponent implements OnInit, AfterViewInit, OnDestr
 
   onRebalance() {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
-    this.flgEditable = false;
-    this.stepper.selected.stepControl.setErrors(null);
+    this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
     this.stepper.next();
+    this.flgEditable = false;
     this.paymentRequest = '';
     this.paymentStatus = null;
     this.flgReusingInvoice = false;

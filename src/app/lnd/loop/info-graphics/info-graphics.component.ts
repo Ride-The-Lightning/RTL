@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
@@ -10,8 +10,9 @@ import { sliderAnimation } from '../../../shared/animation/slider-animation';
   animations: [sliderAnimation]  
 })
 export class InfoGraphicsComponent implements OnInit {
-  @Input() stepNumber = 1;
   @Input() animationDirection = 'forward';
+  @Input() stepNumber = 1;
+  @Output() stepNumberChange = new EventEmitter();
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
@@ -19,4 +20,15 @@ export class InfoGraphicsComponent implements OnInit {
 
   ngOnInit() {}
 
+  onSwipe(event: any) {
+    if(event.direction === 2 && this.stepNumber < 5) {
+      this.stepNumber++;
+      this.animationDirection = 'forward';
+      this.stepNumberChange.emit(this.stepNumber);
+    } else if(event.direction === 4 && this.stepNumber > 1) {
+      this.stepNumber--;
+      this.animationDirection = 'backward';
+      this.stepNumberChange.emit(this.stepNumber);
+    }
+  }
 }
