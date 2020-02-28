@@ -8,13 +8,13 @@ import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@an
 
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { ChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from '../../close-channel-modal/close-channel.component';
-import { LoopOutModalComponent } from '../../../../loop/loop-out-modal/loop-out-modal.component';
+import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -322,7 +322,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],
-        component: LoopOutModalComponent
+        direction: SwapTypeEnum.LOOP_OUT,
+        component: LoopModalComponent
       }}));    
     });
   }

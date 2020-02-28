@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoopOutModalComponent } from './loop-out-modal.component';
+import { LoopModalComponent } from './loop-modal.component';
 
-describe('LoopOutModalComponent', () => {
-  let component: LoopOutModalComponent;
-  let fixture: ComponentFixture<LoopOutModalComponent>;
+describe('LoopModalComponent', () => {
+  let component: LoopModalComponent;
+  let fixture: ComponentFixture<LoopModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopOutModalComponent ]
+      declarations: [ LoopModalComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoopOutModalComponent);
+    fixture = TestBed.createComponent(LoopModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -5,7 +5,7 @@ var options = {};
 
 exports.signMessage = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/getinfo/signMessage';
+  options.url = common.getSelLNServerUrl() + '/utility/signMessage';
   options.form = { message: req.body.message };
   request.post(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
@@ -29,7 +29,7 @@ exports.signMessage = (req, res, next) => {
 
 exports.verifyMessage = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/getinfo/checkMessage/' + req.body.message + '/' + req.body.signature;
+  options.url = common.getSelLNServerUrl() + '/utility/checkMessage/' + req.body.message + '/' + req.body.signature;
   request.get(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
     if(!body || body.error) {

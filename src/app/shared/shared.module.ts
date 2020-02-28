@@ -44,7 +44,8 @@ import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { InfoGraphicsComponent } from '../lnd/loop/info-graphics/info-graphics.component';
+import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 @NgModule({
   imports: [
@@ -141,7 +142,8 @@ import { InfoGraphicsComponent } from '../lnd/loop/info-graphics/info-graphics.c
     PerfectScrollbarModule,
     LoopQuoteComponent,
     LoopStatusComponent,
-    InfoGraphicsComponent
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -162,7 +164,8 @@ import { InfoGraphicsComponent } from '../lnd/loop/info-graphics/info-graphics.c
     AuthSettingsComponent,
     LoopQuoteComponent,
     LoopStatusComponent,
-    InfoGraphicsComponent
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

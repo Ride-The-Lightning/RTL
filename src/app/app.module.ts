@@ -35,8 +35,7 @@ import { InvoiceInformationComponent } from './lnd/transactions/invoice-informat
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
-import { LoopInModalComponent } from './lnd/loop/loop-in-modal/loop-in-modal.component';
-import { LoopOutModalComponent } from './lnd/loop/loop-out-modal/loop-out-modal.component';
+import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { ShowPubkeyComponent } from './shared/components/data-modal/show-pubkey/show-pubkey.component';
 import { OnChainGeneratedAddressComponent } from './shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 import { SpinnerDialogComponent } from './shared/components/data-modal/spinner-dialog/spinner-dialog.component';
@@ -66,8 +65,7 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
-    LoopInModalComponent,
-    LoopOutModalComponent,
+    LoopModalComponent,
     SpinnerDialogComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,
@@ -82,8 +80,7 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
     CLOpenChannelComponent,
     OpenChannelComponent,
     ShowPubkeyComponent,
-    LoopInModalComponent,
-    LoopOutModalComponent,
+    LoopModalComponent,
     SpinnerDialogComponent,
     AlertMessageComponent,
     ConfirmationMessageComponent,

@@ -4,8 +4,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
-import { LoopOutModalComponent } from '../../loop/loop-out-modal/loop-out-modal.component';
+import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -48,7 +49,8 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         channel: channel,
         minQuote: response[0],
         maxQuote: response[1],
-        component: LoopOutModalComponent
+        direction: SwapTypeEnum.LOOP_OUT,
+        component: LoopModalComponent
       }}));    
     });
   }  

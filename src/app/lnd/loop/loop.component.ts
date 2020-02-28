@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import { faInfinity } from '@fortawesome/free-solid-svg-icons';
+
 import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
+import { LoopModalComponent } from './loop-modal/loop-modal.component';
+import { LoopQuote } from '../../shared/models/loopModels';
+import { LoopService } from '../../shared/services/loop.service';
+
+import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-loop',
@@ -8,10 +18,15 @@ import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
   styleUrls: ['./loop.component.scss']
 })
 export class LoopComponent implements OnInit {
-  faInfinity = faInfinity;
-  selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
+  public faInfinity = faInfinity;
+  private targetConf = 2;
+  public inAmount = 250000;
+  public quotes: LoopQuote[] = [];
+  public swapTypeEnum = SwapTypeEnum;
+  public selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor() {}
+  constructor(private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {}
 
@@ -22,4 +37,27 @@ export class LoopComponent implements OnInit {
       this.selectedSwapType = SwapTypeEnum.LOOP_OUT;
     }
   }
+
+  onLoop(direction: SwapTypeEnum) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
+    this.loopService.getLoopInTermsAndQuotes(this.targetConf)
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(response => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
+        minQuote: response[0],
+        maxQuote: response[1],
+        direction: direction,
+        component: LoopModalComponent
+      }}));    
+    });
+  }
+
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
+  
 }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InfoGraphicsComponent } from './info-graphics.component';
+import { LoopInInfoGraphicsComponent } from './info-graphics.component';
 
-describe('InfoGraphicsComponent', () => {
-  let component: InfoGraphicsComponent;
-  let fixture: ComponentFixture<InfoGraphicsComponent>;
+describe('LoopInInfoGraphicsComponent', () => {
+  let component: LoopInInfoGraphicsComponent;
+  let fixture: ComponentFixture<LoopInInfoGraphicsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InfoGraphicsComponent ]
+      declarations: [ LoopInInfoGraphicsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InfoGraphicsComponent);
+    fixture = TestBed.createComponent(LoopInInfoGraphicsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

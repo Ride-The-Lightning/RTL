@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoopOutComponent } from './loop-out.component';
+import { LoopOutInfoGraphicsComponent } from './info-graphics.component';
 
-describe('LoopOutComponent', () => {
-  let component: LoopOutComponent;
-  let fixture: ComponentFixture<LoopOutComponent>;
+describe('LoopOutInfoGraphicsComponent', () => {
+  let component: LoopOutInfoGraphicsComponent;
+  let fixture: ComponentFixture<LoopOutInfoGraphicsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopOutComponent ]
+      declarations: [ LoopOutInfoGraphicsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoopOutComponent);
+    fixture = TestBed.createComponent(LoopOutInfoGraphicsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

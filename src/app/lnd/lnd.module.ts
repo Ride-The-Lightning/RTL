@@ -44,11 +44,9 @@ import { ChannelCapacityInfoComponent } from './home/channel-capacity-info/chann
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
+import { SwapsComponent } from './loop/swaps/swaps.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
-import { LoopOutComponent } from './loop/loop-out/loop-out.component';
-import { LoopInComponent } from './loop/loop-in/loop-in.component';
-import { SwapsComponent } from './loop/swaps/swaps.component';
 
 @NgModule({
   imports: [
@@ -97,8 +95,6 @@ import { SwapsComponent } from './loop/swaps/swaps.component';
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
     LoopComponent,
-    LoopOutComponent,
-    LoopInComponent,
     SwapsComponent
   ],  
   providers: [

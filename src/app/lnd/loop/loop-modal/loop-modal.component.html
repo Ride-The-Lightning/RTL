@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="!flgShowInfo" [@opacityAnimation]>
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? 'Channel Loop-out' : 'Loop-out'}}</span></div>
+      <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
       <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
         <button tabindex="15" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
         <button tabindex="16" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
@@ -47,28 +47,28 @@
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoopOut()">Initiate Loop-Out</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
           <mat-step [stepControl]="statusFormGroup">
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>Loop-Out Status</ng-template>
+              <ng-template matStepLabel>{{loopDirectionCaption}} Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopOutStatus">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{!loopOutStatus ? 'Waiting for Loop-out request...' : loopOutStatus.id_bytes ? 'Loop-out request details' : 'Loop-out error details'}}<mat-icon *ngIf="loopOutStatus" class="ml-1 icon-small">{{(loopOutStatus && loopOutStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{(!loopStatus) ? ('Waiting for ' + loopDirectionCaption + ' request...') : (loopStatus.id_bytes) ? (loopDirectionCaption + ' request details') : (loopDirectionCaption + ' error details')}}<mat-icon *ngIf="loopStatus" class="ml-1 icon-small">{{(loopStatus && loopStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
-                  <div  *ngIf="!loopOutStatus; else loopOutStatusBlock"></div>
+                  <div  *ngIf="!loopStatus; else loopStatusBlock"></div>
                 </mat-expansion-panel>
-                <mat-progress-bar fxFlex="100" *ngIf="!loopOutStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar fxFlex="100" *ngIf="!loopStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
-              <h4 *ngIf="loopOutStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopOutStatus && loopOutStatus.error) ? 'Loop-out failed.' : (loopOutStatus && loopOutStatus.id_bytes && channel) ? 'Loop-out request placed successfully. Go to loop to check it\'s status.' : 'Loop-out request placed successfully.'}}</h4>
+              <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="loopOutStatus && loopOutStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopOutStatus && (loopOutStatus.error || !loopOutStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Check Status</button>
+                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>
@@ -80,8 +80,8 @@
     </mat-card-content>
   </div>
 </div>
-<ng-template #loopOutStatusBlock>
-  <rtl-loop-status fxLayout="column" [loopStatus]="loopOutStatus"></rtl-loop-status>
+<ng-template #loopStatusBlock>
+  <rtl-loop-status fxLayout="column" [loopStatus]="loopStatus"></rtl-loop-status>
 </ng-template>
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="flgShowInfo" [@opacityAnimation] class="info-graphics-container">
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-large">
@@ -92,7 +92,8 @@
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center">
-      <rtl-info-graphics [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-info-graphics>
+      <rtl-loop-out-info-graphics *ngIf="direction === swapTypeEnum.LOOP_OUT" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-out-info-graphics>
+      <rtl-loop-in-info-graphics *ngIf="direction === swapTypeEnum.LOOP_IN" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-in-info-graphics>
     </mat-card-content>
     <div class="my-4" fxLayout="row" fxFlex="10" fxLayoutAlign="center end">
       <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">

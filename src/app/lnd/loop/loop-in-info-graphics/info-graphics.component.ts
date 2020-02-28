@@ -4,12 +4,12 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
 
 @Component({
-  selector: 'rtl-info-graphics',
+  selector: 'rtl-loop-in-info-graphics',
   templateUrl: './info-graphics.component.html',
   styleUrls: ['./info-graphics.component.scss'],
   animations: [sliderAnimation]  
 })
-export class InfoGraphicsComponent implements OnInit {
+export class LoopInInfoGraphicsComponent implements OnInit {
   @Input() animationDirection = 'forward';
   @Input() stepNumber = 1;
   @Output() stepNumberChange = new EventEmitter();
