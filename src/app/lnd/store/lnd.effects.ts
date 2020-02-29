@@ -14,9 +14,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { OpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -132,27 +131,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
-            if(action.payload.showOpenChannelModal) {
-              const peerToAddChannelMessage = {
-                peer: postRes[0], 
-                information: lndData.information,
-                balance: lndData.blockchainBalance.total_balance || 0
-              };
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: { 
-                  type: AlertTypeEnum.INFORMATION,
-                  alertTitle: 'Peer Connected',
-                  message: peerToAddChannelMessage,
-                  newlyAdded: true,
-                  component: OpenChannelComponent
-                }}
-              };
-            } else {
-              return {
-                type: RTLActions.VOID
-              }
-            }
+            return { type: RTLActions.VOID };
           }),
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
@@ -1194,7 +1173,7 @@ export class LNDEffects implements OnDestroy {
         data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error.error.error ? err.error.error.error.error : err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
+          message: { code: err.status, message: (err.error && err.error.error && err.error.error.error && err.error.error.error.error) ? err.error.error.error.error : (err.error && err.error.error && err.error.error.error) ? err.error.error.error : (err.error && err.error.error) ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
           component: ErrorMessageComponent
         }
       }));
