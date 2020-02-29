@@ -10,7 +10,6 @@ import { Peer, GetInfo } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { ConnectPeerModalComponent } from './connect-peer-modal/connect-peer-modal.component';
 import { OpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -30,10 +29,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class PeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild('peersForm', {static: true}) form: any;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
   public displayedColumns = [];
+  public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
@@ -92,22 +93,38 @@ export class PeersComponent implements OnInit, OnDestroy {
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === RTLActions.SET_PEERS)
     ).subscribe((setPeers: RTLActions.SetPeers) => {
+      this.peerAddress = undefined;
       this.flgAnimate = true;
+      this.form.resetForm();
     });
   }
 
-  onOpenChannel(peerToAddChannel: Peer) {
-    const peerToAddChannelMessage = {
-      peer: peerToAddChannel, 
-      information: this.information,
-      balance: this.availableBalance
-    };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-      alertTitle: 'Open Channel',
-      message: peerToAddChannelMessage,
-      newlyAdded: false,
-      component: OpenChannelComponent
-    }}));
+  onConnectPeer() {
+    if(!this.peerAddress) { return true; }
+    const deviderIndex = this.peerAddress.search('@');
+    let pubkey = '';
+    let host = '';
+    if (deviderIndex > -1) {
+      pubkey = this.peerAddress.substring(0, deviderIndex);
+      host = this.peerAddress.substring(deviderIndex + 1);
+      this.connectPeerWithParams(pubkey, host);
+    } else {
+      pubkey = this.peerAddress;
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
+      this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
+      this.lndEffects.setGraphNode
+      .pipe(take(1))
+      .subscribe(graphNode => {
+        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+        this.connectPeerWithParams(pubkey, host);
+      });
+    }
+  }
+
+  connectPeerWithParams(pubkey: string, host: string) {
+    this.newlyAddedPeer = pubkey;
+    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
+    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: true}));
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -124,6 +141,25 @@ export class PeersComponent implements OnInit, OnDestroy {
       showQRName: 'Public Key',
       showQRField: selPeer.pub_key,
       message: reorderedPeer
+    }}));
+  }
+
+  resetData() {
+    this.peerAddress = '';
+    this.form.resetForm();
+  }
+
+  onOpenChannel(peerToAddChannel: Peer) {
+    const peerToAddChannelMessage = {
+      peer: peerToAddChannel, 
+      information: this.information,
+      balance: this.availableBalance
+    };
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      alertTitle: 'Open Channel',
+      message: peerToAddChannelMessage,
+      newlyAdded: false,
+      component: OpenChannelComponent
     }}));
   }
 
@@ -154,10 +190,6 @@ export class PeersComponent implements OnInit, OnDestroy {
     if(this.peers.data && this.peers.data.length > 0) {
       this.commonService.downloadCSV(this.peers.data, 'Peers');
     }
-  }
-
-  openConnectPeer() {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { component: ConnectPeerModalComponent }}));
   }
 
   ngOnDestroy() {

@@ -42,7 +42,6 @@ import { SpinnerDialogComponent } from './shared/components/data-modal/spinner-d
 import { AlertMessageComponent } from './shared/components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './shared/components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
-import { ConnectPeerModalComponent } from './lnd/peers-channels/peers/connect-peer-modal/connect-peer-modal.component';
 
 @NgModule({
   imports: [
@@ -71,8 +70,7 @@ import { ConnectPeerModalComponent } from './lnd/peers-channels/peers/connect-pe
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
-    CloseChannelComponent,
-    ConnectPeerModalComponent
+    CloseChannelComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -87,8 +85,7 @@ import { ConnectPeerModalComponent } from './lnd/peers-channels/peers/connect-pe
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
-    CloseChannelComponent,
-    ConnectPeerModalComponent
+    CloseChannelComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
