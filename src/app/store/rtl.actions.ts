@@ -27,6 +27,7 @@ export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
+export const TWO_FA_SAVE_SETTINGS = 'TWO_FA_SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
 
@@ -258,6 +259,11 @@ export class SetRTLConfig implements Action {
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
   constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
+}
+
+export class TwoFASaveSettings implements Action {
+  readonly type = TWO_FA_SAVE_SETTINGS;
+  constructor(public payload: {secret2fa: string}) {}
 }
 
 export class SetSelelectedNode implements Action {
@@ -608,7 +614,7 @@ export class IsAuthorizedRes implements Action {
 
 export class Login implements Action {
   readonly type = LOGIN;
-  constructor(public payload: {password: string, initialPass: boolean}) {}
+  constructor(public payload: {password: string, token:string, initialPass: boolean}) {}
 }
 
 export class Logout implements Action {

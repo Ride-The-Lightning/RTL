@@ -5,6 +5,7 @@ var common = {};
 
 common.rtl_conf_file_path = '';
 common.rtl_pass = '';
+common.rtl_secret2fa = '';
 common.rtl_sso = 0;
 common.port = 3000;
 common.rtl_cookie_path = '';

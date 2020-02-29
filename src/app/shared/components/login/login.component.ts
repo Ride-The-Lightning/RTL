@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { ConfigSettingsNode } from '../../models/RTLconfig';
+import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -19,7 +19,9 @@ import * as RTLActions from '../../../store/rtl.actions';
 export class LoginComponent implements OnInit, OnDestroy {
   public faUnlockAlt = faUnlockAlt;
   public selNode: ConfigSettingsNode;
+  public appConfig: RTLConfiguration;
   public password = '';
+  public token = '';
   public rtlSSO = 0;
   public rtlCookiePath = '';
   public accessKey = '';
@@ -36,17 +38,19 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.logger.error(effectsErr);
       });
       this.selNode = rtlStore.selNode;
+      this.appConfig = rtlStore.appConfig;
       this.logger.info(rtlStore);
     });
   }
 
   onLogin() {
     if(!this.password) { return true; }
-    this.store.dispatch(new RTLActions.Login({password: sha256(this.password), initialPass: this.password === 'password'}));
+    this.store.dispatch(new RTLActions.Login({password: sha256(this.password), token: this.token, initialPass: this.password === 'password'}));
   }
 
   resetData() {
     this.password = '';
+    this.token = '';
   }
 
   ngOnDestroy() {

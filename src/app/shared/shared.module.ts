@@ -28,6 +28,7 @@ import { CLInvoiceInformationComponent } from './components/data-modal/invoice-i
 import { InvoiceInformationComponent } from './components/data-modal/invoice-information-lnd/invoice-information.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
+import { TwoFASettingsComponent } from './components/settings/2fa-settings/2fa-settings.component';
 import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
@@ -135,6 +136,7 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MatTabsModule,
     MatSnackBarModule,
     AppSettingsComponent,
+    TwoFASettingsComponent,
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,
@@ -163,6 +165,7 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
   ],
   declarations: [
     AppSettingsComponent,
+    TwoFASettingsComponent,
     SettingsComponent,
     CLInvoiceInformationComponent,
     InvoiceInformationComponent,

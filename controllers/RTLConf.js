@@ -31,6 +31,7 @@ exports.getRTLConfig = (req, res, next) => {
     } else {
       const nodeConfData = JSON.parse(data);
       const sso = { rtlSSO: common.rtl_sso, logoutRedirectLink: common.logout_redirect_link };
+      const enable2FA = !common.rtl_secret2fa ? false : true;
       var nodesArr = [];
       if (common.nodes && common.nodes.length > 0) {
         common.nodes.forEach((node, i) => {
@@ -58,7 +59,7 @@ exports.getRTLConfig = (req, res, next) => {
             authentication: authentication})
         });
       }
-      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, nodes: nodesArr });
+      res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
     }
   });
 };
@@ -100,6 +101,25 @@ exports.updateUISettings = (req, res, next) => {
     res.status(500).json({
       message: "Updating Application Node Settings Failed!",
       error: 'Updating Application Node Settings Failed!'
+    });
+  }
+};
+
+exports.update2FASettings = (req, res, next) => {
+  var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  config.secret2fa = req.body.secret2fa;
+  try {
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    common.rtl_secret2fa = config.secret2fa;
+    logger.info({fileName: 'RTLConf', msg: 'Updating 2FA Settings Succesful!'});
+    res.status(201).json({message: '2FA Settings Updated Successfully'});
+  }
+  catch (err) {
+    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating 2FA Settings Failed!'});
+    res.status(500).json({
+      message: "Updating 2FA Settings Failed!",
+      error: 'Updating 2FA Settings Failed!'
     });
   }
 };

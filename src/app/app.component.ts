@@ -90,7 +90,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), initialPass: false}));
+            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), token: '', initialPass: false}));
           } else {
             this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
           }

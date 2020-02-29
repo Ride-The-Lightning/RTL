@@ -200,6 +200,28 @@ export class RTLEffects implements OnDestroy {
   ));
 
   @Effect()
+  twoFASettingSave = this.actions$.pipe(
+    ofType(RTLActions.TWO_FA_SAVE_SETTINGS),
+    mergeMap((action: RTLActions.TwoFASaveSettings) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Update2FASettings'));
+      return this.httpClient.post(environment.CONF_API + '/update2FA', { secret2fa: action.payload.secret2fa });
+    }),
+    map((updateStatus: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.info(updateStatus);
+      return {
+        type: RTLActions.OPEN_SNACK_BAR,
+        payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
+      };
+    },
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Update2FASettings', code: (!err.length) ? err.status : err[0].status, message: (!err.length) ? err.error.error : err[0].error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update 2FA Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
+      return of({type: RTLActions.VOID});
+    })
+  ));
+
+  @Effect()
   configFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_CONFIG),
     mergeMap((action: RTLActions.FetchConfig) => {
@@ -278,7 +300,8 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password
+      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
+      authentication2FA: (!action.payload.token) ? '' : action.payload.token
     })
     .pipe(
       map((postRes: any) => {

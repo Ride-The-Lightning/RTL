@@ -3,6 +3,7 @@ var connect = require('../connect');
 const jwt = require("jsonwebtoken");
 var crypto = require('crypto');
 var logger = require('./logger');
+const otplib = require("otplib");
 
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
@@ -24,7 +25,8 @@ exports.authenticateUser = (req, res, next) => {
     }
   } else {
     const password = req.body.authenticationValue;
-    if (common.rtl_pass === password) {
+    const token2fa = req.body.authentication2FA;
+    if (common.rtl_pass === password && (!common.rtl_secret2fa || otplib.authenticator.check(token2fa, common.rtl_secret2fa))) {
       var rpcUser = 'NODE_USER';
       const token = jwt.sign(
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
