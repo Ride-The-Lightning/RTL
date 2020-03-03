@@ -18,13 +18,9 @@ export class LoopService {
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
-  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number) {
-    let requestBody = {};
-    if (chanId !== '') {
-      requestBody = {amount: amount, chanId: chanId, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee};
-    } else {
-      requestBody = {amount: amount, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee};
-    }
+  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) {
+    let requestBody = { amount: amount, targetConf: targetConf, swapRoutingFee: swapRoutingFee, minerFee: minerFee, prepayRoutingFee: prepayRoutingFee, prepayAmt: prepayAmt, swapFee: swapFee, swapPublicationDeadline: swapPublicationDeadline, destAddress: destAddress };
+    if (chanId !== '') { requestBody['chanId'] = chanId; }
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out';
     return this.httpClient.post(this.loopUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out for Channel: ' + chanId, err)));
   }
@@ -34,8 +30,10 @@ export class LoopService {
     return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Terms', err)));
   }
 
-  getLoopOutQuote(amount: number, targetConf: number) {
-    const params = new HttpParams().set('targetConf', targetConf.toString());
+  getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) {
+    let params = new HttpParams();
+    params = params.append('targetConf', targetConf.toString());
+    params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/quote/' + amount;
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop Out Quote', err)));
   }

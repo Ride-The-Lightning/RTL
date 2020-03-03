@@ -8,29 +8,18 @@ exports.loopOut = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
   options.url = swapServerUrl + '/loop/out';
-  let body = {};
-  if (req.body.chanId !== '') {
-    body = {
-      amt: req.body.amount,
-      loop_out_channel: req.body.chanId,
-      sweep_conf_target: req.body.targetConf,
-      max_swap_routing_fee: req.body.swapRoutingFee,
-      max_miner_fee: req.body.minerFee,
-      max_prepay_routing_fee: req.body.prepayRoutingFee,
-      max_prepay_amt: req.body.prepayAmt,
-      max_swap_fee: req.body.swapFee
-    };
-  } else {
-    body = {
-      amt: req.body.amount,
-      sweep_conf_target: req.body.targetConf,
-      max_swap_routing_fee: req.body.swapRoutingFee,
-      max_miner_fee: req.body.minerFee,
-      max_prepay_routing_fee: req.body.prepayRoutingFee,
-      max_prepay_amt: req.body.prepayAmt,
-      max_swap_fee: req.body.swapFee
-    };
-  }
+  let body = {
+    amt: req.body.amount,
+    sweep_conf_target: req.body.targetConf,
+    max_swap_routing_fee: req.body.swapRoutingFee,
+    max_miner_fee: req.body.minerFee,
+    max_prepay_routing_fee: req.body.prepayRoutingFee,
+    max_prepay_amt: req.body.prepayAmt,
+    max_swap_fee: req.body.swapFee,
+    swap_publication_deadline: req.body.swapPublicationDeadline
+  };
+  if (req.body.chanId !== '') { body['loop_out_channel'] = req.body.chanId; }
+  if (req.body.destAddress !== '') { body['dest'] = req.body.destAddress; }
   options.body = JSON.stringify(body);
   logger.info({fileName: 'Loop', msg: 'Loop Out Body: ' + options.body});
   request.post(options).then(function (body) {
@@ -72,7 +61,7 @@ exports.loopOutTerms = (req, res, next) => {
 exports.loopOutQuote = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2');
+  options.url = swapServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.info({fileName: 'Loop', msg: 'Loop Out Quote URL: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + body});

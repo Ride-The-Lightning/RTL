@@ -3,13 +3,13 @@
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
       <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
-        <button tabindex="15" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
-        <button tabindex="16" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+        <button tabindex="19" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
+        <button tabindex="20" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
       </div>
     </mat-card-header>
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
-        <div *ngIf="channel" class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <div *ngIf="channel" class="padding-gap-large" fxLayout="row wrap" fxLayoutAlign="space-between stretch">
           <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{channel.remote_alias | titlecase}}</p>
           <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{channel.chan_id}}</p>
           <p fxFlex="30"></p>
@@ -22,8 +22,8 @@
                 <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
                 <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
               </div>
-              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">              
-                <mat-form-field fxFlex="48">
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
+                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '30' : '48'">
                   <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
@@ -31,14 +31,15 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
-                <mat-form-field fxFlex="48">
+                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '40' : '48'">
                   <input matInput placeholder="Target Confirmation Blocks" type="number" step="1" tabindex="2" formControlName="targetConf" required>
                   <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation blocks is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation blocks must be a positive number.</mat-error>
                 </mat-form-field>
+                <mat-slide-toggle *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="20" tabindex="3" color="primary" formControlName="fast">Fast</mat-slide-toggle>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
+                <button mat-stroked-button color="primary" tabindex="4" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
               </div>
             </form>
           </mat-step>
@@ -47,7 +48,26 @@
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="7" type="button" matStepperNext>Next</button>
+                <button *ngIf="direction === swapTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step *ngIf="direction === swapTypeEnum.LOOP_OUT" [stepControl]="addressFormGroup" [editable]="flgEditable">
+            <form [formGroup]="addressFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{addressFormLabel}}</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
+                <mat-radio-group color="primary" name="addressType" (change)="onAddressTypeChange($event)" formControlName="addressType" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <mat-radio-button fxFlex="48" tabindex="8" value="local">Node Local Address</mat-radio-button>
+                  <mat-radio-button fxFlex="48" tabindex="9" value="external">External Address</mat-radio-button>
+                </mat-radio-group>
+                <mat-form-field fxFlex="100" class="mt-1">
+                  <input matInput placeholder="Address" tabindex="10" formControlName="address" [required]="addressFormGroup.controls.addressType.value === 'external'">
+                  <mat-error *ngIf="addressFormGroup.controls.address.errors?.required">Address is required.</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="11" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
@@ -61,20 +81,20 @@
                       <span fxLayoutAlign="start center" fxFlex="100">{{(!loopStatus) ? ('Waiting for ' + loopDirectionCaption + ' request...') : (loopStatus.id_bytes) ? (loopDirectionCaption + ' request details') : (loopDirectionCaption + ' error details')}}<mat-icon *ngIf="loopStatus" class="ml-1 icon-small">{{(loopStatus && loopStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
-                  <div  *ngIf="!loopStatus; else loopStatusBlock"></div>
+                  <div *ngIf="!loopStatus; else loopStatusBlock"></div>
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="!loopStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
               <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="10" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="12" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
+                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>
         </mat-vertical-stepper>
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="end end">        
-          <button mat-stroked-button color="primary" tabindex="13" type="button" [mat-dialog-close]="false" default>Close</button>
+          <button mat-stroked-button color="primary" tabindex="14" type="button" [mat-dialog-close]="false" default>Close</button>
         </div>
       </div>
     </mat-card-content>
@@ -88,7 +108,7 @@
     <mat-card-header fxLayout="row" fxFlex="5" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title"></span></div>
       <div fxFlex="8" fxLayoutAlign="end center">
-        <button tabindex="17" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
+        <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center">
@@ -101,10 +121,10 @@
       </span>
     </div>
     <div fxLayout="row" fxFlex="15" fxLayoutAlign="end end" class="mt-2">        
-      <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="12" type="button" (click)="onReadMore()">Read More</button>
-      <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="13" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="14" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+      <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
+      <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="16" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="18" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
     </div>
   </div>
 </div>

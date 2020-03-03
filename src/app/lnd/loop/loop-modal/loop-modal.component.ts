@@ -39,6 +39,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public loopStatus: LoopStatus = null;
   public inputFormLabel = 'Amount to loop-out';
   public quoteFormLabel = 'Confirm Quote';
+  public addressFormLabel = 'Withdrawal Address';
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
   public stepNumber = 1;
@@ -47,9 +48,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public animationDirection = 'forward';
   public flgEditable = true;
   inputFormGroup: FormGroup;
-  quoteFormGroup: FormGroup;  
+  quoteFormGroup: FormGroup;
+  addressFormGroup: FormGroup;
   statusFormGroup: FormGroup;  
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
@@ -63,19 +65,53 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;    
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
-      targetConf: [6, [Validators.required, Validators.min(1)]]
+      targetConf: [6, [Validators.required, Validators.min(1)]],
+      fast: [false, [Validators.required]]
     });
-    this.quoteFormGroup = this.formBuilder.group({});    
-    this.statusFormGroup = this.formBuilder.group({}); 
+    this.quoteFormGroup = this.formBuilder.group({});
+    this.addressFormGroup = this.formBuilder.group({
+      addressType: ['local', [Validators.required]],
+      address: [{value: '', disabled: true}]
+    });
+    this.statusFormGroup = this.formBuilder.group({});
+    this.onFormValueChanges();
   }
 
   ngAfterViewInit() {
     this.inputFormGroup.setErrors({'Invalid': true});
-    this.quoteFormGroup.setErrors({'Invalid': true});
+    if (this.direction === SwapTypeEnum.LOOP_OUT) {
+      this.addressFormGroup.setErrors({'Invalid': true});
+    }
   }
 
+  onFormValueChanges() {
+    this.inputFormGroup.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe(changedValues => {
+      this.inputFormGroup.setErrors({'Invalid': true});
+    });
+    if (this.direction === SwapTypeEnum.LOOP_OUT) {
+      this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[5])).subscribe(changedValues => {
+        this.addressFormGroup.setErrors({'Invalid': true});
+      });
+    }
+  }
+
+  onAddressTypeChange(event: any) {
+    if (event.value === 'external') {
+      this.addressFormGroup.controls.address.setValidators([Validators.required]);
+      this.addressFormGroup.controls.address.markAsTouched();
+      this.addressFormGroup.controls.address.enable();
+    } else {
+      this.addressFormGroup.controls.address.setValidators(null);
+      this.addressFormGroup.controls.address.markAsPristine();
+      this.addressFormGroup.controls.address.disable();
+      this.addressFormGroup.controls.address.setValue('');
+    }
+    this.addressFormGroup.setErrors({'Invalid': true});
+  }
+
+
   onLoop() {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2) { return true; }
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2 || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -92,7 +128,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.error(err);
       });
     } else {
-      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee).pipe(takeUntil(this.unSubs[0]))
+      let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
+      let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
+      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
         this.store.dispatch(new RTLActions.FetchLoopSwaps());
@@ -112,14 +150,15 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
     if(this.direction === SwapTypeEnum.LOOP_IN) {
       this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value)
-      .pipe(takeUntil(this.unSubs[1]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
       });
     } else {
-      this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value)
-      .pipe(takeUntil(this.unSubs[1]))
+      let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
+      this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value, swapPublicationDeadline)
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
@@ -132,20 +171,22 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 0:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         this.quoteFormLabel = 'Confirm Quote';
+        this.addressFormLabel = 'Withdrawal Address';
         break;
     
       case 1:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.targetConf.value) {
-          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6);
+          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
         this.quoteFormLabel = 'Confirm Quote';
+        this.addressFormLabel = 'Withdrawal Address';
         break;
 
       case 2:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.targetConf.value) {
-          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6);
+          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
@@ -154,14 +195,21 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.quoteFormLabel = 'Quote confirmed';
         }
+        if (this.addressFormGroup.controls.addressType.value) {
+          this.addressFormLabel = 'Withdrawal Address | Type: ' + this.addressFormGroup.controls.addressType.value;
+        } else {
+          this.addressFormLabel = 'Withdrawal Address';
+        }
         break;
 
       default:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         this.quoteFormLabel = 'Confirm Quote';
+        this.addressFormLabel = 'Withdrawal Address';        
         break;
     }
-    if (event.selectedIndex < event.previouslySelectedIndex) {
+    if ((this.direction === SwapTypeEnum.LOOP_OUT && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex)
+    || (this.direction === SwapTypeEnum.LOOP_IN && event.selectedIndex < event.previouslySelectedIndex)) {
       event.selectedStep.stepControl.setErrors({'Invalid': true});
     }
   }
