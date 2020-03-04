@@ -40,17 +40,31 @@ export class LoopComponent implements OnInit {
 
   onLoop(direction: SwapTypeEnum) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
-    this.loopService.getLoopInTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(response => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        minQuote: response[0],
-        maxQuote: response[1],
-        direction: direction,
-        component: LoopModalComponent
-      }}));    
-    });
+    if(direction === SwapTypeEnum.LOOP_IN) {
+      this.loopService.getLoopInTermsAndQuotes(this.targetConf)
+      .pipe(takeUntil(this.unSubs[0]))
+      .subscribe(response => {
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.OpenAlert({ data: {
+          minQuote: response[0],
+          maxQuote: response[1],
+          direction: direction,
+          component: LoopModalComponent
+        }}));    
+      });
+    } else {
+      this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+      .pipe(takeUntil(this.unSubs[1]))
+      .subscribe(response => {
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.OpenAlert({ data: {
+          minQuote: response[0],
+          maxQuote: response[1],
+          direction: direction,
+          component: LoopModalComponent
+        }}));    
+      });
+    }
   }
 
   ngOnDestroy() {
