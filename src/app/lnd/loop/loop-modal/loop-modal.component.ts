@@ -228,7 +228,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onReadMore() {
-    window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank');
+    if (this.direction === SwapTypeEnum.LOOP_IN) {
+      window.open('https://blog.lightning.engineering/announcement/2019/06/25/loop-in.html', '_blank');
+    } else {
+      window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank');
+    }
     this.onClose();
   }
 
