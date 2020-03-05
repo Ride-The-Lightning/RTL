@@ -211,7 +211,7 @@ export class RTLEffects implements OnDestroy {
       this.logger.info(updateStatus);
       return {
         type: RTLActions.OPEN_SNACK_BAR,
-        payload: (!updateStatus.length) ? updateStatus.message + '.' : updateStatus[0].message + '.'
+        payload: updateStatus.message
       };
     },
     catchError((err) => {
@@ -317,9 +317,9 @@ export class RTLEffects implements OnDestroy {
         }
       }),
       catchError((err) => {
-        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.message }));
-        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err.error);
         this.logger.info('Redirecting to Login Error Page');
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, {status: err.status, error: err.error.error});
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.error }));
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
         } else {

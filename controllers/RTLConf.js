@@ -109,11 +109,12 @@ exports.update2FASettings = (req, res, next) => {
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.secret2fa = req.body.secret2fa;
+  let message = req.body.secret2fa.trim() === '' ? 'Two factor authentication disabled sucessfully.' : 'Two factor authentication enabled sucessfully.';
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     common.rtl_secret2fa = config.secret2fa;
-    logger.info({fileName: 'RTLConf', msg: 'Updating 2FA Settings Succesful!'});
-    res.status(201).json({message: '2FA Settings Updated Successfully'});
+    logger.info({fileName: 'RTLConf', msg: message});
+    res.status(201).json({message: message});
   }
   catch (err) {
     logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating 2FA Settings Failed!'});

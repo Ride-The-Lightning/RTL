@@ -1,7 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { authenticator } from 'otplib/otplib-browser';
+import { faKey, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
+
+import { RTLConfiguration } from '../../../models/RTLconfig';
+import { LoggerService } from '../../../services/logger.service';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -11,18 +17,36 @@ import * as RTLActions from '../../../../store/rtl.actions';
   templateUrl: './auth-settings.component.html',
   styleUrls: ['./auth-settings.component.scss']
 })
-export class AuthSettingsComponent implements OnInit {
+export class AuthSettingsComponent implements OnInit, OnDestroy {
   @ViewChild('authForm', { static: true }) form: any;
+  @ViewChild('twoFAForm', { static: true }) twoFAForm: any;
+  public faShieldAlt = faShieldAlt;
   public faKey = faKey;
   public oldPassword = '';
   public newPassword = '';
   public confirmPassword = '';
   public errorMsg = '';
   public errorConfirmMsg = '';
+  public isTokenValid = true;
+  public appConfig: RTLConfiguration;
+  public secret2fa: string;
+  public otpauth: string;
+  public token2fa: string;
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('root')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.appConfig = rtlStore.appConfig;
+      if (!this.appConfig.enable2FA) {
+        this.generateSecret();
+      }
+      this.logger.info(rtlStore);
+    });
+  }
 
   onResetPassword() {
     if(!this.oldPassword || !this.newPassword || !this.confirmPassword || this.oldPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
@@ -73,6 +97,37 @@ export class AuthSettingsComponent implements OnInit {
     this.oldPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';
+  }
+
+  generateSecret() {
+    this.secret2fa = authenticator.generateSecret();
+    this.otpauth = authenticator.keyuri('', 'Ride The Lightning (RTL)', this.secret2fa);
+  }
+
+  on2FAuth() {
+    if (this.appConfig.enable2FA) {
+      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));
+      this.generateSecret();
+    } else {
+      if (!this.token2fa) { return true; }
+      this.isTokenValid = authenticator.check(this.token2fa, this.secret2fa);
+      if (!this.isTokenValid) {
+        this.twoFAForm.controls.token2fa.setErrors({ notValid: true });
+        return true;
+      }
+      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
+      this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: this.secret2fa}));
+    }
+    this.token2fa = '';
+    this.appConfig.enable2FA = !this.appConfig.enable2FA;
+  }
+
+  ngOnDestroy() {
+    this.unSubs.forEach(unsub => {
+      unsub.next();
+      unsub.complete();
+    });
   }
 
 }

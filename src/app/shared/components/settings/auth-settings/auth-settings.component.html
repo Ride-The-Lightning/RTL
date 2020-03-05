@@ -1,4 +1,30 @@
 <div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
+  <form fxLayout="column" fxLayoutAlign="start start" class="settings-container page-sub-title-container mt-1" #twoFAForm="ngForm">
+    <div fxFlex="100" class="mb-1">
+      <fa-icon [icon]="faShieldAlt" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Two Factor Authentication</span>
+    </div>
+    <div *ngIf="!appConfig.enable2FA" fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="space-between start" class="mt-2">
+      <div fxLayout="column" fxFlex="50" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="start start">
+        <qrcode [qrdata]="otpauth" [margin]="1" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
+      </div>
+      <div fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
+        <div fxFlex="100" class="my-1">
+          <mat-label>Secret: </mat-label>
+          <mat-label class="font-weight-900">{{secret2fa}}</mat-label>
+        </div>
+        <mat-form-field>
+          <input fxFlex="100" matInput tabindex="1" placeholder="Token" type="text" id="token2fa" name="token2fa" [(ngModel)]="token2fa" tabindex="1" required>
+          <mat-error *ngIf="twoFAForm.controls.token2fa?.errors?.required">Token is required.</mat-error>
+          <mat-error *ngIf="twoFAForm.controls.token2fa?.errors?.notValid">Token is not valid.</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-2">
+      <button mat-flat-button color="primary" tabindex="3" (click)="on2FAuth()">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+    </div>
+  </form>
+  <mat-divider class="my-2" [inset]="true"></mat-divider>
   <form (ngSubmit)="onResetPassword()" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #authForm="ngForm">
     <div fxFlex="100" class="mb-1">
       <fa-icon [icon]="faKey" class="page-title-img mr-1"></fa-icon>
@@ -7,23 +33,23 @@
     <div fxLayout="row">
       <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxLayoutAlign="space-between stretch" class="mt-2">
         <mat-form-field>
-          <input matInput placeholder="Old Password" type="password" id="oldpassword" name="oldpassword" [(ngModel)]="oldPassword" tabindex="1" required>
+          <input matInput placeholder="Old Password" type="password" id="oldpassword" name="oldpassword" [(ngModel)]="oldPassword" tabindex="4" required>
           <mat-error *ngIf="!oldPassword">Old password is required.</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="2" required>
+          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="5" required>
           <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="3" required>
+          <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="6" required>
           <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
         </mat-form-field>
       </div>
     </div>
     <div fxLayout="row">
-      <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-        <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
-        <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="5" type="submit">Reset Password</button>
+      <div fxLayout="row" fxLayoutAlign="start start" class="mt-2">
+        <button mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()" class="mr-1">Clear</button>
+        <button mat-flat-button color="primary" tabindex="8" type="submit">Reset Password</button>
       </div> 
     </div> 
   </form>

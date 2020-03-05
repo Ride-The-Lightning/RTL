@@ -12,8 +12,10 @@
             <mat-error *ngIf="!password">Password is required.</mat-error>
           </mat-form-field>
           <mat-form-field *ngIf="appConfig.enable2FA" fxFlex="100" fxLayoutAlign="start">
-            <input matInput placeholder="2FA" type="text" id="token" name="token" [(ngModel)]="token" tabindex="2">
+            <input matInput placeholder="Two Factor Token" type="text" id="token" name="token" [(ngModel)]="token" tabindex="2" required>
+            <mat-error *ngIf="!token">Two factor token is required.</mat-error>
           </mat-form-field>
+          <p *ngIf="loginErrorMessage !== ''" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>{{loginErrorMessage}}</p>
           <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="4" type="submit">Login</button>

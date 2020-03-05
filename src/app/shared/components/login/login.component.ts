@@ -25,16 +25,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   public rtlSSO = 0;
   public rtlCookiePath = '';
   public accessKey = '';
-
-  private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  public loginErrorMessage = '';
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) { }
 
   ngOnInit() {
     this.store.select('root')
-    .pipe(takeUntil(this.unsub[0]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrorsRoot.forEach(effectsErr => {
+        if (effectsErr.action === 'Login') {
+          this.loginErrorMessage = this.loginErrorMessage + effectsErr.message + ' ';
+        }
         this.logger.error(effectsErr);
       });
       this.selNode = rtlStore.selNode;
@@ -44,17 +47,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin() {
-    if(!this.password) { return true; }
+    if(!this.password || (this.appConfig.enable2FA && !this.token)) { return true; }
+    this.loginErrorMessage = '';
     this.store.dispatch(new RTLActions.Login({password: sha256(this.password), token: this.token, initialPass: this.password === 'password'}));
   }
 
   resetData() {
     this.password = '';
     this.token = '';
+    this.loginErrorMessage = '';
   }
 
   ngOnDestroy() {
-    this.unsub.forEach(completeSub => {
+    this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
     });
