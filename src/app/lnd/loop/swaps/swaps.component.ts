@@ -105,8 +105,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
         [{key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
           {key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
           {key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER}],
-        [{key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID Bytes', width: 100, type: DataTypeEnum.STRING}],
-        [{key: 'id', value: fetchedSwap.id, title: 'ID (Deprecated)', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
         [{key: 'htlc_address', value: fetchedSwap.htlc_address, title: 'HTLC Address', width: 100, type: DataTypeEnum.STRING}]
       ];
       this.store.dispatch(new RTLActions.OpenAlert({ data: {
@@ -127,7 +126,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   onDownloadCSV() {
     if(this.listSwaps.data && this.listSwaps.data.length > 0) {
-      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop-in' : 'Loop-out');
+      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
     }
   }
 

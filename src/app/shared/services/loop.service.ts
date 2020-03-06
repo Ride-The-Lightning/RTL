@@ -39,7 +39,9 @@ export class LoopService {
   }
 
   getLoopOutTermsAndQuotes(targetConf: number) {
-    const params = new HttpParams().set('targetConf', targetConf.toString());
+    let params = new HttpParams();
+    params = params.append('targetConf', targetConf.toString());
+    params = params.append('swapPublicationDeadline', (new Date().getTime() + (30 * 60000)).toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/out/termsAndQuotes';
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => {
       return this.handleErrorWithAlert('Loop Out Terms and Quotes', err);
@@ -57,14 +59,18 @@ export class LoopService {
     return this.httpClient.get(this.loopUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Terms', err)));
   }
 
-  getLoopInQuote(amount: number, targetConf: string) {
-    const params = new HttpParams().set('targetConf', targetConf);
+  getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) {
+    let params = new HttpParams();
+    params = params.append('targetConf', targetConf.toString());
+    params = params.append('swapPublicationDeadline', swapPublicationDeadline.toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/quote/' + amount;
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => this.handleErrorWithoutAlert('Loop In Qoute', err)));
   }
 
   getLoopInTermsAndQuotes(targetConf: number) {
-    const params = new HttpParams().set('targetConf', targetConf.toString());
+    let params = new HttpParams();
+    params = params.append('targetConf', targetConf.toString());
+    params = params.append('swapPublicationDeadline', (new Date().getTime() + (30 * 60000)).toString());
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/in/termsAndQuotes';
     return this.httpClient.get(this.loopUrl, { params: params }).pipe(catchError(err => {
       return this.handleErrorWithAlert('Loop In Terms and Quotes', err);

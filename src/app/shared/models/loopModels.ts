@@ -10,6 +10,7 @@ export interface LoopQuote {
   prepay_amt?: string;
   cltv_delta?: number;
   swap_payment_dest?: string;
+  off_chain_swap_routing_fee_percentage?: number;
 }
 
 export interface LoopStatus {

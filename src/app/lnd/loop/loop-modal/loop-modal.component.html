@@ -3,8 +3,8 @@
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '83' : '91'" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">{{channel ? ('Channel ' + loopDirectionCaption) : loopDirectionCaption}}</span></div>
       <div [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '17' : '9'" fxLayoutAlign="space-between end">
-        <button tabindex="19" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
-        <button tabindex="20" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+        <button tabindex="21" class="btn-close-x p-0" (click)="showInfo()" mat-button>?</button>
+        <button tabindex="22" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
       </div>
     </mat-card-header>
     <mat-card-content class="mt-5px">
@@ -31,15 +31,21 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
-                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '40' : '48'">
+                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '20' : '48'">
                   <input matInput placeholder="Target Confirmation Blocks" type="number" step="1" tabindex="2" formControlName="targetConf" required>
-                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation blocks is required.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation blocks must be a positive number.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.required">Target confirmation is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation must be a positive number.</mat-error>
                 </mat-form-field>
-                <mat-slide-toggle *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="20" tabindex="3" color="primary" formControlName="fast">Fast</mat-slide-toggle>
+                <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30">
+                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" step="1" tabindex="3" formControlName="routingFeePercent" required>
+                  <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.max">Percentage must be less than or equal to {{maxRoutingFeePercentage}}.</mat-error>
+                </mat-form-field>
+                <mat-slide-toggle *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="4" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
+                <button mat-stroked-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
               </div>
             </form>
           </mat-step>
@@ -48,7 +54,7 @@
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="7" type="button" matStepperNext>Next</button>
+                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
                 <button *ngIf="direction === swapTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>

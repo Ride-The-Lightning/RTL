@@ -33,21 +33,21 @@
     <div fxLayout="row">
       <div fxFlex="37" matTooltip="Maximum off-chain fee that may be paid for routing the payment amount to the server">
         <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Swap Routing Fee (Sats)</h4>
-        <span class="foreground-secondary-text">{{(quote?.amount * 0.02) | number}}</span>
+        <span class="foreground-secondary-text">{{(quote?.amount * ((quote?.off_chain_swap_routing_fee_percentage ? quote?.off_chain_swap_routing_fee_percentage : 2) / 100)) | number}}</span>
       </div>
       <div fxFlex="37" matTooltip="Maximum off-chain fee that may be paid for routing the pre-payment amount to the server">
         <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Prepay Routing Fee (Sats)</h4>
         <span class="foreground-secondary-text">36</span>
       </div>
-      <div fxFlex="26" matTooltip="Waiting for Suheb to provide On-chain Fee Tooltip">
+      <div fxFlex="26" matTooltip="An estimate of the on-chain fee that needs to be paid">
         <h4 fxLayoutAlign="start" class="font-bold-500">Max On-chain Fee (Sats)</h4>
         <span class="foreground-secondary-text">447</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>
-    <div fxLayout="row">
-      <div fxFlex="100" matTooltip="Waiting for Suheb to provide Off-chain Swap Payment Destination Tooltip">
-        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Payment Destination</h4>
+    <mat-divider class="w-100 my-1" *ngIf="quote?.swap_payment_dest !== ''"></mat-divider>
+    <div fxLayout="row" *ngIf="quote?.swap_payment_dest !== ''">
+      <div fxFlex="100" matTooltip="The node pubkey where the swap payment needs to be paid to">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Server Node Pubkey</h4>
         <span class="foreground-secondary-text">{{quote?.swap_payment_dest}}</span>
       </div>
     </div>

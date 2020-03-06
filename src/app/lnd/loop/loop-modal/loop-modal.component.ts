@@ -35,11 +35,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public maxQuote: LoopQuote;
   public swapTypeEnum = SwapTypeEnum;
   public direction = SwapTypeEnum.LOOP_OUT;
-  public loopDirectionCaption = 'Loop-out';
+  public loopDirectionCaption = 'Loop out';
   public loopStatus: LoopStatus = null;
-  public inputFormLabel = 'Amount to loop-out';
+  public inputFormLabel = 'Amount to loop out';
   public quoteFormLabel = 'Confirm Quote';
   public addressFormLabel = 'Withdrawal Address';
+  public maxRoutingFeePercentage = 2;
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
   public stepNumber = 1;
@@ -61,11 +62,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.minQuote = this.data.minQuote ? this.data.minQuote : {};
     this.maxQuote = this.data.maxQuote ? this.data.maxQuote : {};
     this.direction = this.data.direction;
-    this.loopDirectionCaption = this.direction === SwapTypeEnum.LOOP_IN ? 'Loop-in' : 'Loop-out';
+    this.loopDirectionCaption = this.direction === SwapTypeEnum.LOOP_IN ? 'Loop in' : 'Loop out';
     this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;    
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
       targetConf: [6, [Validators.required, Validators.min(1)]],
+      routingFeePercent: [this.maxRoutingFeePercentage, [Validators.required, Validators.min(0), Validators.max(this.maxRoutingFeePercentage)]],
       fast: [false, [Validators.required]]
     });
     this.quoteFormGroup = this.formBuilder.group({});
@@ -111,11 +113,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onLoop() {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2 || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.targetConf.value || this.inputFormGroup.controls.targetConf.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
-    const swapRoutingFee = this.inputFormGroup.controls.amount.value * 0.02;
     if (this.direction === SwapTypeEnum.LOOP_IN) {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee, +this.quote.miner_fee, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
@@ -128,6 +129,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logger.error(err);
       });
     } else {
+      let swapRoutingFee = this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100);
       let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.targetConf.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
@@ -148,20 +150,22 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
+    let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
     if(this.direction === SwapTypeEnum.LOOP_IN) {
-      this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value)
+      this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value, swapPublicationDeadline)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
+        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
       });
     } else {
-      let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
       this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.targetConf.value, swapPublicationDeadline)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
+        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
       });
     }
   }
@@ -176,7 +180,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     
       case 1:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.targetConf.value) {
-          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+          if (this.direction === SwapTypeEnum.LOOP_IN) {
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6);
+          } else {
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Percentage: ' +  (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+          }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
@@ -186,7 +194,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
       case 2:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.targetConf.value) {
-          this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+          if (this.direction === SwapTypeEnum.LOOP_IN) {
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6);
+          } else {
+            this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.targetConf.value ? this.inputFormGroup.controls.targetConf.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
+          }
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
