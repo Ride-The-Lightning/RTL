@@ -84,6 +84,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       }
       if (action.type === RTLActions.NEWLY_SAVED_INVOICE) { 
         this.logger.info(action.payload);
+        this.flgInvoiceGenerated = true;
         this.sendPayment(action.payload.paymentRequest);
       }
     });

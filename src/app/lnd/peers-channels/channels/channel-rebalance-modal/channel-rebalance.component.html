@@ -85,7 +85,7 @@
                   <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="!flgInvoiceGenerated" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="flgInvoiceGenerated && flgPaymentSent">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="(flgInvoiceGenerated || flgReusingInvoice) && flgPaymentSent">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>

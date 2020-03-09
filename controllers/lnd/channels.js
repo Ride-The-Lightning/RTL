@@ -93,7 +93,7 @@ exports.getClosedChannels = (req, res, next) => {
       body.channels.forEach(channel => {
         channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
       });
-      body.channels = common.sortDescByKey(body.channels, 'close_type');
+      body.channels = common.sortDescByKey(body.channels, 'close_height');
     }
     logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
     res.status(200).json(body);
