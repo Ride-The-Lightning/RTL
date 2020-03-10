@@ -12,7 +12,7 @@ import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { InvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
+import { InvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -92,7 +92,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
       this.loadInvoicesTable(rtlStore.invoices.invoices ? rtlStore.invoices.invoices : []);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
+        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
     });
 
@@ -171,6 +171,12 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
     }
     this.selTimeUnit = event.value;
+  }
+
+  onDownloadCSV() {
+    if(this.invoices.data && this.invoices.data.length > 0) {
+      this.commonService.downloadCSV(this.invoices.data, 'Invoices');
+    }
   }
 
   ngOnDestroy() {

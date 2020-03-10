@@ -13,8 +13,8 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
-import { InvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-lnd/invoice-information.component';
-import { OpenChannelComponent } from '../../shared/components/data-modal/open-channel-lnd/open-channel.component';
+import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
+import { OpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
@@ -50,7 +50,7 @@ export class LNDEffects implements OnDestroy {
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
-            if (undefined === info.identity_pubkey) {
+            if (!info.identity_pubkey) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
@@ -140,7 +140,7 @@ export class LNDEffects implements OnDestroy {
               };
               return {
                 type: RTLActions.OPEN_ALERT,
-                payload: { width: '50%', data: { 
+                payload: { data: { 
                   type: AlertTypeEnum.INFORMATION,
                   alertTitle: 'Peer Connected',
                   message: peerToAddChannelMessage,
@@ -721,6 +721,7 @@ export class LNDEffects implements OnDestroy {
                 payload: err
               });
             } else {
+              this.logger.error('Error: ' + JSON.stringify(err));
               const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
               return of({type: RTLActions.VOID});
@@ -1114,11 +1115,11 @@ export class LNDEffects implements OnDestroy {
         info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
         info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
       }
-      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+      info.version = (!info.version) ? '' : info.version.split(' ')[0];
     } else {
       info.smaller_currency_unit = CurrencyUnitEnum.SATS;
       info.currency_unit = CurrencyUnitEnum.BTC;
-      info.version = (undefined === info.version) ? '' : info.version.split(' ')[0];
+      info.version = (!info.version) ? '' : info.version.split(' ')[0];
     }
     const node_data = {
       identity_pubkey: info.identity_pubkey,
@@ -1171,7 +1172,7 @@ export class LNDEffects implements OnDestroy {
         data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status, message: err.error.error.error.error ? err.error.error.error.error : err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

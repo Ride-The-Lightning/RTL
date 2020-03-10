@@ -80,14 +80,14 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
-      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
+      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
+        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -233,6 +233,12 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.payments.filter = selFilter;
+  }
+
+  onDownloadCSV() {
+    if(this.payments.data && this.payments.data.length > 0) {
+      this.commonService.downloadCSV(this.payments.data, 'Payments');
+    }
   }
 
   ngOnDestroy() {

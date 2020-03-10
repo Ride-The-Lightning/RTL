@@ -70,17 +70,17 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
         this.failedData = [];
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.forwardingHistory) ? false : true;
+        this.flgLoading[0] = ( rtlStore.forwardingHistory) ? false : true;
       }
       this.logger.info(rtlStore);
     });
   }
 
   onEventsFetch() {
-    if (undefined === this.endDate || this.endDate == null) {
+    if (!this.endDate) {
       this.endDate = new Date();
     }
-    if (undefined === this.startDate || this.startDate == null) {
+    if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
     this.store.dispatch(new RTLActions.GetForwardingHistoryCL(

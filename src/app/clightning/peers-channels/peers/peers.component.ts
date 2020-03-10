@@ -11,7 +11,7 @@ import { PeerCL, GetInfoCL } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { CLOpenChannelComponent } from '../../../shared/components/data-modal/open-channel-cl/open-channel.component';
+import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -77,7 +77,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.balance.totalBalance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if (undefined !== rtlStore.peers) {
+      if ( rtlStore.peers) {
         this.peers = new MatTableDataSource<PeerCL>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);
@@ -166,6 +166,12 @@ export class CLPeersComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.peers.filter = selFilter;
+  }
+
+  onDownloadCSV() {
+    if(this.peers.data && this.peers.data.length > 0) {
+      this.commonService.downloadCSV(this.peers.data, 'Peers');
+    }
   }
 
   ngOnDestroy() {

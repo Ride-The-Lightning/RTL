@@ -30,9 +30,9 @@ export class ServerConfigComponent implements OnInit {
     .subscribe((config: any) => {
       const configFile = config.data;
       this.fileFormat = config.format;
-      if (configFile !== '' && undefined !== configFile && this.fileFormat === 'INI') {
+      if (configFile !== '' &&  configFile && this.fileFormat === 'INI') {
         this.configData = configFile.split('\n');
-      } else if (configFile !== '' && undefined !== configFile && this.fileFormat === 'JSON') {
+      } else if (configFile !== '' &&  configFile && this.fileFormat === 'JSON') {
         this.configData = configFile;
       } else {
         this.configData = '';

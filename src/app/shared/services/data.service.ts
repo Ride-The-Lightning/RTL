@@ -1,7 +1,7 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
-import { take, map, takeUntil, catchError } from 'rxjs/operators';
+import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { LoggerService } from '../../shared/services/logger.service';
@@ -13,12 +13,24 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
-  private CHILD_API_URL = API_URL + '/lnd';
+  private childAPIUrl = API_URL;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService,) {}
 
   ngOnInit() {}
+
+  getChildAPIUrl() {
+    return this.childAPIUrl;
+  }
+
+  setChildAPIUrl(lnImplementation: string) {
+    if (lnImplementation === 'LND') {
+      this.childAPIUrl = API_URL + '/lnd';
+    } else if (lnImplementation === 'CLT') {
+      this.childAPIUrl = API_URL + '/cl';
+    } 
+  }
 
   getFiatRates() {
     return this.httpClient.get(environment.CONF_API + '/rates');
@@ -28,7 +40,7 @@ export class DataService implements OnInit, OnDestroy {
     let nodes$: Array<Observable<any>> = [];
     pubkeys.forEach(pubkey => {
       nodes$.push(
-        this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + pubkey)
+        this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/node/' + pubkey)
         .pipe(takeUntil(this.unSubs[0]),
         catchError(err => of({node: {alias: pubkey}})))
       );
@@ -38,28 +50,28 @@ export class DataService implements OnInit, OnDestroy {
 
   signMessage(msg: string) {
     this.store.dispatch(new RTLActions.OpenSpinner('Signing Message...'));    
-    return this.httpClient.post(this.CHILD_API_URL + environment.MESSAGE_API + '/sign', {message: msg})
+    return this.httpClient.post(this.childAPIUrl + environment.MESSAGE_API + '/sign', {message: msg})
     .pipe(takeUntil(this.unSubs[1]),
     map((res: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());      
-      return res.signature;
+      return res;
     }),
     catchError(err => {
-      this.handleErrorWithAlert('ERROR', 'Sign Message Failed', this.CHILD_API_URL + environment.MESSAGE_API + '/sign', err);
+      this.handleErrorWithAlert('ERROR', 'Sign Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/sign', err);
       throw err;
     }));
   }
 
   verifyMessage(msg: string, sign: string) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verifying Message...'));    
-    return this.httpClient.post(this.CHILD_API_URL + environment.MESSAGE_API + '/verify', {message: msg, signature: sign})
+    return this.httpClient.post(this.childAPIUrl + environment.MESSAGE_API + '/verify', {message: msg, signature: sign})
     .pipe(takeUntil(this.unSubs[2]),
     map((res: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());      
       return res;
     }),
     catchError(err => {
-      this.handleErrorWithAlert('ERROR', 'Verify Message Failed', this.CHILD_API_URL + environment.MESSAGE_API + '/verify', err);
+      this.handleErrorWithAlert('ERROR', 'Verify Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/verify', err);
       throw err;
     }));    
   }

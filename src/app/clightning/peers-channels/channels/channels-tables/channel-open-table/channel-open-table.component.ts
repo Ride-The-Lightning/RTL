@@ -117,7 +117,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
         type: AlertTypeEnum.CONFIRM,
         alertTitle: 'Update Fee Policy',
         noBtnText: 'Cancel',
-        yesBtnText: 'Update All Channels',
+        yesBtnText: 'Update All',
         message: confirmationMsg,
         titleMessage: 'Update fee policy for all channels',
         flgShowInput: true,
@@ -158,7 +158,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
           type: AlertTypeEnum.CONFIRM,
           alertTitle: 'Update Fee Policy',
           noBtnText: 'Cancel',
-          yesBtnText: 'Update Channel',
+          yesBtnText: 'Update',
           message: confirmationMsg,
           titleMessage: titleMsg,
           flgShowInput: true,
@@ -247,6 +247,12 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
+  }
+
+  onDownloadCSV() {
+    if(this.channels.data && this.channels.data.length > 0) {
+      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+    }
   }
 
   ngOnDestroy() {

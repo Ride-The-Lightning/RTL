@@ -20,7 +20,6 @@ common.getSelLNServerUrl = () => {
 
 common.getOptions = () => {
   common.selectedNode.options.method = 'GET';
-  // common.selectedNode.options.form = {};
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
 };
@@ -55,7 +54,7 @@ common.updateSelectedNodeOptions = () => {
 }
 
 common.setOptions = () => {
-  if (undefined !== common.nodes[0].options && undefined !== common.nodes[0].options.headers) { return; }
+  if ( common.nodes[0].options &&  common.nodes[0].options.headers) { return; }
   if (common.nodes && common.nodes.length > 0) {
     common.nodes.forEach(node => {
       node.options = {

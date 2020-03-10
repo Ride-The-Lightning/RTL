@@ -78,7 +78,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.settings = this.selNode.settings;
       this.appConfig = rtlStore.appConfig;
       this.information = rtlStore.nodeData;
-      this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+      this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
         this.flgLoading[0] = false;
@@ -102,6 +102,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
         this.logger.warn('Time limit exceeded for session inactivity.');
+        this.store.dispatch(new RTLActions.CloseAlert());
+        this.store.dispatch(new RTLActions.CloseConfirmation(false));
         this.store.dispatch(new RTLActions.OpenAlert({ data: {
           type: AlertTypeEnum.WARNING,
           alertTitle: 'Logging out',

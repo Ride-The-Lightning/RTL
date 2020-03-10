@@ -21,8 +21,5 @@
 }
 
 .mat-column-actions {
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  min-height: 4.8rem;
 }

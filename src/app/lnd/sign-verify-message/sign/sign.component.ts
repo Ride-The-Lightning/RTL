@@ -25,7 +25,7 @@ export class SignComponent implements OnInit, OnDestroy {
     if (!this.message || this.message === '') { return true; }
     this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { 
       this.signedMessage = this.message;
-      this.signature = res; 
+      this.signature = res.signature; 
     });
   } 
 

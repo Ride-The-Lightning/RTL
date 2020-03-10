@@ -13,6 +13,7 @@ import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
+import { DataService } from '../shared/services/data.service';
 import { Settings, RTLConfiguration, ConfigSettingsNode } from '../shared/models/RTLconfig';
 import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/services/consts-enums-functions';
 
@@ -41,6 +42,7 @@ export class RTLEffects implements OnDestroy {
     private logger: LoggerService,
     private sessionService: SessionService,
     private commonService: CommonService,
+    private dataService: DataService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router) {}
@@ -104,7 +106,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_CONFIRMATION),
     take(1),
     map((action: RTLActions.CloseConfirmation) => {
-      this.dialogRef.close();
+      if (this.dialogRef) { this.dialogRef.close(); }
       this.logger.info(action.payload);
       return action.payload;
     }
@@ -237,8 +239,8 @@ export class RTLEffects implements OnDestroy {
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (undefined === action.payload || action.payload == null || action.payload === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (undefined === action.payload || action.payload == null || action.payload === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
+      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
       map((postRes: any) => {
@@ -315,7 +317,7 @@ export class RTLEffects implements OnDestroy {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
-      this.router.navigate([store.appConfig.sso.logoutRedirectLink]);
+      this.router.navigate(['/login']);
     }
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
@@ -376,15 +378,17 @@ export class RTLEffects implements OnDestroy {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
     if(node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode = { lnImplementation: node.lnImplementation, userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation };
     } else {
-      selNode = { lnImplementation: node.lnImplementation, userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
     if(this.sessionService.getItem('token')) {
-      if(node.lnImplementation.toUpperCase() === 'CLT') {
+      node.lnImplementation = node.lnImplementation.toUpperCase();
+      this.dataService.setChildAPIUrl(node.lnImplementation);
+      if(node.lnImplementation === 'CLT') {
         this.CHILD_API_URL = API_URL + '/cl';
         this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
       } else {
@@ -421,8 +425,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({
-        width: '55%', data: {
+      this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: alertType,
           alertTitle: alertTitle,
           message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },

@@ -9,10 +9,10 @@ exports.deleteExpiredInvoice = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/invoice/delExpiredInvoice' + queryStr;
   request.delete(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices Deleted: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Deleting Invoice Failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     }
     res.status(204).json({status: 'Invoice Deleted Successfully'});
@@ -31,16 +31,16 @@ exports.listInvoices = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/invoice/listInvoices' + labelQuery;
   request(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
-      if (undefined !== body.invoices && body.invoices.length > 0) {
+      if ( body.invoices && body.invoices.length > 0) {
         body.invoices.forEach(invoice => {
-          invoice.paid_at_str =  (undefined === invoice.paid_at) ? '' : common.convertTimestampToDate(invoice.paid_at);
-          invoice.expires_at_str =  (undefined === invoice.expires_at) ? '' : common.convertTimestampToDate(invoice.expires_at);
+          invoice.paid_at_str =  (!invoice.paid_at) ? '' : common.convertTimestampToDate(invoice.paid_at);
+          invoice.expires_at_str =  (!invoice.expires_at) ? '' : common.convertTimestampToDate(invoice.expires_at);
         });
         body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
       }
@@ -62,10 +62,10 @@ exports.addInvoice = (req, res, next) => {
   options.body = req.body;
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Add Invoice Failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);

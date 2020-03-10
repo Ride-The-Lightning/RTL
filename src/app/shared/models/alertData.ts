@@ -1,6 +1,6 @@
 import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
-import { GetInfo, Invoice } from './lndModels';
+import { GetInfo, Invoice, Channel } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 
 export interface MessageErrorField {
@@ -83,6 +83,7 @@ export interface AlertData {
   showCopyName?: string;
   showCopyField?: string;
   component?: any;
+  openedBy?: string;
 }
 
 export interface ConfirmationData {
@@ -106,5 +107,6 @@ export interface ErrorData {
 
 export interface DialogConfig {
   width?: string;
+  minHeight?: string;
   data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData;
 }

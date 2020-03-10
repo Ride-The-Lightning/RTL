@@ -33,6 +33,9 @@ import { CLChannelCapacityInfoComponent } from './home/channel-capacity-info/cha
 import { CLChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { CLNetworkInfoComponent } from './network-info/network-info.component';
 import { CLFeeRatesComponent } from './network-info/fee-rates/fee-rates.component';
+import { CLSignVerifyMessageComponent } from './sign-verify-message/sign-verify-message.component';
+import { CLSignComponent } from './sign-verify-message/sign/sign.component';
+import { CLVerifyComponent } from './sign-verify-message/verify/verify.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -71,7 +74,10 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelCapacityInfoComponent,
     CLChannelLiquidityInfoComponent,
     CLNetworkInfoComponent,
-    CLFeeRatesComponent
+    CLFeeRatesComponent,
+    CLSignVerifyMessageComponent,
+    CLSignComponent,
+    CLVerifyComponent
   ],
   providers: [
     CLUnlockedGuard

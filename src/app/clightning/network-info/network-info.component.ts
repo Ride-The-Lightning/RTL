@@ -82,7 +82,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.id) ? false : true;
+        this.flgLoading[0] = ( this.information.id) ? false : true;
       }
 
       this.fees = rtlStore.fees;
@@ -91,7 +91,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
         this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
       }
       if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (undefined !== this.fees.feeCollected) ? false : true;
+        this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
       }
       
       this.channelsStatus = {
@@ -103,7 +103,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;
       this.feeRatesPerKW = rtlStore.feeRatesPerKW;
       if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = (undefined !== this.feeRatesPerKB && undefined !== this.feeRatesPerKW) ? false : true;
+        this.flgLoading[2] = ( this.feeRatesPerKB &&  this.feeRatesPerKW) ? false : true;
       }
 
       this.logger.info(rtlStore);

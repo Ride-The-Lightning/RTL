@@ -1,92 +1,106 @@
 @import '~@angular/material/theming';
-@import 'change-font';
-@import 'change-theme';
+@import 'theme-font';
+@import 'theme-mode-dark';
+@import 'theme-mode-light';
+@import 'theme-color';
 @import 'typography';
 @include mat-core();
 
 .rtl-container{
   &.purple {
     @import "../skins/purple";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($purple-day-theme);
-      @include change-theme($purple-day-theme);
+      @include theme-mode-light($purple-day-theme);
+      @include theme-color($purple-day-theme);
     }
     &.night {
       @include angular-material-theme($purple-night-theme);
-      @include change-theme($purple-night-theme);
+      @include theme-mode-dark($purple-night-theme);
+      @include theme-color($purple-night-theme);
     }
   }
   &.blue{
     @import "../skins/blue";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($blue-day-theme);
-      @include change-theme($blue-day-theme);
+      @include theme-mode-light($blue-day-theme);
+      @include theme-color($blue-day-theme);
     }
     &.night {
       @include angular-material-theme($blue-night-theme);
-      @include change-theme($blue-night-theme);
+      @include theme-mode-dark($blue-night-theme);
+      @include theme-color($blue-night-theme);
     }
   }
   &.indigo{
     @import "../skins/indigo";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($indigo-day-theme);
-      @include change-theme($indigo-day-theme);
+      @include theme-mode-light($indigo-day-theme);
+      @include theme-color($indigo-day-theme);
     }
     &.night {
       @include angular-material-theme($indigo-night-theme);
-      @include change-theme($indigo-night-theme);
+      @include theme-mode-dark($indigo-night-theme);
+      @include theme-color($indigo-night-theme);
     }
   }
   &.green{
     @import "../skins/green";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($green-day-theme);
-      @include change-theme($green-day-theme);
+      @include theme-mode-light($green-day-theme);
+      @include theme-color($green-day-theme);
     }
     &.night {
       @include angular-material-theme($green-night-theme);
-      @include change-theme($green-night-theme);
+      @include theme-mode-dark($green-night-theme);
+      @include theme-color($green-night-theme);
     }
   }
   &.teal{
     @import "../skins/teal";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($teal-day-theme);
-      @include change-theme($teal-day-theme);
+      @include theme-mode-light($teal-day-theme);
+      @include theme-color($teal-day-theme);
     }
     &.night {
       @include angular-material-theme($teal-night-theme);
-      @include change-theme($teal-night-theme);
+      @include theme-mode-dark($teal-night-theme);
+      @include theme-color($teal-night-theme);
     }
   }
   &.pink{
     @import "../skins/pink";
-    &.small {@include change-font($small-typography);}
-    &.medium {@include change-font($medium-typography);}
-    &.large {@include change-font($large-typography);}
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
     &.day {
       @include angular-material-theme($pink-day-theme);
-      @include change-theme($pink-day-theme);
+      @include theme-mode-light($pink-day-theme);
+      @include theme-color($pink-day-theme);
     }
     &.night {
       @include angular-material-theme($pink-night-theme);
-      @include change-theme($pink-night-theme);
+      @include theme-mode-dark($pink-night-theme);
+      @include theme-color($pink-night-theme);
     }
   }
 }

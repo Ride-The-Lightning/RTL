@@ -548,7 +548,7 @@ export class UnlockWallet implements Action {
 
 export class FetchConfig implements Action {
   readonly type = FETCH_CONFIG;
-  constructor(public payload: string) {} // payload = lnd/bitcoin node
+  constructor(public payload: string) {} // payload = ln/bitcoin node
 }
 
 export class ShowConfig implements Action {

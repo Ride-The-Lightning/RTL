@@ -8,13 +8,13 @@ exports.getFees = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/getFees';
   request(options).then((body) => {
     logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Fetching fee failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
-      if(undefined === body.feeCollected) {
+      if(!body.feeCollected) {
         body.feeCollected = 0;
         body.btc_feeCollected = 0;
       } else {
