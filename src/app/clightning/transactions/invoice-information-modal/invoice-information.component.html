@@ -3,7 +3,7 @@
     <qrcode [qrdata]="invoice.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-1">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
@@ -27,22 +27,18 @@
             <span class="foreground-secondary-text">{{(invoice.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.msatoshi"> (zero amount) </ng-container></span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
-            <span class="foreground-secondary-text">{{invoice.label}}</span>
-          </div>
-        </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
-        <div fxLayout="row">
-          <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date Expiry</h4>
             <span class="foreground-secondary-text">{{invoice.expires_at_str}}</span>
           </div>
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-            <span class="foreground-secondary-text">{{invoice.paid_at_str || '-'}}</span>
-          </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
+        <div fxLayout="row">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
+            <span class="foreground-secondary-text">{{invoice.description || '-'}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>        
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Invoice</h4>
@@ -59,20 +55,24 @@
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        
           <div fxLayout="row">
-            <div fxFlex="100">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.description || '-'}}</span>
-            </div>
-          </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
-          <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Status</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice.status | titlecase}}</span>
             </div>
             <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.label}}</span>
+            </div>
+          </div>
+          <mat-divider class="w-100 my-1"></mat-divider>        
+          <div fxLayout="row">
+            <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Amount Received</h4>
               <span class="overflow-wrap foreground-secondary-text">{{invoice.msatoshi_received/1000 | number}} {{invoice.msatoshi_received ? 'Sats' : ''}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
+              <span class="foreground-secondary-text">{{invoice.paid_at_str || '-'}}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        

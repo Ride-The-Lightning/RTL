@@ -41,7 +41,7 @@ exports.listInvoices = (req, res, next) => {
       if (body.invoices && body.invoices.length > 0) {
         body.invoices.forEach(invoice => {
           invoice.creation_date_str =  (!invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
-          invoice.settle_date_str =  (!invoice.settle_date) ? '' : common.convertTimestampToDate(invoice.settle_date);
+          invoice.settle_date_str =  (!invoice.settle_date || invoice.settle_date === '0') ? '' : common.convertTimestampToDate(invoice.settle_date);
           invoice.btc_value = (!invoice.value) ? 0 : common.convertToBTC(invoice.value);
           invoice.btc_amt_paid_sat =  (!invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
         });

@@ -36,7 +36,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
-  public label = '';
   public description = '';
   public expiry: number;
   public invoiceValue: number;
@@ -67,13 +66,13 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['expires_at_str', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'description', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'description', 'msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['expires_at_str', 'paid_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'paid_at_str', 'description', 'msatoshi', 'actions'];
     }
   }
 
@@ -107,17 +106,17 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onAddInvoice(form: any) {
-    if(!this.label || !this.invoiceValue) { return true; }     
+    if(!this.invoiceValue) { return true; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.flgAnimate = true;
-    this.newlyAddedInvoiceMemo = this.label;
+    this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
     this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
-      label: this.label, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
+      label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
     this.resetData();
   }
@@ -156,7 +155,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.label = '';
     this.description = '';
     this.invoiceValue = undefined;
     this.private = false;
