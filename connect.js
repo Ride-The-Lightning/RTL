@@ -191,7 +191,7 @@ connect.validateNodeConfig = (config) => {
   }
 
   connect.setSSOParams(config);
-	if (errMsg !== '') { throw new Error(errMsg); }
+	if (errMsg && errMsg.trim() !== '') { throw new Error(errMsg); }
 }
 
 connect.setSSOParams = (config) => {
@@ -215,7 +215,8 @@ connect.setSSOParams = (config) => {
     } else {
       common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
     }
-    if (common.rtl_cookie_path === '') {
+
+    if (!common.rtl_cookie_path || common.rtl_cookie_path.trim() === '') {
       errMsg = 'Please set rtlCookiePath value for single sign on option!';
     } else {
       connect.readCookie(common.rtl_cookie_path);

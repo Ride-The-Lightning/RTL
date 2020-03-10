@@ -61,6 +61,7 @@ export interface Channel {
   remote_chan_reserve_sat?: string;
   local_chan_reserve_sat?: string;
   uptime?: string;
+  uptime_str?: string;
   lifetime?: string;
   static_remote_key?: boolean; 
   balancedness?: number; // Between -1 to +1
@@ -222,6 +223,7 @@ export interface Invoice {
   expiry?: string;
   fallback_addr?: string;
   cltv_expiry?: string;
+  state?: string;
   route_hints?: RouteHint[];
   private?: boolean;
   add_index?: string;

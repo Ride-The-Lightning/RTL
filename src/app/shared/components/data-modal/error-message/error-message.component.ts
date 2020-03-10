@@ -16,7 +16,7 @@ export class ErrorMessageComponent implements OnInit {
 
   ngOnInit() {
     this.errorMessage = (typeof(this.data.message.message) === 'object') ? JSON.stringify(this.data.message.message) : this.data.message.message;
-    if (undefined === this.data.message && undefined === this.data.titleMessage && !this.data.message) {
+    if (!this.data.message && !this.data.titleMessage && !this.data.message) {
       this.data.titleMessage = 'Please Check Server Connection';
     }
     this.logger.info(this.data.message);

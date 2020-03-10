@@ -32,10 +32,10 @@ exports.openChannel = (req, res, next) => {
   logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Open Channel Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);
@@ -57,10 +57,10 @@ exports.setChannelFee = (req, res, next) => {
   logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Update Channel Policy Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);
@@ -82,10 +82,10 @@ exports.closeChannel = (req, res, next) => {
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Close Channel Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(204).json(body);
@@ -105,13 +105,13 @@ exports.getLocalRemoteBalance = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channel/localremotebal';
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'Local Remote Balance: ' + JSON.stringify(body)});
-    if(undefined === body.localBalance) {
+    if(!body.localBalance) {
       body.localBalance = 0;
       body.btc_localBalance = 0;
     } else {
       body.btc_localBalance = common.convertToBTC(body.localBalance);
     }
-    if(undefined === body.remoteBalance) {
+    if(!body.remoteBalance) {
       body.remoteBalance = 0;
       body.btc_remoteBalance = 0;
     } else {
@@ -134,17 +134,17 @@ exports.listForwards = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channel/listForwards/';
   request.get(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Forwarding History Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 27, msg: 'Forwarding History Error: ' + JSON.stringify((undefined === body) ? 'Error From Server!' : body.error)});
+    if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 27, msg: 'Forwarding History Error: ' + JSON.stringify((!body) ? 'Error From Server!' : body.error)});
       res.status(500).json({
         message: "Forwarding History Failed!",
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       if (body && body.length > 0) {
         body.forEach(event => {
-          event.received_time_str =  (undefined === event.received_time) ? '' : common.convertTimestampToDate(event.received_time);
-          event.resolved_time_str =  (undefined === event.resolved_time) ? '' : common.convertTimestampToDate(event.resolved_time);
+          event.received_time_str =  (!event.received_time) ? '' : common.convertTimestampToDate(event.received_time);
+          event.resolved_time_str =  (!event.resolved_time) ? '' : common.convertTimestampToDate(event.resolved_time);
         });
         body = common.sortDescByKey(body, 'received_time');
       }

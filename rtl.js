@@ -35,7 +35,7 @@ const onListening = () => {
 };
 
 const server = http.createServer(app);
- 
+
 server.on("error", onError);
 server.on("listening", onListening);
 server.listen(common.port);

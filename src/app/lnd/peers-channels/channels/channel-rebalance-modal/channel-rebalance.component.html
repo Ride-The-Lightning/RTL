@@ -1,0 +1,138 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Channel Rebalance</span></div>
+      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <div fxLayout="column">
+        <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+          <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
+          <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
+          <p fxFlex="30"></p>
+        </div>
+        <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+          <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
+            <form [formGroup]="inputFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">              
+                <mat-form-field fxFlex="48">
+                  <input autoFocus matInput (change)="filterActiveChannels()" placeholder="Amount" type="number" step="100" tabindex="1" formControlName="rebalanceAmount" required>
+                  <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
+                  <span matSuffix>Sats</span>
+                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.min">Amount must be a positive number.</mat-error>
+                  <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.max">Amount must be less than or equal to {{selChannel?.local_balance}}.</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+                  <mat-select tabindex="2" formControlName="selRebalancePeer" placeholder="Receive from Peer" required>
+                    <mat-option *ngFor="let activeChannel of filteredActiveChannels" [value]="activeChannel">
+                      {{activeChannel.remote_alias || activeChannel.chan_id}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()">Estimate Fee</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="feeFormGroup" [editable]="flgEditable">
+            <form [formGroup]="feeFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel disabled="true">{{feeFormLabel}}</ng-template>
+              <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <div fxFlex="75" class="alert">
+                    <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+                    <span>
+                      <strong>Estimated Fee: </strong>{{queryRoute && queryRoute.routes && queryRoute.routes.length > 0 && queryRoute.routes[0].total_fees_msat ? queryRoute.routes[0].total_fees_msat : 0}} mSats |
+                      <strong>Number of Hops: </strong>{{queryRoute && queryRoute.routes && queryRoute.routes.length > 0 && queryRoute.routes[0].hops && queryRoute.routes[0].hops.length ? queryRoute.routes[0].hops.length : 0}}
+                    </span>
+                  </div>
+                  <button mat-stroked-button type="button" tabindex="4" (click)="onEstimateFee()" class="h-35px" matTooltip="Re-estimate Fee"><mat-icon class="mb-5px">loop</mat-icon></button>
+                  <button fxFlex="15" mat-stroked-button type="button" tabindex="5" class="h-35px" (click)="onUseEstimate()">Use Estimate</button>
+                </div>
+                <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+                    <mat-select tabindex="6" formControlName="selFeeLimitType" Placeholder="Fee Limits" required>
+                      <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
+                        {{feeLimitType.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field fxFlex="48">
+                    <input matInput formControlName="feeLimit" placeholder="{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}" type="number" step="1" tabindex="7" required>
+                    <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
+                    <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
+                  </mat-form-field>
+                </div>                
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onRebalance()">Rebalance</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="statusFormGroup">
+            <form [formGroup]="statusFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>Invoice/Payment</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
+                <mat-expansion-panel class="flat-expansion-panel mb-2" fxFlex="100">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated ? 'Generating invoice...' : flgReusingInvoice ? 'Invoice re-used' : 'Invoice generated'}}<mat-icon *ngIf="flgInvoiceGenerated" class="ml-1 icon-small">check</mat-icon></span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="column"><span class="foreground-secondary-text">{{paymentRequest}}</span></div>
+                </mat-expansion-panel>
+                <mat-progress-bar fxFlex="100" *ngIf="!flgInvoiceGenerated" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="(flgInvoiceGenerated || flgReusingInvoice) && flgPaymentSent">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span fxLayoutAlign="start center" fxFlex="100">{{!flgInvoiceGenerated && !flgPaymentSent ? 'Payment waiting for Invoice' : (!flgPaymentSent ? 'Processing payment...' : (paymentStatus?.error ? 'Payment failed' : 'Payment successful'))}}<mat-icon *ngIf="flgPaymentSent" class="ml-1 icon-small">{{paymentStatus?.error ? 'close' : 'check'}}</mat-icon></span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="column" *ngIf="!paymentStatus; else paymentStatusBlock"></div>
+                </mat-expansion-panel>
+                <mat-progress-bar fxFlex="100" *ngIf="flgInvoiceGenerated && !flgPaymentSent" color="primary" mode="indeterminate"></mat-progress-bar>
+              </div>
+              <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
+              <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()">Start Again</button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-vertical-stepper>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </div>
+</div>
+<ng-template #paymentStatusBlock>
+  <ng-container *ngTemplateOutlet="paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>
+</ng-template>
+<ng-template #paymentFailedBlock>
+  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (paymentStatus.error.error.error ? paymentStatus.error.error.error : paymentStatus.error.error ? paymentStatus.error.error : paymentStatus.error ? paymentStatus.error : 'Unknown')}}</span></div>
+</ng-template>
+<ng-template #paymentSuccessfulBlock>
+  <div fxLayout="column">
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
+        <span class="foreground-secondary-text">{{paymentStatus.payment_hash}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>        
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Total Fees ({{paymentStatus.payment_route.total_fees_msat ? 'mSats' : 'Sats'}})</h4>
+        <span class="foreground-secondary-text">{{paymentStatus.payment_route.total_fees_msat ? paymentStatus.payment_route.total_fees_msat : paymentStatus.payment_route.total_fees ? paymentStatus.payment_route.total_fees : 0}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Number of Hops</h4>
+        <span class="foreground-secondary-text">{{paymentStatus && paymentStatus.payment_route && paymentStatus.payment_route.hops && paymentStatus.payment_route.hops.length ? paymentStatus.payment_route.hops.length : 0}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,18 +1,24 @@
 .mat-column-alias {
-  flex: 1 1 10%;
+  flex: 1 1 25%;
   white-space: nowrap;
   overflow: hidden;  
   text-overflow: ellipsis;
 }
 
 .mat-column-pub_key {
-  flex: 1 1 20%;
+  flex: 1 1 35%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 2rem;
 }
 
-.mat-column-ping_time {
-  padding-right: 2rem;
+.mat-column-actions {
+  min-height: 4.8rem;
+  flex: 1 1 10%;
+}
+
+.mat-column-sat_sent, .mat-column-sat_recv, .mat-column-ping_time {
+  flex: 1 1 13%;
+  width: 13%;
 }

@@ -18,7 +18,7 @@ export class Settings {
     public enableLogging?: boolean,
     public lnServerUrl?: string,
     public channelBackupPath?: string,
-    public currencyUnit?: string,
+    public currencyUnit?: string
   ) { }
 }
 
@@ -54,6 +54,7 @@ export interface GetInfoRoot {
   chains?: GetInfoChain[] | string[];
   uris?: string[];  
   version?: string;
+  api_version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;  
 }

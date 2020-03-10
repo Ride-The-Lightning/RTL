@@ -1,7 +1,8 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
-  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices, PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup
+  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
@@ -34,7 +35,7 @@ export interface LNDState {
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '' },
   information: {},
   peers: [],
   fees: {},
@@ -55,7 +56,7 @@ export const initLNDState: LNDState = {
   transactions: [],
   payments: [],
   invoices: {invoices: []},
-  forwardingHistory: {}
+  forwardingHistory: {},
 }
 
 export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) {

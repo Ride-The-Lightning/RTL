@@ -103,9 +103,9 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   }
 
   get invalidValues(): boolean {
-    return (undefined === this.transaction.address || this.transaction.address === '')
-        || ((undefined === this.transaction.satoshis || this.transaction.satoshis <= 0))
-        || (this.flgMinConf && (undefined === this.transaction.minconf || this.transaction.minconf <= 0));
+    return (!this.transaction.address || this.transaction.address === '')
+        || ((!this.transaction.satoshis || this.transaction.satoshis <= 0))
+        || (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0));
   }
 
   resetData() {

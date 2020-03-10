@@ -86,17 +86,17 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+        this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       }
 
       this.networkInfo = rtlStore.networkInfo;
       if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (undefined !== this.networkInfo.num_nodes) ? false : true;
+        this.flgLoading[1] = ( this.networkInfo.num_nodes) ? false : true;
       }
 
       this.fees = rtlStore.fees;
       if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = (undefined !== this.fees.day_fee_sum) ? false : true;
+        this.flgLoading[2] = ( this.fees.day_fee_sum) ? false : true;
       }
       this.channelsStatus = {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },

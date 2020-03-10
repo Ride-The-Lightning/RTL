@@ -1,0 +1,173 @@
+@import "constants";
+
+@mixin theme-mode-dark($theme) {
+  $primary: map-get($theme, primary);
+  $primary-color: mat-color($primary);
+  $primary-lighter: mat-color($primary, lighter);
+  $primary-darker: mat-color($primary, darker);
+  $accent: map-get($theme, accent);
+  $accent-color: mat-color($accent);
+  $warn: map-get($theme, warn);
+  $warn-color: mat-color($warn);
+  $foreground: map-get($theme, foreground);
+  $foreground-base: mat-color($foreground, base); // 1
+  $foreground-text: mat-color($foreground, text); //.87
+  $foreground-secondary-text: mat-color($foreground, secondary-text); // .54
+  $foreground-disabled: mat-color($foreground, disabled); // .38
+  $foreground-divider: mat-color($foreground, divider); // .12
+  $background: map-get($theme, background);
+  $background-color: mat-color($background, card);
+  $hover-background: rgba(0, 0, 0, 0.04);
+  $hover-background-white: rgba(255, 255, 255, 0.06);
+
+  &.night {
+    .mat-primary {
+      color: $primary-darker;
+    }
+    .mat-button-base.mat-flat-button.mat-primary {
+      color: $foreground-text;
+    }
+    .rtl-top-toolbar {
+      border-bottom: 1px solid $background-color;
+    }
+    .mat-tab-label {
+      &.mat-tab-label-active {
+        color: $primary-darker;
+        & .tab-badge .mat-badge-content {
+          background: $primary-darker;
+        }          
+      }
+      & .tab-badge .mat-badge-content {
+        color: mat-color($background, dialog);
+        background: $foreground-secondary-text;
+      }  
+    }
+    .cc-data-block .cc-data-title {
+      color: $primary-darker;
+    }    
+    .mat-stroked-button.mat-primary {
+      border-color: $primary-darker;
+      color: $primary-darker;
+    }
+    .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
+      background-color: white;
+      opacity: 0.09;
+    }    
+    .mat-stroked-button.mat-accent {
+      border-color: $accent-color;
+    }
+    .mat-stroked-button.mat-warn {
+      border-color: $warn-color;
+    }
+    .active-link, .active-link .fa-icon-small, .mat-select-panel .mat-option.mat-active, .mat-select-panel .mat-option.mat-active .fa-icon-small {
+      color: $primary-darker; 
+      font-weight: 500;
+      cursor: pointer;
+      fill: $primary-darker; 
+    }
+    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
+      color: $primary-darker; 
+      cursor: pointer;
+      background: $hover-background-white;
+      & .ng-fa-icon, & .mat-icon {
+        color: $primary-darker;
+      }
+      & .sidenav-img svg {
+        fill: $primary-darker;
+      }
+    }
+    .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
+    .page-title-container .page-title-img, svg.top-icon-small {
+      fill:  $foreground-text;
+    }
+    .selected-color {
+      border-color: $primary-lighter;
+    }
+    .mat-progress-bar-fill::after {
+      background-color: mat-color($primary, 600);
+    }
+    .chart-legend .legend-label:hover, .chart-legend .legend-label .active .legend-label-text {
+      color: $foreground-text !important;
+    } 
+    .cdk-overlay-dark-backdrop {
+      background: rgba(255, 255, 255, 0.32);
+    }   
+    .mat-tree {
+      background: mat-color($background, dialog);
+    }
+    .mat-tab-label, .mat-tab-link {
+      color:  $foreground-secondary-text;
+    }
+    .dashboard-card .mat-card-header .mat-card-title {
+      color:  $foreground-text;
+      & .ng-fa-icon {
+        color:  $foreground-text;
+      }
+    }
+    & .dashboard-info-title {
+      color: $primary-darker;
+    }
+    & .dashboard-info-value {
+      color: $foreground-text;
+    }
+    & .dashboard-capacity-header {
+      color: $foreground-text;
+    }
+    .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
+      background-color: mat-color($accent, A200);
+    }
+    .mat-progress-bar.this-channel-bar .mat-progress-bar-buffer {
+      background-color: mat-color($accent, 400);
+    }
+    .color-primary {
+      color:  $primary-darker !important;
+    }
+    .dot-primary {
+      background-color:  $primary-darker !important;
+    }
+    .dot-primary-lighter {
+      background-color:  $primary-color !important;
+    }
+    .mat-stepper-vertical {
+      background-color: mat-color($background, dialog);
+    }
+    svg {
+      & .fill-color-1 { fill: #232323; }
+      & .fill-color-2 { fill: #222222; }
+      & .fill-color-3 { fill: #3A3A3A; }
+      & .fill-color-4 { fill: #383838; }
+      & .fill-color-5 { fill: #555555; }
+      & .fill-color-6 { fill: #5B5B5B; }
+      & .fill-color-7 { fill: #202020; }
+      & .fill-color-8 { fill: #242424; }
+      & .fill-color-9 { fill: #262626; }
+      & .fill-color-10 { fill: #1A1A1A; }
+      & .fill-color-11 { fill: #171717; }
+      & .fill-color-12 { fill: #CCCCCC; }
+      & .fill-color-13 { fill: #ADADAD; }
+      & .fill-color-14 { fill: #ABABAB; }
+      & .fill-color-15 { fill: #B6B6B6; }
+      & .fill-color-16 { fill: #707070; }
+      & .fill-color-17 { fill: #7C7C7C; }
+      & .fill-color-18 { fill: #5A5A5A; }
+      & .fill-color-19 { fill: #4A4A4A; }
+      & .fill-color-20 { fill: #9F9F9F; }
+      & .fill-color-21 { fill: #CACACA; }
+      & .fill-color-22 { fill: #7F7F7F; }
+      & .fill-color-23 { fill: #777777; }
+      & .fill-color-24 { fill: #5E5E5E; }
+      & .fill-color-25 { fill: #252525; }
+      & .fill-color-26 { fill: #6F6F6F; }
+      & .fill-color-27 { fill: #000000; }
+      & .fill-color-28 { fill: #313131; }
+      & .fill-color-29 { fill: #E7E7E7; }
+      & .fill-color-30 { fill: #FFFFFF; }
+      & .fill-color-31 { fill: $primary-color; }
+      & .fill-color-green-light { fill: #6ECB48; }
+      & .fill-color-primary { fill: $primary-color; }
+      & .fill-color-primary-lighter { fill: $primary-lighter; }
+      & .fill-color-primary-darker { fill: $primary-darker; }
+    }
+  }
+
+}

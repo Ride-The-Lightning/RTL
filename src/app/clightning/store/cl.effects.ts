@@ -12,14 +12,13 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CLInvoiceInformationComponent } from '../../shared/components/data-modal/invoice-information-cl/invoice-information.component';
+import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
+import { CLOpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
 import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
-
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromCLReducers from '../store/cl.reducers';
-import { CLOpenChannelComponent } from '../../shared/components/data-modal/open-channel-cl/open-channel.component';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -228,7 +227,7 @@ export class CLEffects implements OnDestroy {
               };
               return {
                 type: RTLActions.OPEN_ALERT,
-                payload: { width: '50%', data: { 
+                payload: { data: { 
                   type: AlertTypeEnum.INFORMATION,
                   alertTitle: 'Peer Connected',
                   message: peerToAddChannelMessage,
@@ -711,6 +710,7 @@ export class CLEffects implements OnDestroy {
       chains: info.chains,
       uris: info.uris,      
       version: info.version,
+      api_version: info.api_version,
       currency_unit: 'BTC',
       smaller_currency_unit: 'Sats',
       numberOfPendingChannels: info.num_pending_channels
