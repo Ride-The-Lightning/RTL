@@ -37,7 +37,7 @@
                   <mat-error *ngIf="inputFormGroup.controls.targetConf.errors?.min">Target confirmation must be a positive number.</mat-error>
                 </mat-form-field>
                 <!-- <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30" matTooltip="The trade off is success rate vs cost. Higher routing fee means more likely to succeed. at 2% there should be a good chance of success for a route every time but also quite a good possibility they will pay a higher fee at any given point in time. Also if they are looping out through a specific channel the minimum viable fee rate would be the rate of that channel."> -->
-                <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30" matTooltip="The trade off is success rate vs cost. Higher routing fee means more likely to succeed. at 2% there should be a good chance of success for a route every time but also quite a good possibility they will pay a higher fee at any given point in time. Also if they are looping out through a specific channel the minimum viable fee rate would be the rate of that channel.">
+                <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30">
                   <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" step="1" tabindex="3" formControlName="routingFeePercent" required>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
