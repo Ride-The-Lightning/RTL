@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChi
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -39,7 +39,7 @@ export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
 export const SET_PEERS = 'SET_PEERS';
 export const SAVE_NEW_PEER = 'SAVE_NEW_PEER';
-export const ADD_PEER = 'ADD_PEER';
+export const NEWLY_ADDED_PEER = 'NEWLY_ADDED_PEER';
 export const DETACH_PEER = 'DETACH_PEER';
 export const REMOVE_PEER = 'REMOVE_PEER';
 export const SAVE_NEW_INVOICE = 'SAVE_NEW_INVOICE';
@@ -296,12 +296,12 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean, showOpenChannelModal: boolean}) {}
+  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
 }
 
-export class AddPeer implements Action {
-  readonly type = ADD_PEER;
-  constructor(public payload: Peer) {}
+export class NewlyAddedPeer implements Action {
+  readonly type = NEWLY_ADDED_PEER;
+  constructor(public payload: { peer: Peer, balance: number, error?: any}) {}
 }
 
 export class DetachPeer implements Action {
@@ -498,12 +498,12 @@ export class SendPaymentStatus implements Action {
 
 export class FetchGraphNode implements Action {
   readonly type = FETCH_GRAPH_NODE;
-  constructor(public payload: string) {} // payload = pubkey
+  constructor(public payload: {pubkey: string}) {}
 }
 
 export class SetGraphNode implements Action {
   readonly type = SET_GRAPH_NODE;
-  constructor(public payload: GraphNode) {}
+  constructor(public payload: {node: LightningNode, error?: any}) {}
 }
 
 export class GetNewAddress implements Action {
@@ -846,7 +846,7 @@ export type RTLActions =
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
-  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
+  FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
   FetchBalance | SetBalance |

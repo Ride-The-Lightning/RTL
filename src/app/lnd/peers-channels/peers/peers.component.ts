@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter, take } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +11,9 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { OpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
+import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -29,15 +31,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class PeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild('peersForm', {static: true}) form: any;
+  public availableBalance = 0;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
   public displayedColumns = [];
-  public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
-  public availableBalance = 0;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -76,7 +76,7 @@ export class PeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if ( rtlStore.peers) {
+      if (rtlStore.peers) {
         this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);
@@ -93,38 +93,10 @@ export class PeersComponent implements OnInit, OnDestroy {
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === RTLActions.SET_PEERS)
     ).subscribe((setPeers: RTLActions.SetPeers) => {
-      this.peerAddress = undefined;
+      // this.peerAddress = undefined;
       this.flgAnimate = true;
-      this.form.resetForm();
+      // this.form.resetForm();
     });
-  }
-
-  onConnectPeer() {
-    if(!this.peerAddress) { return true; }
-    const deviderIndex = this.peerAddress.search('@');
-    let pubkey = '';
-    let host = '';
-    if (deviderIndex > -1) {
-      pubkey = this.peerAddress.substring(0, deviderIndex);
-      host = this.peerAddress.substring(deviderIndex + 1);
-      this.connectPeerWithParams(pubkey, host);
-    } else {
-      pubkey = this.peerAddress;
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-      this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
-      this.lndEffects.setGraphNode
-      .pipe(take(1))
-      .subscribe(graphNode => {
-        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
-        this.connectPeerWithParams(pubkey, host);
-      });
-    }
-  }
-
-  connectPeerWithParams(pubkey: string, host: string) {
-    this.newlyAddedPeer = pubkey;
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: true}));
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -144,9 +116,10 @@ export class PeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  resetData() {
-    this.peerAddress = '';
-    this.form.resetForm();
+  onConnectPeer() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      component: ConnectPeerComponent
+    }}));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {

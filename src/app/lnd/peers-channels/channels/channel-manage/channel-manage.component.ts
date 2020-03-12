@@ -137,11 +137,11 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
         } else {
           pubkey = (deviderIndex > -1) ? this.peerAddress.substring(0, deviderIndex) : this.peerAddress;
           this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-          this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
+          this.store.dispatch(new RTLActions.FetchGraphNode({pubkey: pubkey}));
           this.lndEffects.setGraphNode
           .pipe(take(1))
-          .subscribe(graphNode => {
-            host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+          .subscribe(resp => {
+            host = (!resp.node.addresses || !resp.node.addresses[0].addr) ? '' : resp.node.addresses[0].addr;
             this.connectPeerWithParams(pubkey, host);
           });
         }
@@ -154,7 +154,7 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
   connectPeerWithParams(pubkey: string, host: string) {
     this.newlyAddedPeer = pubkey;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: false}));
+    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
   }
 
   ngOnDestroy() {

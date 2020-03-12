@@ -132,31 +132,15 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
-            if(action.payload.showOpenChannelModal) {
-              const peerToAddChannelMessage = {
-                peer: postRes[0], 
-                information: lndData.information,
-                balance: lndData.blockchainBalance.total_balance || 0
-              };
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: { 
-                  type: AlertTypeEnum.INFORMATION,
-                  alertTitle: 'Peer Connected',
-                  message: peerToAddChannelMessage,
-                  newlyAdded: true,
-                  component: OpenChannelComponent
-                }}
-              };
-            } else {
-              return {
-                type: RTLActions.VOID
-              }
-            }
+            const peerToAddChannelMessage = { peer: postRes[0], balance: lndData.blockchainBalance.total_balance || 0 };
+            return {
+              type: RTLActions.NEWLY_ADDED_PEER,
+              payload: peerToAddChannelMessage
+            };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
-            return of({type: RTLActions.VOID});
+            this.handleErrorWithoutAlert('SaveNewPeer', err);
+            return of({type: RTLActions.NEWLY_ADDED_PEER, payload: {error: err}});
           })
         );
       }
@@ -735,18 +719,18 @@ export class LNDEffects implements OnDestroy {
   graphNodeFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_GRAPH_NODE),
     mergeMap((action: RTLActions.FetchGraphNode) => {
-      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload)
+      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload.pubkey)
         .pipe(map((graphNode: any) => {
           this.logger.info(graphNode);
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: RTLActions.SET_GRAPH_NODE,
-            payload: graphNode ? graphNode : {}
+            payload: graphNode && graphNode.node ? {node: graphNode.node} : {node: null}
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('ERROR', 'Get Node Address Failed', this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload, err);
-          return of({type: RTLActions.VOID});
+          this.handleErrorWithoutAlert('FetchGraphNode', err);
+          return of({type: RTLActions.SET_GRAPH_NODE, payload: {error: err}});
         }));
       }
   ));
