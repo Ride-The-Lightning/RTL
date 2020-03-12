@@ -9,6 +9,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/lndModels';
+import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
@@ -32,6 +33,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   public newlyAddedPeer: Peer = null;
   public flgEditable = true;
   public peerConnectionError = '';
+  public channelConnectionError = '';
   public peerFormLabel = 'Peer Details';
   public channelFormLabel = 'Open Channel (Optional)';
   peerFormGroup: FormGroup;
@@ -39,9 +41,10 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: {}, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
+    this.totalBalance = this.data.message.balance;
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
       peerAddress: ['', [Validators.required]]
@@ -49,26 +52,42 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
       isPrivate: [false],
-      selTransType: [null],
-      transTypeValue: [''],
+      selTransType: [TRANS_TYPES[0].id],
+      transTypeValue: [{value: '', disabled: true}],
       spendUnconfirmed: [false],
       hiddenAmount: ['', [Validators.required]]
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
+    this.channelFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
+      if (transType === TRANS_TYPES[0].id) {
+        this.channelFormGroup.controls.transTypeValue.setValue('');
+        this.channelFormGroup.controls.transTypeValue.disable();
+        this.channelFormGroup.controls.transTypeValue.setValidators(null);
+        this.channelFormGroup.controls.transTypeValue.setErrors(null);
+      } else {
+        this.channelFormGroup.controls.transTypeValue.setValue('');
+        this.channelFormGroup.controls.transTypeValue.enable();
+        this.channelFormGroup.controls.transTypeValue.setValidators([Validators.required]);
+      }
+    });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.NEWLY_ADDED_PEER || action.type === RTLActions.SAVE_NEW_CHANNEL))
-    .subscribe((action: (RTLActions.NewlyAddedPeer | RTLActions.SaveNewChannel)) => {
+    filter((action) => action.type === RTLActions.NEWLY_ADDED_PEER || action.type === RTLActions.FETCH_PENDING_CHANNELS || action.type === RTLActions.EFFECT_ERROR_LND))
+    .subscribe((action: (RTLActions.NewlyAddedPeer | RTLActions.FetchPendingChannels | RTLActions.EffectErrorLnd)) => {
       if (action.type === RTLActions.NEWLY_ADDED_PEER) { 
-        if (action.payload.error) {
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          this.peerConnectionError = typeof action.payload.error.error.error.error === 'string' ? action.payload.error.error.error.error : typeof action.payload.error.error.error === 'string' ? action.payload.error.error.error : typeof action.payload.error.error === 'string' ? action.payload.error.error : typeof action.payload.error === 'string' ? action.payload.error : 'Peer Connection Failed.';
-        } else {
-          this.logger.info(action.payload);
-          this.newlyAddedPeer = action.payload.peer;
-          this.totalBalance = action.payload.balance;
-          this.flgEditable = false;        
-          this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
-          this.stepper.next();
+        this.logger.info(action.payload);
+        this.flgEditable = false;
+        this.newlyAddedPeer = action.payload.peer;
+        this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
+        this.stepper.next();
+      }
+      if (action.type === RTLActions.FETCH_PENDING_CHANNELS) { 
+        this.dialogRef.close();
+      }
+      if (action.type === RTLActions.EFFECT_ERROR_LND) { 
+        if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
+          this.peerConnectionError = action.payload.message;
+        } else if (action.payload.action === 'SaveNewChannel') {
+          this.channelConnectionError = action.payload.message;
         }
       }
     });
@@ -91,13 +110,9 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       this.lndEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
-        if (graphNode.error) {
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          this.peerConnectionError = typeof graphNode.error.error.error.error === 'string' ? graphNode.error.error.error.error : typeof graphNode.error.error.error === 'string' ? graphNode.error.error.error : typeof graphNode.error.error === 'string' ? graphNode.error.error : typeof graphNode.error === 'string' ? graphNode.error : 'Peer Connection Failed.';
-        } else {
-          host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
-          this.connectPeerWithParams(pubkey, host);
-        }
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+        this.connectPeerWithParams(pubkey, host);
       });
     }
   }
@@ -108,19 +123,13 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel() {
-    this.flgEditable = false;
-
-    // const peerToAddChannelMessage = {
-    //   peer: peerToAddChannel, 
-    //   information: this.information,
-    //   balance: this.availableBalance
-    // };
-    // this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-    //   alertTitle: 'Open Channel',
-    //   message: peerToAddChannelMessage,
-    //   newlyAdded: false,
-    //   component: OpenChannelComponent
-    // }}));
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
+    this.channelConnectionError = '';
+    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
+    this.store.dispatch(new RTLActions.SaveNewChannel({
+      selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
+      transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
+    }));
   }
 
   onClose() {

@@ -14,6 +14,7 @@ export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const CLOSE_ALL_DIALOGS = 'CLOSE_ALL_DIALOGS';
 export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
@@ -189,6 +190,10 @@ export class EffectErrorCl implements Action {
   constructor(public payload: ErrorPayload) {}
 }
 
+export class CloseAllDialogs implements Action {
+  readonly type = CLOSE_ALL_DIALOGS;
+}
+
 export class OpenSnackBar implements Action {
   readonly type = OPEN_SNACK_BAR;
   constructor(public payload: string) {}
@@ -301,7 +306,7 @@ export class SaveNewPeer implements Action {
 
 export class NewlyAddedPeer implements Action {
   readonly type = NEWLY_ADDED_PEER;
-  constructor(public payload: { peer: Peer, balance: number, error?: any}) {}
+  constructor(public payload: { peer: Peer, balance: number}) {}
 }
 
 export class DetachPeer implements Action {
@@ -503,7 +508,7 @@ export class FetchGraphNode implements Action {
 
 export class SetGraphNode implements Action {
   readonly type = SET_GRAPH_NODE;
-  constructor(public payload: {node: LightningNode, error?: any}) {}
+  constructor(public payload: {node: LightningNode}) {}
 }
 
 export class GetNewAddress implements Action {
@@ -842,7 +847,7 @@ export class SetChannelTransactionCL implements Action {
 
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |

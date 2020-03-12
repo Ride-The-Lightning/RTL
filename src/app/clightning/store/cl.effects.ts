@@ -738,9 +738,12 @@ export class CLEffects implements OnDestroy {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirected to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      // this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: typeof err.error === 'string' ? err.error : typeof err.error.error === 'string' ? err.error.error : typeof err.error.error.error === 'string' ? err.error.error.error : typeof err.error.error.error.error === 'string' ? err.error.error.error.error : typeof err.error.error.error.error.error === 'string' ? err.error.error.error.error.error : 'Unknown Error' }));
     }
   }
 
@@ -748,14 +751,16 @@ export class CLEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirected to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: alerType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status, message: typeof err.error === 'string' ? err.error : typeof err.error.error === 'string' ? err.error.error : typeof err.error.error.error === 'string' ? err.error.error.error : typeof err.error.error.error.error === 'string' ? err.error.error.error.error : typeof err.error.error.error.error.error === 'string' ? err.error.error.error.error.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent          
         }
       }));

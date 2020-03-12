@@ -110,7 +110,22 @@ common.sortAscByKey = (array, key) => {
 common.sortDescByKey = (array, key) => {
   const temp = array.sort(function (a, b) {
     var x = +a[key]; var y = +b[key];
-    return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+    return (x > y) ? -1 : ((x < y) ? 1 : 0);
+  });
+  return temp;
+}
+
+common.sortAscByStrKey = (array, key) => {
+  return array.sort(function (a, b) {
+    var x = a[key].toUpperCase(); var y = b[key].toUpperCase();
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
+}
+
+common.sortDescByStrKey = (array, key) => {
+  const temp = array.sort(function (a, b) {
+    var x = a[key].toUpperCase(); var y = b[key].toUpperCase();
+    return (x > y) ? -1 : ((x < y) ? 1 : 0);
   });
   return temp;
 }

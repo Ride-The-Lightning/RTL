@@ -7,7 +7,7 @@ exports.getPeers = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/peer/listPeers';
   request(options).then(function (body) {
-    let peers = ( body) ? common.sortDescByKey(body, 'alias') : [];
+    let peers = ( body) ? common.sortDescByStrKey(body, 'alias') : [];
     logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(peers)});
     res.status(200).json(peers);
   })
@@ -33,7 +33,7 @@ exports.postPeer = (req, res, next) => {
       logger.info({fileName: 'Peers', msg: 'Peer Added: ' + JSON.stringify(body)});
       options.url = common.getSelLNServerUrl() + '/peer/listPeers';
       request(options).then(function (body) {
-        let peers = ( body) ? common.sortDescByKey(body, 'alias') : [];
+        let peers = ( body) ? common.sortDescByStrKey(body, 'alias') : [];
         peers = common.newestOnTop(peers, 'id', req.body.id);
         logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(peers)});
         logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
