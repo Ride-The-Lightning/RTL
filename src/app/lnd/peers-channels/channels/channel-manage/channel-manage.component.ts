@@ -3,12 +3,13 @@ import { Subject } from 'rxjs';
 import { take, takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-
 import { MatSort, MatSnackBar } from '@angular/material';
+
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { TRANS_TYPES, ScreenSizeEnum, AlertTypeEnum, DataTypeEnum } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
+import { OpenChannelComponent } from '../open-channel-modal/open-channel.component';
 
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { LNDEffects } from '../../../store/lnd.effects';
@@ -22,7 +23,6 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class ChannelManageComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild('form', {static: true}) form: any;
   public totalBalance = 0;
   public selectedPeer = '';
   public fundingAmount: number;
@@ -69,25 +69,36 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
           this.newlyAddedPeer = '';
         }
       }
-      if(action.type === RTLActions.FETCH_ALL_CHANNELS) {
-        this.form.resetForm();
-      }
     });
   }
 
+  // onOpenChannel() {
+  //   if (!this.selectedPeer || this.selectedPeer === '' || !this.fundingAmount || (this.totalBalance - ((this.fundingAmount) ? this.fundingAmount : 0) < 0)) { return true; }
+  //   this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
+  //   let transTypeValue = '0';
+  //   if (this.selTransType === '1') {
+  //     transTypeValue = this.transTypeValue.blocks;
+  //   } else if (this.selTransType === '2') {
+  //     transTypeValue = this.transTypeValue.fees;
+  //   }
+  //   this.store.dispatch(new RTLActions.SaveNewChannel({
+  //     selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount, private: this.isPrivate,
+  //     transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+  //   }));
+  // }
+
   onOpenChannel() {
-    if (!this.selectedPeer || this.selectedPeer === '' || !this.fundingAmount || (this.totalBalance - ((this.fundingAmount) ? this.fundingAmount : 0) < 0)) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    let transTypeValue = '0';
-    if (this.selTransType === '1') {
-      transTypeValue = this.transTypeValue.blocks;
-    } else if (this.selTransType === '2') {
-      transTypeValue = this.transTypeValue.fees;
-    }
-    this.store.dispatch(new RTLActions.SaveNewChannel({
-      selectedPeerPubkey: this.selectedPeer, fundingAmount: this.fundingAmount, private: this.isPrivate,
-      transType: this.selTransType, transTypeValue: transTypeValue, spendUnconfirmed: this.spendUnconfirmed
-    }));
+    const peerToAddChannelMessage = {
+      peers: this.peers, 
+      information: this.information,
+      balance: this.totalBalance
+    };
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      alertTitle: 'Open Channel',
+      message: peerToAddChannelMessage,
+      operation: 'channel',
+      component: OpenChannelComponent
+    }}));
   }
 
   resetData() {
@@ -97,7 +108,6 @@ export class ChannelManageComponent implements OnInit, OnDestroy {
     this.isPrivate = false;
     this.selTransType = '0';
     this.transTypeValue = {blocks: '', fees: ''};
-    this.form.resetForm();
   }
 
   onShowAdvanced() {

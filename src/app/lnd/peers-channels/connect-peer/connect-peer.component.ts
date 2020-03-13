@@ -104,15 +104,14 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       host = this.peerFormGroup.controls.peerAddress.value.substring(deviderIndex + 1);
       this.connectPeerWithParams(pubkey, host);
     } else {
-      pubkey = this.peerFormGroup.controls.peerAddress.value;
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-      this.store.dispatch(new RTLActions.FetchGraphNode({pubkey: pubkey}));
+      this.store.dispatch(new RTLActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
       this.lndEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
         this.store.dispatch(new RTLActions.CloseSpinner());
         host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
-        this.connectPeerWithParams(pubkey, host);
+        this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
       });
     }
   }
