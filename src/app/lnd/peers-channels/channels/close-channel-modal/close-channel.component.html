@@ -1,12 +1,9 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Close Channel</span>
-      </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+  <div fxFlex="100" class="padding-gap-dialog">
+    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
+      <span class="page-title">Close Channel</span>
     </mat-card-header>    
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="mt-5px padding-gap-r-large">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box my-2 p-2">
           <p fxLayoutAlign="start center" class="pb-1 word-break">Closing channel: {{channelToClose.channel_point}}</p>
@@ -33,11 +30,11 @@
             </mat-form-field>
           </div>        
         </div>
-        <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="2" default>Clear</button>
-          <button mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">Close Channel</button>
-        </div>
       </form>
     </mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <button mat-button class="mr-1 btn-dialog" color="primary" type="button" tabindex="3" [mat-dialog-close]="false" default>Cancel</button>
+      <button mat-button class="btn-dialog" color="primary" type="submit" tabindex="5" (click)="onCloseChannel()">Close Channel</button>
+    </div>
   </div>
 </div>

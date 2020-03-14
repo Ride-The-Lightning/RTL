@@ -1,12 +1,9 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Connect to a new peer</span>
-      </div>
-      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+  <div fxFlex="100" class="padding-gap-dialog">
+    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
+      <span class="page-title">Connect to a new peer</span>
     </mat-card-header>    
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="mt-5px padding-gap-r-large">
       <div fxLayout="column">
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
           <mat-step [stepControl]="peerFormGroup" [editable]="flgEditable">
@@ -69,10 +66,10 @@
             </form>
           </mat-step>
         </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{newlyAddedPeer?.pub_key ? 'Do It Later' : 'Close'}}</button>
-        </div>
       </div>
     </mat-card-content>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+      <button mat-button class="btn-dialog" color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>{{newlyAddedPeer?.pub_key ? 'Do It Later' : 'Close'}}</button>
+    </div>
   </div>
 </div>

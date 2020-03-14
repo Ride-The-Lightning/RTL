@@ -157,6 +157,10 @@ body {
   }
 }
 
+.padding-gap-dialog {
+  padding: ($gap*3) $gap $gap ($gap*3) !important;
+}
+
 .padding-gap {
   padding: $gap !important;
 }
@@ -167,6 +171,10 @@ body {
 
 .padding-gap-large {
   padding: $gap * 2 !important;
+}
+
+.padding-gap-r-large {
+  padding-right: $gap * 2 !important;
 }
 
 .padding-gap-x-large {
@@ -238,11 +246,6 @@ body {
 
 .grey {
   color: #CCCCCC !important;
-}
-
-.mat-dialog-container {
-  padding: 0 !important;
-  overflow: hidden !important;
 }
 
 .mt-1px {

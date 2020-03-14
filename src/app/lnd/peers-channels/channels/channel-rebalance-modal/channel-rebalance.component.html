@@ -1,12 +1,11 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Channel Rebalance</span></div>
-      <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
+  <div fxFlex="100" class="padding-gap-dialog">
+    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
+      <span class="page-title">Channel Rebalance</span>
     </mat-card-header>
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="mt-5px padding-gap-r-large">
       <div fxLayout="column">
-        <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <div class="padding-gap-dialog" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
           <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
           <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
           <p fxFlex="30"></p>
@@ -102,11 +101,11 @@
             </form>
           </mat-step>
         </mat-vertical-stepper>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
-          <button mat-stroked-button color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
-        </div>
       </div>
     </mat-card-content>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center">        
+      <button mat-button class="btn-dialog" color="primary" tabindex="12" type="button" [mat-dialog-close]="false" default>Close</button>
+    </div>
   </div>
 </div>
 <ng-template #paymentStatusBlock>
