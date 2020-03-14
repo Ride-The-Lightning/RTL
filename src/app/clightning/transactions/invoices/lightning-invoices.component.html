@@ -21,14 +21,14 @@
     <div fxFlex="16" tabindex="6" fxLayoutAlign="start center" *ngIf="showDetails">
       <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
     </div>
-    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="space-between start" *ngIf="showDetails" class="mt-2">
-      <button fxFlex="31" fxLayoutAlign="center center" mat-stroked-button color="warn" tabindex="11" type="button" (click)="onDeleteExpiredInvoices()">Delete Expired</button>
-      <button fxFlex="31" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="31" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
+    <div fxLayout="row" *ngIf="showDetails" class="mt-2">
+      <button class="mr-1" mat-stroked-button color="warn" tabindex="11" type="button" (click)="onDeleteExpiredInvoices()">Delete Expired</button>
+      <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
+      <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
     </div>
-    <div  fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="!showDetails" class="mt-1">
-      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Field</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="10">Create Invoice</button>
+    <div  fxLayout="row" *ngIf="!showDetails" class="mt-1">
+      <button class="mr-1" mat-stroked-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Field</button>
+      <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="10">Create Invoice</button>
     </div>
   </form>
   <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">

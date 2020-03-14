@@ -30,7 +30,6 @@
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
           <button mat-stroked-button color="primary" class="mr-1" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
-          <!-- <button *ngIf="!peer && operation === 'peer'" class="mr-1" mat-flat-button color="primary" type="button" (click)="onConnectPeer(true)" tabindex="8">Add Peer</button> -->
           <button autoFocus mat-flat-button color="primary" type="submit" tabindex="9">{{!peer && operation === 'peer' && !fundingAmount ? 'Add Peer' : 'Open Channel'}}</button>
         </div>
       </form>

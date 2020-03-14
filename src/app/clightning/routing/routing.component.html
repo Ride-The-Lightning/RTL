@@ -6,27 +6,6 @@
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x">
     <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
       <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
-        <!-- <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="card-content-gap mt-1"> -->
-        <!-- <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="onEventsFetch()" #routingForm="ngForm">
-          <div fxFlex="100" fxLayoutAlign="space-between stretch">
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="yesterday"
-                name="startDate" [(ngModel)]="startDate" tabindex="1" #strtDate="ngModel">
-              <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
-              <mat-datepicker #startDatepicker [startAt]="startDate"></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="endDatepicker" [max]="today" placeholder="End Date" name="endDate"
-                [(ngModel)]="endDate" tabindex="2" #enDate="ngModel">
-              <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
-              <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
-            </mat-form-field>
-          </div>
-          <div fxFlex="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" type="submit" tabindex="4">Fetch Events</button>
-          </div>
-        </form> -->
         <div *ngIf="filteredData" fxLayout="row" fxFlex="100" [ngClass]="{'error-border w-100 routing-tabs-block': flgLoading[0]==='error', 'w-100 routing-tabs-block': true}">
           <mat-tab-group fxLayout="column" fxFlex="100">
             <mat-tab label="Forwarding History">

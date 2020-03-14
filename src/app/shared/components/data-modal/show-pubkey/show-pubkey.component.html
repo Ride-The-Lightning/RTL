@@ -32,8 +32,7 @@
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button autoFocus fxFlex="60" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2"
-            type="submit" rtlClipboard payload="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" (copied)="onCopyPubkey($event)">Copy {{selInfoType.infoKey}}</button>
+          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard payload="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" (copied)="onCopyPubkey($event)">Copy {{selInfoType.infoKey}}</button>
         </div>
       </div>
     </mat-card-content>
