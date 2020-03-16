@@ -1,0 +1,59 @@
+<ng-container *ngTemplateOutlet="showPanel ? expansionPanelBlock : quoteDetailsBlock"></ng-container>
+<ng-template #expansionPanelBlock>
+  <ng-container *ngTemplateOutlet="quote?.miner_fee < 0 ? errorBlock : informationBlock"></ng-container>
+</ng-template>
+<ng-template #informationBlock>
+  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span fxLayoutAlign="start center" fxFlex="100">Quote for {{termCaption}} amount ({{quote.amount | number}} Sats)</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <ng-container *ngTemplateOutlet="quoteDetailsBlock"></ng-container>
+  </mat-expansion-panel>
+</ng-template>
+<ng-template #quoteDetailsBlock>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <div fxLayout="row">
+      <div fxFlex="30" matTooltip="The fee that the swap server is charging for the swap">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{quote?.swap_fee | number}}</span>
+      </div>
+      <div fxFlex="30" matTooltip="An estimate of the on-chain fee that needs to be paid to sweep the HTLC">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{quote?.miner_fee | number}}</span>
+      </div>
+      <div fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{quote?.prepay_amt | number}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>        
+    <div fxLayout="row">
+      <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the payment amount to the server">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Swap Routing Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{(quote?.amount * ((quote?.off_chain_swap_routing_fee_percentage ? quote?.off_chain_swap_routing_fee_percentage : 2) / 100)) | number}}</span>
+      </div>
+      <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the pre-payment amount to the server">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Prepay Routing Fee (Sats)</h4>
+        <span class="foreground-secondary-text">36</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1" *ngIf="quote?.swap_payment_dest !== ''"></mat-divider>
+    <div fxLayout="row" *ngIf="quote?.swap_payment_dest !== ''">
+      <div fxFlex="100" matTooltip="The node pubkey where the swap payment needs to be paid to">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Server Node Pubkey</h4>
+        <span class="foreground-secondary-text">{{quote?.swap_payment_dest}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #errorBlock>
+  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [disabled]="true" [ngClass]="{'h-5':!flgShowPanel}">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span fxLayoutAlign="start center" fxFlex="100">Quote for {{termCaption}} amount ({{quote.amount | number}} Sats): Insufficient balance to estimate quote</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+  </mat-expansion-panel>
+</ng-template>

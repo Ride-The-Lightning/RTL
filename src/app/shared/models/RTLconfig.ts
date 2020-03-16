@@ -17,8 +17,9 @@ export class Settings {
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
+    public swapServerUrl?: string,
     public channelBackupPath?: string,
-    public currencyUnit?: string,
+    public currencyUnit?: string
   ) { }
 }
 
@@ -55,6 +56,7 @@ export interface GetInfoRoot {
   chains?: GetInfoChain[] | string[];
   uris?: string[];  
   version?: string;
+  api_version?: string;
   currency_unit?: string;
   smaller_currency_unit?: string;  
 }
@@ -66,6 +68,7 @@ export interface SelNodeChild {
   currencyUnits?: string[];
   fiatConversion?: boolean;
   lnImplementation?: string;
+  swapServerUrl?: string;
 }
 
 export class HelpTopic {

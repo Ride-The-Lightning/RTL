@@ -80,6 +80,12 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
     this.logger.info(this.forwardingHistoryEvents);
   }
 
+  onDownloadCSV() {
+    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+      this.commonService.downloadCSV(this.forwardingHistoryEvents.data, 'Forwarding-history');
+    }
+  }
+
   applyFilter(selFilter: string) {
     this.forwardingHistoryEvents.filter = selFilter;
   }

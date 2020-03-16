@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChi
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, SwapStatus
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -106,6 +106,8 @@ export const GET_FORWARDING_HISTORY = 'GET_FORWARDING_HISTORY';
 export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
+export const FETCH_LOOP_SWAPS = 'FETCH_LOOP_SWAPS';
+export const SET_LOOP_SWAPS = 'SET_LOOP_SWAPS';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -554,7 +556,7 @@ export class UnlockWallet implements Action {
 
 export class FetchConfig implements Action {
   readonly type = FETCH_CONFIG;
-  constructor(public payload: string) {} // payload = lnd/bitcoin node
+  constructor(public payload: string) {} // payload = ln/bitcoin node
 }
 
 export class ShowConfig implements Action {
@@ -600,6 +602,16 @@ export class GetQueryRoutes implements Action {
 export class SetQueryRoutes implements Action {
   readonly type = SET_QUERY_ROUTES;
   constructor(public payload: QueryRoutes) {}
+}
+
+export class FetchLoopSwaps implements Action {
+  readonly type = FETCH_LOOP_SWAPS;
+  constructor() {}
+}
+
+export class SetLoopSwaps implements Action {
+  readonly type = SET_LOOP_SWAPS;
+  constructor(public payload: SwapStatus[]) {}
 }
 
 export class IsAuthorized implements Action {
@@ -869,7 +881,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

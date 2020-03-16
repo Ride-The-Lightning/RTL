@@ -1,21 +1,25 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
-import { Actions } from '@ngrx/effects';
+import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+
+
+import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
-import { ChannelRebalanceComponent } from '../../../../../shared/components/data-modal/channel-rebalance/channel-rebalance.component';
+import { ChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
+import { CloseChannelComponent } from '../../close-channel-modal/close-channel.component';
+import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { CloseChannelLndComponent } from '../../../../../shared/components/data-modal/close-channel-lnd/close-channel-lnd.component';
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -28,6 +32,9 @@ import { CloseChannelLndComponent } from '../../../../../shared/components/data-
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public timeUnit = 'mins:secs';
+  public userPersonaEnum = UserPersonaEnum;
+  public selNode: SelNodeChild = {};
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
@@ -43,9 +50,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public versionsArr = [];
+  private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private actions$: Actions) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -71,12 +79,13 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
+      this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
       if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels);
+        this.loadChannelsTable(this.calculateUptime(rtlStore.allChannels));
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -191,7 +200,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
       channel: channelToClose,
-      component: CloseChannelLndComponent
+      component: CloseChannelComponent
     }}));    
   }
 
@@ -238,7 +247,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  loadChannelsTable(mychannels) {
+  loadChannelsTable(mychannels: Channel[]) {
     mychannels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
@@ -255,6 +264,74 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
+  }
+
+  calculateUptime(channels: Channel[]) {
+    const minutesDivider = 60;
+    const hoursDivider = minutesDivider * 60;
+    const daysDivider = hoursDivider * 24;
+    const yearsDivider = daysDivider * 365;
+    let maxDivider = minutesDivider;
+    let minDivider = 1;
+    let max_uptime = 0;
+    channels.forEach(channel => { if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
+    switch (true) {
+      case max_uptime < hoursDivider:
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
+        break;
+
+      case max_uptime >= hoursDivider && max_uptime < daysDivider:
+        this.timeUnit = 'Hrs:Mins';
+        maxDivider = hoursDivider;
+        minDivider = minutesDivider;
+        break;
+
+      case max_uptime >= daysDivider && max_uptime < yearsDivider:
+        this.timeUnit = 'Days:Hrs';
+        maxDivider = daysDivider;
+        minDivider = hoursDivider;
+        break;
+  
+      case max_uptime > yearsDivider:
+        this.timeUnit = 'Yrs:Days';
+        maxDivider = yearsDivider;
+        minDivider = daysDivider;
+        break;
+  
+      default:
+        this.timeUnit = 'Mins:Secs';
+        maxDivider = minutesDivider;
+        minDivider = 1;
+        break;
+    }
+    channels.forEach(channel => {
+      channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0');
+    });
+    return channels;
+  }
+
+  onLoopOut(selChannel: Channel) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
+    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(response => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
+        channel: selChannel,
+        minQuote: response[0],
+        maxQuote: response[1],
+        direction: SwapTypeEnum.LOOP_OUT,
+        component: LoopModalComponent
+      }}));    
+    });
+  }
+
+  onDownloadCSV() {
+    if(this.channels.data && this.channels.data.length > 0) {
+      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+    }
   }
 
   ngOnDestroy() {

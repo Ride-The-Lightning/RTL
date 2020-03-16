@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public inactiveChannels = 0;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
+  public showLoop = false;
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -127,14 +128,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       });
       this.selNode = rtlStore.nodeSettings;
+      this.showLoop = (this.selNode.swapServerUrl && this.selNode.swapServerUrl.trim() !== '') ? true : false;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.information.identity_pubkey) ? false : true;
+        this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       }
 
       this.fees = rtlStore.fees;
       if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (undefined !== this.fees.day_fee_sum) ? false : true;
+        this.flgLoading[1] = ( this.fees.day_fee_sum) ? false : true;
       }
       this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;
       if (this.flgLoading[2] !== 'error') {

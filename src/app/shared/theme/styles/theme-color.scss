@@ -1,0 +1,394 @@
+@import "constants";
+
+@mixin theme-color($theme) {
+  $primary: map-get($theme, primary);
+  $primary-color: mat-color($primary);
+  $primary-lighter: mat-color($primary, lighter);
+  $primary-darker: mat-color($primary, darker);
+  $accent: map-get($theme, accent);
+  $accent-color: mat-color($accent);
+  $warn: map-get($theme, warn);
+  $warn-color: mat-color($warn);
+  $foreground: map-get($theme, foreground);
+  $foreground-base: mat-color($foreground, base); // 1
+  $foreground-text: mat-color($foreground, text); //.87
+  $foreground-secondary-text: mat-color($foreground, secondary-text); // .54
+  $foreground-disabled: mat-color($foreground, disabled); // .38
+  $foreground-divider: mat-color($foreground, divider); // .12
+  $background: map-get($theme, background);
+  $background-color: mat-color($background, card);
+  $hover-background: rgba(0, 0, 0, 0.04);
+  $hover-background-white: rgba(255, 255, 255, 0.06);
+
+  .bg-primary {
+    @include _mat-toolbar-color($primary);
+  }
+
+  .mat-expansion-panel.flat-expansion-panel {
+    box-shadow: none;
+    padding: 0;
+    border-radius: 4px;
+    background: none;
+  }
+
+  .mat-progress-bar-buffer {
+    background-color: mat-color($primary, 100);
+  }
+
+  .foreground-text {
+    color: $foreground-text !important;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .foreground-secondary-text {
+    color: $foreground-secondary-text !important;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    min-height: 2rem;    
+  }
+
+  .foreground.mat-progress-spinner circle, .foreground.mat-spinner circle {
+    stroke: $foreground-text;
+  }
+
+  .mat-toolbar-row, .mat-toolbar-single-row {
+    height: $toolbar-height;
+  }
+
+  .lnd-info{
+    border-bottom: 1px solid $foreground-divider;
+  }
+
+  a {
+    color: $primary-color;
+  }
+
+  .horizontal-button .fa-icon-small {
+    fill: white;
+    color: white;
+  }
+
+  .h-active-link {
+    border-bottom: 2px solid white;
+  }
+
+  .mat-icon-36 {
+    color: $foreground-secondary-text;
+  }
+  
+  .mat-primary .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple),
+  .mat-primary .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+    background: none;
+    font-weight: 900;
+  }
+
+  .validation-error-icon {
+    position: relative;
+    top: 2px;
+    left: 0.4rem;
+  }
+
+  .genseed-message {
+    width:10%;
+    color: $primary-color;
+  }
+
+  .page-title-container, .page-sub-title-container {
+    color: $foreground-text;
+  }
+
+  .material-icons.primary { color: $primary-color; }
+
+  .material-icons.accent { color: $accent-color; }
+
+  .validation-error-message {
+    position: relative;
+    margin-top: 0.5rem;
+    width:100%;
+    color: $warn-color;
+  }
+
+  .mat-vertical-content {
+    padding: 0 0.4rem 0 1.2rem;
+  }
+
+  .row-disabled {
+    background-color: gray;
+    .mat-icon {
+      cursor: not-allowed;
+    }
+  }
+
+  .mat-menu-panel {
+    min-width: 6.4rem;
+  }
+  
+  .horizontal-button {
+    height: $toolbar-height;
+    border-radius: 0;
+    &:hover {
+      background: $primary-lighter;
+      color: $accent-color;
+    }
+  }
+
+  .mat-stroked-button.mat-primary.horizontal-button-show {
+    line-height: 2.4rem;
+    border-radius: 12rem;
+    background-color: white;
+    color: $primary-color;
+    &:hover {
+      @include mat-elevation(4);
+    }
+    &:hover .mat-button-focus-overlay {
+      opacity: 0.09;
+    }
+  }
+
+  .cc-data-block {
+    & .cc-data-title {
+      font-size: 80%;
+      font-weight: 500;
+    }
+    & .cc-data-value {
+      font-size: 120%;
+      color: $foreground-secondary-text;
+      margin-right: 4rem;
+      min-width: 7rem;
+    }
+  }
+  
+  .mat-cell, .mat-header-cell, .mat-footer-cell {
+    border-bottom-width: 1px;
+    border-bottom-style: solid; 
+    border-bottom-color: $foreground-divider;
+  }
+
+  table.mat-table {
+    border: 1px solid $foreground-divider;
+    border-radius: 4px;
+    background: none;
+    thead tr th {
+      color: $foreground-base;
+    }
+  }
+
+  .bordered-box {
+    border: 1px solid $foreground-divider;
+    border-radius: 4px;
+    background: none;
+    &.read-only {
+      background-color: $hover-background;
+    }
+  }
+
+  .mat-expansion-panel {
+    border: 1px solid $foreground-divider;
+  }
+
+  .more-button {
+    color: $foreground-disabled;
+  }
+
+  .dashboard-tabs-group {
+    & .mat-tab-label:last-child {
+      padding-right: 0;
+      & .more-button {
+        position: absolute;
+        right: 0
+      }
+    }
+  }
+
+  .modal-info-header {
+    color: $foreground-text;
+    font-weight: 500;
+    & .page-title-img svg {
+      color: $foreground-text;
+    }
+  }
+
+  .tab-badge {
+    & .mat-badge-content {
+      width: $dot-size * 1.5;
+      height: $dot-size * 1.5;
+      border-radius: $dot-size * 1.5;
+      line-height: $dot-size * 1.5;
+      margin-top: 1.2rem;
+      font-size: 80%;
+      font-weight: 500;
+    }
+  }
+
+  .table-actions-select {
+    padding: 0.5rem 1rem;
+    margin: 0.7rem 0;
+    width: 10rem;
+    float: right;
+    & .mat-select-placeholder {
+      color: $foreground-text;
+    }
+  }
+
+  .mat-select-panel .mat-option.mat-active {
+    background: none;
+  }
+
+  .mat-tab-label {
+    opacity: 1;
+  }
+
+  .mat-drawer-inner-container {
+    overflow: hidden;
+  }
+
+  .mat-fa-icon-button {
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+  }
+
+  .balances-info-pie-chart {
+    & .legend-label:nth-child(1) .legend-label-color {
+      background-color: mat-color($primary, 200) !important;
+    }
+
+    & .legend-label:nth-child(2) .legend-label-color {
+      background-color: mat-color($primary, 600) !important;
+    }
+  }
+
+  .dashboard-card {
+    & .dashboard-divider {
+      border-top-width: 2px;
+    }
+    & .mat-card-header .mat-card-title {
+      font-size: 180%;
+      margin-bottom: 2.4rem;
+    }
+    & .dashboard-info-value {
+      font-weight: 700;
+    }
+    & .dashboard-info-title {
+      font-weight: 500;
+    }
+    & .dashboard-node-dot {
+      margin: 0 0 -2px 1rem;
+      border: 1px solid $foreground-secondary-text;
+    }    
+    & .dashboard-node-square {
+      display: inline-flex;
+      width: $dot-size;
+      height: $dot-size;
+      margin-right: 1rem;
+    }    
+    & .dashboard-capacity-header {
+      font-size: 130%;
+      font-weight: 700;
+      color: $foreground-secondary-text;
+      &.this-channel-capacity {
+        font-size: 120%;
+      }
+    }
+  }
+
+  .color-warn {
+    color: $warn-color;
+  }
+  
+  .fill-warn {
+    fill: $warn-color;
+  }
+
+  .alert {
+    border: 1px solid $foreground-secondary-text;
+    color: $foreground-secondary-text;
+    background-color: $hover-background;
+
+    &.alert-info {
+      border: 1px solid $blue-color;
+      background-color: $blue-background-color;
+      color: $blue-color;
+        & .alert-icon.ng-fa-icon {
+          color: $blue-color;
+        }
+      }
+  
+    &.alert-warn {
+      border: 1px solid $yellow-alert-color; 
+      background-color: $yellow-background-color;
+      color: $yellow-alert-color;
+      & .alert-icon.ng-fa-icon {
+        color: $yellow-alert-color;
+      }
+      & a {
+        color: $yellow-alert-color;
+      }
+    }
+  
+    &.alert-danger {
+      border: 1px solid $red-color;
+      background-color: $red-background-color;
+      color: $red-color;
+      & .alert-icon.ng-fa-icon {
+        color: $red-color;
+      }
+    }    
+  
+    &.alert-success {
+      border: 1px solid $green-color;
+      background-color: $green-background-color;
+      color: $green-color;
+      & .alert-icon.ng-fa-icon {
+        color: $green-color;
+      }
+    }
+  }
+
+  .help-expansion {
+    & .mat-expansion-panel-header, & .mat-expansion-panel-header-title {
+      font-weight: 500;
+      color: $foreground-secondary-text;
+    }
+    & .mat-expansion-indicator::after, & .mat-expansion-panel-content, & .mat-expansion-panel-header-description {
+      color: $foreground-secondary-text;
+    }
+  }  
+
+  .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon,
+  .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon {
+    width: 1.8rem; 
+  }
+
+  .button-link-dashboard {
+    line-height: 0px;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .failed-status {
+    color: $warn-color;
+  }
+
+  .material-icons.icon-failed-status {
+    font-size: 1.8rem;
+    fill: $warn-color;
+    height: 2rem;
+  }
+
+  .svg-fill-primary {
+    fill: $primary-color;
+  }
+
+  .svg-fill-primary-lighter {
+    fill: $primary-lighter;
+  }
+
+  .mat-expansion-panel-header[aria-disabled='true'] {
+    color: $foreground-text;
+  }
+}

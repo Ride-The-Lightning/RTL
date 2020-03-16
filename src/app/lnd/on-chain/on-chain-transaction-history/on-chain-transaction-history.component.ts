@@ -67,11 +67,11 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      if (undefined !== rtlStore.transactions) {
+      if ( rtlStore.transactions) {
         this.loadTransactionsTable(rtlStore.transactions);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.transactions) ? false : true;
+        this.flgLoading[0] = ( rtlStore.transactions) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -105,6 +105,12 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     this.listTransactions.sort = this.sort;
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
+  }
+
+  onDownloadCSV() {
+    if(this.listTransactions.data && this.listTransactions.data.length > 0) {
+      this.commonService.downloadCSV(this.listTransactions.data, 'Transactions');
+    }
   }
 
   ngOnDestroy() {

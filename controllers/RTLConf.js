@@ -49,6 +49,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.bitcoindConfigPath = node.bitcoind_config_path;
           settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
           settings.lnServerUrl = node.ln_server_url;
+          settings.swapServerUrl = node.swap_server_url;
           settings.channelBackupPath = node.channel_backup_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({
@@ -195,10 +196,10 @@ exports.getConfig = (req, res, next) => {
 exports.getCurrencyRates = (req, res, next) => {
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: "Fetching Rates Failed!",
-        error: (undefined === body) ? 'Error From External Server!' : body.error
+        error: (!body) ? 'Error From External Server!' : body.error
       });
     } else {
       res.status(200).json(body);

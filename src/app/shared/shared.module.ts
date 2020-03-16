@@ -7,9 +7,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
 import {
-  MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
+  MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
   MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
-  MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MAT_DIALOG_DEFAULT_OPTIONS, MatBadgeModule,
+  MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MatBadgeModule,
   MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material';
 
@@ -24,14 +24,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollY: false
 };
 
-import { CLInvoiceInformationComponent } from './components/data-modal/invoice-information-cl/invoice-information.component';
-import { InvoiceInformationComponent } from './components/data-modal/invoice-information-lnd/invoice-information.component';
-import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
-import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
-import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
-import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
-import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/spinner-dialog.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
 import { HelpComponent } from './components/help/help.component';
@@ -41,11 +34,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
-import { ChannelRebalanceComponent } from './components/data-modal/channel-rebalance/channel-rebalance.component';
-import { CLOpenChannelComponent } from './components/data-modal/open-channel-cl/open-channel.component';
-import { OpenChannelComponent } from './components/data-modal/open-channel-lnd/open-channel.component';
-import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
+import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MaxValidator } from './directive/max-amount.directive';
@@ -53,7 +43,9 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { CloseChannelLndComponent } from './components/data-modal/close-channel-lnd/close-channel-lnd.component';
+import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 @NgModule({
   imports: [
@@ -67,7 +59,6 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
-    MatDialogModule,
     MatExpansionModule,
     MatGridListModule,
     MatDatepickerModule,
@@ -108,7 +99,6 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
-    MatDialogModule,
     MatExpansionModule,
     MatGridListModule,
     MatDatepickerModule,
@@ -136,16 +126,6 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MatSnackBarModule,
     AppSettingsComponent,
     SettingsComponent,
-    CLInvoiceInformationComponent,
-    InvoiceInformationComponent,
-    ChannelRebalanceComponent,
-    CLOpenChannelComponent,
-    OpenChannelComponent,
-    OnChainGeneratedAddressComponent,
-    AlertMessageComponent,
-    ConfirmationMessageComponent,
-    ErrorMessageComponent,
-    SpinnerDialogComponent,
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
@@ -159,19 +139,15 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MinValidator,
     QRCodeModule,
     RemoveLeadingZerosPipe,
-    PerfectScrollbarModule
+    PerfectScrollbarModule,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
     SettingsComponent,
-    CLInvoiceInformationComponent,
-    InvoiceInformationComponent,
-    ChannelRebalanceComponent,
-    OnChainGeneratedAddressComponent,
-    AlertMessageComponent,
-    ConfirmationMessageComponent,
-    ErrorMessageComponent,
-    SpinnerDialogComponent,
     NotFoundComponent,
     SideNavigationComponent,
     TopMenuComponent,
@@ -185,30 +161,15 @@ import { CloseChannelLndComponent } from './components/data-modal/close-channel-
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,
-    CLOpenChannelComponent,
-    OpenChannelComponent,
-    ShowPubkeyComponent,
     AuthSettingsComponent,
-    CloseChannelLndComponent
-  ],
-  entryComponents: [
-    CLInvoiceInformationComponent,
-    InvoiceInformationComponent,
-    ChannelRebalanceComponent,
-    OnChainGeneratedAddressComponent,
-    CLOpenChannelComponent,
-    OpenChannelComponent,
-    ShowPubkeyComponent,
-    SpinnerDialogComponent,
-    AlertMessageComponent,
-    ConfirmationMessageComponent,
-    ErrorMessageComponent,
-    CloseChannelLndComponent
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
     DecimalPipe, TitleCasePipe
   ]

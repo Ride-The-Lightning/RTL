@@ -12,7 +12,7 @@ import { GetInfoCL, InvoiceCL } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { CLInvoiceInformationComponent } from '../../../shared/components/data-modal/invoice-information-cl/invoice-information.component';
+import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -36,7 +36,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public newlyAddedInvoiceMemo = '';
   public newlyAddedInvoiceValue = 0;
   public flgAnimate = true;
-  public label = '';
   public description = '';
   public expiry: number;
   public invoiceValue: number;
@@ -67,13 +66,13 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['expires_at_str', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'description', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'description', 'msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['expires_at_str', 'paid_at_str', 'label', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at_str', 'paid_at_str', 'description', 'msatoshi', 'actions'];
     }
   }
 
@@ -100,24 +99,24 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.logger.info(this.invoices);
   
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== rtlStore.invoices) ? false : true;
+        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
     });
 
   }
 
   onAddInvoice(form: any) {
-    if(!this.label || !this.invoiceValue) { return true; }     
+    if(!this.invoiceValue) { return true; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.flgAnimate = true;
-    this.newlyAddedInvoiceMemo = this.label;
+    this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
     this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
-      label: this.label, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
+      label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
     this.resetData();
   }
@@ -156,7 +155,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.label = '';
     this.description = '';
     this.invoiceValue = undefined;
     this.private = false;
@@ -185,6 +183,12 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
     }
     this.selTimeUnit = event.value;
+  }
+
+  onDownloadCSV() {
+    if(this.invoices.data && this.invoices.data.length > 0) {
+      this.commonService.downloadCSV(this.invoices.data, 'Invoices');
+    }
   }
 
   ngOnDestroy() {

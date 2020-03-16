@@ -87,14 +87,14 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
-      this.paymentJSONArr = (null !== rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (undefined === rtlStore.payments || null == rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
+      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.payments = (rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (undefined !== this.paymentJSONArr) ? false : true;
+        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -102,7 +102,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   onSendPayment() {
     if(!this.paymentRequest) { return true; } 
-    if (undefined !== this.paymentDecoded.timestamp_str) {
+    if ( this.paymentDecoded.timestamp_str) {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
@@ -278,6 +278,12 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.payments.filter = selFilter;
+  }
+
+  onDownloadCSV() {
+    if(this.payments.data && this.payments.data.length > 0) {
+      this.commonService.downloadCSV(this.payments.data, 'Payments');
+    }
   }
 
   ngOnDestroy() {

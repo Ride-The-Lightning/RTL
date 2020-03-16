@@ -80,6 +80,7 @@ body {
 
 .mat-sidenav-container .mat-sidenav-content {
   height: 100vh;
+  min-height: 100vh;
 }
 
 .sidenav {
@@ -242,6 +243,7 @@ body {
 
 .mat-dialog-container {
   padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .mt-1px {
@@ -905,6 +907,10 @@ table {
   font-size: 90% !important;
 }
 
+.font-size-120 {
+  font-size: 120% !important;
+}
+
 .font-weight-900 {
   font-weight: 900 !important;
 }
@@ -973,6 +979,9 @@ table {
   max-height: 600px;
 }
 
+.h-2 {
+  min-height: 2rem !important;
+}
 .border-valid {
   border: 1px solid $green-color !important;
 }
@@ -983,4 +992,16 @@ table {
 
 .icon-green {
   fill: $green-color;
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+.h-5 {
+  height: 5rem;
 }

@@ -64,6 +64,7 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080/v1",
+          swapServerUrl: "http://localhost:8081/v1",
           fiatConversion: false
         }
       }
@@ -98,7 +99,7 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 }
 
 connect.validateNodeConfig = (config) => {
-  if(!+config.SSO.rtlSSO) {
+  if((process.env.RTL_SSO === 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
     if (config.multiPassHashed !== '' && config.multiPassHashed) {
       common.rtl_pass = config.multiPassHashed;
     } else if (config.multiPass !== '' && config.multiPass) {
@@ -153,6 +154,7 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].config_path = '';
       }
+      common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL ? process.env.SWAP_SERVER_URL : (node.Settings.swapServerUrl) ? node.Settings.swapServerUrl.trim() : '';
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
@@ -192,7 +194,7 @@ connect.validateNodeConfig = (config) => {
   }
 
   connect.setSSOParams(config);
-	if (errMsg !== '') { throw new Error(errMsg); }
+	if (errMsg && errMsg.trim() !== '') { throw new Error(errMsg); }
 }
 
 connect.setSSOParams = (config) => {
@@ -216,7 +218,8 @@ connect.setSSOParams = (config) => {
     } else {
       common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
     }
-    if (common.rtl_cookie_path === '') {
+
+    if (!common.rtl_cookie_path || common.rtl_cookie_path.trim() === '') {
       errMsg = 'Please set rtlCookiePath value for single sign on option!';
     } else {
       connect.readCookie(common.rtl_cookie_path);

@@ -92,13 +92,13 @@ export class RoutingPeersComponent implements OnInit, OnChanges {
     forwardingEvents.forEach(event => {
       const incoming = incomingResults.find(result => result.chan_id === event.chan_id_in);
       const outgoing = outgoingResults.find(result => result.chan_id === event.chan_id_out);
-      if (undefined === incoming) {
+      if (!incoming) {
         incomingResults.push({chan_id: event.chan_id_in, alias: event.alias_in, events: 1, total_amount: +event.amt_in});
       } else {
         incoming.events++;
         incoming.total_amount = +incoming.total_amount + +event.amt_in;
       }
-      if (undefined === outgoing) {
+      if (!outgoing) {
         outgoingResults.push({chan_id: event.chan_id_out, alias: event.alias_out, events: 1, total_amount: +event.amt_out});
       } else {
         outgoing.events++;

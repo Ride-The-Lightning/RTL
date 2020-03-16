@@ -23,7 +23,7 @@ exports.getAllChannels = (req, res, next) => {
   let remote = 0;
   let total = 0;
   request(options).then(function (body) {
-    logger.info({fileName: 'Channels', msg: 'All Channels Received: ' + JSON.stringify(body)});    
+    logger.info({fileName: 'Channels', msg: 'All Channels Received: ' + JSON.stringify(body)});
     if(body.channels) {
       Promise.all(
         body.channels.map(channel => {
@@ -65,7 +65,7 @@ exports.getPendingChannels = (req, res, next) => {
   options.qs = req.query;
   request(options).then(function (body) {
     let channels = [];
-    if (undefined === body.total_limbo_balance) {
+    if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
       body.btc_total_limbo_balance = 0;
     } else {
@@ -91,9 +91,9 @@ exports.getClosedChannels = (req, res, next) => {
     let channels = [];
     if (body.channels && body.channels.length > 0) {
       body.channels.forEach(channel => {
-        channel.close_type = (undefined === channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+        channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
       });
-      body.channels = common.sortDescByKey(body.channels, 'close_type');
+      body.channels = common.sortDescByKey(body.channels, 'close_height');
     }
     logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -124,10 +124,10 @@ exports.postChannel = (req, res, next) => {
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Channel Open Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Open Channel Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);
@@ -198,10 +198,10 @@ exports.closeChannel = (req, res, next) => {
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Close Channel Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(204).json({message: 'Channel Closed!'});
@@ -240,10 +240,10 @@ exports.postChanPolicy = (req, res, next) => {
   logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
-    if(undefined === body || body.error) {
+    if(!body || body.error) {
       res.status(500).json({
         message: 'Update Channel Failed!',
-        error: (undefined === body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
       res.status(201).json(body);

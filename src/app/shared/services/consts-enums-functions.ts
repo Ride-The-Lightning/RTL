@@ -109,3 +109,26 @@ export enum ScreenSizeEnum {
   MD = 'MD', // 840 - 1439 => tab landscape & small laptops
   LG = 'LG'  // >1440 => big laptops
 }
+
+export const CHANNEL_CLOSURE_TYPE = {
+  COOPERATIVE_CLOSE: { name: 'Co-operative Close', tooltip: 'Channel closed cooperatively' },
+  LOCAL_FORCE_CLOSE: { name: 'Local Force Close', tooltip: 'Channel force-closed by the local node' },
+  REMOTE_FORCE_CLOSE: { name: 'Remote Force Close', tooltip: 'Channel force-closed by the remote node' },
+  BREACH_CLOSE: { name: 'Breach Close', tooltip: 'Remote node attempted to broadcast a prior revoked channel state' },
+  FUNDING_CANCELED: { name: 'Funding Canceled', tooltip: 'Channel never fully opened' },
+  ABANDONED: { name: 'Abandoned', tooltip: 'Channel abandoned by the local node' }
+}
+
+export enum SwapStateEnum {
+  INITIATED	= 'Initiated',
+  PREIMAGE_REVEALED	= 'Preimage Revealed',
+  HTLC_PUBLISHED	= 'HTLC Published',
+  SUCCESS	= 'Successful',
+  FAILED	= 'Failed',
+  INVOICE_SETTLED	= 'Invoice Settled'
+}
+
+export enum SwapTypeEnum {
+  LOOP_OUT = 'LOOP_OUT',
+  LOOP_IN = 'LOOP_IN'
+}

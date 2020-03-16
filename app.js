@@ -26,6 +26,7 @@ const payReqRoutes = require("./routes/lnd/payReq");
 const paymentsRoutes = require("./routes/lnd/payments");
 const invoiceRoutes = require("./routes/lnd/invoices");
 const switchRoutes = require("./routes/lnd/switch");
+const loopRoutes = require('./routes/lnd/loop');
 const messageRoutes = require("./routes/lnd/message");
 
 const infoCLRoutes = require("./routes/c-lightning/getInfo");
@@ -37,6 +38,7 @@ const onChainCLRoutes = require("./routes/c-lightning/onchain");
 const paymentsCLRoutes = require("./routes/c-lightning/payments");
 const peersCLRoutes = require("./routes/c-lightning/peers");
 const networkCLRoutes = require("./routes/c-lightning/network");
+const messageCLRoutes = require("./routes/c-lightning/message");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -74,6 +76,7 @@ app.use(apiLNDRoot + "payreq", payReqRoutes);
 app.use(apiLNDRoot + "payments", paymentsRoutes);
 app.use(apiLNDRoot + "invoices", invoiceRoutes);
 app.use(apiLNDRoot + "switch", switchRoutes);
+app.use(apiLNDRoot + "loop", loopRoutes);
 app.use(apiLNDRoot + "message", messageRoutes);
 
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
@@ -85,6 +88,7 @@ app.use(apiCLRoot + "onchain", onChainCLRoutes);
 app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
+app.use(apiCLRoot + "message", messageCLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

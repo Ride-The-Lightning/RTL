@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.6.4
+### Stable Release: v0.6.8
 
 **Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
 
@@ -107,7 +107,8 @@ Example RTL-Config.json:
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "enableLogging": true,
         "fiatConversion": false,
-        "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080/v1>"
+        "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080/v1>",
+        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. http://localhost:8081/v1>"
       }
     }
   ]
