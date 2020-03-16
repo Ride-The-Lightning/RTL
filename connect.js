@@ -64,7 +64,7 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080/v1",
-          swapServerUrl: "https://localhost:8081/v1",
+          swapServerUrl: "http://localhost:8081/v1",
           fiatConversion: false
         }
       }

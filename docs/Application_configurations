@@ -30,7 +30,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "enableLogging": <Parameter to turn RTL logging off/on. Allowed values - true, false, default false, Required>,
         "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false, Required>,
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
-        "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080/v1 OR https://192.168.0.1:3001/v1. Default 'https://localhost:8080/v1', Required"
+        "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080/v1 OR https://192.168.0.1:3001/v1. Default 'https://localhost:8080/v1', Required",
+        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. http://localhost:8081/v1, Optional>",
       }
     }
   ]
