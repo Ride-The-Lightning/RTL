@@ -123,9 +123,9 @@ exports.loopIn = (req, res, next) => {
   options.body = JSON.stringify({
     amt: req.body.amount,
     max_swap_fee: req.body.swapFee,
-    max_miner_fee: req.body.minerFee,
-    last_hop: req.body.lastHop,
-    external_htlc: req.body.externalHtlc
+    max_miner_fee: req.body.minerFee
+    // last_hop: req.body.lastHop,
+    // external_htlc: req.body.externalHtlc
   });
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In: ' + JSON.stringify(body)});
@@ -191,16 +191,10 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
-
-    //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
-    terms.max_swap_amount = '280000';
-    //Delete after https://github.com/lightninglabs/loop/issues/157 fixed
-
     options1.url = swapServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     options2.url = swapServerUrl + '/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     logger.info({fileName: 'Loop', msg: 'Loop In Min Quote Options: ' + JSON.stringify(options1)});
     logger.info({fileName: 'Loop', msg: 'Loop In Max Quote Options: ' + JSON.stringify(options2)});
-
     Promise.all([request(options1), request(options2)]).then(function(values) {
       values[0] = JSON.parse(values[0]);
       values[1] = JSON.parse(values[1]);
