@@ -48,6 +48,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.bitcoindConfigPath = node.bitcoind_config_path;
           settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
           settings.lnServerUrl = node.ln_server_url;
+          settings.swapServerUrl = node.swap_server_url;
           settings.channelBackupPath = node.channel_backup_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({

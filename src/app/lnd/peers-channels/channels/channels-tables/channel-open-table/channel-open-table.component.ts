@@ -8,11 +8,13 @@ import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@an
 
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
+import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { ChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from '../../close-channel-modal/close-channel.component';
+import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
@@ -51,7 +53,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private decimalPipe: DecimalPipe) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -308,6 +310,22 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0');
     });
     return channels;
+  }
+
+  onLoopOut(selChannel: Channel) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
+    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(response => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
+        channel: selChannel,
+        minQuote: response[0],
+        maxQuote: response[1],
+        direction: SwapTypeEnum.LOOP_OUT,
+        component: LoopModalComponent
+      }}));    
+    });
   }
 
   onDownloadCSV() {

@@ -18,6 +18,7 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { SessionService } from './shared/services/session.service';
 import { CommonService } from './shared/services/common.service';
+import { LoopService } from './shared/services/loop.service';
 import { DataService } from './shared/services/data.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
@@ -40,6 +41,7 @@ import { SpinnerDialogComponent } from './shared/components/data-modal/spinner-d
 import { AlertMessageComponent } from './shared/components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from './shared/components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
+import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 
 @NgModule({
   imports: [
@@ -67,7 +69,8 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
-    CloseChannelComponent
+    CloseChannelComponent,
+    LoopModalComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -81,7 +84,8 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
     AlertMessageComponent,
     ConfirmationMessageComponent,
     ErrorMessageComponent,
-    CloseChannelComponent
+    CloseChannelComponent,
+    LoopModalComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
@@ -89,7 +93,7 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
-    CommonService, AuthGuard, SessionService, DataService
+    CommonService, AuthGuard, SessionService, DataService, LoopService
   ],
   bootstrap: [AppComponent]
 })

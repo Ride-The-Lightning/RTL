@@ -1,3 +1,5 @@
+import { SwapStateEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+
 export interface ChannelStatus {
   channels?: number;
   capacity?:number;
@@ -417,3 +419,20 @@ export interface PendingChannelsData {
   num_channels: number;
   limbo_balance: number;
 }
+
+export interface SwapStatus {
+  type?: SwapTypeEnum;
+  cost_server?: string;
+  cost_offchain?: string;
+  htlc_address?: string;
+  state?: SwapStateEnum;
+  amt?: string;
+  cost_onchain?: string;
+  initiation_time?: string;
+  initiation_time_str?: string;
+  id_bytes?: string;
+  last_update_time?: string;
+  last_update_time_str?: string;
+  id?: string;
+}
+

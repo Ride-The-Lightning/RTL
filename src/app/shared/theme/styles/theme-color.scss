@@ -388,4 +388,7 @@
     fill: $primary-lighter;
   }
 
+  .mat-expansion-panel-header[aria-disabled='true'] {
+    color: $foreground-text;
+  }
 }
