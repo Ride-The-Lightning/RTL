@@ -1,5 +1,5 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
-import { GetInfoRoot } from './RTLconfig';
+import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 import { LoopQuote } from './loopModels';
@@ -114,8 +114,13 @@ export interface ErrorData {
   component?: any;
 }
 
+export interface AuthConfig {
+  appConfig?: RTLConfiguration;
+  component?: any;
+}
+
 export interface DialogConfig {
   width?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig;
 }

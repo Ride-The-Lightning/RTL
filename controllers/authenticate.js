@@ -25,8 +25,7 @@ exports.authenticateUser = (req, res, next) => {
     }
   } else {
     const password = req.body.authenticationValue;
-    const token2fa = req.body.authentication2FA;
-    if (common.rtl_pass === password && (!common.rtl_secret2fa || otplib.authenticator.check(token2fa, common.rtl_secret2fa))) {
+    if (common.rtl_pass === password) {
       var rpcUser = 'NODE_USER';
       const token = jwt.sign(
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
@@ -51,8 +50,8 @@ exports.resetPassword = (req, res, next) => {
       error: "Password cannot be reset for SSO authentication!"
     });
   } else {
-    const oldPassword = req.body.oldPassword;
-    if (common.rtl_pass === oldPassword) {
+    const currPassword = req.body.currPassword;
+    if (common.rtl_pass === currPassword) {
       common.rtl_pass = connect.replacePasswordWithHash(req.body.newPassword);
       var rpcUser = 'NODE_USER';
       const token = jwt.sign(
@@ -67,5 +66,18 @@ exports.resetPassword = (req, res, next) => {
         error: "Old password is not correct!"
       });
     }
+  }
+};
+
+exports.verifyToken = (req, res, next) => {
+  const token2fa = req.body.authentication2FA;
+  if (!common.rtl_secret2fa || otplib.authenticator.check(token2fa, common.rtl_secret2fa)) {
+    res.status(200).json({ isValidToken: true });
+  } else {
+    logger.error({fileName: 'Authenticate', lineNum: 77, msg: 'Token Verification Failed!'});
+    res.status(401).json({
+      message: "Authentication Failed!",
+      error: "Token Verification Failed!"
+    });
   }
 };

@@ -211,10 +211,7 @@ export class RTLEffects implements OnDestroy {
     map((updateStatus: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.logger.info(updateStatus);
-      return {
-        type: RTLActions.OPEN_SNACK_BAR,
-        payload: updateStatus.message
-      };
+      return { type: RTLActions.VOID };
     },
     catchError((err) => {
       this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Update2FASettings', code: (!err.length) ? err.status : err[0].status, message: (!err.length) ? err.error.error : err[0].error.error }));
@@ -292,6 +289,18 @@ export class RTLEffects implements OnDestroy {
    })
   );
 
+  setLoggedInDetails(initialPass: boolean, postRes: any, rootStore: any) {
+    this.logger.info('Successfully Authorized!');
+    this.SetToken(postRes.token);
+    rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
+    if(initialPass) {
+      this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
+      this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
+    } else {
+      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
+    }
+  }
+
   @Effect({ dispatch: false })
   authLogin = this.actions$.pipe(
   ofType(RTLActions.LOGIN),
@@ -302,21 +311,12 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
-      authentication2FA: (!action.payload.token) ? '' : action.payload.token
+      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password
     })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);
-        this.logger.info('Successfully Authorized!');
-        this.SetToken(postRes.token);
-        rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
-        if(action.payload.initialPass) {
-          this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
-          this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
-        } else {
-          this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
-        }
+        this.setLoggedInDetails(action.payload.initialPass, postRes, rootStore);
       }),
       catchError((err) => {
         this.logger.info('Redirecting to Login Error Page');
@@ -327,6 +327,27 @@ export class RTLEffects implements OnDestroy {
         } else {
           this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
         }
+        return of({type: RTLActions.VOID});
+      })
+    );
+  }));
+
+  @Effect({ dispatch: false })
+  tokenVerify = this.actions$.pipe(
+  ofType(RTLActions.VERIFY_TWO_FA),
+  withLatestFrom(this.store.select('root')),
+  mergeMap(([action, rootStore]: [RTLActions.VerifyTwoFA, fromRTLReducer.RootState]) => {
+    this.store.dispatch(new RTLActions.ClearEffectErrorRoot('VerifyToken'));
+    return this.httpClient.post(environment.AUTHENTICATE_API + '/token', {authentication2FA: action.payload.token})
+    .pipe(
+      map((postRes: any) => {
+        this.logger.info(postRes);
+        this.logger.info('Token Successfully Verified!');
+        this.setLoggedInDetails(false, action.payload.authResponse, rootStore);        
+      }),
+      catchError((err) => {
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', {status: err.status, error: err.error.error});
+        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'VerifyToken', code: err.status, message: err.error.error }));
         return of({type: RTLActions.VOID});
       })
     );
@@ -357,7 +378,7 @@ export class RTLEffects implements OnDestroy {
   mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('ResetPassword'));
     return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { 
-      oldPassword: action.payload.oldPassword,
+      currPassword: action.payload.currPassword,
       newPassword: action.payload.newPassword
     })
     .pipe(
