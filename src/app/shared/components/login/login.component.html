@@ -11,9 +11,10 @@
             <input autoFocus matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
             <mat-error *ngIf="!password">Password is required.</mat-error>
           </mat-form-field>
+          <p *ngIf="loginErrorMessage !== ''" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>{{loginErrorMessage}}</p>
           <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="3" type="submit">Login</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="4" type="submit">Login</button>
           </div> 
         </form>
       </mat-card-content>

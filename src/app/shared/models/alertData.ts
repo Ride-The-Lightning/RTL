@@ -1,5 +1,5 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
-import { GetInfoRoot } from './RTLconfig';
+import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 import { LoopQuote } from './loopModels';
@@ -73,6 +73,11 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
+export interface LoginTokenData {
+  authRes: {token: string};
+  component?: any;
+}
+
 export interface LoopAlert {
   channel: Channel;
   minQuote: LoopQuote;
@@ -114,8 +119,14 @@ export interface ErrorData {
   component?: any;
 }
 
+export interface AuthConfig {
+  appConfig?: RTLConfiguration;
+  component?: any;
+}
+
 export interface DialogConfig {
   width?: string;
+  maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData;
 }

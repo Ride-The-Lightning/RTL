@@ -15,7 +15,7 @@
 <ng-template #quoteDetailsBlock>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
     <div fxLayout="row">
-      <div fxFlex="30" matTooltip="The fee that the swap server is charging for the swap">
+      <div fxFlex="30" matTooltip="Estimated fee charged by the loop server for the swap">
         <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
         <span class="foreground-secondary-text">{{quote?.swap_fee | number}}</span>
       </div>
@@ -41,7 +41,7 @@
     </div>
     <mat-divider class="w-100 my-1" *ngIf="quote?.swap_payment_dest !== ''"></mat-divider>
     <div fxLayout="row" *ngIf="quote?.swap_payment_dest !== ''">
-      <div fxFlex="100" matTooltip="The node pubkey where the swap payment needs to be paid to">
+      <div fxFlex="100" matTooltip="The node pubkey, where the swap payments will be sent">
         <h4 fxLayoutAlign="start" class="font-bold-500">Swap Server Node Pubkey</h4>
         <span class="foreground-secondary-text">{{quote?.swap_payment_dest}}</span>
       </div>

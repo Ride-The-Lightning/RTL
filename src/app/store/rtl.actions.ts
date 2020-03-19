@@ -27,6 +27,7 @@ export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
+export const TWO_FA_SAVE_SETTINGS = 'TWO_FA_SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
 
@@ -95,6 +96,7 @@ export const SHOW_CONFIG = 'SHOW_CONFIG';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
 export const LOGIN = 'LOGIN';
+export const VERIFY_TWO_FA = 'VERIFY_TWO_FA';
 export const LOGOUT = 'LOGOUT';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
@@ -260,6 +262,11 @@ export class SetRTLConfig implements Action {
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
   constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
+}
+
+export class TwoFASaveSettings implements Action {
+  readonly type = TWO_FA_SAVE_SETTINGS;
+  constructor(public payload: {secret2fa: string}) {}
 }
 
 export class SetSelelectedNode implements Action {
@@ -623,6 +630,11 @@ export class Login implements Action {
   constructor(public payload: {password: string, initialPass: boolean}) {}
 }
 
+export class VerifyTwoFA implements Action {
+  readonly type = VERIFY_TWO_FA;
+  constructor(public payload: {token: string, authResponse: any}) {}
+}
+
 export class Logout implements Action {
   readonly type = LOGOUT;
   constructor() {}
@@ -630,7 +642,7 @@ export class Logout implements Action {
 
 export class ResetPassword implements Action {
   readonly type = RESET_PASSWORD;
-  constructor(public payload: {oldPassword: string, newPassword: string}) {}
+  constructor(public payload: {currPassword: string, newPassword: string}) {}
 }
 
 export class SetChildNodeSettingsCL implements Action {
@@ -875,7 +887,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

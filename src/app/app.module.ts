@@ -42,6 +42,8 @@ import { AlertMessageComponent } from './shared/components/data-modal/alert-mess
 import { ConfirmationMessageComponent } from './shared/components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
+import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
+import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
 
 @NgModule({
   imports: [
@@ -70,7 +72,9 @@ import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
     ConfirmationMessageComponent,
     ErrorMessageComponent,
     CloseChannelComponent,
-    LoopModalComponent
+    LoopModalComponent,
+    TwoFactorAuthComponent,
+    LoginTokenComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -85,7 +89,9 @@ import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
     ConfirmationMessageComponent,
     ErrorMessageComponent,
     CloseChannelComponent,
-    LoopModalComponent
+    LoopModalComponent,
+    TwoFactorAuthComponent,
+    LoginTokenComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

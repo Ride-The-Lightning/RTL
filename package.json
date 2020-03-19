@@ -43,6 +43,7 @@
     "jsonwebtoken": "^8.5.1",
     "material-design-icons": "^3.0.1",
     "ngx-perfect-scrollbar": "^8.0.0",
+    "otplib": "^11.0.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "roboto-fontface": "^0.10.0",

@@ -23,6 +23,7 @@ const initRootState: RootState = {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
+    enable2FA: false,
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
   nodeData: {}

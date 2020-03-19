@@ -107,6 +107,7 @@ connect.validateNodeConfig = (config) => {
     } else {
       errMsg = errMsg + '\nNode Authentication can be set with multiPass only. Please set multiPass in RTL-Config.json';
     }
+    common.rtl_secret2fa = config.secret2fa;
   }
   common.port = (process.env.PORT) ? connect.normalizePort(process.env.PORT) : (config.port) ? connect.normalizePort(config.port) : 3000;
   if (config.nodes && config.nodes.length > 0) {
