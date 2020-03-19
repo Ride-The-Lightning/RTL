@@ -632,7 +632,7 @@ export class Login implements Action {
 
 export class VerifyTwoFA implements Action {
   readonly type = VERIFY_TWO_FA;
-  constructor(public payload: {token: string, authResponse: string}) {}
+  constructor(public payload: {token: string, authResponse: any}) {}
 }
 
 export class Logout implements Action {

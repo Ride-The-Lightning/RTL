@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
+import { LoginTokenComponent } from '../data-modal/login-2fa-token/login-2fa-token.component';
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import { LoggerService } from '../../services/logger.service';
 
@@ -22,14 +23,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   public appConfig: RTLConfiguration;
   public password = '';
-  public token = '';
   public rtlSSO = 0;
   public rtlCookiePath = '';
   public accessKey = '';
   public loginErrorMessage = '';
-  public tokenErrorMessage = '';
-  public authRes = null;
-  public isLoggedIn = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) { }
@@ -41,8 +38,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       rtlStore.effectErrorsRoot.forEach(effectsErr => {
         if (effectsErr.action === 'Login' || effectsErr.action === 'IsAuthorized') {
           this.loginErrorMessage = this.loginErrorMessage + effectsErr.message + ' ';
-        } else if (effectsErr.action === 'VerifyToken') {
-          this.tokenErrorMessage = this.tokenErrorMessage + effectsErr.message + ' ';
         }
         this.logger.error(effectsErr);
       });
@@ -54,8 +49,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(authRes => {
       if (authRes !== 'ERROR') {
-        this.authRes = authRes;
-        this.isLoggedIn = true;
+        this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35rem', data: {
+          authRes: authRes,
+          component: LoginTokenComponent
+        }}));
+    
       }
     });    
   }
@@ -70,20 +68,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  onVerifyToken() {
-    if (this.appConfig.enable2FA && !this.token) { return true; }
-    this.tokenErrorMessage = '';
-    this.store.dispatch(new RTLActions.VerifyTwoFA({token: this.token, authResponse: this.authRes}));
-  }
-
   resetData() {
     this.password = '';
     this.loginErrorMessage = '';
-  }
-
-  resetToken() {
-    this.token = '';
-    this.tokenErrorMessage = '';
   }
 
   ngOnDestroy() {

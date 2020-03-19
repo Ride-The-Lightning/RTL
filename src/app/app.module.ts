@@ -43,6 +43,7 @@ import { ConfirmationMessageComponent } from './shared/components/data-modal/con
 import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
+import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
 
 @NgModule({
   imports: [
@@ -72,7 +73,8 @@ import { TwoFactorAuthComponent } from './shared/components/data-modal/two-facto
     ErrorMessageComponent,
     CloseChannelComponent,
     LoopModalComponent,
-    TwoFactorAuthComponent
+    TwoFactorAuthComponent,
+    LoginTokenComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -88,7 +90,8 @@ import { TwoFactorAuthComponent } from './shared/components/data-modal/two-facto
     ErrorMessageComponent,
     CloseChannelComponent,
     LoopModalComponent,
-    TwoFactorAuthComponent
+    TwoFactorAuthComponent,
+    LoginTokenComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

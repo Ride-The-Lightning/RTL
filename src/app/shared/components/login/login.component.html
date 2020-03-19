@@ -6,7 +6,7 @@
   <div class="padding-gap">
     <mat-card>
       <mat-card-content class="card-content-gap">
-        <form (ngSubmit)="onLogin()" #loginForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" *ngIf="!isLoggedIn">
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
           <mat-form-field fxFlex="100" fxLayoutAlign="start">
             <input autoFocus matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
             <mat-error *ngIf="!password">Password is required.</mat-error>
@@ -15,17 +15,6 @@
           <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
             <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
             <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="4" type="submit">Login</button>
-          </div> 
-        </form>
-        <form (ngSubmit)="onVerifyToken()" #tokenForm="ngForm" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" *ngIf="appConfig.enable2FA && isLoggedIn">
-          <mat-form-field fxFlex="100" fxLayoutAlign="start">
-            <input matInput placeholder="Two Factor Token" type="text" id="token" name="token" [(ngModel)]="token" tabindex="2" required>
-            <mat-error *ngIf="!token">Two factor token is required.</mat-error>
-          </mat-form-field>
-          <p *ngIf="tokenErrorMessage !== ''" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>{{tokenErrorMessage}}</p>
-          <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetToken()">Clear</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="4" type="submit">Verify</button>
           </div> 
         </form>
       </mat-card-content>
