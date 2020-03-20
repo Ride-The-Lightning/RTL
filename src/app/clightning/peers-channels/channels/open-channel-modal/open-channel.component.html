@@ -1,9 +1,12 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-dialog">
-    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
-      <span class="page-title">{{alertTitle}}</span>
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{alertTitle}}</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px padding-gap-r-large">
+    <mat-card-content class="mt-5px">
       <form fxLayout="column" (ngSubmit)="openChannelForm.form.valid && onOpenChannel()" #openChannelForm="ngForm">
         <mat-expansion-panel class="flat-expansion-panel">
           <mat-expansion-panel-header>
@@ -71,11 +74,18 @@
             </div>
           </div>
         </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <div *ngIf="newlyAdded">
+            <button class="mr-1" mat-stroked-button color="warn" (click)="onClose()" tabindex="7">Do It Later</button>
+            <button class="mr-1" mat-stroked-button color="primary" tabindex="8" type="reset" (click)="resetData()">Clear Field</button>
+            <button autoFocus mat-flat-button color="primary" type="submit" tabindex="9">Open Channel</button>
+          </div>
+          <div *ngIf="!newlyAdded" class="mt-2">
+            <button class="mr-1"  mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
+            <button autoFocus mat-flat-button color="primary" type="submit" tabindex="8">Open Channel</button>
+          </div>
+        </div>
       </form>
     </mat-card-content>
-    <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-      <button mat-button class="mr-1 btn-dialog" color="primary" type="button" tabindex="8" [mat-dialog-close]="false" default>Cancel</button>
-      <button mat-button class="btn-dialog" color="primary" type="submit" tabindex="9">Open Channel</button>
-    </div>
   </div>
 </div>

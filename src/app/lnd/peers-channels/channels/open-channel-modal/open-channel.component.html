@@ -1,9 +1,12 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-dialog">
-    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
-      <span class="page-title">{{alertTitle}}</span>
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{alertTitle}}</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px padding-gap-r-large">
+    <mat-card-content class="mt-5px">
       <form fxLayout="column" (ngSubmit)="openChannelForm.form.valid && onOpenChannel()" #openChannelForm="ngForm">
         <div fxLayout="column">
           <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
@@ -25,12 +28,12 @@
           <span *ngIf="peerConnectionError !== ''">{{'Peer connection failed: ' + peerConnectionError}}</span>
           <span *ngIf="channelConnectionError !== ''">{{'Channel connection failed: ' + channelConnectionError}}</span>
         </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <button mat-stroked-button color="primary" class="mr-1" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
+          <button autoFocus mat-flat-button color="primary" type="submit" tabindex="9">{{!peer && operation === 'peer' && !fundingAmount ? 'Add Peer' : 'Open Channel'}}</button>
+        </div>
       </form>
     </mat-card-content>
-    <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-      <button mat-button class="mr-1 btn-dialog" color="primary" type="button" tabindex="7" [mat-dialog-close]="false" default>Cancel</button>
-      <button mat-button class="btn-dialog" color="primary" type="submit" tabindex="9">{{!peer && operation === 'peer' && !fundingAmount ? 'Add Peer' : 'Open Channel'}}</button>
-    </div>
   </div>
 </div>
 

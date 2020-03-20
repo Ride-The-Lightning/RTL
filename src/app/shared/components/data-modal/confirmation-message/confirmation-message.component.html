@@ -1,9 +1,12 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-dialog">
-    <mat-card-header fxLayout="row" fxLayoutAlign="start center" class="modal-info-header">
-      <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">{{data.alertTitle || alertTypeEnum[data.type]}}</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose(false)" mat-button>X</button>
     </mat-card-header>    
-    <mat-card-content class="mt-5px padding-gap-r-large">
+    <mat-card-content class="mt-5px">
       <form fxLayout="column">
         <p *ngIf="data.titleMessage && !flgShowInput" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
         <div *ngIf="messageObjs?.length>0">
@@ -37,12 +40,12 @@
             </mat-form-field>
           </div>        
         </div>
+        <div fxLayout="row" fxLayoutAlign="end center">
+          <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
+          <button *ngIf="flgShowInput" mat-flat-button color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
+          <button *ngIf="!flgShowInput" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
+        </div>
       </form>
     </mat-card-content>
-    <div fxLayout="row" fxLayoutAlign="end center">
-      <button mat-button class="mr-1 btn-dialog" color="primary" type="reset" (click)="onClose(false)" tabindex="2" default>{{noBtnText}}</button>
-      <button *ngIf="flgShowInput" mat-button class="btn-dialog" color="primary" type="submit" tabindex="3" (click)="onClose(getInputs)">{{yesBtnText}}</button>
-      <button *ngIf="!flgShowInput" mat-button class="btn-dialog" color="primary" type="submit" tabindex="4" (click)="onClose(true)">{{yesBtnText}}</button>
-    </div>
   </div>
 </div>
