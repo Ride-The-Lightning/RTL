@@ -103,19 +103,9 @@ export class PeersComponent implements OnInit, OnDestroy {
   }
 
   onConnectPeer() {
-    // this.store.dispatch(new RTLActions.OpenAlert({ data: {
-    //   message: { peer: null, information: this.information, balance: this.availableBalance },
-    //   component: ConnectPeerComponent
-    // }}));
-    const peerToAddChannelMessage = {
-      information: this.information,
-      balance: this.availableBalance
-    };
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-      alertTitle: 'Add Peer',
-      message: peerToAddChannelMessage,
-      operation: 'peer',
-      component: OpenChannelComponent
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      message: { peer: null, information: this.information, balance: this.availableBalance },
+      component: ConnectPeerComponent
     }}));
   }
 
@@ -128,7 +118,6 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
-      operation: 'channel',
       component: OpenChannelComponent
     }}));
   }

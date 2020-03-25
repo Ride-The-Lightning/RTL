@@ -16,7 +16,6 @@ import { OnChainComponent } from './on-chain/on-chain.component';
 import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
 import { WalletComponent } from './wallet/wallet.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
-import { ChannelManageComponent } from './peers-channels/channels/channel-manage/channel-manage.component';
 import { ChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
@@ -60,7 +59,6 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     LightningInvoicesComponent,
     WalletComponent,
     LightningPaymentsComponent,
-    ChannelManageComponent,
     ChannelPendingTableComponent,
     ChannelClosedTableComponent,
     TransactionsComponent,

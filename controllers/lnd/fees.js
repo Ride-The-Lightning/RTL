@@ -10,6 +10,7 @@ exports.getFees = (req, res, next) => {
   request(options).then((body) => {
     logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Fees', lineNum: 13, msg: JSON.stringify(body.error)});
       res.status(500).json({
         message: "Fetching fee failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -51,6 +52,7 @@ exports.getFees = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    logger.error({fileName: 'Fees', lineNum: 55, msg: JSON.stringify(body.error)});
     return res.status(500).json({
       message: "Fetching fee failed!",
       error: err.error

@@ -31,7 +31,6 @@ export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
   message?: { information: GetInfo, balance: number, peer?: Peer, peers?: Peer[] };
-  operation?: string;
   component?: any;
 }
 

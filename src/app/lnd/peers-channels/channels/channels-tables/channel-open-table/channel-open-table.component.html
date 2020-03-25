@@ -72,7 +72,7 @@
       </ng-container>
       <ng-container matColumnDef="no_peer">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="numPeers<1">No peers connected. Add a peer in order to open a channel.</p>
+          <p *ngIf="numPeers<1 && (!channels.data || channels.data.length<1)">No peers connected. Add a peer in order to open a channel.</p>
           <p *ngIf="numPeers>0 && (!channels.data || channels.data.length<1)">No channels available.</p>
         </td>
       </ng-container>
