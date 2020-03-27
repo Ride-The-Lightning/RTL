@@ -1,5 +1,5 @@
-import { DataTypeEnum } from '../services/consts-enums-functions';
-import { GetInfoRoot } from './RTLconfig';
+import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 import { LoopQuote } from './loopModels';

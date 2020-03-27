@@ -1102,7 +1102,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('LoopSwaps', err);
+            this.handleErrorWithoutAlert('LoopSwaps', 'Fetching Swaps Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
