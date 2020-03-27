@@ -48,6 +48,14 @@ export class RTLEffects implements OnDestroy {
     private router: Router) {}
 
   @Effect({ dispatch: false })
+  closeAllDialogs = this.actions$.pipe(
+    ofType(RTLActions.CLOSE_ALL_DIALOGS),
+    map((action: RTLActions.CloseAllDialogs) => {
+      this.dialog.closeAll();
+    }
+  ));
+
+  @Effect({ dispatch: false })
   openSnackBar = this.actions$.pipe(
     ofType(RTLActions.OPEN_SNACK_BAR),
     map((action: RTLActions.OpenSnackBar) => {

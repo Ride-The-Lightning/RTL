@@ -100,11 +100,6 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         peers: action.payload
       };
-    case RTLActions.ADD_PEER:
-      return {
-        ...state,
-        peers: [...state.peers, action.payload]
-      };
     case RTLActions.REMOVE_PEER:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {

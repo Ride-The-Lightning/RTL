@@ -29,7 +29,7 @@ exports.getPeers = (req, res, next) => {
     .then(function(values) {
       logger.info({fileName: 'Peers', msg: 'Peers with Alias before Sort: ' + JSON.stringify(body)});
       if (body.peers) {
-        body.peers = common.sortDescByKey(body.peers, 'alias');
+        body.peers = common.sortDescByStrKey(body.peers, 'alias');
       }
       logger.info({fileName: 'Peers', msg: 'Peers with Alias after Sort: ' + JSON.stringify(body)});
       res.status(200).json(body.peers);
@@ -68,7 +68,7 @@ exports.postPeer = (req, res, next) => {
           }))
         .then(function(values) {
           if ( body.peers) {
-            body.peers = common.sortDescByKey(body.peers, 'alias');
+            body.peers = common.sortDescByStrKey(body.peers, 'alias');
             logger.info({fileName: 'Peers', msg: 'Peer with Alias: ' + JSON.stringify(body)});
             body.peers = common.newestOnTop(body.peers, 'pub_key', req.body.pubkey);
             logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(body)});

@@ -1,6 +1,6 @@
-import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
-import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
-import { GetInfo, Invoice, Channel } from './lndModels';
+import { DataTypeEnum } from '../services/consts-enums-functions';
+import { GetInfoRoot } from './RTLconfig';
+import { GetInfo, Invoice, Channel, Peer } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
 import { LoopQuote } from './loopModels';
 
@@ -31,8 +31,7 @@ export interface InputData {
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { peer: any, information: GetInfo, balance: number };
-  newlyAdded?: boolean;
+  message?: { information: GetInfo, balance: number, peer?: Peer, peers?: Peer[] };
   component?: any;
 }
 

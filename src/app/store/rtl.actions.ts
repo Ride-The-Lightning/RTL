@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChi
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, SwapStatus
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -14,6 +14,7 @@ export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const CLOSE_ALL_DIALOGS = 'CLOSE_ALL_DIALOGS';
 export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
@@ -40,7 +41,7 @@ export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
 export const SET_PEERS = 'SET_PEERS';
 export const SAVE_NEW_PEER = 'SAVE_NEW_PEER';
-export const ADD_PEER = 'ADD_PEER';
+export const NEWLY_ADDED_PEER = 'NEWLY_ADDED_PEER';
 export const DETACH_PEER = 'DETACH_PEER';
 export const REMOVE_PEER = 'REMOVE_PEER';
 export const SAVE_NEW_INVOICE = 'SAVE_NEW_INVOICE';
@@ -193,6 +194,10 @@ export class EffectErrorCl implements Action {
   constructor(public payload: ErrorPayload) {}
 }
 
+export class CloseAllDialogs implements Action {
+  readonly type = CLOSE_ALL_DIALOGS;
+}
+
 export class OpenSnackBar implements Action {
   readonly type = OPEN_SNACK_BAR;
   constructor(public payload: string) {}
@@ -305,12 +310,12 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean, showOpenChannelModal: boolean}) {}
+  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
 }
 
-export class AddPeer implements Action {
-  readonly type = ADD_PEER;
-  constructor(public payload: Peer) {}
+export class NewlyAddedPeer implements Action {
+  readonly type = NEWLY_ADDED_PEER;
+  constructor(public payload: { peer: Peer, balance: number}) {}
 }
 
 export class DetachPeer implements Action {
@@ -507,12 +512,12 @@ export class SendPaymentStatus implements Action {
 
 export class FetchGraphNode implements Action {
   readonly type = FETCH_GRAPH_NODE;
-  constructor(public payload: string) {} // payload = pubkey
+  constructor(public payload: {pubkey: string}) {}
 }
 
 export class SetGraphNode implements Action {
   readonly type = SET_GRAPH_NODE;
-  constructor(public payload: GraphNode) {}
+  constructor(public payload: {node: LightningNode}) {}
 }
 
 export class GetNewAddress implements Action {
@@ -866,11 +871,11 @@ export class SetChannelTransactionCL implements Action {
 
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
-  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
+  FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
   FetchBalance | SetBalance |
