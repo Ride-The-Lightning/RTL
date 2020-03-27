@@ -37,7 +37,8 @@ If your running RTL and LND on different devices on your local LAN, certain conf
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
         "enableLogging": false,
         "fiatConversion": false,
-        "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080/v1; e.g. https://192.168.0.1:8080/v1>"
+        "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080/v1; e.g. https://192.168.0.1:8080/v1>",
+        "swapServerUrl": "<http://<localhost>:8081/v1>",        
       }
     }
   ]

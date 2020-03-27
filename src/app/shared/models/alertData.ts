@@ -2,6 +2,7 @@ import { DataTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
 import { InvoiceCL, GetInfoCL } from './clModels';
+import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
   code: number;
@@ -71,6 +72,19 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
+export interface LoginTokenData {
+  authRes: {token: string};
+  component?: any;
+}
+
+export interface LoopAlert {
+  channel: Channel;
+  minQuote: LoopQuote;
+  maxQuote: LoopQuote;
+  direction?: SwapTypeEnum;
+  component?: any;
+}
+
 export interface AlertData {
   type: string; // INFORMATION/WARNING/SUCCESS/ERROR
   alertTitle?: string;
@@ -104,8 +118,14 @@ export interface ErrorData {
   component?: any;
 }
 
+export interface AuthConfig {
+  appConfig?: RTLConfiguration;
+  component?: any;
+}
+
 export interface DialogConfig {
   width?: string;
+  maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData;
 }

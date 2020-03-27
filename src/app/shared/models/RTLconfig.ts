@@ -17,6 +17,7 @@ export class Settings {
     public bitcoindConfigPath?: string,
     public enableLogging?: boolean,
     public lnServerUrl?: string,
+    public swapServerUrl?: string,
     public channelBackupPath?: string,
     public currencyUnit?: string
   ) { }
@@ -43,6 +44,7 @@ export class RTLConfiguration {
     public defaultNodeIndex: number,
     public selectedNodeIndex: number,
     public sso: SSO,
+    public enable2FA: boolean,
     public nodes: ConfigSettingsNode[]
   ) { }
 }
@@ -66,6 +68,7 @@ export interface SelNodeChild {
   currencyUnits?: string[];
   fiatConversion?: boolean;
   lnImplementation?: string;
+  swapServerUrl?: string;
 }
 
 export class HelpTopic {

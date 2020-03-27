@@ -35,6 +35,7 @@ import { ServerConfigComponent } from './components/settings/server-config/serve
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
+import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MaxValidator } from './directive/max-amount.directive';
@@ -42,6 +43,9 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
+import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 @NgModule({
   imports: [
@@ -135,7 +139,11 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     MinValidator,
     QRCodeModule,
     RemoveLeadingZerosPipe,
-    PerfectScrollbarModule
+    PerfectScrollbarModule,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -153,7 +161,11 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,
-    AuthSettingsComponent
+    AuthSettingsComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopOutInfoGraphicsComponent,
+    LoopInInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

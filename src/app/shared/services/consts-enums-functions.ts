@@ -118,3 +118,17 @@ export const CHANNEL_CLOSURE_TYPE = {
   FUNDING_CANCELED: { name: 'Funding Canceled', tooltip: 'Channel never fully opened' },
   ABANDONED: { name: 'Abandoned', tooltip: 'Channel abandoned by the local node' }
 }
+
+export enum SwapStateEnum {
+  INITIATED	= 'Initiated',
+  PREIMAGE_REVEALED	= 'Preimage Revealed',
+  HTLC_PUBLISHED	= 'HTLC Published',
+  SUCCESS	= 'Successful',
+  FAILED	= 'Failed',
+  INVOICE_SETTLED	= 'Invoice Settled'
+}
+
+export enum SwapTypeEnum {
+  LOOP_OUT = 'LOOP_OUT',
+  LOOP_IN = 'LOOP_IN'
+}

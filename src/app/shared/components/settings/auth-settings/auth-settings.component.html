@@ -1,21 +1,22 @@
 <div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
-  <form (ngSubmit)="onResetPassword()" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #authForm="ngForm">
-    <div fxFlex="100" class="mb-1">
-      <fa-icon [icon]="faKey" class="page-title-img mr-1"></fa-icon>
-      <span class="page-title">Reset Password</span>
+  <form (ngSubmit)="onChangePassword()" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #authForm="ngForm">
+    <div fxFlex="100">
+      <fa-icon [icon]="faUserLock" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Password</span>
     </div>
     <div fxLayout="row">
-      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxLayoutAlign="space-between stretch" class="mt-2">
+      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxLayoutAlign="space-between stretch">
         <mat-form-field>
-          <input matInput placeholder="Old Password" type="password" id="oldpassword" name="oldpassword" [(ngModel)]="oldPassword" tabindex="1" required>
-          <mat-error *ngIf="!oldPassword">Old password is required.</mat-error>
+          <input matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="4" required>
+          <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
         </mat-form-field>
+        <mat-divider [inset]="true"></mat-divider>
         <mat-form-field>
-          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="2" required>
+          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="5" required>
           <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="3" required>
+          <input matInput placeholder="New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="6" required>
           <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
         </mat-form-field>
       </div>

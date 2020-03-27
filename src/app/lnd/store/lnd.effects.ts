@@ -1087,7 +1087,29 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  initializeRemainingData(info: any, landingPage: string) {
+  @Effect()
+  getLoopSwaps = this.actions$.pipe(
+    ofType(RTLActions.FETCH_LOOP_SWAPS),
+    mergeMap((action: RTLActions.FetchLoopSwaps) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('LoopSwaps'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/swaps')
+        .pipe(
+          map((swaps: any) => {
+            this.logger.info(swaps);
+            return {
+              type: RTLActions.SET_LOOP_SWAPS,
+              payload: swaps
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('LoopSwaps', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+      }
+    ));
+
+    initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (info.chains) {
       if (typeof info.chains[0] === 'string') {

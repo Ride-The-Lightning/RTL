@@ -23,6 +23,7 @@
         "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080/v1",
+        "swapServerUrl": "http://localhost:8081/v1",
         "fiatConversion": false
       }
     }

@@ -153,6 +153,12 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       let clonedMenu = [];
       clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.LNDChildren));
       this.navMenus.data = clonedMenu.filter(navMenuData => {
+        if(navMenuData.children && navMenuData.children.length) {
+          navMenuData.children = navMenuData.children.filter(navMenuChild => {
+            return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/lnd/loop')
+            || (navMenuChild.link === '/lnd/loop' && this.settings.swapServerUrl && this.settings.swapServerUrl.trim() !== '');
+          });
+        }
         return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;
       });
     }

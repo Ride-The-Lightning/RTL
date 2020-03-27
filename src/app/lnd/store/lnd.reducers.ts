@@ -2,7 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus
 } from '../../shared/models/lndModels';
 import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
@@ -31,11 +31,12 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
+  loopSwaps: SwapStatus[];
 }
 
 export const initLNDState: LNDState = {
   effectErrorsLnd: [],
-  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '' },
+  nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
   fees: {},
@@ -57,6 +58,7 @@ export const initLNDState: LNDState = {
   payments: [],
   invoices: {invoices: []},
   forwardingHistory: {},
+  loopSwaps: []
 }
 
 export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) {
@@ -239,6 +241,11 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       return {
         ...state,
         forwardingHistory: action.payload
+      };
+    case RTLActions.SET_LOOP_SWAPS:
+      return {
+        ...state,
+        loopSwaps: action.payload
       };
     default:
       return state;

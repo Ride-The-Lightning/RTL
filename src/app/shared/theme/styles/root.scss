@@ -80,6 +80,7 @@ body {
 
 .mat-sidenav-container .mat-sidenav-content {
   height: 100vh;
+  min-height: 100vh;
 }
 
 .sidenav {
@@ -381,6 +382,10 @@ body {
   margin: 2rem 0 !important;
 }
 
+.my-3 {
+  margin: 3rem 0 !important;
+}
+
 .my-4 {
   margin: 4rem 0 !important;
 }
@@ -654,7 +659,6 @@ body {
 
   .mat-flat-button {
     width: 100%;
-    margin-top: 0.5rem;
     max-height: 3.6rem;
   }
 }
@@ -761,6 +765,10 @@ body {
 
 .h-40 {
   height: 40rem !important;
+}
+
+.h-10 {
+  height: 10rem !important;
 }
 
 .h-4 {

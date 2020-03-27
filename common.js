@@ -5,6 +5,7 @@ var common = {};
 
 common.rtl_conf_file_path = '';
 common.rtl_pass = '';
+common.rtl_secret2fa = '';
 common.rtl_sso = 0;
 common.port = 3000;
 common.rtl_cookie_path = '';
@@ -13,6 +14,10 @@ common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
+
+common.getSelSwapServerUrl = () => {
+  return common.selectedNode.swap_server_url;
+};
 
 common.getSelLNServerUrl = () => {
   return common.selectedNode.ln_server_url;

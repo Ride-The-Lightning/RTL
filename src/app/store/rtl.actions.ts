@@ -28,6 +28,7 @@ export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
+export const TWO_FA_SAVE_SETTINGS = 'TWO_FA_SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
 
@@ -96,6 +97,7 @@ export const SHOW_CONFIG = 'SHOW_CONFIG';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
 export const LOGIN = 'LOGIN';
+export const VERIFY_TWO_FA = 'VERIFY_TWO_FA';
 export const LOGOUT = 'LOGOUT';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
@@ -106,6 +108,8 @@ export const GET_FORWARDING_HISTORY = 'GET_FORWARDING_HISTORY';
 export const SET_FORWARDING_HISTORY = 'SET_FORWARDING_HISTORY';
 export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
+export const FETCH_LOOP_SWAPS = 'FETCH_LOOP_SWAPS';
+export const SET_LOOP_SWAPS = 'SET_LOOP_SWAPS';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -263,6 +267,11 @@ export class SetRTLConfig implements Action {
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
   constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
+}
+
+export class TwoFASaveSettings implements Action {
+  readonly type = TWO_FA_SAVE_SETTINGS;
+  constructor(public payload: {secret2fa: string}) {}
 }
 
 export class SetSelelectedNode implements Action {
@@ -601,6 +610,16 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
+export class FetchLoopSwaps implements Action {
+  readonly type = FETCH_LOOP_SWAPS;
+  constructor() {}
+}
+
+export class SetLoopSwaps implements Action {
+  readonly type = SET_LOOP_SWAPS;
+  constructor(public payload: SwapStatus[]) {}
+}
+
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
   constructor(public payload: string) {} // payload = password
@@ -616,6 +635,11 @@ export class Login implements Action {
   constructor(public payload: {password: string, initialPass: boolean}) {}
 }
 
+export class VerifyTwoFA implements Action {
+  readonly type = VERIFY_TWO_FA;
+  constructor(public payload: {token: string, authResponse: any}) {}
+}
+
 export class Logout implements Action {
   readonly type = LOGOUT;
   constructor() {}
@@ -623,7 +647,7 @@ export class Logout implements Action {
 
 export class ResetPassword implements Action {
   readonly type = RESET_PASSWORD;
-  constructor(public payload: {oldPassword: string, newPassword: string}) {}
+  constructor(public payload: {currPassword: string, newPassword: string}) {}
 }
 
 export class SetChildNodeSettingsCL implements Action {
@@ -868,7 +892,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  IsAuthorized | IsAuthorizedRes | Login | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
