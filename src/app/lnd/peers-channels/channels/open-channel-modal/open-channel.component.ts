@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Subject } from 'rxjs';
-import { take, takeUntil, filter } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -38,7 +38,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public transTypes = TRANS_TYPES;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private actions$: Actions, private logger: LoggerService) { }
+  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) { }
 
   ngOnInit() {
     this.information = this.data.message.information;
@@ -84,9 +84,8 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
-    console.warn(isClosed);
     if (isClosed) {
-      this.advancedTitle = 'Advanced Options: ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ? 'Fee (Sats/Byte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
+      this.advancedTitle = 'Advanced Options | ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ? 'Fee (Sats/Byte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');
     } else {
       this.advancedTitle = 'Advanced Options';
     }

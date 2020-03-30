@@ -1,0 +1,60 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">Send Payment</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <form fxLayoutAlign="space-between stretch" fxLayout="column">
+        <mat-form-field fxFlex="100">
+          <input autoFocus matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" required #paymentReq="ngModel">
+          <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
+          <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
+          <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="100" *ngIf="zeroAmtInvoice">
+          <input matInput placeholder="Amount (Sats)" name="amount" [(ngModel)]="paymentAmount" (change)="onAmountChange($event)" tabindex="2" required #paymentAmt="ngModel">
+          <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
+          <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
+        </mat-form-field>
+        <mat-expansion-panel fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span>{{advancedTitle}}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
+            <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+              <mat-select tabindex="5" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
+                <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
+                  {{feeLimitType.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="26">
+              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="6" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
+              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="40" fxLayoutAlign="start end">
+              <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel">
+                <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
+                  {{activeChannel.remote_alias || activeChannel.chan_id}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="paymentError !== ''">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span *ngIf="paymentError !== ''">{{paymentError}}</span>
+        </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Fields</button>
+          <button mat-flat-button color="primary" (click)="onSendPayment();" tabindex="3">Send Payment</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>

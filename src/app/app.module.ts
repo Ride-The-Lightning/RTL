@@ -35,6 +35,7 @@ import { InvoiceInformationComponent } from './lnd/transactions/invoice-informat
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
+import { LightningSendPaymentsComponent } from './lnd/transactions/send-payment-modal/send-payment.component';
 import { ConnectPeerComponent } from './lnd/peers-channels/connect-peer/connect-peer.component';
 import { ShowPubkeyComponent } from './shared/components/data-modal/show-pubkey/show-pubkey.component';
 import { OnChainGeneratedAddressComponent } from './shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
@@ -67,6 +68,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,
+    LightningSendPaymentsComponent,
     ConnectPeerComponent,
     ShowPubkeyComponent,
     SpinnerDialogComponent,
@@ -85,6 +87,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     OpenChannelComponent,
+    LightningSendPaymentsComponent,
     ConnectPeerComponent,
     ShowPubkeyComponent,
     SpinnerDialogComponent,

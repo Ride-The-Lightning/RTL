@@ -492,7 +492,7 @@ export class SetPayments implements Action {
 
 export class DecodePayment implements Action {
   readonly type = DECODE_PAYMENT;
-  constructor(public payload: string) {} // payload = routeParam
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {}
 }
 
 export class SetDecodedPayment implements Action {
@@ -502,7 +502,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string, fromDialog: boolean }) {}
 }
 
 export class SendPaymentStatus implements Action {
