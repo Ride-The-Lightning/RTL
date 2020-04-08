@@ -10,7 +10,6 @@ import { PeersChannelsComponent } from './peers-channels/peers-channels.componen
 import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
-import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
@@ -77,7 +76,6 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     SignComponent,
     VerifyComponent,
     QueryRoutesComponent,
-    OnChainSendComponent,
     OnChainReceiveComponent,
     OnChainComponent,
     OnChainTransactionHistoryComponent,

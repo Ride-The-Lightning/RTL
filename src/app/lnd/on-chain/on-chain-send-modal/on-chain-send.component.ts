@@ -1,10 +1,12 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
+import { MessageDataField, OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
@@ -16,7 +18,6 @@ import * as sha256 from 'sha256';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-on-chain-send',
@@ -26,7 +27,7 @@ import { MessageDataField } from '../../../shared/models/alertData';
 export class OnChainSendComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
-  @Input() sweepAll = false;
+  public sweepAll = false;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
@@ -47,9 +48,10 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<OnChainSendComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
+    this.sweepAll = this.data.sweepAll;
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rootStore) => {

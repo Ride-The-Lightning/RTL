@@ -13,7 +13,7 @@
       <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="4">Create Invoice</button>
     </div>
   </form>
-  <div *ngIf="showDetails" fxLayout="row" class="mt-1">
+  <div *ngIf="showDetails" fxLayout="row">
     <button mat-flat-button color="primary" (click)="openCreateInvoiceModal();" tabindex="5">Create Invoice</button>
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" *ngIf="showDetails">

@@ -28,6 +28,11 @@ export interface InputData {
   width?: number;
 }
 
+export interface OnChainSendFunds {
+  sweepAll: boolean;
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
@@ -129,5 +134,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds;
 }
