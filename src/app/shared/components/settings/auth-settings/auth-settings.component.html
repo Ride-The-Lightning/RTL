@@ -21,9 +21,22 @@
         </mat-form-field>
       </div>
     </div>
+    <div fxLayout="row">
+      <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
+        <button mat-flat-button color="primary" tabindex="8" type="submit">Change Password</button>
+      </div> 
+    </div> 
   </form>
-  <div fxLayout="row">
-    <button class="mr-1" mat-stroked-button color="primary" tabindex="4" type="reset" (click)="resetData()">Clear</button>
-    <button mat-flat-button color="primary" tabindex="5" type="submit">Reset Password</button>
-  </div> 
+  <mat-divider class="my-2" [inset]="true"></mat-divider>
+  <div fxFlex="100" class="mb-1 settings-container page-sub-title-container mt-1">
+    <fa-icon [icon]="faUserClock" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Two Factor Authentication</span>
+  </div>
+  <div fxFlex="100" class="w-100 alert alert-info">
+    <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
+    <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
+  </div>
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
+    <button mat-flat-button color="primary" tabindex="3" (click)="on2FAuth()">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+  </div>
 </div>
