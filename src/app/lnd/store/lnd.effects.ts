@@ -173,13 +173,16 @@ export class LNDEffects implements OnDestroy {
   saveNewInvoice = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE),
     mergeMap((action: RTLActions.SaveNewInvoice) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoice'));      
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
       })
-        .pipe(
-          map((postRes: any) => {
-            this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
+      .pipe(
+        map((postRes: any) => {
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          if (action.payload.openModal) {
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
             postRes.expiry = action.payload.expiry;
@@ -187,30 +190,28 @@ export class LNDEffects implements OnDestroy {
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
-            if (action.payload.openModal) {
-              this.store.dispatch(new RTLActions.CloseSpinner());
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: {
-                  invoice: postRes,
-                  newlyAdded: true,
-                  component: InvoiceInformationComponent
-                }}
-              }
-            } else {
-              return {
-                type: RTLActions.NEWLY_SAVED_INVOICE,
-                payload: { paymentRequest: postRes.payment_request }
-              }
+            return {
+              type: RTLActions.OPEN_ALERT,
+              payload: { data: {
+                invoice: postRes,
+                newlyAdded: true,
+                component: InvoiceInformationComponent
+              }}
             }
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
-            return of({type: RTLActions.VOID});
-          })
-        );
+          } else {
+            return {
+              type: RTLActions.NEWLY_SAVED_INVOICE,
+              payload: { paymentRequest: postRes.payment_request }
+            }
+          }
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('SaveNewInvoice', 'Add Invoice Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      );
     }
-    ));
+  ));
 
   @Effect()
   openNewChannel = this.actions$.pipe(

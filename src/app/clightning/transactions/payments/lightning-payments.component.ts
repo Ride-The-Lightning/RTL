@@ -241,6 +241,11 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onPasteInvoice(event: any) {
+    this.paymentRequest = event.clipboardData.getData('Text');
+    this.onPaymentRequestEntry();
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

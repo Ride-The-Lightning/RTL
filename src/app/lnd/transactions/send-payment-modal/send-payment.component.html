@@ -9,7 +9,7 @@
     <mat-card-content class="mt-5px">
       <form fxLayoutAlign="space-between stretch" fxLayout="column">
         <mat-form-field fxFlex="100">
-          <input autoFocus matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" required #paymentReq="ngModel">
+          <textarea autoFocus matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" (matTextareaAutosize)="true" required #paymentReq="ngModel"></textarea>
           <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
           <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
           <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>

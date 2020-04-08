@@ -204,7 +204,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       component: LightningSendPaymentsComponent
     }}));
-
   }
 
   onPaymentRequestEntry() {

@@ -46,12 +46,14 @@ export interface CLOpenChannelAlert {
 export interface InvoiceInformation {
   invoice: Invoice;
   newlyAdded?: boolean;
+  pageSize: number;
   component?: any;
 }
 
 export interface CLInvoiceInformation {
   invoice: InvoiceCL;
   newlyAdded?: boolean;
+  pageSize: number;
   component?: any;
 }
 

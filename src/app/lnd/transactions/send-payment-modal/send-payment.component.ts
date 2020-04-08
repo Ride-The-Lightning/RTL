@@ -68,7 +68,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.paymentReq.control.setErrors({'decodeError': true});
         }
       }
-    });    
+    });
   }
 
   onSendPayment() {
