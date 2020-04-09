@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 const app = require("./app");
 const common = require("./common");
 const debug = require("debug")("node-angular");
