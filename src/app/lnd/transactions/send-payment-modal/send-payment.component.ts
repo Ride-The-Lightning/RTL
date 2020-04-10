@@ -123,20 +123,15 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
 
   onAmountChange(event: any) {
     delete this.paymentDecoded.num_satoshis;
-    console.warn(this.paymentDecoded);
   }
 
-  onPasteInvoice(event: any) {
-    this.paymentRequest = event.clipboardData.getData('Text');
-    this.onPaymentRequestEntry();
-  }
-
-  onPaymentRequestEntry() {
+  onPaymentRequestEntry(event: any) {
+    this.paymentRequest = event;
     this.paymentAmount = null;
     this.paymentError = '';
     this.paymentDecodedHint = '';
     this.zeroAmtInvoice = false;
-    if(this.paymentRequest.length > 100) {
+    if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
