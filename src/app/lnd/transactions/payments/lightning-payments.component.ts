@@ -195,20 +195,16 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onPasteInvoice(event: any) {
-    this.paymentRequest = event.clipboardData.getData('Text');
-    this.onPaymentRequestEntry();
-  }
-
   openSendPaymentModal() {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       component: LightningSendPaymentsComponent
     }}));
   }
 
-  onPaymentRequestEntry() {
+  onPaymentRequestEntry(event: any) {
+    this.paymentRequest = event;
     this.paymentDecodedHint = '';
-    if(this.paymentRequest.length > 100) {
+    if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
       this.store.dispatch(new RTLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
