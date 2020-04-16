@@ -19,11 +19,10 @@ import * as RTLActions from '../../store/rtl.actions';
 })
 export class LoopComponent implements OnInit {
   public faInfinity = faInfinity;
-  private targetConf = 2;
   public inAmount = 250000;
   public quotes: LoopQuote[] = [];
   public swapTypeEnum = SwapTypeEnum;
-  public selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
+  public selectedSwapType: SwapTypeEnum = SwapTypeEnum.WITHDRAWAL;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -32,41 +31,20 @@ export class LoopComponent implements OnInit {
 
   onSelectedIndexChange(event: any) {
     if(event === 1) {
-      this.selectedSwapType = SwapTypeEnum.LOOP_IN;
+      this.selectedSwapType = SwapTypeEnum.DEPOSIT;
     } else {
-      this.selectedSwapType = SwapTypeEnum.LOOP_OUT;
+      this.selectedSwapType = SwapTypeEnum.WITHDRAWAL;
     }
   }
 
   onLoop(direction: SwapTypeEnum) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
-    if(direction === SwapTypeEnum.LOOP_IN) {
-      this.loopService.getLoopInTermsAndQuotes(this.targetConf)
-      .pipe(takeUntil(this.unSubs[0]))
-      .subscribe(response => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
-          minQuote: response[0],
-          maxQuote: response[1],
-          direction: direction,
-          component: LoopModalComponent
-        }}));    
-      });
-    } else {
-      this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-      .pipe(takeUntil(this.unSubs[1]))
-      .subscribe(response => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
-          minQuote: response[0],
-          maxQuote: response[1],
-          direction: direction,
-          component: LoopModalComponent
-        }}));    
-      });
-    }
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      direction: direction,
+      component: LoopModalComponent
+    }}));
   }
 
+  // TODO: Check if destrying is needed if usage in component in removed
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();
