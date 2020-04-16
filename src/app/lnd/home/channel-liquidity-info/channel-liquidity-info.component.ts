@@ -49,7 +49,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         channel: channel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: SwapTypeEnum.WITHDRAWAL,
         component: LoopModalComponent
       }}));    
     });

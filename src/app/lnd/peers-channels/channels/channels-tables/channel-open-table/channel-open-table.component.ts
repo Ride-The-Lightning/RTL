@@ -322,7 +322,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: SwapTypeEnum.WITHDRAWAL,
         component: LoopModalComponent
       }}));    
     });

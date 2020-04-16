@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
+  @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.WITHDRAWAL;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public swapStateEnum = SwapStateEnum;
@@ -85,7 +85,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-    this.swapCaption = (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out'
+    this.swapCaption = (this.selectedSwapType === SwapTypeEnum.DEPOSIT) ? 'Deposit' : 'Withdrawal'
     this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
     this.loadSwapsTable(this.filteredSwaps);
   }
@@ -126,7 +126,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   onDownloadCSV() {
     if(this.listSwaps.data && this.listSwaps.data.length > 0) {
-      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
+      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.DEPOSIT) ? 'Deposit' : 'Withdrawal');
     }
   }
 
