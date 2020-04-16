@@ -1,13 +1,13 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form *ngIf="!showDetails" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field fxFlex="100">
-      <textarea matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
+      <textarea matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onSendPayment();" tabindex="3">Send Payment</button>
+      <button mat-flat-button color="primary" (click)="onSendPayment()" tabindex="3">Send Payment</button>
     </div>
   </form>
   <div *ngIf="showDetails" fxLayout="row">
