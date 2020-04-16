@@ -6,12 +6,10 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { LoggerService } from '../../../../shared/services/logger.service';
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
-import { LNDEffects } from '../../../store/lnd.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
@@ -47,10 +45,13 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_LND))
-    .subscribe((action: RTLActions.EffectErrorLnd) => {
-      if (action.payload.action === 'SaveNewChannel') {
+    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.FETCH_ALL_CHANNELS))
+    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.FetchAllChannels) => {
+      if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
+      }
+      if (action.type === RTLActions.FETCH_ALL_CHANNELS) {
+        this.dialogRef.close();
       }
     });
   }

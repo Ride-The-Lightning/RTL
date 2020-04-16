@@ -17,6 +17,7 @@ import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 
 @Component({
   selector: 'rtl-cl-peers',
@@ -30,7 +31,6 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLPeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild('peersForm', {static: true}) form: any;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -96,16 +96,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     ).subscribe((setPeers: RTLActions.SetPeersCL) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;
-      this.form.resetForm();
     });
-  }
-
-  onConnectPeer() {
-    if(!this.peerAddress) { return true; }     
-    this.flgAnimate = true;
-    this.newlyAddedPeer = this.peerAddress;
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerAddress, showOpenChannelModal: true}));
   }
 
   onPeerClick(selPeer: PeerCL, event: any) {
@@ -126,9 +117,11 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  resetData() {
-    this.peerAddress = '';
-    this.form.resetForm();
+  onConnectPeer() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      message: { peer: null, information: this.information, balance: this.availableBalance },
+      component: CLConnectPeerComponent
+    }}));
   }
 
   onOpenChannel(peerToAddChannel: PeerCL) {

@@ -31,6 +31,7 @@ import { CLEffects } from './clightning/store/cl.effects';
 import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLInvoiceInformationComponent } from './clightning/transactions/invoice-information-modal/invoice-information.component';
+import { CLConnectPeerComponent } from './clightning/peers-channels/connect-peer/connect-peer.component';
 import { InvoiceInformationComponent } from './lnd/transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
@@ -69,6 +70,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
+    CLConnectPeerComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
@@ -90,6 +92,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
+    CLConnectPeerComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,

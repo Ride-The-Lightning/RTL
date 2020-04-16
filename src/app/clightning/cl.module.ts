@@ -14,7 +14,6 @@ import { CLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.c
 import { CLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
-import { CLChannelManageComponent } from './peers-channels/channels/channel-manage/channel-manage.component';
 import { CLTransactionsComponent } from './transactions/transactions.component';
 import { CLLookupsComponent } from './lookups/lookups.component';
 import { CLRoutingComponent } from './routing/routing.component';
@@ -52,7 +51,6 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLPeersChannelsComponent,
     CLLightningInvoicesComponent,
     CLLightningPaymentsComponent,
-    CLChannelManageComponent,
     CLTransactionsComponent,
     CLLookupsComponent,
     CLRoutingComponent,
