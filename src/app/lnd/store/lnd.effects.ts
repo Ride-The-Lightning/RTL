@@ -802,15 +802,15 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.FetchTransactions());            
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
             return {
-              type: RTLActions.OPEN_SNACK_BAR,
-              payload: 'Fund Sent Successfully!'
+              type: RTLActions.SET_CHANNEL_TRANSACTION_RES,
+              payload: postRes
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'SetChannelTransaction', code: err.status, message: err.error.error }));
-            this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.TRANSACTIONS_API, err);
+            this.handleErrorWithoutAlert('SetChannelTransaction', 'Sending Fund Failed.', err);
             return of({type: RTLActions.VOID});
           }));
       })

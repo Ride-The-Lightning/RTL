@@ -35,6 +35,7 @@ import { InvoiceInformationComponent } from './lnd/transactions/invoice-informat
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
+import { OnChainSendComponent } from './lnd/on-chain/on-chain-send-modal/on-chain-send.component';
 import { LightningSendPaymentsComponent } from './lnd/transactions/send-payment-modal/send-payment.component';
 import { CreateInvoiceComponent } from './lnd/transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './lnd/peers-channels/connect-peer/connect-peer.component';
@@ -80,7 +81,8 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     LoopModalComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
-    CreateInvoiceComponent
+    CreateInvoiceComponent,
+    OnChainSendComponent
   ],
   entryComponents: [
     CLInvoiceInformationComponent,
@@ -100,7 +102,8 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     LoopModalComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
-    CreateInvoiceComponent
+    CreateInvoiceComponent,
+    OnChainSendComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
