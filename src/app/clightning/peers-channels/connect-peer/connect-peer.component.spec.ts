@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CLChannelManageComponent } from './channel-manage.component';
+import { CLConnectPeerComponent } from './connect-peer.component';
 
-describe('CLChannelManageComponent', () => {
-  let component: CLChannelManageComponent;
-  let fixture: ComponentFixture<CLChannelManageComponent>;
+describe('CLConnectPeerComponent', () => {
+  let component: CLConnectPeerComponent;
+  let fixture: ComponentFixture<CLConnectPeerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelManageComponent ]
+      declarations: [ CLConnectPeerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelManageComponent);
+    fixture = TestBed.createComponent(CLConnectPeerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

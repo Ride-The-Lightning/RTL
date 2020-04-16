@@ -131,6 +131,7 @@ export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
 export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
 export const SET_PEERS_CL = 'SET_PEERS_CL';
 export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
+export const NEWLY_ADDED_PEER_CL = 'NEWLY_ADDED_PEER_CL';
 export const ADD_PEER_CL = 'ADD_PEER_CL';
 export const DETACH_PEER_CL = 'DETACH_PEER_CL';
 export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
@@ -729,7 +730,12 @@ export class SetPeersCL implements Action {
 
 export class SaveNewPeerCL implements Action {
   readonly type = SAVE_NEW_PEER_CL;
-  constructor(public payload: {id: string, showOpenChannelModal: boolean}) {}
+  constructor(public payload: {id: string}) {}
+}
+
+export class NewlyAddedPeerCL implements Action {
+  readonly type = NEWLY_ADDED_PEER_CL;
+  constructor(public payload: { peer: Peer, balance: number}) {}
 }
 
 export class AddPeerCL implements Action {
@@ -902,7 +908,7 @@ export type RTLActions =
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
-  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |
+  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL | NewlyAddedPeerCL |
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
   GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL |

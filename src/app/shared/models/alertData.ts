@@ -1,7 +1,7 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
-import { InvoiceCL, GetInfoCL } from './clModels';
+import { InvoiceCL, GetInfoCL, PeerCL } from './clModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
@@ -43,7 +43,7 @@ export interface OpenChannelAlert {
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { peer: any, information: GetInfoCL, balance: number };
+  message?: { information: GetInfoCL, balance: number, peer?: any, peers?: PeerCL[] };
   newlyAdded?: boolean;
   component?: any;
 }
