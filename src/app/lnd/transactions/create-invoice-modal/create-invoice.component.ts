@@ -7,6 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
+import { InvoiceInformation } from '../../../shared/models/alertData';
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
@@ -14,7 +15,6 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { InvoiceInformation } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-create-invoices',
@@ -59,7 +59,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
-    });    
+    });
   }
 
   onAddInvoice(form: any) {
@@ -81,7 +81,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
     this.expiry = undefined;
     this.invoiceValueHint = '';
     this.selTimeUnit = TimeUnitEnum.SECS;
-    this.invoiceError = '';    
+    this.invoiceError = '';
   }
 
   onInvoiceValueChange() {

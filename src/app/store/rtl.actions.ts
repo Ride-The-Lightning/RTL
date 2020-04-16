@@ -87,6 +87,7 @@ export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
 export const GET_NEW_ADDRESS = 'GET_NEW_ADDRESS';
 export const SET_NEW_ADDRESS = 'SET_NEW_ADDRESS';
 export const SET_CHANNEL_TRANSACTION = 'SET_CHANNEL_TRANSACTION';
+export const SET_CHANNEL_TRANSACTION_RES = 'SET_CHANNEL_TRANSACTION_RES';
 export const GEN_SEED = 'GEN_SEED';
 export const GEN_SEED_RESPONSE = 'GEN_SEED_RESPONSE';
 export const INIT_WALLET = 'INIT_WALLET';
@@ -535,6 +536,11 @@ export class SetChannelTransaction implements Action {
   constructor(public payload: ChannelsTransaction) {}
 }
 
+export class SetChannelTransactionRes implements Action {
+  readonly type = SET_CHANNEL_TRANSACTION_RES;
+  constructor(public payload: any) {}
+}
+
 export class GenSeed implements Action {
   readonly type = GEN_SEED;
   constructor(public payload: string) {}
@@ -889,7 +895,7 @@ export type RTLActions =
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
-  GetNewAddress | SetNewAddress | SetChannelTransaction |
+  GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
   FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |

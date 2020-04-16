@@ -1,15 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { filter, takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef, MatVerticalStepper } from '@angular/material';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { MessageDataField, OnChainSendFunds } from '../../../shared/models/alertData';
+import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
-import { GetInfo, Balance, ChannelsTransaction, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, DataTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -18,6 +20,7 @@ import * as sha256 from 'sha256';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'rtl-on-chain-send',
@@ -27,6 +30,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class OnChainSendComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
+  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
@@ -37,7 +42,10 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
   public newAddress = '';
-  public transaction: ChannelsTransaction = {};
+  public transactionAddress = '';
+  public transactionAmount = null;
+  public transactionFees = null;
+  public transactionBlocks = null;
   public transTypes = [{id: '1', name: 'Target Confirmation Blocks'}, {id: '2', name: 'Fee'}];
   public selTransType = '1';
   public fiatConversion = false;
@@ -46,14 +54,51 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   public currConvertorRate = {};
   public unitConversionValue = 0;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
+  public sendFundError = '';
+  public flgValidated = false;
+  public flgEditable = true;
+  public passwordFormLabel = 'Authenticate with your RTL password';
+  public sendFundFormLabel = 'Sweep funds';
+  public confirmFormLabel = 'Confirm sweep';
+  passwordFormGroup: FormGroup;
+  sendFundFormGroup: FormGroup;  
+  confirmFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<OnChainSendComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions$: Actions, private formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
+    this.passwordFormGroup = this.formBuilder.group({
+      hiddenPassword: ['', [Validators.required]],
+      password: ['', [Validators.required]]
+    });
+    this.sendFundFormGroup = this.formBuilder.group({
+      transactionAddress: ['', Validators.required],
+      transactionBlocks: [null],
+      transactionFees: [null],
+      selTransType: ['1', Validators.required]
+    });
+    this.confirmFormGroup = this.formBuilder.group({}); 
+    this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
+      if (transType === '1') {
+        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
+        this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
+        this.sendFundFormGroup.controls.transactionBlocks.setErrors(null);
+        this.sendFundFormGroup.controls.transactionFees.setValue(null);
+        this.sendFundFormGroup.controls.transactionFees.setValidators(null);
+        this.sendFundFormGroup.controls.transactionFees.setErrors(null);
+      } else {
+        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
+        this.sendFundFormGroup.controls.transactionBlocks.setValidators(null);
+        this.sendFundFormGroup.controls.transactionBlocks.setErrors(null);
+        this.sendFundFormGroup.controls.transactionFees.setValue(null);
+        this.sendFundFormGroup.controls.transactionFees.setValidators([Validators.required]);
+        this.sendFundFormGroup.controls.transactionFees.setErrors(null);
+      }
+    });
     this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rootStore) => {
       this.fiatConversion = rootStore.selNode.settings.fiatConversion;
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
@@ -61,125 +106,124 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES))
+    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.SetChannelTransactionRes) => {
+      if (action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES) {
+        this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
+        this.dialogRef.close();
+      }    
+      if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SetChannelTransaction') {
+        this.sendFundError = action.payload.message;
+      }
+    });
+
   }
 
-  onSendFunds() {
-    if(this.invalidValues) { return true; }
-    if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[1]))
-      .subscribe(data => {
-        this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
-        this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.confirmSend();
-      });
-    } else {
-      this.confirmSend();
-    }
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[2]))
-    .subscribe(pwdConfirmRes => {
-      if (pwdConfirmRes) {
-        if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
-          const pwd = pwdConfirmRes[0].inputValue;
-          this.store.dispatch(new RTLActions.IsAuthorized(sha256(pwd)));
-          this.rtlEffects.isAuthorizedRes
-          .pipe(take(1))
-          .subscribe(authRes => {
-            if (authRes !== 'ERROR') {
-              this.dispatchToSendFunds();
-            } else {
-              this.snackBar.open('Unauthorized User. Logging out from RTL.');
-            }
-          });
-        } else {
-          this.dispatchToSendFunds();
-        }
+  onAuthenticate() {
+    if (!this.passwordFormGroup.controls.password.value) { return true; }
+    this.flgValidated = false;
+    this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
+    this.rtlEffects.isAuthorizedRes
+    .pipe(take(1))
+    .subscribe(authRes => {
+      if (authRes !== 'ERROR') {
+        this.passwordFormGroup.controls.hiddenPassword.setValue(this.passwordFormGroup.controls.password.value);
+        this.stepper.next();
+      } else {
+        this.dialogRef.close();
+        this.snackBar.open('Unauthorized User. Logging out from RTL.');
       }
     });
   }
 
-  confirmSend() {
-    const confirmationMsg: Array<Array<MessageDataField>> = [
-      [{key: 'address', value: this.transaction.address, title: 'BTC Address', width: 100}]
-    ];
-    if (this.sweepAll) {
-      confirmationMsg.push([{key: 'sweep_all', value: true, title: 'Sweep All', width: 50, type: DataTypeEnum.BOOLEAN}]);
-      this.transaction.sendAll = true;
-    } else {
-      confirmationMsg.push([{key: 'amount', value: this.transaction.amount, title: 'Amount (' + this.nodeData.smaller_currency_unit + ')', width: 50, type: DataTypeEnum.NUMBER}]);
-      this.transaction.sendAll = false;
-    }
-    if (this.selTransType === '1') {
-      delete this.transaction.fees;
-      confirmationMsg[1].push({key: 'target_conf_blocks', value: this.transaction.blocks, title: 'Target Confirmation Blocks', width: 50, type: DataTypeEnum.NUMBER});
-    } else {
-      delete this.transaction.blocks;
-      confirmationMsg[1].push({key: 'fees_per_byte', value: this.transaction.fees, title: 'Fee (' + this.nodeData.smaller_currency_unit + '/Byte)', width: 50, type: DataTypeEnum.NUMBER});
-    }
-    if (this.sweepAll && !+this.appConfig.sso.rtlSSO) {
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Confirm Payment',
-        titleMessage: 'Please authorize to sweep all funds with login password.',
-        message: confirmationMsg,
-        noBtnText: 'Cancel',
-        yesBtnText: 'Authorize And Sweep All',
-        flgShowInput: true,
-        getInputs: [{placeholder: 'Enter Login Password', inputType: 'password', inputValue: '', width: 100}]
-      }}));
-    } else {
-      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-        type: AlertTypeEnum.CONFIRM,
-        alertTitle: 'Confirm Payment',
-        message: confirmationMsg,
-        noBtnText: 'Cancel',
-        yesBtnText: 'Send'
-      }}));
-    }
-  }
-
-  dispatchToSendFunds() {
+  onSendFunds() {
+    if(this.invalidValues) { return true; }
+    this.sendFundError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
-    this.store.dispatch(new RTLActions.SetChannelTransaction(this.transaction));
-    this.transaction = {};
-    if(this.form) { this.form.resetForm(); }
-    if(this.formSweepAll) { this.formSweepAll.resetForm(); }
+    const postTransaction = {
+      address: this.transactionAddress,
+      amount: this.transactionAmount,
+      sendAll: this.sweepAll
+    };
+    if (this.sweepAll) {
+      if (this.sendFundFormGroup.controls.selTransType.value === '1') {
+        postTransaction['blocks'] = this.sendFundFormGroup.controls.transactionBlocks.value;
+      }
+      if (this.sendFundFormGroup.controls.selTransType.value === '2') {
+        postTransaction['fees'] = this.sendFundFormGroup.controls.transactionFees.value;
+      }
+    } else {
+      if (this.selTransType === '1') {
+        postTransaction['blocks'] = this.transactionBlocks;
+      }
+      if (this.selTransType === '2') {
+        postTransaction['fees'] = this.transactionFees;
+      }
+    }
+    this.store.dispatch(new RTLActions.SetChannelTransaction(postTransaction));
   }
 
   get invalidValues(): boolean {
     if (this.sweepAll) {
-      return (!this.transaction.address || this.transaction.address === '') || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
+      return (!this.sendFundFormGroup.controls.transactionAddress.value || this.sendFundFormGroup.controls.transactionAddress.value === '') || (this.sendFundFormGroup.controls.selTransType.value === '1' && (!this.sendFundFormGroup.controls.transactionBlocks.value || this.sendFundFormGroup.controls.transactionBlocks.value <= 0)) || (this.sendFundFormGroup.controls.selTransType.value === '2' && (!this.sendFundFormGroup.controls.transactionFees.value || this.sendFundFormGroup.controls.transactionFees.value <= 0));
     } else {
-      return (!this.transaction.address || this.transaction.address === '') || (!this.transaction.amount || this.transaction.amount <= 0)
-      || (this.selTransType === '1' && (!this.transaction.blocks || this.transaction.blocks <= 0)) || (this.selTransType === '2' && (!this.transaction.fees || this.transaction.fees <= 0));
+      return (!this.transactionAddress || this.transactionAddress === '') || (!this.transactionAmount || this.transactionAmount <= 0)
+      || (this.selTransType === '1' && (!this.transactionBlocks || this.transactionBlocks <= 0)) || (this.selTransType === '2' && (!this.transactionFees || this.transactionFees <= 0));
     }
   }
 
   resetData() {
+    this.sendFundError = '';    
     this.selTransType = '1';      
-    if (this.sweepAll) {
-      this.transaction.address = '';
-      this.transaction.blocks = null;
-      this.transaction.fees = null;
-    } else {
-      this.transaction.address = '';
-      this.transaction.amount = null;
-      this.transaction.blocks = null;
-      this.transaction.fees = null;
+    this.transactionAddress = '';
+    this.transactionBlocks = null;
+    this.transactionFees = null;
+    if (!this.sweepAll) {
+      this.transactionAmount = null;
     }
+  }
+
+  stepSelectionChanged(event: any) {
+    this.sendFundError = '';
+    switch (event.selectedIndex) {
+      case 0:
+        this.passwordFormLabel = 'Authenticate with your RTL password';
+        this.sendFundFormLabel = 'Sweep funds'
+        break;
+    
+      case 1:
+        this.passwordFormLabel = 'User authenticated successfully';
+        this.sendFundFormLabel = 'Sweep funds'
+        break;
+
+      case 2:
+        this.passwordFormLabel = 'User authenticated successfully';
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (' + this.nodeData.smaller_currency_unit + '/Byte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
+        break;
+
+      default:
+        this.passwordFormLabel = 'Authenticate with your RTL password';
+        this.sendFundFormLabel = 'Sweep funds'
+        break;
+    }
+    if (event.selectedIndex < event.previouslySelectedIndex) {
+      if (event.selectedIndex === 0) {
+        this.passwordFormGroup.controls.hiddenPassword.setValue('');
+      }
+    }    
   }
 
   onAmountUnitChange(event: any) {
     let self = this;
     let prevSelectedUnit = (this.sweepAll) ? CurrencyUnitEnum.SATS : (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if(this.transaction.amount && this.selAmountUnit !== event.value) {
-      let amount = this.transaction.amount ? this.transaction.amount : 0;
+    if(this.transactionAmount && this.selAmountUnit !== event.value) {
+      let amount = this.transactionAmount ? this.transactionAmount : 0;
       this.commonService.convertCurrency(amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[4]))
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
-        self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+        self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       });
     }
     this.selAmountUnit = event.value;
