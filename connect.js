@@ -42,6 +42,7 @@ connect.setDefaultConfig = () => {
   return {
     multiPass: "password",
     port: "3000",
+    host: "localhost",
     defaultNodeIndex: 1,
     SSO: {
       rtlSSO: 0,
@@ -99,7 +100,7 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 }
 
 connect.validateNodeConfig = (config) => {
-  if((process.env.RTL_SSO === 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
+  if((process.env.RTL_SSO == 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
     if (config.multiPassHashed !== '' && config.multiPassHashed) {
       common.rtl_pass = config.multiPassHashed;
     } else if (config.multiPass !== '' && config.multiPass) {
@@ -110,6 +111,7 @@ connect.validateNodeConfig = (config) => {
     common.rtl_secret2fa = config.secret2fa;
   }
   common.port = (process.env.PORT) ? connect.normalizePort(process.env.PORT) : (config.port) ? connect.normalizePort(config.port) : 3000;
+  common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : 'localhost';
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
       common.nodes[idx] = {};
@@ -286,6 +288,7 @@ connect.logEnvVariables = () => {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
       logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
+      logger.info({fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
       logger.info({fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
       logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
@@ -344,6 +347,7 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
   if (!config.SSO) { config.SSO = {}; }
   var newConfig = {
     port: config.port ? config.port : 3000,
+    host: config.host ? config.host : 'localhost',
     defaultNodeIndex: config.defaultNodeIndex ? config.defaultNodeIndex : 1,
     SSO: {
       rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
@@ -414,6 +418,7 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
   if (!config.Settings) { config.Settings = {}; }
   var newConfig = {
     port: config.Settings.port ? config.Settings.port : 3000,
+    host: 'localhost',
     defaultNodeIndex: 1,
     SSO: {
       rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,

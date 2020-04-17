@@ -8,6 +8,7 @@ common.rtl_pass = '';
 common.rtl_secret2fa = '';
 common.rtl_sso = 0;
 common.port = 3000;
+common.host = 'localhost';
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
