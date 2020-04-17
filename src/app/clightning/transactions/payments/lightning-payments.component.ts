@@ -183,9 +183,10 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onPaymentRequestEntry() {
+  onPaymentRequestEntry(event: any) {
+    this.paymentRequest = event;
     this.paymentDecodedHint = '';
-    if(this.paymentRequest.length > 100) {
+    if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
       this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
@@ -246,11 +247,6 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     if(this.payments.data && this.payments.data.length > 0) {
       this.commonService.downloadCSV(this.payments.data, 'Payments');
     }
-  }
-
-  onPasteInvoice(event: any) {
-    this.paymentRequest = event.clipboardData.getData('Text');
-    this.onPaymentRequestEntry();
   }
 
   ngOnDestroy() {

@@ -118,7 +118,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentError = '';
     this.paymentDecodedHint = '';
     this.zeroAmtInvoice = false;
-    if(this.paymentRequest.length > 100) {
+    if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
