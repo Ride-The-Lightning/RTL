@@ -14,9 +14,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { OpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -74,22 +73,8 @@ export class LNDEffects implements OnDestroy {
               this.router.navigate(['/lnd/wallet']);
               this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
             } else {
-              let code = err.status ? err.status : '';
-              let message = err.error.message ? err.error.message + ' ' : '';
-              if (err.error && err.error.error) {
-                if (err.error.error.code) {
-                  code = err.error.error.code;
-                } else if (err.error.error.message && err.error.error.message.code) {
-                  code = err.error.error.message.code;
-                }
-                if (typeof err.error.error === 'string') {
-                  message = message + err.error.error;
-                } else if (err.error.error.error) {
-                  message = message + err.error.error.error;
-                } else if (err.error.error.errno) {
-                  message = message + err.error.error.errno;
-                }
-              }
+              const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
+              const message = (err.error.message ? err.error.message + ' ' : '') + ((err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error');
               this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
               this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
             }
@@ -890,7 +875,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.message + ' ' + err.error.error.code, this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
+            this.handleErrorWithAlert('ERROR', 'Genseed Generation Failed', this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -955,7 +940,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.error, this.CHILD_API_URL + environment.WALLET_API + '/initwallet', err);
+            this.handleErrorWithAlert('ERROR', 'Wallet Initialization Failed', this.CHILD_API_URL + environment.WALLET_API + '/initwallet', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -982,7 +967,7 @@ export class LNDEffects implements OnDestroy {
             return { type: RTLActions.VOID };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.error, this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', err);
+            this.handleErrorWithAlert('ERROR', 'Unlock Wallet Failed', this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -1183,7 +1168,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: typeof err.error === 'string' ? err.error : typeof err.error.error === 'string' ? err.error.error : typeof err.error.error.error === 'string' ? err.error.error.error : typeof err.error.error.error.error === 'string' ? err.error.error.error.error : typeof err.error.error.error.error.error === 'string' ? err.error.error.error.error.error : genericErrorMessage }));
+      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }
 
@@ -1200,7 +1185,7 @@ export class LNDEffects implements OnDestroy {
         data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: typeof err.error === 'string' ? err.error : typeof err.error.error === 'string' ? err.error.error : typeof err.error.error.error === 'string' ? err.error.error.error : typeof err.error.error.error.error === 'string' ? err.error.error.error.error : typeof err.error.error.error.error.error === 'string' ? err.error.error.error.error.error : 'Unknown Error', URL: errURL },
+          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

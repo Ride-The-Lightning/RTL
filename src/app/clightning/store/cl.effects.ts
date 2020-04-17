@@ -53,22 +53,8 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            let code = err.status ? err.status : '';
-            let message = err.error.message ? err.error.message + ' ' : '';
-            if (err.error && err.error.error) {
-              if (err.error.error.code) {
-                code = err.error.error.code;
-              } else if (err.error.error.message && err.error.error.message.code) {
-                code = err.error.error.message.code;
-              }
-              if (typeof err.error.error === 'string') {
-                message = message + err.error.error;
-              } else if (err.error.error.error) {
-                message = message + err.error.error.error;
-              } else if (err.error.error.errno) {
-                message = message + err.error.error.errno;
-              }
-            }
+            const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
+            const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
             this.handleErrorWithoutAlert('FetchInfoCL', 'Fetching Node Info Failed.', err);            
             return of({type: RTLActions.VOID});
@@ -750,7 +736,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: typeof err.error === 'string' ? err.error : (!err.error.error && typeof err.error.message === 'string') ? err.error.message : (!err.error.error.error && typeof err.error.error.message === 'string') ? err.error.error.message : (!err.error.error.error.error && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (!err.error.error.error.error.error && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : genericErrorMessage }));
+      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
     }
   }
 
@@ -767,7 +753,7 @@ export class CLEffects implements OnDestroy {
         data: {
           type: alerType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: typeof err.error === 'string' ? err.error : (!err.error.error && typeof err.error.message === 'string') ? err.error.message : (!err.error.error.error && typeof err.error.error.message === 'string') ? err.error.error.message : (!err.error.error.error.error && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (!err.error.error.error.error.error && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 'Unknown Error', URL: errURL },
+          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent          
         }
       }));
