@@ -12,11 +12,12 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -51,7 +52,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -100,8 +101,8 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL(this.paymentRequest));
-      this.lndEffects.setDecodedPaymentCL
+      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: false}));
+      this.clEffects.setDecodedPaymentCL
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
@@ -149,7 +150,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000}));
+            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
         });
@@ -175,7 +176,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest}));
+          this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
       });
@@ -186,8 +187,8 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.paymentDecodedHint = '';
     if(this.paymentRequest.length > 100) {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL(this.paymentRequest));
-      this.lndEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
+      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: false}));
+      this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.msatoshi) {
           this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
@@ -204,6 +205,12 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  openSendPaymentModal() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      component: CLLightningSendPaymentsComponent
+    }}));
   }
 
   resetData() {

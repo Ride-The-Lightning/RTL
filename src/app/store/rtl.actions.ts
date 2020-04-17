@@ -145,6 +145,7 @@ export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
 export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
 export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
 export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
+export const SEND_PAYMENT_STATUS_CL = 'SEND_PAYMENT_STATUS_CL';
 export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
 export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
 export const SET_QUERY_ROUTES_CL = 'SET_QUERY_ROUTES_CL';
@@ -504,7 +505,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string, fromDialog: boolean }) {}
+  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -764,7 +765,7 @@ export class SetPaymentsCL implements Action {
 
 export class DecodePaymentCL implements Action {
   readonly type = DECODE_PAYMENT_CL;
-  constructor(public payload: string) {} // payload = routeParam
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // payload = routeParam
 }
 
 export class SetDecodedPaymentCL implements Action {
@@ -774,7 +775,12 @@ export class SetDecodedPaymentCL implements Action {
 
 export class SendPaymentCL implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: { invoice: string, amount?: number }) {}
+  constructor(public payload: { fromDialog: boolean, invoice: string, amount?: number }) {}
+}
+
+export class SendPaymentStatusCL implements Action {
+  readonly type = SEND_PAYMENT_STATUS_CL;
+  constructor(public payload: any) {}
 }
 
 export class GetQueryRoutesCL implements Action {
@@ -910,7 +916,7 @@ export type RTLActions =
   GetNewAddressCL | SetNewAddressCL |
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL | NewlyAddedPeerCL |
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
-  FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
+  FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | SendPaymentStatusCL | DecodePaymentCL | SetDecodedPaymentCL |
   GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
   GetForwardingHistoryCL | SetForwardingHistoryCL |

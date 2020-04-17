@@ -19,33 +19,6 @@
           <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
           <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
         </mat-form-field>
-        <mat-expansion-panel fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span>{{advancedTitle}}</span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap">
-            <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-              <mat-select tabindex="5" [(value)]="selFeeLimitType" Placeholder="Fee Limits">
-                <mat-option *ngFor="let feeLimitType of feeLimitTypes" [value]="feeLimitType">
-                  {{feeLimitType.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="26">
-              <input matInput [(ngModel)]="feeLimit" [placeholder]="selFeeLimitType.placeholder" type="number" name="feeLimit" step="1" min="0" required tabindex="6" #feeLmt="ngModel" [disabled]="selFeeLimitType === feeLimitTypes[0]">
-              <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
-            </mat-form-field>
-            <mat-form-field fxFlex="40" fxLayoutAlign="start end">
-              <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel">
-                <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
-                  {{activeChannel.remote_alias || activeChannel.chan_id}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-expansion-panel>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="paymentError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span *ngIf="paymentError !== ''">{{paymentError}}</span>

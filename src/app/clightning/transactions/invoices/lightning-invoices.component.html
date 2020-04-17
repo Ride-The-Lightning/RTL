@@ -1,36 +1,23 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form [fxLayout]="showDetails ? 'column' : 'row wrap'" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" fxFlex="100" #addInvoiceForm="ngForm">
-    <mat-form-field [fxFlex]="showDetails ? '45' : '100'" fxLayoutAlign="space-between stretch">
+  <form *ngIf="!showDetails" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" #addInvoiceForm="ngForm">
+    <mat-form-field fxFlex="100" fxLayoutAlign="space-between stretch">
       <input matInput [(ngModel)]="description" placeholder="Description" tabindex="2" name="description">
     </mat-form-field>
-    <mat-form-field [fxFlex]="showDetails ? '18' : '100'" fxLayoutAlign="start end">
+    <mat-form-field fxFlex="100" fxLayoutAlign="start end">
       <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="3" name="invoiceValue" required>
       <span matSuffix> {{information?.smaller_currency_unit}} </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>
       <mat-error *ngIf="!invoiceValue">Amount is required.</mat-error>
     </mat-form-field>
-    <mat-form-field fxFlex="10" fxLayoutAlign="start end" *ngIf="showDetails" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-      <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" step="{{selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1}}" min="1" tabindex="4" name="expiry">
-      <span matSuffix> {{selTimeUnit | titlecase}} </span>
-    </mat-form-field>
-    <mat-form-field fxFlex="6" fxLayoutAlign="start end" *ngIf="showDetails" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-      <mat-select [value]="selTimeUnit" tabindex="5" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
-        <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <div fxFlex="16" tabindex="6" fxLayoutAlign="start center" *ngIf="showDetails">
-      <mat-slide-toggle color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
-    </div>
-    <div fxLayout="row" *ngIf="showDetails" class="mt-2">
-      <button class="mr-1" mat-stroked-button color="warn" tabindex="11" type="button" (click)="onDeleteExpiredInvoices()">Delete Expired</button>
-      <button class="mr-1" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="8">Create Invoice</button>
-    </div>
-    <div  fxLayout="row" *ngIf="!showDetails" class="mt-1">
+    <div  fxLayout="row" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="9" type="reset" (click)="resetData()">Clear Field</button>
       <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="10">Create Invoice</button>
     </div>
   </form>
+  <div fxLayout="row" *ngIf="showDetails">
+    <button class="mr-1" mat-stroked-button color="warn" tabindex="7" type="button" (click)="onDeleteExpiredInvoices()">Delete Expired</button>
+    <button mat-flat-button color="primary" (click)="openCreateInvoiceModal()" tabindex="8">Create Invoice</button>
+  </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
     <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
       <div fxFlex="70">
