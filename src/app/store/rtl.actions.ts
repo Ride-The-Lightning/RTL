@@ -162,6 +162,7 @@ export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
 export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
 export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
 export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
+export const SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -887,6 +888,11 @@ export class SetChannelTransactionCL implements Action {
   constructor(public payload: OnChainCL) {}
 }
 
+export class SetChannelTransactionResCL implements Action {
+  readonly type = SET_CHANNEL_TRANSACTION_RES_CL;
+  constructor(public payload: any) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -917,7 +923,7 @@ export type RTLActions =
   FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL | NewlyAddedPeerCL |
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
   FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | SendPaymentStatusCL | DecodePaymentCL | SetDecodedPaymentCL |
-  GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL |
+  GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL | SetChannelTransactionResCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
   GetForwardingHistoryCL | SetForwardingHistoryCL |
   FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL;

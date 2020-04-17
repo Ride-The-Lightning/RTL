@@ -34,6 +34,7 @@ import { CLInvoiceInformationComponent } from './clightning/transactions/invoice
 import { CLConnectPeerComponent } from './clightning/peers-channels/connect-peer/connect-peer.component';
 import { CLLightningSendPaymentsComponent } from './clightning/transactions/send-payment-modal/send-payment.component';
 import { CLCreateInvoiceComponent } from './clightning/transactions/create-invoice-modal/create-invoice.component';
+import { CLOnChainSendComponent } from './clightning/on-chain/on-chain-send-modal/on-chain-send.component';
 import { InvoiceInformationComponent } from './lnd/transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
@@ -75,6 +76,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
+    CLOnChainSendComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
@@ -99,6 +101,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
+    CLOnChainSendComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,

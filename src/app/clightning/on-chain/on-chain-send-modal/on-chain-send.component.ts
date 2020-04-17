@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
+import { MatDialogRef } from '@angular/material';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfoCL, BalanceCL, OnChainCL } from '../../../shared/models/clModels';
@@ -11,10 +14,8 @@ import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { MessageDataField } from '../../../shared/models/alertData';
 
 @Component({
   selector: 'rtl-cl-on-chain-send',
@@ -22,7 +23,8 @@ import { MessageDataField } from '../../../shared/models/alertData';
   styleUrls: ['./on-chain-send.component.scss']
 })
 export class CLOnChainSendComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('form', { static: false }) form: any;
+  public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
@@ -35,6 +37,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public transaction: OnChainCL = {};
   public feeRateTypes = FEE_RATE_TYPES;
   public flgMinConf = false;
+  public sendFundError = '';
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
   public selAmountUnit = CURRENCY_UNITS[0];
@@ -43,7 +46,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe) {}
+  constructor(public dialogRef: MatDialogRef<CLOnChainSendComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -55,51 +58,35 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter(action => action.type === RTLActions.EFFECT_ERROR_CL || action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES_CL))
+    .subscribe((action: RTLActions.EffectErrorCl | RTLActions.SetChannelTransactionResCL) => {
+      if (action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
+        this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
+        this.dialogRef.close();
+      }    
+      if (action.type === RTLActions.EFFECT_ERROR_CL && action.payload.action === 'SetChannelTransactionCL') {
+        this.sendFundError = action.payload.message;
+      }
+    });
+
   }
 
   onSendFunds() {
     if(this.invalidValues) { return true; }
+    this.sendFundError = '';
+    this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     if(this.transaction.satoshis && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[1]))
+      .pipe(takeUntil(this.unSubs[2]))
       .subscribe(data => {
         this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.confirmSend();
+        this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
       });
     } else {
-      this.confirmSend();
+      this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
     }
-    this.rtlEffects.closeConfirm
-    .pipe(takeUntil(this.unSubs[2]))
-    .subscribe(pwdConfirmRes => {
-      if (pwdConfirmRes) {
-        this.dispatchToSendFunds();
-      }
-    });
-  }
-
-  confirmSend() {
-    const confirmationMsg: Array<Array<MessageDataField>> = [
-      [{key: 'address', value: this.transaction.address, title: 'BTC Address', width: 100}],
-      [{key: 'satoshi', value: this.transaction.satoshis, title: 'Amount (Sats)', width: 100}],
-      [{key: 'feeRate', value: this.transaction.feeRate, title: 'Fee Rate', width: 100}],
-      [{key: 'minconf', value: this.transaction.minconf, title: 'Min Confirmation Blocks', width: 100}]
-    ];
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Confirm Payment',
-      message: confirmationMsg,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Send'
-    }}));
-  }
-
-  dispatchToSendFunds() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
-    this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
-    this.transaction = {};
-    this.form.resetForm();
   }
 
   get invalidValues(): boolean {
@@ -109,6 +96,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
+    this.sendFundError = '';    
     this.transaction = {};
     this.flgMinConf = false;
   }
@@ -119,7 +107,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[4]))
+      .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
         self.transaction.satoshis = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       });

@@ -10,7 +10,6 @@ import { CLPeersChannelsComponent } from './peers-channels/peers-channels.compon
 import { CLChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { CLPeersComponent } from './peers-channels/peers/peers.component';
 import { CLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
-import { CLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { CLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
@@ -59,7 +58,6 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLChannelLookupComponent,
     CLNodeLookupComponent,
     CLQueryRoutesComponent,
-    CLOnChainSendComponent,
     CLOnChainReceiveComponent,
     CLOnChainComponent,
     CLChannelsTablesComponent,

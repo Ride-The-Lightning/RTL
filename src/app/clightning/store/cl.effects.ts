@@ -629,7 +629,7 @@ export class CLEffects implements OnDestroy {
   saveNewInvoiceCL = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: RTLActions.SaveNewInvoiceCL) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoiceCL'));
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SaveNewInvoiceCL'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
       })
@@ -696,12 +696,13 @@ export class CLEffects implements OnDestroy {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.CloseSpinner());
           this.store.dispatch(new RTLActions.FetchBalanceCL());
-          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully.'));
-          return { type: RTLActions.VOID };
+          return {
+            type: RTLActions.SET_CHANNEL_TRANSACTION_RES_CL,
+            payload: postRes
+          };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'SetChannelTransactionCL', code: err.status, message: err.error.error }));
-          this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+          this.handleErrorWithoutAlert('SetChannelTransactionCL', 'Sending Fund Failed.', err);
           return of({type: RTLActions.VOID});
         }));
       })
