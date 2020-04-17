@@ -1,0 +1,33 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">Send Payment</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <form fxLayoutAlign="space-between stretch" fxLayout="column">
+        <mat-form-field fxFlex="100">
+          <textarea autoFocus matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" (matTextareaAutosize)="true" required #paymentReq="ngModel"></textarea>
+          <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
+          <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
+          <mat-error *ngIf="paymentReq.errors?.decodeError">{{paymentDecodedHint}}</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="100" *ngIf="zeroAmtInvoice">
+          <input matInput placeholder="Amount (Sats)" name="amount" [(ngModel)]="paymentAmount" (change)="onAmountChange($event)" tabindex="2" required #paymentAmt="ngModel">
+          <mat-hint>It is a zero amount invoice, enter amount to be paid.</mat-hint>
+          <mat-error *ngIf="!paymentAmount">Payment amount is required.</mat-error>
+        </mat-form-field>
+        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="paymentError !== ''">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span *ngIf="paymentError !== ''">{{paymentError}}</span>
+        </div>
+        <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
+          <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Fields</button>
+          <button mat-flat-button color="primary" (click)="onSendPayment();" tabindex="3">Send Payment</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
+</div>

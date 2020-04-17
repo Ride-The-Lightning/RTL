@@ -380,7 +380,8 @@ export class CLEffects implements OnDestroy {
   decodePaymentCL = this.actions$.pipe(
     ofType(RTLActions.DECODE_PAYMENT_CL),
     mergeMap((action: RTLActions.DecodePaymentCL) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload)
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('DecodePaymentCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
         .pipe(
           map((decodedPayment) => {
             this.logger.info(decodedPayment);
@@ -391,7 +392,11 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('DecodePaymentCL', 'Decode Payment Failed.', err);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
+            }
             return of({type: RTLActions.VOID});
           })
         );
@@ -412,26 +417,41 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPaymentCL, any]) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SendPaymentCL'));      
       return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             if (sendRes.error) {
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.status, error: sendRes.error.message });
+              this.logger.error('Error: ' + sendRes.payment_error);
+              const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
+              if (action.payload.fromDialog) {
+                this.handleErrorWithoutAlert('SendPaymentCL', 'Send Payment Failed.', myErr);
+              } else {
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              }
+              return of({type: RTLActions.VOID});
             } else {
               this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
               this.store.dispatch(new RTLActions.FetchChannelsCL());
               this.store.dispatch(new RTLActions.FetchBalanceCL());
               this.store.dispatch(new RTLActions.FetchPaymentsCL());
+              this.store.dispatch(new RTLActions.SetDecodedPaymentCL({}));
               return {
-                type: RTLActions.SET_DECODED_PAYMENT_CL,
-                payload: {}
+                type: RTLActions.SEND_PAYMENT_STATUS_CL,
+                payload: sendRes
               };
             }
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err.error ? err.error : err);
+            this.logger.error('Error: ' + JSON.stringify(err));
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('SendPaymentCL', 'Send Payment Failed.', myErr);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+            }
             return of({type: RTLActions.VOID});
           })
         );

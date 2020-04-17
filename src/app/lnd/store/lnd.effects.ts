@@ -653,7 +653,7 @@ export class LNDEffects implements OnDestroy {
     ofType(RTLActions.SEND_PAYMENT),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SendPayment'));      
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SendPayment'));
       let queryHeaders = {};
       if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
       if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; } // Channel Rebalancing

@@ -1,17 +1,16 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
-    <mat-form-field fxFlex="100">
+    <mat-form-field fxFlex="100" *ngIf="!showDetails">
       <textarea matInput placeholder="Payment Request" name="paymentRequest" [(ngModel)]="paymentRequest" tabindex="1" (keyup)="onPaymentRequestEntry()" (paste)="onPasteInvoice($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
-    <div fxLayout="row" *ngIf="showDetails" class="mt-2">
-      <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onSendPayment();" tabindex="3">Send Payment</button>
-    </div>
     <div fxLayout="row" *ngIf="!showDetails" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
-      <button mat-flat-button color="primary" (click)="onSendPayment();" tabindex="3">Send Payment</button>
+      <button mat-flat-button color="primary" (click)="onSendPayment()" tabindex="3">Send Payment</button>
+    </div>
+    <div fxLayout="row" *ngIf="showDetails" class="mt-2">
+      <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="3">Send Payment</button>
     </div>
   </form>
   <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">

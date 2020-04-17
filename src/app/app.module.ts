@@ -32,6 +32,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLInvoiceInformationComponent } from './clightning/transactions/invoice-information-modal/invoice-information.component';
 import { CLConnectPeerComponent } from './clightning/peers-channels/connect-peer/connect-peer.component';
+import { CLLightningSendPaymentsComponent } from './clightning/transactions/send-payment-modal/send-payment.component';
 import { InvoiceInformationComponent } from './lnd/transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
@@ -71,6 +72,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     CLConnectPeerComponent,
+    CLLightningSendPaymentsComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
@@ -93,6 +95,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     OnChainGeneratedAddressComponent,
     CLOpenChannelComponent,
     CLConnectPeerComponent,
+    CLLightningSendPaymentsComponent,
     OpenChannelComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
