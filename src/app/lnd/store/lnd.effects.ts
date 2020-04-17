@@ -173,7 +173,7 @@ export class LNDEffects implements OnDestroy {
   saveNewInvoice = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE),
     mergeMap((action: RTLActions.SaveNewInvoice) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoice'));      
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoice'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
       })

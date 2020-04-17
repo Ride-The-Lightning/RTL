@@ -14,7 +14,7 @@
     </div>
   </form>
   <div *ngIf="showDetails" fxLayout="row">
-    <button mat-flat-button color="primary" (click)="openCreateInvoiceModal();" tabindex="5">Create Invoice</button>
+    <button mat-flat-button color="primary" (click)="openCreateInvoiceModal()" tabindex="5">Create Invoice</button>
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" *ngIf="showDetails">
     <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">

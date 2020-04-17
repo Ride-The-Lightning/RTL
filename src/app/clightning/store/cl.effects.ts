@@ -629,6 +629,7 @@ export class CLEffects implements OnDestroy {
   saveNewInvoiceCL = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: RTLActions.SaveNewInvoiceCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoiceCL'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
       })
@@ -653,7 +654,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
+            this.handleErrorWithoutAlert('SaveNewInvoiceCL', 'Add Invoice Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
