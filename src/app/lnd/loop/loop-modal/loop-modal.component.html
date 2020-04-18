@@ -15,15 +15,29 @@
           <p fxFlex="30"></p>
         </div>
         <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
+          <mat-step [stepControl]="providerFormGroup" [editable]="flgEditable">
+            <form [formGroup]="providerFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{providerFormLabel}}</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
+                <mat-radio-group color="primary" name="provider" (change)="onSwapProviderChange($event)" formControlName="provider" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <mat-radio-button fxFlex="48" tabindex="8" value={{swapProviderEnum.BOLTZ}} >Boltz.exchange</mat-radio-button>
+                  <mat-radio-button fxFlex="48" tabindex="9" value={{swapProviderEnum.LIGHTNING_LABS}}>Loop by Lightning Labs</mat-radio-button>
+                </mat-radio-group>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="5" type="button" (click)="onChooseProvider()">Next</button>
+              </div>
+            </form>
+          </mat-step>
           <mat-step [stepControl]="inputFormGroup" [editable]="flgEditable">
             <form [formGroup]="inputFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
-                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true"></rtl-loop-quote>
+                <rtl-loop-quote [quote]="minQuote" [termCaption]="'min'" [panelExpanded]="false" [showPanel]="true" [swapProvider]="swapProvider"></rtl-loop-quote>
+                <rtl-loop-quote [quote]="maxQuote" [termCaption]="'max'" [panelExpanded]="false" [showPanel]="true" [swapProvider]="swapProvider"></rtl-loop-quote>
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
-                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '30' : '48'">
+                <mat-form-field [fxFlex]="direction === swapTypeEnum.WITHDRAWAL ? '30' : '48'">
                   <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
@@ -31,18 +45,18 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.min">Amount must be greater than or equal to {{minQuote.amount | number}}.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
-                <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '20' : '48'">
+                <mat-form-field *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" [fxFlex]="direction === swapTypeEnum.WITHDRAWAL ? '20' : '48'">
                   <input matInput placeholder="Sweep Confirmation Target" type="number" step="1" tabindex="2" formControlName="sweepConfTarget" required>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.min">Confirmation target must be a positive number.</mat-error>
                 </mat-form-field>
-                <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30">
+                <mat-form-field *ngIf="direction === swapTypeEnum.WITHDRAWAL && swapProvider === swapProviderEnum.LIGHTNING_LABS" fxFlex="30">
                   <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" step="1" tabindex="3" formControlName="routingFeePercent" required>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.max">Percentage must be less than or equal to {{maxRoutingFeePercentage}}.</mat-error>
                 </mat-form-field>
-                <mat-slide-toggle matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
+                <mat-slide-toggle matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" *ngIf="direction === swapTypeEnum.WITHDRAWAL" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button mat-stroked-button color="primary" tabindex="5" type="button" (click)="onEstimateQuote()">Estimate Quote</button>
@@ -53,13 +67,14 @@
             <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <mat-slide-toggle matTooltip="Download refund file?" *ngIf="swapProvider === swapProviderEnum.BOLTZ" fxFlex="15" tabindex="4" color="primary" formControlName="downloadRefundFile">Download refund file?</mat-slide-toggle>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
-                <button *ngIf="direction === swapTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+                <button *ngIf="direction === swapTypeEnum.WITHDRAWAL || swapProvider === swapProviderEnum.BOLTZ" mat-stroked-button color="primary" tabindex="6" type="button" (click)="nextStep()">Next</button>
+                <button *ngIf="direction === swapTypeEnum.DEPOSIT && swapProvider === swapProviderEnum.LIGHTNING_LABS" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onSwap()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
-          <mat-step *ngIf="direction === swapTypeEnum.LOOP_OUT" [stepControl]="addressFormGroup" [editable]="flgEditable">
+          <mat-step *ngIf="direction === swapTypeEnum.WITHDRAWAL" [stepControl]="addressFormGroup" [editable]="flgEditable">
             <form [formGroup]="addressFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{addressFormLabel}}</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
@@ -73,7 +88,26 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="11" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
+                <button *ngIf="swapProvider === swapProviderEnum.BOLTZ" mat-stroked-button color="primary" tabindex="6" type="button" (click)="nextStep()">Next</button>
+                <button *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" mat-stroked-button color="primary" tabindex="11" type="button" (click)="onSwap()">Initiate {{loopDirectionCaption}}</button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step *ngIf="swapProvider === swapProviderEnum.BOLTZ" [stepControl]="channelFormGroup" [editable]="flgEditable">
+            <form [formGroup]="channelFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
+              <ng-template matStepLabel>{{channelFormLabel}}</ng-template>
+              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
+                <mat-radio-group color="primary" name="channelType" (change)="onChannelTypeChange($event)" formControlName="channelType" fxFlex="100" fxLayoutAlign="space-between stretch">
+                  <mat-radio-button fxFlex="48" tabindex="8" value="default">Default</mat-radio-button>
+                  <mat-radio-button fxFlex="48" tabindex="9" value="specific">Specific ID</mat-radio-button>
+                </mat-radio-group>
+                <mat-form-field fxFlex="100" class="mt-1">
+                  <input matInput placeholder="Channel ID" tabindex="10" formControlName="channelId" [required]="channelFormGroup.controls.channelType.value === 'specific'">
+                  <mat-error *ngIf="channelFormGroup.controls.channelId.errors?.required">Channel ID is required.</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+                <button mat-stroked-button color="primary" tabindex="11" type="button" (click)="onSwap()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
           </mat-step>
@@ -114,25 +148,25 @@
     <mat-card-header fxLayout="row" fxFlex="5" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title"></span></div>
       <div fxFlex="8" fxLayoutAlign="end center">
-        <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
+        <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=2;" mat-button>X</button>
       </div>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center">
-      <rtl-loop-out-info-graphics *ngIf="direction === swapTypeEnum.LOOP_OUT" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-out-info-graphics>
-      <rtl-loop-in-info-graphics *ngIf="direction === swapTypeEnum.LOOP_IN" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-in-info-graphics>
+      <rtl-loop-out-info-graphics *ngIf="direction === swapTypeEnum.WITHDRAWAL" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-out-info-graphics>
+      <rtl-loop-in-info-graphics *ngIf="direction === swapTypeEnum.DEPOSIT" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-loop-in-info-graphics>
     </mat-card-content>
     <div class="my-3" fxLayout="row" fxFlex="10" fxLayoutAlign="center end">
-      <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
+      <span *ngFor="let i of [2, 3, 4, 5, 6];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
     <div fxLayout="row" fxFlex="15" fxLayoutAlign="end end" class="mt-2">        
-      <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
-      <button *ngIf="stepNumber === 5" mat-flat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
-      <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber < 5" mat-stroked-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
-      <button *ngIf="stepNumber > 1 && stepNumber < 5" mat-flat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
-      <button *ngIf="stepNumber < 5" mat-flat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+      <button *ngIf="stepNumber === 6" mat-stroked-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
+      <button *ngIf="stepNumber === 6" mat-flat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
+      <button *ngIf="stepNumber === 6" mat-flat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber < 6" mat-stroked-button class="mr-1" color="primary" tabindex="18" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>
+      <button *ngIf="stepNumber > 2 && stepNumber < 6" mat-flat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
+      <button *ngIf="stepNumber < 6" mat-flat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
     </div>
   </div>
 </div>

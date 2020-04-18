@@ -9,10 +9,11 @@ import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../shared/animation/opacity-animation';
-import { ScreenSizeEnum, SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { ScreenSizeEnum, SwapProviderEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../shared/models/loopModels';
 import { LoopAlert } from '../../../shared/models/alertData';
 import { LoopService } from '../../../shared/services/loop.service';
+import { BoltzService } from '../../../shared/services/boltz.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { Channel } from '../../../shared/models/lndModels';
@@ -33,13 +34,17 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public channel: Channel;
   public minQuote: LoopQuote;
   public maxQuote: LoopQuote;
+  public swapProviderEnum = SwapProviderEnum;
+  public swapProvider = SwapProviderEnum.BOLTZ;
   public swapTypeEnum = SwapTypeEnum;
-  public direction = SwapTypeEnum.LOOP_OUT;
-  public loopDirectionCaption = 'Loop out';
+  public direction = SwapTypeEnum.WITHDRAWAL;
+  public loopDirectionCaption = 'Withdrawal';
   public loopStatus: LoopStatus = null;
-  public inputFormLabel = 'Amount to loop out';
-  public quoteFormLabel = 'Confirm Quote';
+  public providerFormLabel = 'Choose Lightning Service Provider';
+  public inputFormLabel = 'Amount to Withdrawal';
+  public quoteFormLabel = 'Confirm Quote and Download Refund File';
   public addressFormLabel = 'Withdrawal Address';
+  public channelFormLabel = 'Withdrawal Channel ID';
   public maxRoutingFeePercentage = 2;
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
@@ -48,13 +53,16 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
   public flgEditable = true;
+  providerFormGroup: FormGroup;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;
   addressFormGroup: FormGroup;
+  channelFormGroup: FormGroup;
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private targetConf = 2;
 
-  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private boltzService: BoltzService, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -62,18 +70,29 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.minQuote = this.data.minQuote ? this.data.minQuote : {};
     this.maxQuote = this.data.maxQuote ? this.data.maxQuote : {};
     this.direction = this.data.direction;
-    this.loopDirectionCaption = this.direction === SwapTypeEnum.LOOP_IN ? 'Loop in' : 'Loop out';
-    this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;    
+    this.loopDirectionCaption = this.direction === SwapTypeEnum.DEPOSIT ? 'Deposit' : 'Withdrawal';
+    this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
+    this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
+    this.channelFormLabel = `${this.loopDirectionCaption} Channel ID`;
+    this.providerFormGroup = this.formBuilder.group({
+      provider: [this.swapProvider, [Validators.required]]
+    });  
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
       sweepConfTarget: [6, [Validators.required, Validators.min(1)]],
       routingFeePercent: [this.maxRoutingFeePercentage, [Validators.required, Validators.min(0), Validators.max(this.maxRoutingFeePercentage)]],
       fast: [false, [Validators.required]]
     });
-    this.quoteFormGroup = this.formBuilder.group({});
+    this.quoteFormGroup = this.formBuilder.group({
+      downloadRefundFile: [false, [Validators.required]]
+    });
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
       address: [{value: '', disabled: true}]
+    });
+    this.channelFormGroup = this.formBuilder.group({
+      channelType: ['default', [Validators.required]],
+      channelId: [{value: '', disabled: true}]
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
@@ -81,7 +100,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.inputFormGroup.setErrors({'Invalid': true});
-    if (this.direction === SwapTypeEnum.LOOP_OUT) {
+    if (this.direction === SwapTypeEnum.WITHDRAWAL) {
       this.addressFormGroup.setErrors({'Invalid': true});
     }
   }
@@ -90,10 +109,21 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormGroup.valueChanges.pipe(takeUntil(this.unSubs[4])).subscribe(changedValues => {
       this.inputFormGroup.setErrors({'Invalid': true});
     });
-    if (this.direction === SwapTypeEnum.LOOP_OUT) {
+    if (this.direction === SwapTypeEnum.WITHDRAWAL) {
       this.addressFormGroup.valueChanges.pipe(takeUntil(this.unSubs[5])).subscribe(changedValues => {
         this.addressFormGroup.setErrors({'Invalid': true});
       });
+    }
+  }
+
+  onSwapProviderChange(event: any) {
+    switch(event.value) {
+      case SwapProviderEnum.LIGHTNING_LABS:
+        this.swapProvider = SwapProviderEnum.LIGHTNING_LABS;
+        break;
+      default:
+        this.swapProvider = SwapProviderEnum.BOLTZ;
+        break;
     }
   }
 
@@ -111,13 +141,50 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.addressFormGroup.setErrors({'Invalid': true});
   }
 
+  onChannelTypeChange(event: any) {
+    if (event.value === 'specific') {
+      this.channelFormGroup.controls.channelId.setValidators([Validators.required]);
+      this.channelFormGroup.controls.channelId.markAsTouched();
+      this.channelFormGroup.controls.channelId.enable();
+    } else {
+      this.channelFormGroup.controls.channelId.setValidators(null);
+      this.channelFormGroup.controls.channelId.markAsPristine();
+      this.channelFormGroup.controls.channelId.disable();
+      this.channelFormGroup.controls.channelId.setValue('');
+    }
+    this.channelFormGroup.setErrors({'Invalid': true});
+  }
 
-  onLoop() {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+
+  onSwap() {
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.WITHDRAWAL && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
-    if (this.direction === SwapTypeEnum.LOOP_IN) {
+    if(this.swapProvider === SwapProviderEnum.BOLTZ) {
+      this.onSwapByBoltz();
+    } else if (this.swapProvider === SwapProviderEnum.LIGHTNING_LABS) {
+      this.onSwapByLightningLabs();
+    }
+  }
+
+
+  onSwapByBoltz() {
+    this.boltzService.onSwap(this.direction, this.inputFormGroup.controls.amount.value).subscribe((swapStatus: any) => {
+      this.loopStatus = {
+        id_bytes: swapStatus.id,
+        htlc_address: swapStatus.lockupAddress
+      };
+      this.flgEditable = true;
+    }, (err) => {
+      this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
+      this.flgEditable = true;
+      this.logger.error(err);
+    })
+  }
+
+  onSwapByLightningLabs() {
+    if (this.direction === SwapTypeEnum.DEPOSIT) {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee, +this.quote.miner_fee, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
@@ -145,42 +212,117 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onChooseProvider() {
+    if(this.swapProvider === SwapProviderEnum.LIGHTNING_LABS) {
+      this.getTermsAndQuites();
+    } else {
+      this.getPairs();
+    }
+    this.nextStep();
+  }
+
+  nextStep() {
+    this.stepper.selected.stepControl.setErrors(null);
+    this.stepper.next();
+  }
+
+  getTermsAndQuites () {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms & Conditions...'));
+    if(this.direction === SwapTypeEnum.WITHDRAWAL) {
+      this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+      .pipe(takeUntil(this.unSubs[0]))
+      .subscribe(response => {
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.minQuote = response[0];
+        this.maxQuote = response[1];
+      })
+    } else {
+      this.loopService.getLoopInTermsAndQuotes(this.targetConf)
+      .pipe(takeUntil(this.unSubs[1]))
+      .subscribe(response => {
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.minQuote = response[0];
+        this.maxQuote = response[1];
+      })
+    }
+  }
+
+  getPairs() {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Pairs...'));
+    this.providerFormLabel = 'Choose Lightning Service Provider: Boltz.exchange';
+    this.boltzService.getPairs()
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(response => {
+      const pairs = response['pairs']["LTC/BTC"];
+      const lndNode = this.boltzService.getLNDNode();
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.minQuote = {
+        swap_fee: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
+        miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+        swap_payment_dest: lndNode,
+        amount: pairs.limits.minimal
+      };
+      this.maxQuote = {
+        swap_fee: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
+        miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+        swap_payment_dest: lndNode,
+        amount: pairs.limits.maximal
+      };
+    })
+  }
+
   onEstimateQuote() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) { return true; }
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
     let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
-    if(this.direction === SwapTypeEnum.LOOP_IN) {
-      this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
-      .pipe(takeUntil(this.unSubs[2]))
+    if(this.swapProvider === SwapProviderEnum.BOLTZ) {
+      this.boltzService.getPairs()
+      .pipe(takeUntil(this.unSubs[0]))
       .subscribe(response => {
+        const pairs = response['pairs']["LTC/BTC"];
+        const lndNode = this.boltzService.getLNDNode();
         this.store.dispatch(new RTLActions.CloseSpinner());
-        this.quote = response;
-        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
-      });
+        this.quote = {
+          swap_fee: (this.inputFormGroup.controls.amount.value * pairs.fees.percentage * 0.01).toString(),
+          miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+          swap_payment_dest: lndNode,
+          amount: this.inputFormGroup.controls.amount.value
+        }
+      })
     } else {
-      this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(response => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
-        this.quote = response;
-        this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
-      });
+      if(this.direction === SwapTypeEnum.DEPOSIT) {
+        this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
+        .pipe(takeUntil(this.unSubs[2]))
+        .subscribe(response => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.quote = response;
+          this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
+        });
+      } else {
+        this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
+        .pipe(takeUntil(this.unSubs[3]))
+        .subscribe(response => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.quote = response;
+          this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
+        });
+      }
     }
   }
 
   stepSelectionChanged(event: any) {
     switch (event.selectedIndex) {
-      case 0:
+      case 1:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
-        this.quoteFormLabel = 'Confirm Quote';
+        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';
         break;
     
-      case 1:
+      case 2:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.sweepConfTarget.value) {
-          if (this.direction === SwapTypeEnum.LOOP_IN) {
+          if (this.direction === SwapTypeEnum.DEPOSIT) {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Percentage: ' +  (this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : '2') + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
@@ -188,13 +330,14 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
-        this.quoteFormLabel = 'Confirm Quote';
+        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';
         break;
 
-      case 2:
+      case 3:
+      case 4:
         if (this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.sweepConfTarget.value) {
-          if (this.direction === SwapTypeEnum.LOOP_IN) {
+          if (this.direction === SwapTypeEnum.DEPOSIT) {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6);
           } else {
             this.inputFormLabel = this.loopDirectionCaption + ' Amount: ' + (this.decimalPipe.transform(this.inputFormGroup.controls.amount.value ? this.inputFormGroup.controls.amount.value : 0)) + ' Sats | Target Confirmation: ' + (this.inputFormGroup.controls.sweepConfTarget.value ? this.inputFormGroup.controls.sweepConfTarget.value : 6) + ' | Fast: ' + (this.inputFormGroup.controls.fast.value ? 'Enabled' : 'Disabled');
@@ -203,7 +346,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
         if (this.quote && this.quote.swap_fee && this.quote.miner_fee && this.quote.prepay_amt) {
-          this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee + +this.quote.miner_fee) + ' Sats';
+          const refundFileDownloadLabel = ' | Refund file Download: ' + (this.quoteFormGroup.controls.downloadRefundFile.value ? 'True' : 'False');
+          this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee + +this.quote.miner_fee) + ' Sats' + (this.swapProvider === SwapProviderEnum.BOLTZ ? refundFileDownloadLabel : '');
         } else {
           this.quoteFormLabel = 'Quote confirmed';
         }
@@ -213,15 +357,15 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.addressFormLabel = 'Withdrawal Address';
         }
         break;
-
+      
       default:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
-        this.quoteFormLabel = 'Confirm Quote';
+        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';        
         break;
     }
-    if ((this.direction === SwapTypeEnum.LOOP_OUT && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex)
-    || (this.direction === SwapTypeEnum.LOOP_IN && event.selectedIndex < event.previouslySelectedIndex)) {
+    if ((this.direction === SwapTypeEnum.WITHDRAWAL && event.selectedIndex !== 1 && event.selectedIndex < event.previouslySelectedIndex)
+    || (this.direction === SwapTypeEnum.DEPOSIT && event.selectedIndex < event.previouslySelectedIndex)) {
       event.selectedStep.stepControl.setErrors({'Invalid': true});
     }
   }
@@ -240,7 +384,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onReadMore() {
-    if (this.direction === SwapTypeEnum.LOOP_IN) {
+    if (this.direction === SwapTypeEnum.DEPOSIT) {
       window.open('https://blog.lightning.engineering/announcement/2019/06/25/loop-in.html', '_blank');
     } else {
       window.open('https://blog.lightning.engineering/technical/posts/2019/04/15/loop-out-in-depth.html', '_blank');
