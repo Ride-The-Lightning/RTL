@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faWrench, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faTools, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
@@ -19,7 +19,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class AppSettingsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
-  public faWrench = faWrench;
+  public faTools = faTools;
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
   public selNode: ConfigSettingsNode;
