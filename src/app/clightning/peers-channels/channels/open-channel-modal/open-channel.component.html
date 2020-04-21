@@ -7,13 +7,15 @@
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <form fxLayout="column" (ngSubmit)="openChannelForm.form.valid && onOpenChannel()" #openChannelForm="ngForm">
+      <form fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()" #form="ngForm">
         <div fxLayout="column">
           <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
-            <mat-select autoFocus [(ngModel)]="selectedPeer" (selectionChange)="onPeerSelectionChanged($event)" placeholder="Peer Alias" name="peer_alias" tabindex="1" required name="selPeer" #selPeer="ngModel">
-              <mat-option *ngFor="let peer of peers" [value]="peer.id">{{peer.alias ? peer.alias : peer.id}}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="!selectedPeer">Peer alias is required.</mat-error>
+            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="1" required>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
+              <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.id ? peer.id : ''}}</mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="selectedPeer.errors?.required">Peer alias is required.</mat-error>
+            <mat-error *ngIf="selectedPeer.errors?.notfound">Peer not found in the list.</mat-error>
           </mat-form-field>
         </div>
         <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
@@ -23,7 +25,7 @@
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" class="mr-1" tabindex="7" type="reset" (click)="resetData()">Clear Fields</button>
+          <button mat-stroked-button color="primary" class="mr-1" tabindex="7" type="reset">Clear Fields</button>
           <button autoFocus mat-flat-button color="primary" type="submit" tabindex="9">Open Channel</button>
         </div>
       </form>
