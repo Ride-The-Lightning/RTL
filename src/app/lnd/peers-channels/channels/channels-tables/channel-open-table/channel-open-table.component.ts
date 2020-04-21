@@ -274,7 +274,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     let maxDivider = minutesDivider;
     let minDivider = 1;
     let max_uptime = 0;
-    channels.forEach(channel => { if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
+    channels.forEach(channel => { if(channel.uptime && +channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
     switch (true) {
       case max_uptime < hoursDivider:
         this.timeUnit = 'Mins:Secs';
@@ -307,7 +307,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         break;
     }
     channels.forEach(channel => {
-      channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0');
+      channel.uptime_str = channel.uptime ? (this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0')) : '---';
     });
     return channels;
   }
