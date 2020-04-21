@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable, of } from 'rxjs';
+import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -19,17 +20,20 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./open-channel.component.scss']
 })
 export class CLOpenChannelComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('form', { static: false }) form: any;
+  public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public peer: PeerCL;
   public peers: PeerCL[];
-  public selectedPeer = '';
+  public sortedPeers: PeerCL[];
+  public filteredPeers: Observable<PeerCL[]>;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
   public information: GetInfoCL;
   public totalBalance = 0;
   public fundingAmount: number;
+  public selectedPubkey = '';
   public isPrivate = false;
   public feeRateTypes = FEE_RATE_TYPES;
   public selFeeRate = '';
@@ -56,6 +60,38 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
         this.dialogRef.close();
       }
     });
+    let x = '', y = '';
+    this.sortedPeers = this.peers.sort((p1, p2) => {
+      x = p1.alias ? p1.alias.toLowerCase() : p1.id ? p1.id.toLowerCase() : '';
+      y = p2.alias ? p2.alias.toLowerCase() : p1.id.toLowerCase();
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+      map(peer => typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.id),
+      map(alias => alias ? this.filterPeers(alias) : this.sortedPeers.slice())
+    );
+  }
+
+  private filterPeers(newlySelectedPeer: string): PeerCL[] {
+    return this.sortedPeers.filter(peer => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+  }
+
+  displayFn(peer: PeerCL): string {
+    return (peer && peer.alias) ? peer.alias : (peer && peer.id) ? peer.id : '';
+  }
+
+  onSelectedPeerChanged() {
+    this.channelConnectionError = '';
+    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.id) ? this.selectedPeer.value.id : undefined;
+    if (typeof this.selectedPeer.value === 'string') {
+      let selPeer = this.peers.filter(peer => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      if (selPeer.length === 1 && selPeer[0].id) { this.selectedPubkey = selPeer[0].id; }
+    }
+    if (this.selectedPeer.value && !this.selectedPubkey) {
+      this.selectedPeer.setErrors({notfound: true});
+    } else {
+      this.selectedPeer.setErrors(null);
+    }  
   }
 
   onClose() {
@@ -66,11 +102,12 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.flgMinConf = false;
     this.selFeeRate = '';
     this.minConfValue = null;
-    this.selectedPeer = '';
+    this.selectedPeer.setValue('');
     this.fundingAmount = null;
     this.isPrivate = false;
     this.channelConnectionError = '';
-    this.advancedTitle = 'Advanced Options';    
+    this.advancedTitle = 'Advanced Options';
+    this.form.resetForm(); 
   }
 
   onAdvancedPanelToggle(isClosed: boolean) {
@@ -82,15 +119,11 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel() {
-    if ((!this.peer && !this.selectedPeer) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
+    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new RTLActions.SaveNewChannelCL({
-      peerId: ((!this.peer || !this.peer.id) ? this.selectedPeer : this.peer.id), satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
+      peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
     }));
-  }
-
-  onPeerSelectionChanged(event: any) {
-    this.channelConnectionError = '';
   }
 
   ngOnDestroy() {

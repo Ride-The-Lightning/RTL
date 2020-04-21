@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable, of } from 'rxjs';
+import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -19,16 +20,20 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./open-channel.component.scss']
 })
 export class OpenChannelComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: false }) form: any;
+  public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public peer: Peer;
   public peers: Peer[];
-  public selectedPeer = '';
+  public sortedPeers: Peer[];
+  public filteredPeers: Observable<Peer[]>;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
   public information: GetInfo;
   public totalBalance = 0;
   public fundingAmount: number;
+  public selectedPubkey = '';
   public isPrivate = false;
   public selTransType = '0';
   public spendUnconfirmed = false;
@@ -44,7 +49,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions$.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.FETCH_ALL_CHANNELS))
     .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.FetchAllChannels) => {
       if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
@@ -54,6 +59,38 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
         this.dialogRef.close();
       }
     });
+    let x = '', y = '';
+    this.sortedPeers = this.peers.sort((p1, p2) => {
+      x = p1.alias ? p1.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';
+      y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key.toLowerCase();
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));      
+    });
+    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+      map(peer => typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key),
+      map(alias => alias ? this.filterPeers(alias) : this.sortedPeers.slice())
+    );
+  }
+
+  private filterPeers(newlySelectedPeer: string): Peer[] {
+    return this.sortedPeers.filter(peer => peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0);
+  }
+
+  displayFn(peer: Peer): string {
+    return (peer && peer.alias) ? peer.alias : (peer && peer.pub_key) ? peer.pub_key : '';
+  }
+
+  onSelectedPeerChanged() {
+    this.channelConnectionError = '';
+    this.selectedPubkey = (this.selectedPeer.value && this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : undefined;
+    if (typeof this.selectedPeer.value === 'string') {
+      let selPeer = this.peers.filter(peer => peer.alias.length === this.selectedPeer.value.length && peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0);
+      if (selPeer.length === 1 && selPeer[0].pub_key) { this.selectedPubkey = selPeer[0].pub_key; }
+    }
+    if (this.selectedPeer.value && !this.selectedPubkey) {
+      this.selectedPeer.setErrors({notfound: true});
+    } else {
+      this.selectedPeer.setErrors(null);
+    }
   }
 
   onClose() {
@@ -61,7 +98,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.selectedPeer = '';
+    this.selectedPeer.setValue('');
     this.fundingAmount = null;
     this.isPrivate = false;
     this.spendUnconfirmed = false;
@@ -69,17 +106,14 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.transTypeValue = '';
     this.channelConnectionError = '';
     this.advancedTitle = 'Advanced Options';
-  }
-
-  onPeerSelectionChanged(event: any) {
-    this.channelConnectionError = '';
+    this.form.resetForm();  
   }
 
   onOpenChannel() {
-    if ((!this.peer && !this.selectedPeer) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
+    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new RTLActions.SaveNewChannel({
-      selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPeer : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
+      selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
       transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
     }));
   }
