@@ -101,6 +101,7 @@ export const LOGIN = 'LOGIN';
 export const VERIFY_TWO_FA = 'VERIFY_TWO_FA';
 export const LOGOUT = 'LOGOUT';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
+export const RESET_PASSWORD_RES = 'RESET_PASSWORD_RES';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -659,6 +660,11 @@ export class ResetPassword implements Action {
   constructor(public payload: {currPassword: string, newPassword: string}) {}
 }
 
+export class ResetPasswordRes implements Action {
+  readonly type = RESET_PASSWORD_RES;
+  constructor(public payload: {token: string}) {}
+}
+
 export class SetChildNodeSettingsCL implements Action {
   readonly type = SET_CHILD_NODE_SETTINGS_CL;
   constructor(public payload: SelNodeChild) {}
@@ -916,7 +922,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword | ResetPasswordRes |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

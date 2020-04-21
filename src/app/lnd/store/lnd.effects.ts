@@ -1165,7 +1165,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
-      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed.'));
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : genericErrorMessage}));
@@ -1178,7 +1178,7 @@ export class LNDEffects implements OnDestroy {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
-      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed.'));
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({

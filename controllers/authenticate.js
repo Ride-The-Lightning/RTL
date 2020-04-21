@@ -17,7 +17,7 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 21, msg: 'Password Validation Failed!'});
+      logger.error({fileName: 'Authenticate', lineNum: 21, msg: 'SSO Authentication Failed!'});
       res.status(401).json({
         message: "Login Failure!",
         error: "SSO Authentication Failed!"
@@ -33,10 +33,10 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 38, msg: 'Password Validation Failed!'});
+      logger.error({fileName: 'Authenticate', lineNum: 38, msg: 'Invalid Password!'});
       res.status(401).json({
         message: "Authentication Failed!",
-        error: "Password Validation Failed!"
+        error: "Invalid Password!"
       });
     }
   }
@@ -45,8 +45,8 @@ exports.authenticateUser = (req, res, next) => {
 exports.resetPassword = (req, res, next) => {
   if(+common.rtl_sso) {
     logger.error({fileName: 'Authenticate', lineNum: 46, msg: 'Password Reset Failed!'});
-    res.status(402).json({
-      message: "Password Reset Failure!",
+    res.status(401).json({
+      message: "Password Reset Failed!",
       error: "Password cannot be reset for SSO authentication!"
     });
   } else {
@@ -61,7 +61,7 @@ exports.resetPassword = (req, res, next) => {
       res.status(200).json({ token: token });
     } else {
       logger.error({fileName: 'Authenticate', lineNum: 62, msg: 'Password Reset Failed!'});
-      res.status(402).json({
+      res.status(401).json({
         message: "Password Reset Failed!",
         error: "Old password is not correct!"
       });
