@@ -30,6 +30,7 @@ import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
 import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
+import { CLChannelInformationComponent } from './clightning/peers-channels/channels/channel-information-modal/channel-information.component';
 import { CLInvoiceInformationComponent } from './clightning/transactions/invoice-information-modal/invoice-information.component';
 import { CLConnectPeerComponent } from './clightning/peers-channels/connect-peer/connect-peer.component';
 import { CLLightningSendPaymentsComponent } from './clightning/transactions/send-payment-modal/send-payment.component';
@@ -39,6 +40,7 @@ import { InvoiceInformationComponent } from './lnd/transactions/invoice-informat
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
+import { ChannelInformationComponent } from './lnd/peers-channels/channels/channel-information-modal/channel-information.component';
 import { OnChainSendComponent } from './lnd/on-chain/on-chain-send-modal/on-chain-send.component';
 import { LightningSendPaymentsComponent } from './lnd/transactions/send-payment-modal/send-payment.component';
 import { CreateInvoiceComponent } from './lnd/transactions/create-invoice-modal/create-invoice.component';
@@ -77,7 +79,9 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
+    CLChannelInformationComponent,
     OpenChannelComponent,
+    ChannelInformationComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
     ShowPubkeyComponent,
@@ -102,7 +106,9 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
+    CLChannelInformationComponent,
     OpenChannelComponent,
+    ChannelInformationComponent,
     LightningSendPaymentsComponent,
     ConnectPeerComponent,
     ShowPubkeyComponent,
