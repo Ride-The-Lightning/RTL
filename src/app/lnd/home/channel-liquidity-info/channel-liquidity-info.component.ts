@@ -40,19 +40,11 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   }
 
   onLoopOut(channel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
-    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(response => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
-        channel: channel,
-        minQuote: response[0],
-        maxQuote: response[1],
-        direction: SwapTypeEnum.WITHDRAWAL,
-        component: LoopModalComponent
-      }}));    
-    });
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      channel: channel,
+      direction: SwapTypeEnum.WITHDRAWAL,
+      component: LoopModalComponent
+    }}));
   }  
 
   ngOnDestroy() {
