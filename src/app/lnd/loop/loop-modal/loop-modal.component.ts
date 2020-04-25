@@ -44,7 +44,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public inputFormLabel = 'Amount to Withdrawal';
   public quoteFormLabel = 'Confirm Quote and Download Refund File';
   public addressFormLabel = 'Withdrawal Address';
-  public channelFormLabel = 'Withdrawal Channel ID';
   public maxRoutingFeePercentage = 2;
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
@@ -57,7 +56,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;
   addressFormGroup: FormGroup;
-  channelFormGroup: FormGroup;
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
   private targetConf = 2;
@@ -73,7 +71,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loopDirectionCaption = this.direction === SwapTypeEnum.DEPOSIT ? 'Deposit' : 'Withdrawal';
     this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
     this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
-    this.channelFormLabel = `${this.loopDirectionCaption} Channel ID`;
     this.providerFormGroup = this.formBuilder.group({
       provider: [this.swapProvider, [Validators.required]]
     });  
@@ -89,10 +86,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.addressFormGroup = this.formBuilder.group({
       addressType: ['local', [Validators.required]],
       address: [{value: '', disabled: true}]
-    });
-    this.channelFormGroup = this.formBuilder.group({
-      channelType: ['default', [Validators.required]],
-      channelId: [{value: '', disabled: true}]
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
@@ -140,21 +133,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.addressFormGroup.setErrors({'Invalid': true});
   }
-
-  onChannelTypeChange(event: any) {
-    if (event.value === 'specific') {
-      this.channelFormGroup.controls.channelId.setValidators([Validators.required]);
-      this.channelFormGroup.controls.channelId.markAsTouched();
-      this.channelFormGroup.controls.channelId.enable();
-    } else {
-      this.channelFormGroup.controls.channelId.setValidators(null);
-      this.channelFormGroup.controls.channelId.markAsPristine();
-      this.channelFormGroup.controls.channelId.disable();
-      this.channelFormGroup.controls.channelId.setValue('');
-    }
-    this.channelFormGroup.setErrors({'Invalid': true});
-  }
-
 
   onSwap() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.WITHDRAWAL && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }

@@ -88,25 +88,6 @@
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="swapProvider === swapProviderEnum.BOLTZ" mat-stroked-button color="primary" tabindex="6" type="button" (click)="nextStep()">Next</button>
-                <button *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" mat-stroked-button color="primary" tabindex="11" type="button" (click)="onSwap()">Initiate {{loopDirectionCaption}}</button>
-              </div>
-            </form>
-          </mat-step>
-          <mat-step *ngIf="swapProvider === swapProviderEnum.BOLTZ" [stepControl]="channelFormGroup" [editable]="flgEditable">
-            <form [formGroup]="channelFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
-              <ng-template matStepLabel>{{channelFormLabel}}</ng-template>
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch" class="mt-1">
-                <mat-radio-group color="primary" name="channelType" (change)="onChannelTypeChange($event)" formControlName="channelType" fxFlex="100" fxLayoutAlign="space-between stretch">
-                  <mat-radio-button fxFlex="48" tabindex="8" value="default">Default</mat-radio-button>
-                  <mat-radio-button fxFlex="48" tabindex="9" value="specific">Specific ID</mat-radio-button>
-                </mat-radio-group>
-                <mat-form-field fxFlex="100" class="mt-1">
-                  <input matInput placeholder="Channel ID" tabindex="10" formControlName="channelId" [required]="channelFormGroup.controls.channelType.value === 'specific'">
-                  <mat-error *ngIf="channelFormGroup.controls.channelId.errors?.required">Channel ID is required.</mat-error>
-                </mat-form-field>
-              </div>
-              <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button mat-stroked-button color="primary" tabindex="11" type="button" (click)="onSwap()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
