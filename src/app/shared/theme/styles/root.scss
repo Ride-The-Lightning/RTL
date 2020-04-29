@@ -1018,3 +1018,20 @@ table {
 .h-5 {
   height: 5rem;
 }
+
+.btn-sticky-container {
+  height: 0rem;
+  opacity: 0.5;
+  & .mat-icon {
+    animation: scrollDownAnimation 2s infinite;
+  }
+}
+
+@keyframes scrollDownAnimation {
+  0%   {transform: translateY(0)}
+  10%  {transform: translateY(-20%)}
+  20%   {transform: translateY(20%)}
+  30%  {transform: translateY(-20%)}
+  40%  {transform: translateY(20%)}
+  50%  {transform: translateY(0)}
+}
