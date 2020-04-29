@@ -104,6 +104,7 @@ export interface AlertData {
   alertTitle?: string;
   titleMessage?: string;
   message?: Array<Array<MessageDataField>>;
+  scrollable?: boolean;
   showQRName?: string;
   showQRField?: string;
   newlyAdded?: boolean;
@@ -118,6 +119,7 @@ export interface ConfirmationData {
   alertTitle?: string;
   titleMessage?: string;
   message?: any;
+  scrollable?: boolean;
   noBtnText?: string;
   yesBtnText?: string;
   flgShowInput?: boolean;
@@ -129,6 +131,7 @@ export interface ErrorData {
   alertTitle?: string;
   titleMessage?: string;
   message?: MessageErrorField;
+  scrollable?: boolean;
   component?: any;
 }
 
