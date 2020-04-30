@@ -45,7 +45,13 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
       this.getAllForwardingEvents(start, end, offset + num_max_events, callback);
     }    
   }).catch(err => {
-    logger.error({fileName: 'Switch', lineNum: 32, msg: 'Get All Forwarding Events Failed: ' + JSON.stringify(err)});
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Switch', lineNum: 54, msg: 'Get All Forwarding Events Error: ' + JSON.stringify(err)});
     callback({
       message: "Forwarding Events Failed!",
       error: err.error

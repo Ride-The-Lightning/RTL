@@ -12,6 +12,7 @@ exports.signMessage = (req, res, next) => {
   request.post(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Messages', lineNum: 15, msg: 'Sign Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Sign message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -21,7 +22,13 @@ exports.signMessage = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Messages', lineNum: 24, msg: 'Sign Message Failed: ' + JSON.stringify(err)});
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Messages', lineNum: 31, msg: 'Sign Message Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Sign Message Failed!',
       error: err.error
@@ -39,6 +46,7 @@ exports.verifyMessage = (req, res, next) => {
   request.post(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Messages', lineNum: 49, msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Verify message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -48,7 +56,13 @@ exports.verifyMessage = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Messages', lineNum: 24, msg: 'Message Verification Failed: ' + JSON.stringify(err)});
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Messages', lineNum: 65, msg: 'Message Verification Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Verify Message Failed!',
       error: err.error

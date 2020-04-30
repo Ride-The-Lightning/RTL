@@ -9,6 +9,7 @@ exports.getFees = (req, res, next) => {
   request(options).then((body) => {
     logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Fees', lineNum: 12, msg: 'Get Fee Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching fee failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -24,6 +25,13 @@ exports.getFees = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Fees', lineNum: 34, msg: 'Get Fees Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching fee failed!",
       error: err.error

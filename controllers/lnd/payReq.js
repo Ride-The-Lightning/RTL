@@ -11,6 +11,7 @@ exports.decodePayment = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.info({fileName: 'PayReq', msg: 'Payment Decode Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
+      logger.error({fileName: 'PayReq', lineNum: 14, msg: 'Payment Decode Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Payment Request Decode Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -22,6 +23,13 @@ exports.decodePayment = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'PayReq', lineNum: 32, msg: 'Payment Decode Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Payment Request Decode Failed!",
       error: err.error
