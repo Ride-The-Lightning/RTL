@@ -7,7 +7,7 @@ exports.getBalance = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getBalance';
   request(options).then((body) => {
-    logger.info({fileName: 'Balance', msg: ' Balance Received: ' + JSON.stringify(body)});
+    logger.info({fileName: 'Balance', msg: 'Balance Received: ' + JSON.stringify(body)});
     if(!body.totalBalance) {
       body.totalBalance = 0;
       body.btc_totalBalance = 0;
@@ -26,10 +26,16 @@ exports.getBalance = (req, res, next) => {
     } else {
       body.btc_unconfBalance = common.convertToBTC(body.unconfBalance);
     }
-    
     res.status(200).json(body);
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Balance', lineNum: 38, msg: 'Balance Fetch Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching balance failed!",
       error: err.error

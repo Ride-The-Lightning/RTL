@@ -10,6 +10,7 @@ exports.deleteExpiredInvoice = (req, res, next) => {
   request.delete(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices Deleted: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 13, msg: 'Invoice Delete Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Deleting Invoice Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -18,6 +19,13 @@ exports.deleteExpiredInvoice = (req, res, next) => {
     res.status(204).json({status: 'Invoice Deleted Successfully'});
   })
   .catch((err) => {
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Invoice', lineNum: 28, msg: 'Invoice Delete Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Deleting Invoice Failed!",
       error: err.error
@@ -32,6 +40,7 @@ exports.listInvoices = (req, res, next) => {
   request(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body});
     if(!body || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 43, msg: 'List Invoice Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -49,6 +58,13 @@ exports.listInvoices = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Invoice', lineNum: 67, msg: 'List Invoice Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Invoice Info failed!",
       error: err.error
@@ -63,6 +79,7 @@ exports.addInvoice = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 82, msg: 'Add Invoice Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Add Invoice Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -72,6 +89,13 @@ exports.addInvoice = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Invoice', lineNum: 98, msg: 'Add Invoice Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Add Invoice Failed!",
       error: err.error

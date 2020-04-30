@@ -9,6 +9,7 @@ exports.getInfo = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
   logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
+  logger.info({fileName: 'GetInfo', msg: 'Calling Info from LND server url: ' + options.url});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
     logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'LND Get info failed due to bad or missing macaroon!'});
     res.status(502).json({
@@ -17,12 +18,12 @@ exports.getInfo = (req, res, next) => {
     });
   } else {
     common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
-    logger.info({fileName: 'GetInfo', msg: 'Calling getinfo from lnd server url: ' + options.url});
     request(options).then((body) => {
       logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if(!body || search_idx > -1 || body.error) {
+        logger.error({fileName: 'GetInfo', lineNum: 26, msg: 'Get Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
         res.status(500).json({
           message: "Fetching Info Failed!",
           error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -32,6 +33,13 @@ exports.getInfo = (req, res, next) => {
       }
     })
     .catch(function (err) {
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'GetInfo', lineNum: 42, msg: 'Get Info Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Fetching Info Failed!",
         error: err.error

@@ -11,6 +11,7 @@ exports.getPayments = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.info({fileName: 'Payments', msg: 'Payment Decoded Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
+      logger.error({fileName: 'Payments', lineNum: 14, msg: 'List Payments Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Payments List Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -26,6 +27,13 @@ exports.getPayments = (req, res, next) => {
     }
   })
   .catch(function (err) {
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Payments', lineNum: 36, msg: 'List Payments Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Payments List Failed!",
       error: err.error
