@@ -47,7 +47,8 @@ exports.getBackup = (req, res, next) => {
         var createStream = fs.createWriteStream(channel_backup_file);
         createStream.end();
       }
-      catch (err) {
+      catch (errRes) {
+        let err = JSON.parse(JSON.stringify(errRes));
         if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
           delete err.options.headers['Grpc-Metadata-macaroon'];
         }
@@ -61,8 +62,9 @@ exports.getBackup = (req, res, next) => {
   }
   request(options).then(function (body) {
     logger.info({fileName: 'ChannelsBackup', msg: 'Channel Backup: ' + JSON.stringify(body)});
-    fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
-      if (err) {
+    fs.writeFile(channel_backup_file, JSON.stringify(body), function(errRes) {
+      if (errRes) {
+        let err = JSON.parse(JSON.stringify(errRes));
         if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
           delete err.options.headers['Grpc-Metadata-macaroon'];
         }
@@ -76,7 +78,8 @@ exports.getBackup = (req, res, next) => {
       }
     });
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -131,7 +134,8 @@ exports.postBackupVerify = (req, res, next) => {
       logger.info({fileName: 'BackupVerify', msg: 'Channel Backup Verify: ' + JSON.stringify(body)});
       res.status(201).json({ message: message });
     })
-    .catch(function (err) {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }
@@ -195,7 +199,8 @@ exports.postRestore = (req, res, next) => {
         });      
       });
     })
-    .catch(function (err) {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }

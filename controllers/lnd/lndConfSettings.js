@@ -1,8 +1,9 @@
 var fs = require('fs');
 
 exports.getLNDSettings = (req, res, next) => {
-  fs.readFile(req.headers.filepath, function(err, data) {
-    if (err) {
+  fs.readFile(req.headers.filepath, function(errRes, data) {
+    if (errRes) {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }

@@ -18,7 +18,8 @@ exports.deleteExpiredInvoice = (req, res, next) => {
     }
     res.status(204).json({status: 'Invoice Deleted Successfully'});
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -57,7 +58,8 @@ exports.listInvoices = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -88,7 +90,8 @@ exports.addInvoice = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }

@@ -19,7 +19,8 @@ exports.signMessage = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -49,7 +50,8 @@ exports.verifyMessage = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }

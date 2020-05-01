@@ -24,7 +24,8 @@ exports.listPayments = (req, res, next) => {
       res.status(200).json(body.payments);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -56,7 +57,8 @@ exports.decodePayment = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -87,7 +89,8 @@ exports.postPayment = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }

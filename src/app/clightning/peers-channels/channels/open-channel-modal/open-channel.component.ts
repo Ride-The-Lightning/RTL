@@ -49,7 +49,6 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
-    console.warn(this.data.message);
     this.actions$.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === RTLActions.EFFECT_ERROR_CL || action.type === RTLActions.FETCH_CHANNELS_CL))
     .subscribe((action: RTLActions.EffectErrorCl | RTLActions.FetchChannelsCL) => {

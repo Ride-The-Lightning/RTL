@@ -16,7 +16,8 @@ exports.listChannels = (req, res, next) => {
     })    
     res.status(200).json(body);
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -48,7 +49,8 @@ exports.openChannel = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -80,7 +82,8 @@ exports.setChannelFee = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -112,7 +115,8 @@ exports.closeChannel = (req, res, next) => {
       res.status(204).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -146,7 +150,8 @@ exports.getLocalRemoteBalance = (req, res, next) => {
     }
     res.status(200).json(body);
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -184,7 +189,8 @@ exports.listForwards = (req, res, next) => {
       res.status(200).json({ last_offset_index: 0, forwarding_events: body });
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
