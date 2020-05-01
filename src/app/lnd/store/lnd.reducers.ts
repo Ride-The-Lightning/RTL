@@ -220,7 +220,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       };
     case RTLActions.SET_FORWARDING_HISTORY:
       if (action.payload.forwarding_events) {
-        const storedChannels = [...state.allChannels];
+        const storedChannels = [...state.allChannels, ...state.closedChannels];
         action.payload.forwarding_events.forEach(event => {
           if (storedChannels) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
