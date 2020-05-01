@@ -12,7 +12,10 @@ getAliasForPeers = (peer) => {
       peer.alias = aliasBody.node.alias;
       resolve(aliasBody.node.alias);
     })
-    .catch(err => resolve(''));
+    .catch(err => {
+      peer.alias = peer.pub_key.slice(0, 10) + '...' + peer.pub_key.slice(-10);
+      resolve(peer.pub_key);  
+    });
   });
 }
 
