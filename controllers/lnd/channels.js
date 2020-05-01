@@ -38,7 +38,9 @@ exports.getAllChannels = (req, res, next) => {
         body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.info({fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
         res.status(200).json(body);
-      }).catch(err => {
+      })
+      .catch(errRes => {
+        let err = JSON.parse(JSON.stringify(errRes));
         if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
           delete err.options.headers['Grpc-Metadata-macaroon'];
         }
@@ -56,7 +58,8 @@ exports.getAllChannels = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -86,7 +89,8 @@ exports.getPendingChannels = (req, res, next) => {
     logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -116,7 +120,8 @@ exports.getClosedChannels = (req, res, next) => {
     logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -158,7 +163,8 @@ exports.postChannel = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -212,7 +218,8 @@ exports.postTransactions = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -247,7 +254,8 @@ exports.closeChannel = (req, res, next) => {
       res.status(204).json({message: 'Channel Closed!'});
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -296,7 +304,8 @@ exports.postChanPolicy = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }

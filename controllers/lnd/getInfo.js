@@ -32,7 +32,8 @@ exports.getInfo = (req, res, next) => {
         res.status(200).json(body);
       }
     })
-    .catch(function (err) {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }

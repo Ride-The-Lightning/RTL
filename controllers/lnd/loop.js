@@ -34,7 +34,8 @@ exports.loopOut = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -57,7 +58,8 @@ exports.loopOutTerms = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -84,7 +86,8 @@ exports.loopOutQuote = (req, res, next) => {
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -122,7 +125,8 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
       logger.info({fileName: 'Loop', msg: 'Loop Out Quotes 2: ' + JSON.stringify(values[1])});
       res.status(200).json(values);
     })
-    .catch((err) => {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }
@@ -136,7 +140,8 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
       });
     });
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -172,7 +177,8 @@ exports.loopIn = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -195,7 +201,8 @@ exports.loopInTerms = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -222,7 +229,8 @@ exports.loopInQuote = (req, res, next) => {
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -260,7 +268,8 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
       logger.info({fileName: 'Loop', msg: 'Loop In Quotes 2: ' + JSON.stringify(values[1])});
       res.status(200).json(values);
     })
-    .catch((err) => {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
         delete err.options.headers['Grpc-Metadata-macaroon'];
       }
@@ -274,7 +283,8 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
       });
     });
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -306,7 +316,8 @@ exports.swaps = (req, res, next) => {
     }
     res.status(200).json(body.swaps);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -332,7 +343,8 @@ exports.swap = (req, res, next) => {
     body.last_update_time_str =  (!body.last_update_time) ? '' : common.convertTimestampToDate(Math.round(body.last_update_time/1000000000));
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }

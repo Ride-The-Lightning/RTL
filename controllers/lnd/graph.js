@@ -33,7 +33,8 @@ exports.getDescribeGraph = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -70,7 +71,8 @@ exports.getGraphInfo = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -97,12 +99,13 @@ exports.getGraphNode = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     }
-    if ( body) {
+    if (body) {
       body.node.last_update_str =  (!body.node.last_update) ? '' : common.convertTimestampToDate(body.node.last_update);
     }
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -134,7 +137,8 @@ exports.getGraphEdge = (req, res, next) => {
     }
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -177,7 +181,9 @@ exports.getQueryRoutes = (req, res, next) => {
           .then(function(values) {
             logger.info({fileName: 'Graph', msg: 'Hops with Alias: ' + JSON.stringify(body)});
             res.status(200).json(body);
-          }).catch(err => {
+          })
+          .catch(errRes => {
+            let err = JSON.parse(JSON.stringify(errRes));
             if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
               delete err.options.headers['Grpc-Metadata-macaroon'];
             }
@@ -194,7 +200,8 @@ exports.getQueryRoutes = (req, res, next) => {
       });
     }
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -240,7 +247,8 @@ exports.getRemoteFeePolicy = (req, res, next) => {
     }
     res.status(200).json(remoteNodeFee);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }

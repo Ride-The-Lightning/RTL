@@ -17,7 +17,8 @@ exports.getRoute = (req, res, next) => {
     }
     res.status(200).json({routes: body});
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -42,7 +43,8 @@ exports.listNode = (req, res, next) => {
     });
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -66,7 +68,8 @@ exports.listChannel = (req, res, next) => {
     body[1].last_update_str =  (body.length > 1 && body[1].last_update) ? common.convertTimestampToDate(body[1].last_update) : '';
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -87,7 +90,8 @@ exports.feeRates = (req, res, next) => {
   request(options).then(function (body) {
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }

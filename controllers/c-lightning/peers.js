@@ -11,7 +11,8 @@ exports.getPeers = (req, res, next) => {
     logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(peers)});
     res.status(200).json(peers);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }
@@ -46,7 +47,8 @@ exports.postPeer = (req, res, next) => {
         logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(peers)});
         logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
         res.status(201).json(peers);
-        }).catch((err) => {
+        }).catch(errRes => {
+          let err = JSON.parse(JSON.stringify(errRes));
           if (err.options && err.options.headers && err.options.headers.macaroon) {
             delete err.options.headers.macaroon;
           }
@@ -79,7 +81,8 @@ exports.deletePeer = (req, res, next) => {
       res.status(204).json({});
     }
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers.macaroon) {
       delete err.options.headers.macaroon;
     }

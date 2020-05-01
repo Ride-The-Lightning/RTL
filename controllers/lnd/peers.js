@@ -35,7 +35,8 @@ exports.getPeers = (req, res, next) => {
       res.status(200).json(body.peers);
     });
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
@@ -83,7 +84,8 @@ exports.postPeer = (req, res, next) => {
           logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
           res.status(201).json(body.peers);
         })
-        .catch((err) => {
+        .catch(errRes => {
+          let err = JSON.parse(JSON.stringify(errRes));
           if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
             delete err.options.headers['Grpc-Metadata-macaroon'];
           }
@@ -117,7 +119,8 @@ exports.deletePeer = (req, res, next) => {
       res.status(204).json({});
     }
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
     }
