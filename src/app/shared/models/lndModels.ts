@@ -72,10 +72,53 @@ export interface Channel {
 export interface PendingChannels {
   total_limbo_balance?: number;
   btc_total_limbo_balance?: number;
-  pending_closing_channels?: Array<any>;
-  pending_force_closing_channels?: Array<any>;
-  pending_open_channels?: Array<any>;
-  waiting_close_channels?: Array<any>;
+  pending_closing_channels?: Array<PendingClosingChannel>;
+  pending_force_closing_channels?: Array<PendingForceClosingChannel>;
+  pending_open_channels?: Array<PendingOpenChannel>;
+  waiting_close_channels?: Array<WaitingCloseChannel>;
+}
+
+export interface PendingClosingChannel {
+  channel?: PendingChannel;
+  closing_txid?: string;
+}
+
+export interface PendingForceClosingChannel {
+  channel?: PendingChannel;
+  closing_txid?: string;
+  limbo_balance?: string;
+  maturity_height?: number;
+  blocks_til_maturity?: number;
+  recovered_balance?: string;
+  pending_htlcs?: Array<any>;
+  anchor?: string;
+}
+
+export interface PendingOpenChannel {
+  channel?: PendingChannel;
+  confirmation_height?: number;
+  commit_fee?: string;
+  commit_weight?: string;
+  fee_per_kw?: string;
+}
+
+export interface WaitingCloseChannel {
+  channel?: PendingChannel;
+  limbo_balance?: string;
+  commitments?: string;
+}
+
+export interface PendingChannel {
+  remote_alias?: string;
+  remote_node_pub?: string;
+  channel_point?: string;
+  capacity?: string;
+  local_balance?: string;
+  remote_balance?: string;
+  local_chan_reserve_sat?: string;
+  remote_chan_reserve_sat?: string;
+  initiator?: string;
+  commitment_type?: string;
 }
 
 export interface ClosedChannel {
@@ -86,6 +129,7 @@ export interface ClosedChannel {
   chain_hash?: string;
   channel_point?: string;
   chan_id?: string;
+  remote_alias?: string;
   remote_pubkey?: string;
   capacity?: string;
   settled_balance?: string;

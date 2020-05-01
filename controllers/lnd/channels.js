@@ -5,13 +5,17 @@ var options = {};
 
 getAliasForChannel = (channel) => {
   return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/graph/node/' + channel.remote_pubkey;
+    let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
+    options.url = common.getSelLNServerUrl() + '/graph/node/' + pubkey;
     request(options).then(function(aliasBody) {
       logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
       channel.remote_alias = aliasBody.node.alias;
       resolve(aliasBody.node.alias);
     })
-    .catch(err => resolve(''));
+    .catch(err => {
+      channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
+      resolve(pubkey);  
+    });
   });
 }
 
@@ -79,15 +83,43 @@ exports.getPendingChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channels/pending';
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = [];
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
       body.btc_total_limbo_balance = 0;
     } else {
       body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
     }
-    logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    const promises = [];
+    if(body.pending_open_channels && body.pending_open_channels.length > 0) {
+      body.pending_open_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+      body.pending_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
+      body.pending_force_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.waiting_close_channels && body.waiting_close_channels.length > 0) {
+      body.waiting_close_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    Promise.all(promises).then(function(values) {
+      logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
+      res.status(200).json(body);
+    })
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'Channels', lineNum: 106, msg: 'Get Pending Channel Alias Error: ' + JSON.stringify(err)});
+      res.status(500).json({
+        message: 'Fetching Pending Channels Failed!',
+        error: err.error
+      });
+    });      
   })
   .catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
@@ -110,15 +142,36 @@ exports.getClosedChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channels/closed';
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = [];
     if (body.channels && body.channels.length > 0) {
-      body.channels.forEach(channel => {
-        channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+      Promise.all(
+        body.channels.map(channel => {
+          channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+          return getAliasForChannel(channel);
+        })
+      )
+      .then(function(values) {
+        body.channels = common.sortDescByKey(body.channels, 'close_height');
+        logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
+        res.status(200).json(body);
+      })
+      .catch(errRes => {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
+        }
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'Channels', lineNum: 48, msg: 'Get All Channel Alias Error: ' + JSON.stringify(err)});
+        res.status(500).json({
+          message: 'Fetching Channels Alias Failed!',
+          error: err.error
+        });
       });
-      body.channels = common.sortDescByKey(body.channels, 'close_height');
-    }
-    logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    } else {
+      body.channels = [];
+      res.status(200).json(body);
+    }    
   })
   .catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
