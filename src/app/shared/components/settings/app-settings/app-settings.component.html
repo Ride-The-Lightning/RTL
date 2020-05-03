@@ -9,7 +9,7 @@
         <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
         <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
       </div>
-      <div fxLayout="row" fxLayoutAlign="start center">
+      <div fxLayout="row wrap" fxLayoutAlign="start center">
         <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit" name="fiatConversion">Include Fiat Conversion</mat-slide-toggle>
         <mat-form-field>
           <mat-select autoFocus [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" placeholder="Fiat Currency" [disabled]="!selNode.settings.fiatConversion" tabindex="3" [required]="selNode.settings.fiatConversion" name="currencyUnit" #currencyUnit="ngModel">
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch">
-      <div fxLayout="column" fxLayoutAlign="space-between stretch" class="settings-container page-sub-title-container mt-1 w-100">
+      <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between stretch" class="settings-container page-sub-title-container mt-1">
         <div fxFlex="100" class="mt-2">
           <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
           <span class="page-title">Customization</span>

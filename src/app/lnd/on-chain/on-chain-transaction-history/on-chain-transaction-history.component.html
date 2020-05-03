@@ -1,5 +1,5 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start start" class="padding-gap-x-large">
-  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container w-100">
+<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch" class="padding-gap-x-large">
+  <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" fxFlex="100" class="page-sub-title-container">
     <div fxFlex="70">
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Transaction History</span>
@@ -8,7 +8,7 @@
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div fxLayout="row" fxLayoutAlign="start center" class="w-100">
+  <div fxLayout="row" fxLayoutAlign="start start">
     <div perfectScrollbar class="table-container" fxFlex="100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listTransactions" matSort
