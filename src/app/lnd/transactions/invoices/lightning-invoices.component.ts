@@ -12,6 +12,7 @@ import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import { CreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { InvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -95,7 +96,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
     });
-
   }
 
   onAddInvoice(form: any) {
@@ -177,6 +177,13 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     if(this.invoices.data && this.invoices.data.length > 0) {
       this.commonService.downloadCSV(this.invoices.data, 'Invoices');
     }
+  }
+
+  openCreateInvoiceModal() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      pageSize: this.pageSize,
+      component: CreateInvoiceComponent
+    }}));
   }
 
   ngOnDestroy() {

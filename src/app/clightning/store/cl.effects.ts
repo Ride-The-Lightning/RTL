@@ -14,7 +14,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { CLOpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL } from '../../shared/models/clModels';
+import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL, PeerCL } from '../../shared/models/clModels';
 import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -53,24 +53,10 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            let code = err.status ? err.status : '';
-            let message = err.error.message ? err.error.message + ' ' : '';
-            if (err.error && err.error.error) {
-              if (err.error.error.code) {
-                code = err.error.error.code;
-              } else if (err.error.error.message && err.error.error.message.code) {
-                code = err.error.error.message.code;
-              }
-              if (typeof err.error.error === 'string') {
-                message = message + err.error.error;
-              } else if (err.error.error.error) {
-                message = message + err.error.error.error;
-              } else if (err.error.error.errno) {
-                message = message + err.error.error.errno;
-              }
-            }
+            const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
+            const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-            this.handleErrorWithoutAlert('FetchInfoCL', err);            
+            this.handleErrorWithoutAlert('FetchInfoCL', 'Fetching Node Info Failed.', err);            
             return of({type: RTLActions.VOID});
           })
         );
@@ -92,7 +78,7 @@ export class CLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchFeesCL', err);
+      this.handleErrorWithoutAlert('FetchFeesCL', 'Fetching Fees Failed.', err);
       return of({type: RTLActions.VOID});
     }
     ));
@@ -112,7 +98,7 @@ export class CLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchFeeRatesCL', err);
+      this.handleErrorWithoutAlert('FetchFeeRatesCL', 'Fetching Fee Rates Failed.', err);
       return of({type: RTLActions.VOID});
     }
     ));
@@ -132,7 +118,7 @@ export class CLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchBalanceCL', err);
+      this.handleErrorWithoutAlert('FetchBalanceCL', 'Fetching Balances Failed.', err);
       return of({type: RTLActions.VOID});
     }
     ));
@@ -152,7 +138,7 @@ export class CLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchLocalRemoteBalanceCL', err);
+      this.handleErrorWithoutAlert('FetchLocalRemoteBalanceCL', 'Fetching Balances Failed.', err);
       return of({type: RTLActions.VOID});
     }
     ));
@@ -201,7 +187,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchPeersCL', err);
+            this.handleErrorWithoutAlert('FetchPeersCL', 'Fetching Peers Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -213,36 +199,20 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.SAVE_NEW_PEER_CL),
     withLatestFrom(this.store.select('cl')),
     mergeMap(([action, clData]: [RTLActions.SaveNewPeerCL, fromCLReducers.CLState]) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SaveNewPeerCL'));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id })
         .pipe(
-          map((postRes: any) => {
+          map((postRes: PeerCL[]) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.SetPeersCL((postRes && postRes.length > 0) ? postRes : []));
-            if(action.payload.showOpenChannelModal) {
-              const peerToAddChannelMessage = {
-                peer: postRes[0], 
-                information: clData.information,
-                balance: clData.balance.totalBalance || 0
-              };
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: { 
-                  type: AlertTypeEnum.INFORMATION,
-                  alertTitle: 'Peer Connected',
-                  message: peerToAddChannelMessage,
-                  newlyAdded: true,
-                  component: CLOpenChannelComponent
-                }}
-              };
-            } else {
-              return {
-                type: RTLActions.VOID
-              }
-            }
+            return {
+              type: RTLActions.NEWLY_ADDED_PEER_CL,
+              payload: {peer: postRes.find(peer => action.payload.id.indexOf(peer.id) === 0)}
+            };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
+            this.handleErrorWithoutAlert('SaveNewPeerCL', 'Peer Connection Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -287,7 +257,7 @@ export class CLEffects implements OnDestroy {
             };
           },
             catchError((err: any) => {
-              this.handleErrorWithoutAlert('FetchChannelsCL', err);
+              this.handleErrorWithoutAlert('FetchChannelsCL', 'Fetching Channels Failed.', err);
               return of({type: RTLActions.VOID});
             })
           ));
@@ -298,6 +268,7 @@ export class CLEffects implements OnDestroy {
   openNewChannelCL = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: RTLActions.SaveNewChannelCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SaveNewChannelCL'));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
         id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null
       })
@@ -312,7 +283,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Open Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithoutAlert('SaveNewChannelCL', 'Opening Channel Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -386,7 +357,7 @@ export class CLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchPaymentsCL', err);
+      this.handleErrorWithoutAlert('FetchPaymentsCL', 'Fetching Payments Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -395,7 +366,8 @@ export class CLEffects implements OnDestroy {
   decodePaymentCL = this.actions$.pipe(
     ofType(RTLActions.DECODE_PAYMENT_CL),
     mergeMap((action: RTLActions.DecodePaymentCL) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload)
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('DecodePaymentCL'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
         .pipe(
           map((decodedPayment) => {
             this.logger.info(decodedPayment);
@@ -406,7 +378,11 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('DecodePaymentCL', 'Decode Payment Failed.', err);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
+            }
             return of({type: RTLActions.VOID});
           })
         );
@@ -427,26 +403,41 @@ export class CLEffects implements OnDestroy {
     ofType(RTLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPaymentCL, any]) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SendPaymentCL'));      
       return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             if (sendRes.error) {
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, { status: sendRes.status, error: sendRes.error.message });
+              this.logger.error('Error: ' + sendRes.payment_error);
+              const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
+              if (action.payload.fromDialog) {
+                this.handleErrorWithoutAlert('SendPaymentCL', 'Send Payment Failed.', myErr);
+              } else {
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              }
+              return of({type: RTLActions.VOID});
             } else {
               this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
               this.store.dispatch(new RTLActions.FetchChannelsCL());
               this.store.dispatch(new RTLActions.FetchBalanceCL());
               this.store.dispatch(new RTLActions.FetchPaymentsCL());
+              this.store.dispatch(new RTLActions.SetDecodedPaymentCL({}));
               return {
-                type: RTLActions.SET_DECODED_PAYMENT_CL,
-                payload: {}
+                type: RTLActions.SEND_PAYMENT_STATUS_CL,
+                payload: sendRes
               };
             }
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err.error ? err.error : err);
+            this.logger.error('Error: ' + JSON.stringify(err));
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('SendPaymentCL', 'Send Payment Failed.', myErr);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+            }
             return of({type: RTLActions.VOID});
           })
         );
@@ -624,6 +615,7 @@ export class CLEffects implements OnDestroy {
   saveNewInvoiceCL = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: RTLActions.SaveNewInvoiceCL) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorCl('SaveNewInvoiceCL'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
       })
@@ -648,7 +640,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
+            this.handleErrorWithoutAlert('SaveNewInvoiceCL', 'Add Invoice Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -673,7 +665,7 @@ export class CLEffects implements OnDestroy {
           };
         }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchInvoicesCL', err);
+            this.handleErrorWithoutAlert('FetchInvoicesCL', 'Fetching Invoices Failed.', err);
             return of({type: RTLActions.VOID});
           }
         ));
@@ -690,12 +682,13 @@ export class CLEffects implements OnDestroy {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.CloseSpinner());
           this.store.dispatch(new RTLActions.FetchBalanceCL());
-          this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully.'));
-          return { type: RTLActions.VOID };
+          return {
+            type: RTLActions.SET_CHANNEL_TRANSACTION_RES_CL,
+            payload: postRes
+          };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.EffectErrorCl({ action: 'SetChannelTransactionCL', code: err.status, message: err.error.error }));
-          this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+          this.handleErrorWithoutAlert('SetChannelTransactionCL', 'Sending Fund Failed.', err);
           return of({type: RTLActions.VOID});
         }));
       })
@@ -734,13 +727,16 @@ export class CLEffects implements OnDestroy {
     this.router.navigate([newRoute]);
   }
   
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, genericErrorMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.EffectErrorCl({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
     }
   }
 
@@ -748,14 +744,16 @@ export class CLEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: alerType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error, URL: errURL },
+          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent          
         }
       }));

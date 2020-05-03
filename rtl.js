@@ -31,11 +31,11 @@ const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
   debug("Listening on " + bind);
-  console.log('Server is up and running, please open the UI at http://localhost:' + common.port); 
+  console.log('Server is up and running, please open the UI at http://' + common.host + ':' + common.port); 
 };
 
 const server = http.createServer(app);
 
 server.on("error", onError);
 server.on("listening", onListening);
-server.listen(common.port);
+server.listen(common.port, common.host);

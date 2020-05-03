@@ -3,8 +3,9 @@
   min-width: 5rem;
 }
 
-.mat-column-chan_id {
-  flex: 0 0 10%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.mat-column-remote_alias {
+  flex: 1 1 20%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;  
 }

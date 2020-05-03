@@ -21,9 +21,9 @@
               <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
             </mat-form-field>
           </div>
-          <div fxFlex="30" fxLayoutAlign="space-between stretch" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
-            <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" type="submit" tabindex="4">Fetch Events</button>
+          <div fxLayout="row" class="mt-2">
+            <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="reset" (click)="resetData()">Clear</button>
+            <button mat-flat-button color="primary" type="submit" tabindex="4">Fetch Events</button>
           </div>
         </form>
         <div fxLayout="row" fxFlex="100" [ngClass]="{'error-border w-100 routing-tabs-block': flgLoading[0]==='error', 'w-100 routing-tabs-block': true}">

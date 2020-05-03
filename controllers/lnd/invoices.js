@@ -9,6 +9,7 @@ exports.getInvoice = (req, res, next) => {
   request(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 12, msg: 'Invoice Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Invoice Info Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -16,7 +17,15 @@ exports.getInvoice = (req, res, next) => {
     }
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Invoice', lineNum: 27, msg: 'Fetch Invoice Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Invoice Info Failed!",
       error: err.error
@@ -33,6 +42,7 @@ exports.listInvoices = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 44, msg: 'List Invoices Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Invoice Info failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -51,9 +61,17 @@ exports.listInvoices = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Invoice', lineNum: 70, msg: 'List Invoice Error: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: "Fetching Invoice Info failed!",
+      message: "Fetching Invoices failed!",
       error: err.error
     });
   });
@@ -76,6 +94,7 @@ exports.addInvoice = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Invoice', lineNum: 95, msg: 'Add Invoice Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Add Invoice Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -84,7 +103,15 @@ exports.addInvoice = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Invoice', lineNum: 111, msg: 'Add Invoice Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Add Invoice Failed!",
       error: err.error

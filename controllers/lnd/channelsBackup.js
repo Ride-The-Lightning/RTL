@@ -21,7 +21,7 @@ function getFilesList(callback) {
         }
       });
     }
-    response =  {all_restore_exists: all_restore_exists, files: files_list};
+    response = {all_restore_exists: all_restore_exists, files: files_list};
     callback(response);
   });
 }
@@ -33,12 +33,10 @@ exports.getBackup = (req, res, next) => {
   if (req.params.channelPoint === 'ALL') {
     channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-all.bak';
     message = 'All Channels Backup Successful.';
-    // message = 'All Channels Backup Successful at: ' + channel_backup_file + ' !';
     options.url = common.getSelLNServerUrl() + '/channels/backup';
   } else {
     channel_backup_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     message = 'Channel Backup Successful.';
-    // message = 'Channel Backup Successful at: ' + channel_backup_file + ' !';
     let channelpoint = req.params.channelPoint.replace(':', '/');
     options.url = common.getSelLNServerUrl() + '/channels/backup/' + channelpoint;
     let exists = fs.existsSync(channel_backup_file);
@@ -49,23 +47,46 @@ exports.getBackup = (req, res, next) => {
         var createStream = fs.createWriteStream(channel_backup_file);
         createStream.end();
       }
-      catch (err) {
+      catch (errRes) {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
+        }
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'ChannelsBackup', lineNum: 57, msg: 'Channels Backup Error: ' + JSON.stringify(err)});
         return res.status(500).json({ message: 'Channels Backup Failed!', error: err });
       }
     }
   }
   request(options).then(function (body) {
-    logger.info({fileName: 'Channels Backup', msg: 'Channel Backup: ' + JSON.stringify(body)});
-    fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
-      if (err) {
+    logger.info({fileName: 'ChannelsBackup', msg: 'Channel Backup: ' + JSON.stringify(body)});
+    fs.writeFile(channel_backup_file, JSON.stringify(body), function(errRes) {
+      if (errRes) {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
+        }
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'ChannelsBackup', lineNum: 72, msg: 'Channels Backup Error: ' + JSON.stringify(err)});
         return res.status(500).json({ message: 'Channels Backup Failed!', error: err.error });
       } else {
         res.status(200).json({ message: message });
       }
     });
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels Backup', lineNum: 44, msg: 'Channel Backup: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'ChannelsBackup', lineNum: 86, msg: 'Channel Backup Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Channels Backup Failed!',
       error: err.error
@@ -98,7 +119,6 @@ exports.postBackupVerify = (req, res, next) => {
     }
   } else {
     message = 'Channel Verify Successful.';
-    // message = 'Channel ' + req.params.channelPoint + ' Verify Successful!';
     channel_verify_file = common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     let exists = fs.existsSync(channel_verify_file);
     if (exists) {
@@ -111,11 +131,18 @@ exports.postBackupVerify = (req, res, next) => {
   }
   if (verify_backup !== '') {
     request.post(options).then(function (body) {
-      logger.info({fileName: 'Channels Backup Verify', msg: 'Channel Backup Verify: ' + JSON.stringify(body)});
+      logger.info({fileName: 'BackupVerify', msg: 'Channel Backup Verify: ' + JSON.stringify(body)});
       res.status(201).json({ message: message });
     })
-    .catch(function (err) {
-      logger.error({fileName: 'Channels Backup Verify', lineNum: 93, msg: 'Channel Backup Verify: ' + JSON.stringify(err)});
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'BackupVerify', lineNum: 141, msg: 'Channel Backup Verify Error: ' + JSON.stringify(err)});
       return res.status(404).json({
         message: 'Channel backup to Verify failed!',
         error: err.error
@@ -148,7 +175,6 @@ exports.postRestore = (req, res, next) => {
     }
   } else {
     message = 'Channel Restore Successful.';
-    // message = 'Channel ' + req.params.channelPoint + ' Restore Successful!';
     channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'restore' + common.path_separator + 'channel-' + req.params.channelPoint.replace(':', '-') + '.bak';
     let exists = fs.existsSync(channel_restore_file);
     if (exists) {
@@ -161,10 +187,11 @@ exports.postRestore = (req, res, next) => {
   }
   if (restore_backup !== '') {
     request.post(options).then(function (body) {
-      logger.info({fileName: 'Channels Backup Restore', msg: 'Channel Backup Restore: ' + JSON.stringify(body)});
+      logger.info({fileName: 'ChannelRestore', msg: 'Channel Backup Restore: ' + JSON.stringify(body)});
       fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {
         getFilesList(getFilesListRes => {
           if (getFilesListRes.error) {
+            logger.error({fileName: 'ChannelRestore', lineNum: 190, msg: 'Channel Restore Error: ' + JSON.stringify(getFilesListRes.error)});
             return res.status(500).json({ message: 'Channel restore failed!', list: getFilesListRes });
           } else {
             return res.status(201).json({ message: message, list: getFilesListRes });
@@ -172,8 +199,15 @@ exports.postRestore = (req, res, next) => {
         });      
       });
     })
-    .catch(function (err) {
-      logger.error({fileName: 'Channels Backup Restore', lineNum: 143, msg: 'Channel Backup Restore: ' + JSON.stringify(err)});
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'ChannelRestore', lineNum: 205, msg: 'Channel Restore Error: ' + JSON.stringify(err)});
       return res.status(404).json({
         message: 'Channel restore failed!',
         error: err.error.error

@@ -25,6 +25,7 @@ exports.loopOut = (req, res, next) => {
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Loop', lineNum: 28, msg: 'Loop Out Error: ' + JSON.stringify(body.error)});
       res.status(500).json({
         message: 'Loop Out Failed!',
         error: (!body) ? 'Error From Server!' : body.error.message
@@ -33,11 +34,18 @@ exports.loopOut = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Loop Out', lineNum: 33, msg: 'Loop Out Failed: ' + JSON.stringify(err.error)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 44, msg: 'Loop Out Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -50,10 +58,18 @@ exports.loopOutTerms = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 67, msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -70,10 +86,18 @@ exports.loopOutQuote = (req, res, next) => {
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 94, msg: 'Loop Out Quote Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Quote Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -101,17 +125,33 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
       logger.info({fileName: 'Loop', msg: 'Loop Out Quotes 2: ' + JSON.stringify(values[1])});
       res.status(200).json(values);
     })
-    .catch((err) => {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'Loop', lineNum: 132, msg: 'Loop Out Quotes Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Loop Out Quotes Failed!",
-        error: err.error.error ? err.error.error : err.error
+        error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
       });
     });
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 146, msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -124,25 +164,31 @@ exports.loopIn = (req, res, next) => {
     amt: req.body.amount,
     max_swap_fee: req.body.swapFee,
     max_miner_fee: req.body.minerFee
-    // last_hop: req.body.lastHop,
-    // external_htlc: req.body.externalHtlc
   });
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Loop', lineNum: 166, msg: 'Loop In Error: ' + JSON.stringify(body.error)});
       res.status(500).json({
         message: 'Loop In Failed!',
-        error: (!body) ? 'Error From Server!' : body.error.message
+        error: (body.error && body.error.message) ? body.error.message : 'Error From Server!'
       });
     } else {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Loop In', lineNum: 134, msg: 'Loop In Failed: ' + JSON.stringify(err.error)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 182, msg: 'Loop In Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -155,10 +201,18 @@ exports.loopInTerms = (req, res, next) => {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 205, msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Terms Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -175,10 +229,18 @@ exports.loopInQuote = (req, res, next) => {
     body.swap_payment_dest = body.swap_payment_dest ? Buffer.from(body.swap_payment_dest, 'base64').toString('hex') : '';
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 232, msg: 'Loop In Quote Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Quote Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -206,17 +268,33 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
       logger.info({fileName: 'Loop', msg: 'Loop In Quotes 2: ' + JSON.stringify(values[1])});
       res.status(200).json(values);
     })
-    .catch((err) => {
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'Loop', lineNum: 270, msg: 'Loop In Quotes Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Loop In Quotes Failed!",
-        error: err.error.error ? err.error.error : err.error
+        error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
       });
     });
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 284, msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Terms Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -238,10 +316,18 @@ exports.swaps = (req, res, next) => {
     }
     res.status(200).json(body.swaps);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 316, msg: 'List Swaps Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Swaps Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
@@ -257,11 +343,18 @@ exports.swap = (req, res, next) => {
     body.last_update_time_str =  (!body.last_update_time) ? '' : common.convertTimestampToDate(Math.round(body.last_update_time/1000000000));
     res.status(200).json(body);
   })
-  .catch((err) => {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Loop', lineNum: 342, msg: 'Swap Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Swap Failed!",
-      error: err.error.error ? err.error.error : err.error
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };
-

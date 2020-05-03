@@ -20,11 +20,11 @@ import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/serv
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from '../shared/components/data-modal/confirmation-message/confirmation-message.component';
+import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
-import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
@@ -46,6 +46,14 @@ export class RTLEffects implements OnDestroy {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router) {}
+
+  @Effect({ dispatch: false })
+  closeAllDialogs = this.actions$.pipe(
+    ofType(RTLActions.CLOSE_ALL_DIALOGS),
+    map((action: RTLActions.CloseAllDialogs) => {
+      this.dialog.closeAll();
+    }
+  ));
 
   @Effect({ dispatch: false })
   openSnackBar = this.actions$.pipe(
@@ -293,7 +301,7 @@ export class RTLEffects implements OnDestroy {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
-    if(initialPass) {
+    if (initialPass) {
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
       this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
     } else {
@@ -320,7 +328,7 @@ export class RTLEffects implements OnDestroy {
       }),
       catchError((err) => {
         this.logger.info('Redirecting to Login Error Page');
-        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, {status: err.status, error: err.error.error});
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err);
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.error }));
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
@@ -346,7 +354,7 @@ export class RTLEffects implements OnDestroy {
         this.setLoggedInDetails(false, action.payload.authResponse, rootStore);        
       }),
       catchError((err) => {
-        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', {status: err.status, error: err.error.error});
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', err);
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'VerifyToken', code: err.status, message: err.error.error }));
         return of({type: RTLActions.VOID});
       })
@@ -371,29 +379,28 @@ export class RTLEffects implements OnDestroy {
   }));
 
 
-  @Effect({ dispatch: false })
+  @Effect()
   resetPassword = this.actions$.pipe(
   ofType(RTLActions.RESET_PASSWORD),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('ResetPassword'));
-    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { 
-      currPassword: action.payload.currPassword,
-      newPassword: action.payload.newPassword
-    })
-    .pipe(
-      map((postRes: any) => {
-        this.logger.info(postRes);
-        this.logger.info('Password Reset Successful!');
-        this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
-        this.SetToken(postRes.token);
-      }),
-      catchError((err) => {
-        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
-        this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err.error);
-        return of({type: RTLActions.VOID});
-      })
-    );
+    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', {currPassword: action.payload.currPassword, newPassword: action.payload.newPassword})
+    .pipe(map((postRes: any) => {
+      this.logger.info(postRes);
+      this.logger.info('Password Reset Successful!');
+      this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
+      this.SetToken(postRes.token);
+      return {
+        type: RTLActions.RESET_PASSWORD_RES,
+        payload: postRes.token
+      };
+    }),
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
+      this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err);
+      return of({type: RTLActions.VOID});
+    }));
   }));
 
   @Effect()
@@ -456,7 +463,9 @@ export class RTLEffects implements OnDestroy {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
@@ -466,13 +475,15 @@ export class RTLEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },
+          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

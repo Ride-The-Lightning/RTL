@@ -1,0 +1,10 @@
+.mat-column-actions {
+  min-height: 4.8rem;
+}
+
+.mat-column-payment_hash {
+  flex: 1 1 20%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}

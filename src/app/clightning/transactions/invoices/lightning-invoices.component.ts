@@ -17,6 +17,7 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 
 @Component({
   selector: 'rtl-cl-lightning-invoices',
@@ -103,6 +104,13 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       }
     });
 
+  }
+
+  openCreateInvoiceModal() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      pageSize: this.pageSize,
+      component: CLCreateInvoiceComponent
+    }}));
   }
 
   onAddInvoice(form: any) {
