@@ -234,7 +234,9 @@ connect.createDirectory = (dirname) => {
   dirname.split(path.sep).reduce((parentDir, childDir) => {
     const curDir = path.resolve(parentDir, childDir);
     try {
-      fs.mkdirSync(curDir);
+      if (!fs.existsSync(curDir)) {
+        fs.mkdirSync(curDir);
+      }
     } catch (err) {
       if (err.code !== 'EEXIST') {
         if (err.code === 'ENOENT') {

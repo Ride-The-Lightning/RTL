@@ -166,7 +166,6 @@ export class LNDEffects implements OnDestroy {
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
-          this.store.dispatch(new RTLActions.CloseSpinner());
           if (action.payload.openModal) {
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
@@ -175,6 +174,7 @@ export class LNDEffects implements OnDestroy {
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: RTLActions.OPEN_ALERT,
               payload: { data: {
