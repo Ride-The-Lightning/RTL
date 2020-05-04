@@ -732,6 +732,37 @@ export class LNDEffects implements OnDestroy {
   );
 
   @Effect()
+  sendCoins = this.actions$.pipe(
+    ofType(RTLActions.SEND_COINS),
+    withLatestFrom(this.store.select('root')),
+    mergeMap(([action, store]: [RTLActions.SendCoins, any]) => {
+      let queryHeaders = {};
+      if (action.payload.addr) { queryHeaders['addr'] = action.payload.addr; }
+      if (action.payload.amount) { queryHeaders['amount'] = action.payload.amount; }
+      return this.httpClient.post(this.CHILD_API_URL + '/transactions', queryHeaders)
+        .pipe(
+          map((sendRes: any) => {
+            this.logger.info(sendRes);
+            if (sendRes.payment_error) {
+             
+            } else {
+              return {
+                type: RTLActions.SEND_PAYMENT_STATUS,
+                payload: sendRes
+              };
+            }
+          }),
+          catchError((err: any) => {
+            this.logger.error('Error: ' + JSON.stringify(err));
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+            this.handleErrorWithAlert('ERROR', 'Send Coins Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect()
   graphNodeFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_GRAPH_NODE),
     mergeMap((action: RTLActions.FetchGraphNode) => {

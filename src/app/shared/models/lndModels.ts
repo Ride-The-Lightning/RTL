@@ -354,6 +354,11 @@ export interface SendPayment {
   final_cltv_delta?: number;
 }
 
+export interface SendCoins {
+  addr: string;
+  amount: number;
+}
+
 export interface ChannelsTransaction {
   address?:	string;
   amount?: number;
