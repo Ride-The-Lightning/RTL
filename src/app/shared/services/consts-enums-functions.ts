@@ -93,6 +93,10 @@ export enum CurrencyUnitEnum {
   OTHER = 'OTHER'
 }
 
+export enum CurrentyTypeSwapEnum {
+  BTC_BTC = 'BTC/BTC'
+}
+
 export enum DataTypeEnum {
   ARRAY = 'ARRAY',
   NUMBER = 'NUMBER',
