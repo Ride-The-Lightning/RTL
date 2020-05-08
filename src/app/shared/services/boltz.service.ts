@@ -1,12 +1,13 @@
 import { Injectable, Output } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { throwError, of } from 'rxjs';
+import { throwError, of, from } from 'rxjs';
 import { catchError, mergeMap, takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ECPair, crypto, Transaction, address } from 'bitcoinjs-lib';
 import { detectSwap, constructClaimTransaction, Networks } from 'boltz-core';
 
-import { environment, API_URL } from '../../../environments/environment';
+import { BOLTZ_API_URL, boltzEnvironment } from '../../../environments/environment';
+import { CurrencyUnitEnum, CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { LoggerService } from '../../shared/services/logger.service';
 import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
@@ -18,55 +19,39 @@ import { Actions } from '@ngrx/effects';
 @Injectable()
 export class BoltzService {
   private BOLTZ_LND_NODE = '026165850492521f4ac8abd9bd8088123446d126f648ca35e60f88177dc149ceb2@104.196.200.39:9735';
-  private BOLTZ_API = 'https://testnet.boltz.exchange/api/';
+  private unit = CurrencyUnitEnum.BTC;
 
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   getPairs() {
-    const pairsUrl = this.BOLTZ_API + 'getPairs';
+    const pairsUrl = BOLTZ_API_URL + boltzEnvironment.GET_PAIRS;
     return this.httpClient.get(pairsUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Terms', err)));
   }
 
   broadcastClaimTransaction(data, swapStatus, swapInfo) {
-    console.log('initiate broadcast');
-    const feeEstimationUrl = this.BOLTZ_API + 'getfeeestimation';
-    const broadcastTransactionUrl = this.BOLTZ_API + 'broadcasttransaction';
+    const feeEstimationUrl = BOLTZ_API_URL + boltzEnvironment.GET_FEE_ESTIMATION;
+    const broadcastTransactionUrl = BOLTZ_API_URL + boltzEnvironment.BROADCAST_TRANSACTION;
     return this.httpClient.get(feeEstimationUrl).pipe(mergeMap(feeEstimation => {
-      console.log('fee estimation', feeEstimation);
-      console.log('data', data);
-      console.log('swapStatus', swapStatus);
-      console.log('swapInfo', swapInfo);
-      const {redeemScript} = swapStatus;
       const {preimage, privateKey} = swapInfo;
+      const redeemScript = Buffer.from(swapStatus.redeemScript, 'hex');
       const lockupTransaction = Transaction.fromHex(data.transaction.hex);
-      const network = this.getNetwork('BTC');
-      console.log('network', network);
-      const keys = ECPair.fromPrivateKey(this.getHexBuffer(privateKey));
-      console.log('keys', keys);
-      const addressParam = address.toOutputScript(swapInfo.address, network);
-      console.log('addressParam', addressParam);
-      console.log('redeemScript', redeemScript);
-      console.log('lockupTransaction', lockupTransaction);
-      const detectSwapObj = detectSwap(redeemScript, lockupTransaction);
-      console.log('detectSwapObj', detectSwapObj);
       const claimTransaction = constructClaimTransaction(
         [
           {
-            ...detectSwapObj,
+            ...detectSwap(redeemScript, lockupTransaction),
             redeemScript,
             txHash: lockupTransaction.getHash(),
-            preimage: this.getHexBuffer(preimage),
-            keys
+            preimage: Buffer.from(preimage, 'hex'),
+            keys: ECPair.fromPrivateKey(this.getHexBuffer(privateKey))
           },
         ],
-        addressParam,
-        feeEstimation['BTC'],
+        address.toOutputScript(swapInfo.address, this.getNetwork(CurrencyUnitEnum.BTC)),
+        feeEstimation[this.unit],
         false
       ).toHex();
-      console.log('claim', claimTransaction);
       return this.httpClient.post(broadcastTransactionUrl, {
-        urrency: 'BTC',
+        currency: this.unit,
         transactionHex: claimTransaction
       }).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Terms', err)));
     }))
@@ -87,12 +72,10 @@ export class BoltzService {
 
   //TODO figure out network
   getNetwork(symbol) {
-    console.log('getting network');
     const network = 'testnet';
     const bitcoinNetwork = Networks[`bitcoin${this.capitalizeFirstLetter(network)}`];
     const litecoinNetwork = Networks[`litecoin${this.capitalizeFirstLetter(network)}`];
-    console.log('returning network');
-    return symbol === 'BTC' ? bitcoinNetwork : litecoinNetwork;
+    return symbol === CurrencyUnitEnum.BTC ? bitcoinNetwork : litecoinNetwork;
   };
 
   getSwapInfo() {
@@ -105,14 +88,13 @@ export class BoltzService {
   }
 
   onSwap({direction, invoiceAmount, swapInfo, paymentRequest}) {
-    console.log('direction', direction);
     const {preimage, publicKey} = swapInfo;
     let requestBody = {};
-    const swapUrl = this.BOLTZ_API + 'createswap';
+    const swapUrl = BOLTZ_API_URL + boltzEnvironment.CREATE_SWAP;
     if(direction === SwapTypeEnum.WITHDRAWAL) {
       requestBody = { 
         type: 'reversesubmarine',
-        pairId: 'BTC/BTC',
+        pairId: CurrentyTypeSwapEnum.BTC_BTC,
         orderSide: 'buy',
         invoiceAmount,
         preimageHash: crypto.sha256(preimage).toString('hex'),
@@ -122,12 +104,11 @@ export class BoltzService {
     } else {
       const requestBody = { 
         type: 'submarine',
-        pairId: 'BTC/BTC',
+        pairId: CurrentyTypeSwapEnum.BTC_BTC,
         orderSide: 'sell',
         invoice: paymentRequest,
         refundPublicKey: swapInfo.publicKey
       };
-      console.log('posting', requestBody);
       return this.httpClient.post(swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Deposit', err)));
     }
     
@@ -199,6 +180,7 @@ export const SwapUpdateEvent = {
   InvoicePaid: 'invoice.paid',
   InvoiceSettled: 'invoice.settled',
   InvoiceFailedToPay: 'invoice.failedToPay',
+  InvoicePending: 'invoice.pending',
 
   TransactionFailed: 'transaction.failed',
   TransactionMempool: 'transaction.mempool',
