@@ -25,6 +25,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 import { LNDEffects } from '../../store/lnd.effects';
 import { AddressType } from '../../../shared/models/lndModels';
 import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
+import { BOLTZ_API_URL, boltzEnvironment } from '../../../../environments/environment';
+
 
 @Component({
   selector: 'rtl-loop-modal',
@@ -46,7 +48,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public loopDirectionCaption = 'Withdrawal';
   public loopStatus: LoopStatus = null;
   public mempoolStatus = null;
-  public confirmedStatus = null;
+  public transactionStatus = null;
   public providerFormLabel = 'Choose Lightning Service Provider';
   public inputFormLabel = 'Amount to Withdrawal';
   public quoteFormLabel = 'Confirm Quote and Download Refund File';
@@ -155,57 +157,34 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  setSwapStatus({pending, message}) {
-    console.log(pending);
-    console.log(message);
-  }
-
   handleSwapStatus = (data, source, swapStatus, swapInfo) => {
     const status = data.status;
 
     switch (status) {
       case SwapUpdateEvent.TransactionMempool:
-        this.setSwapStatus({
-          pending: true,
-          message: 'Waiting for invoice to be paid...',
-        })
+      case SwapUpdateEvent.InvoicePending:
         break;
 
       case SwapUpdateEvent.TransactionConfirmed:
         source.close();
-        this.setSwapStatus({
-          pending: false,
-          message: 'Waiting for invoice to be paid...',
-        })
-        if(this.direction === SwapTypeEnum.WITHDRAWAL) {
-          this.boltzService.broadcastClaimTransaction(data, swapStatus, swapInfo).subscribe((res => {
-            console.log('res', res);
-            this.confirmedStatus = data;
-          }));
-        }
+        console.log('confirmed');
+        this.boltzService.broadcastClaimTransaction(data, swapStatus, swapInfo).subscribe((result => {
+          this.transactionStatus = data;
+        }));
         break;
   
       case SwapUpdateEvent.InvoiceFailedToPay:
         source.close();
-        this.setSwapStatus({
-          // error: true,
-          pending: false,
-          message: 'Could not pay invoice. Please refund your coins.',
-        })
         break;
   
       case SwapUpdateEvent.SwapExpired:
         source.close();
-        this.setSwapStatus({
-          // error: true,
-          pending: false,
-          message: 'Swap expired. Please refund your coins.',
-        })
         break;
-  
+
       case SwapUpdateEvent.InvoicePaid:
       case SwapUpdateEvent.TransactionClaimed:
         source.close();
+        this.transactionStatus = {invoice: swapStatus};
         break;
 
       default:
@@ -218,7 +197,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     const swapInfo = this.boltzService.getSwapInfo();
     if(this.direction === SwapTypeEnum.DEPOSIT) {
       this.store.dispatch(new RTLActions.SaveNewInvoice({
-        memo: 'xoxo', //
+        memo: 'Sent to BTC Lightning',
         invoiceValue: this.inputFormGroup.controls.amount.value, 
         expiry: 3600, 
         private: false,
@@ -234,35 +213,16 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           swapInfo,
           paymentRequest: action.payload.paymentRequest
         }).subscribe((swapStatus: any) => {
-          console.log('swapStatus', swapStatus);
           this.loopStatus = {
             id_bytes: swapStatus.id,
             htlc_address: swapStatus.address
           };
+          this.onStreamSwap({swapStatus, swapInfo});
 
-          const source = new EventSource(`https://testnet.boltz.exchange/api/streamswapstatus?id=${swapStatus.id}`);
-      
-          this.setSwapStatus({
-            pending: true,
-            message: 'Waiting for one confirmation...',
-          })
-        
-          source.onerror = () => {
-            source.close();
-        
-            console.log(`Lost connection to Boltz`);
-            
-          };
-        
-          source.onmessage = event => {
-            console.log('on mess');
-            this.handleSwapStatus(JSON.parse(event.data), source, swapStatus, swapInfo);
-          };
           const paymentBody = {
-            addr: swapStatus.address,
+            address: swapStatus.address,
             amount: swapStatus.expectedAmount
           };
-          console.log('paymentBody', paymentBody);
           this.store.dispatch(new RTLActions.SendCoins(paymentBody));
         })
       });
@@ -271,50 +231,38 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lndEffects.setNewAddress
       .pipe(take(1))
       .subscribe(newAddress => {
-        console.log('new address', newAddress);
         this.boltzService.onSwap({
           direction: this.direction,
           invoiceAmount: this.inputFormGroup.controls.amount.value,
           swapInfo,
           paymentRequest: null
         }).subscribe((swapStatus: any) => {
-          console.log('swapStatus', swapStatus);
           this.loopStatus = {
             id_bytes: swapStatus.id,
             htlc_address: swapStatus.lockupAddress
           };
-          if(this.direction === SwapTypeEnum.WITHDRAWAL) {
-            this.flgEditable = true;
-            const source = new EventSource(`https://testnet.boltz.exchange/api/streamswapstatus?id=${swapStatus.id}`);
-      
-            this.setSwapStatus({
-              pending: true,
-              message: 'Waiting for one confirmation...',
-            })
-          
-            source.onerror = () => {
-              source.close();
-          
-              console.log(`Lost connection to Boltz`);
-              
-            };
-          
-            source.onmessage = event => {
-              console.log('on mess');
-              this.handleSwapStatus(JSON.parse(event.data), source, swapStatus, {...swapInfo, address: newAddress});
-            };
-            const paymentBody = {
-              paymentReq: swapStatus.invoice,
-              paymentDecoded: {},
-              zeroAmtInvoice: false,
-            }
-            if(this.channel && this.channel.chan_id) {
-              paymentBody['outgoingChannel'] = this.channel;
-            }
-            this.store.dispatch(new RTLActions.SendPayment(paymentBody));
-          } else {
-            console.log('done!');
+          this.flgEditable = true;
+          this.onStreamSwap({swapStatus, swapInfo, newAddress});
+            
+          const paymentBody = {
+            paymentReq: swapStatus.invoice,
+            paymentDecoded: {},
+            zeroAmtInvoice: false,
+            allowSelfPayment: true
           }
+          if(this.channel && this.channel.chan_id) {
+            paymentBody['outgoingChannel'] = this.channel;
+          }
+          this.store.dispatch(new RTLActions.SendPayment(paymentBody));
+          this.actions$.pipe(takeUntil(this.unSubs[1]),
+          filter((action) => action.type === RTLActions.SEND_PAYMENT_STATUS))
+          .subscribe((action: RTLActions.SendPaymentStatus) => {
+            console.log('action', action);
+            const error = action.payload.error;
+            if(error && error.error !== 'payment is in transition') {
+              this.transactionStatus = { error: error.error };
+            }
+          });
         }, (err) => {
           this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
           this.flgEditable = true;
@@ -322,6 +270,20 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       });
     }
+  }
+
+  onStreamSwap({swapStatus, swapInfo, newAddress=''}) {
+    const sourceUrl = BOLTZ_API_URL + boltzEnvironment.STREAM_SWAP_STATUS;
+    const source = new EventSource(`${sourceUrl}?id=${swapStatus.id}`);
+
+    source.onerror = () => {
+      source.close();
+      console.log(`Lost connection to Boltz`);
+    };
+  
+    source.onmessage = event => {
+      this.handleSwapStatus(JSON.parse(event.data), source, swapStatus, {...swapInfo, address: newAddress});
+    };
   }
 
   onSwapByLightningLabs() {

@@ -96,7 +96,7 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{loopDirectionCaption}} Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopStatus && !confirmedStatus">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopStatus && !transactionStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{(!loopStatus) ? ('Waiting for ' + loopDirectionCaption + ' request...') : (loopStatus.id_bytes) ? (loopDirectionCaption + ' request details') : (loopDirectionCaption + ' error details')}}<mat-icon *ngIf="loopStatus" class="ml-1 icon-small">{{(loopStatus && loopStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
@@ -105,20 +105,15 @@
                   <div *ngIf="!loopStatus; else loopStatusBlock"></div>
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="!loopStatus" color="primary" mode="indeterminate"></mat-progress-bar>
-                <mat-expansion-panel *ngIf="swapProvider === swapProviderEnum.BOLTZ && direction === swapTypeEnum.WITHDRAWAL" class="flat-expansion-panel" fxFlex="100" [expanded]="confirmedStatus">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <span fxLayoutAlign="start center" fxFlex="100">{{(!confirmedStatus) ? ('Waiting for confirmed status ...') : (confirmedStatus.transaction) ? ('Confirmed request details') : ('Confirmed error details')}}<mat-icon *ngIf="confirmedStatus" class="ml-1 icon-small">{{(confirmedStatus && confirmedStatus?.transaction) ? 'check' : 'close'}}</mat-icon></span>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <div *ngIf="!confirmedStatus; else loopTransactionDetailsBlock"></div>
-                </mat-expansion-panel>
-                <mat-progress-bar fxFlex="100" *ngIf="swapProvider === swapProviderEnum.BOLTZ && direction === swapTypeEnum.WITHDRAWAL && loopStatus && !confirmedStatus" color="primary" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar fxFlex="100" *ngIf="swapProvider === swapProviderEnum.BOLTZ && loopStatus && !transactionStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
-              <h4 *ngIf="(swapProvider === swapProviderEnum.LIGHTNING_LABS && loopStatus) || (swapProvider === swapProviderEnum.BOLTZ && confirmedStatus)" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
+              <h4 *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS && loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
+              <h4 *ngIf="swapProvider === swapProviderEnum.BOLTZ && direction === swapTypeEnum.WITHDRAWAL" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(transactionStatus && transactionStatus.error) ? (loopDirectionCaption + ' failed. Error: ' + 'transactionStatus?.error?.error') : (transactionStatus && transactionStatus.transaction) ? ('Transaction completed successfully') : ('Waiting for transaction request ...')}}</h4>
+              <h4 *ngIf="swapProvider === swapProviderEnum.BOLTZ && direction === swapTypeEnum.DEPOSIT" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(transactionStatus && transactionStatus.error) ? (loopDirectionCaption + ' failed.Error: ' + 'transactionStatus?.error?.error') : (transactionStatus && transactionStatus.invoice) ? ('Invoice paid successfully') : ('Waiting for invoice request ...')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS && loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="swapProvider === swapProviderEnum.BOLTZ && transactionStatus?.error" mat-flat-button color="primary" tabindex="13" type="button" (click)="stepper.reset()">Start Again</button>
               </div>
             </form>
           </mat-step>
@@ -132,9 +127,6 @@
 </div>
 <ng-template #loopStatusBlock>
   <rtl-loop-status fxLayout="column" [loopStatus]="loopStatus"></rtl-loop-status>
-</ng-template>
-<ng-template #loopTransactionDetailsBlock>
-  <rtl-loop-transaction-details fxLayout="column" [swapTransactionDetails]="confirmedStatus.transaction"></rtl-loop-transaction-details>
 </ng-template>
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" *ngIf="flgShowInfo" [@opacityAnimation] class="info-graphics-container">
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-large">
