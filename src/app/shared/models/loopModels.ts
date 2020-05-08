@@ -19,9 +19,3 @@ export interface LoopStatus {
   id?: string;
   error?: any;
 }
-
-export interface SwapTransactionDetails {
-  hex?: string;
-  id?: string;
-  error?: any;
-}
