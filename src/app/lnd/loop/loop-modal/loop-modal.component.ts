@@ -167,7 +167,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
       case SwapUpdateEvent.TransactionConfirmed:
         source.close();
-        console.log('confirmed');
         this.boltzService.broadcastClaimTransaction(data, swapStatus, swapInfo).subscribe((result => {
           this.transactionStatus = data;
         }));
@@ -257,7 +256,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.actions$.pipe(takeUntil(this.unSubs[1]),
           filter((action) => action.type === RTLActions.SEND_PAYMENT_STATUS))
           .subscribe((action: RTLActions.SendPaymentStatus) => {
-            console.log('action', action);
             const error = action.payload.error;
             if(error && error.error !== 'payment is in transition') {
               this.transactionStatus = { error: error.error };
