@@ -44,7 +44,6 @@ import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
 import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { LoopTransactionDetailsComponent } from '../lnd/loop/loop-transaction-details/loop-transaction-details.component';
 import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
 import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
@@ -143,7 +142,6 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     PerfectScrollbarModule,
     LoopQuoteComponent,
     LoopStatusComponent,
-    LoopTransactionDetailsComponent,
     LoopOutInfoGraphicsComponent,
     LoopInInfoGraphicsComponent
   ],
@@ -166,7 +164,6 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     AuthSettingsComponent,
     LoopQuoteComponent,
     LoopStatusComponent,
-    LoopTransactionDetailsComponent,
     LoopOutInfoGraphicsComponent,
     LoopInInfoGraphicsComponent
   ],
