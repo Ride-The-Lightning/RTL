@@ -1,6 +1,7 @@
 import { VERSION } from './version';
 
 export const API_URL = 'http://localhost:3000/rtl/api';
+export const BOLTZ_API_URL = 'https://testnet.boltz.exchange/api/';
 
 export const environment = {
   production: false,
@@ -26,3 +27,11 @@ export const environment = {
   MESSAGE_API: '/message',
   VERSION: VERSION
 };
+
+export const boltzEnvironment = {
+  GET_PAIRS: 'getPairs',
+  GET_FEE_ESTIMATION: 'getfeeestimation',
+  BROADCAST_TRANSACTION: 'broadcasttransaction',
+  CREATE_SWAP: 'createswap',
+  STREAM_SWAP_STATUS: 'streamswapstatus'
+}
