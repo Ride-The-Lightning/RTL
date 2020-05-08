@@ -508,7 +508,7 @@ export class SendPaymentStatus implements Action {
 
 export class SendCoins implements Action {
   readonly type = SEND_COINS;
-  constructor(public payload: { addr: string, amount: number}) {}
+  constructor(public payload: { address: string, amount: number}) {}
 }
 
 export class FetchGraphNode implements Action {

@@ -737,7 +737,7 @@ export class LNDEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendCoins, any]) => {
       let queryHeaders = {};
-      if (action.payload.addr) { queryHeaders['addr'] = action.payload.addr; }
+      if (action.payload.address) { queryHeaders['address'] = action.payload.address; }
       if (action.payload.amount) { queryHeaders['amount'] = action.payload.amount; }
       return this.httpClient.post(this.CHILD_API_URL + '/transactions', queryHeaders)
         .pipe(

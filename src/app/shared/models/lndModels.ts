@@ -355,7 +355,7 @@ export interface SendPayment {
 }
 
 export interface SendCoins {
-  addr: string;
+  address: string;
   amount: number;
 }
 
