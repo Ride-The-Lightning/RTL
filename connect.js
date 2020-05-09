@@ -111,7 +111,7 @@ connect.validateNodeConfig = (config) => {
     common.rtl_secret2fa = config.secret2fa;
   }
   common.port = (process.env.PORT) ? connect.normalizePort(process.env.PORT) : (config.port) ? connect.normalizePort(config.port) : 3000;
-  common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : 'localhost';
+  common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : null;
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
       common.nodes[idx] = {};
@@ -357,7 +357,9 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
     },
     nodes: []
   };
-
+  if (config.host) {
+    newConfig.host = config.host;
+  }
   if(config.nodes && config.nodes.length > 0) {
     let newNode = {};
     config.nodes.forEach((node, idx) => {

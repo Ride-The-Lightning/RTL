@@ -2,7 +2,6 @@
 
 const app = require("./app");
 const common = require("./common");
-const debug = require("debug")("node-angular");
 const http = require("http");
 var connect = require('./connect').setServerConfiguration(); //Do NOT Remove
 
@@ -10,14 +9,13 @@ const onError = error => {
   if (error.syscall !== "listen") {
     throw error;
   }
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges");
+      console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " requires elevated privileges");
       process.exit(1);
       break;
     case "EADDRINUSE":
-      console.error(bind + " is already in use");
+      console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " is already in use");
       process.exit(1);
       break;
     case "ECONNREFUSED":
@@ -30,14 +28,15 @@ const onError = error => {
 };
 
 const onListening = () => {
-  const addr = server.address();
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + common.port;
-  debug("Listening on " + bind);
-  console.log('Server is up and running, please open the UI at http://' + common.host + ':' + common.port); 
+  console.log('Server is up and running, please open the UI at http://' + (common.host ? common.host : 'localhost') + ':' + common.port); 
 };
 
 const server = http.createServer(app);
 
 server.on("error", onError);
 server.on("listening", onListening);
-server.listen(common.port, common.host);
+if (common.host) {
+  server.listen(common.port, common.host);
+} else {
+  server.listen(common.port);
+}
