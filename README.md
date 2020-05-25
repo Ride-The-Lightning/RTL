@@ -51,17 +51,15 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 * Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### <a name="install"></a>Installation
+To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
+
+To download from master (this is not recommended):
 #### First time setup
-* Fetch sources from RTL git repository, by executing the below on the command prompt:
-
-`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
-* Change directory to RTL folder:
-
-`$ cd RTL`
-
-* Fetch the production dependencies by running:
-`$ npm install --only=prod`
-
+```
+$ git clone https://github.com/Ride-The-Lightning/RTL.git
+$ cd RTL
+$ npm install --only=prod
+```
 #### Or: Update existing dependencies
 ```
 $ cd RTL
