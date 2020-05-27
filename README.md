@@ -37,6 +37,7 @@ RTL is available on the below platforms/services:
 * [Blockdaemon](https://blockdaemon.com/bitcoin-lightning-protocol-details)
 * [myNode](http://mynodebtc.com)
 * [Lux Node](https://luxnode.io/product/lux-node/)
+* [BCubium](https://bgeometrics.com)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
