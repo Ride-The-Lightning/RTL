@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.7.0
+### Stable Release: v0.7.1
 
 **Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
 
@@ -20,15 +20,11 @@
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
 RTL is available on LND and C-Lightning implementations.
 
-This page covers instructions for LND. For C-lightning, refer to [this](docs/C-Lightning-setup.md) page.
+This page covers instructions for LND. For C-Lightning, refer to [this](docs/C-Lightning-setup.md) page.
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
-Pre-requisite for running RTL is a functioning and synced LND node. You can setup your own node, by following the below guides:
-* Windows/Mac users can follow Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
-* Linux or Raspberry Pi users can follow Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
-
-For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
+Pre-requisite for running RTL is a functioning and synced LND node. If you are a Raspberry Pi or a Linux user, you can follow the famous Stadicus's [guide](https://stadicus.github.io/RaspiBolt/) to setup a Bitcoin + Lighting node.
 
 RTL is available on the below platforms/services:
 * [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
