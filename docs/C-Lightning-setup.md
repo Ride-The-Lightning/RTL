@@ -10,15 +10,14 @@
 * [Start the server and access the app](#start)
 
 ### <a name="intro"></a>Introduction
-RTL can now be run to manage a c-lightning node via the UI.
-Please note, this integration is currently in *alpha* testing phase and can be bug prone.
+RTL is now enabled to manage a C-Lightning node.
 
-Follow the below steps to install and setup RTL to run on c-lightning.
+Follow the below steps to install and setup RTL to run on C-Lightning.
 
 ### <a name="prereq"></a>Pre-requisites:
-1. Functioning C-lightning node
+1. Functioning C-Lightning node
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
-3. Cl-Rest - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/Ride-The-Lightning/c-lightning-REST)
+3. Cl-REST - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/Ride-The-Lightning/c-lightning-REST)
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed
 
 ### <a name="arch"></a>Architecture
