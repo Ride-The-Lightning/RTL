@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 ### Stable Release: v0.7.1
 
-**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
+**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-Lightning](docs/C-Lightning-setup.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
