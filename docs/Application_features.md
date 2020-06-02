@@ -2,21 +2,25 @@
 
 ## RTL - Feature List
 
-### Home Page (Dashboard and Node Status)
-- Wallet Balance
-- Number of Peers connected
-- Channel Balance
-- Chain Sync status indicator
-- Fee Report
-- Channel Status
-- Channel Balance comparison (aggregate local vs remote)
+### Home Page - Operator
+- General node information
+- On-Chain and Lightning balances
+- Channel capacity with Local-Remote balances and Balance score
+- Routing fee earned and transactions routed
+- Channel status for Active, Pending, Inactive and Closing channels
+
+### Home Page - Merchant
+- On-Chain and Lightning balances
+- Inbound Channel capacity
+- Outbound Channel capacity
+- Receive and Pay Lightning transactions
 
 ### Settings
-- Current Unit Toggle (Sats to BTC)
-- Layout Customization
-- Menu Customization
-- Theme Skins
-- Nav Options
+- Fiat conversion toggle
+- Default node setting for multiple nodes
+- Toggle for Persona switch to change the dashboard layout
+- Day-Night mode toggle
+- Themes for color customizations
 
 ### LND Wallet
 #### Send/Receive
