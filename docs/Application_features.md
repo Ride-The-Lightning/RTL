@@ -19,8 +19,8 @@
 - Total, Confirmed and Unconfirmed balances in Sats, BTC and Fiat
 - Receive Funds, Generate Address (with QR Code)
 - Send funds
-- Sweep all funds
-- List of on-chain transactions
+- Sweep all funds {LND only}
+- List of on-chain transactions {LND only}
 - Export transaction list to csv
 
 ### Lightning
@@ -29,7 +29,7 @@
 - Open channel
 - Close channel
 - Update channel fee policy
-- Circular Rebalance
+- Circular Rebalance {LND only}
 - Open, Pending and Closed channel list
 - Export all lists to csv
 
@@ -40,7 +40,7 @@
 
 #### Routing
 - Forwarding history
-- Routing peers summary
+- Routing peers summary {LND only}
 
 #### Graph Lookup
 - Lookup a node details with pubkey
@@ -49,13 +49,18 @@
 #### Sign/Verify
 - Sign a message with node's private key and generate a signature
 - Verify the message with a signature to determine the pubkey of the node used to sign
+### Optional Features {LND only}
+#### Loop
+- Loop Out for gaining Inbound channel capacity
+- Loop In for replenishing Outbound capacity
+- Loop Out and In transactions list
 
-#### Backup
+#### Backup {LND only}
 - All channel backup and verify
 - Individual channel backup and verify
 - Folder location of the backup files
 
-### Network
+### Network {LND only}
 - Network information from the graph
 
 ### Settings
