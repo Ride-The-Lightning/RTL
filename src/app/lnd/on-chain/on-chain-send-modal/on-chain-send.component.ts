@@ -142,11 +142,11 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     this.sendFundError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     const postTransaction = {
-      address: this.transactionAddress,
       amount: this.transactionAmount,
       sendAll: this.sweepAll
     };
     if (this.sweepAll) {
+      postTransaction['address'] = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.selTransType.value === '1') {
         postTransaction['blocks'] = this.sendFundFormGroup.controls.transactionBlocks.value;
       }
@@ -154,6 +154,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.sendFundFormGroup.controls.transactionFees.value;
       }
     } else {
+      postTransaction['address'] = this.transactionAddress;
       if (this.selTransType === '1') {
         postTransaction['blocks'] = this.transactionBlocks;
       }

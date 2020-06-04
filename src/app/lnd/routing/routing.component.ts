@@ -35,12 +35,6 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_LND_STORE || action.type === RTLActions.SET_ALL_CHANNELS))
-    .subscribe((action: RTLActions.ResetLNDStore | RTLActions.SetAllChannels) => {
-      if (action.type === RTLActions.RESET_LND_STORE && action.payload.lnImplementation === 'LND') {
-        this.onEventsFetch();
-      }
-    });
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

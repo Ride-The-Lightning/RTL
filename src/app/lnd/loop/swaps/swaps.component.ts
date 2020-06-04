@@ -61,10 +61,6 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(new RTLActions.FetchLoopSwaps());
-    this.actions$.pipe(takeUntil(this.unSubs[0]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchLoopSwaps());
-    });
-
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
