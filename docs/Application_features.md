@@ -49,8 +49,8 @@
 #### Sign/Verify
 - Sign a message with node's private key and generate a signature
 - Verify the message with a signature to determine the pubkey of the node used to sign
-### Optional Features {LND only}
-#### Loop
+
+#### Loop - Optional Feature {LND only}
 - Loop Out for gaining Inbound channel capacity
 - Loop In for replenishing Outbound capacity
 - Loop Out and In transactions list
