@@ -110,6 +110,9 @@ export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 export const FETCH_LOOP_SWAPS = 'FETCH_LOOP_SWAPS';
 export const SET_LOOP_SWAPS = 'SET_LOOP_SWAPS';
+export const FETCH_BOLTZ_SWAPS = 'FETCH_BOLTZ_SWAPS';
+export const SET_BOLTZ_SWAPS = 'SET_BOLTZ_SWAPS';
+export const ADD_BOLTZ_SWAP = 'ADD_BOLTZ_SWAP';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -621,6 +624,20 @@ export class SetLoopSwaps implements Action {
   constructor(public payload: SwapStatus[]) {}
 }
 
+export class FetchBoltzSwaps implements Action {
+  readonly type = FETCH_BOLTZ_SWAPS;
+}
+
+export class SetBoltzSwaps implements Action {
+  readonly type = SET_BOLTZ_SWAPS;
+  constructor(public payload: SwapStatus[]) {}
+}
+
+export class AddBoltzSwap implements Action {
+  readonly type = ADD_BOLTZ_SWAP;
+  constructor(public payload: any) {}
+}
+
 export class IsAuthorized implements Action {
   readonly type = IS_AUTHORIZED;
   constructor(public payload: string) {} // payload = password
@@ -893,7 +910,7 @@ export type RTLActions =
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | FetchBoltzSwaps | SetBoltzSwaps | AddBoltzSwap | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
