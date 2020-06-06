@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
-import { catchError, mergeMap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { ECPair, crypto, Transaction, address } from 'bitcoinjs-lib';
-import { detectSwap, constructClaimTransaction, Networks } from 'boltz-core';
+import { ECPair, crypto } from 'bitcoinjs-lib';
 
 import { BOLTZ_API_URL, boltzEnvironment } from '../../../environments/environment';
 import { CurrencyUnitEnum, CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
@@ -19,8 +18,6 @@ import { Actions } from '@ngrx/effects';
 @Injectable()
 export class BoltzService {
   private BOLTZ_LND_NODE = '026165850492521f4ac8abd9bd8088123446d126f648ca35e60f88177dc149ceb2@104.196.200.39:9735';
-  private unit = CurrencyUnitEnum.BTC;
-
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
@@ -29,54 +26,9 @@ export class BoltzService {
     return this.httpClient.get(pairsUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Terms', err)));
   }
 
-  broadcastClaimTransaction(data, swapStatus, swapInfo) {
-    const feeEstimationUrl = BOLTZ_API_URL + boltzEnvironment.GET_FEE_ESTIMATION;
-    const broadcastTransactionUrl = BOLTZ_API_URL + boltzEnvironment.BROADCAST_TRANSACTION;
-    return this.httpClient.get(feeEstimationUrl).pipe(mergeMap(feeEstimation => {
-      const {preimage, privateKey} = swapInfo;
-      const redeemScript = Buffer.from(swapStatus.redeemScript, 'hex');
-      const lockupTransaction = Transaction.fromHex(data.transaction.hex);
-      const claimTransaction = constructClaimTransaction(
-        [
-          {
-            ...detectSwap(redeemScript, lockupTransaction),
-            redeemScript,
-            txHash: lockupTransaction.getHash(),
-            preimage: Buffer.from(preimage, 'hex'),
-            keys: ECPair.fromPrivateKey(this.getHexBuffer(privateKey))
-          },
-        ],
-        address.toOutputScript(swapInfo.address, this.getNetwork(CurrencyUnitEnum.BTC)),
-        feeEstimation[this.unit],
-        false
-      ).toHex();
-      return this.httpClient.post(broadcastTransactionUrl, {
-        currency: this.unit,
-        transactionHex: claimTransaction
-      }).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Terms', err)));
-    }))
-  }
-
   getLNDNode() {
     return this.BOLTZ_LND_NODE;
   }
-
-  //move to utils/helpers
-  getHexBuffer(input) {
-    return Buffer.from(input, 'hex');
-  };
-
-  capitalizeFirstLetter = input => {
-    return input.charAt(0).toUpperCase() + input.slice(1);
-  };
-
-  //TODO figure out network
-  getNetwork(symbol) {
-    const network = 'testnet';
-    const bitcoinNetwork = Networks[`bitcoin${this.capitalizeFirstLetter(network)}`];
-    const litecoinNetwork = Networks[`litecoin${this.capitalizeFirstLetter(network)}`];
-    return symbol === CurrencyUnitEnum.BTC ? bitcoinNetwork : litecoinNetwork;
-  };
 
   getSwapInfo() {
     const keys = ECPair.makeRandom({ });
@@ -102,7 +54,7 @@ export class BoltzService {
       };
       return this.httpClient.post(swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Withdrawal', err)));
     } else {
-      const requestBody = { 
+      const requestBody = {
         type: 'submarine',
         pairId: CurrentyTypeSwapEnum.BTC_BTC,
         orderSide: 'sell',
@@ -175,18 +127,3 @@ export class BoltzService {
     return throwError(err);
   }
 }
-
-export const SwapUpdateEvent = {
-  InvoicePaid: 'invoice.paid',
-  InvoiceSettled: 'invoice.settled',
-  InvoiceFailedToPay: 'invoice.failedToPay',
-  InvoicePending: 'invoice.pending',
-
-  TransactionFailed: 'transaction.failed',
-  TransactionMempool: 'transaction.mempool',
-  TransactionClaimed: 'transaction.claimed',
-  TransactionRefunded: 'transaction.refunded',
-  TransactionConfirmed: 'transaction.confirmed',
-
-  SwapExpired: 'swap.expired',
-};
