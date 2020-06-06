@@ -51,6 +51,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.lnServerUrl = node.ln_server_url;
           settings.swapServerUrl = node.swap_server_url;
           settings.channelBackupPath = node.channel_backup_path;
+          settings.boltzSwapsPath = node.boltz_swaps_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({
             index: node.index,
