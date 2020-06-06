@@ -8,14 +8,13 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/mate
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import EventSource from 'eventsource';
 
 import { opacityAnimation } from '../../../shared/animation/opacity-animation';
 import { ScreenSizeEnum, SwapProviderEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../shared/models/loopModels';
 import { LoopAlert } from '../../../shared/models/alertData';
 import { LoopService } from '../../../shared/services/loop.service';
-import { BoltzService, SwapUpdateEvent } from '../../../shared/services/boltz.service';
+import { BoltzService } from '../../../shared/services/boltz.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { Channel } from '../../../shared/models/lndModels';
@@ -25,7 +24,6 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 import { LNDEffects } from '../../store/lnd.effects';
 import { AddressType } from '../../../shared/models/lndModels';
 import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
-import { BOLTZ_API_URL, boltzEnvironment } from '../../../../environments/environment';
 
 
 @Component({
@@ -47,11 +45,9 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public direction = SwapTypeEnum.WITHDRAWAL;
   public loopDirectionCaption = 'Withdrawal';
   public loopStatus: LoopStatus = null;
-  public mempoolStatus = null;
-  public transactionStatus = null;
   public providerFormLabel = 'Choose Lightning Service Provider';
   public inputFormLabel = 'Amount to Withdrawal';
-  public quoteFormLabel = 'Confirm Quote and Download Refund File';
+  public quoteFormLabel = 'Confirm Quote';
   public addressFormLabel = 'Withdrawal Address';
   public maxRoutingFeePercentage = 2;
   public prepayRoutingFee = 36;
@@ -81,7 +77,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.direction = this.data.direction;
     this.loopDirectionCaption = this.direction === SwapTypeEnum.DEPOSIT ? 'Deposit' : 'Withdrawal';
     this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
-    this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
+    this.quoteFormLabel = 'Confirm Quote';
     this.providerFormGroup = this.formBuilder.group({
       provider: [this.swapProvider, [Validators.required]]
     });  
@@ -157,41 +153,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleSwapStatus = (data, source, swapStatus, swapInfo) => {
-    const status = data.status;
-
-    switch (status) {
-      case SwapUpdateEvent.TransactionMempool:
-      case SwapUpdateEvent.InvoicePending:
-        break;
-
-      case SwapUpdateEvent.TransactionConfirmed:
-        source.close();
-        this.boltzService.broadcastClaimTransaction(data, swapStatus, swapInfo).subscribe((result => {
-          this.transactionStatus = data;
-        }));
-        break;
-  
-      case SwapUpdateEvent.InvoiceFailedToPay:
-        source.close();
-        break;
-  
-      case SwapUpdateEvent.SwapExpired:
-        source.close();
-        break;
-
-      case SwapUpdateEvent.InvoicePaid:
-      case SwapUpdateEvent.TransactionClaimed:
-        source.close();
-        this.transactionStatus = {invoice: swapStatus};
-        break;
-
-      default:
-        console.log(`Unknown swap status: ${JSON.stringify(data)}`);
-        break;
-    }
-  }
-
   onSwapByBoltz() {
     const swapInfo = this.boltzService.getSwapInfo();
     if(this.direction === SwapTypeEnum.DEPOSIT) {
@@ -212,11 +173,17 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           swapInfo,
           paymentRequest: action.payload.paymentRequest
         }).subscribe((swapStatus: any) => {
+          this.saveSwapFile({
+            swapStatus,
+            costServer: this.quote.swap_fee,
+            costOnchain: this.quote.miner_fee,
+            swapInfo,
+          });
           this.loopStatus = {
             id_bytes: swapStatus.id,
             htlc_address: swapStatus.address
           };
-          this.onStreamSwap({swapStatus, swapInfo});
+          this.store.dispatch(new RTLActions.FetchBoltzSwaps());
 
           const paymentBody = {
             address: swapStatus.address,
@@ -236,12 +203,18 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           swapInfo,
           paymentRequest: null
         }).subscribe((swapStatus: any) => {
+          this.saveSwapFile({
+            swapStatus,
+            costServer: this.quote.swap_fee,
+            costOnchain: this.quote.miner_fee,
+            swapInfo: {...swapInfo, newAddress},
+          });
           this.loopStatus = {
             id_bytes: swapStatus.id,
             htlc_address: swapStatus.lockupAddress
           };
           this.flgEditable = true;
-          this.onStreamSwap({swapStatus, swapInfo, newAddress});
+          this.store.dispatch(new RTLActions.FetchBoltzSwaps());
             
           const paymentBody = {
             paymentReq: swapStatus.invoice,
@@ -253,12 +226,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
             paymentBody['outgoingChannel'] = this.channel;
           }
           this.store.dispatch(new RTLActions.SendPayment(paymentBody));
-          this.actions$.pipe(takeUntil(this.unSubs[1]),
+          this.actions$.pipe(takeUntil(this.unSubs[5]),
           filter((action) => action.type === RTLActions.SEND_PAYMENT_STATUS))
           .subscribe((action: RTLActions.SendPaymentStatus) => {
             const error = action.payload.error;
             if(error && error.error !== 'payment is in transition') {
-              this.transactionStatus = { error: error.error };
+              this.loopStatus = { error: error.error };
             }
           });
         }, (err) => {
@@ -270,18 +243,19 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onStreamSwap({swapStatus, swapInfo, newAddress=''}) {
-    const sourceUrl = BOLTZ_API_URL + boltzEnvironment.STREAM_SWAP_STATUS;
-    const source = new EventSource(`${sourceUrl}?id=${swapStatus.id}`);
-
-    source.onerror = () => {
-      source.close();
-      console.log(`Lost connection to Boltz`);
-    };
-  
-    source.onmessage = event => {
-      this.handleSwapStatus(JSON.parse(event.data), source, swapStatus, {...swapInfo, address: newAddress});
-    };
+  saveSwapFile({swapStatus, costServer, costOnchain, swapInfo}) {
+    this.store.dispatch(new RTLActions.AddBoltzSwap({
+      swap: {
+        ...swapStatus,
+        ...swapInfo,
+        costServer,
+        costOnchain,
+        currency: 'BTC',
+        type: this.direction,
+        state: SwapStateEnum.INITIATED,
+        provider: SwapProviderEnum.BOLTZ,
+      }
+    }));
   }
 
   onSwapByLightningLabs() {
@@ -417,7 +391,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (event.selectedIndex) {
       case 1:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
-        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
+        this.quoteFormLabel = 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';
         break;
     
@@ -431,7 +405,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
-        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
+        this.quoteFormLabel = 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';
         break;
 
@@ -461,7 +435,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       
       default:
         this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
-        this.quoteFormLabel = this.swapProvider === SwapProviderEnum.BOLTZ ? 'Confirm Quote and Download Refund File' : 'Confirm Quote';
+        this.quoteFormLabel = 'Confirm Quote';
         this.addressFormLabel = 'Withdrawal Address';        
         break;
     }
@@ -477,6 +451,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClose() {
+    this.store.dispatch(new RTLActions.FetchBoltzSwaps());
     this.dialogRef.close(true);
   }
 
