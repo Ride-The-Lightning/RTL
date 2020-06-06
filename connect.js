@@ -6,6 +6,7 @@ var hash = crypto.createHash('sha256');
 var common = require('./common');
 var path = require('path');
 var logger = require('./controllers/logger');
+var boltzController = require('./controllers/lnd/boltzSwaps');
 var connect = {};
 var errMsg = '';
 var request = require('request');
@@ -17,26 +18,31 @@ connect.setDefaultConfig = () => {
   var macaroonPath = '';
   var configPath = '';
   var channelBackupPath = '';
+  var boltzSwapsPath = '';
   switch (platform) {
     case 'win32':
       macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
       configPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
       channelBackupPath = homeDir + '\\backup\\node-1';
+      boltzSwapsPath = homeDir + '\\boltz';
       break;
     case 'darwin':
       macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
       channelBackupPath = homeDir + '/backup/node-1';
+      boltzSwapsPath = homeDir + '/boltz';
       break;
     case 'linux':
       macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/.lnd/lnd.conf';
       channelBackupPath = homeDir + '/backup/node-1';
+      boltzSwapsPath = homeDir + '/boltz';
       break;
     default:
       macaroonPath = '';
       configPath = '';
       channelBackupPath = '';
+      boltzSwapsPath = '';
       break;
   }  
   return {
@@ -62,6 +68,7 @@ connect.setDefaultConfig = () => {
           themeMode: "DAY",
           themeColor: "PURPLE",
           channelBackupPath: channelBackupPath,
+          boltzSwapsPath: boltzSwapsPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080/v1",
           swapServerUrl: "http://localhost:8081/v1",
@@ -158,6 +165,7 @@ connect.validateNodeConfig = (config) => {
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
+      common.nodes[idx].boltz_swaps_path = process.env.BOLTZ_SWAPS_PATH ? process.env.BOLTZ_SWAPS_PATH : (node.Settings.boltzSwapsPath) ? node.Settings.boltzSwapsPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
@@ -330,6 +338,10 @@ connect.getAllNodeAllChannelBackup = (node) => {
   })
 };
 
+connect.checkBoltzSwaps = (node) => {
+  boltzController.checkBoltzSwaps();
+}
+
 connect.setSelectedNode = (config) => {
   if(config.defaultNodeIndex) {
     common.selectedNode = common.findNode(config.defaultNodeIndex);
@@ -393,6 +405,9 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
       }
       if (node.Settings.channelBackupPath) {
         newNode.Settings.channelBackupPath = node.Settings.channelBackupPath;
+      }
+      if (node.Settings.boltzSwapsPath) {
+        newNode.Settings.boltzSwapsPath = node.Settings.boltzSwapsPath;
       }
       if (node.Settings.lnServerUrl) {
         newNode.Settings.lnServerUrl = node.Settings.lnServerUrl;
@@ -458,6 +473,9 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
 
   if (config.Settings.channelBackupPath) {
     newConfig.nodes[0].Settings.channelBackupPath = config.Settings.channelBackupPath;
+  }
+  if (config.Settings.boltzSwapsPath) {
+    newConfig.nodes[0].Settings.boltzSwapsPath = config.Settings.boltzSwapsPath;
   }
   if (config.Settings.lnServerUrl) {
     newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl;
