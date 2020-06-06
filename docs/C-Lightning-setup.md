@@ -10,7 +10,7 @@
 * [Start the server and access the app](#start)
 
 ### <a name="intro"></a>Introduction
-RTL is now enabled to manage a C-Lightning node.
+RTL is now enabled to manage lightning nodes running C-Lightning.
 
 Follow the below steps to install and setup RTL to run on C-Lightning.
 
@@ -24,16 +24,16 @@ Follow the below steps to install and setup RTL to run on C-Lightning.
 ![](../screenshots/RTL-CLT-Arch-2.png)
 
 ### <a name="install"></a>Installation:
+To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
+
+To download from master (*not recommended*):
+
 #### First time setup
-* Fetch sources from RTL git repository, by executing the below on the command prompt:
-
-`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
-* Change directory to RTL folder:
-
-`$ cd RTL`
-
-* Fetch the production dependencies by running:
-`$ npm install --only=prod`
+```
+$ git clone https://github.com/Ride-The-Lightning/RTL.git
+$ cd RTL
+$ npm install --only=prod
+```
 
 #### Or: Update existing build
 ```

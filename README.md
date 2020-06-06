@@ -50,7 +50,7 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 ### <a name="install"></a>Installation
 To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
 
-To download from master (this is not recommended):
+To download from master (*not recommended*):
 #### First time setup
 ```
 $ git clone https://github.com/Ride-The-Lightning/RTL.git
