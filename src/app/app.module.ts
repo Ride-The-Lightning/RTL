@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
-import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material';
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { UserIdleModule } from 'angular-user-idle';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { routing } from './app.routing';
@@ -62,11 +62,17 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     SharedModule,
     routing,
     UserIdleModule.forRoot({idle: 60 * 60, timeout: 1, ping: null}),
-    StoreModule.forRoot(RTLReducer),
+    StoreModule.forRoot(RTLReducer, {
+      runtimeChecks: {
+        strictStateImmutability: false,
+        strictActionImmutability: false
+      }
+    }),
     EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     LayoutModule,
-    MatDialogModule
+    MatDialogModule,
+    HammerModule
   ],
   declarations: [
     AppComponent,

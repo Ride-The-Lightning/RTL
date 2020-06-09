@@ -1,6 +1,8 @@
 import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEventCL } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';

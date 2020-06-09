@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
