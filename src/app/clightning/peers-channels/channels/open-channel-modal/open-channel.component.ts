@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject, Observable, of } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';

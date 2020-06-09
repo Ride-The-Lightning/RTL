@@ -6,7 +6,9 @@ import { Actions } from '@ngrx/effects';
 import { faInfoCircle, faExclamationTriangle, faArchive } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelInformationComponent } from '../../peers-channels/channels/channel-information-modal/channel-information.component';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';

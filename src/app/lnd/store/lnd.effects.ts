@@ -6,7 +6,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';

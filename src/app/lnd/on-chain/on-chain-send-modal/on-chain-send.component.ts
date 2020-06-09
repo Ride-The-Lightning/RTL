@@ -5,7 +5,8 @@ import { filter, takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialogRef, MatVerticalStepper } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';

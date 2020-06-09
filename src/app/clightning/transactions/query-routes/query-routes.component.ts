@@ -5,7 +5,8 @@ import { Store } from '@ngrx/store';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CommonService } from '../../../shared/services/common.service';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { RoutesCL } from '../../../shared/models/clModels';
 
 import { CLEffects } from '../../store/cl.effects';

@@ -4,7 +4,8 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';

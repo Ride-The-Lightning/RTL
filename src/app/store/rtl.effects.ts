@@ -6,7 +6,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
