@@ -10,7 +10,16 @@
         <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'w-100 error-border bordered-box': flgLoading[0]==='error','bordered-box w-100': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
-            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+            <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
+              {{channel.channel.remote_alias}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="visibility">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Visibility</mat-header-cell>
+            <mat-cell *matCellDef="let channel">
+              <span *ngIf="!channel.private" fxLayoutAlign="end center" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+              <span *ngIf="channel.private" fxLayoutAlign="end center" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="commit_fee">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Commit Fee (Sats) </mat-header-cell>
@@ -52,6 +61,13 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
             <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
           </ng-container>
+          <ng-container matColumnDef="visibility">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Visibility</mat-header-cell>
+            <mat-cell *matCellDef="let channel">
+              <span *ngIf="!channel.private" fxLayoutAlign="end center" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+              <span *ngIf="channel.private" fxLayoutAlign="end center" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            </mat-cell>
+          </ng-container>
           <ng-container matColumnDef="recovered_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Recovered Balance (Sats) </mat-header-cell>
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.recovered_balance | number}}</mat-cell>
@@ -92,6 +108,13 @@
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
             <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="visibility">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Visibility</mat-header-cell>
+            <mat-cell *matCellDef="let channel">
+              <span *ngIf="!channel.private" fxLayoutAlign="end center" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+              <span *ngIf="channel.private" fxLayoutAlign="end center" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="local_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">
@@ -139,6 +162,13 @@
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
             <mat-cell class="pl-2" *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="visibility">
+            <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">Visibility</mat-header-cell>
+            <mat-cell *matCellDef="let channel">
+              <span *ngIf="!channel.private" fxLayoutAlign="end center" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
+              <span *ngIf="channel.private" fxLayoutAlign="end center" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="limbo_balance">
             <mat-header-cell fxLayoutAlign="end center" *matHeaderCellDef mat-sort-header arrowPosition="before">

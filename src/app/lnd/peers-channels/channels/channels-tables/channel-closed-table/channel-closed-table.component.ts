@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
@@ -36,6 +36,8 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
@@ -45,10 +47,10 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['remote_alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['close_type', 'remote_alias', 'settled_balance', 'actions'];
+      this.displayedColumns = ['close_type', 'remote_alias', 'visibility', 'settled_balance', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['close_type', 'remote_alias', 'capacity', 'close_height', 'settled_balance', 'actions'];
+      this.displayedColumns = ['close_type', 'remote_alias', 'visibility', 'capacity', 'close_height', 'settled_balance', 'actions'];
     }
   }
 

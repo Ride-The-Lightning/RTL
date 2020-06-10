@@ -12,6 +12,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -24,21 +25,23 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
   public selectedFilter = 0;
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
-  public displayedOpenColumns = ['remote_alias', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+  public displayedOpenColumns = ['remote_alias', 'visibility', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
   public pendingOpenChannelsLength = 0;
   public pendingOpenChannels: any;
-  public displayedForceClosingColumns = ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+  public displayedForceClosingColumns = ['remote_alias', 'visibility', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
   public pendingForceClosingChannelsLength = 0;
   public pendingForceClosingChannels: any;
-  public displayedClosingColumns = ['remote_alias', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+  public displayedClosingColumns = ['remote_alias', 'visibility', 'local_balance', 'remote_balance', 'capacity', 'actions'];
   public pendingClosingChannelsLength = 0;
   public pendingClosingChannels: any;
-  public displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
+  public displayedWaitClosingColumns = ['remote_alias', 'visibility', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
@@ -54,10 +57,10 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       this.displayedClosingColumns = ['remote_alias', 'remote_balance', 'actions'];
       this.displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'actions'];
     } else {
-      this.displayedOpenColumns = ['remote_alias', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
-      this.displayedForceClosingColumns = ['remote_alias', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
-      this.displayedClosingColumns = ['remote_alias', 'local_balance', 'remote_balance', 'capacity', 'actions'];
-      this.displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedOpenColumns = ['remote_alias', 'visibility', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
+      this.displayedForceClosingColumns = ['remote_alias', 'visibility', 'recovered_balance', 'limbo_balance', 'capacity', 'actions'];
+      this.displayedClosingColumns = ['remote_alias', 'visibility', 'local_balance', 'remote_balance', 'capacity', 'actions'];
+      this.displayedWaitClosingColumns = ['remote_alias', 'visibility', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
     }
   }
 
