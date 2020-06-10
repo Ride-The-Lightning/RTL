@@ -181,6 +181,12 @@ connect.validateNodeConfig = (config) => {
         console.error('Something went wrong while creating the backup directory: \n' + err);
       }
 
+      try {
+        connect.createDirectory(common.nodes[idx].boltz_swaps_path);
+      } catch (err) {
+        console.error('Something went wrong while creating the boltz swaps directory: \n' + err);
+      }
+
       if (common.nodes[idx].enable_logging) {
         common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
         const log_file = common.nodes[idx].log_file;
