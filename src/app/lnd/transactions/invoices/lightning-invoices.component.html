@@ -1,5 +1,5 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form *ngIf="!showDetails" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" #addInvoiceForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
+  <form *ngIf="!showDetails" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100" #addInvoiceForm="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="end start">
       <input matInput [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
     </mat-form-field>
