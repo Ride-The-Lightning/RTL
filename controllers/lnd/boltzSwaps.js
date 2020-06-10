@@ -58,14 +58,14 @@ function updateBoltzSwap(swap) {
 
 function checkAllSwaps(callback) {
   fs.readdir(common.selectedNode.boltz_swaps_path, function (err, files) {
+    if(!files) return;
     const boltzFiles = files.filter(file => file.includes('.boltz'));
     if (err && err.code !== 'ENOENT' && err.errno !== -4058) { response = { message: 'Boltz Restore List Failed!', error: err } }
     if (boltzFiles && boltzFiles.length > 0) {
       for(let i=0; i < boltzFiles.length; i++) {
         fs.readFile(common.selectedNode.boltz_swaps_path + common.path_separator + boltzFiles[i], 'utf8', function read(err, data) {
           const swap = JSON.parse(data);
-          console.log('state', swap.state);
-          if(swap.state !== 'Successful' && swap.state !== 'Invoice Settled') {
+          if(['Successful', 'Invoice Settled', 'Failed'].indexOf(swap.state) === -1) {
             fetchSwapStatus(swap);
           }
         });
