@@ -52,6 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
+  public screenSizeEnum = ScreenSizeEnum;
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
