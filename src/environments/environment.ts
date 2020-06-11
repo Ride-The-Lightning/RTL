@@ -1,6 +1,7 @@
 import { VERSION } from './version';
 
 export const API_URL = 'http://localhost:3000/rtl/api';
+export const BOLTZ_API_URL = 'https://testnet.boltz.exchange/api/';
 
 export const environment = {
   production: false,
@@ -12,6 +13,7 @@ export const environment = {
   PEERS_API: '/peers',
   CHANNELS_API: '/channels',
   CHANNELS_BACKUP_API: '/channels/backup',
+  BOLTZ_SWAPS_API: '/boltz',
   GETINFO_API: '/getinfo',
   WALLET_API: '/wallet',
   NETWORK_API: '/network',
@@ -26,3 +28,8 @@ export const environment = {
   MESSAGE_API: '/message',
   VERSION: VERSION
 };
+
+export const boltzEnvironment = {
+  GET_PAIRS: 'getPairs',
+  CREATE_SWAP: 'createswap'
+}

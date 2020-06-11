@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LoopQuote } from '../../../shared/models/loopModels';
+import { SwapProviderEnum } from '../../../shared/services/consts-enums-functions';
+
 
 @Component({
   selector: 'rtl-loop-quote',
@@ -11,7 +13,9 @@ export class LoopQuoteComponent implements OnInit {
   @Input() termCaption = '';
   @Input() showPanel = true;
   @Input() panelExpanded = false;
+  @Input() swapProvider: SwapProviderEnum;
   public flgShowPanel = false;
+  public swapProviderEnum = SwapProviderEnum;
 
   constructor() {}
 

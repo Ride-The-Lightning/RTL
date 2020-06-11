@@ -23,13 +23,13 @@
         <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
         <span class="foreground-secondary-text">{{quote?.miner_fee | number}}</span>
       </div>
-      <div fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment">
+      <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment">
         <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
         <span class="foreground-secondary-text">{{quote?.prepay_amt | number}}</span>
       </div>
     </div>
-    <mat-divider class="w-100 my-1"></mat-divider>        
-    <div fxLayout="row">
+    <mat-divider *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" class="w-100 my-1"></mat-divider>        
+    <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" fxLayout="row">
       <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the payment amount to the server">
         <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Swap Routing Fee (Sats)</h4>
         <span class="foreground-secondary-text">{{(quote?.amount * ((quote?.off_chain_swap_routing_fee_percentage ? quote?.off_chain_swap_routing_fee_percentage : 2) / 100)) | number}}</span>

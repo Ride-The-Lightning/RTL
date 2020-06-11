@@ -19,6 +19,7 @@ import { environment } from '../environments/environment';
 import { SessionService } from './shared/services/session.service';
 import { CommonService } from './shared/services/common.service';
 import { LoopService } from './shared/services/loop.service';
+import { BoltzService } from './shared/services/boltz.service';
 import { DataService } from './shared/services/data.service';
 import { LoggerService, ConsoleLoggerService } from './shared/services/logger.service';
 import { AuthGuard } from './shared/services/auth.guard';
@@ -99,7 +100,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
-    CommonService, AuthGuard, SessionService, DataService, LoopService
+    CommonService, AuthGuard, SessionService, DataService, LoopService, BoltzService
   ],
   bootstrap: [AppComponent]
 })

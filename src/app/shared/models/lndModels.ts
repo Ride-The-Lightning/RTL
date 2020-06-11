@@ -1,4 +1,4 @@
-import { SwapStateEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+import { SwapStateEnum, SwapTypeEnum, SwapProviderEnum } from '../services/consts-enums-functions';
 
 export interface ChannelStatus {
   channels?: number;
@@ -354,6 +354,11 @@ export interface SendPayment {
   final_cltv_delta?: number;
 }
 
+export interface SendCoins {
+  address: string;
+  amount: number;
+}
+
 export interface ChannelsTransaction {
   address?:	string;
   amount?: number;
@@ -425,7 +430,7 @@ export interface SwapStatus {
   cost_server?: string;
   cost_offchain?: string;
   htlc_address?: string;
-  state?: SwapStateEnum;
+  state?: SwapStateEnum | string;
   amt?: string;
   cost_onchain?: string;
   initiation_time?: string;
@@ -434,5 +439,6 @@ export interface SwapStatus {
   last_update_time?: string;
   last_update_time_str?: string;
   id?: string;
+  provider?: SwapProviderEnum
 }
 

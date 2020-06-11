@@ -81,6 +81,7 @@ export const DECODE_PAYMENT = 'DECODE_PAYMENT';
 export const SEND_PAYMENT = 'SEND_PAYMENT';
 export const SEND_PAYMENT_STATUS = 'SEND_PAYMENT_STATUS';
 export const SET_DECODED_PAYMENT = 'SET_DECODED_PAYMENT';
+export const SEND_COINS = 'SEND_COINS';
 export const FETCH_GRAPH_NODE = 'FETCH_GRAPH_NODE';
 export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
 export const GET_NEW_ADDRESS = 'GET_NEW_ADDRESS';
@@ -109,6 +110,9 @@ export const GET_QUERY_ROUTES = 'GET_QUERY_ROUTES';
 export const SET_QUERY_ROUTES = 'SET_QUERY_ROUTES';
 export const FETCH_LOOP_SWAPS = 'FETCH_LOOP_SWAPS';
 export const SET_LOOP_SWAPS = 'SET_LOOP_SWAPS';
+export const FETCH_BOLTZ_SWAPS = 'FETCH_BOLTZ_SWAPS';
+export const SET_BOLTZ_SWAPS = 'SET_BOLTZ_SWAPS';
+export const ADD_BOLTZ_SWAP = 'ADD_BOLTZ_SWAP';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -505,6 +509,11 @@ export class SendPaymentStatus implements Action {
   constructor(public payload: any) {}
 }
 
+export class SendCoins implements Action {
+  readonly type = SEND_COINS;
+  constructor(public payload: { address: string, amount: number}) {}
+}
+
 export class FetchGraphNode implements Action {
   readonly type = FETCH_GRAPH_NODE;
   constructor(public payload: string) {} // payload = pubkey
@@ -613,6 +622,20 @@ export class FetchLoopSwaps implements Action {
 export class SetLoopSwaps implements Action {
   readonly type = SET_LOOP_SWAPS;
   constructor(public payload: SwapStatus[]) {}
+}
+
+export class FetchBoltzSwaps implements Action {
+  readonly type = FETCH_BOLTZ_SWAPS;
+}
+
+export class SetBoltzSwaps implements Action {
+  readonly type = SET_BOLTZ_SWAPS;
+  constructor(public payload: SwapStatus[]) {}
+}
+
+export class AddBoltzSwap implements Action {
+  readonly type = ADD_BOLTZ_SWAP;
+  constructor(public payload: any) {}
 }
 
 export class IsAuthorized implements Action {
@@ -881,13 +904,13 @@ export type RTLActions =
   RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
   FetchTransactions | SetTransactions |
   FetchInvoices | SetInvoices | SetTotalInvoices |
-  FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
+  FetchPayments | SetPayments | SendPayment | SendPaymentStatus | SendCoins |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
   GetNewAddress | SetNewAddress | SetChannelTransaction |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  FetchLoopSwaps | SetLoopSwaps | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | FetchBoltzSwaps | SetBoltzSwaps | AddBoltzSwap | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |

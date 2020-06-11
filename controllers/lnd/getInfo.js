@@ -7,6 +7,7 @@ var options = {};
 exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
+  connect.checkBoltzSwaps(common.selectedNode);
   options.url = common.getSelLNServerUrl() + '/getinfo';
   logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {

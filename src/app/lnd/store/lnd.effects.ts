@@ -732,6 +732,37 @@ export class LNDEffects implements OnDestroy {
   );
 
   @Effect()
+  sendCoins = this.actions$.pipe(
+    ofType(RTLActions.SEND_COINS),
+    withLatestFrom(this.store.select('root')),
+    mergeMap(([action, store]: [RTLActions.SendCoins, any]) => {
+      let queryHeaders = {};
+      if (action.payload.address) { queryHeaders['address'] = action.payload.address; }
+      if (action.payload.amount) { queryHeaders['amount'] = action.payload.amount; }
+      return this.httpClient.post(this.CHILD_API_URL + '/transactions', queryHeaders)
+        .pipe(
+          map((sendRes: any) => {
+            this.logger.info(sendRes);
+            if (sendRes.payment_error) {
+             
+            } else {
+              return {
+                type: RTLActions.SEND_PAYMENT_STATUS,
+                payload: sendRes
+              };
+            }
+          }),
+          catchError((err: any) => {
+            this.logger.error('Error: ' + JSON.stringify(err));
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+            this.handleErrorWithAlert('ERROR', 'Send Coins Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect()
   graphNodeFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_GRAPH_NODE),
     mergeMap((action: RTLActions.FetchGraphNode) => {
@@ -1172,6 +1203,59 @@ export class LNDEffects implements OnDestroy {
     }
     this.router.navigate([newRoute]);
   }
+
+  @Effect()
+  getBoltzSwaps = this.actions$.pipe(
+    ofType(RTLActions.FETCH_BOLTZ_SWAPS),
+    mergeMap((action: RTLActions.FetchBoltzSwaps) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('BoltzSwaps'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/list')
+        .pipe(
+          map((resRestoreList) => {
+            this.logger.info(resRestoreList);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.SET_BOLTZ_SWAPS,
+              payload: resRestoreList ? resRestoreList : []
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'FetchBoltzSwaps', code: err.status, message: err.error.message }));
+            this.handleErrorWithAlert('ERROR', 'Fetching Boltz Swaps Failed', this.CHILD_API_URL + environment.CHANNELS_BACKUP_API, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setBoltzSwaps = this.actions$.pipe(
+    ofType(RTLActions.SET_BOLTZ_SWAPS),
+    map((action: RTLActions.SetBoltzSwaps) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect({ dispatch: false })
+  addBoltzSwap = this.actions$.pipe(
+    ofType(RTLActions.ADD_BOLTZ_SWAP),
+    mergeMap((action: RTLActions.AddBoltzSwap) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('BoltzSwaps'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/add', action.payload.swap)
+        .pipe(
+          map((createBoltzSwapRes) => {
+            this.logger.info(createBoltzSwapRes);
+            return of({type: RTLActions.VOID});
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'AddBoltzSwap', code: err.status, message: err.error.message }));
+            this.handleErrorWithAlert('ERROR', 'Adding Boltz Swap Failed', this.CHILD_API_URL + environment.BOLTZ_SWAPS_API, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
