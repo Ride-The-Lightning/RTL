@@ -16,13 +16,6 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Peer </th>
         <td mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}"> {{channel.remote_alias}} </td>
       </ng-container>
-      <ng-container matColumnDef="visibility">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Visibility </th>
-        <td mat-cell *matCellDef="let channel">
-          <span *ngIf="!channel.private" fxLayoutAlign="end center" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
-          <span *ngIf="channel.private" fxLayoutAlign="end center" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
-        </td>
-      </ng-container>
       <ng-container matColumnDef="capacity">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Capacity </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center"> {{channel.capacity | number}} </span>

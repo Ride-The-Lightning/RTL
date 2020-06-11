@@ -69,7 +69,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['remote_alias', 'visibility', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
+      this.displayedColumns = ['remote_alias', 'uptime', 'total_satoshis_sent', 'total_satoshis_received', 'local_balance', 'remote_balance', 'balancedness', 'actions'];
     }
   }
 
