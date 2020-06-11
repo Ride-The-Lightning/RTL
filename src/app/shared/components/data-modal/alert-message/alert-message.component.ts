@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, Inject, ViewChild, ElementRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatSnackBar } from '@angular/material';
 
 import { CommonService } from '../../../services/common.service';
@@ -11,7 +11,8 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapStateEnum } from '../.
   templateUrl: './alert-message.component.html',
   styleUrls: ['./alert-message.component.scss']
 })
-export class AlertMessageComponent implements OnInit {
+export class AlertMessageComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollContainer', { static: true }) scrollContainer: ElementRef;
   public swapStateEnum = SwapStateEnum;
   public showQRField = '';
   public showQRName = '';  
@@ -23,6 +24,7 @@ export class AlertMessageComponent implements OnInit {
   public dataTypeEnum = DataTypeEnum;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public shouldScroll = true;
 
   constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService) { }
 
@@ -39,6 +41,14 @@ export class AlertMessageComponent implements OnInit {
       }
     }
     this.logger.info(this.messageObjs);
+  }
+
+  ngAfterViewChecked() {
+    this.shouldScroll = this.scrollContainer.nativeElement.classList.value.includes('ps--active-y');
+  }
+
+  onScrollDown() {
+    this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop + 62.6;
   }
 
   onCopyField(payload: string) {

@@ -17,17 +17,29 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <mat-tab-group>
-        <mat-tab label="Send">
-          <rtl-on-chain-send [sweepAll]="false"></rtl-on-chain-send>
-        </mat-tab>
         <mat-tab label="Receive">
           <rtl-on-chain-receive></rtl-on-chain-receive>
         </mat-tab>
+        <mat-tab label="Send">
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+            <div fxLayout="row">
+              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal(false)">Send Funds</button>
+            </div>  
+          </div>          
+        </mat-tab>
         <mat-tab label="Sweep All">
-          <rtl-on-chain-send [sweepAll]="true"></rtl-on-chain-send>
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+            <div fxLayout="row">
+              <button mat-flat-button color="primary" type="button" tabindex="3" (click)="openSendFundsModal(true)">Sweep All</button>
+            </div>  
+          </div>          
         </mat-tab>
       </mat-tab-group>
-      <rtl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
+        <div fxLayout="row">
+          <rtl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

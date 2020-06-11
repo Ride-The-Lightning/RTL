@@ -7,6 +7,8 @@ import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as RTLActions from '../../store/rtl.actions';
+import { OnChainSendComponent } from './on-chain-send-modal/on-chain-send.component';
 
 @Component({
   selector: 'rtl-on-chain',
@@ -29,6 +31,13 @@ export class OnChainComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.balances = [{title: 'Total Balance', dataValue: rtlStore.blockchainBalance.total_balance || 0}, {title: 'Confirmed', dataValue: rtlStore.blockchainBalance.confirmed_balance}, {title: 'Unconfirmed', dataValue: rtlStore.blockchainBalance.unconfirmed_balance}];
     });
+  }
+
+  openSendFundsModal(sweepAll: boolean) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      sweepAll: sweepAll,
+      component: OnChainSendComponent
+    }}));
   }
 
   ngOnDestroy() {

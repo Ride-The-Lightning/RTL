@@ -3,9 +3,9 @@
 
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.6.8
+### Stable Release: v0.7.1
 
-**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-lightning](docs/C-Lightning-setup.md)
+**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-Lightning](docs/C-Lightning-setup.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
@@ -20,15 +20,11 @@
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
 RTL is available on LND and C-Lightning implementations.
 
-This page covers instructions for LND. For C-lightning, refer to [this](docs/C-Lightning-setup.md) page.
+This page covers instructions for LND. For C-Lightning, refer to [this](docs/C-Lightning-setup.md) page.
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
-Pre-requisite for running RTL is a functioning and synced LND node. You can setup your own node, by following the below guides:
-* Windows/Mac users can follow Pierre Rochard's [Node Launcher](https://github.com/lightning-power-users/node-launcher)
-* Linux or Raspberry Pi users can follow Stadicus's [guide](https://github.com/Stadicus/guides/blob/master/raspibolt/README.md)
-
-For detailed screenshots and UI operation guide you can visit our [medium post](https://medium.com/@suheb.khan/how-to-ride-the-lightning-447af999dcd2)
+Pre-requisite for running RTL is a functioning and synced LND node. If you are a Raspberry Pi or a Linux user, you can follow the famous Stadicus's [guide](https://stadicus.github.io/RaspiBolt/) to setup a Bitcoin + Lighting node.
 
 RTL is available on the below platforms/services:
 * [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
@@ -37,6 +33,7 @@ RTL is available on the below platforms/services:
 * [Blockdaemon](https://blockdaemon.com/bitcoin-lightning-protocol-details)
 * [myNode](http://mynodebtc.com)
 * [Lux Node](https://luxnode.io/product/lux-node/)
+* [BCubium](https://bgeometrics.com)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
@@ -51,17 +48,15 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 * Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### <a name="install"></a>Installation
+To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
+
+To download from master (*not recommended*):
 #### First time setup
-* Fetch sources from RTL git repository, by executing the below on the command prompt:
-
-`$ git clone https://github.com/Ride-The-Lightning/RTL.git`
-* Change directory to RTL folder:
-
-`$ cd RTL`
-
-* Fetch the production dependencies by running:
-`$ npm install --only=prod`
-
+```
+$ git clone https://github.com/Ride-The-Lightning/RTL.git
+$ cd RTL
+$ npm install --only=prod
+```
 #### Or: Update existing dependencies
 ```
 $ cd RTL

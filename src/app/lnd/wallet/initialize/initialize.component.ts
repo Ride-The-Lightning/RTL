@@ -78,7 +78,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.insecureLND = !window.location.protocol.includes('https://');
+    this.insecureLND = !window.location.protocol.includes('https:');
 
     this.lndEffects.initWalletRes
     .pipe(takeUntil(this.unsubs[2]))

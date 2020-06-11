@@ -9,6 +9,7 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
+import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
@@ -206,29 +207,12 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClick(selChannel: ChannelCL, event: any) {
-    const reorderedChannel = [
-      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'short_channel_id', value: selChannel.short_channel_id, title: 'Short Channel ID', width: 34, type: DataTypeEnum.STRING},
-        {key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 66, type: DataTypeEnum.STRING}],
-      [{key: 'connected', value: selChannel.connected, title: 'Connected', width: 34, type: DataTypeEnum.BOOLEAN},
-        {key: 'private', value: selChannel.private, title: 'Private', width: 33, type: DataTypeEnum.BOOLEAN},
-        {key: 'state', value: selChannel.state, title: 'State', width: 33, type: DataTypeEnum.STRING}],
-      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve (Sats)', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 33, type: DataTypeEnum.NUMBER}],
-      [{key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable (mSats)', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total (mSats)', width: 66, type: DataTypeEnum.NUMBER}]
-    ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Channel Information',
-      showCopyName: 'Short Channel ID',
-      showCopyField: selChannel.short_channel_id,
-      message: reorderedChannel
-    }}));
-  }
+      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+        channel: selChannel,
+        showCopy: true,
+        component: CLChannelInformationComponent
+      }}));
+    }
 
   loadChannelsTable(mychannels) {
     mychannels.sort(function(a, b) {

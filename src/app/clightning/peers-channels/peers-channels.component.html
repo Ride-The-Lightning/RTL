@@ -21,7 +21,12 @@
           <ng-template mat-tab-label>
             <span matBadge="{{activeChannels}}" matBadgeOverlap="false" class="tab-badge">Channels</span>
           </ng-template>
-          <rtl-cl-channel-manage></rtl-cl-channel-manage>
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+            <div fxLayout="row">
+              <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
+            </div>  
+            <rtl-cl-channels-tables fxLayout="row" fxFlex="100"></rtl-cl-channels-tables>
+          </div>
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>

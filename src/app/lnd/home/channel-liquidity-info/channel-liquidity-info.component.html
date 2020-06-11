@@ -23,6 +23,6 @@
 <ng-template #noChannelBlock>
   <div fxLayout="row" fxFlex="10" fxLayoutAlign="space-between center" class="w-100 mt-1">
     No channels available.
-    <button *ngIf="direction === 'Out'" fxFlex="33" fxLayoutAlign="center center" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
+    <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
   </div>
 </ng-template>

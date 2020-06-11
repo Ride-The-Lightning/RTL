@@ -9,7 +9,15 @@ exports.getNewAddress = (req, res, next) => {
   request(options).then((body) => {
     res.status(200).json(body);
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain New Address Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching new address failed!",
       error: err.error
@@ -25,6 +33,7 @@ exports.onChainWithdraw = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'OnChain', lineNum: 35, msg: 'OnChain Withdraw Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'OnChain Withdraw Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -33,8 +42,15 @@ exports.onChainWithdraw = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'OnChain', lineNum: 211, msg: 'OnChain Withdraw Response: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'OnChain', lineNum: 51, msg: 'OnChain Withdraw Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'OnChain Withdraw Failed!',
       error: err.error

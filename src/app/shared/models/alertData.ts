@@ -1,7 +1,7 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
-import { GetInfo, Invoice, Channel } from './lndModels';
-import { InvoiceCL, GetInfoCL } from './clModels';
+import { GetInfo, Invoice, Channel, Peer } from './lndModels';
+import { InvoiceCL, GetInfoCL, PeerCL, ChannelCL } from './clModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
@@ -28,18 +28,22 @@ export interface InputData {
   width?: number;
 }
 
+export interface OnChainSendFunds {
+  sweepAll: boolean;
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { peer: any, information: GetInfo, balance: number };
-  newlyAdded?: boolean;
+  message?: { information: GetInfo, balance: number, peer?: Peer, peers?: Peer[] };
   component?: any;
 }
 
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { peer: any, information: GetInfoCL, balance: number };
+  message?: { information: GetInfoCL, balance: number, peer?: any, peers?: PeerCL[] };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -47,17 +51,26 @@ export interface CLOpenChannelAlert {
 export interface InvoiceInformation {
   invoice: Invoice;
   newlyAdded?: boolean;
+  pageSize: number;
   component?: any;
 }
 
 export interface CLInvoiceInformation {
   invoice: InvoiceCL;
   newlyAdded?: boolean;
+  pageSize: number;
+  component?: any;
+}
+
+export interface CLChannelInformation {
+  channel: ChannelCL;
+  showCopy?: boolean;
   component?: any;
 }
 
 export interface ChannelInformation {
-  channel: Invoice;
+  channel: Channel;
+  showCopy?: boolean;
   component?: any;
 }
 
@@ -91,6 +104,7 @@ export interface AlertData {
   alertTitle?: string;
   titleMessage?: string;
   message?: Array<Array<MessageDataField>>;
+  scrollable?: boolean;
   showQRName?: string;
   showQRField?: string;
   newlyAdded?: boolean;
@@ -105,6 +119,7 @@ export interface ConfirmationData {
   alertTitle?: string;
   titleMessage?: string;
   message?: any;
+  scrollable?: boolean;
   noBtnText?: string;
   yesBtnText?: string;
   flgShowInput?: boolean;
@@ -116,6 +131,7 @@ export interface ErrorData {
   alertTitle?: string;
   titleMessage?: string;
   message?: MessageErrorField;
+  scrollable?: boolean;
   component?: any;
 }
 
@@ -128,5 +144,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds;
 }

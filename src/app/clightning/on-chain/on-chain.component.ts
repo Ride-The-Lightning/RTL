@@ -5,7 +5,9 @@ import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { CLOnChainSendComponent } from './on-chain-send-modal/on-chain-send.component';
 
 @Component({
   selector: 'rtl-cl-on-chain',
@@ -28,6 +30,12 @@ export class CLOnChainComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.balances = [{title: 'Total Balance', dataValue: rtlStore.balance.totalBalance || 0}, {title: 'Confirmed', dataValue: rtlStore.balance.confBalance}, {title: 'Unconfirmed', dataValue: rtlStore.balance.unconfBalance}];
     });
+  }
+
+  openSendFundsModal() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      component: CLOnChainSendComponent
+    }}));
   }
 
   ngOnDestroy() {

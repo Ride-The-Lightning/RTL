@@ -53,7 +53,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           authRes: authRes,
           component: LoginTokenComponent
         }}));
-    
       }
     });    
   }

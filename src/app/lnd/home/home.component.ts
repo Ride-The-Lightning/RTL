@@ -67,7 +67,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
-        { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 6, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 6, rows: 6 },
         { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
         { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];

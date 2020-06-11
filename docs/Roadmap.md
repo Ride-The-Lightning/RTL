@@ -12,15 +12,6 @@ We believe UX improvement is a never-ending cycle. And, we must keep the UI/UX f
 ### Automated Testing
 As the functional complexity increases, we need to add automated testing to ensure quality and less bugs. Another area, where developer contribution is more than welcome.
 
-### LND Loop Integration
-LND's Loop Out and Loop In are important tools for channel re-balancing and will be integrated with RTL UI in the near future.
-* Loop Out
-
-![](../screenshots/Loop-Out-info.png)
-* Loop In
-
-![](../screenshots/Loop-In-info.png)
-
 ### Eclair
 Support [Eclair](https://github.com/ACINQ/eclair) implementation.
 

@@ -10,7 +10,7 @@ import {
   MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatExpansionModule, MatGridListModule, MatDatepickerModule,
   MatIconModule, MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatProgressSpinnerModule, MatRadioModule, MatTreeModule, MatNativeDateModule,
   MatSelectModule, MatSidenavModule, MatSlideToggleModule, MatSortModule, MatTableModule, MatToolbarModule, MatTooltipModule, MatBadgeModule,
-  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS
+  MatPaginatorModule, MatStepperModule, MatSliderModule, MatTabsModule, MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS, MatAutocompleteModule
 } from '@angular/material';
 
 import { QRCodeModule } from 'angularx-qrcode';
@@ -84,6 +84,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     MatSliderModule,
     MatTabsModule,
     MatSnackBarModule,
+    MatAutocompleteModule,
     QRCodeModule,
     RouterModule,
     HttpClientModule,
@@ -124,6 +125,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     MatSliderModule,
     MatTabsModule,
     MatSnackBarModule,
+    MatAutocompleteModule,
     AppSettingsComponent,
     SettingsComponent,
     NotFoundComponent,

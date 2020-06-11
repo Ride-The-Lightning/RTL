@@ -102,11 +102,6 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         peers: action.payload
       };
-    case RTLActions.ADD_PEER:
-      return {
-        ...state,
-        peers: [...state.peers, action.payload]
-      };
     case RTLActions.REMOVE_PEER:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {
@@ -227,7 +222,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       };
     case RTLActions.SET_FORWARDING_HISTORY:
       if (action.payload.forwarding_events) {
-        const storedChannels = [...state.allChannels];
+        const storedChannels = [...state.allChannels, ...state.closedChannels];
         action.payload.forwarding_events.forEach(event => {
           if (storedChannels) {
             for (let idx = 0; idx < storedChannels.length; idx++) {

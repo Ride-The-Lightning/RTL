@@ -8,6 +8,7 @@ common.rtl_pass = '';
 common.rtl_secret2fa = '';
 common.rtl_sso = 0;
 common.port = 3000;
+common.host = null;
 common.rtl_cookie_path = '';
 common.logout_redirect_link = '/login';
 common.cookie = '';
@@ -115,7 +116,22 @@ common.sortAscByKey = (array, key) => {
 common.sortDescByKey = (array, key) => {
   const temp = array.sort(function (a, b) {
     var x = +a[key]; var y = +b[key];
-    return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+    return (x > y) ? -1 : ((x < y) ? 1 : 0);
+  });
+  return temp;
+}
+
+common.sortAscByStrKey = (array, key) => {
+  return array.sort(function (a, b) {
+    var x = a[key] ? a[key].toUpperCase() : ''; var y = b[key] ? b[key].toUpperCase() : '';
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
+}
+
+common.sortDescByStrKey = (array, key) => {
+  const temp = array.sort(function (a, b) {
+    var x = a[key] ? a[key].toUpperCase() : ''; var y = b[key] ? b[key].toUpperCase() : '';
+    return (x > y) ? -1 : ((x < y) ? 1 : 0);
   });
   return temp;
 }

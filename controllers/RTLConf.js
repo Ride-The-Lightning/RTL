@@ -19,10 +19,10 @@ exports.getRTLConfig = (req, res, next) => {
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
       if (err.code === 'ENOENT') {
-        logger.error({fileName: 'RTLConf', lineNum: 46, msg: 'Node config does not exist!'});
+        logger.error({fileName: 'RTLConf', lineNum: 22, msg: 'Node config does not exist!'});
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
-        logger.error({fileName: 'RTLConf', lineNum: 49, msg: 'Getting Node Config Failed!'});
+        logger.error({fileName: 'RTLConf', lineNum: 25, msg: 'Getting Node Config Failed!'});
         res.status(500).json({
           message: "Reading Node Config Failed!",
           error: err
@@ -99,7 +99,7 @@ exports.updateUISettings = (req, res, next) => {
     res.status(201).json({message: 'Application Node Settings Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Application Node Settings Failed!'});
+    logger.error({fileName: 'Conf', lineNum: 101, msg: 'Updating Application Node Settings Failed!'});
     res.status(500).json({
       message: "Updating Application Node Settings Failed!",
       error: 'Updating Application Node Settings Failed!'
@@ -119,7 +119,7 @@ exports.update2FASettings = (req, res, next) => {
     res.status(201).json({message: message});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating 2FA Settings Failed!'});
+    logger.error({fileName: 'Conf', lineNum: 121, msg: 'Updating 2FA Settings Failed!'});
     res.status(500).json({
       message: "Updating 2FA Settings Failed!",
       error: 'Updating 2FA Settings Failed!'
@@ -137,7 +137,7 @@ exports.updateDefaultNode = (req, res, next) => {
     res.status(201).json({message: 'Default Node Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 102, msg: 'Updating Default Node Failed!'});
+    logger.error({fileName: 'Conf', lineNum: 139, msg: 'Updating Default Node Failed!'});
     res.status(500).json({
       message: "Updating Default Node Failed!",
       error: 'Updating Default Node Failed!'
@@ -169,7 +169,7 @@ exports.getConfig = (req, res, next) => {
   logger.info({fileName: 'RTLConf', msg: 'Node Type: ' + req.params.nodeType + ', File Path: ' + confFile});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
-      logger.error({fileName: 'Conf', lineNum: 159, msg: 'Reading Conf Failed!'});
+      logger.error({fileName: 'Conf', lineNum: 171, msg: 'Reading Conf Failed!'});
       res.status(500).json({
         message: "Reading Config File Failed!",
         error: err
@@ -208,7 +208,7 @@ exports.getCurrencyRates = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Conf', lineNum: 241, msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
+    logger.error({fileName: 'Conf', lineNum: 210, msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Rates Failed!",
       error: err.error

@@ -14,9 +14,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { OpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CurrencyUnitEnum, AlertTypeEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -72,26 +71,12 @@ export class LNDEffects implements OnDestroy {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
-              this.handleErrorWithoutAlert('FetchInfo', err);
+              this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
             } else {
-              let code = err.status ? err.status : '';
-              let message = err.error.message ? err.error.message + ' ' : '';
-              if (err.error && err.error.error) {
-                if (err.error.error.code) {
-                  code = err.error.error.code;
-                } else if (err.error.error.message && err.error.error.message.code) {
-                  code = err.error.error.message.code;
-                }
-                if (typeof err.error.error === 'string') {
-                  message = message + err.error.error;
-                } else if (err.error.error.error) {
-                  message = message + err.error.error.error;
-                } else if (err.error.error.errno) {
-                  message = message + err.error.error.errno;
-                }
-              }
+              const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
+              const message = (err.error.message ? err.error.message + ' ' : '') + ((err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error');
               this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-              this.handleErrorWithoutAlert('FetchInfo', err);
+              this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
             }
             return of({type: RTLActions.VOID});
           })
@@ -114,7 +99,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchPeers', err);
+            this.handleErrorWithoutAlert('FetchPeers', 'Fetching Peers Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -125,37 +110,21 @@ export class LNDEffects implements OnDestroy {
   saveNewPeer = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_PEER),
     withLatestFrom(this.store.select('lnd')),
-    mergeMap(([action, lndData]: [RTLActions.SaveNewPeer, fromLNDReducers.LNDState]) => {    
+    mergeMap(([action, lndData]: [RTLActions.SaveNewPeer, fromLNDReducers.LNDState]) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewPeer'));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm })
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
-            if(action.payload.showOpenChannelModal) {
-              const peerToAddChannelMessage = {
-                peer: postRes[0], 
-                information: lndData.information,
-                balance: lndData.blockchainBalance.total_balance || 0
-              };
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: { 
-                  type: AlertTypeEnum.INFORMATION,
-                  alertTitle: 'Peer Connected',
-                  message: peerToAddChannelMessage,
-                  newlyAdded: true,
-                  component: OpenChannelComponent
-                }}
-              };
-            } else {
-              return {
-                type: RTLActions.VOID
-              }
-            }
+            return {
+              type: RTLActions.NEWLY_ADDED_PEER,
+              payload: {peer: postRes[0]}
+            };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Peer Failed', this.CHILD_API_URL + environment.PEERS_API, err);
+            this.handleErrorWithoutAlert('SaveNewPeer', 'Peer Connection Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -189,13 +158,15 @@ export class LNDEffects implements OnDestroy {
   saveNewInvoice = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_INVOICE),
     mergeMap((action: RTLActions.SaveNewInvoice) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewInvoice'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         memo: action.payload.memo, amount: action.payload.invoiceValue, private: action.payload.private, expiry: action.payload.expiry
       })
-        .pipe(
-          map((postRes: any) => {
-            this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
+      .pipe(
+        map((postRes: any) => {
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.FetchInvoices({ num_max_invoices: action.payload.pageSize, reversed: true }));
+          if (action.payload.openModal) {
             postRes.memo = action.payload.memo;
             postRes.value = action.payload.invoiceValue;
             postRes.expiry = action.payload.expiry;
@@ -203,35 +174,35 @@ export class LNDEffects implements OnDestroy {
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
             postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
-            if (action.payload.openModal) {
-              this.store.dispatch(new RTLActions.CloseSpinner());
-              return {
-                type: RTLActions.OPEN_ALERT,
-                payload: { data: {
-                  invoice: postRes,
-                  newlyAdded: true,
-                  component: InvoiceInformationComponent
-                }}
-              }
-            } else {
-              return {
-                type: RTLActions.NEWLY_SAVED_INVOICE,
-                payload: { paymentRequest: postRes.payment_request }
-              }
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: RTLActions.OPEN_ALERT,
+              payload: { data: {
+                invoice: postRes,
+                newlyAdded: true,
+                component: InvoiceInformationComponent
+              }}
             }
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Add Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
-            return of({type: RTLActions.VOID});
-          })
-        );
+          } else {
+            return {
+              type: RTLActions.NEWLY_SAVED_INVOICE,
+              payload: { paymentRequest: postRes.payment_request }
+            }
+          }
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('SaveNewInvoice', 'Add Invoice Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      );
     }
-    ));
+  ));
 
   @Effect()
   openNewChannel = this.actions$.pipe(
     ofType(RTLActions.SAVE_NEW_CHANNEL),
     mergeMap((action: RTLActions.SaveNewChannel) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SaveNewChannel'));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
         node_pubkey: action.payload.selectedPeerPubkey, local_funding_amount: action.payload.fundingAmount, private: action.payload.private,
         trans_type: action.payload.transType, trans_type_value: action.payload.transTypeValue, spend_unconfirmed: action.payload.spendUnconfirmed
@@ -248,7 +219,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Open Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -411,7 +382,7 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchFees', err);
+      this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
       return of({type: RTLActions.VOID});
     })
   );
@@ -435,7 +406,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchBalance/' + action.payload, err);
+            this.handleErrorWithoutAlert('FetchBalance/' + action.payload, 'Fetching' + this.commonService.titleCase(action.payload) + ' Balance Failed.', err);
             return of({type: RTLActions.VOID});
           }
       ));
@@ -457,7 +428,7 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchNetwork', err);
+      this.handleErrorWithoutAlert('FetchNetwork', 'Fetching Network Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -477,7 +448,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels/all', err);
+            this.handleErrorWithoutAlert('FetchChannels/all', 'Fetching All Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
       );
@@ -531,7 +502,7 @@ export class LNDEffects implements OnDestroy {
             };
           },
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels/pending', err);
+            this.handleErrorWithoutAlert('FetchChannels/pending', 'Fetching Pending Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
       ));
@@ -553,7 +524,7 @@ export class LNDEffects implements OnDestroy {
             };
           },
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels/closed', err);
+            this.handleErrorWithoutAlert('FetchChannels/closed', 'Fetching Closed Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
       ));
@@ -580,7 +551,7 @@ export class LNDEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchInvoices', err);
+          this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
           return of({type: RTLActions.VOID});
         }
     ));
@@ -601,7 +572,7 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchTransactions', err);
+      this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -621,7 +592,7 @@ export class LNDEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchPayments', err);
+      this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -630,7 +601,8 @@ export class LNDEffects implements OnDestroy {
   decodePayment = this.actions$.pipe(
     ofType(RTLActions.DECODE_PAYMENT),
     mergeMap((action: RTLActions.DecodePayment) => {
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload)
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('DecodePayment'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam)
         .pipe(
           map((decodedPayment) => {
             this.logger.info(decodedPayment);
@@ -641,7 +613,11 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload, err);
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam, err);
+            }
             return of({type: RTLActions.VOID});
           })
         );
@@ -662,6 +638,7 @@ export class LNDEffects implements OnDestroy {
     ofType(RTLActions.SEND_PAYMENT),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.SendPayment, any]) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('SendPayment'));
       let queryHeaders = {};
       if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
       if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; } // Channel Rebalancing
@@ -688,9 +665,13 @@ export class LNDEffects implements OnDestroy {
                 };
               } else {
                 this.logger.error('Error: ' + sendRes.payment_error);
-                const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error.message};
-                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions/' + action.payload.paymentReq, myErr);
-                return of({type: RTLActions.VOID});              
+                const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
+                if (action.payload.fromDialog) {
+                  this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+                } else {
+                  this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+                }
+                return of({type: RTLActions.VOID});
               }
             } else {
               this.store.dispatch(new RTLActions.SetDecodedPayment({}));
@@ -723,7 +704,11 @@ export class LNDEffects implements OnDestroy {
             } else {
               this.logger.error('Error: ' + JSON.stringify(err));
               const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              if (action.payload.fromDialog) {
+                this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+              } else {
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              }
               return of({type: RTLActions.VOID});
             }
           })
@@ -766,17 +751,18 @@ export class LNDEffects implements OnDestroy {
   graphNodeFetch = this.actions$.pipe(
     ofType(RTLActions.FETCH_GRAPH_NODE),
     mergeMap((action: RTLActions.FetchGraphNode) => {
-      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload)
+      this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchGraphNode'));
+      return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload.pubkey)
         .pipe(map((graphNode: any) => {
           this.logger.info(graphNode);
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: RTLActions.SET_GRAPH_NODE,
-            payload: graphNode ? graphNode : {}
+            payload: graphNode && graphNode.node ? {node: graphNode.node} : {node: null}
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('ERROR', 'Get Node Address Failed', this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload, err);
+          this.handleErrorWithoutAlert('FetchGraphNode', 'Fetching Graph Node Failed.', err);
           return of({type: RTLActions.VOID});
         }));
       }
@@ -832,15 +818,15 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.FetchTransactions());            
             this.store.dispatch(new RTLActions.FetchBalance('blockchain'));
             return {
-              type: RTLActions.OPEN_SNACK_BAR,
-              payload: 'Fund Sent Successfully!'
+              type: RTLActions.SET_CHANNEL_TRANSACTION_RES,
+              payload: postRes
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new RTLActions.EffectErrorLnd({ action: 'SetChannelTransaction', code: err.status, message: err.error.error }));
-            this.handleErrorWithAlert('ERROR', 'Sending Fund Failed', this.CHILD_API_URL + environment.TRANSACTIONS_API, err);
+            this.handleErrorWithoutAlert('SetChannelTransaction', 'Sending Fund Failed.', err);
             return of({type: RTLActions.VOID});
           }));
       })
@@ -920,7 +906,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.message + ' ' + err.error.error.code, this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
+            this.handleErrorWithAlert('ERROR', 'Genseed Generation Failed', this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -985,7 +971,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.error, this.CHILD_API_URL + environment.WALLET_API + '/initwallet', err);
+            this.handleErrorWithAlert('ERROR', 'Wallet Initialization Failed', this.CHILD_API_URL + environment.WALLET_API + '/initwallet', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -1012,7 +998,7 @@ export class LNDEffects implements OnDestroy {
             return { type: RTLActions.VOID };
           }),
           catchError((err) => {
-            this.handleErrorWithAlert('ERROR', err.error.error, this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', err);
+            this.handleErrorWithAlert('ERROR', 'Unlock Wallet Failed', this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', err);
             return of({ type: RTLActions.VOID });
           })
         );
@@ -1150,7 +1136,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('LoopSwaps', err);
+            this.handleErrorWithoutAlert('LoopSwaps', 'Fetching Swaps Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -1257,13 +1243,16 @@ export class LNDEffects implements OnDestroy {
     })
   );
 
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, genericErrorMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }
 
@@ -1271,14 +1260,16 @@ export class LNDEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: err.error.error.error.error ? err.error.error.error.error : err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : err ? err : '', URL: errURL },
+          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

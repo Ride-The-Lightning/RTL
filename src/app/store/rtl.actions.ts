@@ -6,7 +6,7 @@ import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChi
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, SwapStatus
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, SwapStatus
 } from '../shared/models/lndModels';
 
 export const VOID = 'VOID';
@@ -14,6 +14,7 @@ export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
 export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
 export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
+export const CLOSE_ALL_DIALOGS = 'CLOSE_ALL_DIALOGS';
 export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
 export const CLOSE_SPINNER = 'CLOSE_SPINNER';
@@ -40,7 +41,7 @@ export const SET_INFO = 'SET_INFO';
 export const FETCH_PEERS = 'FETCH_PEERS';
 export const SET_PEERS = 'SET_PEERS';
 export const SAVE_NEW_PEER = 'SAVE_NEW_PEER';
-export const ADD_PEER = 'ADD_PEER';
+export const NEWLY_ADDED_PEER = 'NEWLY_ADDED_PEER';
 export const DETACH_PEER = 'DETACH_PEER';
 export const REMOVE_PEER = 'REMOVE_PEER';
 export const SAVE_NEW_INVOICE = 'SAVE_NEW_INVOICE';
@@ -87,6 +88,7 @@ export const SET_GRAPH_NODE = 'SET_GRAPH_NODE';
 export const GET_NEW_ADDRESS = 'GET_NEW_ADDRESS';
 export const SET_NEW_ADDRESS = 'SET_NEW_ADDRESS';
 export const SET_CHANNEL_TRANSACTION = 'SET_CHANNEL_TRANSACTION';
+export const SET_CHANNEL_TRANSACTION_RES = 'SET_CHANNEL_TRANSACTION_RES';
 export const GEN_SEED = 'GEN_SEED';
 export const GEN_SEED_RESPONSE = 'GEN_SEED_RESPONSE';
 export const INIT_WALLET = 'INIT_WALLET';
@@ -100,6 +102,7 @@ export const LOGIN = 'LOGIN';
 export const VERIFY_TWO_FA = 'VERIFY_TWO_FA';
 export const LOGOUT = 'LOGOUT';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
+export const RESET_PASSWORD_RES = 'RESET_PASSWORD_RES';
 export const PEER_LOOKUP = 'PEER_LOOKUP';
 export const CHANNEL_LOOKUP = 'CHANNEL_LOOKUP';
 export const INVOICE_LOOKUP = 'INVOICE_LOOKUP';
@@ -133,6 +136,7 @@ export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
 export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
 export const SET_PEERS_CL = 'SET_PEERS_CL';
 export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
+export const NEWLY_ADDED_PEER_CL = 'NEWLY_ADDED_PEER_CL';
 export const ADD_PEER_CL = 'ADD_PEER_CL';
 export const DETACH_PEER_CL = 'DETACH_PEER_CL';
 export const REMOVE_PEER_CL = 'REMOVE_PEER_CL';
@@ -146,6 +150,7 @@ export const FETCH_PAYMENTS_CL = 'FETCH_PAYMENTS_CL';
 export const SET_PAYMENTS_CL = 'SET_PAYMENTS_CL';
 export const DECODE_PAYMENT_CL = 'DECODE_PAYMENT_CL';
 export const SEND_PAYMENT_CL = 'SEND_PAYMENT_CL';
+export const SEND_PAYMENT_STATUS_CL = 'SEND_PAYMENT_STATUS_CL';
 export const SET_DECODED_PAYMENT_CL = 'SET_DECODED_PAYMENT_CL';
 export const GET_QUERY_ROUTES_CL = 'GET_QUERY_ROUTES_CL';
 export const SET_QUERY_ROUTES_CL = 'SET_QUERY_ROUTES_CL';
@@ -162,6 +167,7 @@ export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
 export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
 export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
 export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
+export const SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -195,6 +201,10 @@ export class ClearEffectErrorCl implements Action {
 export class EffectErrorCl implements Action {
   readonly type = EFFECT_ERROR_CL;
   constructor(public payload: ErrorPayload) {}
+}
+
+export class CloseAllDialogs implements Action {
+  readonly type = CLOSE_ALL_DIALOGS;
 }
 
 export class OpenSnackBar implements Action {
@@ -309,12 +319,12 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER;
-  constructor(public payload: {pubkey: string, host: string, perm: boolean, showOpenChannelModal: boolean}) {}
+  constructor(public payload: {pubkey: string, host: string, perm: boolean}) {}
 }
 
-export class AddPeer implements Action {
-  readonly type = ADD_PEER;
-  constructor(public payload: Peer) {}
+export class NewlyAddedPeer implements Action {
+  readonly type = NEWLY_ADDED_PEER;
+  constructor(public payload: { peer: Peer, balance: number}) {}
 }
 
 export class DetachPeer implements Action {
@@ -491,7 +501,7 @@ export class SetPayments implements Action {
 
 export class DecodePayment implements Action {
   readonly type = DECODE_PAYMENT;
-  constructor(public payload: string) {} // payload = routeParam
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {}
 }
 
 export class SetDecodedPayment implements Action {
@@ -501,7 +511,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT;
-  constructor(public payload: { paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -516,12 +526,12 @@ export class SendCoins implements Action {
 
 export class FetchGraphNode implements Action {
   readonly type = FETCH_GRAPH_NODE;
-  constructor(public payload: string) {} // payload = pubkey
+  constructor(public payload: {pubkey: string}) {}
 }
 
 export class SetGraphNode implements Action {
   readonly type = SET_GRAPH_NODE;
-  constructor(public payload: GraphNode) {}
+  constructor(public payload: {node: LightningNode}) {}
 }
 
 export class GetNewAddress implements Action {
@@ -537,6 +547,11 @@ export class SetNewAddress implements Action {
 export class SetChannelTransaction implements Action {
   readonly type = SET_CHANNEL_TRANSACTION;
   constructor(public payload: ChannelsTransaction) {}
+}
+
+export class SetChannelTransactionRes implements Action {
+  readonly type = SET_CHANNEL_TRANSACTION_RES;
+  constructor(public payload: any) {}
 }
 
 export class GenSeed implements Action {
@@ -668,6 +683,11 @@ export class ResetPassword implements Action {
   constructor(public payload: {currPassword: string, newPassword: string}) {}
 }
 
+export class ResetPasswordRes implements Action {
+  readonly type = RESET_PASSWORD_RES;
+  constructor(public payload: {token: string}) {}
+}
+
 export class SetChildNodeSettingsCL implements Action {
   readonly type = SET_CHILD_NODE_SETTINGS_CL;
   constructor(public payload: SelNodeChild) {}
@@ -741,7 +761,12 @@ export class SetPeersCL implements Action {
 
 export class SaveNewPeerCL implements Action {
   readonly type = SAVE_NEW_PEER_CL;
-  constructor(public payload: {id: string, showOpenChannelModal: boolean}) {}
+  constructor(public payload: {id: string}) {}
+}
+
+export class NewlyAddedPeerCL implements Action {
+  readonly type = NEWLY_ADDED_PEER_CL;
+  constructor(public payload: { peer: Peer, balance: number}) {}
 }
 
 export class AddPeerCL implements Action {
@@ -770,7 +795,7 @@ export class SetPaymentsCL implements Action {
 
 export class DecodePaymentCL implements Action {
   readonly type = DECODE_PAYMENT_CL;
-  constructor(public payload: string) {} // payload = routeParam
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // payload = routeParam
 }
 
 export class SetDecodedPaymentCL implements Action {
@@ -780,7 +805,12 @@ export class SetDecodedPaymentCL implements Action {
 
 export class SendPaymentCL implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: { invoice: string, amount?: number }) {}
+  constructor(public payload: { fromDialog: boolean, invoice: string, amount?: number }) {}
+}
+
+export class SendPaymentStatusCL implements Action {
+  readonly type = SEND_PAYMENT_STATUS_CL;
+  constructor(public payload: any) {}
 }
 
 export class GetQueryRoutesCL implements Action {
@@ -887,13 +917,18 @@ export class SetChannelTransactionCL implements Action {
   constructor(public payload: OnChainCL) {}
 }
 
+export class SetChannelTransactionResCL implements Action {
+  readonly type = SET_CHANNEL_TRANSACTION_RES_CL;
+  constructor(public payload: any) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
-  VoidAction | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
+  VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey |
   UpdateSelectedNodeOptions | ResetRootStore | ResetLNDStore | ResetCLStore |
   SetSelelectedNode | SetNodeData | SetChildNodeSettings | FetchInfo | SetInfo |
-  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer |
+  FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
   AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
   FetchFees | SetFees |
   FetchBalance | SetBalance |
@@ -907,17 +942,17 @@ export type RTLActions =
   FetchPayments | SetPayments | SendPayment | SendPaymentStatus | SendCoins |
   DecodePayment | SetDecodedPayment |
   FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
-  GetNewAddress | SetNewAddress | SetChannelTransaction |
+  GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
   GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
   FetchConfig | ShowConfig | PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-  FetchLoopSwaps | SetLoopSwaps | FetchBoltzSwaps | SetBoltzSwaps | AddBoltzSwap | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword |
+  FetchLoopSwaps | SetLoopSwaps | FetchBoltzSwaps | SetBoltzSwaps | AddBoltzSwap | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA | Logout | ResetPassword | ResetPasswordRes |
   SetChildNodeSettingsCL | FetchInfoCL | SetInfoCL | FetchFeesCL | SetFeesCL | FetchFeeRatesCL | SetFeeRatesCL |
   FetchBalanceCL | SetBalanceCL | FetchLocalRemoteBalanceCL | SetLocalRemoteBalanceCL |
   GetNewAddressCL | SetNewAddressCL |
-  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL |
+  FetchPeersCL | SetPeersCL | AddPeerCL | DetachPeerCL | SaveNewPeerCL | RemovePeerCL | NewlyAddedPeerCL |
   FetchChannelsCL | SetChannelsCL | UpdateChannelsCL | SaveNewChannelCL | CloseChannelCL | RemoveChannelCL |
-  FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | DecodePaymentCL | SetDecodedPaymentCL |
-  GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL |
+  FetchPaymentsCL | SetPaymentsCL | SendPaymentCL | SendPaymentStatusCL | DecodePaymentCL | SetDecodedPaymentCL |
+  GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL | SetChannelTransactionResCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
   GetForwardingHistoryCL | SetForwardingHistoryCL |
   FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL;

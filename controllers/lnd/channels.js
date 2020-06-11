@@ -5,13 +5,17 @@ var options = {};
 
 getAliasForChannel = (channel) => {
   return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/graph/node/' + channel.remote_pubkey;
+    let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
+    options.url = common.getSelLNServerUrl() + '/graph/node/' + pubkey;
     request(options).then(function(aliasBody) {
       logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
       channel.remote_alias = aliasBody.node.alias;
       resolve(aliasBody.node.alias);
     })
-    .catch(err => resolve(''));
+    .catch(err => {
+      channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
+      resolve(pubkey);  
+    });
   });
 }
 
@@ -38,8 +42,16 @@ exports.getAllChannels = (req, res, next) => {
         body.channels = common.sortDescByKey(body.channels, 'balancedness');
         logger.info({fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
         res.status(200).json(body);
-      }).catch(err => {
-        logger.error({fileName: 'Channels', lineNum: 49, msg: 'Get All Channel Alias: ' + JSON.stringify(err)});
+      })
+      .catch(errRes => {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
+        }
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'Channels', lineNum: 48, msg: 'Get All Channel Alias Error: ' + JSON.stringify(err)});
         res.status(500).json({
           message: 'Fetching Channels Alias Failed!',
           error: err.error
@@ -50,8 +62,15 @@ exports.getAllChannels = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 54, msg: 'Get All Channel: ' + JSON.stringify(err.error)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 66, msg: 'Get All Channels Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching All Channels Failed!',
       error: err.error
@@ -64,18 +83,53 @@ exports.getPendingChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channels/pending';
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = [];
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
       body.btc_total_limbo_balance = 0;
     } else {
       body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
     }
-    logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    const promises = [];
+    if(body.pending_open_channels && body.pending_open_channels.length > 0) {
+      body.pending_open_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.pending_closing_channels && body.pending_closing_channels.length > 0) {
+      body.pending_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.pending_force_closing_channels && body.pending_force_closing_channels.length > 0) {
+      body.pending_force_closing_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    if(body.waiting_close_channels && body.waiting_close_channels.length > 0) {
+      body.waiting_close_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
+    }
+    Promise.all(promises).then(function(values) {
+      logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
+      res.status(200).json(body);
+    })
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'Channels', lineNum: 106, msg: 'Get Pending Channel Alias Error: ' + JSON.stringify(err)});
+      res.status(500).json({
+        message: 'Fetching Pending Channels Failed!',
+        error: err.error
+      });
+    });      
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 78, msg: 'Get Pending Channel: ' + JSON.stringify(err.error)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 97, msg: 'Get Pending Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching Pending Channels Failed!',
       error: err.error
@@ -88,18 +142,46 @@ exports.getClosedChannels = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/channels/closed';
   options.qs = req.query;
   request(options).then(function (body) {
-    let channels = [];
     if (body.channels && body.channels.length > 0) {
-      body.channels.forEach(channel => {
-        channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+      Promise.all(
+        body.channels.map(channel => {
+          channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
+          return getAliasForChannel(channel);
+        })
+      )
+      .then(function(values) {
+        body.channels = common.sortDescByKey(body.channels, 'close_height');
+        logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
+        res.status(200).json(body);
+      })
+      .catch(errRes => {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
+        }
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'Channels', lineNum: 48, msg: 'Get All Channel Alias Error: ' + JSON.stringify(err)});
+        res.status(500).json({
+          message: 'Fetching Channels Alias Failed!',
+          error: err.error
+        });
       });
-      body.channels = common.sortDescByKey(body.channels, 'close_height');
-    }
-    logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
-    res.status(200).json(body);
+    } else {
+      body.channels = [];
+      res.status(200).json(body);
+    }    
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 102, msg: 'Get Closed Channel: ' + JSON.stringify(err.error)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 126, msg: 'Get Closed Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching Closed Channels Failed!',
       error: err.error
@@ -125,6 +207,7 @@ exports.postChannel = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Channel Open Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 152, msg: 'Open New Channel  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Open Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -133,8 +216,15 @@ exports.postChannel = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 103, msg: 'Open Channel: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 168, msg: 'Open New Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Open Channel Failed!',
       error: err.error
@@ -166,11 +256,13 @@ exports.postTransactions = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 200, msg: 'Send Payment  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Send Payment Failed!',
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else if (body.payment_error) {
+      logger.error({fileName: 'Channels', lineNum: 206, msg: 'Send Payment Error: ' + JSON.stringify(body.payment_error)});
       res.status(500).json({
         message: 'Send Payment Failed!',
         error: (!body) ? 'Error From Server!' : body.payment_error
@@ -179,8 +271,15 @@ exports.postTransactions = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 143, msg: 'Send Payment: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 222, msg: 'Send Payment Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Send Payment Failed!',
       error: err.error
@@ -199,6 +298,7 @@ exports.closeChannel = (req, res, next) => {
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 241, msg: 'Close Channel  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Close Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -207,8 +307,15 @@ exports.closeChannel = (req, res, next) => {
       res.status(204).json({message: 'Channel Closed!'});
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 169, msg: 'Close Channel: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 257, msg: 'Close Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Close Channel Failed!',
       error: err.error
@@ -241,6 +348,7 @@ exports.postChanPolicy = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 290, msg: 'Update Channel Policy Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Update Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -249,8 +357,15 @@ exports.postChanPolicy = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Channels', lineNum: 211, msg: 'Update Channel Policy: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Channels', lineNum: 306, msg: 'Update Channel Policy Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Update Channel Failed!',
       error: err.error

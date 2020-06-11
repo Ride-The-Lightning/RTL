@@ -10,7 +10,7 @@ exports.getBalance = (req, res, next) => {
   options.qs = req.query;
   request(options).then((body) => {
     logger.info({fileName: 'Balance', msg: 'Request params: ' + JSON.stringify(req.params) + 'Request Query: ' + JSON.stringify(req.query) + ' Balance Received: ' + JSON.stringify(body)});
-    if( body) {
+    if (body) {
       if (upperCase(req.params.source) === 'BLOCKCHAIN') {
         if (!body.total_balance) { body.total_balance = 0; }
         if (!body.confirmed_balance) { body.confirmed_balance = 0; }
@@ -28,7 +28,15 @@ exports.getBalance = (req, res, next) => {
       res.status(200).json(body);
     }
   })
-  .catch(function (err) {
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Balance', lineNum: 38, msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching balance failed!",
       error: err.error
