@@ -41,10 +41,21 @@ common.updateSelectedNodeOptions = () => {
     form: ''
   };
   try {
-    if (common.selectedNode && common.selectedNode.ln_implementation && common.selectedNode.ln_implementation.toUpperCase() === 'CLT') {
-      common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
-    } else {
-      common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+    if (common.selectedNode && common.selectedNode.ln_implementation) {
+      switch (common.selectedNode.ln_implementation.toUpperCase()) {
+        case 'CLT':
+          common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
+          break;
+      
+        case 'ECLR':
+          // common.selectedNode.options.headers = { 'authorization': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'eclair.conf'))).toString("base64") };
+          common.selectedNode.options.headers = { 'authorization': 'Basic ' + new Buffer(`:test`).toString('base64') };
+          break;
+
+        default:
+          common.selectedNode.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'admin.macaroon')).toString('hex') };
+          break;
+      }
     }
     return { status: 200, message: 'Updated Successfully!' };
   } catch(err) {
@@ -70,10 +81,21 @@ common.setOptions = () => {
         form: ''
       };
       try {
-        if (node.ln_implementation && node.ln_implementation.toUpperCase() === 'CLT') {
-          node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
-        } else {
-          node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+        if (node.ln_implementation) {
+          switch (node.ln_implementation.toUpperCase()) {
+            case 'CLT':
+              node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
+              break;
+          
+            case 'ECLR':
+              // node.options.headers = { 'authorization': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'eclair.conf'))).toString("base64") };
+              node.options.headers = { 'authorization': 'Basic ' + new Buffer(`:test`).toString('base64') };
+              break;
+
+            default:
+              node.options.headers = { 'Grpc-Metadata-macaroon': fs.readFileSync(path.join(node.macaroon_path, 'admin.macaroon')).toString('hex') };
+              break;
+          }
         }
       } catch (err) {
         console.error('Common Set Options Error:' + JSON.stringify(err));

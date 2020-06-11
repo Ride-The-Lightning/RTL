@@ -11,6 +11,7 @@ import { AuthGuard } from './shared/services/auth.guard';
 export const routes: Routes = [
   { path: 'lnd', loadChildren: () => import('./lnd/lnd.module').then(childModule => childModule.LNDModule), canActivate: [AuthGuard] },
   { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
+  { path: 'eclr', loadChildren: () => import('./eclair/eclr.module').then(childModule => childModule.ECLRModule), canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'help', component: HelpComponent },
   { path: 'login', component: LoginComponent },

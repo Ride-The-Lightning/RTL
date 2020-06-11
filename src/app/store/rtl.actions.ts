@@ -5,9 +5,11 @@ import { DialogConfig } from '../shared/models/alertData';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SelNodeChild } from '../shared/models/RTLconfig';
 import { GetInfoCL, FeesCL, PeerCL, PaymentCL, PayRequestCL, QueryRoutesCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, InvoiceCL, ListInvoicesCL, OnChainCL } from '../shared/models/clModels';
 import {
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment, GraphNode,
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, SwapStatus
 } from '../shared/models/lndModels';
+
+import { GetInfoECLR } from '../shared/models/eclrModels';
 
 export const VOID = 'VOID';
 export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
@@ -165,6 +167,13 @@ export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
 export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
 export const SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL';
 
+export const RESET_ECLR_STORE = 'RESET_ECLR_STORE';
+export const CLEAR_EFFECT_ERROR_ECLR = 'CLEAR_EFFECT_ERROR_ECLR';
+export const EFFECT_ERROR_ECLR = 'EFFECT_ERROR_ECLR';
+export const SET_CHILD_NODE_SETTINGS_ECLR = 'SET_CHILD_NODE_SETTINGS_ECLR';
+export const FETCH_INFO_ECLR = 'FETCH_INFO_ECLR';
+export const SET_INFO_ECLR = 'SET_INFO_ECLR';
+
 export class VoidAction implements Action {
   readonly type = VOID;
 }
@@ -196,6 +205,16 @@ export class ClearEffectErrorCl implements Action {
 
 export class EffectErrorCl implements Action {
   readonly type = EFFECT_ERROR_CL;
+  constructor(public payload: ErrorPayload) {}
+}
+
+export class ClearEffectErrorEclr implements Action {
+  readonly type = CLEAR_EFFECT_ERROR_ECLR;
+  constructor(public payload: string) {} // payload = errorAction
+}
+
+export class EffectErrorEclr implements Action {
+  readonly type = EFFECT_ERROR_ECLR;
   constructor(public payload: ErrorPayload) {}
 }
 
@@ -257,6 +276,11 @@ export class ResetLNDStore implements Action {
 
 export class ResetCLStore implements Action {
   readonly type = RESET_CL_STORE;
+  constructor(public payload: SelNodeChild) {}
+}
+
+export class ResetECLRStore implements Action {
+  readonly type = RESET_ECLR_STORE;
   constructor(public payload: SelNodeChild) {}
 }
 
@@ -899,6 +923,21 @@ export class SetChannelTransactionResCL implements Action {
   constructor(public payload: any) {}
 }
 
+export class SetChildNodeSettingsECLR implements Action {
+  readonly type = SET_CHILD_NODE_SETTINGS_ECLR;
+  constructor(public payload: SelNodeChild) {}
+}
+
+export class FetchInfoECLR implements Action {
+  readonly type = FETCH_INFO_ECLR;
+  constructor(public payload: {loadPage: string}) {}
+}
+
+export class SetInfoECLR implements Action {
+  readonly type = SET_INFO_ECLR;
+  constructor(public payload: GetInfoECLR) {}
+}
+
 export type RTLActions =
   ClearEffectErrorRoot | EffectErrorRoot | ClearEffectErrorLnd | EffectErrorLnd | ClearEffectErrorCl | EffectErrorCl |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
@@ -932,4 +971,5 @@ export type RTLActions =
   GetQueryRoutesCL | SetQueryRoutesCL | SetChannelTransactionCL | SetChannelTransactionResCL |
   PeerLookupCL | ChannelLookupCL | InvoiceLookupCL | SetLookupCL |
   GetForwardingHistoryCL | SetForwardingHistoryCL |
-  FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL;
+  FetchInvoicesCL | SetInvoicesCL | SetTotalInvoicesCL | SaveNewInvoiceCL | AddInvoiceCL | DeleteExpiredInvoiceCL |
+  ResetECLRStore | ClearEffectErrorEclr | EffectErrorEclr | SetChildNodeSettingsECLR | FetchInfoECLR | SetInfoECLR;

@@ -9,6 +9,7 @@ const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
 const apiLNDRoot = baseHref + "api/lnd/";
 const apiCLRoot = baseHref + "api/cl/";
+const apiECLRRoot = baseHref + "api/eclr/";
 
 const authenticateRoutes = require("./routes/authenticate");
 const RTLConfRoutes = require("./routes/RTLConf");
@@ -39,6 +40,8 @@ const paymentsCLRoutes = require("./routes/c-lightning/payments");
 const peersCLRoutes = require("./routes/c-lightning/peers");
 const networkCLRoutes = require("./routes/c-lightning/network");
 const messageCLRoutes = require("./routes/c-lightning/message");
+
+const infoECLRRoutes = require("./routes/eclair/getInfo");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -89,6 +92,8 @@ app.use(apiCLRoot + "payments", paymentsCLRoutes);
 app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
 app.use(apiCLRoot + "message", messageCLRoutes);
+
+app.use(apiECLRRoot + "getinfo", infoECLRRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

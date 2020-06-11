@@ -316,6 +316,7 @@ export class RTLEffects implements OnDestroy {
   mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
     this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
+    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoECLR'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -436,15 +437,26 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
     this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+    this.store.dispatch(new RTLActions.ResetECLRStore(selNode));
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
-      if(node.lnImplementation === 'CLT') {
-        this.CHILD_API_URL = API_URL + '/cl';
-        this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
-      } else {
-        this.CHILD_API_URL = API_URL + '/lnd';
-        this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+      console.warn(node.lnImplementation);
+      switch (node.lnImplementation) {
+        case 'CLT':
+          this.CHILD_API_URL = API_URL + '/cl';
+          this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
+          break;
+
+        case 'ECLR':
+          this.CHILD_API_URL = API_URL + '/eclr';
+          this.store.dispatch(new RTLActions.FetchInfoECLR({loadPage: landingPage}));
+          break;
+            
+        default:
+          this.CHILD_API_URL = API_URL + '/lnd';
+          this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+          break;
       }
     }
   }

@@ -25,11 +25,19 @@ export class DataService implements OnInit, OnDestroy {
   }
 
   setChildAPIUrl(lnImplementation: string) {
-    if (lnImplementation === 'LND') {
-      this.childAPIUrl = API_URL + '/lnd';
-    } else if (lnImplementation === 'CLT') {
-      this.childAPIUrl = API_URL + '/cl';
-    } 
+    switch (lnImplementation) {
+      case 'CLT':
+        this.childAPIUrl = API_URL + '/cl';
+        break;
+
+      case 'ECLR':
+          this.childAPIUrl = API_URL + '/eclr';
+          break;
+      
+      default:
+        this.childAPIUrl = API_URL + '/lnd';
+        break;
+    }
   }
 
   getFiatRates() {

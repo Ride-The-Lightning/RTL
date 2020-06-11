@@ -28,6 +28,7 @@ import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
+import { ECLREffects } from './eclair/store/eclr.effects';
 import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLChannelInformationComponent } from './clightning/peers-channels/channels/channel-information-modal/channel-information.component';
@@ -68,7 +69,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
         strictActionImmutability: false
       }
     }),
-    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLREffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     LayoutModule,
     MatDialogModule,
