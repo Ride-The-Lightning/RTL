@@ -49,10 +49,9 @@ RTL requires its own config file `RTL-Config.json`, to start the server and prov
 
 Ensure that the follow values are correct per your config:
 * `lnImplementation` - This should be `ECLR`, indicating that RTL is connecting to an Eclair node.
-* `macaroonPath` - Path of the folder containing `eclair.conf` for basic password authentication through `eclair.api.password`.
 * `lnServerUrl` - complete url with ip address and port of the eclair server.
 * `multiPass` - Specify the password (in plain text) to access RTL. This password will be hashed and not stored as plain text.
-* `configPath` (optional) - File path of the eclair config file, if RTL server is local to the eclair server.
+* `configPath` (Mandatory) - Full path of the folder containing `eclair.conf` including the file name for the basic password authentication through `eclair.api.password`.
 
 ```
 {
@@ -68,8 +67,7 @@ Ensure that the follow values are correct per your config:
       "lnNode": "Eclair Testnet # 1",
       "lnImplementation": "ECLR",
       "Authentication": {
-        "macaroonPath": "<Modify to include the path of the folder with eclair.conf>",
-        "configPath": "<Optional - Config file path for eclair>"
+        "configPath": "<Mandatory - Config file path, including .conf file, for authentication>"
       },
       "Settings": {
         "userPersona": "OPERATOR",

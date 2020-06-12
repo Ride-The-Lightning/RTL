@@ -33,12 +33,18 @@ export const MENU_DATA: MenuRootNode = {
       ]},
     {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
     {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+  ],
+  ECLRChildren: [
+    {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/eclr/home', userPersona: UserPersonaEnum.ALL},
+    {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
+    {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
   ]
 };
 
 export class MenuRootNode {
   LNDChildren?: MenuChildNode[];
   CLChildren?: MenuChildNode[];
+  ECLRChildren?: MenuChildNode[];
 }
 
 export class MenuChildNode {

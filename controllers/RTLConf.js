@@ -184,6 +184,12 @@ exports.getConfig = (req, res, next) => {
       if (jsonConfig['rpcpassword']) {
         jsonConfig['rpcpassword'] = jsonConfig['rpcpassword'].replace(/./g, '*');
       }
+      if (jsonConfig['eclair.api.password']) {
+        jsonConfig['eclair.api.password'] = jsonConfig['eclair.api.password'].replace(/./g, '*');
+      }      
+      if (jsonConfig['eclair.bitcoind.rpcpassword']) {
+        jsonConfig['eclair.bitcoind.rpcpassword'] = jsonConfig['eclair.bitcoind.rpcpassword'].replace(/./g, '*');
+      }      
       if (jsonConfig.multiPass) {
         jsonConfig.multiPass = jsonConfig.multiPass.replace(/./g, '*');
       }

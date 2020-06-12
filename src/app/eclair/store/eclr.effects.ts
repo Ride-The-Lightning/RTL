@@ -65,7 +65,7 @@ export class ECLREffects implements OnDestroy {
   ));
 
   initializeRemainingData(info: any, landingPage: string) {
-    this.sessionService.setItem('clUnlocked', 'true');
+    this.sessionService.setItem('eclrUnlocked', 'true');
     const node_data = {
       identity_pubkey: info.nodeId,
       alias: info.alias,

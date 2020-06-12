@@ -1,6 +1,7 @@
 var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
+var ini = require('ini');
 var common = {};
 
 common.rtl_conf_file_path = '';
@@ -48,8 +49,8 @@ common.updateSelectedNodeOptions = () => {
           break;
       
         case 'ECLR':
-          // common.selectedNode.options.headers = { 'authorization': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'eclair.conf'))).toString("base64") };
-          common.selectedNode.options.headers = { 'authorization': 'Basic ' + new Buffer(`:test`).toString('base64') };
+          var eclrPwd = ini.parse(fs.readFileSync(common.selectedNode.config_path, 'utf-8'))['eclair.api.password'];
+          common.selectedNode.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclrPwd).toString('base64') };
           break;
 
         default:
@@ -88,8 +89,8 @@ common.setOptions = () => {
               break;
           
             case 'ECLR':
-              // node.options.headers = { 'authorization': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'eclair.conf'))).toString("base64") };
-              node.options.headers = { 'authorization': 'Basic ' + new Buffer(`:test`).toString('base64') };
+              var eclrPwd = ini.parse(fs.readFileSync(node.config_path, 'utf-8'))['eclair.api.password'];
+              node.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclrPwd).toString('base64') };
               break;
 
             default:

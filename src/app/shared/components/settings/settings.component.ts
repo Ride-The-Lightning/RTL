@@ -41,7 +41,20 @@ export class SettingsComponent implements OnInit, OnDestroy{
       this.showBitcoind = false;
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
-      this.lnImplementationStr = this.selNode.lnImplementation.toUpperCase() === 'CLT' ? 'C-Lightning Config' : 'LND Config';
+      switch (this.selNode.lnImplementation.toUpperCase()) {
+        case 'CLT':
+          this.lnImplementationStr = 'C-Lightning Config';
+          break;
+      
+        case 'ECLR':
+          this.lnImplementationStr = 'Eclair Config';
+          break;
+
+        default:
+          this.lnImplementationStr = 'LND Config';
+          break;
+      }
+
       if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
         this.showLnConfig = true;
       }

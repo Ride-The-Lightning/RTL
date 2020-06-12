@@ -372,6 +372,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate(['/login']);
     }
+    this.sessionService.removeItem('eclrUnlocked');
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');

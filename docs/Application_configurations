@@ -19,8 +19,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "lnNode": "<Node name to uniquely identify the node in the UI, Default 'Node 1', Required>",
       "lnImplementation": "<LNP implementation, Allowed values LND/CLT/ECLR. Default 'LND', Required>",
       "Authentication": {
-        "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT)/'eclair.conf' (ECLR) file, Required>",
-        "configPath": "<Optional:Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally or empty, Optional>"
+        "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT>",
+        "configPath": "<Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally, Optional for LND & CLT, Mandatory for ECLR>"
       },
       "Settings": {
         "userPersona": "<User persona to tailor the data on UI. Allowed values MERCHANT, OPERATOR. Default MERCHANT, Required>",
@@ -46,8 +46,8 @@ HOST (host for the rtl node server, default localhost, Optional)
 LN_IMPLEMENTATION (LND/CLT/ECLR. Default 'LND', Required)
 LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080/v1) (Required)
 SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081/v1) (Optional)
-CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional)
-MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT)/'eclair.conf' (ECLR) file, Required)
+CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional for LND & CLT, Mandatory for ECLR)
+MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Optional)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name, Required if RTL_SSO=1 else Optional)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL, Required if RTL_SSO=1 else Optional)
