@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfoCL, FeesCL, ChannelsStatusCL, FeeRatesCL } from '../../shared/models/clModels';
+import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -22,11 +22,11 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;  
   public selNode: SelNodeChild = {};
-  public information: GetInfoCL = {};
-  public fees: FeesCL;
-  public channelsStatus: ChannelsStatusCL = {};
-  feeRatesPerKB: FeeRatesCL = {};
-  feeRatesPerKW: FeeRatesCL = {};
+  public information: GetInfo = {};
+  public fees: Fees;
+  public channelsStatus: ChannelsStatus = {};
+  feeRatesPerKB: FeeRates = {};
+  feeRatesPerKW: FeeRates = {};
   public nodeCardsOperator = [];
   public nodeCardsMerchant = [];
   public screenSize = '';
@@ -68,14 +68,14 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfoCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
-        if (effectsErr.action === 'FetchFeesCL') {
+        if (effectsErr.action === 'FetchFees') {
           this.flgLoading[1] = 'error';
         }
-        if (effectsErr.action === 'FetchFeeRatesCL') {
+        if (effectsErr.action === 'FetchFeeRates') {
           this.flgLoading[2] = 'error';
         }
       });

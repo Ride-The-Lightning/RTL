@@ -42,6 +42,8 @@ const networkCLRoutes = require("./routes/c-lightning/network");
 const messageCLRoutes = require("./routes/c-lightning/message");
 
 const infoECLRRoutes = require("./routes/eclair/getInfo");
+const feesECLRRoutes = require("./routes/eclair/fees");
+const channelsECLRRoutes = require("./routes/eclair/channels");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -94,6 +96,8 @@ app.use(apiCLRoot + "network", networkCLRoutes);
 app.use(apiCLRoot + "message", messageCLRoutes);
 
 app.use(apiECLRRoot + "getinfo", infoECLRRoutes);
+app.use(apiECLRRoot + "fees", feesECLRRoutes);
+app.use(apiECLRRoot + "channels", channelsECLRRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

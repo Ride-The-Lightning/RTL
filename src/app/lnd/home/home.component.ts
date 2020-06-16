@@ -12,6 +12,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+
+import * as LNDActions from '../store/lnd.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -191,12 +193,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.FETCH_FEES || action.type === RTLActions.SET_FEES))
+    filter((action) => action.type === LNDActions.FETCH_FEES || action.type === LNDActions.SET_FEES))
     .subscribe(action => {
-      if(action.type === RTLActions.FETCH_FEES) {
+      if(action.type === LNDActions.FETCH_FEES) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === RTLActions.SET_FEES) {
+      if(action.type === LNDActions.SET_FEES) {
         this.flgChildInfoUpdated = true;
       }
     });

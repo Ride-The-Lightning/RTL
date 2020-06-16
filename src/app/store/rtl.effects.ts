@@ -23,6 +23,9 @@ import { ConfirmationMessageComponent } from '../shared/components/data-modal/co
 import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
+import * as ECLRActions from '../eclair/store/eclr.actions';
+import * as CLActions from '../clightning/store/cl.actions';
+import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
 
@@ -314,9 +317,9 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.LOGIN),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
-    this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
-    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
-    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoECLR'));    
+    this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
+    this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
+    this.store.dispatch(new ECLRActions.ClearEffectError('FetchInfo'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -436,9 +439,9 @@ export class RTLEffects implements OnDestroy {
       selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
-    this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
-    this.store.dispatch(new RTLActions.ResetCLStore(selNode));
-    this.store.dispatch(new RTLActions.ResetECLRStore(selNode));
+    this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
+    this.store.dispatch(new CLActions.ResetCLStore(selNode));
+    this.store.dispatch(new ECLRActions.ResetECLRStore(selNode));
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
@@ -446,17 +449,17 @@ export class RTLEffects implements OnDestroy {
       switch (node.lnImplementation) {
         case 'CLT':
           this.CHILD_API_URL = API_URL + '/cl';
-          this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
+          this.store.dispatch(new CLActions.FetchInfoCL({loadPage: landingPage}));
           break;
 
         case 'ECLR':
           this.CHILD_API_URL = API_URL + '/eclr';
-          this.store.dispatch(new RTLActions.FetchInfoECLR({loadPage: landingPage}));
+          this.store.dispatch(new ECLRActions.FetchInfoECLR({loadPage: landingPage}));
           break;
             
         default:
           this.CHILD_API_URL = API_URL + '/lnd';
-          this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+          this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
           break;
       }
     }

@@ -1,5 +1,5 @@
 import { Component, OnChanges, Input } from '@angular/core';
-import { GetInfoCL } from '../../../shared/models/clModels';
+import { GetInfo } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { CommonService } from '../../../shared/services/common.service';
   styleUrls: ['./node-info.component.scss']
 })
 export class CLNodeInfoComponent implements OnChanges {
-  @Input() information: GetInfoCL;
+  @Input() information: GetInfo;
   @Input() showColorFieldSeparately: false;
   public chains: Array<string> = [''];
 

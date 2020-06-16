@@ -17,6 +17,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { InvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -109,7 +111,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoice({
+    this.store.dispatch(new LNDActions.SaveNewInvoice({
       memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
     }));
     this.resetData();
@@ -154,7 +156,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       reversed = true;
       index_offset = 0;
     }
-    this.store.dispatch(new RTLActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
+    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
   }
 
   onInvoiceValueChange() {

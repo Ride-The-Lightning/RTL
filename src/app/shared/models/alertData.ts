@@ -1,7 +1,7 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
-import { InvoiceCL, GetInfoCL, PeerCL, ChannelCL } from './clModels';
+import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL } from './clModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {

@@ -10,10 +10,11 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfoECLR } from '../../shared/models/eclrModels';
-// import { ChannelsStatusCL, GetInfoCL, FeesCL, ChannelCL, BalanceCL, FeeRatesCL } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees } from '../../shared/models/eclrModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as ECLRActions from '../store/eclr.actions';
 import * as RTLActions from '../../store/rtl.actions';
 
 @Component({
@@ -34,8 +35,10 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
-  // public fees: FeesCL;
-  public information: GetInfoECLR = {};
+  public fees: Fees;
+  public information: GetInfo = {};
+  public channels: Channel[] = [];
+  public channelStats: ChannelStats = {};
   // public totalBalance: BalanceCL = {};
   // public balances = { onchain: -1, lightning: -1, total: 0 };
   // public allChannels: ChannelCL[] = [];
@@ -110,33 +113,29 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrorsEclr.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfoECLR') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
-        // if (effectsErr.action === 'FetchFeesCL') {
-        //   this.flgLoading[1] = 'error';
-        // }
-        // if (effectsErr.action === 'FetchBalanceCL') {
-        //   this.flgLoading[2] = 'error';
-        // }
-        // if (effectsErr.action === 'FetchLocalRemoteBalanceCL') {
-        //   this.flgLoading[3] = 'error';
-        // }
-        // if (effectsErr.action === 'FetchFeeRatesCL') {
-        //   this.flgLoading[4] = 'error';
-        // }
-        // if (effectsErr.action === 'FetchChannelsCL') {
-        //   this.flgLoading[5] = 'error';
-        // }
+        if (effectsErr.action === 'FetchFees') {
+          this.flgLoading[1] = 'error';
+        }
+        if (effectsErr.action === 'FetchChannels') {
+          this.flgLoading[3] = 'error';
+        }
+        if (effectsErr.action === 'FetchChannelStats') {
+          this.flgLoading[4] = 'error';
+        }
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      // if (this.flgLoading[0] !== 'error') {
-      //   this.flgLoading[0] = ( this.information.id) ? false : true;
-      // }
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = ( this.information.nodeId) ? false : true;
+      }
 
-      // this.fees = rtlStore.fees;
+      this.fees = rtlStore.fees;
+      this.channels = rtlStore.channels;
+      this.channelStats = rtlStore.channelStats;
       // this.fees.totalTxCount = 0;
       // if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
       //   this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
@@ -194,12 +193,12 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     // this.actions$.pipe(takeUntil(this.unSubs[2]),
-    // filter((action) => action.type === RTLActions.FETCH_FEES_CL || action.type === RTLActions.SET_FEES_CL))
+    // filter((action) => action.type === ECLRActions.FETCH_FEES_CL || action.type === ECLRActions.SET_FEES_CL))
     // .subscribe(action => {
-    //   if(action.type === RTLActions.FETCH_FEES_CL) {
+    //   if(action.type === ECLRActions.FETCH_FEES_CL) {
     //     this.flgChildInfoUpdated = false;
     //   }
-    //   if(action.type === RTLActions.SET_FEES_CL) {
+    //   if(action.type === ECLRActions.SET_FEES_CL) {
     //     this.flgChildInfoUpdated = true;
     //   }
     // });

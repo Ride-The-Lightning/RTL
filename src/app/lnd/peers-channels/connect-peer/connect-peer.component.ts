@@ -14,6 +14,7 @@ import { OpenChannelAlert } from '../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -72,19 +73,19 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.NEWLY_ADDED_PEER || action.type === RTLActions.FETCH_PENDING_CHANNELS || action.type === RTLActions.EFFECT_ERROR_LND))
-    .subscribe((action: (RTLActions.NewlyAddedPeer | RTLActions.FetchPendingChannels | RTLActions.EffectErrorLnd)) => {
-      if (action.type === RTLActions.NEWLY_ADDED_PEER) { 
+    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER || action.type === LNDActions.FETCH_PENDING_CHANNELS || action.type === LNDActions.EFFECT_ERROR))
+    .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.EffectError)) => {
+      if (action.type === LNDActions.NEWLY_ADDED_PEER) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === RTLActions.FETCH_PENDING_CHANNELS) { 
+      if (action.type === LNDActions.FETCH_PENDING_CHANNELS) { 
         this.dialogRef.close();
       }
-      if (action.type === RTLActions.EFFECT_ERROR_LND) { 
+      if (action.type === LNDActions.EFFECT_ERROR) { 
         if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {
@@ -106,7 +107,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       this.connectPeerWithParams(pubkey, host);
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-      this.store.dispatch(new RTLActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
+      this.store.dispatch(new LNDActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
       this.lndEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
@@ -119,14 +120,14 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
 
   connectPeerWithParams(pubkey: string, host: string) {
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
+    this.store.dispatch(new LNDActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
   }
 
   onOpenChannel() {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    this.store.dispatch(new RTLActions.SaveNewChannel({
+    this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
       transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value
     }));

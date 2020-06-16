@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { filter, takeUntil, take } from 'rxjs/operators';
@@ -19,9 +20,10 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../store/rtl.effects';
+
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'rtl-on-chain-send',
@@ -108,13 +110,13 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES))
-    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.SetChannelTransactionRes) => {
-      if (action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES) {
+    filter(action => action.type === LNDActions.EFFECT_ERROR || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES))
+    .subscribe((action: LNDActions.EffectError | LNDActions.SetChannelTransactionRes) => {
+      if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === LNDActions.EFFECT_ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -163,7 +165,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.transactionFees;
       }
     }
-    this.store.dispatch(new RTLActions.SetChannelTransaction(postTransaction));
+    this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
   }
 
   get invalidValues(): boolean {

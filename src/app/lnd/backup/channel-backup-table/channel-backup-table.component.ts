@@ -15,6 +15,7 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -83,20 +84,20 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.SET_ALL_CHANNELS)
-    ).subscribe((setchannels: RTLActions.SetAllChannels) => {
+      filter((action) => action.type === LNDActions.SET_ALL_CHANNELS)
+    ).subscribe((setchannels: LNDActions.SetAllChannels) => {
       this.selChannel = undefined;
     });
   }
 
   onBackupChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
-    this.store.dispatch(new RTLActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
-    this.store.dispatch(new RTLActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
 
   onChannelClick(selChannel: Channel, event: any) {

@@ -7,6 +7,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
+import * as LNDActions from '../store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
@@ -43,15 +44,15 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === RTLActions.SET_LOOKUP || action.type === RTLActions.EFFECT_ERROR_LND))
-    ).subscribe((resLookup: RTLActions.SetLookup | RTLActions.EffectErrorLnd) => {
-      if(resLookup.type === RTLActions.SET_LOOKUP) {
+      filter((action) => (action.type === LNDActions.SET_LOOKUP || action.type === LNDActions.EFFECT_ERROR))
+    ).subscribe((resLookup: LNDActions.SetLookup | LNDActions.EffectError) => {
+      if(resLookup.type === LNDActions.SET_LOOKUP) {
         this.flgLoading[0] = true;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
         this.flgSetLookupValue = true;
         this.logger.info(this.lookupValue);
       }
-      if (resLookup.type === RTLActions.EFFECT_ERROR_LND && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === LNDActions.EFFECT_ERROR && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });
@@ -64,10 +65,10 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
     switch (this.selectedFieldId) {
       case 0:
-        this.store.dispatch(new RTLActions.PeerLookup(this.lookupKey.trim()));
+        this.store.dispatch(new LNDActions.PeerLookup(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new RTLActions.ChannelLookup(this.lookupKey.trim()));
+        this.store.dispatch(new LNDActions.ChannelLookup(this.lookupKey.trim()));
         break;
       default:
         break;

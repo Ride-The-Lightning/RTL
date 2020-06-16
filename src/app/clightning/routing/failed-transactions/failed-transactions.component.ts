@@ -4,7 +4,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ForwardingEventCL } from '../../../shared/models/clModels';
+import { ForwardingEvent } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -52,7 +52,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     this.loadForwardingEventsTable(this.failedEvents);
   }
 
-  onForwardingEventClick(selFEvent: ForwardingEventCL, event: any) {
+  onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'received_time_str', value: selFEvent.received_time_str, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
@@ -71,11 +71,11 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     }}));
   }
 
-  loadForwardingEventsTable(forwardingEvents: ForwardingEventCL[]) {
-    this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEventCL>([...forwardingEvents]);
+  loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
+    this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.paginator = this.paginator;
-    this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEventCL, fltr: string) => {
+    this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
       return newEvent.includes(fltr.toLowerCase());
     };    

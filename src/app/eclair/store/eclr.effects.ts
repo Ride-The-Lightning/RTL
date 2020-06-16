@@ -12,12 +12,10 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-// import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-// import { CLOpenChannelComponent } from '../peers-channels/channels/open-channel-modal/open-channel.component';
-import { GetInfoECLR } from '../../shared/models/eclrModels';
-// import { GetInfoECLR, FeesCL, BalanceCL, LocalRemoteBalanceCL, PaymentCL, FeeRatesCL, ListInvoicesCL, InvoiceCL, PeerCL } from '../../shared/models/clModels';
+import { GetInfo, Fees, Channel, ChannelStats } from '../../shared/models/eclrModels';
 import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as ECLRActions from './eclr.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromECLRReducers from './eclr.reducers';
 
@@ -38,18 +36,18 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   infoFetchECLR = this.actions$.pipe(
-    ofType(RTLActions.FETCH_INFO_ECLR),
+    ofType(ECLRActions.FETCH_INFO),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [RTLActions.FetchInfoECLR, fromRTLReducer.RootState]) => {
-      this.store.dispatch(new RTLActions.ClearEffectErrorEclr('FetchInfoECLR'));
-      return this.httpClient.get<GetInfoECLR>(this.CHILD_API_URL + environment.GETINFO_API)
+    mergeMap(([action, store]: [ECLRActions.FetchInfoECLR, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchInfo'));
+      return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
-              type: RTLActions.SET_INFO_ECLR,
+              type: ECLRActions.SET_INFO,
               payload: info ? info : {}
             };
           }),
@@ -57,10 +55,72 @@ export class ECLREffects implements OnDestroy {
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
             const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-            this.handleErrorWithoutAlert('FetchInfoECLR', 'Fetching Node Info Failed.', err);            
+            this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);            
             return of({type: RTLActions.VOID});
           })
         );
+    }
+  ));
+
+  @Effect()
+  fetchFees = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_FEES),
+    mergeMap((action: ECLRActions.FetchFees) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchFees'));
+      return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
+    }),
+    map((fees) => {
+      this.logger.info(fees);
+      return {
+        type: ECLRActions.SET_FEES,
+        payload: fees ? fees : {}
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
+
+  @Effect()
+  channelsFetch = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_CHANNELS),
+    mergeMap((action: ECLRActions.FetchChannels) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannels'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API)
+        .pipe(map((channels: any) => {
+          this.logger.info(channels);
+          return {
+            type: ECLRActions.SET_CHANNELS,
+            payload: (channels && channels.length > 0) ? channels : []
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
+    }
+  ));
+
+  @Effect()
+  channelStatsFetch = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_CHANNEL_STATS),
+    mergeMap((action: ECLRActions.FetchChannelStats) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannelStats'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/stats')
+        .pipe(map((channelStats: any) => {
+          this.logger.info(channelStats);
+          return {
+            type: ECLRActions.SET_CHANNELS,
+            payload: (channelStats && channelStats.length > 0) ? channelStats : []
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchChannelStats', 'Fetching Channel Stats Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
     }
   ));
 
@@ -78,14 +138,15 @@ export class ECLREffects implements OnDestroy {
       numberOfPendingChannels: 0
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    // this.store.dispatch(new RTLActions.FetchFeesCL());
-    // this.store.dispatch(new RTLActions.FetchChannelsCL());
-    // this.store.dispatch(new RTLActions.FetchBalanceCL());
-    // this.store.dispatch(new RTLActions.FetchLocalRemoteBalanceCL());
-    // this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkw'));
-    // this.store.dispatch(new RTLActions.FetchFeeRatesCL('perkb'));
-    // this.store.dispatch(new RTLActions.FetchPeersCL());
-    // this.store.dispatch(new RTLActions.GetForwardingHistoryCL());
+    this.store.dispatch(new ECLRActions.FetchFees());
+    this.store.dispatch(new ECLRActions.FetchChannels());
+    this.store.dispatch(new ECLRActions.FetchChannelStats());
+    // this.store.dispatch(new ECLRActions.FetchBalanceCL());
+    // this.store.dispatch(new ECLRActions.FetchLocalRemoteBalanceCL());
+    // this.store.dispatch(new ECLRActions.FetchFeeRatesCL('perkw'));
+    // this.store.dispatch(new ECLRActions.FetchFeeRatesCL('perkb'));
+    // this.store.dispatch(new ECLRActions.FetchPeersCL());
+    // this.store.dispatch(new ECLRActions.GetForwardingHistoryCL());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/eclr/');
@@ -107,7 +168,7 @@ export class ECLREffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.EffectErrorEclr({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
+      this.store.dispatch(new ECLRActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
     }
   }
 

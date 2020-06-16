@@ -10,10 +10,11 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { ChannelsStatusCL, GetInfoCL, FeesCL, ChannelCL, BalanceCL, FeeRatesCL } from '../../shared/models/clModels';
+import { ChannelsStatus, GetInfo, Fees, Channel, Balance, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-cl-home',
@@ -33,19 +34,19 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
   public selNode: SelNodeChild = {};
-  public fees: FeesCL;
-  public information: GetInfoCL = {};
-  public totalBalance: BalanceCL = {};
+  public fees: Fees;
+  public information: GetInfo = {};
+  public totalBalance: Balance = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
-  public allChannels: ChannelCL[] = [];
-  public channelsStatus: ChannelsStatusCL = {};
-  public allChannelsCapacity: ChannelCL[] = [];
-  public allInboundChannels: ChannelCL[] = [];
-  public allOutboundChannels: ChannelCL[] = [];
+  public allChannels: Channel[] = [];
+  public channelsStatus: ChannelsStatus = {};
+  public allChannelsCapacity: Channel[] = [];
+  public allInboundChannels: Channel[] = [];
+  public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
   public totalOutboundLiquidity = 0;
-  public feeRatesPerKB: FeeRatesCL = {};
-  public feeRatesPerKW: FeeRatesCL = {};
+  public feeRatesPerKB: FeeRates = {};
+  public feeRatesPerKW: FeeRates = {};
   public operatorCards = [];
   public merchantCards = [];
   public screenSize = '';
@@ -109,23 +110,23 @@ export class CLHomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfoCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
-        if (effectsErr.action === 'FetchFeesCL') {
+        if (effectsErr.action === 'FetchFees') {
           this.flgLoading[1] = 'error';
         }
-        if (effectsErr.action === 'FetchBalanceCL') {
+        if (effectsErr.action === 'FetchBalance') {
           this.flgLoading[2] = 'error';
         }
-        if (effectsErr.action === 'FetchLocalRemoteBalanceCL') {
+        if (effectsErr.action === 'FetchLocalRemoteBalance') {
           this.flgLoading[3] = 'error';
         }
-        if (effectsErr.action === 'FetchFeeRatesCL') {
+        if (effectsErr.action === 'FetchFeeRates') {
           this.flgLoading[4] = 'error';
         }
-        if (effectsErr.action === 'FetchChannelsCL') {
+        if (effectsErr.action === 'FetchChannels') {
           this.flgLoading[5] = 'error';
         }
       });
@@ -193,12 +194,12 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.FETCH_FEES_CL || action.type === RTLActions.SET_FEES_CL))
+    filter((action) => action.type === CLActions.FETCH_FEES || action.type === CLActions.SET_FEES))
     .subscribe(action => {
-      if(action.type === RTLActions.FETCH_FEES_CL) {
+      if(action.type === CLActions.FETCH_FEES) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === RTLActions.SET_FEES_CL) {
+      if(action.type === CLActions.SET_FEES) {
         this.flgChildInfoUpdated = true;
       }
     });

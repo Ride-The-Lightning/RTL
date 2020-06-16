@@ -1,27 +1,33 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoECLR } from '../../shared/models/eclrModels';
-// import { GetInfoECLR, FeesCL, BalanceCL, LocalRemoteBalanceCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL } from '../../shared/models/clModels';
+import { GetInfo, Channel, ChannelStats, Fees } from '../../shared/models/eclrModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
-import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import * as ECLRActions from './eclr.actions';
+import * as RTLActions from '../../store/rtl.actions';
 
 export interface ECLRState {
-  effectErrorsEclr: ErrorPayload[];
+  effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
-  information: GetInfoECLR;
+  information: GetInfo;
+  fees: Fees;
+  channels: Channel[];
+  channelStats: ChannelStats;
 }
 
 export const initECLRState: ECLRState = {
-  effectErrorsEclr: [],
+  effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
+  fees: {},
+  channels: [],
+  channelStats: {}
 }
 
-export function ECLRReducer(state = initECLRState, action: RTLActions.RTLActions) {
+export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActions) {
   switch (action.type) {
-    case RTLActions.CLEAR_EFFECT_ERROR_ECLR:
-      const clearedEffectErrors = [...state.effectErrorsEclr];
-      const removeEffectIdx = state.effectErrorsEclr.findIndex(err => {
+    case ECLRActions.CLEAR_EFFECT_ERROR:
+      const clearedEffectErrors = [...state.effectErrors];
+      const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
       });
       if (removeEffectIdx > -1) {
@@ -31,25 +37,40 @@ export function ECLRReducer(state = initECLRState, action: RTLActions.RTLActions
         ...state,
         effectErrorsCl: clearedEffectErrors
       };
-    case RTLActions.EFFECT_ERROR_ECLR:
+    case ECLRActions.EFFECT_ERROR:
       return {
         ...state,
-        effectErrorsCl: [...state.effectErrorsEclr, action.payload]
+        effectErrorsCl: [...state.effectErrors, action.payload]
       };
-    case RTLActions.SET_CHILD_NODE_SETTINGS_ECLR:
+    case ECLRActions.SET_CHILD_NODE_SETTINGS:
       return {
         ...state,
         nodeSettings: action.payload
       }
-    case RTLActions.RESET_ECLR_STORE:
+    case ECLRActions.RESET_ECLR_STORE:
       return {
         ...initECLRState,
         nodeSettings: action.payload,
       };
-    case RTLActions.SET_INFO_ECLR:
+    case ECLRActions.SET_INFO:
       return {
         ...state,
         information: action.payload
+      };
+    case ECLRActions.SET_FEES:
+      return {
+        ...state,
+        fees: action.payload
+      };
+    case ECLRActions.SET_CHANNELS:
+      return {
+        ...state,
+        channels: action.payload,
+      };
+    case ECLRActions.SET_CHANNEL_STATS:
+      return {
+        ...state,
+        channelStats: action.payload,
       };
     default:
       return state;

@@ -7,6 +7,7 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
+import * as LNDActions from '../store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -65,7 +66,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
     if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
-    this.store.dispatch(new RTLActions.GetForwardingHistory({
+    this.store.dispatch(new LNDActions.GetForwardingHistory({
       end_time: Math.round(this.endDate.getTime() / 1000).toString(),
       start_time: Math.round(this.startDate.getTime() / 1000).toString()
     }));
@@ -79,7 +80,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new RTLActions.SetForwardingHistory({}));    
+    this.store.dispatch(new LNDActions.SetForwardingHistory({}));    
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();

@@ -16,6 +16,7 @@ import { LoopService } from '../../../shared/services/loop.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as LNDActions from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-swaps',
@@ -62,7 +63,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchLoopSwaps());
+    this.store.dispatch(new LNDActions.FetchLoopSwaps());
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {

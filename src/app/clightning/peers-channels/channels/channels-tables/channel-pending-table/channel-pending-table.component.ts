@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ChannelCL, GetInfoCL } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
+import { GetInfo, Channel } from '../../../../../shared/models/clModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -32,7 +32,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public channels: any;
   public myChanPolicy: any = {};
-  public information: GetInfoCL = {};
+  public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -66,8 +66,8 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannelsCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchChannels') {
           this.flgLoading[0] = 'error';
         }
       });
@@ -89,7 +89,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     this.channels.filter = this.selFilter;
   }
 
-  onChannelClick(selChannel: ChannelCL, event: any) {
+  onChannelClick(selChannel: Channel, event: any) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       channel: selChannel,
       showCopy: true,
@@ -101,8 +101,8 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     mychannels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
-    this.channels = new MatTableDataSource<ChannelCL>([...mychannels]);
-    this.channels.filterPredicate = (channel: ChannelCL, fltr: string) => {
+    this.channels = new MatTableDataSource<Channel>([...mychannels]);
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id : '') +
       (channel.short_channel_id ? channel.short_channel_id : '') + (channel.id ? channel.id : '') + (channel.alias ? channel.alias : '') +
       (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +

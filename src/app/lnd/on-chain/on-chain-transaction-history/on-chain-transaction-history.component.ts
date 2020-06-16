@@ -13,6 +13,7 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -56,7 +57,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchTransactions());
+    this.store.dispatch(new LNDActions.FetchTransactions());
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {

@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { CLChannelInformation } from '../../../../shared/models/alertData';
-import { ChannelCL } from '../../../../shared/models/clModels';
+import { Channel } from '../../../../shared/models/clModels';
 import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
 
 @Component({
@@ -19,7 +19,7 @@ export class CLChannelInformationComponent implements OnInit {
   public showAdvanced = false;
   public showCopy = true;
   public showCopyField = null;
-  public channel: ChannelCL;
+  public channel: Channel;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 

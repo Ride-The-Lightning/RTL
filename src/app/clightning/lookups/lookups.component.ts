@@ -7,6 +7,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
+import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
@@ -44,9 +45,9 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === RTLActions.SET_LOOKUP_CL || action.type === RTLActions.EFFECT_ERROR_CL))
-    ).subscribe((resLookup: RTLActions.SetLookupCL | RTLActions.EffectErrorCl) => {
-      if(resLookup.type === RTLActions.SET_LOOKUP_CL) {
+      filter((action) => (action.type === CLActions.SET_LOOKUP || action.type === CLActions.EFFECT_ERROR))
+    ).subscribe((resLookup: CLActions.SetLookup | CLActions.EffectError) => {
+      if(resLookup.type === CLActions.SET_LOOKUP) {
         this.flgLoading[0] = true;
         switch (this.selectedFieldId) {
           case 0:
@@ -62,7 +63,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
         this.logger.info(this.nodeLookupValue);
         this.logger.info(this.channelLookupValue);
       }
-      if (resLookup.type === RTLActions.EFFECT_ERROR_CL && resLookup.payload.action === 'LookupCL') {
+      if (resLookup.type === CLActions.EFFECT_ERROR && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });
@@ -76,10 +77,10 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
     switch (this.selectedFieldId) {
       case 0:
-        this.store.dispatch(new RTLActions.PeerLookupCL(this.lookupKey.trim()));
+        this.store.dispatch(new CLActions.PeerLookup(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new RTLActions.ChannelLookupCL({shortChannelID: this.lookupKey.trim(), showError: false}));
+        this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: this.lookupKey.trim(), showError: false}));
         break;
       default:
         break;

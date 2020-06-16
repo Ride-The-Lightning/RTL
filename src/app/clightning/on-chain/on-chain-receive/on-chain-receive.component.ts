@@ -6,6 +6,7 @@ import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { CLEffects } from '../../store/cl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -25,7 +26,7 @@ export class CLOnChainReceiveComponent implements OnInit {
 
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
-    this.store.dispatch(new RTLActions.GetNewAddressCL(this.selectedAddressType));
+    this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
     this.lndEffects.setNewAddressCL
     .pipe(take(1))
     .subscribe(newAddress => {
