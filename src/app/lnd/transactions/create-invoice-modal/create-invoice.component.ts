@@ -52,12 +52,12 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR || action.type === LNDActions.FETCH_INVOICES)) //NEWLY_SAVED_INVOICE
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_INVOICES_LND)) //NEWLY_SAVED_INVOICE
     .subscribe((action: LNDActions.EffectError | LNDActions.FetchInvoices) => { // NewlySavedInvoice
-      if (action.type === LNDActions.FETCH_INVOICES) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
+      if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
         this.dialogRef.close();
       }    
-      if (action.type === LNDActions.EFFECT_ERROR && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });

@@ -12,12 +12,10 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Fees, Channel, ChannelStats } from '../../shared/models/eclrModels';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
+import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats } from '../../shared/models/eclrModels';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as ECLRActions from './eclr.actions';
 import * as RTLActions from '../../store/rtl.actions';
-import * as fromECLRReducers from './eclr.reducers';
 
 @Injectable()
 export class ECLREffects implements OnDestroy {
@@ -36,9 +34,9 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   infoFetchECLR = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_INFO),
+    ofType(ECLRActions.FETCH_INFO_ECLR),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [ECLRActions.FetchInfoECLR, fromRTLReducer.RootState]) => {
+    mergeMap(([action, store]: [ECLRActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
@@ -47,7 +45,7 @@ export class ECLREffects implements OnDestroy {
             this.logger.info(info);
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
-              type: ECLRActions.SET_INFO,
+              type: ECLRActions.SET_INFO_ECLR,
               payload: info ? info : {}
             };
           }),
@@ -64,7 +62,7 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   fetchFees = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_FEES),
+    ofType(ECLRActions.FETCH_FEES_ECLR),
     mergeMap((action: ECLRActions.FetchFees) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchFees'));
       return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
@@ -72,7 +70,7 @@ export class ECLREffects implements OnDestroy {
     map((fees) => {
       this.logger.info(fees);
       return {
-        type: ECLRActions.SET_FEES,
+        type: ECLRActions.SET_FEES_ECLR,
         payload: fees ? fees : {}
       };
     }),
@@ -84,15 +82,19 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   channelsFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_CHANNELS),
+    ofType(ECLRActions.FETCH_CHANNELS_ECLR),
     mergeMap((action: ECLRActions.FetchChannels) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannels'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API)
-        .pipe(map((channels: any) => {
-          this.logger.info(channels);
+        .pipe(map((channelsRes: {activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalances: LightningBalance, channelStatus: ChannelsStatus}) => {
+          this.logger.info(channelsRes);
+          this.store.dispatch(new ECLRActions.SetActiveChannels((channelsRes && channelsRes.activeChannels.length > 0) ? channelsRes.activeChannels : []));
+          this.store.dispatch(new ECLRActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
+          this.store.dispatch(new ECLRActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
+          this.store.dispatch(new ECLRActions.SetLightningBalance(channelsRes.lightningBalances));
           return {
-            type: ECLRActions.SET_CHANNELS,
-            payload: (channels && channels.length > 0) ? channels : []
+            type: ECLRActions.SET_CHANNELS_STATUS_ECLR,
+            payload: channelsRes.channelStatus
           };
         },
         catchError((err: any) => {
@@ -105,14 +107,14 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   channelStatsFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_CHANNEL_STATS),
+    ofType(ECLRActions.FETCH_CHANNEL_STATS_ECLR),
     mergeMap((action: ECLRActions.FetchChannelStats) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannelStats'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/stats')
-        .pipe(map((channelStats: any) => {
+        .pipe(map((channelStats: ChannelStats[]) => {
           this.logger.info(channelStats);
           return {
-            type: ECLRActions.SET_CHANNELS,
+            type: ECLRActions.SET_CHANNEL_STATS_ECLR,
             payload: (channelStats && channelStats.length > 0) ? channelStats : []
           };
         },
@@ -121,6 +123,48 @@ export class ECLREffects implements OnDestroy {
           return of({type: RTLActions.VOID});
         })
       ));
+    }
+  ));
+
+  @Effect()
+  fetchOnchainBalance = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_ONCHAIN_BALANCE_ECLR),
+    mergeMap((action: ECLRActions.FetchOnchainBalance) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchOnchainBalance'));
+      return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + environment.BALANCE_API);
+    }),
+    map((balance) => {
+      this.logger.info(balance);
+      return {
+        type: ECLRActions.SET_ONCHAIN_BALANCE_ECLR,
+        payload: balance ? balance : {}
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchOnchainBalance', 'Fetching Onchain Balances Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
+
+  @Effect()
+  peersFetch = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_PEERS_ECLR),
+    mergeMap((action: ECLRActions.FetchPeers) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchPeers'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
+        .pipe(
+          map((peers: any) => {
+            this.logger.info(peers);
+            return {
+              type: ECLRActions.SET_PEERS_ECLR ,
+              payload: peers ? peers : []
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchPeers', 'Fetching Peers Failed.', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
     }
   ));
 
@@ -141,11 +185,8 @@ export class ECLREffects implements OnDestroy {
     this.store.dispatch(new ECLRActions.FetchFees());
     this.store.dispatch(new ECLRActions.FetchChannels());
     this.store.dispatch(new ECLRActions.FetchChannelStats());
-    // this.store.dispatch(new ECLRActions.FetchBalanceCL());
-    // this.store.dispatch(new ECLRActions.FetchLocalRemoteBalanceCL());
-    // this.store.dispatch(new ECLRActions.FetchFeeRatesCL('perkw'));
-    // this.store.dispatch(new ECLRActions.FetchFeeRatesCL('perkb'));
-    // this.store.dispatch(new ECLRActions.FetchPeersCL());
+    this.store.dispatch(new ECLRActions.FetchOnchainBalance());
+    this.store.dispatch(new ECLRActions.FetchPeers());
     // this.store.dispatch(new ECLRActions.GetForwardingHistoryCL());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {

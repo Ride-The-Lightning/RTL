@@ -110,13 +110,13 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES))
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.SetChannelTransactionRes) => {
-      if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES) {
+      if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === LNDActions.EFFECT_ERROR && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });

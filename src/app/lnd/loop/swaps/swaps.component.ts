@@ -67,7 +67,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchSwaps') { this.flgLoading[0] = 'error'; }
       });
       if (rtlStore.loopSwaps) {

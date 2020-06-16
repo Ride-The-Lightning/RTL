@@ -42,7 +42,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   infoFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_INFO),
+    ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
@@ -56,14 +56,14 @@ export class LNDEffects implements OnDestroy {
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
               return {
-                type: LNDActions.SET_INFO,
+                type: LNDActions.SET_INFO_LND,
                 payload: {}
               };
             } else {
               info.lnImplementation = 'LND';    
               this.initializeRemainingData(info, action.payload.loadPage);
               return {
-                type: LNDActions.SET_INFO,
+                type: LNDActions.SET_INFO_LND,
                 payload: info ? info : {}
               };
             }
@@ -88,7 +88,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   peersFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_PEERS),
+    ofType(LNDActions.FETCH_PEERS_LND),
     mergeMap((action: LNDActions.FetchPeers) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchPeers'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
@@ -96,7 +96,7 @@ export class LNDEffects implements OnDestroy {
           map((peers: any) => {
             this.logger.info(peers);
             return {
-              type: LNDActions.SET_PEERS,
+              type: LNDActions.SET_PEERS_LND,
               payload: peers ? peers : []
             };
           }),
@@ -110,7 +110,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   saveNewPeer = this.actions$.pipe(
-    ofType(LNDActions.SAVE_NEW_PEER),
+    ofType(LNDActions.SAVE_NEW_PEER_LND),
     withLatestFrom(this.store.select('lnd')),
     mergeMap(([action, lndData]: [LNDActions.SaveNewPeer, fromLNDReducers.LNDState]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SaveNewPeer'));
@@ -121,7 +121,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new LNDActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
             return {
-              type: LNDActions.NEWLY_ADDED_PEER,
+              type: LNDActions.NEWLY_ADDED_PEER_LND,
               payload: {peer: postRes[0]}
             };
           }),
@@ -135,7 +135,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   detachPeer = this.actions$.pipe(
-    ofType(LNDActions.DETACH_PEER),
+    ofType(LNDActions.DETACH_PEER_LND),
     mergeMap((action: LNDActions.DetachPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey)
         .pipe(
@@ -144,7 +144,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully.'));
             return {
-              type: LNDActions.REMOVE_PEER,
+              type: LNDActions.REMOVE_PEER_LND,
               payload: { pubkey: action.payload.pubkey }
             };
           }),
@@ -158,7 +158,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   saveNewInvoice = this.actions$.pipe(
-    ofType(LNDActions.SAVE_NEW_INVOICE),
+    ofType(LNDActions.SAVE_NEW_INVOICE_LND),
     mergeMap((action: LNDActions.SaveNewInvoice) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SaveNewInvoice'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
@@ -187,7 +187,7 @@ export class LNDEffects implements OnDestroy {
             }
           } else {
             return {
-              type: LNDActions.NEWLY_SAVED_INVOICE,
+              type: LNDActions.NEWLY_SAVED_INVOICE_LND,
               payload: { paymentRequest: postRes.payment_request }
             }
           }
@@ -202,7 +202,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   openNewChannel = this.actions$.pipe(
-    ofType(LNDActions.SAVE_NEW_CHANNEL),
+    ofType(LNDActions.SAVE_NEW_CHANNEL_LND),
     mergeMap((action: LNDActions.SaveNewChannel) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SaveNewChannel'));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
@@ -217,7 +217,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new LNDActions.FetchAllChannels());
             this.store.dispatch(new LNDActions.BackupChannels({ channelPoint: 'ALL', showMessage: 'Channel Added Successfully!' }));
             return {
-              type: LNDActions.FETCH_PENDING_CHANNELS
+              type: LNDActions.FETCH_PENDING_CHANNELS_LND
             };
           }),
           catchError((err: any) => {
@@ -230,7 +230,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   updateChannel = this.actions$.pipe(
-    ofType(LNDActions.UPDATE_CHANNELS),
+    ofType(LNDActions.UPDATE_CHANNELS_LND),
     mergeMap((action: LNDActions.UpdateChannels) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/chanPolicy',
         { baseFeeMsat: action.payload.baseFeeMsat, feeRate: action.payload.feeRate, timeLockDelta: action.payload.timeLockDelta, chanPoint: action.payload.chanPoint })
@@ -244,7 +244,7 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
             }
             return {
-              type: LNDActions.FETCH_ALL_CHANNELS
+              type: LNDActions.FETCH_ALL_CHANNELS_LND
             };
           }),
           catchError((err: any) => {
@@ -257,7 +257,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   closeChannel = this.actions$.pipe(
-    ofType(LNDActions.CLOSE_CHANNEL),
+    ofType(LNDActions.CLOSE_CHANNEL_LND),
     mergeMap((action: LNDActions.CloseChannel) => {
       let reqUrl = this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelPoint + '?force=' + action.payload.forcibly;
       if(action.payload.targetConf) { reqUrl = reqUrl + '&target_conf=' + action.payload.targetConf; }
@@ -277,7 +277,7 @@ export class LNDEffects implements OnDestroy {
             }
             this.store.dispatch(new LNDActions.BackupChannels({ channelPoint: 'ALL', showMessage: 'Channel Closed Successfully!' }));
             return {
-              type: LNDActions.REMOVE_CHANNEL,
+              type: LNDActions.REMOVE_CHANNEL_LND,
               payload: { channelPoint: action.payload.channelPoint }
             };
           }),
@@ -291,7 +291,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   backupChannels = this.actions$.pipe(
-    ofType(LNDActions.BACKUP_CHANNELS),
+    ofType(LNDActions.BACKUP_CHANNELS_LND),
     mergeMap((action: LNDActions.BackupChannels) => {
       this.store.dispatch(new LNDActions.ClearEffectError('BackupChannels'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/' + action.payload.channelPoint)
@@ -301,7 +301,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar(action.payload.showMessage + ' ' + postRes.message));
             return {
-              type: LNDActions.BACKUP_CHANNELS_RES,
+              type: LNDActions.BACKUP_CHANNELS_RES_LND,
               payload: postRes.message
             };
           }),
@@ -316,7 +316,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   verifyChannels = this.actions$.pipe(
-    ofType(LNDActions.VERIFY_CHANNELS),
+    ofType(LNDActions.VERIFY_CHANNELS_LND),
     mergeMap((action: LNDActions.VerifyChannels) => {
       this.store.dispatch(new LNDActions.ClearEffectError('VerifyChannels'));
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/verify/' + action.payload.channelPoint, {})
@@ -326,7 +326,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
             return {
-              type: LNDActions.VERIFY_CHANNELS_RES,
+              type: LNDActions.VERIFY_CHANNELS_RES_LND,
               payload: postRes.message
             };
           }),
@@ -341,7 +341,7 @@ export class LNDEffects implements OnDestroy {
 
     @Effect()
     restoreChannels = this.actions$.pipe(
-      ofType(LNDActions.RESTORE_CHANNELS),
+      ofType(LNDActions.RESTORE_CHANNELS_LND),
       mergeMap((action: LNDActions.RestoreChannels) => {
         this.store.dispatch(new LNDActions.ClearEffectError('RestoreChannels'));
         return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/' + action.payload.channelPoint, {})
@@ -352,7 +352,7 @@ export class LNDEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.OpenSnackBar(postRes.message));
               this.store.dispatch(new LNDActions.SetRestoreChannelsList(postRes.list));
               return {
-                type: LNDActions.RESTORE_CHANNELS_RES,
+                type: LNDActions.RESTORE_CHANNELS_RES_LND,
                 payload: postRes.message
               };
             }),
@@ -367,7 +367,7 @@ export class LNDEffects implements OnDestroy {
   
   @Effect()
   fetchFees = this.actions$.pipe(
-    ofType(LNDActions.FETCH_FEES),
+    ofType(LNDActions.FETCH_FEES_LND),
     mergeMap((action: LNDActions.FetchFees) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchFees'));
       return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
@@ -379,7 +379,7 @@ export class LNDEffects implements OnDestroy {
         delete fees.forwarding_events_history;
       }
       return {
-        type: LNDActions.SET_FEES,
+        type: LNDActions.SET_FEES_LND,
         payload: fees ? fees : {}
       };
     }),
@@ -391,7 +391,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   balanceFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_BALANCE),
+    ofType(LNDActions.FETCH_BALANCE_LND),
     mergeMap((action: LNDActions.FetchBalance) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchBalance/' + action.payload));
       return this.httpClient.get<Balance>(this.CHILD_API_URL + environment.BALANCE_API + '/' + action.payload)
@@ -403,7 +403,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(res);
             const emptyRes = (action.payload === 'channels') ? { balance: '', btc_balance: '' } : { total_balance: '', btc_total_balance: '' };
             return {
-              type: LNDActions.SET_BALANCE,
+              type: LNDActions.SET_BALANCE_LND,
               payload: res ? { target: action.payload, balance: res } : { target: action.payload, balance: emptyRes }
             };
           }),
@@ -417,7 +417,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   networkInfoFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_NETWORK),
+    ofType(LNDActions.FETCH_NETWORK_LND),
     mergeMap((action: LNDActions.FetchNetwork) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchNetwork'));
       return this.httpClient.get<NetworkInfo>(this.CHILD_API_URL + environment.NETWORK_API + '/info');
@@ -425,7 +425,7 @@ export class LNDEffects implements OnDestroy {
     map((networkInfo) => {
       this.logger.info(networkInfo);
       return {
-        type: LNDActions.SET_NETWORK,
+        type: LNDActions.SET_NETWORK_LND,
         payload: networkInfo ? networkInfo : {}
       };
     }),
@@ -437,7 +437,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   channelsAllFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_ALL_CHANNELS),
+    ofType(LNDActions.FETCH_ALL_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchAllChannels) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchChannels/all'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API)
@@ -445,7 +445,7 @@ export class LNDEffects implements OnDestroy {
           map((channels: any) => {
             this.logger.info(channels);
             return {
-              type: LNDActions.SET_ALL_CHANNELS,
+              type: LNDActions.SET_ALL_CHANNELS_LND,
               payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
             };
           }),
@@ -459,7 +459,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   channelsPendingFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_PENDING_CHANNELS),
+    ofType(LNDActions.FETCH_PENDING_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchPendingChannels) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchChannels/pending'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/pending')
@@ -499,7 +499,7 @@ export class LNDEffects implements OnDestroy {
               }
             }
             return {
-              type: LNDActions.SET_PENDING_CHANNELS,
+              type: LNDActions.SET_PENDING_CHANNELS_LND,
               payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
             };
           },
@@ -513,7 +513,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   channelsClosedFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_CLOSED_CHANNELS),
+    ofType(LNDActions.FETCH_CLOSED_CHANNELS_LND),
     mergeMap((action: LNDActions.FetchClosedChannels) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchChannels/closed'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/closed')
@@ -521,7 +521,7 @@ export class LNDEffects implements OnDestroy {
           map((channels: any) => {
             this.logger.info(channels);
             return {
-              type: LNDActions.SET_CLOSED_CHANNELS,
+              type: LNDActions.SET_CLOSED_CHANNELS_LND,
               payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
             };
           },
@@ -535,7 +535,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   invoicesFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_INVOICES),
+    ofType(LNDActions.FETCH_INVOICES_LND),
     mergeMap((action: LNDActions.FetchInvoices) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchInvoices'));
       const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
@@ -548,7 +548,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new LNDActions.SetTotalInvoices(+res.last_index_offset));
           }
           return {
-            type: LNDActions.SET_INVOICES,
+            type: LNDActions.SET_INVOICES_LND,
             payload: res
           };
         }),
@@ -561,7 +561,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   transactionsFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_TRANSACTIONS),
+    ofType(LNDActions.FETCH_TRANSACTIONS_LND),
     mergeMap((action: LNDActions.FetchTransactions) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchTransactions'));
       return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + environment.TRANSACTIONS_API);
@@ -569,7 +569,7 @@ export class LNDEffects implements OnDestroy {
     map((transactions) => {
       this.logger.info(transactions);
       return {
-        type: LNDActions.SET_TRANSACTIONS,
+        type: LNDActions.SET_TRANSACTIONS_LND,
         payload: (transactions && transactions.length > 0) ? transactions : []
       };
     }),
@@ -581,7 +581,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   paymentsFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_PAYMENTS),
+    ofType(LNDActions.FETCH_PAYMENTS_LND),
     mergeMap((action: LNDActions.FetchPayments) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchPayments'));
       return this.httpClient.get<Payment[]>(this.CHILD_API_URL + environment.PAYMENTS_API);
@@ -589,7 +589,7 @@ export class LNDEffects implements OnDestroy {
     map((payments) => {
       this.logger.info(payments);
       return {
-        type: LNDActions.SET_PAYMENTS,
+        type: LNDActions.SET_PAYMENTS_LND,
         payload: payments ? payments : []
       };
     }),
@@ -601,7 +601,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   decodePayment = this.actions$.pipe(
-    ofType(LNDActions.DECODE_PAYMENT),
+    ofType(LNDActions.DECODE_PAYMENT_LND),
     mergeMap((action: LNDActions.DecodePayment) => {
       this.store.dispatch(new LNDActions.ClearEffectError('DecodePayment'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam)
@@ -610,7 +610,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(decodedPayment);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.SET_DECODED_PAYMENT,
+              type: LNDActions.SET_DECODED_PAYMENT_LND,
               payload: decodedPayment ? decodedPayment : {}
             };
           }),
@@ -628,7 +628,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setDecodedPayment = this.actions$.pipe(
-    ofType(LNDActions.SET_DECODED_PAYMENT),
+    ofType(LNDActions.SET_DECODED_PAYMENT_LND),
     map((action: LNDActions.SetDecodedPayment) => {
       this.logger.info(action.payload);
       return action.payload;
@@ -637,7 +637,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   sendPayment = this.actions$.pipe(
-    ofType(LNDActions.SEND_PAYMENT),
+    ofType(LNDActions.SEND_PAYMENT_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.SendPayment, any]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SendPayment'));
@@ -662,7 +662,7 @@ export class LNDEffects implements OnDestroy {
               if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
                 return {
-                  type: LNDActions.SEND_PAYMENT_STATUS,
+                  type: LNDActions.SEND_PAYMENT_STATUS_LND,
                   payload: sendRes
                 };
               } else {
@@ -691,7 +691,7 @@ export class LNDEffects implements OnDestroy {
                 this.store.dispatch(new RTLActions.OpenSnackBar(msg));
               }
               return {
-                type: LNDActions.SEND_PAYMENT_STATUS,
+                type: LNDActions.SEND_PAYMENT_STATUS_LND,
                 payload: sendRes
               };
             }
@@ -700,7 +700,7 @@ export class LNDEffects implements OnDestroy {
             if (action.payload.allowSelfPayment) { 
               this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
               return of({
-                type: LNDActions.SEND_PAYMENT_STATUS,
+                type: LNDActions.SEND_PAYMENT_STATUS_LND,
                 payload: err
               });
             } else {
@@ -720,7 +720,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   graphNodeFetch = this.actions$.pipe(
-    ofType(LNDActions.FETCH_GRAPH_NODE),
+    ofType(LNDActions.FETCH_GRAPH_NODE_LND),
     mergeMap((action: LNDActions.FetchGraphNode) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchGraphNode'));
       return this.httpClient.get<GraphNode>(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload.pubkey)
@@ -728,7 +728,7 @@ export class LNDEffects implements OnDestroy {
           this.logger.info(graphNode);
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
-            type: LNDActions.SET_GRAPH_NODE,
+            type: LNDActions.SET_GRAPH_NODE_LND,
             payload: graphNode && graphNode.node ? {node: graphNode.node} : {node: null}
           };
         }),
@@ -741,7 +741,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setGraphNode = this.actions$.pipe(
-    ofType(LNDActions.SET_GRAPH_NODE),
+    ofType(LNDActions.SET_GRAPH_NODE_LND),
     map((action: LNDActions.SetGraphNode) => {
       this.logger.info(action.payload);
       return action.payload;
@@ -750,14 +750,14 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   getNewAddress = this.actions$.pipe(
-    ofType(LNDActions.GET_NEW_ADDRESS),
+    ofType(LNDActions.GET_NEW_ADDRESS_LND),
     mergeMap((action: LNDActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.NEW_ADDRESS_API + '?type=' + action.payload.addressId)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
-            type: LNDActions.SET_NEW_ADDRESS,
+            type: LNDActions.SET_NEW_ADDRESS_LND,
             payload: (newAddress && newAddress.address) ? newAddress.address : {}
           };
         }),
@@ -770,7 +770,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setNewAddress = this.actions$.pipe(
-    ofType(LNDActions.SET_NEW_ADDRESS),
+    ofType(LNDActions.SET_NEW_ADDRESS_LND),
     map((action: LNDActions.SetNewAddress) => {
       this.logger.info(action.payload);
       return action.payload;
@@ -779,7 +779,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   SetChannelTransaction = this.actions$.pipe(
-    ofType(LNDActions.SET_CHANNEL_TRANSACTION),
+    ofType(LNDActions.SET_CHANNEL_TRANSACTION_LND),
     mergeMap((action: LNDActions.SetChannelTransaction) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SetChannelTransaction'));
       return this.httpClient.post(this.CHILD_API_URL + environment.TRANSACTIONS_API,
@@ -792,7 +792,7 @@ export class LNDEffects implements OnDestroy {
             this.store.dispatch(new LNDActions.FetchTransactions());            
             this.store.dispatch(new LNDActions.FetchBalance('blockchain'));
             return {
-              type: LNDActions.SET_CHANNEL_TRANSACTION_RES,
+              type: LNDActions.SET_CHANNEL_TRANSACTION_RES_LND,
               payload: postRes
             };
           }),
@@ -805,7 +805,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   fetchForwardingHistory = this.actions$.pipe(
-    ofType(LNDActions.GET_FORWARDING_HISTORY),
+    ofType(LNDActions.GET_FORWARDING_HISTORY_LND),
     mergeMap((action: LNDActions.GetForwardingHistory) => {
       this.store.dispatch(new LNDActions.ClearEffectError('GetForwardingHistory'));
       const queryHeaders: SwitchReq = {
@@ -816,7 +816,7 @@ export class LNDEffects implements OnDestroy {
           map((fhRes: any) => {
             this.logger.info(fhRes);
             return {
-              type: LNDActions.SET_FORWARDING_HISTORY,
+              type: LNDActions.SET_FORWARDING_HISTORY_LND,
               payload: fhRes
             };
           }),
@@ -831,7 +831,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   queryRoutesFetch = this.actions$.pipe(
-    ofType(LNDActions.GET_QUERY_ROUTES),
+    ofType(LNDActions.GET_QUERY_ROUTES_LND),
     mergeMap((action: LNDActions.GetQueryRoutes) => {
       let url = this.CHILD_API_URL + environment.NETWORK_API + '/routes/' + action.payload.destPubkey + '/' + action.payload.amount;
       if (action.payload.outgoingChanId) { url = url + '?outgoing_chan_id=' + action.payload.outgoingChanId; }
@@ -840,7 +840,7 @@ export class LNDEffects implements OnDestroy {
           map((qrRes: any) => {
             this.logger.info(qrRes);
             return {
-              type: LNDActions.SET_QUERY_ROUTES,
+              type: LNDActions.SET_QUERY_ROUTES_LND,
               payload: qrRes
             };
           }),
@@ -855,7 +855,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setQueryRoutes = this.actions$.pipe(
-    ofType(LNDActions.SET_QUERY_ROUTES),
+    ofType(LNDActions.SET_QUERY_ROUTES_LND),
     map((action: LNDActions.SetQueryRoutes) => {
       return action.payload;
     })
@@ -863,7 +863,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   genSeed = this.actions$.pipe(
-    ofType(LNDActions.GEN_SEED),
+    ofType(LNDActions.GEN_SEED_LND),
     mergeMap((action: LNDActions.GenSeed) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.WALLET_API + '/genseed/' + action.payload)
         .pipe(
@@ -872,7 +872,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.GEN_SEED_RESPONSE,
+              type: LNDActions.GEN_SEED_RESPONSE_LND,
               payload: postRes.cipher_seed_mnemonic
             };
           }),
@@ -908,7 +908,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   genSeedResponse = this.actions$.pipe(
-    ofType(LNDActions.GEN_SEED_RESPONSE),
+    ofType(LNDActions.GEN_SEED_RESPONSE_LND),
     map((action: LNDActions.GenSeedResponse) => {
       return action.payload;
     })
@@ -916,7 +916,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   initWalletRes = this.actions$.pipe(
-    ofType(LNDActions.INIT_WALLET_RESPONSE),
+    ofType(LNDActions.INIT_WALLET_RESPONSE_LND),
     map((action: LNDActions.InitWalletResponse) => {
       return action.payload;
     })
@@ -924,7 +924,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   initWallet = this.actions$.pipe(
-    ofType(LNDActions.INIT_WALLET),
+    ofType(LNDActions.INIT_WALLET_LND),
     mergeMap((action: LNDActions.InitWallet) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/initwallet',
         {
@@ -937,7 +937,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.INIT_WALLET_RESPONSE,
+              type: LNDActions.INIT_WALLET_RESPONSE_LND,
               payload: postRes
             };
           }),
@@ -951,7 +951,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   unlockWallet = this.actions$.pipe(
-    ofType(LNDActions.UNLOCK_WALLET),
+    ofType(LNDActions.UNLOCK_WALLET_LND),
     mergeMap((action: LNDActions.UnlockWallet) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', { wallet_password: action.payload.pwd })
         .pipe(
@@ -978,7 +978,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   peerLookup = this.actions$.pipe(
-    ofType(LNDActions.PEER_LOOKUP),
+    ofType(LNDActions.PEER_LOOKUP_LND),
     mergeMap((action: LNDActions.PeerLookup) => {
       this.store.dispatch(new LNDActions.ClearEffectError('Lookup'));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/node/' + action.payload)
@@ -987,7 +987,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(resPeer);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.SET_LOOKUP,
+              type: LNDActions.SET_LOOKUP_LND,
               payload: resPeer
             };
           }),
@@ -1002,7 +1002,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   channelLookup = this.actions$.pipe(
-    ofType(LNDActions.CHANNEL_LOOKUP),
+    ofType(LNDActions.CHANNEL_LOOKUP_LND),
     mergeMap((action: LNDActions.ChannelLookup) => {
       this.store.dispatch(new LNDActions.ClearEffectError('Lookup'));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload)
@@ -1011,7 +1011,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(resChannel);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.SET_LOOKUP,
+              type: LNDActions.SET_LOOKUP_LND,
               payload: resChannel
             };
           }),
@@ -1027,7 +1027,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   invoiceLookup = this.actions$.pipe(
-    ofType(LNDActions.INVOICE_LOOKUP),
+    ofType(LNDActions.INVOICE_LOOKUP_LND),
     mergeMap((action: LNDActions.InvoiceLookup) => {
       this.store.dispatch(new LNDActions.ClearEffectError('Lookup'));
       return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/' + action.payload)
@@ -1036,7 +1036,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(resInvoice);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.SET_LOOKUP,
+              type: LNDActions.SET_LOOKUP_LND,
               payload: resInvoice
             };
           }),
@@ -1051,7 +1051,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setLookup = this.actions$.pipe(
-    ofType(LNDActions.SET_LOOKUP),
+    ofType(LNDActions.SET_LOOKUP_LND),
     map((action: LNDActions.SetLookup) => {
       this.logger.info(action.payload);
       return action.payload;
@@ -1061,7 +1061,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   getRestoreChannelList = this.actions$.pipe(
-    ofType(LNDActions.RESTORE_CHANNELS_LIST),
+    ofType(LNDActions.RESTORE_CHANNELS_LIST_LND),
     mergeMap((action: LNDActions.RestoreChannelsList) => {
       this.store.dispatch(new LNDActions.ClearEffectError('RestoreChannelsList'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_BACKUP_API + '/restore/list')
@@ -1070,7 +1070,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(resRestoreList);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: LNDActions.SET_RESTORE_CHANNELS_LIST,
+              type: LNDActions.SET_RESTORE_CHANNELS_LIST_LND,
               payload: (resRestoreList) ? resRestoreList : {all_restore_exists: false, files: []}
             };
           }),
@@ -1085,7 +1085,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setRestoreChannelList = this.actions$.pipe(
-    ofType(LNDActions.SET_RESTORE_CHANNELS_LIST),
+    ofType(LNDActions.SET_RESTORE_CHANNELS_LIST_LND),
     map((action: LNDActions.SetRestoreChannelsList) => {
       this.logger.info(action.payload);
       return action.payload;
@@ -1094,7 +1094,7 @@ export class LNDEffects implements OnDestroy {
 
   @Effect()
   getLoopSwaps = this.actions$.pipe(
-    ofType(LNDActions.FETCH_LOOP_SWAPS),
+    ofType(LNDActions.FETCH_LOOP_SWAPS_LND),
     mergeMap((action: LNDActions.FetchLoopSwaps) => {
       this.store.dispatch(new LNDActions.ClearEffectError('LoopSwaps'));
       return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/swaps')
@@ -1102,7 +1102,7 @@ export class LNDEffects implements OnDestroy {
           map((swaps: any) => {
             this.logger.info(swaps);
             return {
-              type: LNDActions.SET_LOOP_SWAPS,
+              type: LNDActions.SET_LOOP_SWAPS_LND,
               payload: swaps
             };
           }),

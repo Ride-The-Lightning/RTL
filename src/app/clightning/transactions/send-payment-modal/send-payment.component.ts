@@ -53,12 +53,12 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR || action.type === CLActions.SEND_PAYMENT_STATUS))
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL))
     .subscribe((action: CLActions.EffectError | CLActions.SendPaymentStatus) => {
-      if (action.type === CLActions.SEND_PAYMENT_STATUS) { 
+      if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) { 
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.EFFECT_ERROR) {
+      if (action.type === CLActions.EFFECT_ERROR_CL) {
         if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.msatoshi;
           this.paymentError = action.payload.message;

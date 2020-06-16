@@ -5,6 +5,7 @@ export interface GetInfo {
   color?: string;
   features?: string;
   chainHash?: string;
+  network?: string;
   blockHeight?: number;
   publicAddresses?: string[];
   currency_unit?: string;
@@ -13,16 +14,19 @@ export interface GetInfo {
 }
 
 export interface Fees {
-  day_fee_sum?: number;
-  week_fee_sum?: number;
-  month_fee_sum?: number;
-  daily_tx_count?: number;
-  weekly_tx_count?: number;
-  monthly_tx_count?: number;
-  channelStats?: ChannelStats[];
+  daily_fee?: number;
+  daily_txs?: number;
+  weekly_fee?: number;
+  weekly_txs?: number;
+  monthly_fee?: number;
+  monthly_txs?: number;
+  sent?: any[];
+  received?: any[];
+  relayed?: any[];
 }
 
 export interface Channel {
+  alias?: string;
   nodeId?: string;
   channelId?: string;
   state?: string;
@@ -143,4 +147,41 @@ export interface ChannelStats {
   paymentCount?: number;
   relayFee?: number;
   networkFee?: number;
+}
+
+export interface OnChainBalance {
+  totalBalance?: number;
+  confBalance?: number;
+  unconfBalance?: number;
+  btc_totalBalance?: number;
+  btc_confBalance?: number;
+  btc_unconfBalance?: number;
+}
+
+export interface LightningBalance {
+  localBalance: number;
+  remoteBalance: number;
+  pendingBalance?: number;
+  btc_localBalance?: number;
+  btc_remoteBalance?: number;
+  btc_pendingBalance?: number;
+}
+
+export interface ChannelStatus {
+  channels?: number;
+  capacity?:number;
+}
+
+export interface ChannelsStatus {
+  active?: ChannelStatus;
+  inactive?: ChannelStatus;
+  pending?: ChannelStatus;
+  closing?: ChannelStatus;
+}
+
+export interface Peer {
+  nodeId?: string;
+  state?: string;
+  address?: string;
+  channels?: string;
 }

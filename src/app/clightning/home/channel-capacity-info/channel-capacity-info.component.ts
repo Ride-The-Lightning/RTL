@@ -19,7 +19,7 @@ export class CLChannelCapacityInfoComponent {
   constructor(private router: Router) {}
 
   goToChannels() {
-    this.router.navigateByUrl('/lnd/peerschannels');
+    this.router.navigateByUrl('/cl/peerschannels');
   }
 
 }

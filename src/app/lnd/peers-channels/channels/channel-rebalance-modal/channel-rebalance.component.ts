@@ -75,16 +75,16 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES || action.type === LNDActions.SEND_PAYMENT_STATUS || action.type === LNDActions.NEWLY_SAVED_INVOICE))
+    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
     .subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
-      if (action.type === LNDActions.SET_QUERY_ROUTES) { this.queryRoute = action.payload; }     
-      if (action.type === LNDActions.SEND_PAYMENT_STATUS) { 
+      if (action.type === LNDActions.SET_QUERY_ROUTES_LND) { this.queryRoute = action.payload; }     
+      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 
         this.logger.info(action.payload);
         this.flgPaymentSent = true;
         this.paymentStatus = action.payload;
         this.flgEditable = true;        
       }
-      if (action.type === LNDActions.NEWLY_SAVED_INVOICE) { 
+      if (action.type === LNDActions.NEWLY_SAVED_INVOICE_LND) { 
         this.logger.info(action.payload);
         this.flgInvoiceGenerated = true;
         this.sendPayment(action.payload.paymentRequest);

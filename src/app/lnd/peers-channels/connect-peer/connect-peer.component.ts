@@ -73,19 +73,19 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER || action.type === LNDActions.FETCH_PENDING_CHANNELS || action.type === LNDActions.EFFECT_ERROR))
+    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.EFFECT_ERROR_LND))
     .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.EffectError)) => {
-      if (action.type === LNDActions.NEWLY_ADDED_PEER) { 
+      if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === LNDActions.FETCH_PENDING_CHANNELS) { 
+      if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) { 
         this.dialogRef.close();
       }
-      if (action.type === LNDActions.EFFECT_ERROR) { 
+      if (action.type === LNDActions.EFFECT_ERROR_LND) { 
         if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

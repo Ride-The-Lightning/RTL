@@ -44,15 +44,15 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === LNDActions.SET_LOOKUP || action.type === LNDActions.EFFECT_ERROR))
+      filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.EFFECT_ERROR_LND))
     ).subscribe((resLookup: LNDActions.SetLookup | LNDActions.EffectError) => {
-      if(resLookup.type === LNDActions.SET_LOOKUP) {
+      if(resLookup.type === LNDActions.SET_LOOKUP_LND) {
         this.flgLoading[0] = true;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
         this.flgSetLookupValue = true;
         this.logger.info(this.lookupValue);
       }
-      if (resLookup.type === LNDActions.EFFECT_ERROR && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === LNDActions.EFFECT_ERROR_LND && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });

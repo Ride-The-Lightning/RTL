@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
@@ -193,12 +193,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === LNDActions.FETCH_FEES || action.type === LNDActions.SET_FEES))
+    filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND))
     .subscribe(action => {
-      if(action.type === LNDActions.FETCH_FEES) {
+      if(action.type === LNDActions.FETCH_FEES_LND) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === LNDActions.SET_FEES) {
+      if(action.type === LNDActions.SET_FEES_LND) {
         this.flgChildInfoUpdated = true;
       }
     });

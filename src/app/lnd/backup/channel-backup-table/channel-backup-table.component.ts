@@ -54,7 +54,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {
           this.flgLoading[0] = 'error';
         }
@@ -84,7 +84,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.SET_ALL_CHANNELS)
+      filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND)
     ).subscribe((setchannels: LNDActions.SetAllChannels) => {
       this.selChannel = undefined;
     });

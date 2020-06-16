@@ -41,7 +41,7 @@ export const initCLState: CLState = {
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
   switch (action.type) {
-    case CLActions.CLEAR_EFFECT_ERROR:
+    case CLActions.CLEAR_EFFECT_ERROR_CL:
       const clearedEffectErrors = [...state.effectErrors];
       const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
@@ -51,14 +51,14 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       }
       return {
         ...state,
-        effectErrorsCl: clearedEffectErrors
+        effectErrors: clearedEffectErrors
       };
-    case CLActions.EFFECT_ERROR:
+    case CLActions.EFFECT_ERROR_CL:
       return {
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
       };
-    case CLActions.SET_CHILD_NODE_SETTINGS:
+    case CLActions.SET_CHILD_NODE_SETTINGS_CL:
       return {
         ...state,
         nodeSettings: action.payload
@@ -68,17 +68,17 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         ...initCLState,
         nodeSettings: action.payload,
       };
-    case CLActions.SET_INFO:
+    case CLActions.SET_INFO_CL:
       return {
         ...state,
         information: action.payload
       };
-    case CLActions.SET_FEES:
+    case CLActions.SET_FEES_CL:
       return {
         ...state,
         fees: action.payload
       };
-    case CLActions.SET_FEE_RATES:
+    case CLActions.SET_FEE_RATES_CL:
       if (action.payload.perkb) {
         return {
           ...state,
@@ -94,27 +94,27 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
           ...state
         }
       }
-    case CLActions.SET_BALANCE:
+    case CLActions.SET_BALANCE_CL:
       return {
         ...state,
         balance: action.payload
       };
-    case CLActions.SET_LOCAL_REMOTE_BALANCE:
+    case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
       return {
         ...state,
         localRemoteBalance: action.payload
       };
-    case CLActions.SET_PEERS:
+    case CLActions.SET_PEERS_CL:
       return {
         ...state,
         peers: action.payload
       };
-    case CLActions.ADD_PEER:
+    case CLActions.ADD_PEER_CL:
       return {
         ...state,
         peers: [...state.peers, action.payload]
       };
-    case CLActions.REMOVE_PEER:
+    case CLActions.REMOVE_PEER_CL:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {
         return peer.id === action.payload.id;
@@ -126,12 +126,12 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         ...state,
         peers: modifiedPeers
       };
-    case CLActions.SET_CHANNELS:
+    case CLActions.SET_CHANNELS_CL:
       return {
         ...state,
         allChannels: action.payload,
       };
-    case CLActions.REMOVE_CHANNEL:
+    case CLActions.REMOVE_CHANNEL_CL:
       const modifiedChannels = [...state.allChannels];
       const removeChannelIdx = state.allChannels.findIndex(channel => {
         return channel.channel_id === action.payload.channelId;
@@ -143,29 +143,29 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         ...state,
         allChannels: modifiedChannels
       };
-    case CLActions.SET_PAYMENTS:
+    case CLActions.SET_PAYMENTS_CL:
       return {
         ...state,
         payments: action.payload
       };
-    case CLActions.SET_FORWARDING_HISTORY:
+    case CLActions.SET_FORWARDING_HISTORY_CL:
       return {
         ...state,
         forwardingHistory: action.payload
       };
-    case CLActions.ADD_INVOICE:
+    case CLActions.ADD_INVOICE_CL:
       const newInvoices = state.invoices;
       newInvoices.invoices.unshift(action.payload);
       return {
         ...state,
         invoices: newInvoices
       };
-    case CLActions.SET_INVOICES:
+    case CLActions.SET_INVOICES_CL:
       return {
         ...state,
         invoices: action.payload
       };
-    case CLActions.SET_TOTAL_INVOICES:
+    case CLActions.SET_TOTAL_INVOICES_CL:
       return {
         ...state,
         totalInvoices: action.payload

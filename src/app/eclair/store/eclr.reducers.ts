@@ -1,17 +1,22 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus } from '../../shared/models/eclrModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLRActions from './eclr.actions';
-import * as RTLActions from '../../store/rtl.actions';
 
 export interface ECLRState {
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
-  channels: Channel[];
-  channelStats: ChannelStats;
+  activeChannels: Channel[];
+  pendingChannels: Channel[];
+  inactiveChannels: Channel[];
+  channelsStatus: ChannelsStatus;
+  channelStats: ChannelStats[];
+  onchainBalance: OnChainBalance;
+  lightningBalance: LightningBalance;
+  peers: Peer[]
 }
 
 export const initECLRState: ECLRState = {
@@ -19,13 +24,19 @@ export const initECLRState: ECLRState = {
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
-  channels: [],
-  channelStats: {}
+  activeChannels: [],
+  pendingChannels: [],
+  inactiveChannels: [],
+  channelsStatus: {},
+  channelStats: [],
+  onchainBalance: { totalBalance: 0, confBalance: 0, unconfBalance: 0 },
+  lightningBalance:  { localBalance: -1, remoteBalance: -1 },
+  peers: []
 }
 
 export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActions) {
   switch (action.type) {
-    case ECLRActions.CLEAR_EFFECT_ERROR:
+    case ECLRActions.CLEAR_EFFECT_ERROR_ECLR:
       const clearedEffectErrors = [...state.effectErrors];
       const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
@@ -35,14 +46,14 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
       }
       return {
         ...state,
-        effectErrorsCl: clearedEffectErrors
+        effectErrors: clearedEffectErrors
       };
-    case ECLRActions.EFFECT_ERROR:
+    case ECLRActions.EFFECT_ERROR_ECLR:
       return {
         ...state,
-        effectErrorsCl: [...state.effectErrors, action.payload]
+        effectErrors: [...state.effectErrors, action.payload]
       };
-    case ECLRActions.SET_CHILD_NODE_SETTINGS:
+    case ECLRActions.SET_CHILD_NODE_SETTINGS_ECLR:
       return {
         ...state,
         nodeSettings: action.payload
@@ -52,25 +63,55 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
         ...initECLRState,
         nodeSettings: action.payload,
       };
-    case ECLRActions.SET_INFO:
+    case ECLRActions.SET_INFO_ECLR:
       return {
         ...state,
         information: action.payload
       };
-    case ECLRActions.SET_FEES:
+    case ECLRActions.SET_FEES_ECLR:
       return {
         ...state,
         fees: action.payload
       };
-    case ECLRActions.SET_CHANNELS:
+    case ECLRActions.SET_ACTIVE_CHANNELS_ECLR:
       return {
         ...state,
-        channels: action.payload,
+        activeChannels: action.payload,
       };
-    case ECLRActions.SET_CHANNEL_STATS:
+    case ECLRActions.SET_PENDING_CHANNELS_ECLR:
+      return {
+        ...state,
+        pendingChannels: action.payload,
+      };
+    case ECLRActions.SET_INACTIVE_CHANNELS_ECLR:
+      return {
+        ...state,
+        inactiveChannels: action.payload,
+      };
+    case ECLRActions.SET_CHANNELS_STATUS_ECLR:
+      return {
+        ...state,
+        channelsStatus: action.payload,
+      };
+    case ECLRActions.SET_CHANNEL_STATS_ECLR:
       return {
         ...state,
         channelStats: action.payload,
+      };
+    case ECLRActions.SET_ONCHAIN_BALANCE_ECLR:
+      return {
+        ...state,
+        onchainBalance: action.payload
+      };
+    case ECLRActions.SET_LIGHTNING_BALANCE_ECLR:
+      return {
+        ...state,
+        lightningBalance: action.payload
+      };
+    case ECLRActions.SET_PEERS_ECLR:
+      return {
+        ...state,
+        peers: action.payload
       };
     default:
       return state;

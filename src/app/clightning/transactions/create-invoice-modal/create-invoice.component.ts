@@ -52,12 +52,12 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR || action.type === CLActions.FETCH_INVOICES))
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.FETCH_INVOICES_CL ))
     .subscribe((action: CLActions.EffectError | CLActions.FetchInvoices) => {
-      if (action.type === CLActions.FETCH_INVOICES) {
+      if (action.type === CLActions.FETCH_INVOICES_CL ) {
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.EFFECT_ERROR && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });

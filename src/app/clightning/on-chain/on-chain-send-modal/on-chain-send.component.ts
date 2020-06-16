@@ -60,13 +60,13 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES))
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
     .subscribe((action: CLActions.EffectError | CLActions.SetChannelTransactionRes) => {
-      if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES) {
+      if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.EFFECT_ERROR && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });

@@ -73,19 +73,19 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER || action.type === CLActions.FETCH_CHANNELS || action.type === CLActions.EFFECT_ERROR))
+    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.EFFECT_ERROR_CL))
     .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.EffectError)) => {
-      if (action.type === CLActions.NEWLY_ADDED_PEER) { 
+      if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === CLActions.FETCH_CHANNELS) { 
+      if (action.type === CLActions.FETCH_CHANNELS_CL) { 
         this.dialogRef.close();
       }
-      if (action.type === CLActions.EFFECT_ERROR) { 
+      if (action.type === CLActions.EFFECT_ERROR_CL) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

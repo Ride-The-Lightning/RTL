@@ -6,6 +6,13 @@ import { SharedModule } from '../shared/shared.module';
 
 import { ECLRRootComponent } from './eclr-root.component';
 import { ECLRHomeComponent } from './home/home.component';
+import { ECLRNodeInfoComponent } from './home/node-info/node-info.component';
+import { ECLRBalancesInfoComponent } from './home/balances-info/balances-info.component';
+import { ECLRFeeInfoComponent } from './home/fee-info/fee-info.component';
+import { ECLRChannelStatusInfoComponent } from './home/channel-status-info/channel-status-info.component';
+import { ECLRChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
+import { ECLRChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
+
 import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -16,7 +23,13 @@ import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
   ],
   declarations: [
     ECLRRootComponent,
-    ECLRHomeComponent
+    ECLRHomeComponent,
+    ECLRNodeInfoComponent,
+    ECLRBalancesInfoComponent,
+    ECLRFeeInfoComponent,
+    ECLRChannelStatusInfoComponent,
+    ECLRChannelCapacityInfoComponent,
+    ECLRChannelLiquidityInfoComponent
   ],
   providers: [
     ECLRUnlockedGuard

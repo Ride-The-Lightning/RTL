@@ -445,16 +445,15 @@ export class RTLEffects implements OnDestroy {
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
-      console.warn(node.lnImplementation);
       switch (node.lnImplementation) {
         case 'CLT':
           this.CHILD_API_URL = API_URL + '/cl';
-          this.store.dispatch(new CLActions.FetchInfoCL({loadPage: landingPage}));
+          this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
           break;
 
         case 'ECLR':
           this.CHILD_API_URL = API_URL + '/eclr';
-          this.store.dispatch(new ECLRActions.FetchInfoECLR({loadPage: landingPage}));
+          this.store.dispatch(new ECLRActions.FetchInfo({loadPage: landingPage}));
           break;
             
         default:

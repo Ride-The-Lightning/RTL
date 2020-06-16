@@ -96,7 +96,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === CLActions.SET_PEERS)
+      filter((action) => action.type === CLActions.SET_PEERS_CL)
     ).subscribe((setPeers: CLActions.SetPeers) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;

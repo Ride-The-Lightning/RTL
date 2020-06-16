@@ -51,12 +51,12 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
     this.actions$.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR || action.type === LNDActions.FETCH_ALL_CHANNELS))
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.FetchAllChannels) => {
-      if (action.type === LNDActions.EFFECT_ERROR && action.payload.action === 'SaveNewChannel') {
+      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
-      if (action.type === LNDActions.FETCH_ALL_CHANNELS) {
+      if (action.type === LNDActions.FETCH_ALL_CHANNELS_LND) {
         this.dialogRef.close();
       }
     });

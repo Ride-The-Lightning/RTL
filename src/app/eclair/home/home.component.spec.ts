@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CLHomeComponent } from './home.component';
+import { ECLRHomeComponent } from './home.component';
 
-describe('CLHomeComponent', () => {
-  let component: CLHomeComponent;
-  let fixture: ComponentFixture<CLHomeComponent>;
+describe('ECLRHomeComponent', () => {
+  let component: ECLRHomeComponent;
+  let fixture: ComponentFixture<ECLRHomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLHomeComponent ]
+      declarations: [ ECLRHomeComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLHomeComponent);
+    fixture = TestBed.createComponent(ECLRHomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

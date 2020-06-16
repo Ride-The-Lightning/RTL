@@ -10,7 +10,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Channel, ChannelStats, Fees } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclrModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -38,18 +38,15 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
   public fees: Fees;
   public information: GetInfo = {};
   public channels: Channel[] = [];
-  public channelStats: ChannelStats = {};
-  // public totalBalance: BalanceCL = {};
-  // public balances = { onchain: -1, lightning: -1, total: 0 };
-  // public allChannels: ChannelCL[] = [];
-  // public channelsStatus: ChannelsStatusCL = {};
-  // public allChannelsCapacity: ChannelCL[] = [];
-  // public allInboundChannels: ChannelCL[] = [];
-  // public allOutboundChannels: ChannelCL[] = [];
-  // public totalInboundLiquidity = 0;
-  // public totalOutboundLiquidity = 0;
-  // public feeRatesPerKB: FeeRatesCL = {};
-  // public feeRatesPerKW: FeeRatesCL = {};
+  public channelStats: ChannelStats[] = [];
+  public onchainBalance: OnChainBalance = {};
+  public balances = { onchain: -1, lightning: -1, total: 0 };
+  public channelsStatus: ChannelsStatus = {};
+  public allChannelsCapacity: Channel[] = [];
+  public allInboundChannels: Channel[] = [];
+  public allOutboundChannels: Channel[] = [];
+  public totalInboundLiquidity = 0;
+  public totalOutboundLiquidity = 0;
   public operatorCards = [];
   public merchantCards = [];
   public screenSize = '';
@@ -64,46 +61,46 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
-        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 6, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 6, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
-        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 3, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 3, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
       this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-        { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 2, rows: 5 }
+        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 2, rows: 5 }
       ];
     }
   }
@@ -121,87 +118,68 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
           this.flgLoading[1] = 'error';
         }
         if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[3] = 'error';
+          this.flgLoading[2] = 'error';
         }
         if (effectsErr.action === 'FetchChannelStats') {
-          this.flgLoading[4] = 'error';
+          this.flgLoading[3] = 'error';
         }
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.information.nodeId) ? false : true;
+        this.flgLoading[0] = (this.information.nodeId) ? false : true;
       }
 
       this.fees = rtlStore.fees;
-      this.channels = rtlStore.channels;
+      if (this.flgLoading[1] !== 'error') {
+        this.flgLoading[1] = (this.fees.daily_fee) ? false : true;
+      }
+
+      this.channels = rtlStore.activeChannels;
+      this.onchainBalance = rtlStore.onchainBalance;
+      this.balances.onchain = this.onchainBalance.totalBalance;
+      this.balances.lightning = rtlStore.lightningBalance.localBalance;
+      this.balances.total = this.balances.lightning + this.balances.onchain;
+      this.balances = Object.assign({}, this.balances);
+      let local = (rtlStore.lightningBalance.localBalance) ? +rtlStore.lightningBalance.localBalance : 0;
+      let remote = (rtlStore.lightningBalance.remoteBalance) ? +rtlStore.lightningBalance.remoteBalance : 0;
+      let total = local + remote;
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
+      this.channelsStatus = rtlStore.channelsStatus;
+      this.totalInboundLiquidity = 0;
+      this.totalOutboundLiquidity = 0;
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
+      // TO DO: Check SORTING BELOW
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.data.commitments.localCommit.spec.toRemote > 0), 'data.commitments.localCommit.spec.toRemote')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.data.commitments.localCommit.spec.toLocal > 0), 'data.commitments.localCommit.spec.toLocal')));
+      this.channels.forEach(channel => {
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.data.commitments.localCommit.spec.toRemote/1000);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.data.commitments.localCommit.spec.toLocal/1000);
+      });
+      if (this.flgLoading[2] !== 'error') {
+        this.flgLoading[2] = (this.channels) ? false : true;
+      }
       this.channelStats = rtlStore.channelStats;
-      // this.fees.totalTxCount = 0;
-      // if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
-      //   this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
-      // }
-      // if (this.flgLoading[1] !== 'error') {
-      //   this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
-      // }
-
-      // this.totalBalance = rtlStore.balance;
-      // this.balances.onchain = rtlStore.balance.totalBalance;
-      // this.balances.lightning = rtlStore.localRemoteBalance.localBalance;
-      // this.balances.total = this.balances.lightning + this.balances.onchain;
-      // this.balances = Object.assign({}, this.balances);
-      // if (this.flgLoading[2] !== 'error') {
-      //   this.flgLoading[2] = ('' !== this.totalBalance) ? false : true;
-      // }
-
-      // let local = (rtlStore.localRemoteBalance.localBalance) ? +rtlStore.localRemoteBalance.localBalance : 0;
-      // let remote = (rtlStore.localRemoteBalance.remoteBalance) ? +rtlStore.localRemoteBalance.remoteBalance : 0;
-      // let total = local + remote;
-      // this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
-      // if (this.flgLoading[3] !== 'error') {
-      //   this.flgLoading[3] = (rtlStore.localRemoteBalance.localBalance) ? false : true;
-      // }
-
-      // this.feeRatesPerKB = rtlStore.feeRatesPerKB;
-      // this.feeRatesPerKW = rtlStore.feeRatesPerKW;
-      // if (this.flgLoading[4] !== 'error') {
-      //   this.flgLoading[4] = ( this.feeRatesPerKB &&  this.feeRatesPerKW) ? false : true;
-      // }
-
-      // this.channelsStatus = {
-      //   active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
-      //   pending: { channels:  rtlStore.information.num_pending_channels, capacity: rtlStore.localRemoteBalance.pendingBalance | 0 },
-      //   inactive: { channels: rtlStore.information.num_inactive_channels, capacity: rtlStore.localRemoteBalance.inactiveBalance | 0 }
-      // };
-      // this.totalInboundLiquidity = 0;
-      // this.totalOutboundLiquidity = 0;
-      // this.allChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
-      // this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-      // this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them')));
-      // this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us')));
-      // this.allChannels.forEach(channel => {
-      //   this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them/1000);
-      //   this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us/1000);
-      // });
-      // if (this.flgLoading[5] !== 'error') {
-      //   this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
-      // }      
-      // if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.feeCollected >= 0) {
-      //   this.flgChildInfoUpdated = true;
-      // } else {
-      //   this.flgChildInfoUpdated = false;
-      // }
+      if (this.flgLoading[3] !== 'error') {
+        this.flgLoading[3] = (this.channelStats) ? false : true;
+      }
+      if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.monthly_fee >= 0) {
+        this.flgChildInfoUpdated = true;
+      } else {
+        this.flgChildInfoUpdated = false;
+      }
       this.logger.info(rtlStore);
     });
-    // this.actions$.pipe(takeUntil(this.unSubs[2]),
-    // filter((action) => action.type === ECLRActions.FETCH_FEES_CL || action.type === ECLRActions.SET_FEES_CL))
-    // .subscribe(action => {
-    //   if(action.type === ECLRActions.FETCH_FEES_CL) {
-    //     this.flgChildInfoUpdated = false;
-    //   }
-    //   if(action.type === ECLRActions.SET_FEES_CL) {
-    //     this.flgChildInfoUpdated = true;
-    //   }
-    // });
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    filter((action) => action.type === ECLRActions.FETCH_FEES_ECLR || action.type === ECLRActions.SET_FEES_ECLR))
+    .subscribe(action => {
+      if(action.type === ECLRActions.FETCH_FEES_ECLR) {
+        this.flgChildInfoUpdated = false;
+      }
+      if(action.type === ECLRActions.SET_FEES_ECLR) {
+        this.flgChildInfoUpdated = true;
+      }
+    });
   }
 
   onNavigateTo(link: string) {
@@ -209,17 +187,17 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
   }
 
   onsortChannelsBy() {
-    // if (this.sortField === 'Balance Score') {
-    //   this.sortField =  'Capacity';
-    //   this.allChannelsCapacity = this.allChannels.sort(function (a, b) {
-    //     const x = +a.msatoshi_to_us + +a.msatoshi_to_them;
-    //     const y = +b.msatoshi_to_them + +b.msatoshi_to_them;
-    //     return ((x > y) ? -1 : ((x < y) ? 1 : 0));
-    //   });
-    // } else {
-    //   this.sortField =  'Balance Score';
-    //   this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-    // }
+    if (this.sortField === 'Balance Score') {
+      this.sortField =  'Capacity';
+      this.allChannelsCapacity = this.channels.sort(function (a, b) {
+        const x = +a.data.commitments.localCommit.spec.toLocal + +a.data.commitments.localCommit.spec.toRemote;
+        const y = +b.data.commitments.localCommit.spec.toLocal + +b.data.commitments.localCommit.spec.toRemote;
+        return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+      });
+    } else {
+      this.sortField =  'Balance Score';
+      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
+    }
   }
 
   ngOnDestroy() {

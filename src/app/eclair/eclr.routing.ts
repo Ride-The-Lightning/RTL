@@ -10,6 +10,11 @@ export const EclrRoutes: Routes = [
   { path: '', component: ECLRRootComponent,
     children: [
     { path: 'home', component: ECLRHomeComponent, canActivate: [ECLRUnlockedGuard] },
+    // { path: 'onchain', component: ECLROnChainComponent, canActivate: [ECLRUnlockedGuard] },
+    // { path: 'peerschannels', component: ECLRPeersChannelsComponent, canActivate: [ECLRUnlockedGuard] },
+    // { path: 'transactions', component: ECLRTransactionsComponent, canActivate: [ECLRUnlockedGuard] },
+    // { path: 'routing', component: ECLRRoutingComponent, canActivate: [ECLRUnlockedGuard] },
+    // { path: 'lookups', component: ECLRLookupsComponent, canActivate: [ECLRUnlockedGuard] },
     { path: '**', component: NotFoundComponent }
   ]}
 ];

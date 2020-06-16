@@ -194,12 +194,12 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === CLActions.FETCH_FEES || action.type === CLActions.SET_FEES))
+    filter((action) => action.type === CLActions.FETCH_FEES_CL || action.type === CLActions.SET_FEES_CL))
     .subscribe(action => {
-      if(action.type === CLActions.FETCH_FEES) {
+      if(action.type === CLActions.FETCH_FEES_CL) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === CLActions.SET_FEES) {
+      if(action.type === CLActions.SET_FEES_CL) {
         this.flgChildInfoUpdated = true;
       }
     });
