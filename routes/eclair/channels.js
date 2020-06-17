@@ -5,5 +5,6 @@ const authCheck = require("../authCheck");
 
 router.get("/", authCheck, ChannelsController.getChannels);
 router.get("/stats", authCheck, ChannelsController.getChannelStats);
+router.post("/", authCheck, ChannelsController.openChannel);
 
 module.exports = router;

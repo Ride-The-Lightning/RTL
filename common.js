@@ -26,7 +26,7 @@ common.getSelLNServerUrl = () => {
 };
 
 common.getOptions = () => {
-  common.selectedNode.options.method = 'GET';
+  common.selectedNode.options.method = common.selectedNode.ln_implementation.toUpperCase() !== 'ECLR' ? 'GET' : 'POST';
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
 };

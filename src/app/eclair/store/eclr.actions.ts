@@ -25,7 +25,13 @@ export const SET_LIGHTNING_BALANCE_ECLR = 'SET_LIGHTNING_BALANCE_ECLR';
 export const SET_CHANNELS_STATUS_ECLR = 'SET_CHANNELS_STATUS_ECLR';
 export const FETCH_PEERS_ECLR = 'FETCH_PEERS_ECLR';
 export const SET_PEERS_ECLR = 'SET_PEERS_ECLR';
-
+export const SAVE_NEW_PEER_ECLR = 'SAVE_NEW_PEER_ECLR';
+export const NEWLY_ADDED_PEER_ECLR = 'NEWLY_ADDED_PEER_ECLR';
+export const ADD_PEER_ECLR = 'ADD_PEER_ECLR';
+export const DETACH_PEER_ECLR = 'DETACH_PEER_ECLR';
+export const REMOVE_PEER_ECLR = 'REMOVE_PEER_ECLR';
+export const GET_NEW_ADDRESS_ECLR = 'GET_NEW_ADDRESS_ECLR';
+export const SET_NEW_ADDRESS_ECLR = 'SET_NEW_ADDRESS_ECLR';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ECLR;
@@ -122,7 +128,44 @@ export class SetPeers implements Action {
   constructor(public payload: Peer[]) {}
 }
 
+export class SaveNewPeer implements Action {
+  readonly type = SAVE_NEW_PEER_ECLR;
+  constructor(public payload: {nodeId: string}) {}
+}
+
+export class NewlyAddedPeer implements Action {
+  readonly type = NEWLY_ADDED_PEER_ECLR;
+  constructor(public payload: { peer: Peer, balance: number}) {}
+}
+
+export class AddPeer implements Action {
+  readonly type = ADD_PEER_ECLR;
+  constructor(public payload: Peer) {}
+}
+
+export class DetachPeer implements Action {
+  readonly type = DETACH_PEER_ECLR;
+  constructor(public payload: {nodeId: string, force: boolean}) {}
+}
+
+export class RemovePeer implements Action {
+  readonly type = REMOVE_PEER_ECLR;
+  constructor(public payload: {nodeId: string}) {}
+}
+
+export class GetNewAddress implements Action {
+  readonly type = GET_NEW_ADDRESS_ECLR;
+}
+
+export class SetNewAddress implements Action {
+  readonly type = SET_NEW_ADDRESS_ECLR;
+  constructor(public payload: string) {} // payload = newAddress
+}
+
 export type ECLRActions = ResetECLRStore | ClearEffectError | EffectError | SetChildNodeSettings |
-  FetchInfo | SetInfo | FetchFees | SetFees | FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
+  FetchInfo | SetInfo | FetchFees | SetFees |
+  FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
+  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
-  FetchOnchainBalance | SetOnchainBalance | SetLightningBalance | FetchPeers | SetPeers;
+  FetchOnchainBalance | SetOnchainBalance | SetLightningBalance | FetchPeers | SetPeers |
+  GetNewAddress | SetNewAddress;

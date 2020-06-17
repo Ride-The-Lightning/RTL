@@ -12,8 +12,9 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats } from '../../shared/models/eclrModels';
+import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer } from '../../shared/models/eclrModels';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromECLRReducer from './eclr.reducers';
 import * as ECLRActions from './eclr.actions';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -168,6 +169,60 @@ export class ECLREffects implements OnDestroy {
     }
   ));
 
+  @Effect()
+  getNewAddress = this.actions$.pipe(
+    ofType(ECLRActions.GET_NEW_ADDRESS_ECLR),
+    mergeMap((action: ECLRActions.GetNewAddress) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API)
+        .pipe(map((newAddress: any) => {
+          this.logger.info(newAddress);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: ECLRActions.SET_NEW_ADDRESS_ECLR,
+            payload: (newAddress && newAddress.address) ? newAddress.address : {}
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+          return of({type: RTLActions.VOID});
+        }));
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setNewAddress = this.actions$.pipe(
+    ofType(ECLRActions.SET_NEW_ADDRESS_ECLR),
+    map((action: ECLRActions.SetNewAddress) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  saveNewPeer = this.actions$.pipe(
+    ofType(ECLRActions.SAVE_NEW_PEER_ECLR),
+    withLatestFrom(this.store.select('eclr')),
+    mergeMap(([action, eclrData]: [ECLRActions.SaveNewPeer, fromECLRReducer.ECLRState]) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewPeer'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { nodeId: action.payload.nodeId })
+        .pipe(
+          map((postRes: Peer[]) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new ECLRActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
+            return {
+              type: ECLRActions.NEWLY_ADDED_PEER_ECLR,
+              payload: {peer: postRes.find(peer => action.payload.nodeId.indexOf(peer.nodeId) === 0)}
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('SaveNewPeer', 'Peer Connection Failed.', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+  ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('eclrUnlocked', 'true');
     const node_data = {
@@ -188,6 +243,9 @@ export class ECLREffects implements OnDestroy {
     this.store.dispatch(new ECLRActions.FetchOnchainBalance());
     this.store.dispatch(new ECLRActions.FetchPeers());
     // this.store.dispatch(new ECLRActions.GetForwardingHistoryCL());
+    // START: DELETE AFTER TESTING
+    // this.store.dispatch(new ECLRActions.GetNewAddress());
+    // END: DELETE AFTER TESTING
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/eclr/');

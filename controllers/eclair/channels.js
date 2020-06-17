@@ -7,8 +7,8 @@ exports.getChannels = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channels';
   if (req.query && req.query.nodeId) {
-    options.qs = req.query.nodeId;
-    logger.info({fileName: 'Channels', msg: 'Channels Node Id: ' + req.query.nodeId});
+    options.form = req.query;
+    logger.info({fileName: 'Channels', msg: 'Channels Node Id: ' + JSON.stringify(options.form)});
   }
   request.post(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'All Channels: ' + JSON.stringify(body)});
@@ -36,9 +36,11 @@ exports.getChannels = (req, res, next) => {
           channelStatus.active.channels = channelStatus.active.channels + 1;
           channelStatus.active.capacity = channelStatus.active.capacity + channel.data.commitments.localCommit.spec.toLocal;
         } else if (channel.state.includes('WAIT')) {
+          pendingChannels.push(channel);
           channelStatus.pending.channels = channelStatus.pending.channels + 1;
           channelStatus.pending.capacity = channelStatus.pending.capacity + channel.data.commitments.localCommit.spec.toLocal;
         } else {
+          inactiveChannels.push(channel);
           channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
           channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.data.commitments.localCommit.spec.toLocal;
         }
@@ -121,3 +123,41 @@ exports.getChannelStats = (req, res, next) => {
   });  
 }
 
+exports.openChannel = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/open';
+  // nodeId
+  // fundingSatoshis
+  // pushMsat
+  // fundingFeerateSatByte
+  // channelFlags
+  // openTimeoutSeconds
+  options.form = req.query;
+  logger.info({fileName: 'Channels', msg: 'Open Channel Params: ' + JSON.stringify(options.form)});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
+    if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 140, msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      res.status(500).json({
+        message: 'Open Channel Failed!',
+        error: (!body) ? 'Error From Server!' : body.error
+      });
+    } else {
+      res.status(201).json(body);
+    }
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.authorization) {
+      delete err.options.headers.authorization;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+      delete err.response.request.headers.authorization;
+    }
+    logger.error({fileName: 'Channels', lineNum: 58, msg: 'Open Channel Failed: ' + JSON.stringify(err)});
+    return res.status(err.statusCode ? err.statusCode : 500).json({
+      message: "Open Channel Failed!",
+      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+    });
+  });
+}
