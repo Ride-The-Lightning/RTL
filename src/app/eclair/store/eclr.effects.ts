@@ -345,7 +345,6 @@ export class ECLREffects implements OnDestroy {
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new ECLRActions.FetchFees());
     this.store.dispatch(new ECLRActions.FetchChannels());
-    this.store.dispatch(new ECLRActions.FetchChannelStats());
     this.store.dispatch(new ECLRActions.FetchOnchainBalance());
     this.store.dispatch(new ECLRActions.FetchPeers());
     let newRoute = this.location.path();

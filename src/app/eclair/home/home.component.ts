@@ -10,12 +10,11 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclrModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as ECLRActions from '../store/eclr.actions';
-import * as RTLActions from '../../store/rtl.actions';
 
 @Component({
   selector: 'rtl-eclr-home',
@@ -38,7 +37,6 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
   public fees: Fees;
   public information: GetInfo = {};
   public channels: Channel[] = [];
-  public channelStats: ChannelStats[] = [];
   public onchainBalance: OnChainBalance = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
   public channelsStatus: ChannelsStatus = {};
@@ -120,9 +118,6 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
         if (effectsErr.action === 'FetchChannels') {
           this.flgLoading[2] = 'error';
         }
-        if (effectsErr.action === 'FetchChannelStats') {
-          this.flgLoading[3] = 'error';
-        }
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
@@ -158,10 +153,6 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       });
       if (this.flgLoading[2] !== 'error') {
         this.flgLoading[2] = (this.channels) ? false : true;
-      }
-      this.channelStats = rtlStore.channelStats;
-      if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = (this.channelStats) ? false : true;
       }
       if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.monthly_fee >= 0) {
         this.flgChildInfoUpdated = true;

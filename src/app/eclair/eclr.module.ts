@@ -21,6 +21,8 @@ import { ECLRConnectPeerComponent } from './peers-channels/connect-peer/connect-
 import { ECLRChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
 import { ECLROpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { ECLRChannelsTableComponent } from './peers-channels/channels/channels-table/channels-table.component';
+import { ECLRRoutingComponent } from './routing/routing.component';
+import { ECLRForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 
 import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -47,7 +49,9 @@ import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
     ECLRChannelsTableComponent,
     ECLRConnectPeerComponent,
     ECLRChannelInformationComponent,
-    ECLROpenChannelComponent
+    ECLROpenChannelComponent,
+    ECLRRoutingComponent,
+    ECLRForwardingHistoryComponent
   ],
   providers: [
     ECLRUnlockedGuard

@@ -51,24 +51,24 @@
         <mat-divider [inset]="true" class="my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Base Fee (mSats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.feeBaseMsat | number}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.channelFlags === 0 ? 'Yes' : 'No'}}</span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mSat)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Buried</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced">
           <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Channel Flags</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{channel.channelFlags | number}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Base Fee (mSats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.feeBaseMsat | number}}</span>
             </div>
             <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Buried</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mSat)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths}}</span>
             </div>
           </div>
           <mat-divider [inset]="true" class="my-1"></mat-divider>

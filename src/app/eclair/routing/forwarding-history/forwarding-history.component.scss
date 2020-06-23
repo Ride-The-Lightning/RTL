@@ -1,0 +1,11 @@
+.mat-column-channelId {
+  flex: 1 1 25%;
+  width: 25%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}
