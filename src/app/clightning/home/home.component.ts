@@ -32,7 +32,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;  
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
-  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
+  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
@@ -139,7 +139,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.fees = rtlStore.fees;
       this.fees.totalTxCount = 0;
       if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
-        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
+        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length;
       }
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
@@ -157,7 +157,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       let local = (rtlStore.localRemoteBalance.localBalance) ? +rtlStore.localRemoteBalance.localBalance : 0;
       let remote = (rtlStore.localRemoteBalance.remoteBalance) ? +rtlStore.localRemoteBalance.remoteBalance : 0;
       let total = local + remote;
-      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
       if (this.flgLoading[3] !== 'error') {
         this.flgLoading[3] = (rtlStore.localRemoteBalance.localBalance) ? false : true;
       }

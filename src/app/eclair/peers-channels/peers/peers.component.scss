@@ -1,0 +1,23 @@
+.mat-column-alias {
+  flex: 1 1 10%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}
+
+.mat-column-nodeId {
+  flex: 1 1 10%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 2rem;
+}
+
+.mat-column-address {
+  flex: 1 1 15%;
+  width: 15%;
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}

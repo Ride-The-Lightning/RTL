@@ -32,6 +32,10 @@ export const DETACH_PEER_ECLR = 'DETACH_PEER_ECLR';
 export const REMOVE_PEER_ECLR = 'REMOVE_PEER_ECLR';
 export const GET_NEW_ADDRESS_ECLR = 'GET_NEW_ADDRESS_ECLR';
 export const SET_NEW_ADDRESS_ECLR = 'SET_NEW_ADDRESS_ECLR';
+export const SAVE_NEW_CHANNEL_ECLR = 'SAVE_NEW_CHANNEL_ECLR';
+export const UPDATE_CHANNELS_ECLR = 'UPDATE_CHANNELS_ECLR';
+export const CLOSE_CHANNEL_ECLR = 'CLOSE_CHANNEL_ECLR';
+export const REMOVE_CHANNEL_ECLR = 'REMOVE_CHANNEL_ECLR';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ECLR;
@@ -143,9 +147,9 @@ export class AddPeer implements Action {
   constructor(public payload: Peer) {}
 }
 
-export class DetachPeer implements Action {
+export class DisconnectPeer implements Action {
   readonly type = DETACH_PEER_ECLR;
-  constructor(public payload: {nodeId: string, force: boolean}) {}
+  constructor(public payload: {nodeId: string}) {}
 }
 
 export class RemovePeer implements Action {
@@ -162,10 +166,31 @@ export class SetNewAddress implements Action {
   constructor(public payload: string) {} // payload = newAddress
 }
 
+export class SaveNewChannel implements Action {
+  readonly type = SAVE_NEW_CHANNEL_ECLR;
+  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number}) {}
+}
+
+export class UpdateChannels implements Action {
+  readonly type = UPDATE_CHANNELS_ECLR;
+  constructor(public payload: {baseFeeMsat: number, feeRate: number, channelId?: string, channelIds?: string}) {}
+}
+
+export class CloseChannel implements Action {
+  readonly type = CLOSE_CHANNEL_ECLR;
+  constructor(public payload: {channelId: string}) {}
+}
+
+export class RemoveChannel implements Action {
+  readonly type = REMOVE_CHANNEL_ECLR;
+  constructor(public payload: {channelId: string}) {}
+}
+
 export type ECLRActions = ResetECLRStore | ClearEffectError | EffectError | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
-  FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
+  FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | SetLightningBalance | FetchPeers | SetPeers |
-  GetNewAddress | SetNewAddress;
+  GetNewAddress | SetNewAddress |
+  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel;

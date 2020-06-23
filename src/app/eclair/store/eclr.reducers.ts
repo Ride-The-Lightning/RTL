@@ -113,6 +113,30 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
         ...state,
         peers: action.payload
       };
+    case ECLRActions.REMOVE_PEER_ECLR:
+      const modifiedPeers = [...state.peers];
+      const removePeerIdx = state.peers.findIndex(peer => {
+        return peer.nodeId === action.payload.nodeId;
+      });
+      if (removePeerIdx > -1) {
+        modifiedPeers.splice(removePeerIdx, 1);
+      }
+      return {
+        ...state,
+        peers: modifiedPeers
+      };
+    case ECLRActions.REMOVE_CHANNEL_ECLR:
+      const modifiedChannels = [...state.activeChannels];
+      const removeChannelIdx = state.activeChannels.findIndex(channel => {
+        return channel.channelId === action.payload.channelId;
+      });
+      if (removeChannelIdx > -1) {
+        modifiedChannels.splice(removeChannelIdx, 1);
+      }
+      return {
+        ...state,
+        activeChannels: modifiedChannels
+      };
     default:
       return state;
   }

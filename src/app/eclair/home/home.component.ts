@@ -150,11 +150,11 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       this.totalOutboundLiquidity = 0;
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
       // TO DO: Check SORTING BELOW
-      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.data.commitments.localCommit.spec.toRemote > 0), 'data.commitments.localCommit.spec.toRemote')));
-      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.data.commitments.localCommit.spec.toLocal > 0), 'data.commitments.localCommit.spec.toLocal')));
+      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toRemote > 0), 'toRemote')));
+      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toLocal > 0), 'toLocal')));
       this.channels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.data.commitments.localCommit.spec.toRemote/1000);
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.data.commitments.localCommit.spec.toLocal/1000);
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote/1000);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal/1000);
       });
       if (this.flgLoading[2] !== 'error') {
         this.flgLoading[2] = (this.channels) ? false : true;
@@ -190,8 +190,8 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
     if (this.sortField === 'Balance Score') {
       this.sortField =  'Capacity';
       this.allChannelsCapacity = this.channels.sort(function (a, b) {
-        const x = +a.data.commitments.localCommit.spec.toLocal + +a.data.commitments.localCommit.spec.toRemote;
-        const y = +b.data.commitments.localCommit.spec.toLocal + +b.data.commitments.localCommit.spec.toRemote;
+        const x = +a.toLocal + +a.toRemote;
+        const y = +b.toLocal + +b.toRemote;
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
       });
     } else {

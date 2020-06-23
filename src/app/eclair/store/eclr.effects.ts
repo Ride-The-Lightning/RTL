@@ -154,11 +154,11 @@ export class ECLREffects implements OnDestroy {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchPeers'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
         .pipe(
-          map((peers: any) => {
+          map((peers: Peer[]) => {
             this.logger.info(peers);
             return {
               type: ECLRActions.SET_PEERS_ECLR ,
-              payload: peers ? peers : []
+              payload: peers && peers.length ? peers.filter(peer => peer.state !== 'DISCONNECTED') : []
             };
           }),
           catchError((err: any) => {
@@ -179,7 +179,7 @@ export class ECLREffects implements OnDestroy {
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
             type: ECLRActions.SET_NEW_ADDRESS_ECLR,
-            payload: (newAddress && newAddress.address) ? newAddress.address : {}
+            payload: newAddress
           };
         }),
         catchError((err: any) => {
@@ -223,6 +223,111 @@ export class ECLREffects implements OnDestroy {
     }
   ));
 
+  @Effect()
+  detachPeer = this.actions$.pipe(
+    ofType(ECLRActions.DETACH_PEER_ECLR),
+    mergeMap((action: ECLRActions.DisconnectPeer) => {
+      return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId)
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully!'));
+            return {
+              type: ECLRActions.REMOVE_PEER_ECLR,
+              payload: { nodeId: action.payload.nodeId }
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('ERROR', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+  ));
+
+  @Effect()
+  openNewChannel = this.actions$.pipe(
+    ofType(ECLRActions.SAVE_NEW_CHANNEL_ECLR),
+    mergeMap((action: ECLRActions.SaveNewChannel) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewChannel'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
+        id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null
+      })
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
+            return {
+              type: ECLRActions.FETCH_CHANNELS_ECLR
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+  ));
+
+  @Effect()
+  updateChannel = this.actions$.pipe(
+    ofType(ECLRActions.UPDATE_CHANNELS_ECLR),
+    mergeMap((action: ECLRActions.UpdateChannels) => {
+      let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
+      if (action.payload.channelIds) {
+        queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
+      } else {
+        queryParam = queryParam + '&channelId=' + action.payload.channelId;        
+      }
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/updateRelayFee' + queryParam, {})
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            if(action.payload.channelIds) {
+              this.store.dispatch(new RTLActions.OpenSnackBar('Channels Updated Successfully.'));
+            } else {
+              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+            }
+            return {
+              type: ECLRActions.FETCH_CHANNELS_ECLR
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('ERROR', 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+  ));
+
+  @Effect()
+  closeChannel = this.actions$.pipe(
+    ofType(ECLRActions.CLOSE_CHANNEL_ECLR),
+    mergeMap((action: ECLRActions.CloseChannel) => {
+      const queryParam = '?channelId=' + action.payload.channelId;
+      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + queryParam)
+        .pipe(
+          map((postRes: any) => {
+            this.logger.info(postRes);
+            setTimeout(() => {
+              this.store.dispatch(new ECLRActions.FetchChannels());
+              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
+            }, 1000);
+            return {
+              type: RTLActions.CLOSE_SPINNER
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithAlert('ERROR', 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+  ));
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('eclrUnlocked', 'true');
     const node_data = {
@@ -242,10 +347,6 @@ export class ECLREffects implements OnDestroy {
     this.store.dispatch(new ECLRActions.FetchChannelStats());
     this.store.dispatch(new ECLRActions.FetchOnchainBalance());
     this.store.dispatch(new ECLRActions.FetchPeers());
-    // this.store.dispatch(new ECLRActions.GetForwardingHistoryCL());
-    // START: DELETE AFTER TESTING
-    // this.store.dispatch(new ECLRActions.GetNewAddress());
-    // END: DELETE AFTER TESTING
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/eclr/');

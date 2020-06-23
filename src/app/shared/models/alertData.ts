@@ -2,6 +2,7 @@ import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
 import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL } from './clModels';
+import { GetInfo as GetInfoECLR, Peer as PeerECLR, Channel as ChannelECLR } from './eclrModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
@@ -48,6 +49,14 @@ export interface CLOpenChannelAlert {
   component?: any;
 }
 
+export interface ECLROpenChannelAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { information: GetInfoECLR, balance: number, peer?: any, peers?: PeerECLR[] };
+  newlyAdded?: boolean;
+  component?: any;
+}
+
 export interface InvoiceInformation {
   invoice: Invoice;
   newlyAdded?: boolean;
@@ -62,15 +71,22 @@ export interface CLInvoiceInformation {
   component?: any;
 }
 
+export interface ChannelInformation {
+  channel: Channel;
+  showCopy?: boolean;
+  component?: any;
+}
+
 export interface CLChannelInformation {
   channel: ChannelCL;
   showCopy?: boolean;
   component?: any;
 }
 
-export interface ChannelInformation {
-  channel: Channel;
+export interface ECLRChannelInformation {
+  channel: ChannelECLR;
   showCopy?: boolean;
+  selectedTab?: string;
   component?: any;
 }
 
@@ -144,5 +160,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | ECLRChannelInformation | ECLROpenChannelAlert;
 }

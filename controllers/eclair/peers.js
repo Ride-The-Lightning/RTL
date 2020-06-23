@@ -8,7 +8,7 @@ exports.getPeers = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/peers';
   request.post(options).then(function (body) {
     logger.info({fileName: 'Peers', msg: 'Peers Received: ' + JSON.stringify(body)});
-      res.status(200).json(body);
+    res.status(200).json(body);
   })
   .catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
@@ -65,5 +65,33 @@ exports.connectPeer = (req, res, next) => {
           });
         });
     }
+  });
+};
+
+exports.deletePeer = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/disconnect';
+  if (req.route.nodeId) {
+    options.form = { nodeId: req.route.nodeId };
+    logger.info({fileName: 'Peers', msg: 'Disconnect Peer Params: ' + JSON.stringify(options.form)});
+  }
+  request.post(options, (error, response, body) => {
+    logger.info({fileName: 'Peers', msg: 'Disconnect Peer Response: ' + JSON.stringify(body)});
+    logger.info({fileName: 'Peers', msg: 'Peer Disconnected: ' + req.params.peerId});
+    res.status(204).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.authorization) {
+      delete err.options.headers.authorization;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+      delete err.response.request.headers.authorization;
+    }
+    logger.error({fileName: 'Peers', lineNum: 91, msg: 'Disconnect Peer Error: ' + JSON.stringify(err)});
+    return res.status(err.statusCode ? err.statusCode : 500).json({
+      message: "Disconnect Peer Failed!",
+      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+    });
   });
 };
