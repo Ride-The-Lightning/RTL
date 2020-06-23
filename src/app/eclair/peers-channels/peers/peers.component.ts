@@ -117,7 +117,11 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
 
   onConnectPeer() {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { peer: null, information: this.information, balance: this.availableBalance },
+      message: { 
+        peer: null,
+        information: this.information,
+        balance: this.availableBalance
+      },
       component: ECLRConnectPeerComponent
     }}));
   }

@@ -9,7 +9,6 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/eclrModels';
 import { ECLROpenChannelAlert } from '../../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as ECLRActions from '../../../store/eclr.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -36,10 +35,7 @@ export class ECLROpenChannelComponent implements OnInit, OnDestroy {
   public fundingAmount: number;
   public selectedPubkey = '';
   public isPrivate = false;
-  public feeRateTypes = FEE_RATE_TYPES;
-  public selFeeRate = '';
-  public flgMinConf = false;
-  public minConfValue = null;
+  public feeRate = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLROpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLROpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
@@ -99,9 +95,7 @@ export class ECLROpenChannelComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.flgMinConf = false;
-    this.selFeeRate = '';
-    this.minConfValue = null;
+    this.feeRate = null;
     this.selectedPeer.setValue('');
     this.fundingAmount = null;
     this.isPrivate = false;
@@ -112,17 +106,17 @@ export class ECLROpenChannelComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = (!this.flgMinConf && !this.selFeeRate) ? 'Advanced Options' : 'Advanced Options | ' + (this.flgMinConf ? 'Min Confirmation Blocks: ' : 'Fee Rate: ') + (this.flgMinConf ? this.minConfValue : (this.selFeeRate ? this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType : ''));
+      this.advancedTitle = (this.feeRate && this.feeRate > 0) ? 'Advanced Options | Fee (Sats/Byte): ' + this.feeRate : 'Advanced Options';
     } else {
       this.advancedTitle = 'Advanced Options';
     }
   }
 
   onOpenChannel() {
-    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
+    if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new ECLRActions.SaveNewChannel({
-      peerId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
+      nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, feeRate: this.feeRate
     }));
   }
 

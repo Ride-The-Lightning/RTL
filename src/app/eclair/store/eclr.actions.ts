@@ -134,12 +134,12 @@ export class SetPeers implements Action {
 
 export class SaveNewPeer implements Action {
   readonly type = SAVE_NEW_PEER_ECLR;
-  constructor(public payload: {nodeId: string}) {}
+  constructor(public payload: {id: string}) {}
 }
 
 export class NewlyAddedPeer implements Action {
   readonly type = NEWLY_ADDED_PEER_ECLR;
-  constructor(public payload: { peer: Peer, balance: number}) {}
+  constructor(public payload: { peer: Peer }) {}
 }
 
 export class AddPeer implements Action {
@@ -168,7 +168,7 @@ export class SetNewAddress implements Action {
 
 export class SaveNewChannel implements Action {
   readonly type = SAVE_NEW_CHANNEL_ECLR;
-  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number}) {}
+  constructor(public payload: {nodeId: string, amount: number, private: boolean, feeRate?: number}) {}
 }
 
 export class UpdateChannels implements Action {

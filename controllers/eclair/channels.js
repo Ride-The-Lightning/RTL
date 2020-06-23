@@ -120,7 +120,7 @@ exports.openChannel = (req, res, next) => {
   // fundingFeerateSatByte
   // channelFlags
   // openTimeoutSeconds
-  options.form = req.query;
+  options.form = req.body;
   logger.info({fileName: 'Channels', msg: 'Open Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});

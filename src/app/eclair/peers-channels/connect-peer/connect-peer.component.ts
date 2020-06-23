@@ -10,7 +10,6 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer } from '../../../shared/models/eclrModels';
 import { ECLROpenChannelAlert } from '../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLREffects } from '../../store/eclr.effects';
@@ -29,7 +28,6 @@ export class ECLRConnectPeerComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
   public totalBalance = 0;
-  public feeRateTypes = FEE_RATE_TYPES;
   public flgChannelOpened = false;
   public channelOpenStatus = null;
   public newlyAddedPeer: Peer = null;
@@ -54,24 +52,10 @@ export class ECLRConnectPeerComponent implements OnInit, OnDestroy {
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
       isPrivate: [false],
-      selFeeRate: [null],
-      flgMinConf: [false],
-      minConfValue: [null],
+      feeRate: [null],
       hiddenAmount: ['', [Validators.required]]
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
-    this.channelFormGroup.controls.flgMinConf.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(flg => {
-      if (flg) {
-        this.channelFormGroup.controls.selFeeRate.setValue(null);
-        this.channelFormGroup.controls.selFeeRate.disable();
-        this.channelFormGroup.controls.minConfValue.enable();
-        this.channelFormGroup.controls.minConfValue.setValidators([Validators.required]);
-      } else {
-        this.channelFormGroup.controls.selFeeRate.enable();
-        this.channelFormGroup.controls.minConfValue.disable();
-        this.channelFormGroup.controls.minConfValue.setValidators(null);
-      }
-    });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === ECLRActions.NEWLY_ADDED_PEER_ECLR || action.type === ECLRActions.FETCH_CHANNELS_ECLR || action.type === ECLRActions.EFFECT_ERROR_ECLR))
     .subscribe((action: (ECLRActions.NewlyAddedPeer | ECLRActions.FetchChannels | ECLRActions.EffectError)) => {
@@ -99,15 +83,15 @@ export class ECLRConnectPeerComponent implements OnInit, OnDestroy {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new ECLRActions.SaveNewPeer({nodeId: this.peerFormGroup.controls.peerAddress.value}));
+    this.store.dispatch(new ECLRActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
   onOpenChannel() {
-    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
+    if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new ECLRActions.SaveNewChannel({
-      peerId: this.newlyAddedPeer.nodeId, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
+      nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
     }));
   }
 

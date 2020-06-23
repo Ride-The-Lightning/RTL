@@ -13,16 +13,16 @@
   </div>
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
   <div fxLayout="column" fxFlex.gt-sm="88" fxFlex="84" fxLayoutAlign="start start" class="channels-capacity-scroll" perfectScrollbar>
-    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels.length > 0; else noChannelBlock">
+    <div fxLayout="column" fxFlex="100" class="w-100" *ngIf="allChannels && allChannels?.length > 0; else noChannelBlock">
       <div *ngFor="let channel of allChannels" class="mt-2">
-        <span class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.shortChannelId}}" matTooltipDisabled="{{(channel.alias || channel.shortChannelId).length < 26}}">{{(channel.alias || channel.shortChannelId) | slice:0:24}}{{(channel.alias || channel.shortChannelId).length > 25 ? '...' : ''}}</span>
+        <span class="dashboard-capacity-header" matTooltip="{{channel.alias || channel.shortChannelId}}" matTooltipDisabled="{{(channel.alias || channel.shortChannelId).length < 26}}">{{(channel?.alias || channel?.shortChannelId) | slice:0:24}}{{(channel?.alias || channel?.shortChannelId).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-          <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel.toLocal/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
+          <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Local:</strong>{{channel?.toLocal/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
           <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90 color-primary">
             <fa-icon [icon]="faBalanceScale" class="color-primary mr-3px" matTooltip="Balance Score"></fa-icon>
-            ({{channel.balancedness || 0 | number}})
+            ({{channel?.balancedness || 0 | number}})
           </mat-hint>
-          <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel.toRemote/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
+          <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channel?.toRemote/1000 || 0 | number:'1.0-0'}} Sats</mat-hint>
         </div>
         <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{channel.toLocal && channel.toLocal > 0 ? ((+channel.toLocal/((+channel.toLocal)+(+channel.toRemote)))*100) : 0}}"></mat-progress-bar>
       </div>

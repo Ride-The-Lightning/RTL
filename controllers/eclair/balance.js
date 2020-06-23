@@ -30,10 +30,10 @@ exports.getBalance = (req, res, next) => {
   })
   .catch(errRes => {
     let body = {};
-    body.totalBalance = 0;
-    body.btc_totalBalance = 0;
-    body.confBalance = 0;
-    body.btc_confBalance = 0;
+    body.totalBalance = 20000000;
+    body.btc_totalBalance = 0.200000;
+    body.confBalance = 20000000;
+    body.btc_confBalance = 0.200000;
     body.unconfBalance = 0;
     body.btc_unconfBalance = 0;
     res.status(200).json(body);

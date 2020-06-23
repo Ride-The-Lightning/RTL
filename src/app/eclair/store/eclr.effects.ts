@@ -204,15 +204,15 @@ export class ECLREffects implements OnDestroy {
     withLatestFrom(this.store.select('eclr')),
     mergeMap(([action, eclrData]: [ECLRActions.SaveNewPeer, fromECLRReducer.ECLRState]) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewPeer'));
-      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { nodeId: action.payload.nodeId })
+      return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {})
         .pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new ECLRActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
+            this.store.dispatch(new ECLRActions.SetPeers((postRes && postRes.length) ? (postRes.filter(peer => peer.state !== 'DISCONNECTED')) : []));
             return {
               type: ECLRActions.NEWLY_ADDED_PEER_ECLR,
-              payload: {peer: postRes.find(peer => action.payload.nodeId.indexOf(peer.nodeId) === 0)}
+              payload: { peer: postRes[0] }
             };
           }),
           catchError((err: any) => {
@@ -232,7 +232,7 @@ export class ECLREffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully!'));
+            this.store.dispatch(new RTLActions.OpenSnackBar('Disconnecting Peer!'));
             return {
               type: ECLRActions.REMOVE_PEER_ECLR,
               payload: { nodeId: action.payload.nodeId }
@@ -251,9 +251,10 @@ export class ECLREffects implements OnDestroy {
     ofType(ECLRActions.SAVE_NEW_CHANNEL_ECLR),
     mergeMap((action: ECLRActions.SaveNewChannel) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewChannel'));
-      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
-        id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null
-      })
+      const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ? 
+          { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private, fundingFeerateSatByte: action.payload.feeRate }
+        : { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private}
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, reqBody)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -368,7 +369,7 @@ export class ECLREffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new ECLRActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
+      this.store.dispatch(new ECLRActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : genericErrorMessage }));
     }
   }
 

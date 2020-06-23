@@ -1,4 +1,4 @@
-<!-- <div fxLayout="row">
+<div fxLayout="row">
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
@@ -37,25 +37,25 @@
   <mat-expansion-panel class="flat-expansion-panel my-1" *ngIf="peer" expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        <span>Peer: &nbsp;</span><strong class="font-weight-900">{{peer?.alias || peer?.id}}</strong>
+        <span>Peer: &nbsp;</span><strong class="font-weight-900">{{peer?.alias || peer?.nodeId}}</strong>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div fxLayout="column">
       <div fxLayout="row">
         <div fxFlex="100">
           <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
-          <span class="foreground-secondary-text">{{peer.id}}</span>
+          <span class="foreground-secondary-text">{{peer.nodeId}}</span>
         </div>
       </div>
       <mat-divider class="w-100 my-1"></mat-divider>
       <div fxLayout="row">
         <div fxFlex="50">
           <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-          <span class="overflow-wrap foreground-secondary-text">{{peer?.netaddr}}</span>
+          <span class="overflow-wrap foreground-secondary-text">{{peer?.address}}</span>
         </div>
         <div fxFlex="50">
-          <h4 fxLayoutAlign="start" class="font-bold-500">Connected</h4>
-          <span class="overflow-wrap foreground-secondary-text">{{peer.connected ? 'True' : 'False'}}</span>
+          <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
+          <span class="overflow-wrap foreground-secondary-text">{{peer?.state | titlecase}}</span>
         </div>
       </div>
     </div>
@@ -83,23 +83,13 @@
       </mat-expansion-panel-header>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
         <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-          <mat-form-field fxFlex="48" fxLayoutAlign="start end">
-            <mat-select tabindex="4" placeholder="Fee Rate" [(value)]="selFeeRate" [disabled]="flgMinConf">
-              <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
-                {{feeRateType.feeRateType}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
           <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="selFeeRate=null;" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
-            <mat-form-field fxFlex="98">
-              <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
-              <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
+            <mat-form-field fxFlex="100">
+              <input matInput [(ngModel)]="feeRate" placeholder="Fee (Sats/Byte)" type="number" name="fee" step="1" min="0" tabindex="7" #fee="ngModel">
             </mat-form-field>
           </div>
         </div>
       </div>
     </mat-expansion-panel>    
   </form>
-</ng-template> -->
-<h4>Open Channel</h4>
+</ng-template>
