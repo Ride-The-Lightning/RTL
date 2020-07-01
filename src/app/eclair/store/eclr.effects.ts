@@ -12,7 +12,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer } from '../../shared/models/eclrModels';
+import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit } from '../../shared/models/eclrModels';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromECLRReducer from './eclr.reducers';
 import * as ECLRActions from './eclr.actions';
@@ -62,17 +62,18 @@ export class ECLREffects implements OnDestroy {
   ));
 
   @Effect()
-  fetchFees = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_FEES_ECLR),
-    mergeMap((action: ECLRActions.FetchFees) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchFees'));
-      return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
+  fetchAudit = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_AUDIT_ECLR),
+    mergeMap((action: ECLRActions.FetchAudit) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchAudit'));
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API);
     }),
-    map((fees) => {
-      this.logger.info(fees);
+    map((audit: Audit) => {
+      this.logger.info(audit);
+      this.store.dispatch(new ECLRActions.SetPayments(audit.payments));
       return {
         type: ECLRActions.SET_FEES_ECLR,
-        payload: fees ? fees : {}
+        payload: audit && audit.fees ? audit.fees : {}
       };
     }),
     catchError((err: any) => {
@@ -314,11 +315,12 @@ export class ECLREffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             setTimeout(() => {
+              this.store.dispatch(new RTLActions.CloseSpinner());
               this.store.dispatch(new ECLRActions.FetchChannels());
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
-            }, 1000);
+            }, 2000);
             return {
-              type: RTLActions.CLOSE_SPINNER
+              type: RTLActions.VOID
             };
           }),
           catchError((err: any) => {
@@ -328,6 +330,118 @@ export class ECLREffects implements OnDestroy {
         );
     }
   ));
+
+  @Effect()
+  queryRoutesFetch = this.actions$.pipe(
+    ofType(ECLRActions.GET_QUERY_ROUTES_ECLR),
+    mergeMap((action: ECLRActions.GetQueryRoutes) => {
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount)
+        .pipe(
+          map((qrRes: any) => {
+            this.logger.info(qrRes);
+            return {
+              type: ECLRActions.SET_QUERY_ROUTES_ECLR,
+              payload: qrRes
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new ECLRActions.SetQueryRoutes([]));
+            this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    }
+    ));
+
+  @Effect({ dispatch: false })
+  setQueryRoutes = this.actions$.pipe(
+    ofType(ECLRActions.SET_QUERY_ROUTES_ECLR),
+    map((action: ECLRActions.SetQueryRoutes) => {
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  decodePayment = this.actions$.pipe(
+    ofType(ECLRActions.DECODE_PAYMENT_ECLR),
+    mergeMap((action: ECLRActions.DecodePayment) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('DecodePayment'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
+        .pipe(
+          map((decodedPayment) => {
+            this.logger.info(decodedPayment);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: ECLRActions.SET_DECODED_PAYMENT_ECLR,
+              payload: decodedPayment ? decodedPayment : {}
+            };
+          }),
+          catchError((err: any) => {
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam, err);
+            }
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setDecodedPayment = this.actions$.pipe(
+    ofType(ECLRActions.SET_DECODED_PAYMENT_ECLR),
+    map((action: ECLRActions.SetDecodedPayment) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect()
+  sendPayment = this.actions$.pipe(
+    ofType(ECLRActions.SEND_PAYMENT_ECLR),
+    withLatestFrom(this.store.select('root')),
+    mergeMap(([action, store]: [ECLRActions.SendPayment, any]) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('SendPayment'));      
+      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
+        .pipe(
+          map((sendRes: any) => {
+            this.logger.info(sendRes);
+            if (sendRes.error) {
+              this.store.dispatch(new RTLActions.CloseSpinner());
+              this.logger.error('Error: ' + sendRes.payment_error);
+              const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
+              if (action.payload.fromDialog) {
+                this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+              } else {
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+              }
+              return of({type: RTLActions.VOID});
+            } else {
+              setTimeout(() => {
+                this.store.dispatch(new ECLRActions.SendPaymentStatus(sendRes));
+                this.store.dispatch(new RTLActions.CloseSpinner());
+                this.store.dispatch(new ECLRActions.FetchChannels());
+                this.store.dispatch(new ECLRActions.SetDecodedPayment({}));
+                this.store.dispatch(new ECLRActions.FetchAudit());
+                this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
+              }, 3000);
+              return { type: RTLActions.VOID };
+            }
+          }),
+          catchError((err: any) => {
+            this.logger.error('Error: ' + JSON.stringify(err));
+            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+            if (action.payload.fromDialog) {
+              this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+            } else {
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+            }
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('eclrUnlocked', 'true');
@@ -343,7 +457,7 @@ export class ECLREffects implements OnDestroy {
       numberOfPendingChannels: 0
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLRActions.FetchFees());
+    this.store.dispatch(new ECLRActions.FetchAudit());
     this.store.dispatch(new ECLRActions.FetchChannels());
     this.store.dispatch(new ECLRActions.FetchOnchainBalance());
     this.store.dispatch(new ECLRActions.FetchPeers());

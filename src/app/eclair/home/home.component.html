@@ -80,10 +80,10 @@
             <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive">
-                  <!-- <rtl-eclr-lightning-invoices class="h-100" [showDetails]="false"></rtl-eclr-lightning-invoices> -->
+                  <rtl-eclr-lightning-invoices class="h-100" [showDetails]="false"></rtl-eclr-lightning-invoices>
                 </mat-tab>
                 <mat-tab label="Pay">
-                  <!-- <rtl-eclr-lightning-payments [showDetails]="false"></rtl-eclr-lightning-payments> -->
+                  <rtl-eclr-lightning-payments [showDetails]="false"></rtl-eclr-lightning-payments>
                 </mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>

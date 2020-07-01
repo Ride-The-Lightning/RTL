@@ -415,7 +415,7 @@ export class CLEffects implements OnDestroy {
               if (action.payload.fromDialog) {
                 this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
               } else {
-                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
               }
               return of({type: RTLActions.VOID});
             } else {
@@ -436,7 +436,7 @@ export class CLEffects implements OnDestroy {
             if (action.payload.fromDialog) {
               this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
             } else {
-              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+              this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
             }
             return of({type: RTLActions.VOID});
           })

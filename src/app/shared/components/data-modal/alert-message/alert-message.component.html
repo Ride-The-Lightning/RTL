@@ -23,7 +23,11 @@
                   <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
                   <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
                     <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-                      <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block w-100">{{arrayObj}}</span></ng-container>
+                      <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
+                        <span *ngFor="let arrayObj of obj.value" class="display-block w-100">
+                          {{arrayObj | json}}
+                        </span>
+                      </ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
                       <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
                       <ng-container *ngSwitchDefault>

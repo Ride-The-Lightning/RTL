@@ -114,12 +114,6 @@ exports.getChannelStats = (req, res, next) => {
 exports.openChannel = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/open';
-  // nodeId
-  // fundingSatoshis
-  // pushMsat
-  // fundingFeerateSatByte
-  // channelFlags
-  // openTimeoutSeconds
   options.form = req.body;
   logger.info({fileName: 'Channels', msg: 'Open Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {

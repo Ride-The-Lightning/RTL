@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments } from '../../shared/models/eclrModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLRActions from './eclr.actions';
@@ -16,7 +16,8 @@ export interface ECLRState {
   channelStats: ChannelStats[];
   onchainBalance: OnChainBalance;
   lightningBalance: LightningBalance;
-  peers: Peer[]
+  peers: Peer[];
+  payments: Payments;
 }
 
 export const initECLRState: ECLRState = {
@@ -31,7 +32,8 @@ export const initECLRState: ECLRState = {
   channelStats: [],
   onchainBalance: { totalBalance: 0, confBalance: 0, unconfBalance: 0 },
   lightningBalance:  { localBalance: -1, remoteBalance: -1 },
-  peers: []
+  peers: [],
+  payments: {}
 }
 
 export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActions) {
@@ -136,6 +138,11 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
       return {
         ...state,
         activeChannels: modifiedChannels
+      };
+    case ECLRActions.SET_PAYMENTS_ECLR:
+      return {
+        ...state,
+        payments: action.payload
       };
     default:
       return state;

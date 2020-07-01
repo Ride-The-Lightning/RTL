@@ -55,6 +55,13 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
+import { ECLRInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
+import { ECLROpenChannelComponent } from './eclair/peers-channels/channels/open-channel-modal/open-channel.component';
+import { ECLRConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
+import { ECLRLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
+import { ECLRCreateInvoiceComponent } from './eclair/transactions/create-invoice-modal/create-invoice.component';
+import { ECLROnChainSendComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send.component';
+import { ECLRChannelInformationComponent } from './eclair/peers-channels/channels/channel-information-modal/channel-information.component';
 
 @NgModule({
   imports: [
@@ -77,16 +84,9 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
   ],
   declarations: [
     AppComponent,
-    CLInvoiceInformationComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
-    CLOpenChannelComponent,
-    CLConnectPeerComponent,
-    CLLightningSendPaymentsComponent,
-    CLCreateInvoiceComponent,
-    CLOnChainSendComponent,
-    CLChannelInformationComponent,
     OpenChannelComponent,
     ChannelInformationComponent,
     LightningSendPaymentsComponent,
@@ -101,34 +101,55 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     TwoFactorAuthComponent,
     LoginTokenComponent,
     CreateInvoiceComponent,
-    OnChainSendComponent
+    OnChainSendComponent,
+    CLInvoiceInformationComponent,
+    CLOpenChannelComponent,
+    CLConnectPeerComponent,
+    CLLightningSendPaymentsComponent,
+    CLCreateInvoiceComponent,
+    CLOnChainSendComponent,
+    CLChannelInformationComponent,
+    ECLRInvoiceInformationComponent,
+    ECLROpenChannelComponent,
+    ECLRConnectPeerComponent,
+    ECLRLightningSendPaymentsComponent,
+    ECLRCreateInvoiceComponent,
+    ECLROnChainSendComponent,
+    ECLRChannelInformationComponent
   ],
   entryComponents: [
-    CLInvoiceInformationComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    ShowPubkeyComponent,
+    TwoFactorAuthComponent,
+    LoginTokenComponent,
+    OnChainGeneratedAddressComponent,
+    CloseChannelComponent,
+    LoopModalComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
-    OnChainGeneratedAddressComponent,
+    OpenChannelComponent,
+    ConnectPeerComponent,
+    LightningSendPaymentsComponent,
+    CreateInvoiceComponent,
+    OnChainSendComponent,
+    ChannelInformationComponent,
+    CLInvoiceInformationComponent,
     CLOpenChannelComponent,
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
     CLChannelInformationComponent,
-    OpenChannelComponent,
-    ChannelInformationComponent,
-    LightningSendPaymentsComponent,
-    ConnectPeerComponent,
-    ShowPubkeyComponent,
-    SpinnerDialogComponent,
-    AlertMessageComponent,
-    ConfirmationMessageComponent,
-    ErrorMessageComponent,
-    CloseChannelComponent,
-    LoopModalComponent,
-    TwoFactorAuthComponent,
-    LoginTokenComponent,
-    CreateInvoiceComponent,
-    OnChainSendComponent
+    ECLRInvoiceInformationComponent,
+    ECLROpenChannelComponent,
+    ECLRConnectPeerComponent,
+    ECLRLightningSendPaymentsComponent,
+    ECLRCreateInvoiceComponent,
+    ECLROnChainSendComponent,
+    ECLRChannelInformationComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

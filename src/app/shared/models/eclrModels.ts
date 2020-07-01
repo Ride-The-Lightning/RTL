@@ -13,6 +13,11 @@ export interface GetInfo {
   lnImplementation?: string;
 }
 
+export interface Audit {
+  fees: Fees;
+  payments: Payments;
+}
+
 export interface Fees {
   daily_fee?: number;
   daily_txs?: number;
@@ -20,9 +25,65 @@ export interface Fees {
   weekly_txs?: number;
   monthly_fee?: number;
   monthly_txs?: number;
-  sent?: any[];
-  received?: any[];
-  relayed?: any[];
+}
+
+export interface Payments {
+  sent?: PaymentSent[];
+  received?: PaymentReceived[];
+  relayed?: PaymentRelayed[];
+}
+
+export interface PaymentSent {
+  type?: string;
+  id?: string;
+  paymentHash?: string;
+  paymentPreimage?: string;
+  recipientAmount?: number;
+  recipientNodeId?: string;
+  parts: PaymentSentPart[];
+}
+
+export interface PaymentSentPart {
+  id?: string;
+  amount?: number;
+  feesPaid?: number;
+  toChannelId?: string;
+  timestamp?: number;
+}
+
+export interface PaymentReceived {
+  type?: string;
+  paymentHash?: string;
+  parts: PaymentReceivedPart[];
+}
+
+export interface PaymentReceivedPart {
+  amount?: number;
+  fromChannelId?: string;
+  timestamp?: number;
+}
+
+export interface PaymentRelayed {
+  type?: string;
+  amountIn?: number;
+  amountOut?: number;
+  paymentHash?: string;
+  fromChannelId?: string;
+  toChannelId?: string;
+  timestamp?: number;
+}
+
+export interface PayRequest {
+  prefix?: string;
+  timestamp?: number;
+  timestampStr?: string;
+  nodeId?: string;
+  serialized?: string;
+  description?: string;
+  paymentHash?: string;
+  expiry?: number;
+  minFinalCltvExpiry?: number;
+  amount?: number;
 }
 
 export interface Channel {
@@ -93,119 +154,8 @@ export interface SendPaymentOnChain {
   minconf?: number;
 }
 
-// export interface Channel {
-//   alias?: string;
-//   nodeId?: string;
-//   channelId?: string;
-//   state?: string;
-//   data?: {
-//     commitments?: {
-//       localParams?: {
-//         nodeId?: string;
-//         channelKeyPath?: {
-//           path?: number[]
-//         },
-//         dustLimit?: number;
-//         maxHtlcValueInFlight?: number;
-//         channelReserve?: number;
-//         htlcMinimum?: number;
-//         toSelfDelay?: number;
-//         maxAcceptedHtlcs?: number;
-//         isFunder?: boolean;
-//         defaultFinalScriptPubKey?: string;
-//         globalFeatures?: string;
-//         localFeatures?: string;
-//       },
-//       remoteParams?: {
-//         nodeId?: string;
-//         dustLimit?: number;
-//         maxHtlcValueInFlight?: number;
-//         channelReserve?: number;
-//         htlcMinimum?: number;
-//         toSelfDelay?: number;
-//         maxAcceptedHtlcs?: number;
-//         fundingPubKey?: string;
-//         revocationBasepoint?: string;
-//         paymentBasepoint?: string;
-//         delayedPaymentBasepoint?: string;
-//         htlcBasepoint?: string;
-//         globalFeatures?: string;
-//         localFeatures?: string;
-//       },
-//       channelFlags?: number;
-//       localCommit?: {
-//         index?: number;
-//         spec?: {
-//           htlcs?: [],
-//           feeratePerKw?: number;
-//           toLocal?: number;
-//           toRemote?: number;
-//         },
-//         publishableTxs?: {
-//           commitTx?: string;
-//           htlcTxsAndSigs?: []
-//         }
-//       },
-//       remoteCommit?: {
-//         index?: number;
-//         spec?: {
-//           htlcs?: [],
-//           feeratePerKw?: number;
-//           toLocal?: number;
-//           toRemote?: number;
-//         },
-//         txid?: string;
-//         remotePerCommitmentPoint?: string;
-//       },
-//       localChanges?: {
-//         proposed?: [],
-//         signed?: [],
-//         acked?: []
-//       },
-//       remoteChanges?: {
-//         proposed?: [],
-//         acked?: [],
-//         signed?: []
-//       },
-//       localNextHtlcId?: number;
-//       remoteNextHtlcId?: number;
-//       originChannels?: any,
-//       remoteNextCommitInfo?: string;
-//       commitInput?: {
-//         outPoint?: string;
-//         amountSatoshis?: number;
-//       },
-//       remotePerCommitmentSecrets?: number;
-//       channelId?: string;
-//     },
-//     shortChannelId?: string;
-//     buried?: boolean;
-//     channelAnnouncement?: {
-//       nodeSignature1?: string;
-//       nodeSignature2?: string;
-//       bitcoinSignature1?: string;
-//       bitcoinSignature2?: string;
-//       features?: string;
-//       chainHash?: string;
-//       shortChannelId?: string;
-//       nodeId1?: string;
-//       nodeId2?: string;
-//       bitcoinKey1?: string;
-//       bitcoinKey2?: string;
-//     },
-//     channelUpdate?: {
-//       signature?: string;
-//       chainHash?: string;
-//       shortChannelId?: string;
-//       timestamp?: number;
-//       messageFlags?: number;
-//       channelFlags?: number;
-//       cltvExpiryDelta?: number;
-//       htlcMinimumMsat?: number;
-//       feeBaseMsat?: number;
-//       feeProportionalMillionths?: number;
-//       htlcMaximumMsat?: number;
-//     }
-//   }
-// }
+export interface Route {
+  nodeId?: string;
+  alias?: string;
+}
 

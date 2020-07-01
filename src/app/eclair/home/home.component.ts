@@ -112,7 +112,7 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
-        if (effectsErr.action === 'FetchFees') {
+        if (effectsErr.action === 'FetchAudit') {
           this.flgLoading[1] = 'error';
         }
         if (effectsErr.action === 'FetchChannels') {
@@ -162,9 +162,9 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === ECLRActions.FETCH_FEES_ECLR || action.type === ECLRActions.SET_FEES_ECLR))
+    filter((action) => action.type === ECLRActions.FETCH_AUDIT_ECLR || action.type === ECLRActions.SET_FEES_ECLR))
     .subscribe(action => {
-      if(action.type === ECLRActions.FETCH_FEES_ECLR) {
+      if(action.type === ECLRActions.FETCH_AUDIT_ECLR) {
         this.flgChildInfoUpdated = false;
       }
       if(action.type === ECLRActions.SET_FEES_ECLR) {

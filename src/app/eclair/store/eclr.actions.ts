@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, PayRequest } from '../../shared/models/eclrModels';
 
 export const RESET_ECLR_STORE = 'RESET_ECLR_STORE';
 export const CLEAR_EFFECT_ERROR_ECLR = 'CLEAR_EFFECT_ERROR_ECLR';
@@ -10,7 +10,7 @@ export const EFFECT_ERROR_ECLR = 'EFFECT_ERROR_ECLR';
 export const SET_CHILD_NODE_SETTINGS_ECLR = 'SET_CHILD_NODE_SETTINGS_ECLR';
 export const FETCH_INFO_ECLR = 'FETCH_INFO_ECLR';
 export const SET_INFO_ECLR = 'SET_INFO_ECLR';
-export const FETCH_FEES_ECLR = 'FETCH_FEES_ECLR';
+export const FETCH_AUDIT_ECLR = 'FETCH_AUDIT_ECLR';
 export const SET_FEES_ECLR = 'SET_FEES_ECLR';
 export const FETCH_CHANNELS_ECLR = 'FETCH_CHANNELS_ECLR';
 export const SET_ACTIVE_CHANNELS_ECLR = 'SET_ACTIVE_CHANNELS_ECLR';
@@ -36,6 +36,13 @@ export const SAVE_NEW_CHANNEL_ECLR = 'SAVE_NEW_CHANNEL_ECLR';
 export const UPDATE_CHANNELS_ECLR = 'UPDATE_CHANNELS_ECLR';
 export const CLOSE_CHANNEL_ECLR = 'CLOSE_CHANNEL_ECLR';
 export const REMOVE_CHANNEL_ECLR = 'REMOVE_CHANNEL_ECLR';
+export const SET_PAYMENTS_ECLR = 'SET_PAYMENTS_ECLR';
+export const GET_QUERY_ROUTES_ECLR = 'GET_QUERY_ROUTES_ECLR';
+export const SET_QUERY_ROUTES_ECLR = 'SET_QUERY_ROUTES_ECLR';
+export const DECODE_PAYMENT_ECLR = 'DECODE_PAYMENT_ECLR';
+export const SET_DECODED_PAYMENT_ECLR = 'SET_DECODED_PAYMENT_ECLR';
+export const SEND_PAYMENT_ECLR = 'SEND_PAYMENT_ECLR';
+export const SEND_PAYMENT_STATUS_ECLR = 'SEND_PAYMENT_STATUS_ECLR';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ECLR;
@@ -67,8 +74,8 @@ export class SetInfo implements Action {
   constructor(public payload: GetInfo) {}
 }
 
-export class FetchFees implements Action {
-  readonly type = FETCH_FEES_ECLR;
+export class FetchAudit implements Action {
+  readonly type = FETCH_AUDIT_ECLR;
 }
 
 export class SetFees implements Action {
@@ -186,11 +193,47 @@ export class RemoveChannel implements Action {
   constructor(public payload: {channelId: string}) {}
 }
 
+export class SetPayments implements Action {
+  readonly type = SET_PAYMENTS_ECLR;
+  constructor(public payload: Payments) {}
+}
+
+export class GetQueryRoutes implements Action {
+  readonly type = GET_QUERY_ROUTES_ECLR;
+  constructor(public payload: {nodeId: string, amount: number}) {}
+}
+
+export class SetQueryRoutes implements Action {
+  readonly type = SET_QUERY_ROUTES_ECLR;
+  constructor(public payload: Route[]) {}
+}
+
+export class DecodePayment implements Action {
+  readonly type = DECODE_PAYMENT_ECLR;
+  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // payload = routeParam
+}
+
+export class SetDecodedPayment implements Action {
+  readonly type = SET_DECODED_PAYMENT_ECLR;
+  constructor(public payload: PayRequest) {}
+}
+
+export class SendPayment implements Action {
+  readonly type = SEND_PAYMENT_ECLR;
+  constructor(public payload: { fromDialog: boolean, invoice: string, amountMsat?: number }) {}
+}
+
+export class SendPaymentStatus implements Action {
+  readonly type = SEND_PAYMENT_STATUS_ECLR;
+  constructor(public payload: any) {}
+}
+
 export type ECLRActions = ResetECLRStore | ClearEffectError | EffectError | SetChildNodeSettings |
-  FetchInfo | SetInfo | FetchFees | SetFees |
+  FetchInfo | SetInfo | FetchAudit | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | SetLightningBalance | FetchPeers | SetPeers |
   GetNewAddress | SetNewAddress |
-  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel;
+  SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
+  SetPayments | DecodePayment | SetDecodedPayment | SendPayment | SendPaymentStatus;

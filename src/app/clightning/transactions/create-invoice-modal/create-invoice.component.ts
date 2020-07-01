@@ -65,7 +65,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   onAddInvoice(form: any) {
     this.invoiceError = '';
-    if(!this.invoiceValue) { return true; }
+    if(!this.invoiceValue) { this.invoiceValue = 0; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);

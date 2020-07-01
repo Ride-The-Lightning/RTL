@@ -41,8 +41,8 @@
           <td mat-cell *matCellDef="let invoice">{{invoice.memo}}</td>
         </ng-container>
         <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Value (Sats) </th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.value | number}} </span></td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Value/Amount Paid (Sats) </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.value || invoice?.amt_paid_sat | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="settle_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-4"> Date Settled </th>

@@ -14,16 +14,15 @@ import { ECLRChannelCapacityInfoComponent } from './home/channel-capacity-info/c
 import { ECLRChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { ECLROnChainComponent } from './on-chain/on-chain.component';
 import { ECLROnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
-import { ECLROnChainSendComponent } from './on-chain/on-chain-send-modal/on-chain-send.component';
 import { ECLRPeersChannelsComponent } from './peers-channels/peers-channels.component';
 import { ECLRPeersComponent } from './peers-channels/peers/peers.component';
-import { ECLRConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
-import { ECLRChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
-import { ECLROpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { ECLRChannelsTableComponent } from './peers-channels/channels/channels-table/channels-table.component';
+import { ECLRTransactionsComponent } from './transactions/transactions.component';
+import { ECLRQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
+import { ECLRLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
+import { ECLRLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { ECLRRoutingComponent } from './routing/routing.component';
 import { ECLRForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
-
 import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -43,15 +42,15 @@ import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
     ECLRChannelLiquidityInfoComponent,
     ECLROnChainComponent,
     ECLROnChainReceiveComponent,
-    ECLROnChainSendComponent,
     ECLRPeersComponent,
     ECLRPeersChannelsComponent,
     ECLRChannelsTableComponent,
-    ECLRConnectPeerComponent,
-    ECLRChannelInformationComponent,
-    ECLROpenChannelComponent,
     ECLRRoutingComponent,
-    ECLRForwardingHistoryComponent
+    ECLRForwardingHistoryComponent,
+    ECLRTransactionsComponent,
+    ECLRQueryRoutesComponent,
+    ECLRLightningPaymentsComponent,
+    ECLRLightningInvoicesComponent
   ],
   providers: [
     ECLRUnlockedGuard
