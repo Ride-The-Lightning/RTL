@@ -28,7 +28,7 @@ export class ECLROnChainComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
-      this.balances = [{title: 'Total Balance', dataValue: rtlStore.onchainBalance.totalBalance || 0}, {title: 'Confirmed', dataValue: rtlStore.onchainBalance.confBalance}, {title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfBalance}];
+      this.balances = [{title: 'Total Balance', dataValue: rtlStore.onchainBalance.total || 0}, {title: 'Confirmed', dataValue: rtlStore.onchainBalance.confirmed}, {title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfirmed}];
     });
   }
 

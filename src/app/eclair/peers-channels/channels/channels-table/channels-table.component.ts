@@ -85,7 +85,7 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
       this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;
       this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
       this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;
-      this.totalBalance = rtlStore.onchainBalance.totalBalance;
+      this.totalBalance = rtlStore.onchainBalance.total;
       this.activeChannels = rtlStore.activeChannels;
       this.pendingChannels = rtlStore.pendingChannels;
       this.inactiveChannels = rtlStore.inactiveChannels;
@@ -112,8 +112,8 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
       titleMessage: titleMsg,
       flgShowInput: true,
       getInputs: [
-        {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate.data && channelToUpdate.data.channelUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48},
-        {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate.data && channelToUpdate.data.channelUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48}
+        {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48},
+        {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48}
       ]
     }}));
     this.rtlEffects.closeConfirm

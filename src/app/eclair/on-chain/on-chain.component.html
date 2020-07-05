@@ -23,12 +23,16 @@
         <mat-tab label="Send">
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
             <div fxLayout="row">
-              <p>Coming Soon</p>
-              <!-- <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal()">Send Funds</button> -->
+              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal()">Send Funds</button>
             </div>  
           </div>          
         </mat-tab>
       </mat-tab-group>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
+        <div fxLayout="row">
+          <rtl-eclr-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-eclr-on-chain-transaction-history>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

@@ -5,8 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { CLInvoiceInformation } from '../../../shared/models/alertData';
-// import { Invoice } from '../../../shared/models/eclrModels';
+import { Invoice } from '../../../shared/models/eclrModels';
+import { ECLRInvoiceInformation } from '../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
@@ -19,15 +19,15 @@ export class ECLRInvoiceInformationComponent implements OnInit {
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
   public newlyAdded = false;
-  // public invoice: Invoice;
+  public invoice: Invoice;
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(public dialogRef: MatDialogRef<ECLRInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: CLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<ECLRInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLRInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    // this.invoice = this.data.invoice;
+    this.invoice = this.data.invoice;
     this.newlyAdded = this.data.newlyAdded;
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {

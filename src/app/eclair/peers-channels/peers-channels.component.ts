@@ -40,8 +40,8 @@ export class ECLRPeersChannelsComponent implements OnInit, OnDestroy {
       this.peers = rtlStore.peers;
       this.activePeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.activeChannels = rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels ? rtlStore.channelsStatus.active.channels : 0;
-      this.totalBalance = rtlStore.onchainBalance.totalBalance;
-      this.balances = [{title: 'Total Balance', dataValue: rtlStore.onchainBalance.totalBalance || 0}, {title: 'Confirmed', dataValue: rtlStore.onchainBalance.confBalance}, {title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfBalance}];
+      this.totalBalance = rtlStore.onchainBalance.total;
+      this.balances = [{title: 'Total Balance', dataValue: rtlStore.onchainBalance.total || 0}, {title: 'Confirmed', dataValue: rtlStore.onchainBalance.confirmed}, {title: 'Unconfirmed', dataValue: rtlStore.onchainBalance.unconfirmed}];
     });
   }
 

@@ -7,7 +7,7 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { InvoiceInformation } from '../../../shared/models/alertData';
+import { ECLRInvoiceInformation } from '../../../shared/models/alertData';
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclrModels';
@@ -41,7 +41,7 @@ export class ECLRCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLRCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLRCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLRInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
@@ -51,29 +51,33 @@ export class ECLRCreateInvoiceComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
     });
-    // this.actions$.pipe(takeUntil(this.unSubs[1]),
-    // filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.FETCH_INVOICES_ECLR))
-    // .subscribe((action: ECLRActions.EffectError | ECLRActions.FetchInvoices) => {
-    //   if (action.type === ECLRActions.FETCH_INVOICES_ECLR) {
-    //     this.dialogRef.close();
-    //   }    
-    //   if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'SaveNewInvoice') {
-    //     this.invoiceError = action.payload.message;
-    //   }
-    // });
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.FETCH_INVOICES_ECLR))
+    .subscribe((action: ECLRActions.EffectError | ECLRActions.FetchInvoices) => {
+      if (action.type === ECLRActions.FETCH_INVOICES_ECLR) {
+        this.dialogRef.close();
+      }    
+      if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'CreateInvoice') {
+        this.invoiceError = action.payload.message;
+      }
+    });
   }
 
   onAddInvoice(form: any) {
     this.invoiceError = '';
-    if(!this.invoiceValue) { return true; }
+    if(!this.description) { return true; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    // this.store.dispatch(new ECLRActions.SaveNewInvoice({
-    //   label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
-    // }));
+    let invoicePayload = null;
+    if (this.invoiceValue) {
+      invoicePayload = { description: this.description, expireIn: expiryInSecs, amountMsat: this.invoiceValue*1000 };
+    } else {
+      invoicePayload = { description: this.description, expireIn: expiryInSecs };
+    }
+    this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
+    this.store.dispatch(new ECLRActions.CreateInvoice(invoicePayload));
   }
 
   resetData() {

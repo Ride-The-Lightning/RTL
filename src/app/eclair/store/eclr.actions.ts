@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, PayRequest } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, PayRequest, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclrModels';
 
 export const RESET_ECLR_STORE = 'RESET_ECLR_STORE';
 export const CLEAR_EFFECT_ERROR_ECLR = 'CLEAR_EFFECT_ERROR_ECLR';
@@ -43,6 +43,15 @@ export const DECODE_PAYMENT_ECLR = 'DECODE_PAYMENT_ECLR';
 export const SET_DECODED_PAYMENT_ECLR = 'SET_DECODED_PAYMENT_ECLR';
 export const SEND_PAYMENT_ECLR = 'SEND_PAYMENT_ECLR';
 export const SEND_PAYMENT_STATUS_ECLR = 'SEND_PAYMENT_STATUS_ECLR';
+export const FETCH_TRANSACTIONS_ECLR = 'FETCH_TRANSACTIONS_ECLR';
+export const SET_TRANSACTIONS_ECLR = 'SET_TRANSACTIONS_ECLR';
+export const SEND_ONCHAIN_FUNDS_ECLR = 'SEND_ONCHAIN_FUNDS_ECLR';
+export const SEND_ONCHAIN_FUNDS_RES_ECLR = 'SEND_ONCHAIN_FUNDS_RES_ECLR';
+export const FETCH_INVOICES_ECLR = 'FETCH_INVOICES_ECLR';
+export const SET_INVOICES_ECLR = 'SET_INVOICES_ECLR';
+export const SET_TOTAL_INVOICES_ECLR = 'SET_TOTAL_INVOICES_ECLR';
+export const CREATE_INVOICE_ECLR = 'CREATE_INVOICE_ECLR';
+export const ADD_INVOICE_ECLR = 'ADD_INVOICE_ECLR';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ECLR;
@@ -228,12 +237,52 @@ export class SendPaymentStatus implements Action {
   constructor(public payload: any) {}
 }
 
+export class FetchTransactions implements Action {
+  readonly type = FETCH_TRANSACTIONS_ECLR;
+}
+
+export class SetTransactions implements Action {
+  readonly type = SET_TRANSACTIONS_ECLR;
+  constructor(public payload: Transaction[]) {}
+}
+
+export class SendOnchainFunds implements Action {
+  readonly type = SEND_ONCHAIN_FUNDS_ECLR;
+  constructor(public payload: SendPaymentOnChain) {}
+}
+
+export class SendOnchainFundsRes implements Action {
+  readonly type = SEND_ONCHAIN_FUNDS_RES_ECLR;
+  constructor(public payload: any) {}
+}
+
+export class FetchInvoices implements Action {
+  readonly type = FETCH_INVOICES_ECLR;
+}
+
+export class SetInvoices implements Action {
+  readonly type = SET_INVOICES_ECLR;
+  constructor(public payload: Invoice[]) {}
+}
+
+export class CreateInvoice implements Action {
+  readonly type = CREATE_INVOICE_ECLR;
+  constructor(public payload: {description: string, expireIn: number, amountMsat?: number}) {}
+}
+
+export class AddInvoice implements Action {
+  readonly type = ADD_INVOICE_ECLR;
+  constructor(public payload: Invoice) {}
+}
+
 export type ECLRActions = ResetECLRStore | ClearEffectError | EffectError | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchAudit | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
-  FetchOnchainBalance | SetOnchainBalance | SetLightningBalance | FetchPeers | SetPeers |
-  GetNewAddress | SetNewAddress |
+  FetchOnchainBalance | SetOnchainBalance | GetNewAddress | SetNewAddress |
+  SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
+  SetLightningBalance | FetchPeers | SetPeers |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
-  SetPayments | DecodePayment | SetDecodedPayment | SendPayment | SendPaymentStatus;
+  SetPayments | DecodePayment | SetDecodedPayment | SendPayment | SendPaymentStatus |
+  FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;

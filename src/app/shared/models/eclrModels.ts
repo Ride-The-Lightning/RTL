@@ -110,12 +110,12 @@ export interface ChannelStats {
 }
 
 export interface OnChainBalance {
-  totalBalance?: number;
-  confBalance?: number;
-  unconfBalance?: number;
-  btc_totalBalance?: number;
-  btc_confBalance?: number;
-  btc_unconfBalance?: number;
+  total?: number;
+  confirmed?: number;
+  unconfirmed?: number;
+  btc_total?: number;
+  btc_confirmed?: number;
+  btc_unconfirmed?: number;
 }
 
 export interface LightningBalance {
@@ -149,13 +149,44 @@ export interface Peer {
 
 export interface SendPaymentOnChain {
   address?:	string;
-  satoshis?: number;
-  feeRate?: string;
-  minconf?: number;
+  amount?: number;
+  blocks?: number;
 }
 
 export interface Route {
   nodeId?: string;
   alias?: string;
+}
+
+export interface Transaction {
+  address?: string;
+  amount?: number;
+  fees?: number;
+  blockHash?: string;
+  confirmations?: number;
+  txid?: string;
+  timestamp?: number;
+  timestampStr?: string;
+}
+
+export interface Invoice {
+  prefix?: string;
+  timestamp?: number;
+  timestampStr?: string;
+  expiresAt?: number;
+  expiresAtStr?: string;
+  status?: string;
+  nodeId?: string;
+  serialized?: string;
+  description?: string;
+  paymentHash?: string;
+  expiry?: number;
+  amount?: number;
+  features?: { activated: Feature[], unknown: Feature[] }
+}
+
+export interface Feature {
+  name?: string;
+  support?: string;
 }
 

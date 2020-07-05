@@ -1,6 +1,6 @@
-<!-- <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode [qrdata]="invoice.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <qrcode [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
   <div fxFlex="65" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-1">
@@ -13,22 +13,16 @@
     <mat-card-content [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode [qrdata]="invoice.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
-        </div>
-        <div fxLayout="row" *ngIf="invoice.warning_capacity">
-          <div fxFlex="100" class="alert alert-warn">
-            <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
-            <span>{{invoice.warning_capacity}}</span>
-          </div>
+          <qrcode [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
-            <span class="foreground-secondary-text">{{(invoice.msatoshi/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.msatoshi"> (zero amount) </ng-container></span>
+            <span class="foreground-secondary-text">{{(invoice.amount/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.amount"> (zero amount) </ng-container></span>
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date Expiry</h4>
-            <span class="foreground-secondary-text">{{invoice.expires_at_str}}</span>
+            <span class="foreground-secondary-text">{{invoice.expiresAtStr}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
@@ -42,7 +36,7 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Invoice</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{invoice.bolt11}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{invoice.serialized}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced">
@@ -50,29 +44,25 @@
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Hash</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_hash}}</span>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.paymentHash}}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Status</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.status | titlecase}}</span>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.status || 'Paid' | titlecase}}</span>
             </div>
             <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Label</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.label}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.timestampStr}}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        
           <div fxLayout="row">
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Amount Received</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.msatoshi_received/1000 | number}} {{invoice.msatoshi_received ? 'Sats' : ''}}</span>
-            </div>
-            <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-              <span class="foreground-secondary-text">{{invoice.paid_at_str || '-'}}</span>
+            <div fxFlex="100">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Node Id</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.nodeId}}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        
@@ -82,10 +72,9 @@
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.bolt11" (copied)="onCopyPayment($event)">Copy Invoice</button>
+          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.serialized" (copied)="onCopyPayment($event)">Copy Invoice</button>
         </div>
       </div>
       </mat-card-content>
   </div>
-</div> -->
-<h4>Invoice Information</h4>
+</div>

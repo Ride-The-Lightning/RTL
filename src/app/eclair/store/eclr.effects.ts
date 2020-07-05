@@ -12,11 +12,12 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Fees, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit, Transaction, Invoice } from '../../shared/models/eclrModels';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromECLRReducer from './eclr.reducers';
 import * as ECLRActions from './eclr.actions';
 import * as RTLActions from '../../store/rtl.actions';
+import { ECLRInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 @Injectable()
 export class ECLREffects implements OnDestroy {
@@ -133,7 +134,7 @@ export class ECLREffects implements OnDestroy {
     ofType(ECLRActions.FETCH_ONCHAIN_BALANCE_ECLR),
     mergeMap((action: ECLRActions.FetchOnchainBalance) => {
       this.store.dispatch(new ECLRActions.ClearEffectError('FetchOnchainBalance'));
-      return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + environment.BALANCE_API);
+      return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/balance');
     }),
     map((balance) => {
       this.logger.info(balance);
@@ -442,6 +443,101 @@ export class ECLREffects implements OnDestroy {
         );
     })
   );
+
+  @Effect()
+  transactionsFetch = this.actions$.pipe(
+    ofType(ECLRActions.FETCH_TRANSACTIONS_ECLR),
+    mergeMap((action: ECLRActions.FetchTransactions) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('FetchTransactions'));
+      return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/transactions?count=1000&skip=0');
+    }),
+    map((transactions) => {
+      this.logger.info(transactions);
+      return {
+        type: ECLRActions.SET_TRANSACTIONS_ECLR,
+        payload: (transactions && transactions.length > 0) ? transactions : []
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
+
+  @Effect()
+  SendOnchainFunds = this.actions$.pipe(
+    ofType(ECLRActions.SEND_ONCHAIN_FUNDS_ECLR),
+    mergeMap((action: ECLRActions.SendOnchainFunds) => {
+      this.store.dispatch(new ECLRActions.ClearEffectError('SendOnchainFunds'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
+      .pipe(map((postRes: any) => {
+        this.logger.info(postRes);
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new ECLRActions.FetchOnchainBalance());
+        return {
+          type: ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR,
+          payload: postRes
+        };
+      }),
+      catchError((err: any) => {
+        this.handleErrorWithoutAlert('SendOnchainFunds', 'Sending Fund Failed.', err);
+        return of({type: RTLActions.VOID});
+      }));
+    })
+  );
+
+  @Effect()
+  createInvoice = this.actions$.pipe(
+  ofType(ECLRActions.CREATE_INVOICE_ECLR),
+  mergeMap((action: ECLRActions.CreateInvoice) => {
+    this.store.dispatch(new ECLRActions.ClearEffectError('CreateInvoice'));
+    return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload)
+      .pipe(map((postRes: Invoice) => {
+          this.logger.info(postRes);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          postRes.amount = action.payload.amountMsat;
+          postRes.timestamp = new Date().getTime() / 1000;
+          postRes.timestampStr = this.commonService.convertTimestampToDate(+postRes.timestamp);
+          postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
+          postRes.expiresAtStr = this.commonService.convertTimestampToDate(+postRes.expiresAt);
+          postRes.description = action.payload.description;
+          postRes.status = 'unpaid';
+          this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+              invoice: postRes,
+              newlyAdded: false,
+              component: ECLRInvoiceInformationComponent
+          }}));
+          return {
+            type: ECLRActions.FETCH_INVOICES_ECLR
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('CreateInvoice', 'Create Invoice Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      );
+  }
+  ));
+
+  @Effect()
+  invoicesFetch = this.actions$.pipe(
+  ofType(ECLRActions.FETCH_INVOICES_ECLR),
+  mergeMap((action: ECLRActions.FetchInvoices) => {
+    this.store.dispatch(new ECLRActions.ClearEffectError('FetchInvoices'));
+    return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + environment.INVOICES_API)
+      .pipe(map((res: Invoice[]) => {
+        this.logger.info(res);
+        return {
+          type: ECLRActions.SET_INVOICES_ECLR,
+          payload: res
+        };
+      }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
+          return of({type: RTLActions.VOID});
+        }
+      ));
+  }));
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('eclrUnlocked', 'true');

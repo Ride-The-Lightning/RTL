@@ -9,7 +9,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclrModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -36,8 +36,6 @@ export class ECLROnChainSendComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public newAddress = '';
   public transaction: SendPaymentOnChain = {};
-  public feeRateTypes = FEE_RATE_TYPES;
-  public flgMinConf = false;
   public sendFundError = '';
   public fiatConversion = false;
   public amountUnits = CURRENCY_UNITS;
@@ -59,58 +57,56 @@ export class ECLROnChainSendComponent implements OnInit, OnDestroy {
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
-    // this.actions$.pipe(takeUntil(this.unSubs[1]),
-    // filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.SET_ONCHAIN_PAYMENT_RES_ECLR))
-    // .subscribe((action: ECLRActions.EffectError | ECLRActions.SetOnChainPaymentRes) => {
-    //   if (action.type === ECLRActions.SET_ONCHAIN_PAYMENT_RES) {
-    //     this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
-    //     this.dialogRef.close();
-    //   }    
-    //   if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'SetOnchainPayment') {
-    //     this.sendFundError = action.payload.message;
-    //   }
-    // });
-
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR))
+    .subscribe((action: ECLRActions.EffectError | ECLRActions.SendOnchainFundsRes) => {
+      if (action.type === ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR) {
+        this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
+        this.dialogRef.close();
+      }    
+      if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'SendOnchainFunds') {
+        this.sendFundError = action.payload.message;
+      }
+    });
   }
 
   onSendFunds() {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
-    // if(this.transaction.satoshis && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-    //   this.commonService.convertCurrency(this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
-    //   .pipe(takeUntil(this.unSubs[2]))
-    //   .subscribe(data => {
-    //     this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
-    //     this.selAmountUnit = CurrencyUnitEnum.SATS;
-    //     this.store.dispatch(new ECLRActions.SetOnchainPayment(this.transaction));
-    //   });
-    // } else {
-    //   this.store.dispatch(new ECLRActions.SetOnchainPayment(this.transaction));
-    // }
+    if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
+      .pipe(takeUntil(this.unSubs[2]))
+      .subscribe(data => {
+        this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
+        this.store.dispatch(new ECLRActions.SendOnchainFunds(this.transaction));
+      });
+    } else {
+      this.store.dispatch(new ECLRActions.SendOnchainFunds(this.transaction));
+    }
   }
 
   get invalidValues(): boolean {
     return (!this.transaction.address || this.transaction.address === '')
-        || ((!this.transaction.satoshis || this.transaction.satoshis <= 0))
-        || (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0));
+        || ((!this.transaction.amount || this.transaction.amount <= 0))
+        || (!this.transaction.blocks || this.transaction.blocks <= 0);
   }
 
   resetData() {
     this.sendFundError = '';    
     this.transaction = {};
-    this.flgMinConf = false;
   }
 
   onAmountUnitChange(event: any) {
     let self = this;
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
-    if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
+    if(this.transaction.amount && this.selAmountUnit !== event.value) {
+      this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
-        self.transaction.satoshis = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+        self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       });
     }
     this.selAmountUnit = event.value;

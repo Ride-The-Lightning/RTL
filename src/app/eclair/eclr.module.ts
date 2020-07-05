@@ -14,6 +14,7 @@ import { ECLRChannelCapacityInfoComponent } from './home/channel-capacity-info/c
 import { ECLRChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { ECLROnChainComponent } from './on-chain/on-chain.component';
 import { ECLROnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
+import { ECLROnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
 import { ECLRPeersChannelsComponent } from './peers-channels/peers-channels.component';
 import { ECLRPeersComponent } from './peers-channels/peers/peers.component';
 import { ECLRChannelsTableComponent } from './peers-channels/channels/channels-table/channels-table.component';
@@ -42,6 +43,7 @@ import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
     ECLRChannelLiquidityInfoComponent,
     ECLROnChainComponent,
     ECLROnChainReceiveComponent,
+    ECLROnChainTransactionHistoryComponent,
     ECLRPeersComponent,
     ECLRPeersChannelsComponent,
     ECLRChannelsTableComponent,

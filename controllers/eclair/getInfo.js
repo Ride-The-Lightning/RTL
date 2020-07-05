@@ -7,6 +7,7 @@ exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
+  options.form = {};
   logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   logger.info({fileName: 'GetInfo', msg: 'Calling Info from Eclair server url: ' + options.url});
   if (!options.headers || !options.headers.authorization) {

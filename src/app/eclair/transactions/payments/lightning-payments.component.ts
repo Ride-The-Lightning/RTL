@@ -65,10 +65,10 @@ export class ECLRLightningPaymentsComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['id', 'recipientAmount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'paymentHash', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['id', 'recipientAmount', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['id', 'recipientNodeId', 'paymentHash', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['id', 'recipientNodeId', 'recipientAmount', 'actions'];
     }
   }
 

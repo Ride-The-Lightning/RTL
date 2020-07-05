@@ -132,7 +132,7 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
 
       this.channels = rtlStore.activeChannels;
       this.onchainBalance = rtlStore.onchainBalance;
-      this.balances.onchain = this.onchainBalance.totalBalance;
+      this.balances.onchain = this.onchainBalance.total;
       this.balances.lightning = rtlStore.lightningBalance.localBalance;
       this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);

@@ -2,7 +2,7 @@ import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
 import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL } from './clModels';
-import { GetInfo as GetInfoECLR, Peer as PeerECLR, Channel as ChannelECLR } from './eclrModels';
+import { GetInfo as GetInfoECLR, Peer as PeerECLR, Channel as ChannelECLR, Invoice as InvoiceECLR } from './eclrModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
@@ -66,6 +66,13 @@ export interface InvoiceInformation {
 
 export interface CLInvoiceInformation {
   invoice: InvoiceCL;
+  newlyAdded?: boolean;
+  pageSize: number;
+  component?: any;
+}
+
+export interface ECLRInvoiceInformation {
+  invoice: InvoiceECLR;
   newlyAdded?: boolean;
   pageSize: number;
   component?: any;
@@ -160,5 +167,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | ECLRChannelInformation | ECLROpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLRInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | ECLRChannelInformation | ECLROpenChannelAlert;
 }

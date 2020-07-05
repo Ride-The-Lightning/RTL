@@ -78,7 +78,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
-      this.availableBalance = rtlStore.onchainBalance.totalBalance || 0;
+      this.availableBalance = rtlStore.onchainBalance.total || 0;
       this.peers = (rtlStore.peers) ? new MatTableDataSource<Peer>([...rtlStore.peers]) : new MatTableDataSource([]);
       this.peers.sort = this.sort;
       this.peers.paginator = this.paginator;

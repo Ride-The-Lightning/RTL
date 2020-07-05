@@ -1,5 +1,4 @@
-Coming Soon
-<!-- <div fxLayout="row">
+<div fxLayout="row">
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
@@ -14,9 +13,9 @@ Coming Soon
           <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="30">
-          <input matInput [(ngModel)]="transaction.satoshis" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" required #amount="ngModel">
+          <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" required #amount="ngModel">
           <span matSuffix> {{selAmountUnit}} </span>
-          <mat-error *ngIf="!transaction.satoshis">Amount is required.</mat-error>
+          <mat-error *ngIf="!transaction.amount">Amount is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="10" fxLayoutAlign="start end">
           <mat-select [value]="selAmountUnit" tabindex="3" required name="amountUnit" (selectionChange)="onAmountUnitChange($event)">
@@ -24,20 +23,10 @@ Coming Soon
           </mat-select>
         </mat-form-field>
         <div fxFlex="60" fxLayoutAlign="space-between stretch" fxLayout="row wrap">
-          <mat-form-field fxFlex="48" fxLayoutAlign="start end">
-            <mat-select tabindex="6" placeholder="Fee Rate" [(value)]="transaction.feeRate" [disabled]="flgMinConf">
-              <mat-option *ngFor="let feeRateType of feeRateTypes" [value]="feeRateType.feeRateId">
-                {{feeRateType.feeRateType}}
-              </mat-option>
-            </mat-select>
+          <mat-form-field fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+            <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" required="true">
+            <mat-error *ngIf="!transaction.blocks">Target Confirmation Blocks is required.</mat-error>
           </mat-form-field>
-          <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <mat-checkbox fxFlex="2" tabindex="7" color="primary" [(ngModel)]="flgMinConf" (change)="transaction.feeRate=null" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
-            <mat-form-field fxFlex="98">
-              <input matInput [(ngModel)]="transaction.minconf" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
-              <mat-error *ngIf="flgMinConf && !transaction.minconf">Min Confirmation Blocks is required.</mat-error>
-            </mat-form-field>
-          </div>
         </div>
         <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch"></div>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="sendFundError !== ''">
@@ -51,4 +40,4 @@ Coming Soon
       </form>
     </mat-card-content>
   </div>
-</div> -->
+</div>

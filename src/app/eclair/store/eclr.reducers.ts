@@ -1,5 +1,5 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclrModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLRActions from './eclr.actions';
@@ -18,6 +18,8 @@ export interface ECLRState {
   lightningBalance: LightningBalance;
   peers: Peer[];
   payments: Payments;
+  transactions: Transaction[];
+  invoices: Invoice[];
 }
 
 export const initECLRState: ECLRState = {
@@ -30,10 +32,12 @@ export const initECLRState: ECLRState = {
   inactiveChannels: [],
   channelsStatus: {},
   channelStats: [],
-  onchainBalance: { totalBalance: 0, confBalance: 0, unconfBalance: 0 },
+  onchainBalance: { total: 0, confirmed: 0, unconfirmed: 0 },
   lightningBalance:  { localBalance: -1, remoteBalance: -1 },
   peers: [],
-  payments: {}
+  payments: {},
+  transactions: [],
+  invoices: []
 }
 
 export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActions) {
@@ -143,6 +147,23 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
       return {
         ...state,
         payments: action.payload
+      };
+    case ECLRActions.SET_TRANSACTIONS_ECLR:
+      return {
+        ...state,
+        transactions: action.payload
+      };
+    case ECLRActions.ADD_INVOICE_ECLR:
+      const newInvoices = state.invoices;
+      newInvoices.unshift(action.payload);
+      return {
+        ...state,
+        invoices: newInvoices
+      };
+    case ECLRActions.SET_INVOICES_ECLR:
+      return {
+        ...state,
+        invoices: action.payload
       };
     default:
       return state;
