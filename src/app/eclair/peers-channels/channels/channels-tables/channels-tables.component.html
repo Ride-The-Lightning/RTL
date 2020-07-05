@@ -1,0 +1,22 @@
+<div fxLayout="column" fxFlex="100" class="mt-2 bordered-box">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numOfOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+      </ng-template>
+      <rtl-eclr-channel-open-table></rtl-eclr-channel-open-table>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numOfPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
+      </ng-template>
+      <rtl-eclr-channel-pending-table></rtl-eclr-channel-pending-table>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numOfInactiveChannels}}" matBadgeOverlap="false" class="tab-badge">Inactive</span>
+      </ng-template>
+      <rtl-eclr-channel-inactive-table></rtl-eclr-channel-inactive-table>
+    </mat-tab>
+  </mat-tab-group>
+</div>

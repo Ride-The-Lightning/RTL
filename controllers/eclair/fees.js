@@ -27,8 +27,19 @@ exports.getFees = (req, res, next) => {
     let week_start_time = current_time - 604800;
     let day_start_time = current_time - 86400;
     let fee = 0;
+    resBody.payments.sent.forEach(sentEle => {
+      sentEle.parts.forEach(part => {
+        part.timestampStr =  (!part.timestamp) ? '' : common.convertTimestampToDate(Math.round(part.timestamp / 1000));
+      });      
+    });
+    resBody.payments.received.forEach(receivedEle => {
+      receivedEle.parts.forEach(part => {
+        part.timestampStr =  (!part.timestamp) ? '' : common.convertTimestampToDate(Math.round(part.timestamp / 1000));
+      });      
+    });
     resBody.payments.relayed.forEach(relayedEle => {
       logger.info({fileName: 'Fees', msg: 'Relayed Transaction: ' + JSON.stringify(relayedEle)});
+      relayedEle.timestampStr =  (!relayedEle.timestamp) ? '' : common.convertTimestampToDate(Math.round(relayedEle.timestamp / 1000));
       fee = relayedEle.amountIn - relayedEle.amountOut;
       if (relayedEle.timestamp >= day_start_time) {
         resBody.fees.daily_fee = resBody.fees.daily_fee + fee;

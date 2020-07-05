@@ -4,7 +4,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ChannelStats } from '../../../shared/models/eclrModels';
+import { PaymentRelayed } from '../../../shared/models/eclrModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -36,13 +36,13 @@ export class ECLRForwardingHistoryComponent implements OnInit, OnChanges {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['channelId', 'avgPaymentAmount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'amountIn', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['channelId', 'paymentCount', 'avgPaymentAmount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'amountIn', 'amountOut', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['channelId', 'paymentCount', 'avgPaymentAmount', 'relayFee', 'networkFee', 'actions'];
+      this.displayedColumns = ['timestampStr', 'amountIn', 'amountOut', 'paymentHash', 'actions'];
     }
   }
 
@@ -52,13 +52,14 @@ export class ECLRForwardingHistoryComponent implements OnInit, OnChanges {
     this.loadForwardingEventsTable(this.successfulEvents);
   }
 
-  onForwardingEventClick(selFEvent: any, event: any) {
+  onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
     const reorderedFHEvent = [
-      [{key: 'channelId', value: selFEvent.channelId, title: 'Channel ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'paymentCount', value: selFEvent.paymentCount, title: 'Payment Count', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'avgPaymentAmount', value: selFEvent.avgPaymentAmount, title: 'Avg. Payment Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'relayFee', value: selFEvent.relayFee, title: 'Relay Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'networkFee', value: selFEvent.networkFee, title: 'Network Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
+      [{key: 'timestampStr', value: selFEvent.timestampStr, title: 'Date/Time', width: 34, type: DataTypeEnum.DATE_TIME},
+        {key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+        {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
+      [{key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -67,12 +68,12 @@ export class ECLRForwardingHistoryComponent implements OnInit, OnChanges {
     }}));
   }
 
-  loadForwardingEventsTable(forwardingEvents: ChannelStats[]) {
-    this.forwardingHistoryEvents = new MatTableDataSource<ChannelStats>([...forwardingEvents]);
+  loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
+    this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.paginator = this.paginator;
-    this.forwardingHistoryEvents.filterPredicate = (event: ChannelStats, fltr: string) => {
-      const newEvent = event.channelId + event.avgPaymentAmount + event.paymentCount + event.relayFee + event.networkFee;
+    this.forwardingHistoryEvents.filterPredicate = (event: PaymentRelayed, fltr: string) => {
+      const newEvent = event.amountIn + event.amountOut + event.paymentHash + event.fromChannelId + event.toChannelId + event.timestampStr;
       return newEvent.includes(fltr.toLowerCase());
     };    
     this.logger.info(this.forwardingHistoryEvents);

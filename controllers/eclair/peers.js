@@ -27,8 +27,10 @@ exports.getPeers = (req, res, next) => {
       body.forEach(peer => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
       peersNodeIds = peersNodeIds.substring(1);
       getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
+        let foundPeer = {};
         body.map(peer => {
-          peer.alias = peersWithAlias.find(peerWithAlias => peer.nodeId === peerWithAlias.nodeId).alias;
+          foundPeer = peersWithAlias.find(peerWithAlias => peer.nodeId === peerWithAlias.nodeId);
+          peer.alias = foundPeer ? foundPeer.alias : '';
         });
         body = common.sortDescByStrKey(body, 'alias');
         logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(body)});
@@ -73,11 +75,24 @@ exports.connectPeer = (req, res, next) => {
     options.url = common.getSelLNServerUrl() + '/peers';
     options.form = {};
     request.post(options).then(function (body) {
-      let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
-      peers = common.newestOnTop(peers, 'nodeId', req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : req.query.nodeId ? req.query.nodeId : '');
-      logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(peers)});
-      logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
-      res.status(201).json(peers);
+      logger.info({fileName: 'Peers', msg: 'Peers Received: ' + JSON.stringify(body)});
+      if (body && body.length) {
+        let peersNodeIds = '';
+        body.forEach(peer => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
+        peersNodeIds = peersNodeIds.substring(1);
+        getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
+          body.map(peer => {
+            peer.alias = peersWithAlias.find(peerWithAlias => peer.nodeId === peerWithAlias.nodeId).alias;
+          });
+          let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
+          peers = common.newestOnTop(peers, 'nodeId', req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : req.query.nodeId ? req.query.nodeId : '');
+          logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(peers)});
+          logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
+          res.status(201).json(peers);
+        });
+      } else {
+        res.status(201).json([]);
+      }
     }).catch(errRes => {
       let err = JSON.parse(JSON.stringify(errRes));
       if (err.options && err.options.headers && err.options.headers.authorization) {

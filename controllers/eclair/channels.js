@@ -70,11 +70,13 @@ exports.getChannels = (req, res, next) => {
             activeChannels.push(channel);
             channelStatus.active.channels = channelStatus.active.channels + 1;
             channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
-          } else if (channel.state.includes('WAIT')) {
+          } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING')) {
+            channel.state = channel.state.replace(/_/g, ' ');
             pendingChannels.push(channel);
             channelStatus.pending.channels = channelStatus.pending.channels + 1;
             channelStatus.pending.capacity = channelStatus.pending.capacity + channel.toLocal;
           } else {
+            channel.state = channel.state.replace(/_/g, ' ');
             inactiveChannels.push(channel);
             channelStatus.inactive.channels = channelStatus.inactive.channels + 1;
             channelStatus.inactive.capacity = channelStatus.inactive.capacity + channel.toLocal;
@@ -197,7 +199,7 @@ exports.closeChannel = (req, res, next) => {
   } else {
     options.url = common.getSelLNServerUrl() + '/forceclose';
   }
-  options.form = req.query;
+  options.form = { channelId: req.query.channelId };
   logger.info({fileName: 'Channels', msg: 'Close Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});

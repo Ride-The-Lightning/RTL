@@ -94,8 +94,7 @@ export class ECLROnChainTransactionHistoryComponent implements OnInit, OnDestroy
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
-      message: reorderedTransactions,
-      scrollable: false
+      message: reorderedTransactions
     }}));
   }
 

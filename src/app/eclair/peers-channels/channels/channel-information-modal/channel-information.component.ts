@@ -17,11 +17,8 @@ import { ScreenSizeEnum } from '../../../../shared/services/consts-enums-functio
 export class ECLRChannelInformationComponent implements OnInit {
   public faReceipt = faReceipt;
   public showAdvanced = false;
-  public showCopy = true;
-  public showCopyField = null;
   public channel: Channel;
   public channelsType = 'open';
-  public channelState = '';
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
@@ -29,9 +26,7 @@ export class ECLRChannelInformationComponent implements OnInit {
 
   ngOnInit() {
     this.channel = this.data.channel;
-    this.channelsType = this.data.selectedTab;
-    this.showCopy = this.data.showCopy;
-    this.channelState = this.channel.state.replace(/_/g, ' ');
+    this.channelsType = this.data.channelsType;
     this.screenSize = this.commonService.getScreenSize();
   }
 

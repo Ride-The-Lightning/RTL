@@ -115,10 +115,10 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onConnectPeer() {
+  onConnectPeer(selPeer: Peer) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       message: { 
-        peer: null,
+        peer: selPeer.nodeId ? selPeer : null,
         information: this.information,
         balance: this.availableBalance
       },
@@ -141,14 +141,21 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
   }
 
   onPeerDetach(peerToDetach: Peer) {
-    const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.nodeId);
-    this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
-      type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Disconnect Peer',
-      titleMessage: msg,
-      noBtnText: 'Cancel',
-      yesBtnText: 'Disconnect'
-    }}));
+    if (peerToDetach.channels > 0) {
+      this.store.dispatch(new RTLActions.OpenAlert({ data: {
+        type: AlertTypeEnum.ERROR,
+        alertTitle: 'Disconnect Not Allowed',
+        titleMessage: 'Channel active with this peer.'
+      }}));
+    } else {
+      this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
+        type: AlertTypeEnum.CONFIRM,
+        alertTitle: 'Disconnect Peer',
+        titleMessage: 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.nodeId),
+        noBtnText: 'Cancel',
+        yesBtnText: 'Disconnect'
+      }}));
+    }
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {

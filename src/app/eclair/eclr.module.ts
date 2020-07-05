@@ -17,7 +17,10 @@ import { ECLROnChainReceiveComponent } from './on-chain/on-chain-receive/on-chai
 import { ECLROnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
 import { ECLRPeersChannelsComponent } from './peers-channels/peers-channels.component';
 import { ECLRPeersComponent } from './peers-channels/peers/peers.component';
-import { ECLRChannelsTableComponent } from './peers-channels/channels/channels-table/channels-table.component';
+import { ECLRChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
+import { ECLRChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { ECLRChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
+import { ECLRChannelInactiveTableComponent } from './peers-channels/channels/channels-tables/channel-inactive-table/channel-inactive-table.component';
 import { ECLRTransactionsComponent } from './transactions/transactions.component';
 import { ECLRQueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { ECLRLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
@@ -46,7 +49,10 @@ import { ECLRUnlockedGuard } from '../shared/services/auth.guard';
     ECLROnChainTransactionHistoryComponent,
     ECLRPeersComponent,
     ECLRPeersChannelsComponent,
-    ECLRChannelsTableComponent,
+    ECLRChannelsTablesComponent,
+    ECLRChannelOpenTableComponent,
+    ECLRChannelPendingTableComponent,
+    ECLRChannelInactiveTableComponent,
     ECLRRoutingComponent,
     ECLRForwardingHistoryComponent,
     ECLRTransactionsComponent,

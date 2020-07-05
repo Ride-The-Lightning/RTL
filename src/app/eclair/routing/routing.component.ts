@@ -1,14 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
-import * as ECLRActions from '../store/eclr.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 
@@ -24,23 +21,22 @@ export class ECLRRoutingComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.dispatch(new ECLRActions.FetchChannelStats());
     this.store.select('eclr')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.errorMessage = '';
       rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannelStats') {
+        if (effectsErr.action === 'FetchAudit') {
           this.flgLoading[0] = 'error';
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      this.events = rtlStore.channelStats;
+      this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.channelStats) ? false : true;
+        this.flgLoading[0] = (rtlStore.payments) ? false : true;
       }
       this.logger.info(rtlStore);
     });

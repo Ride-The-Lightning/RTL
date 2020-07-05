@@ -45,7 +45,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.shouldScroll = this.scrollContainer.nativeElement.classList.value.includes('ps--active-y');
+    this.shouldScroll = this.scrollContainer && this.scrollContainer.nativeElement ? this.scrollContainer.nativeElement.classList.value.includes('ps--active-y') : false;
   }
 
   onScrollDown() {

@@ -6,43 +6,37 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo } from '../../../../shared/models/eclrModels';
+import { Channel, GetInfo } from '../../../../../shared/models/eclrModels';
 // import { Channel, GetInfo, ChannelEdge } from '../../../../shared/models/eclrModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../shared/services/consts-enums-functions';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { CommonService } from '../../../../shared/services/common.service';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { LoggerService } from '../../../../../shared/services/logger.service';
+import { CommonService } from '../../../../../shared/services/common.service';
 
-import { ECLRChannelInformationComponent } from '../channel-information-modal/channel-information.component';
-import { ECLREffects } from '../../../store/eclr.effects';
-import { RTLEffects } from '../../../../store/rtl.effects';
-import * as ECLRActions from '../../../store/eclr.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { ECLRChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
+import { ECLREffects } from '../../../../store/eclr.effects';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as ECLRActions from '../../../../store/eclr.actions';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-channels-table',
-  templateUrl: './channels-table.component.html',
-  styleUrls: ['./channels-table.component.scss'],
+  selector: 'rtl-eclr-channel-open-table',
+  templateUrl: './channel-open-table.component.html',
+  styleUrls: ['./channel-open-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
+export class ECLRChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  public numOfOpenChannels = 0;
-  public numOfPendingChannels = 0;
-  public numOfInactiveChannels = 0;
   public activeChannels: Channel[];
-  public inactiveChannels: Channel[];
-  public pendingChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
-  public selectedTab = 'open';
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public selectedFilter = '';
@@ -82,14 +76,9 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
-      this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;
-      this.numOfPendingChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.pending && rtlStore.channelsStatus.pending.channels) ? rtlStore.channelsStatus.pending.channels : 0;
-      this.numOfInactiveChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.inactive && rtlStore.channelsStatus.inactive.channels) ? rtlStore.channelsStatus.inactive.channels : 0;
       this.totalBalance = rtlStore.onchainBalance.total;
       this.activeChannels = rtlStore.activeChannels;
-      this.pendingChannels = rtlStore.pendingChannels;
-      this.inactiveChannels = rtlStore.inactiveChannels;
-      this.loadChannelsTable(0);
+      this.loadChannelsTable();
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.activeChannels) ? false : true;
       }
@@ -138,7 +127,7 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
     this.applyFilter();
   }
 
-  onChannelClose(channelToClose: Channel) {
+  onChannelClose(channelToClose: Channel, forceClose: boolean) {
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Close Channel',
@@ -151,7 +140,7 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new ECLRActions.CloseChannel({channelId: channelToClose.channelId}));
+        this.store.dispatch(new ECLRActions.CloseChannel({channelId: channelToClose.channelId, force: forceClose}));
       }
     });
   }
@@ -164,36 +153,16 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
   onChannelClick(selChannel: Channel, event: any) {
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         channel: selChannel,
-        showCopy: true,
-        selectedTab: this.selectedTab,
+        channelsType: 'open',
         component: ECLRChannelInformationComponent
       }}));
     }
 
-  loadChannelsTable(event: any) {
-    let channelsToLoad: Channel[] = [];
-    switch (event) {
-      case 0:
-        this.selectedTab = 'open';
-        channelsToLoad = this.activeChannels;
-        break;
-      case 1:
-        this.selectedTab = 'pending';
-        channelsToLoad = this.pendingChannels;
-        break;
-      case 2:
-        this.selectedTab = 'inactive';
-        channelsToLoad = this.inactiveChannels;
-        break;
-      default:
-        this.selectedTab = 'open';
-        channelsToLoad = this.activeChannels;
-        break;
-    }
-    channelsToLoad.sort(function(a, b) {
+  loadChannelsTable() {
+    this.activeChannels.sort(function(a, b) {
       return (a.alias === b.alias) ? 0 : ((b.alias) ? 1 : -1);
     });
-    this.channels = new MatTableDataSource<Channel>([...channelsToLoad]);
+    this.channels = new MatTableDataSource<Channel>([...this.activeChannels]);
     this.channels.sort = this.sort;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
@@ -201,7 +170,7 @@ export class ECLRChannelsTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Channels-' + this.selectedTab);
+      this.commonService.downloadCSV(this.channels.data, 'ActiveChannels');
     }
   }
 

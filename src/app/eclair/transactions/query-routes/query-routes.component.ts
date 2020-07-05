@@ -53,10 +53,10 @@ export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.qrHops = new MatTableDataSource([]);
     this.eclrEffects.setQueryRoutes
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {
-      this.qrHops = new MatTableDataSource([]);
       this.qrHops.data = [];
       if (queryRoute) {
         this.flgLoading[0] = false;
@@ -71,6 +71,7 @@ export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
 
   onQueryRoutes() {
     if(!this.nodeId || !this.amount) { return true; }
+    this.qrHops.data = [];
     this.flgLoading[0] = true;
     this.store.dispatch(new ECLRActions.GetQueryRoutes({nodeId: this.nodeId, amount: this.amount*1000}));
   }

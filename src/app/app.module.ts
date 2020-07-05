@@ -56,6 +56,7 @@ import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
 import { ECLRInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
+import { ECLRPaymentInformationComponent } from './eclair/transactions/payment-information-modal/payment-information.component';
 import { ECLROpenChannelComponent } from './eclair/peers-channels/channels/open-channel-modal/open-channel.component';
 import { ECLRConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
 import { ECLRLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
@@ -110,6 +111,7 @@ import { ECLRChannelInformationComponent } from './eclair/peers-channels/channel
     CLOnChainSendComponent,
     CLChannelInformationComponent,
     ECLRInvoiceInformationComponent,
+    ECLRPaymentInformationComponent,
     ECLROpenChannelComponent,
     ECLRConnectPeerComponent,
     ECLRLightningSendPaymentsComponent,
@@ -144,6 +146,7 @@ import { ECLRChannelInformationComponent } from './eclair/peers-channels/channel
     CLOnChainSendComponent,
     CLChannelInformationComponent,
     ECLRInvoiceInformationComponent,
+    ECLRPaymentInformationComponent,
     ECLROpenChannelComponent,
     ECLRConnectPeerComponent,
     ECLRLightningSendPaymentsComponent,

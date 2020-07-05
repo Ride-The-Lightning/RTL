@@ -194,7 +194,7 @@ export class UpdateChannels implements Action {
 
 export class CloseChannel implements Action {
   readonly type = CLOSE_CHANNEL_ECLR;
-  constructor(public payload: {channelId: string}) {}
+  constructor(public payload: {channelId: string, force: boolean}) {}
 }
 
 export class RemoveChannel implements Action {

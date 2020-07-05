@@ -49,6 +49,7 @@ export interface PaymentSentPart {
   feesPaid?: number;
   toChannelId?: string;
   timestamp?: number;
+  timestampStr?: string;
 }
 
 export interface PaymentReceived {
@@ -61,6 +62,7 @@ export interface PaymentReceivedPart {
   amount?: number;
   fromChannelId?: string;
   timestamp?: number;
+  timestampStr?: string;
 }
 
 export interface PaymentRelayed {
@@ -71,6 +73,7 @@ export interface PaymentRelayed {
   fromChannelId?: string;
   toChannelId?: string;
   timestamp?: number;
+  timestampStr?: string;
 }
 
 export interface PayRequest {
@@ -144,7 +147,7 @@ export interface Peer {
   alias?: string;
   state?: string;
   address?: string;
-  channels?: string;
+  channels?: number;
 }
 
 export interface SendPaymentOnChain {
@@ -175,6 +178,8 @@ export interface Invoice {
   timestampStr?: string;
   expiresAt?: number;
   expiresAtStr?: string;
+  receivedAt?: number;
+  receivedAtStr?: string;
   status?: string;
   nodeId?: string;
   serialized?: string;

@@ -20,7 +20,7 @@
           </div>
           <div *ngIf="channelsType !== 'open'" fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channelState | titlecase}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.state | titlecase}}</span>
           </div>
         </div>
         <mat-divider [inset]="true" class="my-1"></mat-divider>        
@@ -59,7 +59,7 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
           </div>
         </div>
-        <div *ngIf="showAdvanced">
+        <div *ngIf="showAdvanced && channelsType === 'open'">
           <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="50">
@@ -74,13 +74,12 @@
           <mat-divider [inset]="true" class="my-1"></mat-divider>
         </div>
         <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
-          <button mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
+          <button *ngIf="channelsType === 'open'" mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button *ngIf="showCopy && channelsType === 'open'" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="channel.shortChannelId" (copied)="onCopyChanID($event)">Copy Short Channel ID</button>
-          <button *ngIf="showCopy && channelsType !== 'open'" autoFocus mat-flat-button color="primary" tabindex="3" type="submit" rtlClipboard [payload]="channel.channelId" (copied)="onCopyChanID($event)">Copy Channel ID</button>
-          <button *ngIf="!showCopy" autoFocus mat-flat-button color="primary" tabindex="4" type="button" (click)="onClose()">OK</button>
+          <button *ngIf="channelsType === 'open'" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="channel.shortChannelId" (copied)="onCopyChanID($event)">Copy Short Channel ID</button>
+          <button *ngIf="channelsType !== 'open'" autoFocus mat-flat-button color="primary" tabindex="3" type="submit" rtlClipboard [payload]="channel.channelId" (copied)="onCopyChanID($event)">Copy Channel ID</button>
         </div>
       </div>
     </mat-card-content>

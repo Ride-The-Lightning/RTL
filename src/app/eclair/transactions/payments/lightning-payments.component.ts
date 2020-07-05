@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { ECLRLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
+import { ECLRPaymentInformationComponent } from '../payment-information-modal/payment-information.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { ECLREffects } from '../../store/eclr.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -221,18 +222,9 @@ export class ECLRLightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onPaymentClick(selPayment: PaymentSent, event: any) {
-    const reorderedPayment = [
-      [{key: 'id', value: selPayment.id, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'recipientNodeId', value: selPayment.recipientNodeId, title: 'Destination', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'recipientAmount', value: selPayment.recipientAmount, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'parts', value: selPayment.parts, title: 'Parts', width: 100, type: DataTypeEnum.ARRAY}]
-    ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Payment Information',
-      message: reorderedPayment
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      payment: selPayment,
+      component: ECLRPaymentInformationComponent
     }}));
   }
 

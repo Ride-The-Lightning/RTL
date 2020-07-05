@@ -45,9 +45,11 @@ export class ECLRConnectPeerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.nodeId && this.data.message.peer.address) ? (this.data.message.peer.nodeId + '@' + this.data.message.peer.address) : 
+    (this.data.message.peer && this.data.message.peer.nodeId && !this.data.message.peer.address) ? this.data.message.peer.nodeId : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
-      peerAddress: ['', [Validators.required]]
+      peerAddress: [this.peerAddress, [Validators.required]]
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],

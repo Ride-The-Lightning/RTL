@@ -1,12 +1,12 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #peersForm="ngForm">
-    <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onConnectPeer()">Add Peer</button>
+    <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onConnectPeer({})">Add Peer</button>
   </form>
   <div fxLayout="column">
     <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
       <div fxFlex="70">
         <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
-        <span class="page-title">Connected Peers</span>
+        <span class="page-title">Peers</span>
       </div>
       <mat-form-field fxFlex="30">
         <div fxLayout="row" fxLayoutAlign="start start">
@@ -25,7 +25,11 @@
         </ng-container>
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-3"> Alias </th>
-          <td mat-cell *matCellDef="let peer" class="px-3" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}"> {{peer?.alias}} </td>
+          <td mat-cell *matCellDef="let peer" class="px-3" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '25rem'}">
+            <span *ngIf="peer.state === 'CONNECTED'" class="dot green" matTooltip="Connected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="peer.state === 'DISCONNECTED'" class="dot red" matTooltip="Disconnected" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            {{peer?.alias}}
+          </td>
         </ng-container>
         <ng-container matColumnDef="state">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
@@ -54,7 +58,8 @@
                 <mat-select-trigger></mat-select-trigger>
                 <mat-option (click)="onPeerClick(peer, $event)">View Info</mat-option>
                 <mat-option (click)="onOpenChannel(peer)">Open Channel</mat-option>
-                <mat-option (click)="onPeerDetach(peer)">Disconnect</mat-option>
+                <mat-option *ngIf="peer.state === 'CONNECTED'" (click)="onPeerDetach(peer)">Disconnect</mat-option>
+                <mat-option *ngIf="peer.state === 'DISCONNECTED'" (click)="onConnectPeer(peer)">Reconnect</mat-option>
               </mat-select>
             </div>
           </td>

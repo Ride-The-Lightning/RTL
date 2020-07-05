@@ -78,7 +78,7 @@ export class ECLREffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
+      this.handleErrorWithoutAlert('FetchAudit', 'Fetching Fees Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -160,7 +160,7 @@ export class ECLREffects implements OnDestroy {
             this.logger.info(peers);
             return {
               type: ECLRActions.SET_PEERS_ECLR ,
-              payload: peers && peers.length ? peers.filter(peer => peer.state !== 'DISCONNECTED') : []
+              payload: peers && peers.length ? peers : []
             };
           }),
           catchError((err: any) => {
@@ -260,6 +260,7 @@ export class ECLREffects implements OnDestroy {
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
+            this.store.dispatch(new ECLRActions.FetchPeers());
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {
@@ -310,8 +311,7 @@ export class ECLREffects implements OnDestroy {
   closeChannel = this.actions$.pipe(
     ofType(ECLRActions.CLOSE_CHANNEL_ECLR),
     mergeMap((action: ECLRActions.CloseChannel) => {
-      const queryParam = '?channelId=' + action.payload.channelId;
-      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + queryParam)
+      return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
@@ -595,7 +595,7 @@ export class ECLREffects implements OnDestroy {
         data: {
           type: alerType,
           alertTitle: alertTitle,
-          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
+          message: { code: err.status, message: (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent          
         }
       }));

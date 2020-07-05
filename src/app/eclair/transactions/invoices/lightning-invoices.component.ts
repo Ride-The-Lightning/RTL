@@ -64,16 +64,16 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['expiresAtStr', 'amount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'amount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['expiresAtStr', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'description', 'amount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['expiresAtStr', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'description', 'amount', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['expiresAtStr', 'timestampStr', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestampStr', 'description', 'amount', 'receivedAtStr', 'actions'];
     }
   }
 
@@ -133,17 +133,8 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onInvoiceClick(selInvoice: Invoice, event: any) {
-    let reCreatedInvoice: Invoice = {
-      amount: selInvoice.amount,
-      expiresAtStr: selInvoice.expiresAtStr,
-      timestampStr: selInvoice.timestampStr,
-      serialized: selInvoice.serialized,
-      paymentHash: selInvoice.paymentHash,
-      description: selInvoice.description,
-      status: selInvoice.status,
-    };
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-        invoice: reCreatedInvoice,
+        invoice: selInvoice,
         newlyAdded: false,
         component: ECLRInvoiceInformationComponent
     }}));
