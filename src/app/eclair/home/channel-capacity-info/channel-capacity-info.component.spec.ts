@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRChannelCapacityInfoComponent } from './channel-capacity-info.component';
+import { ECLChannelCapacityInfoComponent } from './channel-capacity-info.component';
 
-describe('ECLRChannelCapacityInfoComponent', () => {
-  let component: ECLRChannelCapacityInfoComponent;
-  let fixture: ComponentFixture<ECLRChannelCapacityInfoComponent>;
+describe('ECLChannelCapacityInfoComponent', () => {
+  let component: ECLChannelCapacityInfoComponent;
+  let fixture: ComponentFixture<ECLChannelCapacityInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRChannelCapacityInfoComponent ]
+      declarations: [ ECLChannelCapacityInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRChannelCapacityInfoComponent);
+    fixture = TestBed.createComponent(ECLChannelCapacityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

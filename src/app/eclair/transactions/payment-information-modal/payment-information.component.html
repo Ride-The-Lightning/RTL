@@ -11,7 +11,7 @@
         <div fxLayout="row">
           <div fxFlex="30">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount (Sats)</h4>
-            <span class="foreground-secondary-text">{{payment.recipientAmount}}</span>
+            <span class="foreground-secondary-text">{{payment.recipientAmount/1000 | number}}</span>
           </div>
           <div fxFlex="70">
             <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRRoutingComponent } from './routing.component';
+import { ECLRoutingComponent } from './routing.component';
 
-describe('ECLRRoutingComponent', () => {
-  let component: ECLRRoutingComponent;
-  let fixture: ComponentFixture<ECLRRoutingComponent>;
+describe('ECLRoutingComponent', () => {
+  let component: ECLRoutingComponent;
+  let fixture: ComponentFixture<ECLRoutingComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRRoutingComponent ]
+      declarations: [ ECLRoutingComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRRoutingComponent);
+    fixture = TestBed.createComponent(ECLRoutingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

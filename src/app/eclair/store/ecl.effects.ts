@@ -12,16 +12,16 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { GetInfo, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit, Transaction, Invoice } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit, Transaction, Invoice } from '../../shared/models/eclModels';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as fromECLRReducer from './eclr.reducers';
-import * as ECLRActions from './eclr.actions';
+import * as fromECLReducer from './ecl.reducers';
+import * as ECLActions from './ecl.actions';
 import * as RTLActions from '../../store/rtl.actions';
-import { ECLRInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
+import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 @Injectable()
-export class ECLREffects implements OnDestroy {
-  CHILD_API_URL = API_URL + '/eclr';
+export class ECLEffects implements OnDestroy {
+  CHILD_API_URL = API_URL + '/ecl';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
@@ -35,11 +35,11 @@ export class ECLREffects implements OnDestroy {
     private location: Location) { }
 
   @Effect()
-  infoFetchECLR = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_INFO_ECLR),
+  infoFetchECL = this.actions$.pipe(
+    ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [ECLRActions.FetchInfo, fromRTLReducer.RootState]) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchInfo'));
+    mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
@@ -47,7 +47,7 @@ export class ECLREffects implements OnDestroy {
             this.logger.info(info);
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
-              type: ECLRActions.SET_INFO_ECLR,
+              type: ECLActions.SET_INFO_ECL,
               payload: info ? info : {}
             };
           }),
@@ -64,16 +64,16 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   fetchAudit = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_AUDIT_ECLR),
-    mergeMap((action: ECLRActions.FetchAudit) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchAudit'));
+    ofType(ECLActions.FETCH_AUDIT_ECL),
+    mergeMap((action: ECLActions.FetchAudit) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchAudit'));
       return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API);
     }),
     map((audit: Audit) => {
       this.logger.info(audit);
-      this.store.dispatch(new ECLRActions.SetPayments(audit.payments));
+      this.store.dispatch(new ECLActions.SetPayments(audit.payments));
       return {
-        type: ECLRActions.SET_FEES_ECLR,
+        type: ECLActions.SET_FEES_ECL,
         payload: audit && audit.fees ? audit.fees : {}
       };
     }),
@@ -85,18 +85,18 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   channelsFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_CHANNELS_ECLR),
-    mergeMap((action: ECLRActions.FetchChannels) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannels'));
+    ofType(ECLActions.FETCH_CHANNELS_ECL),
+    mergeMap((action: ECLActions.FetchChannels) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchChannels'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API)
         .pipe(map((channelsRes: {activeChannels: Channel[], pendingChannels: Channel[], inactiveChannels: Channel[], lightningBalances: LightningBalance, channelStatus: ChannelsStatus}) => {
           this.logger.info(channelsRes);
-          this.store.dispatch(new ECLRActions.SetActiveChannels((channelsRes && channelsRes.activeChannels.length > 0) ? channelsRes.activeChannels : []));
-          this.store.dispatch(new ECLRActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
-          this.store.dispatch(new ECLRActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
-          this.store.dispatch(new ECLRActions.SetLightningBalance(channelsRes.lightningBalances));
+          this.store.dispatch(new ECLActions.SetActiveChannels((channelsRes && channelsRes.activeChannels.length > 0) ? channelsRes.activeChannels : []));
+          this.store.dispatch(new ECLActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
+          this.store.dispatch(new ECLActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
+          this.store.dispatch(new ECLActions.SetLightningBalance(channelsRes.lightningBalances));
           return {
-            type: ECLRActions.SET_CHANNELS_STATUS_ECLR,
+            type: ECLActions.SET_CHANNELS_STATUS_ECL,
             payload: channelsRes.channelStatus
           };
         },
@@ -110,14 +110,14 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   channelStatsFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_CHANNEL_STATS_ECLR),
-    mergeMap((action: ECLRActions.FetchChannelStats) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchChannelStats'));
+    ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
+    mergeMap((action: ECLActions.FetchChannelStats) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchChannelStats'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/stats')
         .pipe(map((channelStats: ChannelStats[]) => {
           this.logger.info(channelStats);
           return {
-            type: ECLRActions.SET_CHANNEL_STATS_ECLR,
+            type: ECLActions.SET_CHANNEL_STATS_ECL,
             payload: (channelStats && channelStats.length > 0) ? channelStats : []
           };
         },
@@ -131,15 +131,15 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   fetchOnchainBalance = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_ONCHAIN_BALANCE_ECLR),
-    mergeMap((action: ECLRActions.FetchOnchainBalance) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchOnchainBalance'));
+    ofType(ECLActions.FETCH_ONCHAIN_BALANCE_ECL),
+    mergeMap((action: ECLActions.FetchOnchainBalance) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchOnchainBalance'));
       return this.httpClient.get<OnChainBalance>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/balance');
     }),
     map((balance) => {
       this.logger.info(balance);
       return {
-        type: ECLRActions.SET_ONCHAIN_BALANCE_ECLR,
+        type: ECLActions.SET_ONCHAIN_BALANCE_ECL,
         payload: balance ? balance : {}
       };
     }),
@@ -151,15 +151,15 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   peersFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_PEERS_ECLR),
-    mergeMap((action: ECLRActions.FetchPeers) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchPeers'));
+    ofType(ECLActions.FETCH_PEERS_ECL),
+    mergeMap((action: ECLActions.FetchPeers) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchPeers'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
         .pipe(
           map((peers: Peer[]) => {
             this.logger.info(peers);
             return {
-              type: ECLRActions.SET_PEERS_ECLR ,
+              type: ECLActions.SET_PEERS_ECL ,
               payload: peers && peers.length ? peers : []
             };
           }),
@@ -173,14 +173,14 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   getNewAddress = this.actions$.pipe(
-    ofType(ECLRActions.GET_NEW_ADDRESS_ECLR),
-    mergeMap((action: ECLRActions.GetNewAddress) => {
+    ofType(ECLActions.GET_NEW_ADDRESS_ECL),
+    mergeMap((action: ECLActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
           this.store.dispatch(new RTLActions.CloseSpinner());
           return {
-            type: ECLRActions.SET_NEW_ADDRESS_ECLR,
+            type: ECLActions.SET_NEW_ADDRESS_ECL,
             payload: newAddress
           };
         }),
@@ -193,8 +193,8 @@ export class ECLREffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setNewAddress = this.actions$.pipe(
-    ofType(ECLRActions.SET_NEW_ADDRESS_ECLR),
-    map((action: ECLRActions.SetNewAddress) => {
+    ofType(ECLActions.SET_NEW_ADDRESS_ECL),
+    map((action: ECLActions.SetNewAddress) => {
       this.logger.info(action.payload);
       return action.payload;
     })
@@ -202,18 +202,18 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   saveNewPeer = this.actions$.pipe(
-    ofType(ECLRActions.SAVE_NEW_PEER_ECLR),
-    withLatestFrom(this.store.select('eclr')),
-    mergeMap(([action, eclrData]: [ECLRActions.SaveNewPeer, fromECLRReducer.ECLRState]) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewPeer'));
+    ofType(ECLActions.SAVE_NEW_PEER_ECL),
+    withLatestFrom(this.store.select('ecl')),
+    mergeMap(([action, eclData]: [ECLActions.SaveNewPeer, fromECLReducer.ECLState]) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('SaveNewPeer'));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {})
         .pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new ECLRActions.SetPeers((postRes && postRes.length) ? (postRes.filter(peer => peer.state !== 'DISCONNECTED')) : []));
+            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? (postRes.filter(peer => peer.state !== 'DISCONNECTED')) : []));
             return {
-              type: ECLRActions.NEWLY_ADDED_PEER_ECLR,
+              type: ECLActions.NEWLY_ADDED_PEER_ECL,
               payload: { peer: postRes[0] }
             };
           }),
@@ -227,8 +227,8 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   detachPeer = this.actions$.pipe(
-    ofType(ECLRActions.DETACH_PEER_ECLR),
-    mergeMap((action: ECLRActions.DisconnectPeer) => {
+    ofType(ECLActions.DETACH_PEER_ECL),
+    mergeMap((action: ECLActions.DisconnectPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId)
         .pipe(
           map((postRes: any) => {
@@ -236,7 +236,7 @@ export class ECLREffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Disconnecting Peer!'));
             return {
-              type: ECLRActions.REMOVE_PEER_ECLR,
+              type: ECLActions.REMOVE_PEER_ECL,
               payload: { nodeId: action.payload.nodeId }
             };
           }),
@@ -250,9 +250,9 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   openNewChannel = this.actions$.pipe(
-    ofType(ECLRActions.SAVE_NEW_CHANNEL_ECLR),
-    mergeMap((action: ECLRActions.SaveNewChannel) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('SaveNewChannel'));
+    ofType(ECLActions.SAVE_NEW_CHANNEL_ECL),
+    mergeMap((action: ECLActions.SaveNewChannel) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('SaveNewChannel'));
       const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ? 
           { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private, fundingFeerateSatByte: action.payload.feeRate }
         : { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private}
@@ -260,11 +260,11 @@ export class ECLREffects implements OnDestroy {
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new ECLRActions.FetchPeers());
+            this.store.dispatch(new ECLActions.FetchPeers());
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {
-              type: ECLRActions.FETCH_CHANNELS_ECLR
+              type: ECLActions.FETCH_CHANNELS_ECL
             };
           }),
           catchError((err: any) => {
@@ -277,8 +277,8 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   updateChannel = this.actions$.pipe(
-    ofType(ECLRActions.UPDATE_CHANNELS_ECLR),
-    mergeMap((action: ECLRActions.UpdateChannels) => {
+    ofType(ECLActions.UPDATE_CHANNELS_ECL),
+    mergeMap((action: ECLActions.UpdateChannels) => {
       let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
       if (action.payload.channelIds) {
         queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
@@ -296,7 +296,7 @@ export class ECLREffects implements OnDestroy {
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
             }
             return {
-              type: ECLRActions.FETCH_CHANNELS_ECLR
+              type: ECLActions.FETCH_CHANNELS_ECL
             };
           }),
           catchError((err: any) => {
@@ -309,15 +309,15 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   closeChannel = this.actions$.pipe(
-    ofType(ECLRActions.CLOSE_CHANNEL_ECLR),
-    mergeMap((action: ECLRActions.CloseChannel) => {
+    ofType(ECLActions.CLOSE_CHANNEL_ECL),
+    mergeMap((action: ECLActions.CloseChannel) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new ECLRActions.FetchChannels());
+              this.store.dispatch(new ECLActions.FetchChannels());
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
             }, 2000);
             return {
@@ -334,19 +334,19 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   queryRoutesFetch = this.actions$.pipe(
-    ofType(ECLRActions.GET_QUERY_ROUTES_ECLR),
-    mergeMap((action: ECLRActions.GetQueryRoutes) => {
+    ofType(ECLActions.GET_QUERY_ROUTES_ECL),
+    mergeMap((action: ECLActions.GetQueryRoutes) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount)
         .pipe(
           map((qrRes: any) => {
             this.logger.info(qrRes);
             return {
-              type: ECLRActions.SET_QUERY_ROUTES_ECLR,
+              type: ECLActions.SET_QUERY_ROUTES_ECL,
               payload: qrRes
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new ECLRActions.SetQueryRoutes([]));
+            this.store.dispatch(new ECLActions.SetQueryRoutes([]));
             this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
             return of({type: RTLActions.VOID});
           })
@@ -356,24 +356,24 @@ export class ECLREffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setQueryRoutes = this.actions$.pipe(
-    ofType(ECLRActions.SET_QUERY_ROUTES_ECLR),
-    map((action: ECLRActions.SetQueryRoutes) => {
+    ofType(ECLActions.SET_QUERY_ROUTES_ECL),
+    map((action: ECLActions.SetQueryRoutes) => {
       return action.payload;
     })
   );
 
   @Effect()
   decodePayment = this.actions$.pipe(
-    ofType(ECLRActions.DECODE_PAYMENT_ECLR),
-    mergeMap((action: ECLRActions.DecodePayment) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('DecodePayment'));
+    ofType(ECLActions.DECODE_PAYMENT_ECL),
+    mergeMap((action: ECLActions.DecodePayment) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('DecodePayment'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
         .pipe(
           map((decodedPayment) => {
             this.logger.info(decodedPayment);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
-              type: ECLRActions.SET_DECODED_PAYMENT_ECLR,
+              type: ECLActions.SET_DECODED_PAYMENT_ECL,
               payload: decodedPayment ? decodedPayment : {}
             };
           }),
@@ -391,8 +391,8 @@ export class ECLREffects implements OnDestroy {
 
   @Effect({ dispatch: false })
   setDecodedPayment = this.actions$.pipe(
-    ofType(ECLRActions.SET_DECODED_PAYMENT_ECLR),
-    map((action: ECLRActions.SetDecodedPayment) => {
+    ofType(ECLActions.SET_DECODED_PAYMENT_ECL),
+    map((action: ECLActions.SetDecodedPayment) => {
       this.logger.info(action.payload);
       return action.payload;
     })
@@ -400,10 +400,10 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   sendPayment = this.actions$.pipe(
-    ofType(ECLRActions.SEND_PAYMENT_ECLR),
+    ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [ECLRActions.SendPayment, any]) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('SendPayment'));      
+    mergeMap(([action, store]: [ECLActions.SendPayment, any]) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('SendPayment'));      
       return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
         .pipe(
           map((sendRes: any) => {
@@ -420,11 +420,11 @@ export class ECLREffects implements OnDestroy {
               return of({type: RTLActions.VOID});
             } else {
               setTimeout(() => {
-                this.store.dispatch(new ECLRActions.SendPaymentStatus(sendRes));
+                this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
                 this.store.dispatch(new RTLActions.CloseSpinner());
-                this.store.dispatch(new ECLRActions.FetchChannels());
-                this.store.dispatch(new ECLRActions.SetDecodedPayment({}));
-                this.store.dispatch(new ECLRActions.FetchAudit());
+                this.store.dispatch(new ECLActions.FetchChannels());
+                this.store.dispatch(new ECLActions.SetDecodedPayment({}));
+                this.store.dispatch(new ECLActions.FetchAudit());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
               }, 3000);
               return { type: RTLActions.VOID };
@@ -446,15 +446,15 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   transactionsFetch = this.actions$.pipe(
-    ofType(ECLRActions.FETCH_TRANSACTIONS_ECLR),
-    mergeMap((action: ECLRActions.FetchTransactions) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('FetchTransactions'));
+    ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
+    mergeMap((action: ECLActions.FetchTransactions) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchTransactions'));
       return this.httpClient.get<Transaction[]>(this.CHILD_API_URL + environment.ON_CHAIN_API + '/transactions?count=1000&skip=0');
     }),
     map((transactions) => {
       this.logger.info(transactions);
       return {
-        type: ECLRActions.SET_TRANSACTIONS_ECLR,
+        type: ECLActions.SET_TRANSACTIONS_ECL,
         payload: (transactions && transactions.length > 0) ? transactions : []
       };
     }),
@@ -466,16 +466,16 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   SendOnchainFunds = this.actions$.pipe(
-    ofType(ECLRActions.SEND_ONCHAIN_FUNDS_ECLR),
-    mergeMap((action: ECLRActions.SendOnchainFunds) => {
-      this.store.dispatch(new ECLRActions.ClearEffectError('SendOnchainFunds'));
+    ofType(ECLActions.SEND_ONCHAIN_FUNDS_ECL),
+    mergeMap((action: ECLActions.SendOnchainFunds) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('SendOnchainFunds'));
       return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
       .pipe(map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
-        this.store.dispatch(new ECLRActions.FetchOnchainBalance());
+        this.store.dispatch(new ECLActions.FetchOnchainBalance());
         return {
-          type: ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR,
+          type: ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL,
           payload: postRes
         };
       }),
@@ -488,9 +488,9 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   createInvoice = this.actions$.pipe(
-  ofType(ECLRActions.CREATE_INVOICE_ECLR),
-  mergeMap((action: ECLRActions.CreateInvoice) => {
-    this.store.dispatch(new ECLRActions.ClearEffectError('CreateInvoice'));
+  ofType(ECLActions.CREATE_INVOICE_ECL),
+  mergeMap((action: ECLActions.CreateInvoice) => {
+    this.store.dispatch(new ECLActions.ClearEffectError('CreateInvoice'));
     return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload)
       .pipe(map((postRes: Invoice) => {
           this.logger.info(postRes);
@@ -505,10 +505,10 @@ export class ECLREffects implements OnDestroy {
           this.store.dispatch(new RTLActions.OpenAlert({ data: { 
               invoice: postRes,
               newlyAdded: false,
-              component: ECLRInvoiceInformationComponent
+              component: ECLInvoiceInformationComponent
           }}));
           return {
-            type: ECLRActions.FETCH_INVOICES_ECLR
+            type: ECLActions.FETCH_INVOICES_ECL
           };
         }),
         catchError((err: any) => {
@@ -521,14 +521,14 @@ export class ECLREffects implements OnDestroy {
 
   @Effect()
   invoicesFetch = this.actions$.pipe(
-  ofType(ECLRActions.FETCH_INVOICES_ECLR),
-  mergeMap((action: ECLRActions.FetchInvoices) => {
-    this.store.dispatch(new ECLRActions.ClearEffectError('FetchInvoices'));
+  ofType(ECLActions.FETCH_INVOICES_ECL),
+  mergeMap((action: ECLActions.FetchInvoices) => {
+    this.store.dispatch(new ECLActions.ClearEffectError('FetchInvoices'));
     return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + environment.INVOICES_API)
       .pipe(map((res: Invoice[]) => {
         this.logger.info(res);
         return {
-          type: ECLRActions.SET_INVOICES_ECLR,
+          type: ECLActions.SET_INVOICES_ECL,
           payload: res
         };
       }),
@@ -540,11 +540,11 @@ export class ECLREffects implements OnDestroy {
   }));
 
   initializeRemainingData(info: any, landingPage: string) {
-    this.sessionService.setItem('eclrUnlocked', 'true');
+    this.sessionService.setItem('eclUnlocked', 'true');
     const node_data = {
       identity_pubkey: info.nodeId,
       alias: info.alias,
-      testnet: false,
+      testnet: info.network === 'testnet',
       chains: info.publicAddresses,
       uris: info.uris,      
       version: info.version,
@@ -553,18 +553,18 @@ export class ECLREffects implements OnDestroy {
       numberOfPendingChannels: 0
     };
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLRActions.FetchAudit());
-    this.store.dispatch(new ECLRActions.FetchChannels());
-    this.store.dispatch(new ECLRActions.FetchOnchainBalance());
-    this.store.dispatch(new ECLRActions.FetchPeers());
+    this.store.dispatch(new ECLActions.FetchAudit());
+    this.store.dispatch(new ECLActions.FetchChannels());
+    this.store.dispatch(new ECLActions.FetchOnchainBalance());
+    this.store.dispatch(new ECLActions.FetchPeers());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
-      newRoute = newRoute.replace('/lnd/', '/eclr/');
+      newRoute = newRoute.replace('/lnd/', '/ecl/');
     } else if (newRoute.includes('/cl/')) {
-      newRoute = newRoute.replace('/cl/', '/eclr/');
+      newRoute = newRoute.replace('/cl/', '/ecl/');
     }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
-      newRoute = '/eclr/home';
+      newRoute = '/ecl/home';
     }
     this.router.navigate([newRoute]);
   }
@@ -578,7 +578,7 @@ export class ECLREffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new ECLRActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : genericErrorMessage }));
+      this.store.dispatch(new ECLActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : genericErrorMessage }));
     }
   }
 

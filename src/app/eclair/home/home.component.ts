@@ -10,18 +10,18 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as ECLRActions from '../store/eclr.actions';
+import * as ECLActions from '../store/ecl.actions';
 
 @Component({
-  selector: 'rtl-eclr-home',
+  selector: 'rtl-ecl-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class ECLRHomeComponent implements OnInit, OnDestroy {
+export class ECLHomeComponent implements OnInit, OnDestroy {
   public faSmile = faSmile;
   public faFrown = faFrown;
   public faAngleDoubleDown = faAngleDoubleDown;
@@ -59,52 +59,52 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/ecl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
-        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 6, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/ecl/transactions', title: '', cols: 6, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
-        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+        { id: 'fee', goTo: 'Routing', link: '/ecl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
-        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 3, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+        { id: 'transactions', goTo: 'Transactions', link: '/ecl/transactions', title: '', cols: 3, rows: 4 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCardHeight = ((window.screen.height - 200) / 2) + 'px';
       this.merchantCardHeight = ((window.screen.height - 210) / 10) + 'px';
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-        { id: 'fee', goTo: 'Routing', link: '/eclr/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'fee', goTo: 'Routing', link: '/ecl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
+        { id: 'status', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
-        { id: 'balance', goTo: 'On-Chain', link: '/eclr/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/eclr/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'transactions', goTo: 'Transactions', link: '/eclr/transactions', title: '', cols: 2, rows: 5 }
+        { id: 'balance', goTo: 'On-Chain', link: '/ecl/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/ecl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'transactions', goTo: 'Transactions', link: '/ecl/transactions', title: '', cols: 2, rows: 5 }
       ];
     }
   }
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
@@ -148,8 +148,8 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toRemote > 0), 'toRemote')));
       this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toLocal > 0), 'toLocal')));
       this.channels.forEach(channel => {
-        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote/1000);
-        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal/1000);
+        this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
+        this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
       });
       if (this.flgLoading[2] !== 'error') {
         this.flgLoading[2] = (this.channels) ? false : true;
@@ -162,12 +162,12 @@ export class ECLRHomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === ECLRActions.FETCH_AUDIT_ECLR || action.type === ECLRActions.SET_FEES_ECLR))
+    filter((action) => action.type === ECLActions.FETCH_AUDIT_ECL || action.type === ECLActions.SET_FEES_ECL))
     .subscribe(action => {
-      if(action.type === ECLRActions.FETCH_AUDIT_ECLR) {
+      if(action.type === ECLActions.FETCH_AUDIT_ECL) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === ECLRActions.SET_FEES_ECLR) {
+      if(action.type === ECLActions.SET_FEES_ECL) {
         this.flgChildInfoUpdated = true;
       }
     });

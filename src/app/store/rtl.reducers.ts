@@ -2,7 +2,7 @@ import { ActionReducerMap } from '@ngrx/store';
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
-import * as fromECLR from '../eclair/store/eclr.reducers';
+import * as fromECL from '../eclair/store/ecl.reducers';
 import * as fromCL from '../clightning/store/cl.reducers';
 import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
@@ -80,12 +80,12 @@ export interface RTLState {
   root: RootState;
   lnd: fromLND.LNDState;
   cl: fromCL.CLState;
-  eclr: fromECLR.ECLRState;
+  ecl: fromECL.ECLState;
 }
 
 export const RTLReducer: ActionReducerMap<RTLState> = {
   root: RootReducer,
   lnd: fromLND.LNDReducer,
   cl: fromCL.CLReducer,
-  eclr: fromECLR.ECLRReducer
+  ecl: fromECL.ECLReducer
 };

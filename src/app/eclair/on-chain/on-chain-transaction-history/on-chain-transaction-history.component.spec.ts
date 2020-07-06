@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLROnChainTransactionHistoryComponent } from './on-chain-transaction-history.component';
+import { ECLOnChainTransactionHistoryComponent } from './on-chain-transaction-history.component';
 
-describe('ECLROnChainTransactionHistoryComponent', () => {
-  let component: ECLROnChainTransactionHistoryComponent;
-  let fixture: ComponentFixture<ECLROnChainTransactionHistoryComponent>;
+describe('ECLOnChainTransactionHistoryComponent', () => {
+  let component: ECLOnChainTransactionHistoryComponent;
+  let fixture: ComponentFixture<ECLOnChainTransactionHistoryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLROnChainTransactionHistoryComponent ]
+      declarations: [ ECLOnChainTransactionHistoryComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLROnChainTransactionHistoryComponent);
+    fixture = TestBed.createComponent(ECLOnChainTransactionHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

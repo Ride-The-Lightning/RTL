@@ -120,11 +120,11 @@ connect.validateNodeConfig = (config) => {
       common.nodes[idx].ln_node = node.lnNode;
       common.nodes[idx].ln_implementation = (process.env.LN_IMPLEMENTATION) ? process.env.LN_IMPLEMENTATION : node.lnImplementation ? node.lnImplementation : 'LND';
 
-      if (common.nodes[idx].ln_implementation !== 'ECLR' && process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
+      if (common.nodes[idx].ln_implementation !== 'ECL' && process.env.MACAROON_PATH && process.env.MACAROON_PATH.trim() !== '') {
         common.nodes[idx].macaroon_path = process.env.MACAROON_PATH;
-      } else if(common.nodes[idx].ln_implementation !== 'ECLR' && node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
+      } else if(common.nodes[idx].ln_implementation !== 'ECL' && node.Authentication && node.Authentication.macaroonPath && node.Authentication.macaroonPath.trim() !== '') {
         common.nodes[idx].macaroon_path = node.Authentication.macaroonPath;
-      } else if (common.nodes[idx].ln_implementation !== 'ECLR') {
+      } else if (common.nodes[idx].ln_implementation !== 'ECL') {
         errMsg = 'Please set macaroon path for node index ' + node.index + ' in RTL-Config.json!';
       }
 
@@ -139,7 +139,7 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].config_path = '';
       }
-      if (common.nodes[idx].ln_implementation === 'ECLR' && common.nodes[idx].config_path === '') {
+      if (common.nodes[idx].ln_implementation === 'ECL' && common.nodes[idx].config_path === '') {
         errMsg = errMsg + '\nPlease set config path for node index ' + node.index + ' in RTL-Config.json! Eclair authentications with `eclair.api.password` value from the file!';
       }
 

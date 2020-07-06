@@ -52,8 +52,8 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
             this.router.navigate(['/cl/home']);
             break;
         
-          case 'ECLR':
-            this.router.navigate(['/eclr/home']);
+          case 'ECL':
+            this.router.navigate(['/ecl/home']);
             break;
 
           default:

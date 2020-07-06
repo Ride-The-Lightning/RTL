@@ -7,22 +7,22 @@ import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { ECLRInvoiceInformation } from '../../../shared/models/alertData';
+import { ECLInvoiceInformation } from '../../../shared/models/alertData';
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { GetInfo } from '../../../shared/models/eclrModels';
+import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as ECLRActions from '../../store/eclr.actions';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-create-invoices',
+  selector: 'rtl-ecl-create-invoices',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
-export class ECLRCreateInvoiceComponent implements OnInit, OnDestroy {
+export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public description = '';
@@ -41,23 +41,23 @@ export class ECLRCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLRCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLRInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.FETCH_INVOICES_ECLR))
-    .subscribe((action: ECLRActions.EffectError | ECLRActions.FetchInvoices) => {
-      if (action.type === ECLRActions.FETCH_INVOICES_ECLR) {
+    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.FETCH_INVOICES_ECL))
+    .subscribe((action: ECLActions.EffectError | ECLActions.FetchInvoices) => {
+      if (action.type === ECLActions.FETCH_INVOICES_ECL) {
         this.dialogRef.close();
       }    
-      if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'CreateInvoice') {
+      if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'CreateInvoice') {
         this.invoiceError = action.payload.message;
       }
     });
@@ -77,7 +77,7 @@ export class ECLRCreateInvoiceComponent implements OnInit, OnDestroy {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
-    this.store.dispatch(new ECLRActions.CreateInvoice(invoicePayload));
+    this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
   }
 
   resetData() {

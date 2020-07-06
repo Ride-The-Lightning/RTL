@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRChannelInactiveTableComponent } from './channel-inactive-table.component';
+import { ECLChannelInactiveTableComponent } from './channel-inactive-table.component';
 
-describe('ECLRChannelInactiveTableComponent', () => {
-  let component: ECLRChannelInactiveTableComponent;
-  let fixture: ComponentFixture<ECLRChannelInactiveTableComponent>;
+describe('ECLChannelInactiveTableComponent', () => {
+  let component: ECLChannelInactiveTableComponent;
+  let fixture: ComponentFixture<ECLChannelInactiveTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRChannelInactiveTableComponent ]
+      declarations: [ ECLChannelInactiveTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRChannelInactiveTableComponent);
+    fixture = TestBed.createComponent(ECLChannelInactiveTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

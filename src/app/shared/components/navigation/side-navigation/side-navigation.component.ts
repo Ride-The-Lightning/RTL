@@ -139,8 +139,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           this.loadCLTMenu();
           break;
       
-        case 'ECLR':
-          this.loadECLRMenu();
+        case 'ECL':
+          this.loadECLMenu();
           break;
 
         default:
@@ -184,8 +184,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadECLRMenu() {
-    this.navMenus.data = JSON.parse(JSON.stringify(MENU_DATA.ECLRChildren));
+  loadECLMenu() {
+    this.navMenus.data = JSON.parse(JSON.stringify(MENU_DATA.ECLChildren));
   }
 
   onShowData(node: MenuChildNode) {

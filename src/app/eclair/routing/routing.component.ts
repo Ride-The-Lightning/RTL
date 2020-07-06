@@ -10,11 +10,11 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 
 
 @Component({
-  selector: 'rtl-eclr-routing',
+  selector: 'rtl-ecl-routing',
   templateUrl: './routing.component.html',
   styleUrls: ['./routing.component.scss']
 })
-export class ECLRRoutingComponent implements OnInit, OnDestroy {
+export class ECLRoutingComponent implements OnInit, OnDestroy {
   public faMapSigns = faMapSigns;
   public events = [];
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -24,7 +24,7 @@ export class ECLRRoutingComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.errorMessage = '';

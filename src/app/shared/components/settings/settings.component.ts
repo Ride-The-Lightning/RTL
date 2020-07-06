@@ -46,7 +46,7 @@ export class SettingsComponent implements OnInit, OnDestroy{
           this.lnImplementationStr = 'C-Lightning Config';
           break;
       
-        case 'ECLR':
+        case 'ECL':
           this.lnImplementationStr = 'Eclair Config';
           break;
 

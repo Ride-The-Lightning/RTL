@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 
 @Component({
-  selector: 'rtl-eclr-root',
-  templateUrl: './eclr-root.component.html',
-  styleUrls: ['./eclr-root.component.scss']
+  selector: 'rtl-ecl-root',
+  templateUrl: './ecl-root.component.html',
+  styleUrls: ['./ecl-root.component.scss']
 })
-export class ECLRRootComponent {
+export class ECLRootComponent {
   loading = false;
 
   constructor(private router: Router) {

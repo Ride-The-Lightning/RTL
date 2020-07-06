@@ -51,9 +51,9 @@ exports.getBalance = (req, res, next) => {
   })
   .catch(errRes => {
     let body = {};
-    body.total = 20000000;
+    body.total = 20000;
     body.btc_total = 0.200000;
-    body.confirmed = 20000000;
+    body.confirmed = 20000;
     body.btc_confirmed = 0.200000;
     body.unconfirmed = 0;
     body.btc_unconfirmed = 0;

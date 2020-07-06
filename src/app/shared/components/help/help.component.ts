@@ -196,8 +196,8 @@ export class HelpComponent implements OnInit, OnDestroy {
           this.LNPLink = '/cl/';  
           break;
       
-        case 'ECLR':
-          this.LNPLink = '/eclr/';  
+        case 'ECL':
+          this.LNPLink = '/ecl/';  
           break;
 
         default:

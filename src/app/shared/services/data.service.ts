@@ -31,8 +31,8 @@ export class DataService implements OnInit, OnDestroy {
         this.childAPIUrl = API_URL + '/cl';
         break;
 
-      case 'ECLR':
-          this.childAPIUrl = API_URL + '/eclr';
+      case 'ECL':
+          this.childAPIUrl = API_URL + '/ecl';
           break;
       
       default:

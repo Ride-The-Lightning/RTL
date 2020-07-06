@@ -1154,8 +1154,8 @@ export class LNDEffects implements OnDestroy {
     let newRoute = this.location.path();
     if(newRoute.includes('/cl/')) {
       newRoute = newRoute.replace('/cl/', '/lnd/');
-    } else if (newRoute.includes('/eclr/')) {
-      newRoute = newRoute.replace('/eclr/', '/lnd/');
+    } else if (newRoute.includes('/ecl/')) {
+      newRoute = newRoute.replace('/ecl/', '/lnd/');
     }
     if(newRoute.includes('/unlock') || newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/lnd/home';

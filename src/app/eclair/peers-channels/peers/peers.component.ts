@@ -9,22 +9,22 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Peer, GetInfo } from '../../../shared/models/eclrModels';
+import { Peer, GetInfo } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { ECLROpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
-import { ECLRConnectPeerComponent } from '../connect-peer/connect-peer.component';
+import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
+import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
-import { ECLREffects } from '../../store/eclr.effects';
+import { ECLEffects } from '../../store/ecl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as ECLRActions from '../../store/eclr.actions';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-peers',
+  selector: 'rtl-ecl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   animations: [newlyAddedRowAnimation],
@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
   ]
 })
-export class ECLRPeersComponent implements OnInit, OnDestroy {
+export class ECLPeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public faUsers = faUsers;
@@ -51,7 +51,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclrEffects: ECLREffects, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private actions$: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -69,7 +69,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
@@ -91,8 +91,8 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === ECLRActions.SET_PEERS_ECLR)
-    ).subscribe((setPeers: ECLRActions.SetPeers) => {
+      filter((action) => action.type === ECLActions.SET_PEERS_ECL)
+    ).subscribe((setPeers: ECLActions.SetPeers) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;
     });
@@ -122,7 +122,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
         information: this.information,
         balance: this.availableBalance
       },
-      component: ECLRConnectPeerComponent
+      component: ECLConnectPeerComponent
     }}));
   }
 
@@ -136,7 +136,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
       newlyAdded: false,
-      component: ECLROpenChannelComponent
+      component: ECLOpenChannelComponent
     }}));
   }
 
@@ -161,7 +161,7 @@ export class ECLRPeersComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
-        this.store.dispatch(new ECLRActions.DisconnectPeer({nodeId: peerToDetach.nodeId}));
+        this.store.dispatch(new ECLActions.DisconnectPeer({nodeId: peerToDetach.nodeId}));
       }
     });
   }

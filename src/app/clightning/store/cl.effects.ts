@@ -720,8 +720,8 @@ export class CLEffects implements OnDestroy {
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');
-    } else if (newRoute.includes('/eclr/')) {
-      newRoute = newRoute.replace('/eclr/', '/cl/');
+    } else if (newRoute.includes('/ecl/')) {
+      newRoute = newRoute.replace('/ecl/', '/cl/');
     }
     if (newRoute.includes('/login') || newRoute.includes('/error') || newRoute === '' || landingPage === 'HOME' || newRoute.includes('?access-key=')) {
       newRoute = '/cl/home';

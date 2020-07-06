@@ -40,11 +40,11 @@
         <mat-divider [inset]="true" class="my-1"></mat-divider>        
         <div fxLayout="row">
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance (mSats)</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance (Sats)</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel.toLocal | number}}</span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (mSats)</h4>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel.toRemote | number}}</span>
           </div>
         </div>
@@ -67,7 +67,7 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.feeBaseMsat | number}}</span>
             </div>
             <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mSat)</h4>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mSats)</h4>
               <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths}}</span>
             </div>
           </div>

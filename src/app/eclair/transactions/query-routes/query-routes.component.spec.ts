@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRQueryRoutesComponent } from './query-routes.component';
+import { ECLQueryRoutesComponent } from './query-routes.component';
 
-describe('ECLRQueryRoutesComponent', () => {
-  let component: ECLRQueryRoutesComponent;
-  let fixture: ComponentFixture<ECLRQueryRoutesComponent>;
+describe('ECLQueryRoutesComponent', () => {
+  let component: ECLQueryRoutesComponent;
+  let fixture: ComponentFixture<ECLQueryRoutesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRQueryRoutesComponent ]
+      declarations: [ ECLQueryRoutesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRQueryRoutesComponent);
+    fixture = TestBed.createComponent(ECLQueryRoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

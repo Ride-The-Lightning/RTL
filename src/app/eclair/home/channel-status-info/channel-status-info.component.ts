@@ -1,12 +1,12 @@
 import { Component, OnChanges, Input } from '@angular/core';
-import { ChannelsStatus } from '../../../shared/models/eclrModels';
+import { ChannelsStatus } from '../../../shared/models/eclModels';
 
 @Component({
-  selector: 'rtl-eclr-channel-status-info',
+  selector: 'rtl-ecl-channel-status-info',
   templateUrl: './channel-status-info.component.html',
   styleUrls: ['./channel-status-info.component.scss']
 })
-export class ECLRChannelStatusInfoComponent implements OnChanges {
+export class ECLChannelStatusInfoComponent implements OnChanges {
   @Input() channelsStatus: ChannelsStatus = {};
 
   constructor() {}

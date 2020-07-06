@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRConnectPeerComponent } from './connect-peer.component';
+import { ECLConnectPeerComponent } from './connect-peer.component';
 
-describe('ECLRConnectPeerComponent', () => {
-  let component: ECLRConnectPeerComponent;
-  let fixture: ComponentFixture<ECLRConnectPeerComponent>;
+describe('ECLConnectPeerComponent', () => {
+  let component: ECLConnectPeerComponent;
+  let fixture: ComponentFixture<ECLConnectPeerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRConnectPeerComponent ]
+      declarations: [ ECLConnectPeerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRConnectPeerComponent);
+    fixture = TestBed.createComponent(ECLConnectPeerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

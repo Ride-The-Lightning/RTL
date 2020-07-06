@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRBalancesInfoComponent } from './balances-info.component';
+import { ECLBalancesInfoComponent } from './balances-info.component';
 
-describe('ECLRBalancesInfoComponent', () => {
-  let component: ECLRBalancesInfoComponent;
-  let fixture: ComponentFixture<ECLRBalancesInfoComponent>;
+describe('ECLBalancesInfoComponent', () => {
+  let component: ECLBalancesInfoComponent;
+  let fixture: ComponentFixture<ECLBalancesInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRBalancesInfoComponent ]
+      declarations: [ ECLBalancesInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRBalancesInfoComponent);
+    fixture = TestBed.createComponent(ECLBalancesInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

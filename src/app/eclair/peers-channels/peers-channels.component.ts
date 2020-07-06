@@ -5,19 +5,19 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfo, Peer } from '../../shared/models/eclrModels';
-import { ECLROpenChannelComponent } from './channels/open-channel-modal/open-channel.component';
+import { GetInfo, Peer } from '../../shared/models/eclModels';
+import { ECLOpenChannelComponent } from './channels/open-channel-modal/open-channel.component';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-peers-channels',
+  selector: 'rtl-ecl-peers-channels',
   templateUrl: './peers-channels.component.html',
   styleUrls: ['./peers-channels.component.scss']
 })
-export class ECLRPeersChannelsComponent implements OnInit, OnDestroy {
+export class ECLPeersChannelsComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
@@ -32,7 +32,7 @@ export class ECLRPeersChannelsComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
@@ -54,7 +54,7 @@ export class ECLRPeersChannelsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
-      component: ECLROpenChannelComponent
+      component: ECLOpenChannelComponent
     }}));
   }
 

@@ -9,22 +9,22 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { PayRequest, Channel } from '../../../shared/models/eclrModels';
+import { PayRequest, Channel } from '../../../shared/models/eclModels';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { ECLREffects } from '../../store/eclr.effects';
-import * as ECLRActions from '../../store/eclr.actions';
+import { ECLEffects } from '../../store/ecl.effects';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-lightning-send-payments',
+  selector: 'rtl-ecl-lightning-send-payments',
   templateUrl: './send-payment.component.html',
   styleUrls: ['./send-payment.component.scss'],
 })
-export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
+export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('paymentReq', { static: true }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
@@ -41,10 +41,10 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLRLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclrEffects: ECLREffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
@@ -52,12 +52,12 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.SEND_PAYMENT_STATUS_ECLR))
-    .subscribe((action: ECLRActions.EffectError | ECLRActions.SendPaymentStatus) => {
-      if (action.type === ECLRActions.SEND_PAYMENT_STATUS_ECLR) { 
+    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL))
+    .subscribe((action: ECLActions.EffectError | ECLActions.SendPaymentStatus) => {
+      if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) { 
         this.dialogRef.close();
       }    
-      if (action.type === ECLRActions.EFFECT_ERROR_ECLR) {
+      if (action.type === ECLActions.EFFECT_ERROR_ECL) {
         if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.amount;
           this.paymentError = action.payload.message;
@@ -80,8 +80,8 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);      
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLRActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.eclrEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
+      this.eclEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
           this.paymentDecoded.amount = 0;
@@ -89,7 +89,7 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
         } else {
           this.zeroAmtInvoice = false;
-          this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+          this.commonService.convertCurrency(+this.paymentDecoded.amount/1000, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[2]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {
@@ -106,9 +106,9 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
   sendPayment() {
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
     if (this.zeroAmtInvoice) {
-      this.store.dispatch(new ECLRActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
+      this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
     } else {
-      this.store.dispatch(new ECLRActions.SendPayment({invoice: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, fromDialog: true}));
     }
   }
 
@@ -121,8 +121,8 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLRActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.eclrEffects.setDecodedPayment.subscribe(decodedPayment => {
+      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
+      this.eclEffects.setDecodedPayment.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
           this.paymentDecoded.amount = 0;
@@ -130,7 +130,7 @@ export class ECLRLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
         } else {
           this.zeroAmtInvoice = false;
-          this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+          this.commonService.convertCurrency(+this.paymentDecoded.amount/1000, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[3]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {

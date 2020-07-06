@@ -24,18 +24,18 @@
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-eclr-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
+            <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
               [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}">
-            </rtl-eclr-node-info>
-            <rtl-eclr-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"
-              [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-eclr-balances-info>
-            <rtl-eclr-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField"
+            </rtl-ecl-node-info>
+            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"
+              [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField"
               [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity"
-              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-eclr-channel-capacity-info>
-            <rtl-eclr-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees"
-              [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-eclr-fee-info>
-            <rtl-eclr-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus"
-              [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-eclr-channel-status-info>
+              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-ecl-channel-capacity-info>
+            <rtl-ecl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees"
+              [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-ecl-fee-info>
+            <rtl-ecl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus"
+              [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-ecl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>
@@ -67,23 +67,23 @@
         </mat-card-header>
         <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-            <rtl-eclr-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
-              [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-eclr-node-info>
-            <rtl-eclr-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"
-              [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-eclr-balances-info>
-            <rtl-eclr-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'"
+            <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
+              [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-ecl-node-info>
+            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"
+              [ngClass]="{'error-border': flgLoading[2]==='error'}"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'"
               [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels"
-              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-eclr-channel-liquidity-info>
-            <rtl-eclr-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'"
+              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-ecl-channel-liquidity-info>
+            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'"
               [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels"
-              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-eclr-channel-liquidity-info>
+              [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-ecl-channel-liquidity-info>
             <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive">
-                  <rtl-eclr-lightning-invoices class="h-100" [showDetails]="false"></rtl-eclr-lightning-invoices>
+                  <rtl-ecl-lightning-invoices class="h-100" [showDetails]="false"></rtl-ecl-lightning-invoices>
                 </mat-tab>
                 <mat-tab label="Pay">
-                  <rtl-eclr-lightning-payments [showDetails]="false"></rtl-eclr-lightning-payments>
+                  <rtl-ecl-lightning-payments [showDetails]="false"></rtl-ecl-lightning-payments>
                 </mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>

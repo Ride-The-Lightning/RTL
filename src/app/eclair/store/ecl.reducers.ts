@@ -1,10 +1,10 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclrModels';
+import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import * as ECLRActions from './eclr.actions';
+import * as ECLActions from './ecl.actions';
 
-export interface ECLRState {
+export interface ECLState {
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
@@ -22,7 +22,7 @@ export interface ECLRState {
   invoices: Invoice[];
 }
 
-export const initECLRState: ECLRState = {
+export const initECLState: ECLState = {
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -40,9 +40,9 @@ export const initECLRState: ECLRState = {
   invoices: []
 }
 
-export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActions) {
+export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
   switch (action.type) {
-    case ECLRActions.CLEAR_EFFECT_ERROR_ECLR:
+    case ECLActions.CLEAR_EFFECT_ERROR_ECL:
       const clearedEffectErrors = [...state.effectErrors];
       const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
@@ -54,72 +54,72 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
         ...state,
         effectErrors: clearedEffectErrors
       };
-    case ECLRActions.EFFECT_ERROR_ECLR:
+    case ECLActions.EFFECT_ERROR_ECL:
       return {
         ...state,
         effectErrors: [...state.effectErrors, action.payload]
       };
-    case ECLRActions.SET_CHILD_NODE_SETTINGS_ECLR:
+    case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
       return {
         ...state,
         nodeSettings: action.payload
       }
-    case ECLRActions.RESET_ECLR_STORE:
+    case ECLActions.RESET_ECL_STORE:
       return {
-        ...initECLRState,
+        ...initECLState,
         nodeSettings: action.payload,
       };
-    case ECLRActions.SET_INFO_ECLR:
+    case ECLActions.SET_INFO_ECL:
       return {
         ...state,
         information: action.payload
       };
-    case ECLRActions.SET_FEES_ECLR:
+    case ECLActions.SET_FEES_ECL:
       return {
         ...state,
         fees: action.payload
       };
-    case ECLRActions.SET_ACTIVE_CHANNELS_ECLR:
+    case ECLActions.SET_ACTIVE_CHANNELS_ECL:
       return {
         ...state,
         activeChannels: action.payload,
       };
-    case ECLRActions.SET_PENDING_CHANNELS_ECLR:
+    case ECLActions.SET_PENDING_CHANNELS_ECL:
       return {
         ...state,
         pendingChannels: action.payload,
       };
-    case ECLRActions.SET_INACTIVE_CHANNELS_ECLR:
+    case ECLActions.SET_INACTIVE_CHANNELS_ECL:
       return {
         ...state,
         inactiveChannels: action.payload,
       };
-    case ECLRActions.SET_CHANNELS_STATUS_ECLR:
+    case ECLActions.SET_CHANNELS_STATUS_ECL:
       return {
         ...state,
         channelsStatus: action.payload,
       };
-    case ECLRActions.SET_CHANNEL_STATS_ECLR:
+    case ECLActions.SET_CHANNEL_STATS_ECL:
       return {
         ...state,
         channelStats: action.payload,
       };
-    case ECLRActions.SET_ONCHAIN_BALANCE_ECLR:
+    case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {
         ...state,
         onchainBalance: action.payload
       };
-    case ECLRActions.SET_LIGHTNING_BALANCE_ECLR:
+    case ECLActions.SET_LIGHTNING_BALANCE_ECL:
       return {
         ...state,
         lightningBalance: action.payload
       };
-    case ECLRActions.SET_PEERS_ECLR:
+    case ECLActions.SET_PEERS_ECL:
       return {
         ...state,
         peers: action.payload
       };
-    case ECLRActions.REMOVE_PEER_ECLR:
+    case ECLActions.REMOVE_PEER_ECL:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {
         return peer.nodeId === action.payload.nodeId;
@@ -131,7 +131,7 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
         ...state,
         peers: modifiedPeers
       };
-    case ECLRActions.REMOVE_CHANNEL_ECLR:
+    case ECLActions.REMOVE_CHANNEL_ECL:
       const modifiedChannels = [...state.activeChannels];
       const removeChannelIdx = state.activeChannels.findIndex(channel => {
         return channel.channelId === action.payload.channelId;
@@ -143,24 +143,24 @@ export function ECLRReducer(state = initECLRState, action: ECLRActions.ECLRActio
         ...state,
         activeChannels: modifiedChannels
       };
-    case ECLRActions.SET_PAYMENTS_ECLR:
+    case ECLActions.SET_PAYMENTS_ECL:
       return {
         ...state,
         payments: action.payload
       };
-    case ECLRActions.SET_TRANSACTIONS_ECLR:
+    case ECLActions.SET_TRANSACTIONS_ECL:
       return {
         ...state,
         transactions: action.payload
       };
-    case ECLRActions.ADD_INVOICE_ECLR:
+    case ECLActions.ADD_INVOICE_ECL:
       const newInvoices = state.invoices;
       newInvoices.unshift(action.payload);
       return {
         ...state,
         invoices: newInvoices
       };
-    case ECLRActions.SET_INVOICES_ECLR:
+    case ECLActions.SET_INVOICES_ECL:
       return {
         ...state,
         invoices: action.payload

@@ -7,11 +7,11 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-channels-tables',
+  selector: 'rtl-ecl-channels-tables',
   templateUrl: './channels-tables.component.html',
   styleUrls: ['./channels-tables.component.scss']
 })
-export class ECLRChannelsTablesComponent implements OnInit, OnDestroy {
+export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
   public numOfOpenChannels = 0;
   public numOfPendingChannels = 0;
   public numOfInactiveChannels = 0;
@@ -20,7 +20,7 @@ export class ECLRChannelsTablesComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.numOfOpenChannels = (rtlStore.channelsStatus && rtlStore.channelsStatus.active && rtlStore.channelsStatus.active.channels) ? rtlStore.channelsStatus.active.channels : 0;

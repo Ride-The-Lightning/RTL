@@ -23,7 +23,7 @@ import { ConfirmationMessageComponent } from '../shared/components/data-modal/co
 import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
-import * as ECLRActions from '../eclair/store/eclr.actions';
+import * as ECLActions from '../eclair/store/ecl.actions';
 import * as CLActions from '../clightning/store/cl.actions';
 import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
@@ -319,7 +319,7 @@ export class RTLEffects implements OnDestroy {
   mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
     this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
     this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
-    this.store.dispatch(new ECLRActions.ClearEffectError('FetchInfo'));    
+    this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -375,7 +375,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate(['/login']);
     }
-    this.sessionService.removeItem('eclrUnlocked');
+    this.sessionService.removeItem('eclUnlocked');
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');
@@ -441,7 +441,7 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
     this.store.dispatch(new CLActions.ResetCLStore(selNode));
-    this.store.dispatch(new ECLRActions.ResetECLRStore(selNode));
+    this.store.dispatch(new ECLActions.ResetECLStore(selNode));
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
@@ -451,9 +451,9 @@ export class RTLEffects implements OnDestroy {
           this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
           break;
 
-        case 'ECLR':
-          this.CHILD_API_URL = API_URL + '/eclr';
-          this.store.dispatch(new ECLRActions.FetchInfo({loadPage: landingPage}));
+        case 'ECL':
+          this.CHILD_API_URL = API_URL + '/ecl';
+          this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
           break;
             
         default:

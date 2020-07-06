@@ -34,16 +34,9 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
           <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{payment?.recipientNodeId}}</td>
         </ng-container>
-        <!-- <ng-container matColumnDef="paymentHash">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
-          <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">
-            <div>{{payment?.paymentHash}}</div>
-          </td>
-        </ng-container> -->
         <ng-container matColumnDef="recipientAmount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
-          <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.recipientAmount | number}}</span></td>
+          <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{(payment?.recipientAmount/1000) | number}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">

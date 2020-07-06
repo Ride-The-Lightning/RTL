@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRNodeInfoComponent } from './node-info.component';
+import { ECLNodeInfoComponent } from './node-info.component';
 
-describe('ECLRNodeInfoComponent', () => {
-  let component: ECLRNodeInfoComponent;
-  let fixture: ComponentFixture<ECLRNodeInfoComponent>;
+describe('ECLNodeInfoComponent', () => {
+  let component: ECLNodeInfoComponent;
+  let fixture: ComponentFixture<ECLNodeInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRNodeInfoComponent ]
+      declarations: [ ECLNodeInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRNodeInfoComponent);
+    fixture = TestBed.createComponent(ECLNodeInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

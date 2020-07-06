@@ -9,7 +9,7 @@ const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
 const apiLNDRoot = baseHref + "api/lnd/";
 const apiCLRoot = baseHref + "api/cl/";
-const apiECLRRoot = baseHref + "api/eclr/";
+const apiECLRoot = baseHref + "api/ecl/";
 
 const authenticateRoutes = require("./routes/authenticate");
 const RTLConfRoutes = require("./routes/RTLConf");
@@ -41,13 +41,13 @@ const peersCLRoutes = require("./routes/c-lightning/peers");
 const networkCLRoutes = require("./routes/c-lightning/network");
 const messageCLRoutes = require("./routes/c-lightning/message");
 
-const infoECLRRoutes = require("./routes/eclair/getInfo");
-const feesECLRRoutes = require("./routes/eclair/fees");
-const channelsECLRRoutes = require("./routes/eclair/channels");
-const onChainECLRRoutes = require("./routes/eclair/onchain");
-const peersECLRRoutes = require("./routes/eclair/peers");
-const invoicesECLRRoutes = require("./routes/eclair/invoices");
-const paymentsECLRRoutes = require("./routes/eclair/payments");
+const infoECLRoutes = require("./routes/eclair/getInfo");
+const feesECLRoutes = require("./routes/eclair/fees");
+const channelsECLRoutes = require("./routes/eclair/channels");
+const onChainECLRoutes = require("./routes/eclair/onchain");
+const peersECLRoutes = require("./routes/eclair/peers");
+const invoicesECLRoutes = require("./routes/eclair/invoices");
+const paymentsECLRoutes = require("./routes/eclair/payments");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -99,13 +99,13 @@ app.use(apiCLRoot + "peers", peersCLRoutes);
 app.use(apiCLRoot + "network", networkCLRoutes);
 app.use(apiCLRoot + "message", messageCLRoutes);
 
-app.use(apiECLRRoot + "getinfo", infoECLRRoutes);
-app.use(apiECLRRoot + "fees", feesECLRRoutes);
-app.use(apiECLRRoot + "channels", channelsECLRRoutes);
-app.use(apiECLRRoot + "onchain", onChainECLRRoutes);
-app.use(apiECLRRoot + "peers", peersECLRRoutes);
-app.use(apiECLRRoot + "invoices", invoicesECLRRoutes);
-app.use(apiECLRRoot + "payments", paymentsECLRRoutes);
+app.use(apiECLRoot + "getinfo", infoECLRoutes);
+app.use(apiECLRoot + "fees", feesECLRoutes);
+app.use(apiECLRoot + "channels", channelsECLRoutes);
+app.use(apiECLRoot + "onchain", onChainECLRoutes);
+app.use(apiECLRoot + "peers", peersECLRoutes);
+app.use(apiECLRoot + "invoices", invoicesECLRoutes);
+app.use(apiECLRoot + "payments", paymentsECLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

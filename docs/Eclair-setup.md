@@ -1,4 +1,4 @@
-![](../screenshots/RTL-ECLR-Dashboard.png)
+![](../screenshots/RTL-ECL-Dashboard.png)
 
 ## RTL Eclair setup
 
@@ -19,7 +19,7 @@ Follow the below steps to install and setup RTL to run on Eclair.
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 
 ### <a name="arch"></a>Architecture
-![](../screenshots/RTL-ECLR-Arch-2.png)
+![](../screenshots/RTL-ECL-Arch-2.png)
 
 ### <a name="install"></a>Installation:
 #### First time setup
@@ -48,7 +48,7 @@ RTL requires its own config file `RTL-Config.json`, to start the server and prov
 * Modify the RTL conf file per the example file below
 
 Ensure that the follow values are correct per your config:
-* `lnImplementation` - This should be `ECLR`, indicating that RTL is connecting to an Eclair node.
+* `lnImplementation` - This should be `ECL`, indicating that RTL is connecting to an Eclair node.
 * `lnServerUrl` - complete url with ip address and port of the eclair server.
 * `multiPass` - Specify the password (in plain text) to access RTL. This password will be hashed and not stored as plain text.
 * `configPath` (Mandatory) - Full path of the folder containing `eclair.conf` including the file name for the basic password authentication through `eclair.api.password`.
@@ -65,7 +65,7 @@ Ensure that the follow values are correct per your config:
     {
       "index": 1,
       "lnNode": "Eclair Testnet # 1",
-      "lnImplementation": "ECLR",
+      "lnImplementation": "ECL",
       "Authentication": {
         "configPath": "<Mandatory - Config file path, including .conf file, for authentication>"
       },

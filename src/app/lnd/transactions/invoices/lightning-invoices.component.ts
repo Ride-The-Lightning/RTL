@@ -76,7 +76,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'settle_date', 'actions'];
+      this.displayedColumns = ['creation_date', 'memo', 'value', 'amt_paid_sat', 'settle_date', 'actions'];
     }
   }
 

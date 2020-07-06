@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { Fees } from '../../../shared/models/eclrModels';
+import { Fees } from '../../../shared/models/eclModels';
 
 @Component({
-  selector: 'rtl-eclr-fee-info',
+  selector: 'rtl-ecl-fee-info',
   templateUrl: './fee-info.component.html',
   styleUrls: ['./fee-info.component.scss']
 })
-export class ECLRFeeInfoComponent {
+export class ECLFeeInfoComponent {
   @Input() fees: Fees;
   totalFees = [{'name': 'Monthly', 'value': 0}, {'name': 'Weekly', 'value': 0}, {'name': 'Daily', 'value': 0}];
   maxFeeValue = 100;

@@ -26,7 +26,7 @@ common.getSelLNServerUrl = () => {
 };
 
 common.getOptions = () => {
-  common.selectedNode.options.method = common.selectedNode.ln_implementation.toUpperCase() !== 'ECLR' ? 'GET' : 'POST';
+  common.selectedNode.options.method = common.selectedNode.ln_implementation.toUpperCase() !== 'ECL' ? 'GET' : 'POST';
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
 };
@@ -48,9 +48,9 @@ common.updateSelectedNodeOptions = () => {
           common.selectedNode.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(common.selectedNode.macaroon_path, 'access.macaroon'))).toString("base64") };
           break;
       
-        case 'ECLR':
-          var eclrPwd = ini.parse(fs.readFileSync(common.selectedNode.config_path, 'utf-8'))['eclair.api.password'];
-          common.selectedNode.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclrPwd).toString('base64') };
+        case 'ECL':
+          var eclPwd = ini.parse(fs.readFileSync(common.selectedNode.config_path, 'utf-8'))['eclair.api.password'];
+          common.selectedNode.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclPwd).toString('base64') };
           break;
 
         default:
@@ -88,9 +88,9 @@ common.setOptions = () => {
               node.options.headers = { 'macaroon': Buffer.from(fs.readFileSync(path.join(node.macaroon_path, 'access.macaroon'))).toString("base64") };
               break;
           
-            case 'ECLR':
-              var eclrPwd = ini.parse(fs.readFileSync(node.config_path, 'utf-8'))['eclair.api.password'];
-              node.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclrPwd).toString('base64') };
+            case 'ECL':
+              var eclPwd = ini.parse(fs.readFileSync(node.config_path, 'utf-8'))['eclair.api.password'];
+              node.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclPwd).toString('base64') };
               break;
 
             default:

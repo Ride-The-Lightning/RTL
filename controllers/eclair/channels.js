@@ -14,8 +14,8 @@ simplifyAllChannels = (channels) => {
       channelId: channel.channelId ? channel.channelId : '',
       state: channel.state ? channel.state : '',
       channelFlags: channel.data && channel.data.commitments && channel.data.commitments.channelFlags ? channel.data.commitments.channelFlags : 0,
-      toLocal: (channel.data.commitments.localCommit.spec.toLocal) ? +channel.data.commitments.localCommit.spec.toLocal : 0,
-      toRemote: (channel.data.commitments.localCommit.spec.toRemote) ? +channel.data.commitments.localCommit.spec.toRemote : 0,
+      toLocal: (channel.data.commitments.localCommit.spec.toLocal) ? Math.round(+channel.data.commitments.localCommit.spec.toLocal/1000) : 0,
+      toRemote: (channel.data.commitments.localCommit.spec.toRemote) ? Math.round(+channel.data.commitments.localCommit.spec.toRemote/1000) : 0,
       shortChannelId: channel.data && channel.data.shortChannelId ? channel.data.shortChannelId : '',
       buried: channel.data && channel.data.buried ? channel.data.buried : false,
       feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
@@ -70,7 +70,7 @@ exports.getChannels = (req, res, next) => {
             activeChannels.push(channel);
             channelStatus.active.channels = channelStatus.active.channels + 1;
             channelStatus.active.capacity = channelStatus.active.capacity + channel.toLocal;
-          } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING')) {
+          } else if (channel.state.includes('WAIT') || channel.state.includes('CLOSING') || channel.state.includes('SYNCING')) {
             channel.state = channel.state.replace(/_/g, ' ');
             pendingChannels.push(channel);
             channelStatus.pending.channels = channelStatus.pending.channels + 1;

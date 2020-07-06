@@ -25,14 +25,14 @@
             <div fxLayout="row">
               <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
             </div>  
-            <rtl-eclr-channels-tables fxLayout="row" fxFlex="100"></rtl-eclr-channels-tables>
+            <rtl-ecl-channels-tables fxLayout="row" fxFlex="100"></rtl-ecl-channels-tables>
           </div>
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>
             <span matBadge="{{activePeers}}" matBadgeOverlap="false" class="tab-badge">Peers</span>
           </ng-template>
-          <rtl-eclr-peers></rtl-eclr-peers>
+          <rtl-ecl-peers></rtl-ecl-peers>
         </mat-tab>
       </mat-tab-group>
     </mat-card-content>

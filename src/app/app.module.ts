@@ -28,7 +28,7 @@ import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
-import { ECLREffects } from './eclair/store/eclr.effects';
+import { ECLEffects } from './eclair/store/ecl.effects';
 import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLChannelInformationComponent } from './clightning/peers-channels/channels/channel-information-modal/channel-information.component';
@@ -55,14 +55,14 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
-import { ECLRInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
-import { ECLRPaymentInformationComponent } from './eclair/transactions/payment-information-modal/payment-information.component';
-import { ECLROpenChannelComponent } from './eclair/peers-channels/channels/open-channel-modal/open-channel.component';
-import { ECLRConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
-import { ECLRLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
-import { ECLRCreateInvoiceComponent } from './eclair/transactions/create-invoice-modal/create-invoice.component';
-import { ECLROnChainSendComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send.component';
-import { ECLRChannelInformationComponent } from './eclair/peers-channels/channels/channel-information-modal/channel-information.component';
+import { ECLInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
+import { ECLPaymentInformationComponent } from './eclair/transactions/payment-information-modal/payment-information.component';
+import { ECLOpenChannelComponent } from './eclair/peers-channels/channels/open-channel-modal/open-channel.component';
+import { ECLConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
+import { ECLLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
+import { ECLCreateInvoiceComponent } from './eclair/transactions/create-invoice-modal/create-invoice.component';
+import { ECLOnChainSendComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send.component';
+import { ECLChannelInformationComponent } from './eclair/peers-channels/channels/channel-information-modal/channel-information.component';
 
 @NgModule({
   imports: [
@@ -77,7 +77,7 @@ import { ECLRChannelInformationComponent } from './eclair/peers-channels/channel
         strictActionImmutability: false
       }
     }),
-    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLREffects]),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     LayoutModule,
     MatDialogModule,
@@ -110,14 +110,14 @@ import { ECLRChannelInformationComponent } from './eclair/peers-channels/channel
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
     CLChannelInformationComponent,
-    ECLRInvoiceInformationComponent,
-    ECLRPaymentInformationComponent,
-    ECLROpenChannelComponent,
-    ECLRConnectPeerComponent,
-    ECLRLightningSendPaymentsComponent,
-    ECLRCreateInvoiceComponent,
-    ECLROnChainSendComponent,
-    ECLRChannelInformationComponent
+    ECLInvoiceInformationComponent,
+    ECLPaymentInformationComponent,
+    ECLOpenChannelComponent,
+    ECLConnectPeerComponent,
+    ECLLightningSendPaymentsComponent,
+    ECLCreateInvoiceComponent,
+    ECLOnChainSendComponent,
+    ECLChannelInformationComponent
   ],
   entryComponents: [
     SpinnerDialogComponent,
@@ -145,14 +145,14 @@ import { ECLRChannelInformationComponent } from './eclair/peers-channels/channel
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
     CLChannelInformationComponent,
-    ECLRInvoiceInformationComponent,
-    ECLRPaymentInformationComponent,
-    ECLROpenChannelComponent,
-    ECLRConnectPeerComponent,
-    ECLRLightningSendPaymentsComponent,
-    ECLRCreateInvoiceComponent,
-    ECLROnChainSendComponent,
-    ECLRChannelInformationComponent
+    ECLInvoiceInformationComponent,
+    ECLPaymentInformationComponent,
+    ECLOpenChannelComponent,
+    ECLConnectPeerComponent,
+    ECLLightningSendPaymentsComponent,
+    ECLCreateInvoiceComponent,
+    ECLOnChainSendComponent,
+    ECLChannelInformationComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

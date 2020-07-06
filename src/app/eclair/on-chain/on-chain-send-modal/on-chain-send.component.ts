@@ -8,22 +8,22 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
-import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclrModels';
+import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import * as ECLRActions from '../../store/eclr.actions';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-on-chain-send',
+  selector: 'rtl-ecl-on-chain-send',
   templateUrl: './on-chain-send.component.html',
   styleUrls: ['./on-chain-send.component.scss']
 })
-export class ECLROnChainSendComponent implements OnInit, OnDestroy {
+export class ECLOnChainSendComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
@@ -45,7 +45,7 @@ export class ECLROnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLROnChainSendComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -58,13 +58,13 @@ export class ECLROnChainSendComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLRActions.EFFECT_ERROR_ECLR || action.type === ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR))
-    .subscribe((action: ECLRActions.EffectError | ECLRActions.SendOnchainFundsRes) => {
-      if (action.type === ECLRActions.SEND_ONCHAIN_FUNDS_RES_ECLR) {
+    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL))
+    .subscribe((action: ECLActions.EffectError | ECLActions.SendOnchainFundsRes) => {
+      if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === ECLRActions.EFFECT_ERROR_ECLR && action.payload.action === 'SendOnchainFunds') {
+      if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'SendOnchainFunds') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -80,10 +80,10 @@ export class ECLROnChainSendComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.store.dispatch(new ECLRActions.SendOnchainFunds(this.transaction));
+        this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
       });
     } else {
-      this.store.dispatch(new ECLRActions.SendOnchainFunds(this.transaction));
+      this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
     }
   }
 

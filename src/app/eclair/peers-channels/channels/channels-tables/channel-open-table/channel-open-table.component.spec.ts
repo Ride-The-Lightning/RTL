@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRChannelOpenTableComponent } from './channel-open-table.component';
+import { ECLChannelOpenTableComponent } from './channel-open-table.component';
 
-describe('ECLRChannelOpenTableComponent', () => {
-  let component: ECLRChannelOpenTableComponent;
-  let fixture: ComponentFixture<ECLRChannelOpenTableComponent>;
+describe('ECLChannelOpenTableComponent', () => {
+  let component: ECLChannelOpenTableComponent;
+  let fixture: ComponentFixture<ECLChannelOpenTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRChannelOpenTableComponent ]
+      declarations: [ ECLChannelOpenTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRChannelOpenTableComponent);
+    fixture = TestBed.createComponent(ECLChannelOpenTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

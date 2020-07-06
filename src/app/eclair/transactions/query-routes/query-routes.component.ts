@@ -7,20 +7,20 @@ import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { CommonService } from '../../../shared/services/common.service';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Route } from '../../../shared/models/eclrModels';
+import { Route } from '../../../shared/models/eclModels';
 
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { ECLREffects } from '../../store/eclr.effects';
-import * as ECLRActions from '../../store/eclr.actions';
+import { ECLEffects } from '../../store/ecl.effects';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-query-routes',
+  selector: 'rtl-ecl-query-routes',
   templateUrl: './query-routes.component.html',
   styleUrls: ['./query-routes.component.scss']
 })
-export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
+export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild('queryRoutesForm', { static: false }) form: any;  
   public nodeId = '';
@@ -35,7 +35,7 @@ export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private eclrEffects: ECLREffects, private commonService: CommonService) {
+  constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -54,7 +54,7 @@ export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.qrHops = new MatTableDataSource([]);
-    this.eclrEffects.setQueryRoutes
+    this.eclEffects.setQueryRoutes
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(queryRoute => {
       this.qrHops.data = [];
@@ -73,7 +73,7 @@ export class ECLRQueryRoutesComponent implements OnInit, OnDestroy {
     if(!this.nodeId || !this.amount) { return true; }
     this.qrHops.data = [];
     this.flgLoading[0] = true;
-    this.store.dispatch(new ECLRActions.GetQueryRoutes({nodeId: this.nodeId, amount: this.amount*1000}));
+    this.store.dispatch(new ECLActions.GetQueryRoutes({nodeId: this.nodeId, amount: this.amount*1000}));
   }
 
   resetData() {

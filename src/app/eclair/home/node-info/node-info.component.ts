@@ -1,21 +1,22 @@
 import { Component, OnChanges, Input } from '@angular/core';
-import { GetInfo } from '../../../shared/models/eclrModels';
+import { GetInfo } from '../../../shared/models/eclModels';
+import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
-  selector: 'rtl-eclr-node-info',
+  selector: 'rtl-ecl-node-info',
   templateUrl: './node-info.component.html',
   styleUrls: ['./node-info.component.scss']
 })
-export class ECLRNodeInfoComponent implements OnChanges {
+export class ECLNodeInfoComponent implements OnChanges {
   @Input() information: GetInfo;
   @Input() showColorFieldSeparately: false;
   public chains: Array<string> = [''];
 
-  constructor() { }
+  constructor(private commonService: CommonService) { }
 
   ngOnChanges() {
     this.chains = [];
-    this.chains.push('Bitcoin ' + (this.information.network ? this.information.network : 'Testnet'));
+    this.chains.push('Bitcoin ' + (this.information.network ? this.commonService.titleCase(this.information.network) : 'Testnet'));
   }
 
 }

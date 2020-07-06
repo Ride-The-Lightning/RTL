@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRPaymentInformationComponent } from './payment-information.component';
+import { ECLPaymentInformationComponent } from './payment-information.component';
 
-describe('ECLRPaymentInformationComponent', () => {
-  let component: ECLRPaymentInformationComponent;
-  let fixture: ComponentFixture<ECLRPaymentInformationComponent>;
+describe('ECLPaymentInformationComponent', () => {
+  let component: ECLPaymentInformationComponent;
+  let fixture: ComponentFixture<ECLPaymentInformationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRPaymentInformationComponent ]
+      declarations: [ ECLPaymentInformationComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRPaymentInformationComponent);
+    fixture = TestBed.createComponent(ECLPaymentInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

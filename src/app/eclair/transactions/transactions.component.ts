@@ -9,11 +9,11 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
-  selector: 'rtl-eclr-transactions',
+  selector: 'rtl-ecl-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss']
 })
-export class ECLRTransactionsComponent implements OnInit, OnDestroy {
+export class ECLTransactionsComponent implements OnInit, OnDestroy {
   faExchangeAlt = faExchangeAlt;
   faChartPie = faChartPie;
   currencyUnits = [];
@@ -23,7 +23,7 @@ export class ECLRTransactionsComponent implements OnInit, OnDestroy {
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.currencyUnits = rtlStore.nodeSettings.currencyUnits;

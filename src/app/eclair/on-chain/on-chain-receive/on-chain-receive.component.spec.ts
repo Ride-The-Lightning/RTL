@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLROnChainReceiveComponent } from './on-chain-receive.component';
+import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
 
-describe('ECLROnChainReceiveComponent', () => {
-  let component: ECLROnChainReceiveComponent;
-  let fixture: ComponentFixture<ECLROnChainReceiveComponent>;
+describe('ECLOnChainReceiveComponent', () => {
+  let component: ECLOnChainReceiveComponent;
+  let fixture: ComponentFixture<ECLOnChainReceiveComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLROnChainReceiveComponent ]
+      declarations: [ ECLOnChainReceiveComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLROnChainReceiveComponent);
+    fixture = TestBed.createComponent(ECLOnChainReceiveComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

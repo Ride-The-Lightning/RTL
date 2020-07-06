@@ -5,16 +5,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { Invoice } from '../../../shared/models/eclrModels';
-import { ECLRInvoiceInformation } from '../../../shared/models/alertData';
+import { Invoice } from '../../../shared/models/eclModels';
+import { ECLInvoiceInformation } from '../../../shared/models/alertData';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
-  selector: 'rtl-eclr-invoice-information',
+  selector: 'rtl-ecl-invoice-information',
   templateUrl: './invoice-information.component.html',
   styleUrls: ['./invoice-information.component.scss']
 })
-export class ECLRInvoiceInformationComponent implements OnInit {
+export class ECLInvoiceInformationComponent implements OnInit {
   public faReceipt = faReceipt;
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
@@ -24,7 +24,7 @@ export class ECLRInvoiceInformationComponent implements OnInit {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(public dialogRef: MatDialogRef<ECLRInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLRInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
+  constructor(public dialogRef: MatDialogRef<ECLInvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.invoice = this.data.invoice;

@@ -10,20 +10,20 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { GetInfo, Invoice } from '../../../shared/models/eclrModels';
+import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { ECLRCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
-import { ECLRInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
+import { ECLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
+import { ECLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { RTLEffects } from '../../../store/rtl.effects';
-import * as ECLRActions from '../../store/eclr.actions';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-lightning-invoices',
+  selector: 'rtl-ecl-lightning-invoices',
   templateUrl: './lightning-invoices.component.html',
   styleUrls: ['./lightning-invoices.component.scss'],
   animations: [newlyAddedRowAnimation],
@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
-export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
+export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() showDetails = true;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
@@ -78,8 +78,8 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new ECLRActions.FetchInvoices());
-    this.store.select('eclr')
+    this.store.dispatch(new ECLActions.FetchInvoices());
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
@@ -108,7 +108,7 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
   openCreateInvoiceModal() {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       pageSize: this.pageSize,
-      component: ECLRCreateInvoiceComponent
+      component: ECLCreateInvoiceComponent
     }}));
   }
 
@@ -128,7 +128,7 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
-    this.store.dispatch(new ECLRActions.CreateInvoice(invoicePayload));
+    this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
     this.resetData();
   }
 
@@ -136,7 +136,7 @@ export class ECLRLightningInvoicesComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         invoice: selInvoice,
         newlyAdded: false,
-        component: ECLRInvoiceInformationComponent
+        component: ECLInvoiceInformationComponent
     }}));
   }
 

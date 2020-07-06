@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLRForwardingHistoryComponent } from './forwarding-history.component';
+import { ECLForwardingHistoryComponent } from './forwarding-history.component';
 
-describe('ECLRForwardingHistoryComponent', () => {
-  let component: ECLRForwardingHistoryComponent;
-  let fixture: ComponentFixture<ECLRForwardingHistoryComponent>;
+describe('ECLForwardingHistoryComponent', () => {
+  let component: ECLForwardingHistoryComponent;
+  let fixture: ComponentFixture<ECLForwardingHistoryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRForwardingHistoryComponent ]
+      declarations: [ ECLForwardingHistoryComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLRForwardingHistoryComponent);
+    fixture = TestBed.createComponent(ECLForwardingHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

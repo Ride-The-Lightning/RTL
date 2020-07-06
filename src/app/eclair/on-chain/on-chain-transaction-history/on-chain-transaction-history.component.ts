@@ -8,24 +8,24 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Transaction } from '../../../shared/models/eclrModels';
+import { Transaction } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as ECLRActions from '../../store/eclr.actions';
+import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-on-chain-transaction-history',
+  selector: 'rtl-ecl-on-chain-transaction-history',
   templateUrl: './on-chain-transaction-history.component.html',
   styleUrls: ['./on-chain-transaction-history.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
-export class ECLROnChainTransactionHistoryComponent implements OnInit, OnDestroy {
+export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   faHistory = faHistory;
@@ -57,8 +57,8 @@ export class ECLROnChainTransactionHistoryComponent implements OnInit, OnDestroy
   }
 
   ngOnInit() {
-    this.store.dispatch(new ECLRActions.FetchTransactions());
-    this.store.select('eclr')
+    this.store.dispatch(new ECLActions.FetchTransactions());
+    this.store.select('ecl')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {

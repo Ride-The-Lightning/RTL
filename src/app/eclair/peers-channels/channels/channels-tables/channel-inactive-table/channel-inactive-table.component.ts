@@ -6,28 +6,28 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo } from '../../../../../shared/models/eclrModels';
-// import { Channel, GetInfo, ChannelEdge } from '../../../../shared/models/eclrModels';
+import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
+// import { Channel, GetInfo, ChannelEdge } from '../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
-import { ECLRChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
-import { ECLREffects } from '../../../../store/eclr.effects';
+import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
+import { ECLEffects } from '../../../../store/ecl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as ECLRActions from '../../../../store/eclr.actions';
+import * as ECLActions from '../../../../store/ecl.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-eclr-channel-inactive-table',
+  selector: 'rtl-ecl-channel-inactive-table',
   templateUrl: './channel-inactive-table.component.html',
   styleUrls: ['./channel-inactive-table.component.scss'],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ECLRChannelInactiveTableComponent implements OnInit, OnDestroy {
+export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public inactiveChannels: Channel[];
@@ -48,7 +48,7 @@ export class ECLRChannelInactiveTableComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclrEffects: ECLREffects, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -66,7 +66,7 @@ export class ECLRChannelInactiveTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select('eclr')
+    this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
@@ -95,7 +95,7 @@ export class ECLRChannelInactiveTableComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         channel: selChannel,
         channelsType: 'inactive',
-        component: ECLRChannelInformationComponent
+        component: ECLChannelInformationComponent
       }}));
     }
 
