@@ -15,6 +15,7 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -37,7 +38,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
   public displayedColumns = ['channel_point', 'actions'];
-  public selChannel: Channel;
+  public selectedChannel: Channel;
   public channels: any;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
@@ -45,7 +46,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -81,12 +82,16 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND)
-    ).subscribe((setchannels: LNDActions.SetAllChannels) => {
-      this.selChannel = undefined;
+    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
+    ).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
+      if(action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+        this.selectedChannel = undefined;
+      }
+      if(action.type === RTLActions.SHOW_FILE) {
+        this.commonService.downloadFile(action.payload, 'Backup-Channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'All'), '.bak', '.bak');
+        this.selectedChannel = undefined;
+        this.store.dispatch(new RTLActions.CloseSpinner());
+      }
     });
   }
 
@@ -98,6 +103,12 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   onVerifyChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
     this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+  }
+
+  onDownloadBackup(selChannel: Channel) {
+    this.selectedChannel = selChannel;
+    this.store.dispatch(new RTLActions.OpenSpinner('Downloading Backup File...'));
+    this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'ALL'}));
   }
 
   onChannelClick(selChannel: Channel, event: any) {

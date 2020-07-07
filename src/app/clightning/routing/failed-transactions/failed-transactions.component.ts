@@ -84,7 +84,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
 
   onDownloadCSV() {
     if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadCSV(this.forwardingHistoryEvents.data, 'Failed-transactions');
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Failed-transactions');
     }
   }
 

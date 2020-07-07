@@ -33,7 +33,7 @@ exports.getBalance = (req, res, next) => {
   options.form = {};
   request.post(options).then((body) => {
     logger.info({fileName: 'Onchain', msg: 'Balance Received: ' + JSON.stringify(body)});
-    if(!body.confBalance) {
+    if(!body.confirmed) {
       body.confirmed = 0;
       body.btc_confirmed = 0;
     } else {
@@ -50,26 +50,18 @@ exports.getBalance = (req, res, next) => {
     res.status(200).json(body);
   })
   .catch(errRes => {
-    let body = {};
-    body.total = 20000;
-    body.btc_total = 0.200000;
-    body.confirmed = 20000;
-    body.btc_confirmed = 0.200000;
-    body.unconfirmed = 0;
-    body.btc_unconfirmed = 0;
-    res.status(200).json(body);
-    // let err = JSON.parse(JSON.stringify(errRes));
-    // if (err.options && err.options.headers && err.options.headers.authorization) {
-    //   delete err.options.headers.authorization;
-    // }
-    // if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-    //   delete err.response.request.headers.authorization;
-    // }
-    // logger.error({fileName: 'Onchain', lineNum: 58, msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
-    // return res.status(err.statusCode ? err.statusCode : 500).json({
-    //   message: "Fetching balance failed!",
-    //   error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-    // });
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.authorization) {
+      delete err.options.headers.authorization;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+      delete err.response.request.headers.authorization;
+    }
+    logger.error({fileName: 'Onchain', lineNum: 58, msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
+    return res.status(err.statusCode ? err.statusCode : 500).json({
+      message: "Fetching balance failed!",
+      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+    });
   });
 };
 

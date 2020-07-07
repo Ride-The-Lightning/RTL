@@ -238,7 +238,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+      this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
   }
 

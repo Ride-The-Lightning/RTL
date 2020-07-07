@@ -430,6 +430,38 @@ export class RTLEffects implements OnDestroy {
    }
   ));
 
+  @Effect()
+  fetchFile = this.actions$.pipe(
+    ofType(RTLActions.FETCH_FILE),
+    mergeMap((action: RTLActions.FetchFile) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('fetchFile'));
+      let query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
+      return this.httpClient.get(environment.CONF_API + '/file' + query)
+      .pipe(
+        map((fetchedFile: any) => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.SHOW_FILE,
+            payload: fetchedFile
+          };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'fetchFile', code: err.status, message: err.error.error }));
+          this.handleErrorWithAlert('ERROR', err.error.message, environment.CONF_API + '/file' + query, {status: err.error.error.errno, error: err.error.error.code});
+          return of({type: RTLActions.VOID});          
+        }
+      ));
+    })
+  );
+
+  @Effect({ dispatch: false })
+  showFile = this.actions$.pipe(
+    ofType(RTLActions.SHOW_FILE),
+    map((action: RTLActions.ShowFile) => {
+      return action.payload;
+    })
+  );
+
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};

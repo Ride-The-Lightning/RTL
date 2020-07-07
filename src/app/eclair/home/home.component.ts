@@ -144,7 +144,6 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;
       this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels, 'balancedness')));
-      // TO DO: Check SORTING BELOW
       this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toRemote > 0), 'toRemote')));
       this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.channels.filter(channel => channel.toLocal > 0), 'toLocal')));
       this.channels.forEach(channel => {

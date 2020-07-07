@@ -118,7 +118,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Pending-inactive-channels');
+      this.commonService.downloadFile(this.channels.data, 'Pending-inactive-channels');
     }
   }
 

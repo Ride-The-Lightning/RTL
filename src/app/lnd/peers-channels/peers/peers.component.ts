@@ -150,7 +150,7 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.peers.data && this.peers.data.length > 0) {
-      this.commonService.downloadCSV(this.peers.data, 'Peers');
+      this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }
 

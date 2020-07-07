@@ -125,7 +125,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   onDownloadCSV() {
     if(this.listSwaps.data && this.listSwaps.data.length > 0) {
-      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
+      this.commonService.downloadFile(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
     }
   }
 

@@ -84,7 +84,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
 
   onDownloadCSV() {
     if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadCSV(this.forwardingHistoryEvents.data, 'Forwarding-history');
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }
 
