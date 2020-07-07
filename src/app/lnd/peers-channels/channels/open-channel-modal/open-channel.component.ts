@@ -11,6 +11,7 @@ import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
+import * as LNDActions from '../../../store/lnd.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
@@ -50,12 +51,12 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
     this.actions$.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.FETCH_ALL_CHANNELS))
-    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.FetchAllChannels) => {
-      if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
+    .subscribe((action: LNDActions.EffectError | LNDActions.FetchAllChannels) => {
+      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
-      if (action.type === RTLActions.FETCH_ALL_CHANNELS) {
+      if (action.type === LNDActions.FETCH_ALL_CHANNELS_LND) {
         this.dialogRef.close();
       }
     });
@@ -112,7 +113,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   onOpenChannel() {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    this.store.dispatch(new RTLActions.SaveNewChannel({
+    this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
       transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
     }));

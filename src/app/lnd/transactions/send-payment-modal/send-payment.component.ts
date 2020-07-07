@@ -15,6 +15,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -53,12 +54,12 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.SEND_PAYMENT_STATUS))
-    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.SendPaymentStatus) => {
-      if (action.type === RTLActions.SEND_PAYMENT_STATUS) { 
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
+    .subscribe((action: LNDActions.EffectError | LNDActions.SendPaymentStatus) => {
+      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 
         this.dialogRef.close();
       }    
-      if (action.type === RTLActions.EFFECT_ERROR_LND) {
+      if (action.type === LNDActions.EFFECT_ERROR_LND) {
         if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.num_satoshis;          
           this.paymentError = action.payload.message;
@@ -81,7 +82,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -114,10 +115,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
     }
   }
 
@@ -135,7 +136,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {

@@ -43,3 +43,17 @@ export class CLUnlockedGuard implements CanActivate {
     }
   }
 }
+
+@Injectable()
+export class ECLUnlockedGuard implements CanActivate {
+  constructor(private sessionService: SessionService) {}
+
+  canActivate(): boolean | Observable<boolean> | Promise<boolean> {
+    return true;
+    if (!this.sessionService.getItem('eclUnlocked')) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}

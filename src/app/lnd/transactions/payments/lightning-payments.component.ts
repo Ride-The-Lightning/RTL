@@ -15,13 +15,14 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
+import { SelNodeChild } from '../../../shared/models/RTLconfig';
+import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -83,7 +84,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPayments') {
           this.flgLoading[0] = 'error';
         }
@@ -110,7 +111,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.lndEffects.setDecodedPayment
       .pipe(take(1))
       .subscribe(decodedPayment => {
@@ -164,7 +165,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
+            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
             this.resetData();
           }
         });
@@ -190,7 +191,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new RTLActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
+          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
           this.resetData();
         }
       });
@@ -208,7 +209,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.paymentDecodedHint = '';
     if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -288,7 +289,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      this.commonService.downloadCSV(this.payments.data, 'Payments');
+      this.commonService.downloadFile(this.payments.data, 'Payments');
     }
   }
 

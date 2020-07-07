@@ -47,10 +47,18 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
       if (this.currPassword.toLowerCase() === 'password') {
-        if (this.selNode.lnImplementation === 'LND') {
-          this.router.navigate(['/lnd/home']);
-        } else {
-          this.router.navigate(['/cl/home']);
+        switch (this.selNode.lnImplementation.toUpperCase()) {
+          case 'CLT':
+            this.router.navigate(['/cl/home']);
+            break;
+        
+          case 'ECL':
+            this.router.navigate(['/ecl/home']);
+            break;
+
+          default:
+            this.router.navigate(['/lnd/home']);
+            break;
         }
       }
       this.form.resetForm();

@@ -1,0 +1,27 @@
+<div fxLayout="row wrap" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faChartPie" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Lightning Balance</span>
+</div>
+<div fxLayout="column" class="padding-gap-x mb-4">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <rtl-currency-unit-converter [values]="balances"></rtl-currency-unit-converter>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+  <fa-icon [icon]="faExchangeAlt" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Lightning Transactions</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <mat-tab-group>
+        <mat-tab label="Payments"><rtl-ecl-lightning-payments [showDetails]="true"></rtl-ecl-lightning-payments></mat-tab>
+        <mat-tab label="Invoices"><rtl-ecl-lightning-invoices [showDetails]="true"></rtl-ecl-lightning-invoices></mat-tab>
+        <mat-tab label="Query Routes"><rtl-ecl-query-routes></rtl-ecl-query-routes></mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+  

@@ -1,6 +1,6 @@
 import { Component, AfterContentChecked, Input } from '@angular/core';
 
-import { FeeRatesCL, FeeRatePerObj, feeRateStyle } from '../../../shared/models/clModels';
+import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-fee-rates',
@@ -9,7 +9,7 @@ import { FeeRatesCL, FeeRatePerObj, feeRateStyle } from '../../../shared/models/
 })
 export class CLFeeRatesComponent implements AfterContentChecked {
   @Input() feeRateStyle: string;
-  @Input() feeRates: FeeRatesCL;
+  @Input() feeRates: FeeRates;
   @Input() flgLoading: Boolean | 'error';
   perkbw: FeeRatePerObj = {};
 

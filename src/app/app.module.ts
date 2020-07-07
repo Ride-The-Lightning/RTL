@@ -28,6 +28,7 @@ import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
 import { LNDEffects } from './lnd/store/lnd.effects';
 import { CLEffects } from './clightning/store/cl.effects';
+import { ECLEffects } from './eclair/store/ecl.effects';
 import { LayoutModule } from '@angular/cdk/layout';
 import { CLOpenChannelComponent } from './clightning/peers-channels/channels/open-channel-modal/open-channel.component';
 import { CLChannelInformationComponent } from './clightning/peers-channels/channels/channel-information-modal/channel-information.component';
@@ -54,6 +55,14 @@ import { ErrorMessageComponent } from './shared/components/data-modal/error-mess
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
+import { ECLInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
+import { ECLPaymentInformationComponent } from './eclair/transactions/payment-information-modal/payment-information.component';
+import { ECLOpenChannelComponent } from './eclair/peers-channels/channels/open-channel-modal/open-channel.component';
+import { ECLConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
+import { ECLLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
+import { ECLCreateInvoiceComponent } from './eclair/transactions/create-invoice-modal/create-invoice.component';
+import { ECLOnChainSendComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send.component';
+import { ECLChannelInformationComponent } from './eclair/peers-channels/channels/channel-information-modal/channel-information.component';
 
 @NgModule({
   imports: [
@@ -68,7 +77,7 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
         strictActionImmutability: false
       }
     }),
-    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects]),
+    EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     LayoutModule,
     MatDialogModule,
@@ -76,16 +85,9 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
   ],
   declarations: [
     AppComponent,
-    CLInvoiceInformationComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
     OnChainGeneratedAddressComponent,
-    CLOpenChannelComponent,
-    CLConnectPeerComponent,
-    CLLightningSendPaymentsComponent,
-    CLCreateInvoiceComponent,
-    CLOnChainSendComponent,
-    CLChannelInformationComponent,
     OpenChannelComponent,
     ChannelInformationComponent,
     LightningSendPaymentsComponent,
@@ -100,34 +102,57 @@ import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-to
     TwoFactorAuthComponent,
     LoginTokenComponent,
     CreateInvoiceComponent,
-    OnChainSendComponent
+    OnChainSendComponent,
+    CLInvoiceInformationComponent,
+    CLOpenChannelComponent,
+    CLConnectPeerComponent,
+    CLLightningSendPaymentsComponent,
+    CLCreateInvoiceComponent,
+    CLOnChainSendComponent,
+    CLChannelInformationComponent,
+    ECLInvoiceInformationComponent,
+    ECLPaymentInformationComponent,
+    ECLOpenChannelComponent,
+    ECLConnectPeerComponent,
+    ECLLightningSendPaymentsComponent,
+    ECLCreateInvoiceComponent,
+    ECLOnChainSendComponent,
+    ECLChannelInformationComponent
   ],
   entryComponents: [
-    CLInvoiceInformationComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    ShowPubkeyComponent,
+    TwoFactorAuthComponent,
+    LoginTokenComponent,
+    OnChainGeneratedAddressComponent,
+    CloseChannelComponent,
+    LoopModalComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
-    OnChainGeneratedAddressComponent,
+    OpenChannelComponent,
+    ConnectPeerComponent,
+    LightningSendPaymentsComponent,
+    CreateInvoiceComponent,
+    OnChainSendComponent,
+    ChannelInformationComponent,
+    CLInvoiceInformationComponent,
     CLOpenChannelComponent,
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
     CLOnChainSendComponent,
     CLChannelInformationComponent,
-    OpenChannelComponent,
-    ChannelInformationComponent,
-    LightningSendPaymentsComponent,
-    ConnectPeerComponent,
-    ShowPubkeyComponent,
-    SpinnerDialogComponent,
-    AlertMessageComponent,
-    ConfirmationMessageComponent,
-    ErrorMessageComponent,
-    CloseChannelComponent,
-    LoopModalComponent,
-    TwoFactorAuthComponent,
-    LoginTokenComponent,
-    CreateInvoiceComponent,
-    OnChainSendComponent
+    ECLInvoiceInformationComponent,
+    ECLPaymentInformationComponent,
+    ECLOpenChannelComponent,
+    ECLConnectPeerComponent,
+    ECLLightningSendPaymentsComponent,
+    ECLCreateInvoiceComponent,
+    ECLOnChainSendComponent,
+    ECLChannelInformationComponent
   ],  
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

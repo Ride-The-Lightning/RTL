@@ -5,6 +5,8 @@ import { Store } from '@ngrx/store';
 import { Channel } from '../../../../shared/models/lndModels';
 import { ChannelInformation } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+
+import * as LNDActions from '../../../store/lnd.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
@@ -32,7 +34,7 @@ export class CloseChannelComponent implements OnInit {
     if (this.blocks) { closeChannelParams.targetConf = this.blocks; }
     if (this.fees) { closeChannelParams.satPerByte = this.fees; }
     this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-    this.store.dispatch(new RTLActions.CloseChannel(closeChannelParams));
+    this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
     this.dialogRef.close(false);
   }
 

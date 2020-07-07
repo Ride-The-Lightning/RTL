@@ -4,11 +4,11 @@ import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
   PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus
 } from '../../shared/models/lndModels';
-import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import * as LNDActions from './lnd.actions';
 
 export interface LNDState {
-  effectErrorsLnd: ErrorPayload[];
+  effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;  
   information: GetInfo;
   peers: Peer[];
@@ -35,7 +35,7 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  effectErrorsLnd: [],
+  effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
@@ -61,11 +61,11 @@ export const initLNDState: LNDState = {
   loopSwaps: []
 }
 
-export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) {
+export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
   switch (action.type) {
-    case RTLActions.CLEAR_EFFECT_ERROR_LND:
-      const clearedEffectErrors = [...state.effectErrorsLnd];
-      const removeEffectIdx = state.effectErrorsLnd.findIndex(err => {
+    case LNDActions.CLEAR_EFFECT_ERROR_LND:
+      const clearedEffectErrors = [...state.effectErrors];
+      const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
       });
       if (removeEffectIdx > -1) {
@@ -73,34 +73,34 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
       }
       return {
         ...state,
-        effectErrorsLnd: clearedEffectErrors
+        effectErrors: clearedEffectErrors
       };
-    case RTLActions.EFFECT_ERROR_LND:
+    case LNDActions.EFFECT_ERROR_LND:
       return {
         ...state,
-        effectErrorsLnd: [...state.effectErrorsLnd, action.payload]
+        effectErrors: [...state.effectErrors, action.payload]
       };
-    case RTLActions.SET_CHILD_NODE_SETTINGS:
+    case LNDActions.SET_CHILD_NODE_SETTINGS_LND:
       return {
         ...state,
         nodeSettings: action.payload
       }
-    case RTLActions.RESET_LND_STORE:
+    case LNDActions.RESET_LND_STORE:
       return {
         ...initLNDState,
         nodeSettings: action.payload,
       };
-    case RTLActions.SET_INFO:
+    case LNDActions.SET_INFO_LND:
       return {
         ...state,
         information: action.payload
       };
-    case RTLActions.SET_PEERS:
+    case LNDActions.SET_PEERS_LND:
       return {
         ...state,
         peers: action.payload
       };
-    case RTLActions.REMOVE_PEER:
+    case LNDActions.REMOVE_PEER_LND:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {
         return peer.pub_key === action.payload.pubkey;
@@ -112,30 +112,30 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         peers: modifiedPeers
       };
-    case RTLActions.ADD_INVOICE:
+    case LNDActions.ADD_INVOICE_LND:
       const newInvoices = state.invoices;
       newInvoices.invoices.unshift(action.payload);
       return {
         ...state,
         invoices: newInvoices
       };
-    case RTLActions.SET_FEES:
+    case LNDActions.SET_FEES_LND:
       return {
         ...state,
         fees: action.payload
       };
-    case RTLActions.SET_CLOSED_CHANNELS:
+    case LNDActions.SET_CLOSED_CHANNELS_LND:
       return {
         ...state,
         closedChannels: action.payload,
       };
-    case RTLActions.SET_PENDING_CHANNELS:
+    case LNDActions.SET_PENDING_CHANNELS_LND:
       return {
         ...state,
         pendingChannels: action.payload.channels,
         numberOfPendingChannels: action.payload.pendingChannels,
       };
-    case RTLActions.SET_ALL_CHANNELS:
+    case LNDActions.SET_ALL_CHANNELS_LND:
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;
       if (action.payload) {
         action.payload.forEach(channel => {
@@ -169,7 +169,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         totalLocalBalance: localBal,
         totalRemoteBalance: remoteBal
       };
-    case RTLActions.REMOVE_CHANNEL:
+    case LNDActions.REMOVE_CHANNEL_LND:
       const modifiedChannels = [...state.allChannels];
       const removeChannelIdx = state.allChannels.findIndex(channel => {
         return channel.channel_point === action.payload.channelPoint;
@@ -181,7 +181,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         allChannels: modifiedChannels
       };
-    case RTLActions.SET_BALANCE:
+    case LNDActions.SET_BALANCE_LND:
       if (action.payload.target === 'channels') {
         return {
           ...state,
@@ -193,32 +193,32 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
           blockchainBalance: action.payload.balance
         };
       }
-    case RTLActions.SET_NETWORK:
+    case LNDActions.SET_NETWORK_LND:
       return {
         ...state,
         networkInfo: action.payload
       };
-    case RTLActions.SET_INVOICES:
+    case LNDActions.SET_INVOICES_LND:
       return {
         ...state,
         invoices: action.payload
       };
-    case RTLActions.SET_TOTAL_INVOICES:
+    case LNDActions.SET_TOTAL_INVOICES_LND:
       return {
         ...state,
         totalInvoices: action.payload
       };
-    case RTLActions.SET_TRANSACTIONS:
+    case LNDActions.SET_TRANSACTIONS_LND:
       return {
         ...state,
         transactions: action.payload
       };
-    case RTLActions.SET_PAYMENTS:
+    case LNDActions.SET_PAYMENTS_LND:
       return {
         ...state,
         payments: action.payload
       };
-    case RTLActions.SET_FORWARDING_HISTORY:
+    case LNDActions.SET_FORWARDING_HISTORY_LND:
       if (action.payload.forwarding_events) {
         const storedChannels = [...state.allChannels, ...state.closedChannels];
         action.payload.forwarding_events.forEach(event => {
@@ -242,7 +242,7 @@ export function LNDReducer(state = initLNDState, action: RTLActions.RTLActions) 
         ...state,
         forwardingHistory: action.payload
       };
-    case RTLActions.SET_LOOP_SWAPS:
+    case LNDActions.SET_LOOP_SWAPS_LND:
       return {
         ...state,
         loopSwaps: action.payload

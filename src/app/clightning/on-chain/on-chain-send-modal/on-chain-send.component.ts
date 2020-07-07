@@ -8,12 +8,13 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
-import { GetInfoCL, BalanceCL, OnChainCL } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, AlertTypeEnum, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { GetInfo, Balance, OnChain } from '../../../shared/models/clModels';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -31,10 +32,10 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public addressTypes = [];
   public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress = ADDRESS_TYPES[1];
-  public blockchainBalance: BalanceCL = {};
-  public information: GetInfoCL = {};
+  public blockchainBalance: Balance = {};
+  public information: GetInfo = {};
   public newAddress = '';
-  public transaction: OnChainCL = {};
+  public transaction: OnChain = {};
   public feeRateTypes = FEE_RATE_TYPES;
   public flgMinConf = false;
   public sendFundError = '';
@@ -59,13 +60,13 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_CL || action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES_CL))
-    .subscribe((action: RTLActions.EffectErrorCl | RTLActions.SetChannelTransactionResCL) => {
-      if (action.type === RTLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
+    .subscribe((action: CLActions.EffectError | CLActions.SetChannelTransactionRes) => {
+      if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === RTLActions.EFFECT_ERROR_CL && action.payload.action === 'SetChannelTransactionCL') {
+      if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -82,10 +83,10 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
+        this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
       });
     } else {
-      this.store.dispatch(new RTLActions.SetChannelTransactionCL(this.transaction));
+      this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
     }
   }
 

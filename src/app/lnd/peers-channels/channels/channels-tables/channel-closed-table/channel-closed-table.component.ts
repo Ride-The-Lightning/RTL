@@ -58,7 +58,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/closed') {
           this.flgLoading[0] = 'error';
         }
@@ -112,7 +112,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.closedChannels.data && this.closedChannels.data.length > 0) {
-      this.commonService.downloadCSV(this.closedChannels.data, 'Closed-channels');
+      this.commonService.downloadFile(this.closedChannels.data, 'Closed-channels');
     }
   }
 
