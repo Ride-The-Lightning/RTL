@@ -18,9 +18,6 @@ Follow the below steps to install and setup RTL to run on Eclair.
 1. Functioning Eclair node
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 
-### <a name="arch"></a>Architecture
-![](../screenshots/RTL-ECL-Arch-2.png)
-
 ### <a name="install"></a>Installation:
 #### First time setup
 * Fetch sources from RTL git repository, by executing the below on the command prompt:
