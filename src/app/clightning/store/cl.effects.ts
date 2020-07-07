@@ -33,7 +33,15 @@ export class CLEffects implements OnDestroy {
     private logger: LoggerService,
     private commonService: CommonService,
     private router: Router,
-    private location: Location) { }
+    private location: Location) { 
+      this.store.select('cl')
+      .pipe(takeUntil(this.unSubs[0]))
+      .subscribe((rtlStore) => {
+        if(rtlStore.initialAPIResponseCounter > 7) {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+        }
+      });
+    }
 
   @Effect()
   infoFetchCL = this.actions$.pipe(
@@ -708,6 +716,7 @@ export class CLEffects implements OnDestroy {
       smaller_currency_unit: 'Sats',
       numberOfPendingChannels: info.num_pending_channels
     };
+    this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new CLActions.FetchFees());
     this.store.dispatch(new CLActions.FetchChannels());

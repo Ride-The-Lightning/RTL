@@ -32,7 +32,15 @@ export class ECLEffects implements OnDestroy {
     private logger: LoggerService,
     private commonService: CommonService,
     private router: Router,
-    private location: Location) { }
+    private location: Location) {
+      this.store.select('ecl')
+      .pipe(takeUntil(this.unSubs[0]))
+      .subscribe((rtlStore) => {
+        if(rtlStore.initialAPIResponseCounter > 4) {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+        }
+      });
+    }
 
   @Effect()
   infoFetchECL = this.actions$.pipe(
@@ -586,6 +594,7 @@ export class ECLEffects implements OnDestroy {
       smaller_currency_unit: 'Sats',
       numberOfPendingChannels: 0
     };
+    this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new ECLActions.FetchAudit());
     this.store.dispatch(new ECLActions.FetchChannels());
