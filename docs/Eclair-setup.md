@@ -15,8 +15,9 @@ RTL is now enabled to manage an Eclair node.
 Follow the below steps to install and setup RTL to run on Eclair.
 
 ### <a name="prereq"></a>Pre-requisites:
-1. Functioning Eclair node
-2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
+1. Functioning Eclair node v0.4.1 or above. Follow install instructions on their [github](https://github.com/ACINQ/eclair) page.
+2. Bitcoin core v0.19.1 or above (this is an Eclair dependency).
+3. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 
 ### <a name="install"></a>Installation:
 #### First time setup
