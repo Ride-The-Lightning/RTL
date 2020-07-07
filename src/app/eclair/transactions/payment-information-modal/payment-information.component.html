@@ -11,9 +11,16 @@
         <div fxLayout="row">
           <div fxFlex="30">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount (Sats)</h4>
-            <span class="foreground-secondary-text">{{payment.recipientAmount/1000 | number}}</span>
+            <span class="foreground-secondary-text">{{payment.recipientAmount | number}}</span>
           </div>
           <div fxFlex="70">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
+            <span class="foreground-secondary-text">{{payment.firstPartTimestampStr}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>   
+        <div fxLayout="row">
+          <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
             <span class="foreground-secondary-text">{{payment.id}}</span>
           </div>
@@ -48,7 +55,7 @@
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <h4 fxFlex="30" fxLayoutAlign="start" class="font-bold-500">Part {{i + 1}}</h4>
-                    <h4 fxFlex="70" fxLayoutAlign="start" class="font-bold-500">{{part.amount/1000 | number}} (Sats)</h4>
+                    <h4 fxFlex="70" fxLayoutAlign="start" class="font-bold-500">{{part.amount | number}} (Sats)</h4>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div fxLayout="column">

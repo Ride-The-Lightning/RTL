@@ -40,6 +40,8 @@ export interface PaymentSent {
   paymentPreimage?: string;
   recipientAmount?: number;
   recipientNodeId?: string;
+  firstPartTimestamp?: number;
+  firstPartTimestampStr?: string;  
   parts: PaymentSentPart[];
 }
 
@@ -55,6 +57,8 @@ export interface PaymentSentPart {
 export interface PaymentReceived {
   type?: string;
   paymentHash?: string;
+  firstPartTimestamp?: number;
+  firstPartTimestampStr?: string;  
   parts: PaymentReceivedPart[];
 }
 

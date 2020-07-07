@@ -18,7 +18,7 @@
         <div fxLayout="row">
           <div fxFlex="40">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
-            <span class="foreground-secondary-text">{{(invoice.amount/1000 || 0) | number}} Sats<ng-container *ngIf="!invoice.amount"> (zero amount) </ng-container></span>
+            <span class="foreground-secondary-text">{{(invoice.amount || 0) | number}} Sats<ng-container *ngIf="!invoice.amount"> (zero amount) </ng-container></span>
           </div>
           <div fxFlex="40">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>

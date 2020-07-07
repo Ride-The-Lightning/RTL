@@ -261,6 +261,7 @@ export class ECLEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new ECLActions.FetchPeers());
+            this.store.dispatch(new ECLActions.FetchOnchainBalance());
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {

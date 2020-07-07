@@ -23,6 +23,7 @@ exports.decodePayment = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Payments', msg: 'Payment Decode Received: ' + JSON.stringify(body)});
     body.timestampStr =  (!body.timestamp) ? '' : common.convertTimestampToDate(body.timestamp);
+    if (body.amount) { body.amount = Math.round(body.amount/1000); }
     res.status(200).json(body);
   })
   .catch(errRes => {

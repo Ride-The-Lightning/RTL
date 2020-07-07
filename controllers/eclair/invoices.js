@@ -10,13 +10,14 @@ getReceivedPaymentInfo = (invoice) => {
     invoice.timestampStr =  (!invoice.timestamp) ? '' : common.convertTimestampToDate(invoice.timestamp);
     invoice.expiresAt =  (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
     invoice.expiresAtStr =  (!invoice.expiresAt) ? '' : common.convertTimestampToDate(invoice.expiresAt);
+    if (invoice.amount) { invoice.amount = Math.round(invoice.amount/1000); }
     idx = pendingInvoices.findIndex(pendingInvoice => invoice.serialized === pendingInvoice.serialized);
     if (idx < 0) {
       options.url = common.getSelLNServerUrl() + '/getreceivedinfo';
       options.form = { paymentHash: invoice.paymentHash };
       request(options).then(response => {
         invoice.status = response.status.type;
-        invoice.amount = response.status.amount;
+        invoice.amount = Math.round(response.status.amount/1000);
         if (response.status.receivedAt) {
           invoice.receivedAt = Math.round(response.status.receivedAt / 1000);
           invoice.receivedAtStr = common.convertTimestampToDate(invoice.receivedAt);
@@ -95,6 +96,7 @@ exports.createInvoice = (req, res, next) => {
   options.form = req.body;
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Create Invoice Response: ' + JSON.stringify(body)});
+    if (body.amount) { body.amount = Math.round(body.amount/1000); }
     res.status(201).json(body);
   })
   .catch(errRes => {

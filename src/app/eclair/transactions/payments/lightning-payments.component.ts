@@ -60,16 +60,16 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'actions'];
+      this.displayedColumns = ['timestamp', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['timestamp', 'recipientAmount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['timestamp', 'id', 'recipientAmount', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['id', 'recipientNodeId', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['timestamp', 'id', 'recipientNodeId', 'recipientAmount', 'actions'];
     }
   }
 
@@ -161,7 +161,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
         [{key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100}],
         [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
         [{key: 'timestampStr', value: this.paymentDecoded.timestampStr, title: 'Creation Date', width: 50},
-          {key: 'amount', value: this.paymentDecoded.amount/1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
+          {key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50}]
       ];
@@ -193,13 +193,13 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.eclEffects.setDecodedPayment.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.amount) {
-          this.commonService.convertCurrency(+this.paymentDecoded.amount/1000, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+          this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[1]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
             } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
             }
           });
         } else {
