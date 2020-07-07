@@ -539,6 +539,39 @@ export class ECLEffects implements OnDestroy {
       ));
   }));
 
+  @Effect()
+  peerLookup = this.actions$.pipe(
+    ofType(ECLActions.PEER_LOOKUP_ECL),
+    mergeMap((action: ECLActions.PeerLookup) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('Lookup'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload)
+        .pipe(
+          map((resPeer) => {
+            this.logger.info(resPeer);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: ECLActions.SET_LOOKUP_ECL,
+              payload: resPeer
+            };
+          }),
+          catchError((err: any) => {
+            this.store.dispatch(new ECLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
+            this.handleErrorWithAlert('ERROR', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setLookup = this.actions$.pipe(
+    ofType(ECLActions.SET_LOOKUP_ECL),
+    map((action: ECLActions.SetLookup) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('eclUnlocked', 'true');
     const node_data = {

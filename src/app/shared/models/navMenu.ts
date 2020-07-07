@@ -41,7 +41,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/ecl/peerschannels', userPersona: UserPersonaEnum.ALL},
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/ecl/transactions', userPersona: UserPersonaEnum.ALL},
       {id: 34, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/ecl/routing', userPersona: UserPersonaEnum.ALL},
-      // {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/ecl/lookups', userPersona: UserPersonaEnum.ALL}
+      {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/ecl/lookups', userPersona: UserPersonaEnum.ALL}
       ]},
     {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
     {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    

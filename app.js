@@ -48,6 +48,7 @@ const onChainECLRoutes = require("./routes/eclair/onchain");
 const peersECLRoutes = require("./routes/eclair/peers");
 const invoicesECLRoutes = require("./routes/eclair/invoices");
 const paymentsECLRoutes = require("./routes/eclair/payments");
+const networkECLRoutes = require("./routes/eclair/network");
 
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json());
@@ -106,6 +107,7 @@ app.use(apiECLRoot + "onchain", onChainECLRoutes);
 app.use(apiECLRoot + "peers", peersECLRoutes);
 app.use(apiECLRoot + "invoices", invoicesECLRoutes);
 app.use(apiECLRoot + "payments", paymentsECLRoutes);
+app.use(apiECLRoot + "network", networkECLRoutes);
 
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "angular", "index.html"));

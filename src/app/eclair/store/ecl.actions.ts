@@ -52,6 +52,8 @@ export const SET_INVOICES_ECL = 'SET_INVOICES_ECL';
 export const SET_TOTAL_INVOICES_ECL = 'SET_TOTAL_INVOICES_ECL';
 export const CREATE_INVOICE_ECL = 'CREATE_INVOICE_ECL';
 export const ADD_INVOICE_ECL = 'ADD_INVOICE_ECL';
+export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
+export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_ECL;
@@ -275,6 +277,16 @@ export class AddInvoice implements Action {
   constructor(public payload: Invoice) {}
 }
 
+export class PeerLookup implements Action {
+  readonly type = PEER_LOOKUP_ECL;
+  constructor(public payload: string) {} // payload = id
+}
+
+export class SetLookup implements Action {
+  readonly type = SET_LOOKUP_ECL;
+  constructor(public payload: any) {} // payload = lookup Response (Peer)
+}
+
 export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchAudit | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
@@ -282,7 +294,7 @@ export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChi
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
   FetchOnchainBalance | SetOnchainBalance | GetNewAddress | SetNewAddress |
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
-  SetLightningBalance | FetchPeers | SetPeers |
+  SetLightningBalance | FetchPeers | SetPeers | PeerLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
   SetPayments | DecodePayment | SetDecodedPayment | SendPayment | SendPaymentStatus |
   FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;

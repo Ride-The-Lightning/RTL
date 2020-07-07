@@ -195,3 +195,14 @@ export interface Feature {
   support?: string;
 }
 
+export interface LookupNode {
+  signature?: string;
+  features?: { activated?: Feature[], unknown?: any[] };
+  timestamp?: number;
+  timestampStr?: string;
+  nodeId?: string;
+  rgbColor?: string;
+  alias?: string;
+  addresses?: string[];
+  unknownFields?: string;
+}
