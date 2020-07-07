@@ -1,0 +1,47 @@
+<div fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="start end" class="padding-gap-x page-title-container">
+    <fa-icon [icon]="faSearch" class="page-title-img mr-1"></fa-icon>
+    <span class="page-title">Graph Lookups</span>
+  </div>
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start" class="padding-gap">
+    <mat-card fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
+      <mat-card-content fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="card-content-gap mt-1">
+        <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start space-between" class="w-100" #form="ngForm">
+          <div fxFlex="20" fxFlex.gt-md="15" fxLayoutAlign="start end">
+            <!-- <mat-radio-group color="primary" [(ngModel)]="selectedFieldId" (change)="onSelectChange($event)" tabindex="1" name="lookupField">
+              <mat-radio-button *ngFor="let lookupField of lookupFields" [value]="lookupField.id" [checked]="selectedFieldId === lookupField.id" class="mr-4">
+                {{lookupField.name}}
+              </mat-radio-button>
+            </mat-radio-group> -->
+            <mat-radio-group color="primary" tabindex="1" name="lookupField">
+              <mat-radio-button [value]="0" checked class="mr-4">Node</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <mat-form-field fxFlex="80" fxFlex.gt-md="85" fxLayoutAlign="start end" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+            <!-- <input matInput name="lookupKey" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" (change)="clearLookupValue()" [(ngModel)]="lookupKey" tabindex="2" required #key> -->
+            <input matInput name="lookupKey" [formControl]="lookupKeyCtrl" [placeholder]="lookupFields[selectedFieldId]?.placeholder || 'Lookup Key'" tabindex="2" required #key>
+            <mat-error *ngIf="lookupKeyCtrl.errors?.required">{{lookupFields[selectedFieldId]?.placeholder}} is required.</mat-error>
+            <mat-error *ngIf="lookupKeyCtrl.errors?.invalid">Invalid {{lookupFields[selectedFieldId]?.placeholder}}.</mat-error>
+          </mat-form-field>
+          <div fxLayout="row" class="mt-2">
+            <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
+            <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
+          </div>
+        </form>     
+        <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="flgSetLookupValue" class="w-100 mt-2">
+          <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+            <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
+          </div>
+          <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+            <span fxFlex="100" *ngSwitchCase="0"><div *ngIf="nodeLookupValue.nodeid !== ''; else errorBlock"><rtl-ecl-node-lookup [lookupResult]="nodeLookupValue"></rtl-ecl-node-lookup></div></span>
+            <!-- <span fxFlex="100" *ngSwitchCase="1"><div *ngIf="channelLookupValue.length>0; else errorBlock"><rtl-cl-channel-lookup [lookupResult]="channelLookupValue"></rtl-cl-channel-lookup></div></span> -->
+            <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
+          </div>
+        </div>      
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<ng-template #errorBlock>
+  <h3>Error! Unable to find details!</h3>
+</ng-template>

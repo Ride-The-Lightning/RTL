@@ -1,12 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faReceipt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLInvoiceInformation } from '../../../shared/models/alertData';
-import { InvoiceCL } from '../../../shared/models/clModels';
+import { Invoice } from '../../../shared/models/clModels';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
@@ -19,7 +19,7 @@ export class CLInvoiceInformationComponent implements OnInit {
   public faExclamationTriangle = faExclamationTriangle;
   public showAdvanced = false;
   public newlyAdded = false;
-  public invoice: InvoiceCL;
+  public invoice: Invoice;
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;

@@ -6,15 +6,19 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { PeerCL, GetInfoCL } from '../../../shared/models/clModels';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Peer, GetInfo } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
@@ -37,7 +41,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public peerAddress = '';
   public peers: any;
-  public information: GetInfoCL = {};
+  public information: GetInfo = {};
   public availableBalance = 0;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
@@ -68,8 +72,8 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPeersCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPeers') {
           this.flgLoading[0] = 'error';
         }
       });
@@ -78,7 +82,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
       if ( rtlStore.peers) {
-        this.peers = new MatTableDataSource<PeerCL>([...rtlStore.peers]);
+        this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
         setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
@@ -92,14 +96,14 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     this.actions$
     .pipe(
       takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.SET_PEERS_CL)
-    ).subscribe((setPeers: RTLActions.SetPeersCL) => {
+      filter((action) => action.type === CLActions.SET_PEERS_CL)
+    ).subscribe((setPeers: CLActions.SetPeers) => {
       this.peerAddress = undefined;
       this.flgAnimate = true;
     });
   }
 
-  onPeerClick(selPeer: PeerCL, event: any) {
+  onPeerClick(selPeer: Peer, event: any) {
     const reorderedPeer = [
       [{key: 'id', value: selPeer.id, title: 'Public Key', width: 100}],
       [{key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100}],
@@ -124,7 +128,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onOpenChannel(peerToAddChannel: PeerCL) {
+  onOpenChannel(peerToAddChannel: Peer) {
     const peerToAddChannelMessage = {
       peer: peerToAddChannel, 
       information: this.information,
@@ -138,7 +142,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onPeerDetach(peerToDetach: PeerCL) {
+  onPeerDetach(peerToDetach: Peer) {
     const msg = 'Disconnect peer: ' + ((peerToDetach.alias) ? peerToDetach.alias : peerToDetach.id);
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
       type: AlertTypeEnum.CONFIRM,
@@ -152,7 +156,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
-        this.store.dispatch(new RTLActions.DetachPeerCL({id: peerToDetach.id, force: false}));
+        this.store.dispatch(new CLActions.DetachPeer({id: peerToDetach.id, force: false}));
       }
     });
   }
@@ -163,7 +167,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.peers.data && this.peers.data.length > 0) {
-      this.commonService.downloadCSV(this.peers.data, 'Peers');
+      this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }
 

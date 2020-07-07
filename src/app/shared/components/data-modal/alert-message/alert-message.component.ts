@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewChecked, Inject, ViewChild, ElementRef } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatSnackBar } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
@@ -44,7 +45,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.shouldScroll = this.scrollContainer.nativeElement.classList.value.includes('ps--active-y');
+    this.shouldScroll = this.scrollContainer && this.scrollContainer.nativeElement ? this.scrollContainer.nativeElement.classList.value.includes('ps--active-y') : false;
   }
 
   onScrollDown() {

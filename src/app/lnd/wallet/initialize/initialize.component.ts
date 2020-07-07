@@ -5,9 +5,10 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 import { LNDEffects } from '../../store/lnd.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -91,13 +92,13 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     .subscribe(genSeedRes => {
       this.genSeedResponse = genSeedRes;
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new RTLActions.InitWallet({
+        this.store.dispatch(new LNDActions.InitWallet({
           pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
           cipher: this.genSeedResponse,
           passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
         }));
       } else {
-        this.store.dispatch(new RTLActions.InitWallet({
+        this.store.dispatch(new LNDActions.InitWallet({
           pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
           cipher: this.genSeedResponse
         }));
@@ -112,22 +113,22 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new RTLActions.InitWallet({
+        this.store.dispatch(new LNDActions.InitWallet({
           pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
           cipher: cipherArr,
           passphrase: window.btoa(this.passphraseFormGroup.controls.passphrase.value)
         }));
       } else {
-        this.store.dispatch(new RTLActions.InitWallet({
+        this.store.dispatch(new LNDActions.InitWallet({
           pwd: window.btoa(this.passwordFormGroup.controls.initWalletPassword.value),
           cipher: cipherArr
         }));
       }
     } else {
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {
-        this.store.dispatch(new RTLActions.GenSeed(window.btoa(this.passphraseFormGroup.controls.passphrase.value)));
+        this.store.dispatch(new LNDActions.GenSeed(window.btoa(this.passphraseFormGroup.controls.passphrase.value)));
       } else {
-        this.store.dispatch(new RTLActions.GenSeed(''));
+        this.store.dispatch(new LNDActions.GenSeed(''));
       }
     }
   }
@@ -135,7 +136,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   onGoToHome() {
     setTimeout(() => {
       this.store.dispatch(new RTLActions.UpdateSelectedNodeOptions());
-      this.store.dispatch(new RTLActions.FetchInfo({loadPage:'HOME'}));
+      this.store.dispatch(new LNDActions.FetchInfo({loadPage:'HOME'}));
     }, 1000 * 1);
   }
 

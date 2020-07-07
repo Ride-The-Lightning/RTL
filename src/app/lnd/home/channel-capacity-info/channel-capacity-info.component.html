@@ -5,7 +5,7 @@
       <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90"><strong class="font-weight-900 mr-5px">Local:</strong>{{channelBalances.localBalance || 0 | number}} Sats</mat-hint>
       <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90">
         <fa-icon [icon]="faBalanceScale" class="mr-3px" matTooltip="Balance Score"></fa-icon>
-        ({{channelBalances.balancedness || 0 | number}})
+        ({{channelBalances?.balancedness || 0 | number}})
       </mat-hint>
       <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channelBalances.remoteBalance || 0 | number}} Sats</mat-hint>
     </div>

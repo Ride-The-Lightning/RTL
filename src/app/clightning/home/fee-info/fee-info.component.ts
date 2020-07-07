@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FeesCL } from '../../../shared/models/clModels';
+import { Fees } from '../../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-fee-info',
@@ -7,7 +7,7 @@ import { FeesCL } from '../../../shared/models/clModels';
   styleUrls: ['./fee-info.component.scss']
 })
 export class CLFeeInfoComponent {
-  @Input() fees: FeesCL;
+  @Input() fees: Fees;
   totalFees = [{'name': 'Total', 'value': 0}];
 
 }

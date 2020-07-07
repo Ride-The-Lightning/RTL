@@ -5,7 +5,9 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -15,6 +17,7 @@ import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -63,7 +66,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPeers') {
           this.flgLoading[0] = 'error';
         }
@@ -136,7 +139,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
-        this.store.dispatch(new RTLActions.DetachPeer({pubkey: peerToDetach.pub_key}));
+        this.store.dispatch(new LNDActions.DetachPeer({pubkey: peerToDetach.pub_key}));
       }
     });
   }
@@ -147,7 +150,7 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.peers.data && this.peers.data.length > 0) {
-      this.commonService.downloadCSV(this.peers.data, 'Peers');
+      this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }
 

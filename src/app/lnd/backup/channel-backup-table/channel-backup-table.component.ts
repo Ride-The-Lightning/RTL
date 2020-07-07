@@ -6,13 +6,17 @@ import { Actions } from '@ngrx/effects';
 import { faInfoCircle, faExclamationTriangle, faArchive } from '@fortawesome/free-solid-svg-icons';
 
 import { ChannelInformationComponent } from '../../peers-channels/channels/channel-information-modal/channel-information.component';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import { RTLEffects } from '../../../store/rtl.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -34,7 +38,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
   public displayedColumns = ['channel_point', 'actions'];
-  public selChannel: Channel;
+  public selectedChannel: Channel;
   public channels: any;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
@@ -42,7 +46,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private rtlEffects: RTLEffects) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -51,7 +55,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'Fetchchannels') {
           this.flgLoading[0] = 'error';
         }
@@ -78,23 +82,33 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.SET_ALL_CHANNELS)
-    ).subscribe((setchannels: RTLActions.SetAllChannels) => {
-      this.selChannel = undefined;
+    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
+    ).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
+      if(action.type === LNDActions.SET_ALL_CHANNELS_LND) {
+        this.selectedChannel = undefined;
+      }
+      if(action.type === RTLActions.SHOW_FILE) {
+        this.commonService.downloadFile(action.payload, 'Backup-Channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'All'), '.bak', '.bak');
+        this.selectedChannel = undefined;
+        this.store.dispatch(new RTLActions.CloseSpinner());
+      }
     });
   }
 
   onBackupChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
-    this.store.dispatch(new RTLActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
-    this.store.dispatch(new RTLActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+  }
+
+  onDownloadBackup(selChannel: Channel) {
+    this.selectedChannel = selChannel;
+    this.store.dispatch(new RTLActions.OpenSpinner('Downloading Backup File...'));
+    this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'ALL'}));
   }
 
   onChannelClick(selChannel: Channel, event: any) {

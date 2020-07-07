@@ -5,8 +5,10 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { GetInfoCL, PaymentCL, PayRequestCL } from '../../../shared/models/clModels';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -16,6 +18,7 @@ import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-pay
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -38,11 +41,11 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public information: GetInfoCL = {};
+  public information: GetInfo = {};
   public payments: any;
-  public paymentJSONArr: PaymentCL[] = [];
+  public paymentJSONArr: Payment[] = [];
   public displayedColumns = [];
-  public paymentDecoded: PayRequestCL = {};
+  public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public flgSticky = false;
@@ -70,19 +73,19 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchPaymentsCL());    
+    this.store.dispatch(new CLActions.FetchPayments());    
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPaymentsCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPayments') {
           this.flgLoading[0] = 'error';
         }
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<PaymentCL>([...this.paymentJSONArr]);
+      this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.paginator = this.paginator;
@@ -101,7 +104,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: false}));
+      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL
       .pipe(take(1))
       .subscribe(decodedPayment => {
@@ -129,7 +132,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
           [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
           [{key: 'created_at_str', value: this.paymentDecoded.created_at_str, title: 'Creation Date', width: 40},
             {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
-            {key: 'min_final_cltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30}]
+            {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30}]
         ];
         const titleMsg = 'It is a zero amount invoice. Enter the amount (Sats) to pay.';
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
@@ -150,7 +153,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
+            this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
         });
@@ -162,7 +165,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
         [{key: 'created_at_str', value: this.paymentDecoded.created_at_str, title: 'Creation Date', width: 50},
           {key: 'num_satoshis', value: this.paymentDecoded.msatoshi/1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
-          {key: 'min_final_cltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50}]
+          {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50}]
       ];
       this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
         type: AlertTypeEnum.CONFIRM,
@@ -176,7 +179,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, fromDialog: false}));
+          this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
       });
@@ -188,7 +191,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.paymentDecodedHint = '';
     if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: false}));
+      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.msatoshi) {
@@ -220,7 +223,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  onPaymentClick(selPayment: PaymentCL, event: any) {
+  onPaymentClick(selPayment: Payment, event: any) {
     const reorderedPayment = [
       [{key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
@@ -245,7 +248,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      this.commonService.downloadCSV(this.payments.data, 'Payments');
+      this.commonService.downloadFile(this.payments.data, 'Payments');
     }
   }
 

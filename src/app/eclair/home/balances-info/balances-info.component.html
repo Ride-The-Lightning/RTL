@@ -1,0 +1,16 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Lightning</h4>
+    <div class="overflow-wrap dashboard-info-value">{{balances.lightning | number}} Sats</div>
+    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{balances.lightning/balances.total*100}}"></mat-progress-bar>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">On-chain</h4>
+    <div class="overflow-wrap dashboard-info-value">{{balances.onchain | number}} Sats</div>
+    <mat-progress-bar class="dashboard-progress-bar" mode="determinate" value="{{balances.onchain/balances.total*100}}"></mat-progress-bar>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Total</h4>
+    <div class="overflow-wrap dashboard-info-value">{{balances.total | number}} Sats</div>
+  </div>
+</div>

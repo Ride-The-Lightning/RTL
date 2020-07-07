@@ -3,7 +3,9 @@ import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
@@ -18,6 +20,7 @@ import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.compo
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -74,7 +77,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/all') {
           this.flgLoading[0] = 'error';
         }
@@ -95,7 +98,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
+    this.store.dispatch(new LNDActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
     .pipe(take(1))
     .subscribe(resLookup => {
@@ -146,13 +149,13 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
+          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
+      this.store.dispatch(new LNDActions.ChannelLookup(channelToUpdate.chan_id.toString()));
       this.lndEffects.setLookup
       .pipe(take(1))
       .subscribe(resLookup => {
@@ -190,7 +193,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
+          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
         }
       });
     }
@@ -300,7 +303,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+      this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
   }
 

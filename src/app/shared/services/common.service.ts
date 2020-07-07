@@ -179,17 +179,23 @@ export class CommonService implements OnInit {
     return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
   };
 
-  downloadCSV(data: any[], filename: string) {
-    let blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
-    let downloadUrl = document.createElement("a");
+  downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
+    let blob = new Blob();
+    if (fromFormat === '.json') {
+      blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
+    } else {
+      blob = new Blob(['\ufeff' + data], { type: 'text;charset=utf-8;' });
+    }
+
+    let downloadUrl = document.createElement('a');
     let url = URL.createObjectURL(blob);
     let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
     if (isSafariBrowser) {
-      downloadUrl.setAttribute("target", "_blank");
+      downloadUrl.setAttribute('target', '_blank');
     }
-    downloadUrl.setAttribute("href", url);
-    downloadUrl.setAttribute("download", filename + ".csv");
-    downloadUrl.style.visibility = "hidden";
+    downloadUrl.setAttribute('href', url);
+    downloadUrl.setAttribute('download', filename + toFormat);
+    downloadUrl.style.visibility = 'hidden';
     document.body.appendChild(downloadUrl);
     downloadUrl.click();
     document.body.removeChild(downloadUrl);

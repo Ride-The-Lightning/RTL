@@ -5,7 +5,9 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SwapStatus } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -14,6 +16,7 @@ import { LoopService } from '../../../shared/services/loop.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as LNDActions from '../../store/lnd.actions';
 
 @Component({
   selector: 'rtl-swaps',
@@ -60,15 +63,11 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchLoopSwaps());
-    this.actions$.pipe(takeUntil(this.unSubs[0]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchLoopSwaps());
-    });
-
+    this.store.dispatch(new LNDActions.FetchLoopSwaps());
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchSwaps') { this.flgLoading[0] = 'error'; }
       });
       if (rtlStore.loopSwaps) {
@@ -126,7 +125,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   onDownloadCSV() {
     if(this.listSwaps.data && this.listSwaps.data.length > 0) {
-      this.commonService.downloadCSV(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
+      this.commonService.downloadFile(this.listSwaps.data, (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop in' : 'Loop out');
     }
   }
 

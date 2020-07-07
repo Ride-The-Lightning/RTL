@@ -10,7 +10,8 @@
     </div>
     <div fxLayout="row" class="mt-2">
       <button mat-stroked-button class="mr-1" color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>
-      <button mat-flat-button color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
+      <button mat-flat-button class="mr-1" color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
+      <button mat-flat-button color="primary" tabindex="3" (click)="onDownloadBackup({})">Download Backup</button>
     </div>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
@@ -37,6 +38,7 @@
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
+              <mat-option (click)="onDownloadBackup(channel)">Download Backup</mat-option>
               <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
             </mat-select>
           </div>

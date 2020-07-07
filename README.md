@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
 ### Stable Release: v0.7.1
 
-**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-Lightning](docs/C-Lightning-setup.md)
+**Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-Lightning](docs/C-Lightning-setup.md) -- [Eclair](docs/Eclair-setup.md)
 
 * [Introduction](#intro)
 * [Architecture](#arch)
@@ -18,9 +18,9 @@
 
 ### <a name="intro"></a>Introduction
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
-RTL is available on LND and C-Lightning implementations.
+RTL is available on LND, C-Lightning and Eclair implementations.
 
-This page covers instructions for LND. For C-Lightning, refer to [this](docs/C-Lightning-setup.md) page.
+This page covers instructions for LND. For C-Lightning, refer to [this](docs/C-Lightning-setup.md) page. For Eclair, refer to [this](docs/Eclair-setup.md) page.
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 

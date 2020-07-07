@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,6 +18,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { Channel } from '../../../shared/models/lndModels';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -121,7 +123,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee, +this.quote.miner_fee, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
-        this.store.dispatch(new RTLActions.FetchLoopSwaps());
+        this.store.dispatch(new LNDActions.FetchLoopSwaps());
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
@@ -135,7 +137,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
-        this.store.dispatch(new RTLActions.FetchLoopSwaps());
+        this.store.dispatch(new LNDActions.FetchLoopSwaps());
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };

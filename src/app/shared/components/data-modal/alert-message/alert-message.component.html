@@ -9,43 +9,16 @@
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.scrollable}" #scrollContainer>
-      <div fxLayout="column">
-        <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
-          <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
-        </div>
-        <div fxLayout="row" fxFlex="100">
-          <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
-          <div *ngIf="messageObjs?.length>0" fxFlex="100">
-            <div *ngFor="let objs of messageObjs; index as i;">
-              <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
-                <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
-                  <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
-                  <span *ngIf="obj && obj.value; else emptyField">
-                    <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-                      <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block w-100">{{arrayObj}}</span></ng-container>
-                      <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
-                      <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
-                      <ng-container *ngSwitchDefault>
-                        <p fxLayout="row" *ngIf="data.openedBy === 'SWAP' && obj.key === 'state'; else noStyleBlock" [ngClass]="{'failed-status': obj.value === swapStateEnum.FAILED}">
-                          {{obj.value}}
-                          <mat-icon *ngIf="obj.value === swapStateEnum.FAILED" fxLayoutAlign="end end" class="icon-failed-status">info</mat-icon>
-                        </p>
-                        <ng-template #noStyleBlock>{{obj.value}}</ng-template>
-                      </ng-container>
-                    </span>
-                  </span>
-                  <ng-template #emptyField>
-                    <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
-                  </ng-template>
-                  <mat-divider class="w-100 my-1"></mat-divider>
-                </div>                
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </mat-card-content>
+    <ng-container *ngIf="data.scrollable">
+      <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.scrollable}" #scrollContainer>
+        <ng-container *ngTemplateOutlet="contentBlock"></ng-container>        
+      </mat-card-content>
+    </ng-container>
+    <ng-container *ngIf="!data.scrollable">
+      <mat-card-content class="mt-5px mb-0 pr-2">
+        <ng-container *ngTemplateOutlet="contentBlock"></ng-container>        
+      </mat-card-content>
+    </ng-container>
     <div *ngIf="data.scrollable && shouldScroll" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container">
       <button mat-mini-fab aria-label="Scroll Down" fxLayoutAlign="center center" (click)="onScrollDown()">
         <mat-icon fxLayoutAlign="center center">arrow_downward</mat-icon>
@@ -60,3 +33,45 @@
     </div>
   </div>
 </div>
+
+<ng-template #contentBlock>
+  <div fxLayout="column">
+    <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large mb-1" [ngClass]="{'display-none': showQRField === '' || (screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM)}">
+      <qrcode *ngIf="showQRField !== ''" [qrdata]="showQRField" [margin]="2" [width]="240" [errorCorrectionLevel]="'L'"></qrcode>
+    </div>
+    <div fxLayout="row" fxFlex="100">
+      <p *ngIf="data.titleMessage" fxLayoutAlign="start center" class="pb-1">{{data.titleMessage}}</p>
+      <div *ngIf="messageObjs?.length>0" fxFlex="100">
+        <div *ngFor="let objs of messageObjs; index as i;">
+          <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start center" fxLayoutAlign.gt-md="space-between start">
+            <div fxLayout="column" fxFlex="100" fxFlex.gt-md="{{obj.width}}" *ngFor="let obj of objs; index as j;">
+              <h4 fxLayoutAlign="start" class="font-bold-500">{{obj.title}}</h4>
+              <span *ngIf="obj && (!!obj.value || obj.value === 0); else emptyField">
+                <span [ngSwitch]="obj.type" class="foreground-secondary-text" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+                  <ng-container *ngSwitchCase="dataTypeEnum.ARRAY">
+                    <span *ngFor="let arrayObj of obj.value" class="display-block w-100">
+                      {{arrayObj | json}}
+                    </span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
+                  <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value ? 'True' : 'False'}}</ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <p fxLayout="row" *ngIf="data.openedBy === 'SWAP' && obj.key === 'state'; else noStyleBlock" [ngClass]="{'failed-status': obj.value === swapStateEnum.FAILED}">
+                      {{obj.value}}
+                      <mat-icon *ngIf="obj.value === swapStateEnum.FAILED" fxLayoutAlign="end end" class="icon-failed-status">info</mat-icon>
+                    </p>
+                    <ng-template #noStyleBlock>{{obj.value}}</ng-template>
+                  </ng-container>
+                </span>
+              </span>
+              <ng-template #emptyField>
+                <span fxFlex="100" class="foreground-secondary-text">&nbsp;</span>
+              </ng-template>
+              <mat-divider class="w-100 my-1"></mat-divider>
+            </div>                
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
@@ -13,6 +13,7 @@ import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -51,12 +52,12 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_LND || action.type === RTLActions.FETCH_INVOICES)) //NEWLY_SAVED_INVOICE
-    .subscribe((action: RTLActions.EffectErrorLnd | RTLActions.FetchInvoices) => { // NewlySavedInvoice
-      if (action.type === RTLActions.FETCH_INVOICES) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
+    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_INVOICES_LND)) //NEWLY_SAVED_INVOICE
+    .subscribe((action: LNDActions.EffectError | LNDActions.FetchInvoices) => { // NewlySavedInvoice
+      if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
         this.dialogRef.close();
       }    
-      if (action.type === RTLActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });
@@ -69,7 +70,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoice({
+    this.store.dispatch(new LNDActions.SaveNewInvoice({
       memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
     }));
   }

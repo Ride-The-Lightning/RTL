@@ -5,7 +5,9 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -53,13 +55,10 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchClosedChannels());
-    });
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/closed') {
           this.flgLoading[0] = 'error';
         }
@@ -113,7 +112,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.closedChannels.data && this.closedChannels.data.length > 0) {
-      this.commonService.downloadCSV(this.closedChannels.data, 'Closed-channels');
+      this.commonService.downloadFile(this.closedChannels.data, 'Closed-channels');
     }
   }
 

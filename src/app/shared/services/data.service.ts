@@ -7,9 +7,10 @@ import { Store } from '@ngrx/store';
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 
+import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
+import * as LNDActions from '../../lnd/store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
@@ -25,11 +26,19 @@ export class DataService implements OnInit, OnDestroy {
   }
 
   setChildAPIUrl(lnImplementation: string) {
-    if (lnImplementation === 'LND') {
-      this.childAPIUrl = API_URL + '/lnd';
-    } else if (lnImplementation === 'CLT') {
-      this.childAPIUrl = API_URL + '/cl';
-    } 
+    switch (lnImplementation) {
+      case 'CLT':
+        this.childAPIUrl = API_URL + '/cl';
+        break;
+
+      case 'ECL':
+          this.childAPIUrl = API_URL + '/ecl';
+          break;
+      
+      default:
+        this.childAPIUrl = API_URL + '/lnd';
+        break;
+    }
   }
 
   getFiatRates() {
@@ -83,7 +92,7 @@ export class DataService implements OnInit, OnDestroy {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else {
-      this.store.dispatch(new RTLActions.EffectErrorLnd({ action: actionName, code: err.status.toString(), message: err.error.error }));
+      this.store.dispatch(new LNDActions.EffectError({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
   }
 
