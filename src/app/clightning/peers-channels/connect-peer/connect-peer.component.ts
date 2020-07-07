@@ -47,9 +47,11 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) : 
+    (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
-      peerAddress: ['', [Validators.required]]
+      peerAddress: [this.peerAddress, [Validators.required]]
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
