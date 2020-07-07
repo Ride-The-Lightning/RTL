@@ -77,8 +77,6 @@ export interface Peer {
   id?: string;
   connected?: boolean;
   netaddr?: string[];
-  globalfeatures?: string;
-  localfeatures?: string;
   alias?: string;
 }
 
@@ -234,7 +232,6 @@ export interface LookupNode {
   color?: string;
   last_timestamp?: number;
   last_timestamp_str?: string;
-  globalfeatures?: string;
   features?: string;
   addresses?: Address[];
 }

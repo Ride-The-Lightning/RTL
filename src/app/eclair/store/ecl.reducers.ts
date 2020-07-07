@@ -5,6 +5,7 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
 
 export interface ECLState {
+  initialAPIResponseCounter: number;
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
@@ -23,6 +24,7 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
+  initialAPIResponseCounter: 0,
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -77,6 +79,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_FEES_ECL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         fees: action.payload
       };
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
@@ -97,6 +100,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_CHANNELS_STATUS_ECL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         channelsStatus: action.payload,
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
@@ -107,6 +111,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         onchainBalance: action.payload
       };
     case ECLActions.SET_LIGHTNING_BALANCE_ECL:
@@ -117,6 +122,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PEERS_ECL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         peers: action.payload
       };
     case ECLActions.REMOVE_PEER_ECL:
@@ -146,6 +152,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_PAYMENTS_ECL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         payments: action.payload
       };
     case ECLActions.SET_TRANSACTIONS_ECL:

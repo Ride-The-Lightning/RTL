@@ -58,13 +58,13 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'alias', 'netaddr', 'actions'];
+      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['id', 'alias', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
+      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['id', 'alias', 'netaddr', 'globalfeatures', 'localfeatures', 'actions'];
+      this.displayedColumns = ['alias', 'id', 'netaddr', 'actions'];
     }
   }
 
@@ -108,9 +108,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       [{key: 'id', value: selPeer.id, title: 'Public Key', width: 100}],
       [{key: 'netaddr', value: selPeer.netaddr, title: 'Address', width: 100}],
       [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 50},
-        {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}],
-      [{key: 'globalfeatures', value: selPeer.globalfeatures, title: 'Global Features', width: 50},
-        {key: 'localfeatures', value: selPeer.localfeatures, title: 'Local Features', width: 50}]
+        {key: 'connected', value: selPeer.connected ? 'True' : 'False', title: 'Connected', width: 50}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -121,9 +119,9 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onConnectPeer() {
+  onConnectPeer(selPeer: Peer) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      message: { peer: null, information: this.information, balance: this.availableBalance },
+      message: { peer: (selPeer.id ? selPeer : null), information: this.information, balance: this.availableBalance },
       component: CLConnectPeerComponent
     }}));
   }

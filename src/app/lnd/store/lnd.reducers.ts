@@ -8,6 +8,7 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as LNDActions from './lnd.actions';
 
 export interface LNDState {
+  initialAPIResponseCounter: number;
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;  
   information: GetInfo;
@@ -35,6 +36,7 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
+  initialAPIResponseCounter: 0,
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
@@ -98,6 +100,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_PEERS_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         peers: action.payload
       };
     case LNDActions.REMOVE_PEER_LND:
@@ -122,16 +125,19 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_FEES_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         fees: action.payload
       };
     case LNDActions.SET_CLOSED_CHANNELS_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         closedChannels: action.payload,
       };
     case LNDActions.SET_PENDING_CHANNELS_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         pendingChannels: action.payload.channels,
         numberOfPendingChannels: action.payload.pendingChannels,
       };
@@ -161,6 +167,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       }
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         allChannels: action.payload,
         numberOfActiveChannels: activeChannels,
         numberOfInactiveChannels: inactiveChannels,
@@ -185,6 +192,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       if (action.payload.target === 'channels') {
         return {
           ...state,
+          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
           channelBalance: action.payload.balance
         };
       } else {
@@ -196,11 +204,13 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_NETWORK_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         networkInfo: action.payload
       };
     case LNDActions.SET_INVOICES_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         invoices: action.payload
       };
     case LNDActions.SET_TOTAL_INVOICES_LND:
@@ -216,6 +226,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_PAYMENTS_LND:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         payments: action.payload
       };
     case LNDActions.SET_FORWARDING_HISTORY_LND:
