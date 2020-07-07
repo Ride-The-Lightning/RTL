@@ -434,7 +434,7 @@ export class ECLEffects implements OnDestroy {
                 this.store.dispatch(new ECLActions.FetchChannels());
                 this.store.dispatch(new ECLActions.SetDecodedPayment({}));
                 this.store.dispatch(new ECLActions.FetchAudit());
-                this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
+                this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
               }, 3000);
               return { type: RTLActions.VOID };
             }
