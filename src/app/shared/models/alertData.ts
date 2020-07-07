@@ -44,7 +44,7 @@ export interface OpenChannelAlert {
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCL, balance: number, peer?: any, peers?: PeerCL[] };
+  message?: { information: GetInfoCL, balance: number, peer?: PeerCL, peers?: PeerCL[] };
   newlyAdded?: boolean;
   component?: any;
 }
