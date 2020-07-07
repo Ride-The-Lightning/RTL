@@ -18,9 +18,11 @@
 
 ### <a name="intro"></a>Introduction
 RTL is a full function, device agnostic, web user interface to help manage lightning node operations.
-RTL is available on LND, C-Lightning and Eclair implementations.
+RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning](https://github.com/ElementsProject/lightning) and [Eclair](https://github.com/ACINQ/eclair) implementations.
 
-This page covers instructions for LND. For C-Lightning, refer to [this](docs/C-Lightning-setup.md) page. For Eclair, refer to [this](docs/Eclair-setup.md) page.
+* C-Lightning users, refer to [this](docs/C-Lightning-setup.md) page for install instructions.
+* Eclair users, refer to [this](docs/Eclair-setup.md) page for install instructions.
+* LND users, follow the instructions below on this page
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
