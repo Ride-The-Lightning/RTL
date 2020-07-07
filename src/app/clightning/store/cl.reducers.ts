@@ -6,6 +6,7 @@ import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 
 export interface CLState {
+  initialAPIResponseCounter: number;
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
@@ -23,6 +24,7 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
+  initialAPIResponseCounter: 0,
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -76,17 +78,20 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_FEES_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         fees: action.payload
       };
     case CLActions.SET_FEE_RATES_CL:
       if (action.payload.perkb) {
         return {
           ...state,
+          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
           feeRatesPerKB: action.payload
         };
       } else if (action.payload.perkw) {
         return {
           ...state,
+          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
           feeRatesPerKW: action.payload
         };
       } else {
@@ -97,16 +102,19 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_BALANCE_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         balance: action.payload
       };
     case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         localRemoteBalance: action.payload
       };
     case CLActions.SET_PEERS_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         peers: action.payload
       };
     case CLActions.ADD_PEER_CL:
@@ -129,6 +137,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_CHANNELS_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         allChannels: action.payload,
       };
     case CLActions.REMOVE_CHANNEL_CL:
@@ -151,6 +160,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_FORWARDING_HISTORY_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         forwardingHistory: action.payload
       };
     case CLActions.ADD_INVOICE_CL:

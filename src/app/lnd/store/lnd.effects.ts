@@ -38,7 +38,15 @@ export class LNDEffects implements OnDestroy {
     private sessionService: SessionService,
     public dialog: MatDialog,
     private router: Router,
-    private location: Location) { }
+    private location: Location) { 
+    this.store.select('lnd')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      if(rtlStore.initialAPIResponseCounter > 8) {
+        this.store.dispatch(new RTLActions.CloseSpinner());
+      }
+    });
+  }
 
   @Effect()
   infoFetch = this.actions$.pipe(
@@ -1141,6 +1149,7 @@ export class LNDEffects implements OnDestroy {
       currency_unit: info.currency_unit, 
       smaller_currency_unit: info.smaller_currency_unit
     };
+    this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new LNDActions.FetchPeers());
     this.store.dispatch(new LNDActions.FetchBalance('channels'));
