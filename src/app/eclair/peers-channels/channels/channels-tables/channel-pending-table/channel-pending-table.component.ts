@@ -111,7 +111,7 @@ export class ECLChannelPendingTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'PendingChannels');
+      this.commonService.downloadFile(this.channels.data, 'PendingChannels');
     }
   }
 

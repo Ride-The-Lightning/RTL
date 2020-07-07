@@ -111,7 +111,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'InactiveChannels');
+      this.commonService.downloadFile(this.channels.data, 'InactiveChannels');
     }
   }
 

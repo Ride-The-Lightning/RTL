@@ -12,7 +12,7 @@ import { Channel } from '../../../shared/models/eclModels';
 export class ECLChannelCapacityInfoComponent {
   public faBalanceScale = faBalanceScale;
   public faDumbbell = faDumbbell;
-  @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: string};
+  @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};
   @Input() allChannels: Channel[];
   @Input() sortBy: string = 'Balance Score';
 

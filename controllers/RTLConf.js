@@ -199,6 +199,23 @@ exports.getConfig = (req, res, next) => {
   });
 };
 
+exports.getFile = (req, res, next) => {
+  let file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
+  logger.info({fileName: 'Conf', msg: 'Channel Point: ' + req.query.channel + ', File Path: ' + file});
+  fs.readFile(file, 'utf8', function(err, data) {
+    if (err) {
+      logger.error({fileName: 'Conf', lineNum: 207, msg: 'Reading File Failed!'});
+      res.status(500).json({
+        message: "Reading File Failed!",
+        error: err
+      });
+    } else {
+      logger.info({fileName: 'Conf', msg: 'File Data: ' + data});
+      res.status(200).json(data);
+    }
+  });
+};
+
 exports.getCurrencyRates = (req, res, next) => {
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {

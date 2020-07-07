@@ -112,7 +112,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.closedChannels.data && this.closedChannels.data.length > 0) {
-      this.commonService.downloadCSV(this.closedChannels.data, 'Closed-channels');
+      this.commonService.downloadFile(this.closedChannels.data, 'Closed-channels');
     }
   }
 

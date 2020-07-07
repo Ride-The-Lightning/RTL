@@ -109,7 +109,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.listTransactions.data && this.listTransactions.data.length > 0) {
-      this.commonService.downloadCSV(this.listTransactions.data, 'Transactions');
+      this.commonService.downloadFile(this.listTransactions.data, 'Transactions');
     }
   }
 

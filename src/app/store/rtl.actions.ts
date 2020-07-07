@@ -35,6 +35,8 @@ export const VERIFY_TWO_FA = 'VERIFY_TWO_FA';
 export const LOGOUT = 'LOGOUT';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const RESET_PASSWORD_RES = 'RESET_PASSWORD_RES';
+export const FETCH_FILE = 'FETCH_FILE';
+export const SHOW_FILE = 'SHOW_FILE';
 
 export class VoidAction implements Action {
   readonly type = VOID;
@@ -175,10 +177,20 @@ export class VerifyTwoFA implements Action {
   constructor(public payload: {token: string, authResponse: any}) {}
 }
 
+export class FetchFile implements Action {
+  readonly type = FETCH_FILE;
+  constructor(public payload: {channelPoint: string, path?: string}) {}
+}
+
+export class ShowFile implements Action {
+  readonly type = SHOW_FILE;
+  constructor(public payload: any) {}
+}
+
 export type RTLActions = ClearEffectErrorRoot | EffectErrorRoot |
   IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
   UpdateSelectedNodeOptions | ResetRootStore |
   SetSelelectedNode | SetNodeData |
-  Logout | ResetPassword | ResetPasswordRes;
+  Logout | ResetPassword | ResetPasswordRes | FetchFile | ShowFile;

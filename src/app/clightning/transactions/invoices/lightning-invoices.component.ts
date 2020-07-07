@@ -198,7 +198,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.invoices.data && this.invoices.data.length > 0) {
-      this.commonService.downloadCSV(this.invoices.data, 'Invoices');
+      this.commonService.downloadFile(this.invoices.data, 'Invoices');
     }
   }
 

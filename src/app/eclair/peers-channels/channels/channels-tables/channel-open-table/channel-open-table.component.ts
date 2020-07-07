@@ -170,7 +170,7 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'ActiveChannels');
+      this.commonService.downloadFile(this.channels.data, 'ActiveChannels');
     }
   }
 
