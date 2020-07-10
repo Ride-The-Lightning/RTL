@@ -20,6 +20,7 @@ Follow the below steps to install and setup RTL to run on Eclair.
 3. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 
 ### <a name="install"></a>Installation:
+Eclair is integrated with RTL v0.8.0 and above.
 To download a specific RTL version follow the instructions on the [release page](https://github.com/Ride-The-Lightning/RTL/releases)
 
 To download from master (*not recommended*) follow the below instructions:
