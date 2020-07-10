@@ -1,7 +1,9 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort, MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
-import { LookupNodeCL } from '../../../shared/models/clModels';
+import { LookupNode } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
@@ -11,7 +13,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 })
 export class CLNodeLookupComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @Input() lookupResult: LookupNodeCL;
+  @Input() lookupResult: LookupNode;
   public addresses: any;
   public displayedColumns = ['type', 'address', 'port', 'actions'];
 

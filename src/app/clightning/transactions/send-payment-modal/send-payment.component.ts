@@ -5,17 +5,18 @@ import { Subject } from 'rxjs';
 import { take, takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { PayRequestCL, ChannelCL } from '../../../shared/models/clModels';
+import { PayRequest, Channel } from '../../../shared/models/clModels';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -28,12 +29,12 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('paymentReq', { static: true }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
-  public paymentDecoded: PayRequestCL = {};
+  public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
   public paymentAmount = null;
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public selActiveChannel: ChannelCL = {};
+  public selActiveChannel: Channel = {};
   public activeChannels = {};
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
@@ -52,17 +53,17 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === RTLActions.EFFECT_ERROR_CL || action.type === RTLActions.SEND_PAYMENT_STATUS_CL))
-    .subscribe((action: RTLActions.EffectErrorCl | RTLActions.SendPaymentStatusCL) => {
-      if (action.type === RTLActions.SEND_PAYMENT_STATUS_CL) { 
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL))
+    .subscribe((action: CLActions.EffectError | CLActions.SendPaymentStatus) => {
+      if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) { 
         this.dialogRef.close();
       }    
-      if (action.type === RTLActions.EFFECT_ERROR_CL) {
-        if (action.payload.action === 'SendPaymentCL') {
+      if (action.type === CLActions.EFFECT_ERROR_CL) {
+        if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.msatoshi;
           this.paymentError = action.payload.message;
         }
-        if (action.payload.action === 'DecodePaymentCL') {
+        if (action.payload.action === 'DecodePayment') {
           this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
           this.paymentReq.control.setErrors({'decodeError': true});
         }
@@ -80,7 +81,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);      
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {
@@ -107,9 +108,9 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   sendPayment() {
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
     if (this.zeroAmtInvoice) {
-      this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, amount: this.paymentAmount*1000, fromDialog: true}));
+      this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, amount: this.paymentAmount*1000, fromDialog: true}));
     } else {
-      this.store.dispatch(new RTLActions.SendPaymentCL({invoice: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, fromDialog: true}));
     }
   }
 
@@ -122,7 +123,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new RTLActions.DecodePaymentCL({routeParam: this.paymentRequest, fromDialog: true}));
+      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {

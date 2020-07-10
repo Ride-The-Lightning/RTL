@@ -398,11 +398,6 @@ export interface SendPayment {
   final_cltv_delta?: number;
 }
 
-export interface SendCoins {
-  address: string;
-  amount: number;
-}
-
 export interface ChannelsTransaction {
   address?:	string;
   amount?: number;

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfoCL, PeerCL } from '../../shared/models/clModels';
+import { GetInfo, Peer } from '../../shared/models/clModels';
 import { CLOpenChannelComponent } from './channels/open-channel-modal/open-channel.component';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
@@ -19,8 +19,8 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 })
 export class CLPeersChannelsComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
-  public information: GetInfoCL = {};
-  public peers: PeerCL[] = [];
+  public information: GetInfo = {};
+  public peers: Peer[] = [];
   public totalBalance = 0;
   public activePeers = 0;
   public activeChannels = 0;

@@ -3,16 +3,16 @@ export enum feeRateStyle {
   KW = 'KW'
 }
 
-export interface ChannelStatusCL {
+export interface ChannelStatus {
   channels?: number;
   capacity?:number;
 }
 
-export interface ChannelsStatusCL {
-  active?: ChannelStatusCL;
-  inactive?: ChannelStatusCL;
-  pending?: ChannelStatusCL;
-  closing?: ChannelStatusCL;
+export interface ChannelsStatus {
+  active?: ChannelStatus;
+  inactive?: ChannelStatus;
+  pending?: ChannelStatus;
+  closing?: ChannelStatus;
 }
 
 export interface Address {
@@ -21,12 +21,12 @@ export interface Address {
   port?: number;
 }
 
-export interface GetInfoChainCL {
+export interface GetInfoChain {
   chain?: string;
   network?: string;
 }
 
-export interface GetInfoCL {
+export interface GetInfo {
   id?: string;
   alias?: string;
   color?: string;
@@ -39,7 +39,7 @@ export interface GetInfoCL {
   version?: string;
   blockheight?: number;
   network?: string;
-  chains?: GetInfoChainCL[];
+  chains?: GetInfoChain[];
   msatoshi_fees_collected?: number;
   fees_collected_msat?: string;
   currency_unit?: string;
@@ -47,13 +47,13 @@ export interface GetInfoCL {
   lnImplementation?: string;
 }
 
-export interface FeesCL {
+export interface Fees {
   feeCollected?: number;
   btc_feeCollected?: number;
   totalTxCount?: number;
 }
 
-export interface BalanceCL {
+export interface Balance {
   totalBalance?: number;
   confBalance?: number;
   unconfBalance?: number;
@@ -62,7 +62,7 @@ export interface BalanceCL {
   btc_unconfBalance?: number;
 }
 
-export interface LocalRemoteBalanceCL {
+export interface LocalRemoteBalance {
   localBalance: number;
   remoteBalance: number;
   pendingBalance?: number;
@@ -73,16 +73,14 @@ export interface LocalRemoteBalanceCL {
   btc_inactiveBalance?: number;
 }
 
-export interface PeerCL {
+export interface Peer {
   id?: string;
   connected?: boolean;
   netaddr?: string[];
-  globalfeatures?: string;
-  localfeatures?: string;
   alias?: string;
 }
 
-export interface InvoiceCL {
+export interface Invoice {
   label?: string;
   bolt11?: string;
   payment_hash?: string;
@@ -100,20 +98,20 @@ export interface InvoiceCL {
   warning_capacity?: string;
 }
 
-export interface ListInvoicesCL {
-  invoices?: InvoiceCL[];
+export interface ListInvoices {
+  invoices?: Invoice[];
   last_index_offset?: string;
   first_index_offset?: string;
 }
 
-export interface OnChainCL {
+export interface OnChain {
   address?:	string;
   satoshis?: number;
   feeRate?: string;
   minconf?: number;
 }
 
-export interface HopCL {
+export interface Hop {
   hop_sequence?: number;
   pubkey_alias?: string;
   chan_id?:	string;
@@ -126,7 +124,7 @@ export interface HopCL {
   pub_key?:	string;
 }
 
-export interface PaymentCL {
+export interface Payment {
   amount_msat?: string;
   amount_sent_msat?: string;
   bolt11?: string;
@@ -141,7 +139,7 @@ export interface PaymentCL {
   status?: string;
 }
 
-export interface PayRequestCL {
+export interface PayRequest {
   currency?: string;
   created_at?: number;
   expiry?: number;
@@ -156,7 +154,7 @@ export interface PayRequestCL {
   expire_at_str?: string;
 }
 
-export interface ForwardingEventCL {
+export interface ForwardingEvent {
   payment_hash?: string;
   in_channel?: string;
   out_channel?: string;
@@ -173,16 +171,16 @@ export interface ForwardingEventCL {
   resolved_time_str?: string;
 }
 
-export interface ForwardingHistoryResCL {
+export interface ForwardingHistoryRes {
   last_offset_index?: number;
-  forwarding_events?: ForwardingEventCL[];
+  forwarding_events?: ForwardingEvent[];
 }
 
-export interface QueryRoutesCL {
-  routes: RoutesCL[];
+export interface QueryRoutes {
+  routes: Routes[];
 }
 
-export interface RoutesCL {
+export interface Routes {
   id?: string;
   channel?: string;
   direction?: number;
@@ -192,7 +190,7 @@ export interface RoutesCL {
   alias?: string;
 }
 
-export interface ChannelCL {
+export interface Channel {
   id?: string;
   alias?: string;
   connected?: boolean;
@@ -209,7 +207,7 @@ export interface ChannelCL {
   spendable_msatoshi?: string;
 }
 
-export interface ChannelEdgeCL {
+export interface ChannelEdge {
   active?: boolean;
   amount_msat?: string;
   base_fee_millisatoshi?: number;
@@ -228,18 +226,17 @@ export interface ChannelEdgeCL {
   source?: string;
 }
 
-export interface LookupNodeCL {
+export interface LookupNode {
   nodeid?: string;
   alias?: string;
   color?: string;
   last_timestamp?: number;
   last_timestamp_str?: string;
-  globalfeatures?: string;
   features?: string;
   addresses?: Address[];
 }
 
-export interface FeeRatesCL {
+export interface FeeRates {
   perkb?: FeeRatePerObj,
   perkw?: FeeRatePerObj,
   onchain_fee_estimates?: {

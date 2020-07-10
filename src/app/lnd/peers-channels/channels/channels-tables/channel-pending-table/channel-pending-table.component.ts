@@ -3,7 +3,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, PendingChannels } from '../../../../../shared/models/lndModels';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -65,7 +66,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/pending') {
           this.flgLoading[0] = 'error';
         }

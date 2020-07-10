@@ -1,7 +1,8 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
-import { InvoiceCL, GetInfoCL, PeerCL, ChannelCL } from './clModels';
+import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL } from './clModels';
+import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 
 export interface MessageErrorField {
@@ -43,7 +44,15 @@ export interface OpenChannelAlert {
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCL, balance: number, peer?: any, peers?: PeerCL[] };
+  message?: { information: GetInfoCL, balance: number, peer?: PeerCL, peers?: PeerCL[] };
+  newlyAdded?: boolean;
+  component?: any;
+}
+
+export interface ECLOpenChannelAlert {
+  alertTitle?: string;
+  titleMessage?: string;
+  message?: { information: GetInfoECL, balance: number, peer?: PeerECL, peers?: PeerECL[] };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -62,15 +71,33 @@ export interface CLInvoiceInformation {
   component?: any;
 }
 
-export interface CLChannelInformation {
-  channel: ChannelCL;
-  showCopy?: boolean;
+export interface ECLInvoiceInformation {
+  invoice: InvoiceECL;
+  newlyAdded?: boolean;
+  pageSize: number;
+  component?: any;
+}
+
+export interface ECLPaymentInformation {
+  payment: PaymentSentECL;
   component?: any;
 }
 
 export interface ChannelInformation {
   channel: Channel;
   showCopy?: boolean;
+  component?: any;
+}
+
+export interface CLChannelInformation {
+  channel: ChannelCL;
+  showCopy?: boolean;
+  component?: any;
+}
+
+export interface ECLChannelInformation {
+  channel: ChannelECL;
+  channelsType?: string;
   component?: any;
 }
 
@@ -144,5 +171,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

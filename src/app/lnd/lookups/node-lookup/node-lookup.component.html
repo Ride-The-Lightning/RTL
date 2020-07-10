@@ -1,34 +1,32 @@
 <div fxLayout="column" *ngIf="lookupResult" class="mt-1">
-  <mat-divider></mat-divider>        
+  <mat-divider [inset]="true" class="mb-1"></mat-divider>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
     <h4 fxLayoutAlign="start" class="font-bold-500">Pub Key</h4>
     <span class="foreground-secondary-text w-100">{{lookupResult.node.pub_key}}</span>
-    <mat-divider class="my-1"></mat-divider>        
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Alias</h4>
       <span class="foreground-secondary-text">{{lookupResult.node.alias}}<span class="ml-2" [ngStyle]="{'background-color': lookupResult.node?.color}">{{lookupResult.node?.color}}</span></span>
-      <mat-divider class="my-1"></mat-divider>        
     </div>
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Last Update</h4>
       <span class="foreground-secondary-text">{{lookupResult.node.last_update_str}}</span>
-      <mat-divider class="my-1"></mat-divider>        
     </div>
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Total Capacity (Sats)</h4>
       <span class="foreground-secondary-text">{{lookupResult.total_capacity | number}}</span>
-      <mat-divider class="my-1"></mat-divider>        
     </div>
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="end start" class="my-1">
       <h4 fxLayoutAlign="start" class="font-bold-500">Number of Channels</h4>
       <span class="foreground-secondary-text">{{lookupResult.num_channels | number}}</span>
-      <mat-divider class="my-1"></mat-divider>        
     </div>
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>        
   <div fxLayout="column" class="mt-2">
     <h4 fxFlex="100" fxLayoutAlign="start" class="font-bold-500 mb-1">Addresses</h4>
     <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">

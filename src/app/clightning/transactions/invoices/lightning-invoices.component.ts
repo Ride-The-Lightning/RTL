@@ -4,17 +4,20 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { GetInfoCL, InvoiceCL } from '../../../shared/models/clModels';
+import { GetInfo, Invoice } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
@@ -44,8 +47,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public invoicePaymentReq = '';
   public invoices: any;
-  public invoiceJSONArr: InvoiceCL[] = [];  
-  public information: GetInfoCL = {};
+  public invoiceJSONArr: Invoice[] = [];  
+  public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public private = false;
@@ -78,12 +81,12 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchInvoicesCL({num_max_invoices: 100, index_offset: 0, reversed: false}));
+    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 100, index_offset: 0, reversed: false}));
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInvoicesCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchInvoices') {
           this.flgLoading[0] = 'error';
         }
       });
@@ -92,7 +95,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.totalInvoices = rtlStore.totalInvoices;
       this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
-      this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<InvoiceCL>([...this.invoiceJSONArr]);
+      this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
       this.invoices.data = this.invoiceJSONArr;
       this.invoices.sort = this.sort;
       this.invoices.paginator = this.paginator;    
@@ -114,7 +117,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onAddInvoice(form: any) {
-    if(!this.invoiceValue) { return true; }     
+    if(!this.invoiceValue) { this.invoiceValue = 0; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
@@ -123,7 +126,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
-    this.store.dispatch(new RTLActions.SaveNewInvoiceCL({
+    this.store.dispatch(new CLActions.SaveNewInvoice({
       label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
     this.resetData();
@@ -138,13 +141,13 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Deleting Invoices...'));
-        this.store.dispatch(new RTLActions.DeleteExpiredInvoiceCL());
+        this.store.dispatch(new CLActions.DeleteExpiredInvoice());
       }
     });    
   }
 
-  onInvoiceClick(selInvoice: InvoiceCL, event: any) {
-    let reCreatedInvoice: InvoiceCL = {
+  onInvoiceClick(selInvoice: Invoice, event: any) {
+    let reCreatedInvoice: Invoice = {
       msatoshi: selInvoice.msatoshi,
       label: selInvoice.label,
       expires_at_str: selInvoice.expires_at_str,
@@ -195,7 +198,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.invoices.data && this.invoices.data.length > 0) {
-      this.commonService.downloadCSV(this.invoices.data, 'Invoices');
+      this.commonService.downloadFile(this.invoices.data, 'Invoices');
     }
   }
 

@@ -185,11 +185,34 @@ exports.getConfig = (req, res, next) => {
       if (jsonConfig['rpcpassword']) {
         jsonConfig['rpcpassword'] = jsonConfig['rpcpassword'].replace(/./g, '*');
       }
+      if (jsonConfig['eclair.api.password']) {
+        jsonConfig['eclair.api.password'] = jsonConfig['eclair.api.password'].replace(/./g, '*');
+      }      
+      if (jsonConfig['eclair.bitcoind.rpcpassword']) {
+        jsonConfig['eclair.bitcoind.rpcpassword'] = jsonConfig['eclair.bitcoind.rpcpassword'].replace(/./g, '*');
+      }      
       if (jsonConfig.multiPass) {
         jsonConfig.multiPass = jsonConfig.multiPass.replace(/./g, '*');
       }
       const responseJSON = (JSONFormat) ? jsonConfig : ini.stringify(jsonConfig);
       res.status(200).json({format: (JSONFormat) ? 'JSON' : 'INI', data: responseJSON});
+    }
+  });
+};
+
+exports.getFile = (req, res, next) => {
+  let file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
+  logger.info({fileName: 'Conf', msg: 'Channel Point: ' + req.query.channel + ', File Path: ' + file});
+  fs.readFile(file, 'utf8', function(err, data) {
+    if (err) {
+      logger.error({fileName: 'Conf', lineNum: 207, msg: 'Reading File Failed!'});
+      res.status(500).json({
+        message: "Reading File Failed!",
+        error: err
+      });
+    } else {
+      logger.info({fileName: 'Conf', msg: 'File Data: ' + data});
+      res.status(200).json(data);
     }
   });
 };

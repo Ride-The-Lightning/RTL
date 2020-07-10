@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { ECPair, crypto } from 'bitcoinjs-lib';
 
 import { BOLTZ_API_URL, boltzEnvironment } from '../../../environments/environment';
-import { CurrencyUnitEnum, CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
+import { CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { LoggerService } from '../../shared/services/logger.service';
 import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
@@ -69,7 +69,6 @@ export class BoltzService {
   randomBytes(size) {
     const bytes = Buffer.allocUnsafe(size);
     window.crypto.getRandomValues(bytes);
-  
     return bytes;
   };
 

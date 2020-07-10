@@ -5,12 +5,15 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Transaction } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -54,15 +57,11 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchTransactions());
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchTransactions());
-    });
-
+    this.store.dispatch(new LNDActions.FetchTransactions());
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchTransactions') {
           this.flgLoading[0] = 'error';
         }
@@ -110,7 +109,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.listTransactions.data && this.listTransactions.data.length > 0) {
-      this.commonService.downloadCSV(this.listTransactions.data, 'Transactions');
+      this.commonService.downloadFile(this.listTransactions.data, 'Transactions');
     }
   }
 

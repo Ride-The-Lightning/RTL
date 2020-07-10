@@ -15,13 +15,13 @@
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qrcode [qrdata]="address" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
-        <div fxLayout="row">
+        <div fxLayout="row" *ngIf="addressType!==''">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address Type</h4>
             <span class="foreground-secondary-text">{{addressType}}</span>
           </div>
         </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
+        <mat-divider class="w-100 my-1" *ngIf="addressType!==''"></mat-divider>        
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>

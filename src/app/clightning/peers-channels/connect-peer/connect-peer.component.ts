@@ -4,15 +4,17 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../../shared/services/logger.service';
-import { PeerCL } from '../../../shared/models/clModels';
+import { Peer } from '../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../shared/models/alertData';
 import { FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { CLEffects } from '../../store/cl.effects';
+import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -30,7 +32,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   public feeRateTypes = FEE_RATE_TYPES;
   public flgChannelOpened = false;
   public channelOpenStatus = null;
-  public newlyAddedPeer: PeerCL = null;
+  public newlyAddedPeer: Peer = null;
   public flgEditable = true;
   public peerConnectionError = '';
   public channelConnectionError = '';
@@ -45,9 +47,11 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
+    this.peerAddress = (this.data.message.peer && this.data.message.peer.id && this.data.message.peer.netaddr) ? (this.data.message.peer.id + '@' + this.data.message.peer.netaddr) : 
+    (this.data.message.peer && this.data.message.peer.id && !this.data.message.peer.netaddr) ? this.data.message.peer.id : '';
     this.peerFormGroup = this.formBuilder.group({
       hiddenAddress: ['', [Validators.required]],
-      peerAddress: ['', [Validators.required]]
+      peerAddress: [this.peerAddress, [Validators.required]]
     });
     this.channelFormGroup = this.formBuilder.group({
       fundingAmount: ['', [Validators.required, Validators.min(1), Validators.max(this.totalBalance)]],
@@ -71,22 +75,22 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.NEWLY_ADDED_PEER_CL || action.type === RTLActions.FETCH_CHANNELS_CL || action.type === RTLActions.EFFECT_ERROR_CL))
-    .subscribe((action: (RTLActions.NewlyAddedPeerCL | RTLActions.FetchChannelsCL | RTLActions.EffectErrorCl)) => {
-      if (action.type === RTLActions.NEWLY_ADDED_PEER_CL) { 
+    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.EFFECT_ERROR_CL))
+    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.EffectError)) => {
+      if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
         this.newlyAddedPeer = action.payload.peer;
         this.peerFormGroup.controls.hiddenAddress.setValue(this.peerFormGroup.controls.peerAddress.value);
         this.stepper.next();
       }
-      if (action.type === RTLActions.FETCH_CHANNELS_CL) { 
+      if (action.type === CLActions.FETCH_CHANNELS_CL) { 
         this.dialogRef.close();
       }
-      if (action.type === RTLActions.EFFECT_ERROR_CL) { 
-        if (action.payload.action === 'SaveNewPeerCL') {
+      if (action.type === CLActions.EFFECT_ERROR_CL) { 
+        if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
-        } else if (action.payload.action === 'SaveNewChannelCL') {
+        } else if (action.payload.action === 'SaveNewChannel') {
           this.channelConnectionError = action.payload.message;
         }
       }
@@ -97,14 +101,14 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeerCL({id: this.peerFormGroup.controls.peerAddress.value}));
+    this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
   onOpenChannel() {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    this.store.dispatch(new RTLActions.SaveNewChannelCL({
+    this.store.dispatch(new CLActions.SaveNewChannel({
       peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
     }));
   }

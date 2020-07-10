@@ -7,6 +7,7 @@ import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
+import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -38,7 +39,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    // this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_CL_STORE))
+    // this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_STORE))
     // .subscribe((resetClStore: RTLActions.ResetCLStore) => {
     //   this.onEventsFetch();
     // });
@@ -47,8 +48,8 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.filteredData = false;
       this.errorMessage = '';
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistoryCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'GetForwardingHistory') {
           this.flgLoading[0] = 'error';
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
@@ -83,7 +84,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
     if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
     }
-    this.store.dispatch(new RTLActions.GetForwardingHistoryCL(
+    this.store.dispatch(new CLActions.GetForwardingHistory(
       // {
       //   end_time: Math.round(this.endDate.getTime() / 1000).toString(),
       //   start_time: Math.round(this.startDate.getTime() / 1000).toString()
@@ -101,7 +102,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resetData();
-    this.store.dispatch(new RTLActions.SetForwardingHistoryCL({}));
+    this.store.dispatch(new CLActions.SetForwardingHistory({}));
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();

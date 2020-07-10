@@ -12,6 +12,8 @@ import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+
+import * as LNDActions from '../store/lnd.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
 
@@ -52,6 +54,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
+  public screenSizeEnum = ScreenSizeEnum;
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -107,7 +110,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchInfo') {
           this.flgLoading[0] = 'error';
         }
@@ -190,12 +193,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === RTLActions.FETCH_FEES || action.type === RTLActions.SET_FEES))
+    filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND))
     .subscribe(action => {
-      if(action.type === RTLActions.FETCH_FEES) {
+      if(action.type === LNDActions.FETCH_FEES_LND) {
         this.flgChildInfoUpdated = false;
       }
-      if(action.type === RTLActions.SET_FEES) {
+      if(action.type === LNDActions.SET_FEES_LND) {
         this.flgChildInfoUpdated = true;
       }
     });

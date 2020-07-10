@@ -6,7 +6,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
@@ -23,6 +23,9 @@ import { ConfirmationMessageComponent } from '../shared/components/data-modal/co
 import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
+import * as ECLActions from '../eclair/store/ecl.actions';
+import * as CLActions from '../clightning/store/cl.actions';
+import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
 
@@ -314,8 +317,9 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.LOGIN),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
-    this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
-    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
+    this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
+    this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
+    this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -371,6 +375,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate(['/login']);
     }
+    this.sessionService.removeItem('eclUnlocked');
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');
@@ -425,6 +430,38 @@ export class RTLEffects implements OnDestroy {
    }
   ));
 
+  @Effect()
+  fetchFile = this.actions$.pipe(
+    ofType(RTLActions.FETCH_FILE),
+    mergeMap((action: RTLActions.FetchFile) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('fetchFile'));
+      let query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
+      return this.httpClient.get(environment.CONF_API + '/file' + query)
+      .pipe(
+        map((fetchedFile: any) => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.SHOW_FILE,
+            payload: fetchedFile
+          };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'fetchFile', code: err.status, message: err.error.error }));
+          this.handleErrorWithAlert('ERROR', err.error.message, environment.CONF_API + '/file' + query, {status: err.error.error.errno, error: err.error.error.code});
+          return of({type: RTLActions.VOID});          
+        }
+      ));
+    })
+  );
+
+  @Effect({ dispatch: false })
+  showFile = this.actions$.pipe(
+    ofType(RTLActions.SHOW_FILE),
+    map((action: RTLActions.ShowFile) => {
+      return action.payload;
+    })
+  );
+
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
@@ -434,17 +471,27 @@ export class RTLEffects implements OnDestroy {
       selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
-    this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
-    this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+    this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
+    this.store.dispatch(new CLActions.ResetCLStore(selNode));
+    this.store.dispatch(new ECLActions.ResetECLStore(selNode));
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
-      if(node.lnImplementation === 'CLT') {
-        this.CHILD_API_URL = API_URL + '/cl';
-        this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
-      } else {
-        this.CHILD_API_URL = API_URL + '/lnd';
-        this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+      switch (node.lnImplementation) {
+        case 'CLT':
+          this.CHILD_API_URL = API_URL + '/cl';
+          this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
+          break;
+
+        case 'ECL':
+          this.CHILD_API_URL = API_URL + '/ecl';
+          this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
+          break;
+            
+        default:
+          this.CHILD_API_URL = API_URL + '/lnd';
+          this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
+          break;
       }
     }
   }

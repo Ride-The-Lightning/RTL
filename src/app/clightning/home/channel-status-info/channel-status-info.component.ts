@@ -1,5 +1,5 @@
 import { Component, OnChanges, Input } from '@angular/core';
-import { ChannelsStatusCL } from '../../../shared/models/clModels';
+import { ChannelsStatus } from '../../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-channel-status-info',
@@ -7,7 +7,7 @@ import { ChannelsStatusCL } from '../../../shared/models/clModels';
   styleUrls: ['./channel-status-info.component.scss']
 })
 export class CLChannelStatusInfoComponent implements OnChanges {
-  @Input() channelsStatus: ChannelsStatusCL = {};
+  @Input() channelsStatus: ChannelsStatus = {};
 
   constructor() {}
 
