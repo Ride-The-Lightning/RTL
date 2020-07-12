@@ -49,8 +49,7 @@ common.updateSelectedNodeOptions = () => {
           break;
       
         case 'ECL':
-          var eclPwd = ini.parse(fs.readFileSync(common.selectedNode.config_path, 'utf-8'))['eclair.api.password'];
-          common.selectedNode.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclPwd).toString('base64') };
+          common.selectedNode.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + common.selectedNode.ln_api_password).toString('base64') };
           break;
 
         default:
@@ -89,8 +88,7 @@ common.setOptions = () => {
               break;
           
             case 'ECL':
-              var eclPwd = ini.parse(fs.readFileSync(node.config_path, 'utf-8'))['eclair.api.password'];
-              node.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + eclPwd).toString('base64') };
+              node.options.headers = { 'authorization': 'Basic ' + Buffer.from(':' + node.ln_api_password).toString('base64') };
               break;
 
             default:
