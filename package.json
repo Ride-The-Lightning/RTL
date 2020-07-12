@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.8.1-beta",
+  "version": "0.8.2-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -59,10 +59,11 @@
     "@angular-devkit/build-angular": "~0.901.7",
     "@angular/cli": "~9.1.7",
     "@ngrx/store-devtools": "^9.2.0",
-    "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
+    "dotenv": "^8.2.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~5.0.0",
