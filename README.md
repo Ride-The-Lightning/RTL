@@ -22,7 +22,7 @@ RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning
 
 * C-Lightning users, refer to [this](docs/C-Lightning-setup.md) page for install instructions.
 * Eclair users, refer to [this](docs/Eclair-setup.md) page for install instructions.
-* LND users, follow the instructions below on this page
+* LND users, follow the instructions below
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
