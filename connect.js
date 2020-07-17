@@ -146,7 +146,7 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].config_path = '';
       }
-      if (common.nodes[idx].ln_implementation === 'ECL' && common.nodes[idx].config_path !== '') {
+      if (common.nodes[idx].ln_implementation === 'ECL' && common.nodes[idx].ln_api_password === '' && common.nodes[idx].config_path !== '') {
         try {
           let exists = fs.existsSync(common.nodes[idx].config_path);
           if (exists) {

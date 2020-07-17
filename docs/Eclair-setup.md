@@ -48,7 +48,8 @@ Ensure that the follow values are correct per your config:
 * `lnImplementation` - This should be `ECL`, indicating that RTL is connecting to an Eclair node.
 * `lnServerUrl` - complete url with ip address and port of the eclair server.
 * `multiPass` - Specify the password (in plain text) to access RTL. This password will be hashed and not stored as plain text.
-* `configPath` (Mandatory) - Full path of the folder containing `eclair.conf` including the file name for the basic password authentication through `eclair.api.password`.
+* `configPath` (Optinal) - Full path of the folder containing `eclair.conf` including the file name. Can be used for the basic password authentication through `eclair.api.password`.
+* `lnApiPassword` (Mandatory if configPath is missing) - The same value from eclair.conf's eclair.api.password should be provided directly here. It will be used for Eclair API authentication. 
 
 ```
 {
@@ -64,7 +65,8 @@ Ensure that the follow values are correct per your config:
       "lnNode": "Eclair Testnet # 1",
       "lnImplementation": "ECL",
       "Authentication": {
-        "configPath": "<Mandatory - Config file path, including .conf file, for authentication>"
+        "configPath": "<Optional - Config file path, including .conf file>",
+        "lnApiPassword": "<Mandatory - Password used for API authentication>",
       },
       "Settings": {
         "userPersona": "OPERATOR",
@@ -77,7 +79,7 @@ Ensure that the follow values are correct per your config:
       }
     }
   ],
-  "multiPass": <password required for accessing RTL>
+  "multiPass": "<password required for accessing RTL>"
 }
 ```
 ### <a name="start"></a>Start the server and access the app

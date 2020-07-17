@@ -94,7 +94,8 @@ Example RTL-Config.json:
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 1>",
-        "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
+        "configPath": "<Optional:Path of the .conf if present locally or empty>",
+        "lnApiPassword": "<Optional:Can be used to provide password in ECL implementation>"
       },
       "Settings": {
         "userPersona": "OPERATOR",

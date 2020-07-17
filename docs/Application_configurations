@@ -20,7 +20,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "lnImplementation": "<LNP implementation, Allowed values LND/CLT/ECL. Default 'LND', Required>",
       "Authentication": {
         "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT>",
-        "configPath": "<Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally, Optional for LND & CLT, Mandatory for ECL>"
+        "configPath": "<Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally, Optional, only mandatory for ECL if the lnApiPassword is missing>",
+        "lnApiPassword": "<Password to be used for ECL API authentication. Mandatory only for ECL if the configPath is missing>"
       },
       "Settings": {
         "userPersona": "<User persona to tailor the data on UI. Allowed values MERCHANT, OPERATOR. Default MERCHANT, Required>",
