@@ -66,7 +66,7 @@ Ensure that the follow values are correct per your config:
       "lnImplementation": "ECL",
       "Authentication": {
         "configPath": "<Optional - Config file path, including .conf file>",
-        "lnApiPassword": "<Mandatory - Password used for API authentication>",
+        "lnApiPassword": "<Mandatory if the configPath is missing - Password used for API authentication>",
       },
       "Settings": {
         "userPersona": "OPERATOR",
