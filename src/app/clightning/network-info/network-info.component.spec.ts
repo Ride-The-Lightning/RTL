@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NetworkInfoComponent } from './network-info.component';
+import { CLNetworkInfoComponent } from './network-info.component';
 
-describe('NetworkInfoComponent', () => {
-  let component: NetworkInfoComponent;
-  let fixture: ComponentFixture<NetworkInfoComponent>;
+describe('CLNetworkInfoComponent', () => {
+  let component: CLNetworkInfoComponent;
+  let fixture: ComponentFixture<CLNetworkInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NetworkInfoComponent ]
+      declarations: [ CLNetworkInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NetworkInfoComponent);
+    fixture = TestBed.createComponent(CLNetworkInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

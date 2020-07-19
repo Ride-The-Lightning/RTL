@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CLChannelsTablesComponent } from './channels-tables.component';
+import { ECLChannelsTablesComponent } from './channels-tables.component';
 
-describe('CLChannelsTablesComponent', () => {
-  let component: CLChannelsTablesComponent;
-  let fixture: ComponentFixture<CLChannelsTablesComponent>;
+describe('ECLChannelsTablesComponent', () => {
+  let component: ECLChannelsTablesComponent;
+  let fixture: ComponentFixture<ECLChannelsTablesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelsTablesComponent ]
+      declarations: [ ECLChannelsTablesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLChannelsTablesComponent);
+    fixture = TestBed.createComponent(ECLChannelsTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

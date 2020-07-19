@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CLPeersComponent } from './peers.component';
+import { ECLPeersComponent } from './peers.component';
 
-describe('CLPeersComponent', () => {
-  let component: CLPeersComponent;
-  let fixture: ComponentFixture<CLPeersComponent>;
+describe('ECLPeersComponent', () => {
+  let component: ECLPeersComponent;
+  let fixture: ComponentFixture<ECLPeersComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLPeersComponent ]
+      declarations: [ ECLPeersComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CLPeersComponent);
+    fixture = TestBed.createComponent(ECLPeersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
