@@ -37,7 +37,8 @@ export class CLEffects implements OnDestroy {
       this.store.select('cl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseCounter > 7) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) {
+          rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
       });
