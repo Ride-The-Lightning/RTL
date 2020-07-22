@@ -5,10 +5,11 @@ import {
   PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+
 import * as LNDActions from './lnd.actions';
 
 export interface LNDState {
-  initialAPIResponseCounter: number;
+  initialAPIResponseStatus: String[];
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;  
   information: GetInfo;
@@ -36,7 +37,7 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  initialAPIResponseCounter: 0,
+  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
@@ -64,6 +65,8 @@ export const initLNDState: LNDState = {
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
+  let newAPIStatus = state.initialAPIResponseStatus;
+
   switch (action.type) {
     case LNDActions.CLEAR_EFFECT_ERROR_LND:
       const clearedEffectErrors = [...state.effectErrors];
@@ -98,9 +101,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         information: action.payload
       };
     case LNDActions.SET_PEERS_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case LNDActions.REMOVE_PEER_LND:
@@ -123,21 +127,24 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         invoices: newInvoices
       };
     case LNDActions.SET_FEES_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case LNDActions.SET_CLOSED_CHANNELS_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'CLOSEDCHANNELS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         closedChannels: action.payload,
       };
     case LNDActions.SET_PENDING_CHANNELS_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PENDINGCHANNELS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         pendingChannels: action.payload.channels,
         numberOfPendingChannels: action.payload.pendingChannels,
       };
@@ -165,9 +172,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
           }
         });
       }
+      newAPIStatus = [...state.initialAPIResponseStatus, 'ALLCHANNELS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         allChannels: action.payload,
         numberOfActiveChannels: activeChannels,
         numberOfInactiveChannels: inactiveChannels,
@@ -190,9 +198,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       };
     case LNDActions.SET_BALANCE_LND:
       if (action.payload.target === 'channels') {
+        newAPIStatus = [...state.initialAPIResponseStatus,'BALANCE'];
         return {
           ...state,
-          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+          initialAPIResponseStatus: newAPIStatus,
           channelBalance: action.payload.balance
         };
       } else {
@@ -204,13 +213,13 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_NETWORK_LND:
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         networkInfo: action.payload
       };
     case LNDActions.SET_INVOICES_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus,'INVOICES'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         invoices: action.payload
       };
     case LNDActions.SET_TOTAL_INVOICES_LND:
@@ -224,9 +233,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         transactions: action.payload
       };
     case LNDActions.SET_PAYMENTS_LND:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case LNDActions.SET_FORWARDING_HISTORY_LND:
