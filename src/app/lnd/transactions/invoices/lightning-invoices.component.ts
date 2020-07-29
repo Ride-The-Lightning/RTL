@@ -36,8 +36,8 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
-  public newlyAddedInvoiceMemo = '';
-  public newlyAddedInvoiceValue = 0;
+  public newlyAddedInvoiceMemo = null;
+  public newlyAddedInvoiceValue = null;
   public flgAnimate = true;
   public memo = '';
   public expiry: number;
