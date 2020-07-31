@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -17,7 +17,7 @@ import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
 export class ShowPubkeyComponent implements OnInit {
   public faReceipt = faReceipt;
   public information: GetInfoRoot;
-  public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}, { infoID: 1, infoKey: 'node URI', infoName: 'Node URI'}];
+  public infoTypes = [{infoID: 0, infoKey: 'node pubkey', infoName: 'Node pubkey'}];
   public selInfoType = this.infoTypes[0];
   public qrWidth = 210;
   public screenSize = '';
@@ -27,6 +27,15 @@ export class ShowPubkeyComponent implements OnInit {
 
   ngOnInit() {
     this.information = this.data.information;
+    if (this.information.uris) {
+      if (this.information.uris.length === 1) {
+        this.infoTypes.push({infoID: 1, infoKey: 'node URI', infoName: 'Node URI'});
+      } else if (this.information.uris.length > 1) {
+        this.information.uris.forEach((uri, idx) => {
+          this.infoTypes.push({infoID: (idx + 1), infoKey: 'node URI ' + (idx + 1), infoName: 'Node URI ' + (idx + 1)});
+        });
+      }
+    }
     this.screenSize = this.commonService.getScreenSize();
   }
 

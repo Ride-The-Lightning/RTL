@@ -7,6 +7,7 @@ import { ADDRESS_TYPES } from '../../../shared/services/consts-enums-functions';
 import { OnChainGeneratedAddressComponent } from '../../../shared/components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
 
 import { LNDEffects } from '../../store/lnd.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -26,7 +27,7 @@ export class OnChainReceiveComponent implements OnInit {
 
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
-    this.store.dispatch(new RTLActions.GetNewAddress(this.selectedAddressType));
+    this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
     this.lndEffects.setNewAddress
     .pipe(take(1))
     .subscribe(newAddress => {

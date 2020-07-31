@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode qrdata="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <qrcode qrdata="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
   <div fxFlex="100" fxFlex.gt-sm="70" class="padding-gap-large pl-3">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
@@ -13,7 +13,7 @@
     <mat-card-content class="pr-1">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode qrdata="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+          <qrcode qrdata="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
         <div fxLayout="row" *ngIf="information.uris && information.uris.length > 0">
           <mat-form-field fxFlex="100" fxFlex.gt-sm="40" fxLayoutAlign="start end">
@@ -27,13 +27,12 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">{{selInfoType.infoName}}</h4>
-            <span class="foreground-secondary-text">{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}</span>
+            <span class="foreground-secondary-text">{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <button autoFocus fxFlex="60" fxFlex.gt-sm="33" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2"
-            type="submit" rtlClipboard payload="{{selInfoType.infoID === 1 ? information.uris[0] : information.identity_pubkey}}" (copied)="onCopyPubkey($event)">Copy {{selInfoType.infoKey}}</button>
+          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard payload="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" (copied)="onCopyPubkey($event)">Copy {{selInfoType.infoKey}}</button>
         </div>
       </div>
     </mat-card-content>

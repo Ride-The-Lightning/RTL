@@ -8,9 +8,10 @@
       <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
       <span><strong>Backup Folder Location: </strong>{{selNode.channelBackupPath}}.</span>
     </div>
-    <div fxLayout="row" fxFlex="100" fxFlex.gt-sm="30" fxLayoutAlign="space-between stretch" class="mt-2">
-      <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>
-      <button fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
+    <div fxLayout="row" class="mt-2">
+      <button mat-stroked-button class="mr-1" color="primary" tabindex="1" (click)="onVerifyChannels({})">Verify All</button>
+      <button mat-flat-button class="mr-1" color="primary" tabindex="2" (click)="onBackupChannels({})">Backup All</button>
+      <button mat-flat-button color="primary" tabindex="3" (click)="onDownloadBackup({})">Download Backup</button>
     </div>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
@@ -32,11 +33,12 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>        
         <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center">
-          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+          <div fxFlex="30" class="bordered-box table-actions-select">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
               <mat-option (click)="onBackupChannels(channel)">Backup</mat-option>
+              <mat-option (click)="onDownloadBackup(channel)">Download Backup</mat-option>
               <mat-option (click)="onVerifyChannels(channel)">Verify</mat-option>
             </mat-select>
           </div>

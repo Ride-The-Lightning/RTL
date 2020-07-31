@@ -3,9 +3,11 @@ import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
-
+import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
@@ -18,6 +20,7 @@ import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.compo
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -74,7 +77,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchChannels/all') {
           this.flgLoading[0] = 'error';
         }
@@ -95,7 +98,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
+    this.store.dispatch(new LNDActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
     .pipe(take(1))
     .subscribe(resLookup => {
@@ -146,13 +149,13 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
+          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookup(channelToUpdate.chan_id.toString()));
+      this.store.dispatch(new LNDActions.ChannelLookup(channelToUpdate.chan_id.toString()));
       this.lndEffects.setLookup
       .pipe(take(1))
       .subscribe(resLookup => {
@@ -190,7 +193,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
+          this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
         }
       });
     }
@@ -210,40 +213,10 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClick(selChannel: Channel, event: any) {
-    const reorderedChannel = [
-      [{key: 'remote_alias', value: selChannel.remote_alias, title: 'Peer Alias', width: 40},
-        {key: 'active', value: selChannel.active, title: 'Active', width: 30, type: DataTypeEnum.BOOLEAN},
-        {key: 'private', value: selChannel.private, title: 'Private', width: 30, type: DataTypeEnum.BOOLEAN}],
-      [{key: 'remote_pubkey', value: selChannel.remote_pubkey, title: 'Peer Public Key', width: 100}],
-      [{key: 'channel_point', value: selChannel.channel_point, title: 'Channel Point', width: 100}],
-      [{key: 'chan_id', value: selChannel.chan_id, title: 'Channel ID', width: 50},
-        {key: 'capacity', value: selChannel.capacity, title: 'Capacity', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'local_balance', value: selChannel.local_balance, title: 'Local Balance', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'remote_balance', value: selChannel.remote_balance, title: 'Remote Balance', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'commit_fee', value: selChannel.commit_fee, title: 'Commit Fee', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'commit_weight', value: selChannel.commit_weight, title: 'Commit Weight', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'fee_per_kw', value: selChannel.fee_per_kw, title: 'Fee/KW', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'unsettled_balance', value: selChannel.unsettled_balance, title: 'Unsettled Balance', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'total_satoshis_sent', value: selChannel.total_satoshis_sent, title: 'Total Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'total_satoshis_received', value: selChannel.total_satoshis_received, title: 'Total Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'chan_status_flags', value: selChannel.chan_status_flags, title: 'Channel Status Flags', width: 50, type: DataTypeEnum.STRING},
-        {key: 'close_address', value: selChannel.close_address, title: 'Close Address', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'num_updates', value: selChannel.num_updates, title: 'Number of Updates', width: 40, type: DataTypeEnum.NUMBER},
-        {key: 'pending_htlcs', value: selChannel.pending_htlcs, title: 'Pending HTLCs', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'csv_delay', value: selChannel.csv_delay, title: 'CSV Delay', width: 30, type: DataTypeEnum.NUMBER}],
-      [{key: 'initiator', value: selChannel.initiator, title: 'Initiator', width: 40, type: DataTypeEnum.BOOLEAN},
-        {key: 'uptime', value: selChannel.uptime, title: 'Uptime (Seconds)', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'lifetime', value: selChannel.lifetime, title: 'Lifetime (Seconds)', width: 30, type: DataTypeEnum.NUMBER}],
-      [{key: 'static_remote_key', value: selChannel.static_remote_key, title: 'Static Remote Key', width: 40, type: DataTypeEnum.BOOLEAN},
-        {key: 'local_chan_reserve_sat', value: selChannel.local_chan_reserve_sat, title: 'Local Chan Reserve (Sats)', width: 30, type: DataTypeEnum.NUMBER},
-        {key: 'remote_chan_reserve_sat', value: selChannel.remote_chan_reserve_sat, title: 'Remote Chan Reserve (Sats)', width: 30, type: DataTypeEnum.NUMBER}]
-    ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Channel Information',
-      showCopyName: 'Channel ID',
-      showCopyField: selChannel.chan_id,
-      message: reorderedChannel
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      channel: selChannel,
+      showCopy: true,
+      component: ChannelInformationComponent
     }}));
   }
 
@@ -274,7 +247,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     let maxDivider = minutesDivider;
     let minDivider = 1;
     let max_uptime = 0;
-    channels.forEach(channel => { if(+channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
+    channels.forEach(channel => { if(channel.uptime && +channel.uptime > max_uptime) { max_uptime = +channel.uptime; }});
     switch (true) {
       case max_uptime < hoursDivider:
         this.timeUnit = 'Mins:Secs';
@@ -307,7 +280,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
         break;
     }
     channels.forEach(channel => {
-      channel.uptime_str = this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0');
+      channel.uptime_str = channel.uptime ? (this.decimalPipe.transform(Math.floor(+channel.uptime / maxDivider), '2.0-0') + ':' + this.decimalPipe.transform(Math.round((+channel.uptime % maxDivider) / minDivider), '2.0-0')) : '---';
     });
     return channels;
   }
@@ -322,7 +295,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+      this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
   }
 

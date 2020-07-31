@@ -1,19 +1,23 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { OpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
-import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+import { ConnectPeerComponent } from '../connect-peer/connect-peer.component';
+
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -21,7 +25,6 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   selector: 'rtl-peers',
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
-  animations: [newlyAddedRowAnimation],
   providers: [
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
   ]
@@ -29,15 +32,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class PeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild('peersForm', {static: true}) form: any;
+  public availableBalance = 0;
   public faUsers = faUsers;
-  public newlyAddedPeer = '';
-  public flgAnimate = true;
   public displayedColumns = [];
-  public peerAddress = '';
   public peers: any;
   public information: GetInfo = {};
-  public availableBalance = 0;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -67,7 +66,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchPeers') {
           this.flgLoading[0] = 'error';
         }
@@ -76,10 +75,9 @@ export class PeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.blockchainBalance.total_balance || 0;
       this.peers = new MatTableDataSource([]);
       this.peers.data = [];
-      if ( rtlStore.peers) {
+      if (rtlStore.peers) {
         this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
         this.peers.data = rtlStore.peers;
-        setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
       this.peers.sort = this.sort;
       this.peers.paginator = this.paginator;
@@ -88,43 +86,6 @@ export class PeersComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$
-    .pipe(
-      takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.SET_PEERS)
-    ).subscribe((setPeers: RTLActions.SetPeers) => {
-      this.peerAddress = undefined;
-      this.flgAnimate = true;
-      this.form.resetForm();
-    });
-  }
-
-  onConnectPeer() {
-    if(!this.peerAddress) { return true; }
-    const deviderIndex = this.peerAddress.search('@');
-    let pubkey = '';
-    let host = '';
-    if (deviderIndex > -1) {
-      pubkey = this.peerAddress.substring(0, deviderIndex);
-      host = this.peerAddress.substring(deviderIndex + 1);
-      this.connectPeerWithParams(pubkey, host);
-    } else {
-      pubkey = this.peerAddress;
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Address...'));
-      this.store.dispatch(new RTLActions.FetchGraphNode(pubkey));
-      this.lndEffects.setGraphNode
-      .pipe(take(1))
-      .subscribe(graphNode => {
-        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
-        this.connectPeerWithParams(pubkey, host);
-      });
-    }
-  }
-
-  connectPeerWithParams(pubkey: string, host: string) {
-    this.newlyAddedPeer = pubkey;
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
-    this.store.dispatch(new RTLActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false, showOpenChannelModal: true}));
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -144,9 +105,11 @@ export class PeersComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  resetData() {
-    this.peerAddress = '';
-    this.form.resetForm();
+  onConnectPeer() {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      message: { peer: null, information: this.information, balance: this.availableBalance },
+      component: ConnectPeerComponent
+    }}));
   }
 
   onOpenChannel(peerToAddChannel: Peer) {
@@ -158,7 +121,6 @@ export class PeersComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       alertTitle: 'Open Channel',
       message: peerToAddChannelMessage,
-      newlyAdded: false,
       component: OpenChannelComponent
     }}));
   }
@@ -177,7 +139,7 @@ export class PeersComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
-        this.store.dispatch(new RTLActions.DetachPeer({pubkey: peerToDetach.pub_key}));
+        this.store.dispatch(new LNDActions.DetachPeer({pubkey: peerToDetach.pub_key}));
       }
     });
   }
@@ -188,7 +150,7 @@ export class PeersComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.peers.data && this.peers.data.length > 0) {
-      this.commonService.downloadCSV(this.peers.data, 'Peers');
+      this.commonService.downloadFile(this.peers.data, 'Peers');
     }
   }
 

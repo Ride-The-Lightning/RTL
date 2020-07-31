@@ -7,92 +7,100 @@
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <mat-card-content class="mt-5px">
-      <form fxLayout="column" (ngSubmit)="openChannelForm.form.valid && onOpenChannel()" #openChannelForm="ngForm">
-        <mat-expansion-panel class="flat-expansion-panel">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span>{{newlyAdded ? '' : 'Open channel with'}}&nbsp;</span><strong class="font-weight-900">{{peer.alias || peer.address}}</strong>&nbsp;{{newlyAdded ? 'added as a peer.' : '.'}} 
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div fxLayout="column">
-            <div fxLayout="row">
-              <div fxFlex="100">
-                <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
-                <span class="foreground-secondary-text">{{peer.pub_key}}</span>
-              </div>
-            </div>
-            <mat-divider class="w-100 my-1"></mat-divider>
-            <div fxLayout="row">
-              <div fxFlex="50">
-                <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
-                <span class="overflow-wrap foreground-secondary-text">{{peer.address}}</span>
-              </div>
-              <div fxFlex="50">
-                  <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
-                  <span class="overflow-wrap foreground-secondary-text">{{peer.inbound ? 'True' : 'False'}}</span>
-                </div>
-              </div>
-          </div>
-        </mat-expansion-panel>
-        <div fxLayout="column" class="bordered-box mt-2 open-inputs-box">
-          <div fxLayout="row" fxFlex="100">
-            <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-              <div fxFlex="100" fxLayoutAlign="start start">
-                <span class="page-title">Open Channel</span>
-              </div>
-            </mat-card-header>
-          </div>
-          <div fxLayout="row" fxFlex="100">
-            Available balance: {{totalBalance | number}} {{information.smaller_currency_unit}}
-          </div>
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
-            <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" max="{{totalBalance}}">
-              <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0)}})</mat-hint>
-              <span matSuffix> {{information?.smaller_currency_unit}} </span>
-              <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
-              <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
-            </mat-form-field>
-            <div fxFlex="35" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
-            </div>
-          </div>
-          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-            <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-              <mat-select tabindex="3" [(value)]="selTransType">
-                <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
-                  {{transType.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='0'">
-              <input matInput placeholder="Default" disabled>
-            </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='1'">
-              <input matInput [(ngModel)]="transTypeValue.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" required tabindex="4" #blocks="ngModel">
-              <mat-error *ngIf="!transTypeValue.blocks">Target confirmation block is required.</mat-error>
-            </mat-form-field>
-            <mat-form-field fxFlex="30" *ngIf="selTransType=='2'">
-              <input matInput [(ngModel)]="transTypeValue.fees" placeholder="Fee ({{information?.smaller_currency_unit}}/Byte)" type="number" name="fees" step="1" min="0" required tabindex="5" #fees="ngModel">
-              <mat-error *ngIf="!transTypeValue.fees">Fee is required.</mat-error>
-            </mat-form-field>
-            <div fxFlex="35" fxLayoutAlign="start center">
-              <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
-            </div>
-          </div>
+      <form fxLayout="column" (submit)="onOpenChannel()" (reset)="resetData()" #form="ngForm">
+        <div fxLayout="column">
+          <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
+            <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="1" required>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
+              <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.pub_key ? peer.pub_key : ''}}</mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="selectedPeer.errors?.required">Peer alias is required.</mat-error>
+            <mat-error *ngIf="selectedPeer.errors?.notfound">Peer not found in the list.</mat-error>
+          </mat-form-field>
+        </div>
+        <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
+        <ng-container *ngTemplateOutlet="openChannelBlock"></ng-container>
+        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="channelConnectionError !== ''">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
         </div>
         <div class="mt-2" fxLayout="row" fxLayoutAlign="end center">
-          <div *ngIf="newlyAdded" fxLayoutAlign="space-between center" fxFlex="60">
-            <button fxFlex="33" fxLayoutAlign="center center" mat-stroked-button color="warn" (click)="onClose()" tabindex="7">Do It Later</button>
-            <button fxFlex="32" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="8" type="reset" (click)="resetData()">Clear Field</button>
-            <button autoFocus fxFlex="33" fxLayoutAlign="center center" mat-flat-button color="primary" type="submit" tabindex="9">Open Channel</button>
-          </div>
-          <div *ngIf="!newlyAdded" fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="30" class="mt-2">
-            <button fxFlex="48" fxLayoutAlign="center center" mat-stroked-button color="primary" tabindex="7" type="reset" (click)="resetData()">Clear Field</button>
-            <button autoFocus fxFlex="48" fxLayoutAlign="center center" mat-flat-button color="primary" type="submit" tabindex="8">Open Channel</button>
-          </div>
+          <button mat-stroked-button color="primary" class="mr-1" tabindex="7" type="reset">Clear Fields</button>
+          <button autoFocus mat-flat-button color="primary" type="submit" tabindex="9">Open Channel</button>
         </div>
       </form>
     </mat-card-content>
   </div>
 </div>
+
+<ng-template #peerDetailsExpansionBlock>
+  <mat-expansion-panel class="flat-expansion-panel my-1" *ngIf="peer" expanded="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span>Peer: &nbsp;</span><strong class="font-weight-900">{{peer?.alias || peer?.address}}</strong>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="column">
+      <div fxLayout="row">
+        <div fxFlex="100">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Pubkey</h4>
+          <span class="foreground-secondary-text">{{peer.pub_key}}</span>
+        </div>
+      </div>
+      <mat-divider class="w-100 my-1"></mat-divider>
+      <div fxLayout="row">
+        <div fxFlex="50">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
+          <span class="overflow-wrap foreground-secondary-text">{{peer?.address}}</span>
+        </div>
+        <div fxFlex="50">
+          <h4 fxLayoutAlign="start" class="font-bold-500">Inbound</h4>
+          <span class="overflow-wrap foreground-secondary-text">{{peer?.inbound ? 'True' : 'False'}}</span>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</ng-template>
+<ng-template #openChannelBlock>
+  <div fxLayout="column">
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+      <mat-form-field fxFlex="60" fxLayoutAlign="start end">
+        <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" max="{{totalBalance}}">
+        <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
+        <span matSuffix> {{information?.smaller_currency_unit}} </span>
+        <mat-error *ngIf="!fundingAmount">Amount is required.</mat-error>
+        <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
+      </mat-form-field>
+      <div fxFlex="35" fxLayoutAlign="start center">
+        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+      </div>
+    </div>
+    <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span>{{advancedTitle}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+          <mat-form-field fxFlex="49">
+            <mat-select tabindex="3" [(value)]="selTransType">
+              <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
+                {{transType.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="49">
+            <input matInput [(ngModel)]="transTypeValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" step="1" min="0" tabindex="4" name="transTypeValue" #transTypeVal="ngModel">
+            <mat-error *ngIf="selTransType!=='0' && !transTypeValue">{{selTransType === '1' ? 'Target Confirmation Blocks' : 'Fee'}} is required.</mat-error>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+          <div fxFlex="50" fxLayoutAlign="start center">
+            <mat-slide-toggle tabindex="6" color="primary" [(ngModel)]="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>    
+  </div>
+</ng-template>

@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +20,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { Channel } from '../../../shared/models/lndModels';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import { LNDEffects } from '../../store/lnd.effects';
@@ -156,7 +158,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onSwapByBoltz() {
     const swapInfo = this.boltzService.getSwapInfo();
     if(this.direction === SwapTypeEnum.DEPOSIT) {
-      this.store.dispatch(new RTLActions.SaveNewInvoice({
+      this.store.dispatch(new LNDActions.SaveNewInvoice({
         memo: 'Sent to BTC Lightning',
         invoiceValue: this.inputFormGroup.controls.amount.value, 
         expiry: 3600, 
@@ -165,8 +167,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         openModal: false
       }));
       this.actions$.pipe(takeUntil(this.unSubs[1]),
-      filter((action) => action.type === RTLActions.NEWLY_SAVED_INVOICE))
-      .subscribe((action: RTLActions.NewlySavedInvoice) => {
+      filter((action) => action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
+      .subscribe((action: LNDActions.NewlySavedInvoice) => {
         this.boltzService.onSwap({
           direction: this.direction,
           invoiceAmount: this.inputFormGroup.controls.amount.value,
@@ -183,17 +185,17 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
             id_bytes: swapStatus.id,
             htlc_address: swapStatus.address
           };
-          this.store.dispatch(new RTLActions.FetchBoltzSwaps());
+          this.store.dispatch(new LNDActions.FetchBoltzSwaps());
 
           const paymentBody = {
             address: swapStatus.address,
             amount: swapStatus.expectedAmount
           };
-          this.store.dispatch(new RTLActions.SendCoins(paymentBody));
+          this.store.dispatch(new LNDActions.SetChannelTransaction(paymentBody));
         })
       });
     } else {
-      this.store.dispatch(new RTLActions.GetNewAddress(this.selectedAddressType));
+      this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
       this.lndEffects.setNewAddress
       .pipe(take(1))
       .subscribe(newAddress => {
@@ -214,9 +216,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
             htlc_address: swapStatus.lockupAddress
           };
           this.flgEditable = true;
-          this.store.dispatch(new RTLActions.FetchBoltzSwaps());
+          this.store.dispatch(new LNDActions.FetchBoltzSwaps());
             
           const paymentBody = {
+            fromDialog: true,
             paymentReq: swapStatus.invoice,
             paymentDecoded: {},
             zeroAmtInvoice: false,
@@ -225,10 +228,10 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
           if(this.channel && this.channel.chan_id) {
             paymentBody['outgoingChannel'] = this.channel;
           }
-          this.store.dispatch(new RTLActions.SendPayment(paymentBody));
+          this.store.dispatch(new LNDActions.SendPayment(paymentBody));
           this.actions$.pipe(takeUntil(this.unSubs[5]),
-          filter((action) => action.type === RTLActions.SEND_PAYMENT_STATUS))
-          .subscribe((action: RTLActions.SendPaymentStatus) => {
+          filter((action) => action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
+          .subscribe((action: LNDActions.SendPaymentStatus) => {
             const error = action.payload.error;
             if(error && error.error !== 'payment is in transition') {
               this.loopStatus = { error: error.error };
@@ -244,7 +247,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   saveSwapFile({swapStatus, costServer, costOnchain, swapInfo}) {
-    this.store.dispatch(new RTLActions.AddBoltzSwap({
+    this.store.dispatch(new LNDActions.AddBoltzSwap({
       swap: {
         ...swapStatus,
         ...swapInfo,
@@ -263,7 +266,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee, +this.quote.miner_fee, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
-        this.store.dispatch(new RTLActions.FetchLoopSwaps());
+        this.store.dispatch(new LNDActions.FetchLoopSwaps());
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
@@ -277,7 +280,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
-        this.store.dispatch(new RTLActions.FetchLoopSwaps());
+        this.store.dispatch(new LNDActions.FetchLoopSwaps());
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
@@ -289,7 +292,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onChooseProvider() {
     if(this.swapProvider === SwapProviderEnum.LIGHTNING_LABS) {
-      this.getTermsAndQuites();
+      this.getTermsAndQuotes();
     } else {
       this.getPairs();
     }
@@ -301,8 +304,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.next();
   }
 
-  getTermsAndQuites () {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms & Conditions...'));
+  getTermsAndQuotes () {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms & Quotes...'));
     if(this.direction === SwapTypeEnum.WITHDRAWAL) {
       this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
       .pipe(takeUntil(this.unSubs[0]))
@@ -451,7 +454,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClose() {
-    this.store.dispatch(new RTLActions.FetchBoltzSwaps());
+    this.store.dispatch(new LNDActions.FetchBoltzSwaps());
     this.dialogRef.close(true);
   }
 

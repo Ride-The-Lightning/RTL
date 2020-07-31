@@ -1,0 +1,42 @@
+<div fxLayout="row">
+  <div fxFlex="100" class="padding-gap-large">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
+      <div fxFlex="95" fxLayoutAlign="start start">
+        <span class="page-title">Create Invoice</span>
+      </div>
+      <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" [mat-dialog-close]="false" default mat-button>X</button>
+    </mat-card-header>
+    <mat-card-content class="mt-5px">
+      <form fxLayout="row wrap" fxLayoutAlign="space-between start" fxFlex="100" #addInvoiceForm="ngForm">
+        <mat-form-field fxFlex="100" fxLayoutAlign="end start">
+          <input matInput autoFocus [(ngModel)]="memo" placeholder="Memo" tabindex="1" name="memo">
+        </mat-form-field>
+        <mat-form-field fxFlex="50" fxLayoutAlign="start end">
+          <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="2" name="invoiceValue">
+          <span matSuffix> {{information?.smaller_currency_unit}} </span>
+          <mat-hint>{{invoiceValueHint}}</mat-hint>          
+        </mat-form-field>
+        <mat-form-field fxFlex="24" fxLayoutAlign="start end">
+          <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" step="{{selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1}}" min="1" tabindex="3" name="expiry">
+          <span matSuffix> {{selTimeUnit | titlecase}} </span>
+        </mat-form-field>
+        <mat-form-field fxFlex="24" fxLayoutAlign="start end">
+          <mat-select [value]="selTimeUnit" tabindex="4" name="timeUnit" (selectionChange)="onTimeUnitChange($event)">
+            <mat-option *ngFor="let timeUnit of timeUnits" [value]="timeUnit">{{timeUnit | titlecase}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div fxLayout="row" fxFlex="100" class="mt-1" fxLayoutAlign="start center">
+          <mat-slide-toggle tabindex="4" color="primary" [(ngModel)]="private" matTooltip="Include routing hints for private channels" [matTooltipPosition]="'above'" name="private">Private Routing Hints</mat-slide-toggle>
+        </div>
+        <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="invoiceError !== ''">
+          <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+          <span *ngIf="invoiceError !== ''">{{invoiceError}}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" class="mt-2" fxLayoutAlign="end center">
+          <button class="mr-1" mat-stroked-button color="primary" tabindex="5" type="reset" (click)="resetData()">Clear Field</button>
+          <button mat-flat-button color="primary" (click)="onAddInvoice(addInvoiceForm)" tabindex="6">Create Invoice</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>      
+</div>

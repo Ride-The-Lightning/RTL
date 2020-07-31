@@ -3,14 +3,18 @@ import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
-import { ChannelCL, GetInfoCL, ChannelEdgeCL } from '../../../../../shared/models/clModels';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Channel, GetInfo, ChannelEdge } from '../../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
+import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
+import * as CLActions from '../../../../store/cl.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -29,7 +33,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   public displayedColumns = [];
   public channels: any;
   public myChanPolicy: any = {};
-  public information: GetInfoCL = {};
+  public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -63,8 +67,8 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsCl.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannelsCL') {
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchChannels') {
           this.flgLoading[0] = 'error';
         }
       });
@@ -81,13 +85,13 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     });
   }
 
-  onViewRemotePolicy(selChannel: ChannelCL) {
-    this.store.dispatch(new RTLActions.ChannelLookupCL({shortChannelID: selChannel.short_channel_id, showError: true}));
+  onViewRemotePolicy(selChannel: Channel) {
+    this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
-    .subscribe((resLookup: ChannelEdgeCL[])  => {
+    .subscribe((resLookup: ChannelEdge[])  => {
       if(resLookup.length === 0) { return false; }
-      let remoteNode: ChannelEdgeCL = {};
+      let remoteNode: ChannelEdge = {};
       if(resLookup[0].source !== this.information.id) {
         remoteNode = resLookup[0];
       } else {
@@ -133,16 +137,16 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
+          this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new RTLActions.ChannelLookupCL(channelToUpdate.short_channel_id));
+      this.store.dispatch(new CLActions.ChannelLookup(channelToUpdate.short_channel_id));
       this.clEffects.setLookupCL
       .pipe(take(1))
-      .subscribe((resLookup: ChannelEdgeCL[]) => {
+      .subscribe((resLookup: ChannelEdge[]) => {
         if (resLookup.length > 0 && resLookup[0].destination === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth};
         } else if (resLookup.length > 1 && resLookup[1].destination === this.information.id) {
@@ -175,14 +179,14 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
-          this.store.dispatch(new RTLActions.UpdateChannelsCL({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
+          this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
         }
       });
     }
     this.applyFilter();
   }
 
-  onChannelClose(channelToClose: ChannelCL) {
+  onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Close Channel',
@@ -195,7 +199,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new RTLActions.CloseChannelCL({channelId: channelToClose.channel_id}));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id}));
       }
     });
   }
@@ -205,37 +209,20 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     this.channels.filter = this.selFilter;
   }
 
-  onChannelClick(selChannel: ChannelCL, event: any) {
-    const reorderedChannel = [
-      [{key: 'channel_id', value: selChannel.channel_id, title: 'Channel ID', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'id', value: selChannel.id, title: 'Peer Public Key', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'funding_txid', value: selChannel.funding_txid, title: 'Funding Transaction Id', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'short_channel_id', value: selChannel.short_channel_id, title: 'Short Channel ID', width: 34, type: DataTypeEnum.STRING},
-        {key: 'alias', value: selChannel.alias, title: 'Peer Alias', width: 66, type: DataTypeEnum.STRING}],
-      [{key: 'connected', value: selChannel.connected, title: 'Connected', width: 34, type: DataTypeEnum.BOOLEAN},
-        {key: 'private', value: selChannel.private, title: 'Private', width: 33, type: DataTypeEnum.BOOLEAN},
-        {key: 'state', value: selChannel.state, title: 'State', width: 33, type: DataTypeEnum.STRING}],
-      [{key: 'our_channel_reserve_satoshis', value: selChannel.our_channel_reserve_satoshis, title: 'Our Channel Reserve (Sats)', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'their_channel_reserve_satoshis', value: selChannel.their_channel_reserve_satoshis, title: 'Their Channel Reserve (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_to_us', value: selChannel.msatoshi_to_us, title: 'mSatoshi to Us', width: 33, type: DataTypeEnum.NUMBER}],
-      [{key: 'spendable_msatoshi', value: selChannel.spendable_msatoshi, title: 'Spendable (mSats)', width: 34, type: DataTypeEnum.NUMBER},
-        {key: 'msatoshi_total', value: selChannel.msatoshi_total, title: 'Total (mSats)', width: 66, type: DataTypeEnum.NUMBER}]
-    ];
-    this.store.dispatch(new RTLActions.OpenAlert({ data: {
-      type: AlertTypeEnum.INFORMATION,
-      alertTitle: 'Channel Information',
-      showCopyName: 'Short Channel ID',
-      showCopyField: selChannel.short_channel_id,
-      message: reorderedChannel
-    }}));
-  }
+  onChannelClick(selChannel: Channel, event: any) {
+      this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+        channel: selChannel,
+        showCopy: true,
+        component: CLChannelInformationComponent
+      }}));
+    }
 
   loadChannelsTable(mychannels) {
     mychannels.sort(function(a, b) {
       return (a.active === b.active) ? 0 : ((b.active) ? 1 : -1);
     });
-    this.channels = new MatTableDataSource<ChannelCL>([...mychannels]);
-    this.channels.filterPredicate = (channel: ChannelCL, fltr: string) => {
+    this.channels = new MatTableDataSource<Channel>([...mychannels]);
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id : '') +
       (channel.short_channel_id ? channel.short_channel_id : '') + (channel.id ? channel.id : '') + (channel.alias ? channel.alias : '') +
       (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
@@ -251,7 +238,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
-      this.commonService.downloadCSV(this.channels.data, 'Open-channels');
+      this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
   }
 

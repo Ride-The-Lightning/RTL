@@ -1,28 +1,31 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfoCL, FeesCL, BalanceCL, LocalRemoteBalanceCL, PeerCL, PaymentCL, ChannelCL, FeeRatesCL, ForwardingHistoryResCL, ListInvoicesCL } from '../../shared/models/clModels';
-import { ErrorPayload } from '../../shared/models/errorPayload';
-import * as RTLActions from '../../store/rtl.actions';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices } from '../../shared/models/clModels';
+import { ErrorPayload } from '../../shared/models/errorPayload';
+import * as CLActions from '../store/cl.actions';
+import * as RTLActions from '../../store/rtl.actions';
 
 export interface CLState {
-  effectErrorsCl: ErrorPayload[];
+  initialAPIResponseCounter: number;
+  effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
-  information: GetInfoCL;
-  fees: FeesCL;
-  feeRatesPerKB: FeeRatesCL;
-  feeRatesPerKW: FeeRatesCL;
-  balance: BalanceCL;
-  localRemoteBalance: LocalRemoteBalanceCL;
-  peers: PeerCL[];
-  allChannels: ChannelCL[];
-  payments: PaymentCL[];
-  forwardingHistory: ForwardingHistoryResCL;
-  invoices: ListInvoicesCL;
+  information: GetInfo;
+  fees: Fees;
+  feeRatesPerKB: FeeRates;
+  feeRatesPerKW: FeeRates;
+  balance: Balance;
+  localRemoteBalance: LocalRemoteBalance;
+  peers: Peer[];
+  allChannels: Channel[];
+  payments: Payment[];
+  forwardingHistory: ForwardingHistoryRes;
+  invoices: ListInvoices;
   totalInvoices: number;
 }
 
 export const initCLState: CLState = {
-  effectErrorsCl: [],
+  initialAPIResponseCounter: 0,
+  effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -38,11 +41,11 @@ export const initCLState: CLState = {
   totalInvoices: -1
 }
 
-export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
+export function CLReducer(state = initCLState, action: CLActions.CLActions) {
   switch (action.type) {
-    case RTLActions.CLEAR_EFFECT_ERROR_CL:
-      const clearedEffectErrors = [...state.effectErrorsCl];
-      const removeEffectIdx = state.effectErrorsCl.findIndex(err => {
+    case CLActions.CLEAR_EFFECT_ERROR_CL:
+      const clearedEffectErrors = [...state.effectErrors];
+      const removeEffectIdx = state.effectErrors.findIndex(err => {
         return err.action === action.payload;
       });
       if (removeEffectIdx > -1) {
@@ -50,42 +53,45 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
       }
       return {
         ...state,
-        effectErrorsCl: clearedEffectErrors
+        effectErrors: clearedEffectErrors
       };
-    case RTLActions.EFFECT_ERROR_CL:
+    case CLActions.EFFECT_ERROR_CL:
       return {
         ...state,
-        effectErrorsCl: [...state.effectErrorsCl, action.payload]
+        effectErrors: [...state.effectErrors, action.payload]
       };
-    case RTLActions.SET_CHILD_NODE_SETTINGS_CL:
+    case CLActions.SET_CHILD_NODE_SETTINGS_CL:
       return {
         ...state,
         nodeSettings: action.payload
       }
-    case RTLActions.RESET_CL_STORE:
+    case CLActions.RESET_CL_STORE:
       return {
         ...initCLState,
         nodeSettings: action.payload,
       };
-    case RTLActions.SET_INFO_CL:
+    case CLActions.SET_INFO_CL:
       return {
         ...state,
         information: action.payload
       };
-    case RTLActions.SET_FEES_CL:
+    case CLActions.SET_FEES_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         fees: action.payload
       };
-    case RTLActions.SET_FEE_RATES_CL:
+    case CLActions.SET_FEE_RATES_CL:
       if (action.payload.perkb) {
         return {
           ...state,
+          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
           feeRatesPerKB: action.payload
         };
       } else if (action.payload.perkw) {
         return {
           ...state,
+          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
           feeRatesPerKW: action.payload
         };
       } else {
@@ -93,27 +99,30 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
           ...state
         }
       }
-    case RTLActions.SET_BALANCE_CL:
+    case CLActions.SET_BALANCE_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         balance: action.payload
       };
-    case RTLActions.SET_LOCAL_REMOTE_BALANCE_CL:
+    case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         localRemoteBalance: action.payload
       };
-    case RTLActions.SET_PEERS_CL:
+    case CLActions.SET_PEERS_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         peers: action.payload
       };
-    case RTLActions.ADD_PEER_CL:
+    case CLActions.ADD_PEER_CL:
       return {
         ...state,
         peers: [...state.peers, action.payload]
       };
-    case RTLActions.REMOVE_PEER_CL:
+    case CLActions.REMOVE_PEER_CL:
       const modifiedPeers = [...state.peers];
       const removePeerIdx = state.peers.findIndex(peer => {
         return peer.id === action.payload.id;
@@ -125,12 +134,13 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         peers: modifiedPeers
       };
-    case RTLActions.SET_CHANNELS_CL:
+    case CLActions.SET_CHANNELS_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         allChannels: action.payload,
       };
-    case RTLActions.REMOVE_CHANNEL_CL:
+    case CLActions.REMOVE_CHANNEL_CL:
       const modifiedChannels = [...state.allChannels];
       const removeChannelIdx = state.allChannels.findIndex(channel => {
         return channel.channel_id === action.payload.channelId;
@@ -142,29 +152,30 @@ export function CLReducer(state = initCLState, action: RTLActions.RTLActions) {
         ...state,
         allChannels: modifiedChannels
       };
-    case RTLActions.SET_PAYMENTS_CL:
+    case CLActions.SET_PAYMENTS_CL:
       return {
         ...state,
         payments: action.payload
       };
-    case RTLActions.SET_FORWARDING_HISTORY_CL:
+    case CLActions.SET_FORWARDING_HISTORY_CL:
       return {
         ...state,
+        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
         forwardingHistory: action.payload
       };
-    case RTLActions.ADD_INVOICE_CL:
+    case CLActions.ADD_INVOICE_CL:
       const newInvoices = state.invoices;
       newInvoices.invoices.unshift(action.payload);
       return {
         ...state,
         invoices: newInvoices
       };
-    case RTLActions.SET_INVOICES_CL:
+    case CLActions.SET_INVOICES_CL:
       return {
         ...state,
         invoices: action.payload
       };
-    case RTLActions.SET_TOTAL_INVOICES_CL:
+    case CLActions.SET_TOTAL_INVOICES_CL:
       return {
         ...state,
         totalInvoices: action.payload

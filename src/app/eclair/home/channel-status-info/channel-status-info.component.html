@@ -1,0 +1,28 @@
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Active</h4>
+    <div class="overflow-wrap dashboard-info-value"><span class="dot tiny-dot green"></span>{{(channelsStatus.active?.channels || 0) | number}}</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Pending</h4>
+    <div class="overflow-wrap dashboard-info-value"><span class="dot tiny-dot yellow"></span>{{(channelsStatus.pending?.channels || 0) | number}}</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Inactive</h4>
+    <div class="overflow-wrap dashboard-info-value"><span class="dot tiny-dot grey"></span>{{(channelsStatus.inactive?.channels || 0) | number}}</div>
+  </div>
+</div>
+<div fxLayout="column" fxFlex="50" fxLayoutAlign="space-between stretch">
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Capacity</h4>
+    <div class="overflow-wrap dashboard-info-value">{{(channelsStatus.active?.capacity || 0) | number}} Sats</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Capacity</h4>
+    <div class="overflow-wrap dashboard-info-value">{{(channelsStatus.pending?.capacity || 0) | number}} Sats</div>
+  </div>
+  <div>
+    <h4 fxLayoutAlign="start" class="dashboard-info-title">Capacity</h4>
+    <div class="overflow-wrap dashboard-info-value">{{(channelsStatus.inactive?.capacity || 0) | number}} Sats</div>
+  </div>
+</div>

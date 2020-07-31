@@ -6,7 +6,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of, Subject, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
@@ -20,11 +20,14 @@ import { AuthenticateWith, CURRENCY_UNITS, ScreenSizeEnum } from '../shared/serv
 import { SpinnerDialogComponent } from '../shared/components/data-modal/spinner-dialog/spinner-dialog.component';
 import { AlertMessageComponent } from '../shared/components/data-modal/alert-message/alert-message.component';
 import { ConfirmationMessageComponent } from '../shared/components/data-modal/confirmation-message/confirmation-message.component';
+import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 import { ShowPubkeyComponent } from '../shared/components/data-modal/show-pubkey/show-pubkey.component';
 
+import * as ECLActions from '../eclair/store/ecl.actions';
+import * as CLActions from '../clightning/store/cl.actions';
+import * as LNDActions from '../lnd/store/lnd.actions';
 import * as RTLActions from './rtl.actions';
 import * as fromRTLReducer from './rtl.reducers';
-import { ErrorMessageComponent } from '../shared/components/data-modal/error-message/error-message.component';
 
 @Injectable()
 export class RTLEffects implements OnDestroy {
@@ -46,6 +49,14 @@ export class RTLEffects implements OnDestroy {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router) {}
+
+  @Effect({ dispatch: false })
+  closeAllDialogs = this.actions$.pipe(
+    ofType(RTLActions.CLOSE_ALL_DIALOGS),
+    map((action: RTLActions.CloseAllDialogs) => {
+      this.dialog.closeAll();
+    }
+  ));
 
   @Effect({ dispatch: false })
   openSnackBar = this.actions$.pipe(
@@ -293,7 +304,7 @@ export class RTLEffects implements OnDestroy {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
-    if(initialPass) {
+    if (initialPass) {
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
       this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
     } else {
@@ -306,8 +317,9 @@ export class RTLEffects implements OnDestroy {
   ofType(RTLActions.LOGIN),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
-    this.store.dispatch(new RTLActions.ClearEffectErrorLnd('FetchInfo'));
-    this.store.dispatch(new RTLActions.ClearEffectErrorCl('FetchInfoCL'));    
+    this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
+    this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
+    this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
       authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
@@ -320,7 +332,7 @@ export class RTLEffects implements OnDestroy {
       }),
       catchError((err) => {
         this.logger.info('Redirecting to Login Error Page');
-        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, {status: err.status, error: err.error.error});
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API, err);
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Login', code: err.status, message: err.error.error }));
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '401', errorMessage: 'Single Sign On Failed!' }});
@@ -346,7 +358,7 @@ export class RTLEffects implements OnDestroy {
         this.setLoggedInDetails(false, action.payload.authResponse, rootStore);        
       }),
       catchError((err) => {
-        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', {status: err.status, error: err.error.error});
+        this.handleErrorWithAlert('ERROR', 'Authorization Failed!', environment.AUTHENTICATE_API + '/token', err);
         this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'VerifyToken', code: err.status, message: err.error.error }));
         return of({type: RTLActions.VOID});
       })
@@ -363,6 +375,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate(['/login']);
     }
+    this.sessionService.removeItem('eclUnlocked');
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');
@@ -371,29 +384,28 @@ export class RTLEffects implements OnDestroy {
   }));
 
 
-  @Effect({ dispatch: false })
+  @Effect()
   resetPassword = this.actions$.pipe(
   ofType(RTLActions.RESET_PASSWORD),
   withLatestFrom(this.store.select('root')),
   mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('ResetPassword'));
-    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', { 
-      currPassword: action.payload.currPassword,
-      newPassword: action.payload.newPassword
-    })
-    .pipe(
-      map((postRes: any) => {
-        this.logger.info(postRes);
-        this.logger.info('Password Reset Successful!');
-        this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
-        this.SetToken(postRes.token);
-      }),
-      catchError((err) => {
-        this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
-        this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err.error);
-        return of({type: RTLActions.VOID});
-      })
-    );
+    return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', {currPassword: action.payload.currPassword, newPassword: action.payload.newPassword})
+    .pipe(map((postRes: any) => {
+      this.logger.info(postRes);
+      this.logger.info('Password Reset Successful!');
+      this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
+      this.SetToken(postRes.token);
+      return {
+        type: RTLActions.RESET_PASSWORD_RES,
+        payload: postRes.token
+      };
+    }),
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'ResetPassword', code: err.status, message: err.error.message }));
+      this.handleErrorWithAlert('ERROR', 'Password Reset Failed!', environment.AUTHENTICATE_API + '/reset', err);
+      return of({type: RTLActions.VOID});
+    }));
   }));
 
   @Effect()
@@ -418,6 +430,38 @@ export class RTLEffects implements OnDestroy {
    }
   ));
 
+  @Effect()
+  fetchFile = this.actions$.pipe(
+    ofType(RTLActions.FETCH_FILE),
+    mergeMap((action: RTLActions.FetchFile) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('fetchFile'));
+      let query = '?channel=' + action.payload.channelPoint + (action.payload.path ? '&path=' + action.payload.path : '');
+      return this.httpClient.get(environment.CONF_API + '/file' + query)
+      .pipe(
+        map((fetchedFile: any) => {
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          return {
+            type: RTLActions.SHOW_FILE,
+            payload: fetchedFile
+          };
+        }),
+        catchError((err: any) => {
+          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'fetchFile', code: err.status, message: err.error.error }));
+          this.handleErrorWithAlert('ERROR', err.error.message, environment.CONF_API + '/file' + query, {status: err.error.error.errno, error: err.error.error.code});
+          return of({type: RTLActions.VOID});          
+        }
+      ));
+    })
+  );
+
+  @Effect({ dispatch: false })
+  showFile = this.actions$.pipe(
+    ofType(RTLActions.SHOW_FILE),
+    map((action: RTLActions.ShowFile) => {
+      return action.payload;
+    })
+  );
+
   initializeNode(node: any, isInitialSetup: boolean) {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
@@ -427,17 +471,27 @@ export class RTLEffects implements OnDestroy {
       selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
-    this.store.dispatch(new RTLActions.ResetLNDStore(selNode));
-    this.store.dispatch(new RTLActions.ResetCLStore(selNode));
+    this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
+    this.store.dispatch(new CLActions.ResetCLStore(selNode));
+    this.store.dispatch(new ECLActions.ResetECLStore(selNode));
     if(this.sessionService.getItem('token')) {
       node.lnImplementation = node.lnImplementation.toUpperCase();
       this.dataService.setChildAPIUrl(node.lnImplementation);
-      if(node.lnImplementation === 'CLT') {
-        this.CHILD_API_URL = API_URL + '/cl';
-        this.store.dispatch(new RTLActions.FetchInfoCL({loadPage: landingPage}));
-      } else {
-        this.CHILD_API_URL = API_URL + '/lnd';
-        this.store.dispatch(new RTLActions.FetchInfo({loadPage: landingPage}));
+      switch (node.lnImplementation) {
+        case 'CLT':
+          this.CHILD_API_URL = API_URL + '/cl';
+          this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
+          break;
+
+        case 'ECL':
+          this.CHILD_API_URL = API_URL + '/ecl';
+          this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
+          break;
+            
+        default:
+          this.CHILD_API_URL = API_URL + '/lnd';
+          this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
+          break;
       }
     }
   }
@@ -456,7 +510,9 @@ export class RTLEffects implements OnDestroy {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.EffectErrorRoot({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
@@ -466,13 +522,15 @@ export class RTLEffects implements OnDestroy {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
+      this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
+      this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: alertType,
           alertTitle: alertTitle,
-          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : 'Unknown Error', URL: errURL },
+          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

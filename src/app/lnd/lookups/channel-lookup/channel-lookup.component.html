@@ -1,26 +1,26 @@
 <div fxLayout="column" *ngIf="lookupResult" class="mt-1">
-  <mat-divider></mat-divider>        
+  <mat-divider [inset]="true" class="mb-1"></mat-divider>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
     <h4 class="font-bold-500">Channel Id</h4>
     <span class="foreground-secondary-text">{{lookupResult.channel_id}}</span>
-    <mat-divider class="my-1"></mat-divider>        
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="end start" class="my-1">
     <h4 class="font-bold-500">Channel Point</h4>
     <span class="foreground-secondary-text">{{lookupResult.chan_point}}</span>
-    <mat-divider class="my-1"></mat-divider>        
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end start" class="my-1">
       <h4 class="font-bold-500">Last Update</h4>
       <span class="foreground-secondary-text">{{lookupResult.last_update_str}}</span>
-      <mat-divider class="my-1"></mat-divider>        
     </div>
     <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end start" class="my-1">
       <h4 class="font-bold-500">Capacity (Sats)</h4>
       <span class="foreground-secondary-text">{{lookupResult.capacity | number}}</span>
     </div>
   </div>
+  <mat-divider [inset]="true" class="my-1"></mat-divider>
   <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row">
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mt-1 bordered-box padding-gap-large">
       <div fxLayout="column">

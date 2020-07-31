@@ -1,6 +1,8 @@
 import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
@@ -77,7 +79,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
 
   onDownloadCSV() {
     if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
-      this.commonService.downloadCSV(this.forwardingHistoryEvents.data, 'Forwarding-history');
+      this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }
 

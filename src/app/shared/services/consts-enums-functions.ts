@@ -1,4 +1,4 @@
-import { MatPaginatorIntl } from '@angular/material';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 export function getPaginatorLabel(field: string) {
   const appPaginator = new MatPaginatorIntl();
@@ -37,8 +37,7 @@ export const TRANS_TYPES = [
 
 export const FEE_LIMIT_TYPES = [
   {id: 'none', name: 'No Fee Limit', placeholder: 'No Limit'},
-  {id: 'fixed', name: 'Fixed (Sats)', placeholder: 'Fixed Limit in Sats'},
-  // {id: 'fixed_msat', name: 'Fixed in mSats'},
+  {id: 'fixed', name: 'Fixed Limit (Sats)', placeholder: 'Fixed Limit in Sats'},
   {id: 'percent', name: 'Percentage of Payment Amount', placeholder: 'Percentage Limit'}
 ];
 

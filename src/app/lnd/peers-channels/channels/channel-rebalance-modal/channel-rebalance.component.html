@@ -50,7 +50,7 @@
                     </span>
                   </div>
                   <button mat-stroked-button type="button" tabindex="4" (click)="onEstimateFee()" class="h-35px" matTooltip="Re-estimate Fee"><mat-icon class="mb-5px">loop</mat-icon></button>
-                  <button fxFlex="15" mat-stroked-button type="button" tabindex="5" class="h-35px" (click)="onUseEstimate()">Use Estimate</button>
+                  <button mat-stroked-button type="button" tabindex="5" class="h-35px" (click)="onUseEstimate()">Use Estimate</button>
                 </div>
                 <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                   <mat-form-field fxFlex="48" fxLayoutAlign="start end">
@@ -95,7 +95,7 @@
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="flgInvoiceGenerated && !flgPaymentSent" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
-              <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rabalance Failed.'}}</h4>
+              <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rebalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()">Start Again</button>
               </div>

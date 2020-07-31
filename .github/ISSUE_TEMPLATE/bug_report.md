@@ -1,6 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
@@ -14,19 +17,15 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Actual behavior**
-Tell us what happens instead
-
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
 **Your environment**
-* version of `lnd`
-* operating system (`uname -a` on *Nix)
-* version of `btcd`, `bitcoind`, or other backend
+* Version of `RTL`
+* Version of `lnd`
+* Version of `btcd`, `bitcoind`, or other backend
+* Browser & browser version
+* Operating system (`uname -a` on *Nix)
 * any other relevant environment details
 
 **Additional context**

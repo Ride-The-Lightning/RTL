@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { MatDialogRef, MAT_DIALOG_DATA, MatVerticalStepper } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatVerticalStepper } from '@angular/material/stepper';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
@@ -13,8 +14,9 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/lndModels';
 import { FEE_LIMIT_TYPES, PAGE_SIZE } from '../../../../shared/services/consts-enums-functions';
 
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as LNDActions from '../../../store/lnd.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-channel-rebalance',
@@ -73,16 +75,16 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_QUERY_ROUTES || action.type === RTLActions.SEND_PAYMENT_STATUS || action.type === RTLActions.NEWLY_SAVED_INVOICE))
-    .subscribe((action: (RTLActions.SetQueryRoutes | RTLActions.SendPaymentStatus | RTLActions.NewlySavedInvoice)) => {
-      if (action.type === RTLActions.SET_QUERY_ROUTES) { this.queryRoute = action.payload; }     
-      if (action.type === RTLActions.SEND_PAYMENT_STATUS) { 
+    filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
+    .subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
+      if (action.type === LNDActions.SET_QUERY_ROUTES_LND) { this.queryRoute = action.payload; }     
+      if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 
         this.logger.info(action.payload);
         this.flgPaymentSent = true;
         this.paymentStatus = action.payload;
         this.flgEditable = true;        
       }
-      if (action.type === RTLActions.NEWLY_SAVED_INVOICE) { 
+      if (action.type === LNDActions.NEWLY_SAVED_INVOICE_LND) { 
         this.logger.info(action.payload);
         this.flgInvoiceGenerated = true;
         this.sendPayment(action.payload.paymentRequest);
@@ -99,7 +101,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.queryRoute = null;
     this.feeFormGroup.reset();
     this.feeFormGroup.controls.selFeeLimitType.setValue(this.feeLimitTypes[0]);
-    this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id}));
+    this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, amount: this.inputFormGroup.controls.rebalanceAmount.value, outgoingChanId: this.selChannel.chan_id}));
   }
 
   stepSelectionChanged(event: any) {
@@ -165,7 +167,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       this.flgReusingInvoice = true;
       this.sendPayment(unsettledInvoice.payment_request);
     } else {
-      this.store.dispatch(new RTLActions.SaveNewInvoice({
+      this.store.dispatch(new LNDActions.SaveNewInvoice({
         memo: 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats', invoiceValue: this.inputFormGroup.controls.rebalanceAmount.value, private: false, expiry: 3600, pageSize: PAGE_SIZE, openModal: false
       }));
     }
@@ -178,7 +180,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(new RTLActions.SendPayment({paymentReq: payReq, paymentDecoded: {}, zeroAmtInvoice: false, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey}));
+    this.store.dispatch(new LNDActions.SendPayment({paymentReq: payReq, paymentDecoded: {}, zeroAmtInvoice: false, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true}));
   }
 
   filterActiveChannels() {

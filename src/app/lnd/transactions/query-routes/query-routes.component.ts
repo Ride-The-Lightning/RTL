@@ -5,13 +5,15 @@ import { Store } from '@ngrx/store';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CommonService } from '../../../shared/services/common.service';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Hop } from '../../../shared/models/lndModels';
 
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LNDEffects } from '../../store/lnd.effects';
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-query-routes',
@@ -69,7 +71,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
   onQueryRoutes() {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
-    this.store.dispatch(new RTLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
+    this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));
   }
 
   resetData() {

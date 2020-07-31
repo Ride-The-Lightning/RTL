@@ -10,6 +10,7 @@ exports.signMessage = (req, res, next) => {
   request.post(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Messages', lineNum: 13, msg: 'Message Sign Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Sign message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -18,8 +19,15 @@ exports.signMessage = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Messages', lineNum: 24, msg: 'Sign Message Failed: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Messages', lineNum: 29, msg: 'Sign Message Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Sign Message Failed!',
       error: err.error
@@ -33,6 +41,7 @@ exports.verifyMessage = (req, res, next) => {
   request.get(options, (error, response, body) => {
     logger.info({fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
     if(!body || body.error) {
+      logger.error({fileName: 'Messages', lineNum: 43, msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Verify message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -41,8 +50,15 @@ exports.verifyMessage = (req, res, next) => {
       res.status(201).json(body);
     }
   })
-  .catch(function (err) {
-    logger.error({fileName: 'Messages', lineNum: 24, msg: 'Message Verification Failed: ' + JSON.stringify(err)});
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'Messages', lineNum: 59, msg: 'Message Verification Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Verify Message Failed!',
       error: err.error

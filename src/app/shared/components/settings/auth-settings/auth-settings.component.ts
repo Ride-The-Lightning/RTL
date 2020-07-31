@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
 import { faUserLock, faUserClock, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
-import { RTLConfiguration } from '../../../models/RTLconfig';
+import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -28,17 +30,39 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public errorMsg = '';
   public errorConfirmMsg = '';
   public appConfig: RTLConfiguration;
+  public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router) {}
 
   ngOnInit() {
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
+      this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
+    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
+    .subscribe((action: (RTLActions.ResetPasswordRes)) => {
+      if (this.currPassword.toLowerCase() === 'password') {
+        switch (this.selNode.lnImplementation.toUpperCase()) {
+          case 'CLT':
+            this.router.navigate(['/cl/home']);
+            break;
+        
+          case 'ECL':
+            this.router.navigate(['/ecl/home']);
+            break;
+
+          default:
+            this.router.navigate(['/lnd/home']);
+            break;
+        }
+      }
+      this.form.resetForm();
+    });    
   }
 
   onChangePassword() {
@@ -84,12 +108,6 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       }
     }
     return invalid;
-  }
-
-  resetData() {
-    this.currPassword = '';
-    this.newPassword = '';
-    this.confirmPassword = '';
   }
 
   on2FAuth() {

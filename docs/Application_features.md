@@ -2,76 +2,77 @@
 
 ## RTL - Feature List
 
-### Home Page (Dashboard and Node Status)
-- Wallet Balance
-- Number of Peers connected
-- Channel Balance
-- Chain Sync status indicator
-- Fee Report
-- Channel Status
-- Channel Balance comparison (aggregate local vs remote)
+### Home Page - Operator
+- General node information
+- On-Chain and Lightning balances
+- Channel capacity with Local-Remote balances and Balance score
+- Routing fee earned and transactions routed
+- Channel status for Active, Pending, Inactive and Closing channels
 
-### Settings
-- Current Unit Toggle (Sats to BTC)
-- Layout Customization
-- Menu Customization
-- Theme Skins
-- Nav Options
+### Home Page - Merchant
+- On-Chain and Lightning balances
+- Inbound Channel capacity
+- Outbound Channel capacity
+- Receive and Pay Lightning transactions
 
-### LND Wallet
-#### Send/Receive
-- Total Balance
-- Confirmed Balance
-- Unconfirmed Balance
+### On-Chain
+- Total, Confirmed and Unconfirmed balances in Sats, BTC and Fiat
 - Receive Funds, Generate Address (with QR Code)
 - Send funds
-#### List Transactions
-- List of on-chain transactions
+- Sweep all funds {LND only}
+- List of on-chain transactions {LND only}
+- Export transaction list to csv
 
-### Peers (Manage LN Peers)
-- Connect to a peer with the LN Public key and/or IP address
-- List of connected peers with alias
-- Detach Peer
-
-### Channels
-#### Management
-- Open Channel with connected peers
-- List of channels
+### Lightning
+#### Peers/Channels
+- Peer management (Connect, disconnect with network peers)
+- Open channel
 - Close channel
-- Update Channel (One or All)
-#### Pending
-- Pending Open Channels (Default)
-- Pending Force Closing Channels
-- Pending Closing Channels
-- Waiting Close
-#### Closed
-- List of Closed Channels
-#### Backup
+- Update channel fee policy
+- Circular Rebalance {LND only}
+- Open, Pending and Closed channel list
+- Export all lists to csv
+
+#### Transactions
+- Make payments
+- Invoice generation
+- Query routes
+
+#### Routing
+- Forwarding history
+- Routing peers summary {LND only}
+
+#### Graph Lookup
+- Lookup a node details with pubkey
+- Lookup a channel details with Channel ID
+
+#### Sign/Verify
+- Sign a message with node's private key and generate a signature
+- Verify the message with a signature to determine the pubkey of the node used to sign
+
+#### Loop - Optional Feature {LND only}
+- Loop Out for gaining Inbound channel capacity
+- Loop In for replenishing Outbound capacity
+- Loop Out and In transactions list
+
+#### Backup {LND only}
 - All channel backup and verify
 - Individual channel backup and verify
 - Folder location of the backup files
 
-### Payments
-#### Send
-- Verify and Send Payments
-- List of payments made via node
-- Pay empty invoice with custom amount
-#### Query Routes
-- Query the path to the node with the pubkey and amount to be sent
+### Network {LND only}
+- Network information from the graph
 
-### Invoices
-- Add Invoice with Optional Memo and Amount and Generate payment request (with QR Code)
-- List Invoices
+### Settings
+- Fiat conversion toggle
+- Default node setting for multiple nodes
+- Toggle for Persona switch to change the dashboard layout
+- Day-Night mode toggle
+- Themes for color customizations
 
-### Forwarding History
-- View all the forwarded HTLCs within a date range (default view is past 24 hours)
+### Help
+- Basic In-product documentation
 
-### Routing Peers
-- Show routing events group by incoming and outgoing events group by peer alias, channel id and amount routed
-
-### Lookups
-- Lookup a node details with pubkey
-- Lookup a channel details with Channel ID
-
-### Node Config
-- Read-only view of Node conf files for lnd and bitcoin
+### Public Key
+- Display the node pubkey along with a QR code
+- Display the node URI along with a QR code

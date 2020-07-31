@@ -5,12 +5,15 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource, MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Transaction } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -54,15 +57,11 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new RTLActions.FetchTransactions());
-    this.actions$.pipe(takeUntil(this.unsub[2]), filter((action) => action.type === RTLActions.RESET_LND_STORE)).subscribe((resetLndStore: RTLActions.ResetLNDStore) => {
-      this.store.dispatch(new RTLActions.FetchTransactions());
-    });
-
+    this.store.dispatch(new LNDActions.FetchTransactions());
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsLnd.forEach(effectsErr => {
+      rtlStore.effectErrors.forEach(effectsErr => {
         if (effectsErr.action === 'FetchTransactions') {
           this.flgLoading[0] = 'error';
         }
@@ -84,19 +83,20 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
   onTransactionClick(selTransaction: Transaction, event: any) {
     const reorderedTransactions = [
-      [{key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Address', width: 100, type: DataTypeEnum.ARRAY}],
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
       [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER},
         {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER}]
+        {key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
+      [{key: 'dest_addresses', value: selTransaction.dest_addresses, title: 'Destination Addresses', width: 100, type: DataTypeEnum.ARRAY}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Transaction Information',
       message: reorderedTransactions,
+      scrollable: selTransaction.dest_addresses && selTransaction.dest_addresses.length > 5
     }}));
   }
 
@@ -109,7 +109,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.listTransactions.data && this.listTransactions.data.length > 0) {
-      this.commonService.downloadCSV(this.listTransactions.data, 'Transactions');
+      this.commonService.downloadFile(this.listTransactions.data, 'Transactions');
     }
   }
 
