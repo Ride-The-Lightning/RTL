@@ -80,7 +80,6 @@ export const FETCH_BOLTZ_SWAPS = 'FETCH_BOLTZ_SWAPS';
 export const SET_BOLTZ_SWAPS = 'SET_BOLTZ_SWAPS';
 export const ADD_BOLTZ_SWAP = 'ADD_BOLTZ_SWAP';
 
-
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_LND;
   constructor(public payload: string) {} // payload = errorAction

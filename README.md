@@ -3,7 +3,7 @@
 
 <a href="https://snyk.io/test/github/Ride-The-Lightning/RTL"><img src="https://snyk.io/test/github/Ride-The-Lightning/RTL/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/Ride-The-Lightning/RTL" style="max-width:100%;"></a>
 [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat-square)](https://github.com/DAVFoundation/captain-n3m0/blob/master/LICENSE)
-### Stable Release: v0.7.1
+### Stable Release: v0.8.2
 
 **Intro** -- [Application Features](docs/Application_features.md) -- [Road Map](docs/Roadmap.md) -- [LND API Coverage](docs/LNDAPICoverage.md) -- [Application Configurations](docs/Application_configurations) -- [C-Lightning](docs/C-Lightning-setup.md) -- [Eclair](docs/Eclair-setup.md)
 
@@ -22,7 +22,7 @@ RTL is available on [LND](https://github.com/lightningnetwork/lnd), [C-Lightning
 
 * C-Lightning users, refer to [this](docs/C-Lightning-setup.md) page for install instructions.
 * Eclair users, refer to [this](docs/Eclair-setup.md) page for install instructions.
-* LND users, follow the instructions below on this page
+* LND users, follow the instructions below
 
 Lightning Network Daemon(LND) is an implementation of Lightning Network BOLT protocol by [Lightning Labs](https://lightning.engineering/).
 
@@ -94,7 +94,8 @@ Example RTL-Config.json:
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 1>",
-        "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
+        "configPath": "<Optional:Path of the .conf if present locally or empty>",
+        "lnApiPassword": "<Optional:Can be used to provide password in ECL implementation>"
       },
       "Settings": {
         "userPersona": "OPERATOR",

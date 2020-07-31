@@ -22,10 +22,10 @@ exports.getFees = (req, res, next) => {
         relayed: body && body.relayed ? body.relayed : []
       }
     };
-    let current_time = Math.round((new Date().getTime()) / 1000);
-    let month_start_time = current_time - 2629743;
-    let week_start_time = current_time - 604800;
-    let day_start_time = current_time - 86400;
+    let current_time = Math.round((new Date().getTime()));
+    let month_start_time = current_time - 2629743000;
+    let week_start_time = current_time - 604800000;
+    let day_start_time = current_time - 86400000;
     let fee = 0;
     resBody.payments.sent.forEach(sentEle => {
       if (sentEle.recipientAmount) { sentEle.recipientAmount = Math.round(sentEle.recipientAmount/1000); }

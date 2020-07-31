@@ -15,7 +15,7 @@ RTL is now enabled to manage lightning nodes running C-Lightning.
 Follow the below steps to install and setup RTL to run on C-Lightning.
 
 ### <a name="prereq"></a>Pre-requisites:
-1. Functioning C-Lightning node
+1. Functioning C-Lightning node. Follow install instructions on their [github](https://github.com/ElementsProject/lightning)
 2. NodeJS - Can be downloaded [here](https://nodejs.org/en/download)
 3. Cl-REST - Ensure that `cl-rest` API server is installed and running. Install instructions [here](https://github.com/Ride-The-Lightning/c-lightning-REST)
 4. Copy the `access.macaroon` file from `cl-rest` to the device, on which RTL will be installed

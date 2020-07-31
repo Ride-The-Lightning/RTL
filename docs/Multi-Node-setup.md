@@ -26,6 +26,7 @@ This step is only required to configure the nodes, which will be remotely connec
 8. `lnServerUrl` must be set to the service url for LND/C Lightining REST APIs for each node, with the unique ip address of the node hosting lnd/clightning e.g. https://192.168.0.1:8080/v1 OR https://192.168.0.1:3001/v1. In this case the ip address of the node hosting lnd/clightning is '192.168.0.1'
 9. `swapServerUrl` must be set to the swap service url. e.g. http://localhost:8081/v1.
 10. `configPath` and `bitcoindConfigPath` are optional parameters which can be set only if the RTL is running locally on the same node. Else it can be set to "" or removed from the conf file all together.
+11. `lnApiPassword` is mandatory in the ln implementation is ECL and configPath is missing. It is used to provide password for API authentication. It will be ignored in other ln implementations.
 
 #### 3. Restart RTL
 
