@@ -92,38 +92,4 @@ export class BoltzService {
     }
     return throwError(err);
   }
-
-  handleErrorWithAlert(errURL: string, err: any) {
-    if (typeof err.error.error === 'string') {
-      try {
-        err = JSON.parse(err.error.error);
-      } catch(err) {}
-    } else {
-      err = err.error.error.error ? err.error.error.error : err.error.error ? err.error.error : err.error ? err.error : { code : 500, message: 'Unknown Error' };
-    }
-    this.logger.error(err);
-    this.store.dispatch(new RTLActions.CloseSpinner())
-    if (err.status === 401) {
-      this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
-    } else if (err.errno === 'ECONNREFUSED') {
-      this.store.dispatch(new RTLActions.OpenAlert({
-        data: {
-          type: 'ERROR',
-          alertTitle: 'Swap Not Connected',
-          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Swap Server', URL: errURL },
-          component: ErrorMessageComponent
-        }
-      }));
-    } else {
-      this.store.dispatch(new RTLActions.OpenAlert({data: {
-          type: AlertTypeEnum.ERROR,
-          alertTitle: 'ERROR',
-          message: { code: err.code ? err.code : err.status, message: err.message ? err.message : 'Unknown Error', URL: errURL },
-          component: ErrorMessageComponent
-        }
-      }));
-    }
-    return throwError(err);
-  }
 }
