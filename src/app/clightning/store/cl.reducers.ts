@@ -167,7 +167,8 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         payments: action.payload
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:
-      if (action.payload.forwarding_events) {
+      const modifiedFeeWithTxCount = state.fees;
+      if (action.payload.forwarding_events && action.payload.forwarding_events.length > 0) {
         const storedChannels = [...state.allChannels];
         action.payload.forwarding_events.forEach(event => {
           if (storedChannels && storedChannels.length > 0) {
@@ -183,12 +184,14 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
             }
           }
         });
+        modifiedFeeWithTxCount.totalTxCount = action.payload.forwarding_events.filter(event => event.status === 'settled').length;
       } else {
         action.payload = {};
       }
       return {
         ...state,
         initialAPIResponseStatus: newAPIStatus,
+        fee: modifiedFeeWithTxCount,
         forwardingHistory: action.payload
       };
     case CLActions.ADD_INVOICE_CL:

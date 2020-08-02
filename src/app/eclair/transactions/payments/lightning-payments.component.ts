@@ -88,6 +88,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
+      this.payments.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {

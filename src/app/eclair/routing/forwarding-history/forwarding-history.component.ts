@@ -36,13 +36,13 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestampStr', 'amountIn', 'actions'];
+      this.displayedColumns = ['timestamp', 'amountIn', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestampStr', 'amountIn', 'amountOut', 'actions'];
+      this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestampStr', 'amountIn', 'amountOut', 'paymentHash', 'actions'];
+      this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'paymentHash', 'actions'];
     }
   }
 
@@ -71,6 +71,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: PaymentRelayed, fltr: string) => {
       const newEvent = event.amountIn + event.amountOut + event.paymentHash + event.fromChannelId + event.toChannelId + event.timestampStr;

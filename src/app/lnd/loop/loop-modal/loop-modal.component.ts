@@ -113,14 +113,13 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.addressFormGroup.setErrors({'Invalid': true});
   }
 
-
   onLoop() {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     if (this.direction === SwapTypeEnum.LOOP_IN) {
-      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee, +this.quote.miner_fee, '', true).pipe(takeUntil(this.unSubs[0]))
+      this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee_sat, +this.quote.htlc_publish_fee_sat, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
         this.store.dispatch(new LNDActions.FetchLoopSwaps());
@@ -134,7 +133,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       let swapRoutingFee = this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100);
       let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
-      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.miner_fee, this.prepayRoutingFee, +this.quote.prepay_amt, +this.quote.swap_fee, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
+      this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.htlc_sweep_fee_sat, this.prepayRoutingFee, +this.quote.prepay_amt_sat, +this.quote.swap_fee_sat, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = JSON.parse(loopStatus);
         this.store.dispatch(new LNDActions.FetchLoopSwaps());
@@ -204,8 +203,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
-        if (this.quote && this.quote.swap_fee && this.quote.miner_fee && this.quote.prepay_amt) {
-          this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee + +this.quote.miner_fee) + ' Sats';
+        if (this.quote && this.quote.swap_fee_sat && (this.quote.htlc_sweep_fee_sat || this.quote.htlc_publish_fee_sat) && this.quote.prepay_amt_sat) {
+          this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee_sat + +(this.quote.htlc_sweep_fee_sat ? this.quote.htlc_sweep_fee_sat : this.quote.htlc_publish_fee_sat ? this.quote.htlc_publish_fee_sat : 0)) + ' Sats';
         } else {
           this.quoteFormLabel = 'Quote confirmed';
         }

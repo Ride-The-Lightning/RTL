@@ -30,7 +30,7 @@
     <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-        <ng-container matColumnDef="expires_at_str">
+        <ng-container matColumnDef="expires_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Expiry Date </th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice.status === 'paid'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -38,7 +38,7 @@
             {{invoice.expires_at_str}}
           </td>
         </ng-container>
-        <ng-container matColumnDef="paid_at_str">
+        <ng-container matColumnDef="paid_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Paid Date </th>
           <td mat-cell *matCellDef="let invoice">{{invoice.paid_at_str}}</td>
         </ng-container>

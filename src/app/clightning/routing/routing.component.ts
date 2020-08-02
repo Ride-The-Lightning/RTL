@@ -39,10 +39,6 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === CLActions.SET_CHANNELS_CL))
-    .subscribe((action: CLActions.SetChannels) => {
-      this.onEventsFetch();
-    });
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

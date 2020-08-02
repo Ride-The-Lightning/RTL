@@ -7,7 +7,7 @@
   </div>
   <div perfectScrollbar fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
-      <ng-container matColumnDef="timestampStr">
+      <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>
         <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.timestampStr}}</td>
       </ng-container>
