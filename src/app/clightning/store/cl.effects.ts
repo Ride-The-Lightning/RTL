@@ -260,6 +260,7 @@ export class CLEffects implements OnDestroy {
         .pipe(
           map((channels: any) => {
             this.logger.info(channels);
+            this.store.dispatch(new CLActions.GetForwardingHistory());
             return {
               type: CLActions.SET_CHANNELS_CL,
               payload: (channels && channels.length > 0) ? channels : []

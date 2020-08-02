@@ -137,10 +137,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       }
 
       this.fees = rtlStore.fees;
-      this.fees.totalTxCount = 0;
-      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
-        this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length;
-      }
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
       }

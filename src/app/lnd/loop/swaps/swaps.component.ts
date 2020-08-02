@@ -55,10 +55,10 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
       this.displayedColumns = ['state', 'amt', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['state', 'initiation_time_str', 'amt', 'actions'];
+      this.displayedColumns = ['state', 'initiation_time', 'amt', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['state', 'initiation_time_str', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
+      this.displayedColumns = ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
     }
   }
 

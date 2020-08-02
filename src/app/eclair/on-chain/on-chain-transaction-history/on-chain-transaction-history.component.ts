@@ -43,16 +43,16 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestampStr', 'amount', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestampStr', 'amount', 'confirmations', 'fees', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'confirmations', 'fees', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestampStr', 'amount', 'fees', 'confirmations', 'address', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'fees', 'confirmations', 'address', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestampStr', 'amount', 'fees', 'confirmations', 'address', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'fees', 'confirmations', 'address', 'actions'];
     }
   }
 

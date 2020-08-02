@@ -39,10 +39,10 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges {
       this.displayedColumns = ['in_msatoshi', 'out_msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['received_time_str', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['received_time', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }
 

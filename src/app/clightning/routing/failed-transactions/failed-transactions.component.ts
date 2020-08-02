@@ -42,7 +42,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
       this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['status', 'received_time_str', 'resolved_time_str', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['status', 'received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
     }
   }
 

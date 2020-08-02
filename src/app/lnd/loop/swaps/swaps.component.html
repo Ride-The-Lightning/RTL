@@ -12,11 +12,11 @@
     <div perfectScrollbar class="table-container" fxFlex="100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listSwaps" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-        <ng-container matColumnDef="initiation_time_str">
+        <ng-container matColumnDef="initiation_time">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiation Time </th>
           <td mat-cell *matCellDef="let swap">{{swap.initiation_time_str}}</td>
         </ng-container>
-        <ng-container matColumnDef="last_update_time_str">
+        <ng-container matColumnDef="last_update_time">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Update Time </th>
           <td mat-cell *matCellDef="let swap">{{swap.last_update_time_str}}</td>
         </ng-container>
