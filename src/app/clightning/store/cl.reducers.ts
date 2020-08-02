@@ -190,8 +190,8 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       }
       return {
         ...state,
-        fee: modifiedFeeWithTxCount,
         initialAPIResponseStatus: newAPIStatus,
+        fee: modifiedFeeWithTxCount,
         forwardingHistory: action.payload
       };
     case CLActions.ADD_INVOICE_CL:
