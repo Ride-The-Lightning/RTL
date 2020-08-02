@@ -126,7 +126,7 @@
             </div>
             <div fxFlex="25">
               <h4 fxLayoutAlign="start" class="font-bold-500">Pending HTLCs</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{channel.pending_htlcs | number}}</span>
+              <span class="overflow-wrap foreground-secondary-text">{{channel?.pending_htlcs?.length | number}}</span>
             </div>
           </div>
           <mat-divider [inset]="true" class="my-1"></mat-divider>
