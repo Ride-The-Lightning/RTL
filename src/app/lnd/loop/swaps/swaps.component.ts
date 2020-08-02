@@ -119,6 +119,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   loadSwapsTable(swaps) {
     this.listSwaps = new MatTableDataSource<SwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
+    this.listSwaps.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

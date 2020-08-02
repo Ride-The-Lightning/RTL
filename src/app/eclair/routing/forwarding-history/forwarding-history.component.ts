@@ -71,6 +71,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: PaymentRelayed, fltr: string) => {
       const newEvent = event.amountIn + event.amountOut + event.paymentHash + event.fromChannelId + event.toChannelId + event.timestampStr;

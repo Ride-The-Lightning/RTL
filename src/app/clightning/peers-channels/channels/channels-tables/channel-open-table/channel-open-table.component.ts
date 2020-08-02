@@ -232,6 +232,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr.toLowerCase());
     };
     this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

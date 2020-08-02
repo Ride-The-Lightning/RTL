@@ -102,6 +102,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   loadClosedChannelsTable(closedChannels) {
     this.closedChannels = new MatTableDataSource<ClosedChannel>([...closedChannels]);
     this.closedChannels.sort = this.sort;
+    this.closedChannels.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
     this.closedChannels.paginator = this.paginator;
     this.logger.info(this.closedChannels);
   }
