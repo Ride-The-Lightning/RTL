@@ -30,10 +30,11 @@
                       {{activeChannel.remote_alias || activeChannel.chan_id}}
                     </mat-option>
                   </mat-select>
+                  <mat-error *ngIf="inputFormGroup.controls.selRebalancePeer.errors?.required">Peer is required.</mat-error>
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="3" type="button" (click)="onEstimateFee()">Estimate Fee</button>
+                <button mat-stroked-button color="primary" tabindex="3" type="submit" (click)="onEstimateFee()">Estimate Fee</button>
               </div>
             </form>
           </mat-step>
@@ -68,7 +69,7 @@
                 </div>                
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onRebalance()">Rebalance</button>
+                <button mat-stroked-button color="primary" tabindex="8" type="submit" (click)="onRebalance()">Rebalance</button>
               </div>
             </form>
           </mat-step>

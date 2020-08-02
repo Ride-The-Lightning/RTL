@@ -153,7 +153,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   onRebalance() {
-    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
+    if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
     this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
     this.stepper.next();
     this.flgEditable = false;

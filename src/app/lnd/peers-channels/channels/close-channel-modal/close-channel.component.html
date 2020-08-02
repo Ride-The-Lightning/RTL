@@ -12,7 +12,7 @@
           <p fxLayoutAlign="start center" class="pb-1 word-break">Closing channel: {{channelToClose.channel_point}}</p>
           <div fxLayoutAlign="space-between center">
             <mat-form-field fxFlex.gt-sm="48">
-              <mat-select [(value)]="selTransType" tabindex="1">
+              <mat-select [(value)]="selTransType" tabindex="1" [disabled]="!channelToClose.active">
                 <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                   {{transType.name}}
                 </mat-option>

@@ -39,10 +39,10 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onEventsFetch();
-    // this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === RTLActions.RESET_STORE))
-    // .subscribe((resetClStore: RTLActions.ResetCLStore) => {
-    //   this.onEventsFetch();
-    // });
+    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === CLActions.SET_CHANNELS_CL))
+    .subscribe((action: CLActions.SetChannels) => {
+      this.onEventsFetch();
+    });
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -56,6 +56,8 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
       });
       if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
         this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
+        this.successfulData = [];
+        this.failedData = [];
         rtlStore.forwardingHistory.forwarding_events.forEach(event => {
           if (event.status === 'settled') {
             this.successfulData.push(event);
@@ -78,18 +80,9 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   }
 
   onEventsFetch() {
-    if (!this.endDate) {
-      this.endDate = new Date();
-    }
-    if (!this.startDate) {
-      this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
-    }
-    this.store.dispatch(new CLActions.GetForwardingHistory(
-      // {
-      //   end_time: Math.round(this.endDate.getTime() / 1000).toString(),
-      //   start_time: Math.round(this.startDate.getTime() / 1000).toString()
-      // }
-    ));
+    if (!this.endDate) { this.endDate = new Date(); }
+    if (!this.startDate) { this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30); }
+    this.store.dispatch(new CLActions.GetForwardingHistory());
   }
 
   resetData() {

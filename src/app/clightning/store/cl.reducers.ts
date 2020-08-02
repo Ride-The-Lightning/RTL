@@ -6,7 +6,7 @@ import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 
 export interface CLState {
-  initialAPIResponseCounter: number;
+  initialAPIResponseStatus: String[];
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
@@ -24,7 +24,7 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  initialAPIResponseCounter: 0,
+  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -42,6 +42,8 @@ export const initCLState: CLState = {
 }
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
+  let newAPIStatus = state.initialAPIResponseStatus;
+
   switch (action.type) {
     case CLActions.CLEAR_EFFECT_ERROR_CL:
       const clearedEffectErrors = [...state.effectErrors];
@@ -76,22 +78,25 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         information: action.payload
       };
     case CLActions.SET_FEES_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case CLActions.SET_FEE_RATES_CL:
       if (action.payload.perkb) {
+        newAPIStatus = [...state.initialAPIResponseStatus, 'FEERATEKB'];
         return {
           ...state,
-          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+          initialAPIResponseStatus: newAPIStatus,
           feeRatesPerKB: action.payload
         };
       } else if (action.payload.perkw) {
+        newAPIStatus = [...state.initialAPIResponseStatus, 'FEERATEKW'];
         return {
           ...state,
-          initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+          initialAPIResponseStatus: newAPIStatus,
           feeRatesPerKW: action.payload
         };
       } else {
@@ -100,21 +105,24 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         }
       }
     case CLActions.SET_BALANCE_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'BALANCE'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         balance: action.payload
       };
     case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELBALANCE'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         localRemoteBalance: action.payload
       };
     case CLActions.SET_PEERS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case CLActions.ADD_PEER_CL:
@@ -135,9 +143,10 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         peers: modifiedPeers
       };
     case CLActions.SET_CHANNELS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         allChannels: action.payload,
       };
     case CLActions.REMOVE_CHANNEL_CL:
@@ -158,9 +167,28 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         payments: action.payload
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:
+      if (action.payload.forwarding_events) {
+        const storedChannels = [...state.allChannels];
+        action.payload.forwarding_events.forEach(event => {
+          if (storedChannels && storedChannels.length > 0) {
+            for (let idx = 0; idx < storedChannels.length; idx++) {
+              if (storedChannels[idx].short_channel_id === event.in_channel) {
+                event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
+                if (event.out_channel_alias) { return; }
+              }
+              if (storedChannels[idx].short_channel_id.toString() === event.out_channel) {
+                event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
+                if (event.in_channel_alias) { return; }
+              }
+            }
+          }
+        });
+      } else {
+        action.payload = {};
+      }
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         forwardingHistory: action.payload
       };
     case CLActions.ADD_INVOICE_CL:
