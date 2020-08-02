@@ -21,11 +21,11 @@
       </ng-container>
       <ng-container matColumnDef="in_channel">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
-        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.in_channel}}</td>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.in_channel_alias || fhEvent?.in_channel}}</td>
       </ng-container>
       <ng-container matColumnDef="out_channel">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
-        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.out_channel}}</td>
+        <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.out_channel_alias || fhEvent?.out_channel}}</td>
       </ng-container>
       <ng-container matColumnDef="in_msatoshi">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount In (Sats)</th>
