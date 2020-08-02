@@ -243,7 +243,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       if (action.payload.forwarding_events) {
         const storedChannels = [...state.allChannels, ...state.closedChannels];
         action.payload.forwarding_events.forEach(event => {
-          if (storedChannels) {
+          if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
               if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
                 event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
