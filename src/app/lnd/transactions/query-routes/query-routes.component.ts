@@ -65,7 +65,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
     });
   }
 

@@ -88,7 +88,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
-      this.payments.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {

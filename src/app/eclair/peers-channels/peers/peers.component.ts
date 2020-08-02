@@ -81,7 +81,7 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.onchainBalance.total || 0;
       this.peers = (rtlStore.peers) ? new MatTableDataSource<Peer>([...rtlStore.peers]) : new MatTableDataSource([]);
       this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;

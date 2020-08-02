@@ -80,9 +80,9 @@ export class PeersComponent implements OnInit, OnDestroy {
         this.peers.data = rtlStore.peers;
       }
       this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.peers.paginator = this.paginator;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }

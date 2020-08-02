@@ -164,7 +164,7 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
     });
     this.channels = new MatTableDataSource<Channel>([...this.activeChannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

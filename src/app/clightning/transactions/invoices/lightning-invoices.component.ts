@@ -98,7 +98,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
       this.invoices.data = this.invoiceJSONArr;
       this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.invoices.paginator = this.paginator;    
       setTimeout(() => { this.flgAnimate = false; }, 5000);
       this.logger.info(this.invoices);

@@ -87,7 +87,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
         setTimeout(() => { this.flgAnimate = false; }, 3000);
       }
       this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;

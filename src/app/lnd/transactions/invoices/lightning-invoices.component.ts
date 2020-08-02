@@ -128,7 +128,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   loadInvoicesTable(invoices) {
     this.invoices = new MatTableDataSource<Invoice>([...invoices]);
     this.invoices.sort = this.sort;
-    this.invoices.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }

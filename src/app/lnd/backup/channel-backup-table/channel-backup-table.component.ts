@@ -67,7 +67,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
         this.channels.data = rtlStore.allChannels;
       }
       this.channels.sort = this.sort;
-      this.channels.sortingDataAccessor = (data, sortHeaderId) => data[sortHeaderId].toLocaleLowerCase();
+      this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
       this.channels.paginator = this.paginator;
       this.channels.filterPredicate = (channel: Channel, fltr: string) => {
         const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point : '') + (channel.chan_id ? channel.chan_id : '') +
