@@ -43,16 +43,16 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'actions'];
+      this.displayedColumns = ['time_stamp', 'amount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'num_confirmations', 'total_fees', 'actions'];
+      this.displayedColumns = ['time_stamp', 'amount', 'num_confirmations', 'total_fees', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['time_stamp_str', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     }
   }
 
@@ -103,7 +103,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
+    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

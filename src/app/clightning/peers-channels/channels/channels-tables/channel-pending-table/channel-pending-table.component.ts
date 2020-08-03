@@ -112,7 +112,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr.toLowerCase());
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }
