@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -29,6 +30,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
