@@ -101,7 +101,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && typeof data[sortHeaderId] === 'string') ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? data[sortHeaderId] : '';
+    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

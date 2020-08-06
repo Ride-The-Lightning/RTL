@@ -42,7 +42,6 @@ connect.setDefaultConfig = () => {
   return {
     multiPass: "password",
     port: "3000",
-    host: "localhost",
     defaultNodeIndex: 1,
     SSO: {
       rtlSSO: 0,
@@ -376,7 +375,6 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
   if (!config.SSO) { config.SSO = {}; }
   var newConfig = {
     port: config.port ? config.port : 3000,
-    host: config.host ? config.host : 'localhost',
     defaultNodeIndex: config.defaultNodeIndex ? config.defaultNodeIndex : 1,
     SSO: {
       rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
@@ -449,7 +447,6 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
   if (!config.Settings) { config.Settings = {}; }
   var newConfig = {
     port: config.Settings.port ? config.Settings.port : 3000,
-    host: 'localhost',
     defaultNodeIndex: 1,
     SSO: {
       rtlSSO: config.SSO.rtlSSO ? config.SSO.rtlSSO : 0,
