@@ -57,3 +57,24 @@ exports.onChainWithdraw = (req, res, next) => {
     });
   });
 }
+
+exports.getTransactions = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/listFunds';
+  request(options).then((body) => {
+    res.status(200).json(body);
+  }).catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.macaroon) {
+      delete err.options.headers.macaroon;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
+      delete err.response.request.headers.macaroon;
+    }
+    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain List Funds Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Fetching list funds failed!",
+      error: err.error
+    });
+  });
+};
