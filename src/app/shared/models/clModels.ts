@@ -255,3 +255,13 @@ export interface FeeRatePerObj {
   min_acceptable?: number;
   max_acceptable?: number;
 }
+
+export interface Transaction {
+  txid?: string;
+  output?: number;
+  value?: number;
+  status?: string;
+  blockheight?: string;
+  address?: string;
+  amount_msat?: string;
+}

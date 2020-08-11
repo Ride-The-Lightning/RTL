@@ -1,0 +1,11 @@
+.mat-column-txid {
+  flex: 0 0 15%;
+  width: 15%;
+  & .ellipsis-parent {
+    display: flex;
+  }
+}
+
+.mat-column-actions {
+  min-height: 4.8rem;
+}

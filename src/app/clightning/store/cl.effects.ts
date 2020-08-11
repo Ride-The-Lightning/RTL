@@ -13,7 +13,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, Transaction } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -655,50 +655,70 @@ export class CLEffects implements OnDestroy {
 
   @Effect()
   invoicesFetchCL = this.actions$.pipe(
-    ofType(CLActions.FETCH_INVOICES_CL),
-    mergeMap((action: CLActions.FetchInvoices) => {
-      this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
-      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
-      const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
-      const reversed = (action.payload.reversed) ? action.payload.reversed : false;
-      return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
-        .pipe(map((res: ListInvoices) => {
-          this.logger.info(res);
-          this.store.dispatch(new CLActions.SetTotalInvoices(res.invoices ? res.invoices.length : 0));
-          return {
-            type: CLActions.SET_INVOICES_CL,
-            payload: res
-          };
-        }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
-            return of({type: RTLActions.VOID});
-          }
-        ));
-    }));
-
-    @Effect()
-    SetChannelTransactionCL = this.actions$.pipe(
-      ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
-      mergeMap((action: CLActions.SetChannelTransaction) => {
-        this.store.dispatch(new CLActions.ClearEffectError('SetChannelTransaction'));
-        return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
-        .pipe(
-        map((postRes: any) => {
-          this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          this.store.dispatch(new CLActions.FetchBalance());
-          return {
-            type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
-            payload: postRes
-          };
-        }),
+  ofType(CLActions.FETCH_INVOICES_CL),
+  mergeMap((action: CLActions.FetchInvoices) => {
+    this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
+    const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
+    const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
+    const reversed = (action.payload.reversed) ? action.payload.reversed : false;
+    return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
+      .pipe(map((res: ListInvoices) => {
+        this.logger.info(res);
+        this.store.dispatch(new CLActions.SetTotalInvoices(res.invoices ? res.invoices.length : 0));
+        return {
+          type: CLActions.SET_INVOICES_CL,
+          payload: res
+        };
+      }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('SetChannelTransaction', 'Sending Fund Failed.', err);
+          this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
           return of({type: RTLActions.VOID});
-        }));
-      })
-    );
+        }
+      ));
+  }));
+
+  @Effect()
+  SetChannelTransactionCL = this.actions$.pipe(
+    ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
+    mergeMap((action: CLActions.SetChannelTransaction) => {
+      this.store.dispatch(new CLActions.ClearEffectError('SetChannelTransaction'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
+      .pipe(
+      map((postRes: any) => {
+        this.logger.info(postRes);
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new CLActions.FetchBalance());
+        return {
+          type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
+          payload: postRes
+        };
+      }),
+      catchError((err: any) => {
+        this.handleErrorWithoutAlert('SetChannelTransaction', 'Sending Fund Failed.', err);
+        return of({type: RTLActions.VOID});
+      }));
+    })
+  );
+
+  @Effect()
+  transactionsFetch = this.actions$.pipe(
+    ofType(CLActions.FETCH_TRANSACTIONS_CL),
+    mergeMap((action: CLActions.FetchTransactions) => {
+      this.store.dispatch(new CLActions.ClearEffectError('FetchTransactions'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '/transactions');
+    }),
+    map((transactions: any) => {
+      this.logger.info(transactions);
+      return {
+        type: CLActions.SET_TRANSACTIONS_CL,
+        payload: (transactions && transactions.outputs && transactions.outputs.length > 0) ? transactions.outputs : []
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');

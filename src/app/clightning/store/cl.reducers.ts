@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, Transaction } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
@@ -21,6 +21,7 @@ export interface CLState {
   forwardingHistory: ForwardingHistoryRes;
   invoices: ListInvoices;
   totalInvoices: number;
+  transactions: Transaction[];
 }
 
 export const initCLState: CLState = {
@@ -38,7 +39,8 @@ export const initCLState: CLState = {
   payments: [],
   forwardingHistory: {},
   invoices: { invoices: [] },
-  totalInvoices: -1
+  totalInvoices: -1,
+  transactions: []
 }
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
@@ -210,6 +212,11 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       return {
         ...state,
         totalInvoices: action.payload
+      };
+    case CLActions.SET_TRANSACTIONS_CL:
+      return {
+        ...state,
+        transactions: action.payload
       };
     default:
       return state;
