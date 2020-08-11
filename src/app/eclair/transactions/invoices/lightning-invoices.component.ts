@@ -8,7 +8,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -53,9 +53,6 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public timeUnitEnum = TimeUnitEnum;
-  public timeUnits = TIME_UNITS;
-  public selTimeUnit = TimeUnitEnum.SECS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
@@ -116,9 +113,6 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   onAddInvoice(form: any) {
     if(!this.description) { return true; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
-      expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
-    }
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
@@ -146,7 +140,6 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.invoiceValue = undefined;
     this.expiry = undefined;
     this.invoiceValueHint = '';
-    this.selTimeUnit = TimeUnitEnum.SECS;
   }
 
   applyFilter(selFilter: string) {
@@ -162,13 +155,6 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       });
     }
-  }
-
-  onTimeUnitChange(event: any) {
-    if(this.expiry && this.selTimeUnit !== event.value) {
-      this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
-    }
-    this.selTimeUnit = event.value;
   }
 
   onDownloadCSV() {
