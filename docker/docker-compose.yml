@@ -79,7 +79,15 @@ services:
       - "${RTL_PORT}:${RTL_PORT}"
     environment:
       PORT: ${RTL_PORT}
+      HOST: 192.168.0.27
       MACAROON_PATH: /shared
       LN_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}/v1
       CONFIG_PATH: ''
-      RTL_PASS: ${RTL_PASS}
+      LN_IMPLEMENTATION: LND
+      SWAP_SERVER_URL: http://${LIGHTNING_HOST}:${LIGHTNING_LOOP_PORT}/v1
+      RTL_SSO: 0
+      RTL_COOKIE_PATH: ''
+      LOGOUT_REDIRECT_LINK: ''
+      RTL_CONFIG_PATH: /RTL
+      BITCOIND_CONFIG_PATH: ''
+      CHANNEL_BACKUP_PATH: /shared/lnd/backup
