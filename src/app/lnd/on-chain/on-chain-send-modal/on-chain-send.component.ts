@@ -143,9 +143,17 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   onSendFunds() {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
+    let amount = this.transactionAmount ? this.transactionAmount : 0;
+    if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
+      .pipe(takeUntil(this.unSubs[3]))
+      .subscribe(data => {
+        amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
+      });
+    }
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     const postTransaction = {
-      amount: this.transactionAmount,
+      amount: amount,
       sendAll: this.sweepAll
     };
     if (this.sweepAll) {
