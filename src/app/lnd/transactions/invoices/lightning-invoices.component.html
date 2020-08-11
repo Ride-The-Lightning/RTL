@@ -36,21 +36,25 @@
             <span *ngIf="!invoice.settled" class="dot yellow" matTooltip="Unsettled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             {{invoice.creation_date_str}}</td>
         </ng-container>
-        <ng-container matColumnDef="memo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Memo </th>
-          <td mat-cell *matCellDef="let invoice">{{invoice.memo}}</td>
-        </ng-container>
-        <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Value (Sats) </th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.value | number}} </span></td>
-        </ng-container>
-        <ng-container matColumnDef="amt_paid_sat">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount Paid (Sats) </th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.amt_paid_sat | number}} </span></td>
-        </ng-container>
         <ng-container matColumnDef="settle_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="pl-4"> Date Settled </th>
           <td mat-cell *matCellDef="let invoice" class="pl-4">{{invoice.settle_date_str || '-'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="memo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Memo </th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+              <span class="ellipsis-child">{{invoice.memo}}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.value | number}} </span></td>
+        </ng-container>
+        <ng-container matColumnDef="amt_paid_sat">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount Settled (Sats) </th>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice?.amt_paid_sat | number}} </span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">

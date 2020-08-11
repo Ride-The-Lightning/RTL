@@ -73,7 +73,7 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['timestamp', 'description', 'amount', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'description', 'amount', 'receivedAt', 'actions'];
+      this.displayedColumns = ['timestamp', 'receivedAt', 'description', 'amount', 'actions'];
     }
   }
 

@@ -73,10 +73,10 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['expires_at', 'paid_at', 'description', 'msatoshi', 'actions'];
+      this.displayedColumns = ['expires_at', 'paid_at', 'description', 'msatoshi', 'msatoshi_received', 'actions'];
     }
   }
 
