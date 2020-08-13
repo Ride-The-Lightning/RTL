@@ -1,3 +1,11 @@
+.mat-column-short_channel_id {
+  flex: 0 0 15%;
+  width: 15%;
+  & .ellipsis-parent {
+    display: flex;
+  }
+}
+
 .mat-column-alias {
   flex: 0 0 20%;
   width: 20%;
@@ -12,7 +20,7 @@
   width: 22%;
 }
 
-.mat-column-short_channel_id, .mat-column-state, .mat-column-msatoshi_to_us, .mat-column-msatoshi_to_them {
+.mat-column-state, .mat-column-msatoshi_to_us, .mat-column-msatoshi_to_them {
   flex: 0 0 15%;
   width: 15%;
   white-space: nowrap;

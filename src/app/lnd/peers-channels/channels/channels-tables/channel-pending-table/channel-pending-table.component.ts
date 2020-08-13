@@ -195,6 +195,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     this.pendingOpenChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingOpenChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingOpenChannels.sort = this.sort;
+    this.pendingOpenChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.logger.info(this.pendingOpenChannels);
   }
 
@@ -205,6 +206,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     this.pendingForceClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingForceClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingForceClosingChannels.sort = this.sort;
+    this.pendingForceClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.logger.info(this.pendingForceClosingChannels);
   }
 
@@ -215,6 +217,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     this.pendingClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingClosingChannels.sort = this.sort;
+    this.pendingClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.logger.info(this.pendingClosingChannels);
   }
 
@@ -225,6 +228,7 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     this.pendingWaitClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingWaitClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingWaitClosingChannels.sort = this.sort;
+    this.pendingWaitClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.logger.info(this.pendingWaitClosingChannels);
   }
 

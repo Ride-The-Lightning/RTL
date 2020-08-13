@@ -60,6 +60,7 @@ export class ChannelRestoreTableComponent implements OnInit {
       this.channels = new MatTableDataSource([...resRCList.files]);
       this.channels.data = resRCList.files;
       this.channels.sort = this.sort;
+      this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
       this.channels.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
         this.flgLoading[0] = false;

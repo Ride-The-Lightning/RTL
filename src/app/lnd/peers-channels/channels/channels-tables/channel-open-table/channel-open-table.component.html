@@ -14,8 +14,10 @@
           <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
             <span *ngIf="channel.active" class="dot green" matTooltip="Active" matTooltipPosition="right"></span>
             <span *ngIf="!channel.active" class="dot yellow" matTooltip="Inactive" matTooltipPosition="right"></span>
+            <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
+            <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
             <span class="ellipsis-child">{{channel.remote_alias || channel.remote_pubkey}}</span>
-          </div>            
+          </div>
         </td>
       </ng-container>
       <ng-container matColumnDef="uptime">

@@ -66,6 +66,7 @@ export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
+      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     });
   }
 

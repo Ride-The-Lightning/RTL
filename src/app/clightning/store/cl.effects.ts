@@ -37,7 +37,8 @@ export class CLEffects implements OnDestroy {
       this.store.select('cl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseCounter > 7) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 7) {
+          rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
       });
@@ -259,6 +260,7 @@ export class CLEffects implements OnDestroy {
         .pipe(
           map((channels: any) => {
             this.logger.info(channels);
+            this.store.dispatch(new CLActions.GetForwardingHistory());
             return {
               type: CLActions.SET_CHANNELS_CL,
               payload: (channels && channels.length > 0) ? channels : []
@@ -573,10 +575,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
     mergeMap((action: CLActions.GetForwardingHistory) => {
       this.store.dispatch(new CLActions.ClearEffectError('GetForwardingHistory'));
-      // const queryHeaders: SwitchReq = {
-      //   num_max_events: action.payload.num_max_events, index_offset: action.payload.index_offset, end_time: action.payload.end_time, start_time: action.payload.start_time
-      // };
-      // return this.httpClient.post(this.CHILD_API_URL + environment.SWITCH_API, queryHeaders)
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards')
         .pipe(
           map((fhRes: any) => {
@@ -725,7 +723,6 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.FetchFeeRates('perkw'));
     this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
     this.store.dispatch(new CLActions.FetchPeers());
-    this.store.dispatch(new CLActions.GetForwardingHistory());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');

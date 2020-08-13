@@ -42,7 +42,8 @@ export class LNDEffects implements OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseCounter > 8) {
+      if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) {
+        rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
         this.store.dispatch(new RTLActions.CloseSpinner());
       }
     });

@@ -36,8 +36,8 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
-  public newlyAddedInvoiceMemo = '';
-  public newlyAddedInvoiceValue = 0;
+  public newlyAddedInvoiceMemo = null;
+  public newlyAddedInvoiceValue = null;
   public flgAnimate = true;
   public memo = '';
   public expiry: number;
@@ -128,6 +128,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   loadInvoicesTable(invoices) {
     this.invoices = new MatTableDataSource<Invoice>([...invoices]);
     this.invoices.sort = this.sort;
+    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }

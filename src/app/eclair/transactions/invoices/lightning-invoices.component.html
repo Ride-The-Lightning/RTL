@@ -30,7 +30,7 @@
     <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-        <ng-container matColumnDef="timestampStr">
+        <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
           <td mat-cell *matCellDef="let invoice">
             <span *ngIf="invoice.status === 'received'" class="dot green" matTooltip="Received" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -48,7 +48,7 @@
           <td mat-cell *matCellDef="let invoice" class="pr-3"><span fxLayoutAlign="end center"> {{invoice.amount | number:'1.0-0'}}
             </span></td>
         </ng-container>
-        <ng-container matColumnDef="receivedAtStr">
+        <ng-container matColumnDef="receivedAt">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Settled </th>
           <td mat-cell *matCellDef="let invoice">{{invoice.receivedAtStr}}</td>
         </ng-container>

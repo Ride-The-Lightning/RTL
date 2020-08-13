@@ -5,7 +5,7 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
 
 export interface ECLState {
-  initialAPIResponseCounter: number;
+  initialAPIResponseStatus: String[];
   effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
@@ -24,7 +24,7 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
-  initialAPIResponseCounter: 0,
+  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
   effectErrors: [],
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
@@ -43,6 +43,8 @@ export const initECLState: ECLState = {
 }
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
+  let newAPIStatus = state.initialAPIResponseStatus;
+
   switch (action.type) {
     case ECLActions.CLEAR_EFFECT_ERROR_ECL:
       const clearedEffectErrors = [...state.effectErrors];
@@ -77,9 +79,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         information: action.payload
       };
     case ECLActions.SET_FEES_ECL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
@@ -98,9 +101,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         inactiveChannels: action.payload,
       };
     case ECLActions.SET_CHANNELS_STATUS_ECL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         channelsStatus: action.payload,
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
@@ -109,9 +113,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         channelStats: action.payload,
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'ONCHAINBALANCE'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         onchainBalance: action.payload
       };
     case ECLActions.SET_LIGHTNING_BALANCE_ECL:
@@ -120,9 +125,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         lightningBalance: action.payload
       };
     case ECLActions.SET_PEERS_ECL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case ECLActions.REMOVE_PEER_ECL:
@@ -150,9 +156,10 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         activeChannels: modifiedChannels
       };
     case ECLActions.SET_PAYMENTS_ECL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseCounter: state.initialAPIResponseCounter + 1,
+        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case ECLActions.SET_TRANSACTIONS_ECL:

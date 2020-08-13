@@ -60,16 +60,16 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'actions'];
+      this.displayedColumns = ['firstPartTimestamp', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['firstPartTimestamp', 'recipientAmount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'id', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientAmount', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'id', 'recipientNodeId', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientNodeId', 'recipientAmount', 'actions'];
     }
   }
 
@@ -88,6 +88,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
+      this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
       this.payments.paginator = this.paginator;
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {

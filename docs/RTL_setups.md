@@ -14,7 +14,6 @@ If your running RTL and LND on different devices on your local LAN, certain conf
 {
   "multiPass": "<password in plain text, Default 'password'>",
   "port": "3000",
-  "host": "localhost",
   "defaultNodeIndex": 1,
   "SSO": {
     "rtlSSO": 0,

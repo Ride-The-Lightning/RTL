@@ -34,7 +34,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Bolt11</th>
           <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{payment?.bolt11}}</td>
         </ng-container>
-        <ng-container matColumnDef="created_at_str">
+        <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
           <td mat-cell *matCellDef="let payment">
             <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
@@ -55,12 +55,12 @@
         <ng-container matColumnDef="msatoshi_sent">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:'1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="msatoshi">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:'1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="payment_preimage">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Pre Image</th>

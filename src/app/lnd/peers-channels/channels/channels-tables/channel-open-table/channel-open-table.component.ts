@@ -23,6 +23,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -53,6 +54,8 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public versionsArr = [];
+  public faEye = faEye;
+  public faEyeSlash = faEyeSlash
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -235,6 +238,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }
