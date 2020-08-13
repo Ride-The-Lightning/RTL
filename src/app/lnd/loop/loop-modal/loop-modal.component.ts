@@ -144,7 +144,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSwap() {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage) || (this.direction === SwapTypeEnum.WITHDRAWAL && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -177,8 +177,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         }).subscribe((swapStatus: any) => {
           this.saveSwapFile({
             swapStatus,
-            costServer: this.quote.swap_fee,
-            costOnchain: this.quote.miner_fee,
+            costServer: this.quote.swap_fee_sat,
+            costOnchain: this.quote.htlc_publish_fee_sat,
             swapInfo,
           });
           this.loopStatus = {
@@ -207,8 +207,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         }).subscribe((swapStatus: any) => {
           this.saveSwapFile({
             swapStatus,
-            costServer: this.quote.swap_fee,
-            costOnchain: this.quote.miner_fee,
+            costServer: this.quote.swap_fee_sat,
+            costOnchain: this.quote.htlc_publish_fee_sat,
             swapInfo: {...swapInfo, newAddress},
           });
           this.loopStatus = {
@@ -335,14 +335,14 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       const lndNode = this.boltzService.getLNDNode();
       this.store.dispatch(new RTLActions.CloseSpinner());
       this.minQuote = {
-        swap_fee: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
-        miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+        swap_fee_sat: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
+        htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
         swap_payment_dest: lndNode,
         amount: pairs.limits.minimal
       };
       this.maxQuote = {
-        swap_fee: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
-        miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+        swap_fee_sat: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
+        htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
         swap_payment_dest: lndNode,
         amount: pairs.limits.maximal
       };
@@ -363,8 +363,8 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         const lndNode = this.boltzService.getLNDNode();
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = {
-          swap_fee: (this.inputFormGroup.controls.amount.value * pairs.fees.percentage * 0.01).toString(),
-          miner_fee: pairs.fees.minerFees.baseAsset.normal.toString(),
+          swap_fee_sat: (this.inputFormGroup.controls.amount.value * pairs.fees.percentage * 0.01).toString(),
+          htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
           swap_payment_dest: lndNode,
           amount: this.inputFormGroup.controls.amount.value
         }
@@ -423,8 +423,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.inputFormLabel = 'Amount to ' + this.loopDirectionCaption;
         }
-        if (this.quote && this.quote.swap_fee && this.quote.miner_fee && this.quote.prepay_amt) {
-          this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee + +this.quote.miner_fee) + ' Sats' + (this.swapProvider === SwapProviderEnum.BOLTZ ? refundFileDownloadLabel : '');
         if (this.quote && this.quote.swap_fee_sat && (this.quote.htlc_sweep_fee_sat || this.quote.htlc_publish_fee_sat) && this.quote.prepay_amt_sat) {
           const refundFileDownloadLabel = ' | Refund file Download: ' + (this.quoteFormGroup.controls.downloadRefundFile.value ? 'True' : 'False');
           this.quoteFormLabel = 'Quote confirmed | Estimated Fees: ' + this.decimalPipe.transform(+this.quote.swap_fee_sat + +(this.quote.htlc_sweep_fee_sat ? this.quote.htlc_sweep_fee_sat : this.quote.htlc_publish_fee_sat ? this.quote.htlc_publish_fee_sat : 0)) + ' Sats';

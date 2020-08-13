@@ -23,7 +23,7 @@
         <h4 fxLayoutAlign="start" class="font-bold-500">{{quote?.htlc_sweep_fee_sat ? 'HTLC Sweep Fee (Sats)' : quote?.htlc_publish_fee_sat ? 'HTLC Publish Fee (Sats)' : ''}}</h4>
         <span class="foreground-secondary-text">{{(quote?.htlc_sweep_fee_sat ? quote.htlc_sweep_fee_sat : quote?.htlc_publish_fee_sat ? quote.htlc_publish_fee_sat : 0) | number}}</span>
       </div>
-      <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment" *ngIf="quote?.prepay_amt_sat">
+      <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS && quote?.prepay_amt_sat" fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment">
         <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
         <span class="foreground-secondary-text">{{quote?.prepay_amt_sat | number}}</span>
       </div>
