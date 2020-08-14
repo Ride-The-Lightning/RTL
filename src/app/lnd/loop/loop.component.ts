@@ -45,7 +45,7 @@ export class LoopComponent implements OnInit {
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
+        this.store.dispatch(new RTLActions.OpenAlert({data: {
           minQuote: response[0],
           maxQuote: response[1],
           direction: direction,
@@ -57,7 +57,7 @@ export class LoopComponent implements OnInit {
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
-        this.store.dispatch(new RTLActions.OpenAlert({ data: {
+        this.store.dispatch(new RTLActions.OpenAlert({data: {
           minQuote: response[0],
           maxQuote: response[1],
           direction: direction,
