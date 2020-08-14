@@ -175,11 +175,11 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         action.payload.forwarding_events.forEach(event => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id === event.in_channel) {
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === event.in_channel) {
                 event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
                 if (event.out_channel_alias) { return; }
               }
-              if (storedChannels[idx].short_channel_id.toString() === event.out_channel) {
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === event.out_channel) {
                 event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
                 if (event.in_channel_alias) { return; }
               }
@@ -214,8 +214,10 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         totalInvoices: action.payload
       };
     case CLActions.SET_TRANSACTIONS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'TRANSACTIONS'];
       return {
         ...state,
+        initialAPIResponseStatus: newAPIStatus,
         transactions: action.payload
       };
     default:

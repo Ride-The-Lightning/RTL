@@ -71,7 +71,6 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
     .subscribe((action: CLActions.EffectError | CLActions.SetChannelTransactionRes) => {
       if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
-        this.store.dispatch(new CLActions.FetchTransactions());
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
@@ -121,6 +120,8 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     let utxoNew = {value: 0}; 
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
+    } else {
+      this.totalSelectedUTXOAmount = 0;
     }
   }
 
