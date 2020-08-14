@@ -109,6 +109,7 @@ export interface OnChain {
   satoshis?: number;
   feeRate?: string;
   minconf?: number;
+  utxos?: string[];
 }
 
 export interface Hop {

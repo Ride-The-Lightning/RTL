@@ -53,7 +53,7 @@ exports.onChainWithdraw = (req, res, next) => {
     logger.error({fileName: 'OnChain', lineNum: 51, msg: 'OnChain Withdraw Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'OnChain Withdraw Failed!',
-      error: err.error
+      error: err
     });
   });
 }
@@ -62,6 +62,7 @@ exports.getTransactions = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/listFunds';
   request(options).then((body) => {
+    if (body.outputs) { body.outputs = common.sortDescByStrKey(body.outputs, 'status'); }
     res.status(200).json(body);
   }).catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
