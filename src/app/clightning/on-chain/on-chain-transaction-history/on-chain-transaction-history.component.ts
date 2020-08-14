@@ -57,7 +57,7 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new CLActions.FetchTransactions());
+    // this.store.dispatch(new CLActions.FetchTransactions());
     this.store.select('cl')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {

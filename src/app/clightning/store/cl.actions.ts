@@ -226,7 +226,7 @@ export class UpdateChannels implements Action {
 
 export class SaveNewChannel implements Action {
   readonly type = SAVE_NEW_CHANNEL_CL;
-  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number}) {}
+  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number, utxos?: string[]}) {}
 }
 
 export class CloseChannel implements Action {

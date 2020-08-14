@@ -37,7 +37,7 @@ export class CLEffects implements OnDestroy {
       this.store.select('cl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 7) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) {
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
@@ -279,24 +279,23 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: CLActions.SaveNewChannel) => {
       this.store.dispatch(new CLActions.ClearEffectError('SaveNewChannel'));
-      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, {
-        id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null
-      })
-        .pipe(
-          map((postRes: any) => {
-            this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
-            this.store.dispatch(new CLActions.FetchBalance());
-            return {
-              type: CLActions.FETCH_CHANNELS_CL
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
-            return of({type: RTLActions.VOID});
-          })
-        );
+      let newPayload = {id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null};
+      if (action.payload.utxos) { newPayload['utxos'] = action.payload.utxos; }
+      return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API, newPayload)
+      .pipe(map((postRes: any) => {
+        this.logger.info(postRes);
+        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
+        this.store.dispatch(new CLActions.FetchBalance());
+        this.store.dispatch(new CLActions.FetchTransactions());
+        return {
+          type: CLActions.FETCH_CHANNELS_CL
+        };
+      }),
+      catchError((err: any) => {
+        this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
+        return of({type: RTLActions.VOID});
+      }));
     }
     ));
 
@@ -688,6 +687,7 @@ export class CLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.store.dispatch(new CLActions.FetchBalance());
+        this.store.dispatch(new CLActions.FetchTransactions());
         return {
           type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
           payload: postRes
@@ -743,6 +743,7 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.FetchFeeRates('perkw'));
     this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
     this.store.dispatch(new CLActions.FetchPeers());
+    this.store.dispatch(new CLActions.FetchTransactions());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');
