@@ -3,6 +3,35 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
+function _groupPayments(payments) {
+  return Object.values(payments.reduce((result, current) => {
+    const multi = !!current.partid;
+
+    result[current.payment_hash] = result[current.payment_hash] || {
+      id: current.id,
+      payment_hash: current.payment_hash,
+      label: '',
+      created_at: current.created_at
+    };
+    const payment = result[current.payment_hash];
+    if (!multi) payment.id = current.id;
+
+    if (current.payment_preimage) payment.payment_preimage = current.payment_preimage;
+    if (current.bolt11) payment.bolt11 = current.bolt11;
+    if (current.label) payment.label = current.label;
+    if (current.destination) payment.destination = current.destination;
+    const sent = current.status === 'complete' ? current.msatoshi_sent : 0;
+    payment.msatoshi_sent = (payment.msatoshi_sent || 0) + sent;
+    payment.msatoshi = (payment.msatoshi || 0) + (current.status === 'complete' ? current.msatoshi : 0);
+    if (!multi && current.status === 'complete') payment.msatoshi_sent = current.msatoshi_sent;
+    payment.created_at_str = (!payment.created_at) ? '' : common.convertTimestampToDate(payment.created_at);
+    payment.status = payment.status === 'complete' ? payment.status : current.status;
+    if (multi && current.status === 'complete') payment.parts = (payment.parts || 0) + 1;
+
+    return result;
+  }, {}));
+}
+
 exports.listPayments = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/pay/listPayments';
@@ -16,12 +45,9 @@ exports.listPayments = (req, res, next) => {
       });
     } else {
       if ( body &&  body.payments && body.payments.length > 0) {
-        body.payments.forEach(payment => {
-          payment.created_at_str =  (!payment.created_at) ? '' : common.convertTimestampToDate(payment.created_at);
-        });
         body.payments = common.sortDescByKey(body.payments, 'created_at');
       }
-      res.status(200).json(body.payments);
+      res.status(200).json(_groupPayments(body.payments));
     }
   })
   .catch(errRes => {
