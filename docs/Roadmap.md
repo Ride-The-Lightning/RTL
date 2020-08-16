@@ -1,4 +1,4 @@
-[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [LND API Coverage](LNDAPICoverage.md) -- [Application Configurations](Application_configurations)
+[Intro](../README.md) -- [Application Features](Application_features.md) -- **Road Map** -- [Application Configurations](Application_configurations)
 
 # Product Roadmap for RTL Application
 
@@ -11,9 +11,6 @@ We believe UX improvement is a never-ending cycle. And, we must keep the UI/UX f
 
 ### Automated Testing
 As the functional complexity increases, we need to add automated testing to ensure quality and less bugs. Another area, where developer contribution is more than welcome.
-
-### Eclair
-Support [Eclair](https://github.com/ACINQ/eclair) implementation.
 
 ### Advanced Node Monitoring
 Active node monitoring may be required to ensure reliability of routing nodes. Monitoring can include generating alerts for out-of-balance channels, inactive channels, disconnected peers, low activity channels etc. This feature will be required for professional node operaters running commercial routing nodes with a need to react to signals, requiring specific action to be taken.
