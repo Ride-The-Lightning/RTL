@@ -26,12 +26,16 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./send-payment.component.scss'],
 })
 export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
-  @ViewChild('paymentReq', { static: true }) paymentReq: NgModel;
+  private paymentReq: NgModel;
+  @ViewChild('paymentReq') set payReq(paymReq: NgModel) {if(paymReq) { this.paymentReq = paymReq; }}  
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public paymentDecoded: PayRequest = {};
   public zeroAmtInvoice = false;
   public paymentAmount = null;
+  public paymentType = 'invoice';
+  public pubkey = '';
+  public keysendAmount = null;
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public selActiveChannel: Channel = {};
@@ -72,37 +76,45 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onSendPayment() {
-    if(!this.paymentRequest) { return true; } 
-    if (this.paymentDecoded.created_at_str) {
-      this.sendPayment();
+    if ((this.paymentType === 'invoice' && !this.paymentRequest) || (this.paymentType === 'keysend' && (!this.pubkey || this.pubkey.trim() === '' || !this.keysendAmount || this.keysendAmount <= 0))) { return true; } 
+    if (this.paymentType === 'keysend') {
+      this.keysendPayment();
     } else {
-      this.paymentAmount = null;
-      this.paymentError = '';
-      this.paymentDecodedHint = '';
-      this.paymentReq.control.setErrors(null);      
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {
-          this.paymentDecoded.msatoshi = 0;
-          this.zeroAmtInvoice = true;
-          this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
-        } else {
-          this.zeroAmtInvoice = false;
-          this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-          .pipe(takeUntil(this.unSubs[2]))
-          .subscribe(data => {
-            if(this.selNode.fiatConversion) {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
-            }
-          });
-        }
-      });
+      if (this.paymentDecoded.created_at_str) {
+        this.sendPayment();
+      } else {
+        this.paymentAmount = null;
+        this.paymentError = '';
+        this.paymentDecodedHint = '';
+        this.paymentReq.control.setErrors(null);      
+        this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+        this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
+        this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
+          this.paymentDecoded = decodedPayment;
+          if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {
+            this.paymentDecoded.msatoshi = 0;
+            this.zeroAmtInvoice = true;
+            this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
+          } else {
+            this.zeroAmtInvoice = false;
+            this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+            .pipe(takeUntil(this.unSubs[2]))
+            .subscribe(data => {
+              if(this.selNode.fiatConversion) {
+                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
+              } else {
+                this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+              }
+            });
+          }
+        });
+      }
     }
+  }
 
+  keysendPayment() {
+    this.store.dispatch(new RTLActions.OpenSpinner('Sending Keysend Payment...'));
+    this.store.dispatch(new CLActions.SendPayment({pubkey: this.pubkey, amount: this.keysendAmount*1000, fromDialog: true}));
   }
 
   sendPayment() {
@@ -151,16 +163,26 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentDecoded.msatoshi = event;
   }
 
-  resetData() {
-    this.paymentDecoded = {};
-    this.paymentRequest = '';
-    this.selActiveChannel = null;
-    this.feeLimit = null;
-    this.selFeeLimitType = FEE_LIMIT_TYPES[0];
-    this.paymentReq.control.setErrors(null);
+  onPaymentTypeChange() {
     this.paymentError = '';
-    this.paymentDecodedHint = '';
-    this.zeroAmtInvoice = false;
+  }
+
+  resetData() {
+    if (this.paymentType === 'keysend') {
+      this.pubkey = '';
+      this.keysendAmount = null;
+    } else {
+      this.paymentDecoded = {};
+      this.paymentRequest = '';
+      this.selActiveChannel = null;
+      this.feeLimit = null;
+      this.selFeeLimitType = FEE_LIMIT_TYPES[0];
+      this.paymentReq.control.setErrors(null);
+      this.paymentDecodedHint = '';
+      this.zeroAmtInvoice = false;
+      this.paymentAmount = null;
+    }
+    this.paymentError = '';
   }
 
   ngOnDestroy() {

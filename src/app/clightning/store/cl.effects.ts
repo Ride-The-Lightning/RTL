@@ -412,44 +412,43 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.SendPayment, any]) => {
-      this.store.dispatch(new CLActions.ClearEffectError('SendPayment'));      
-      return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
-        .pipe(
-          map((sendRes: any) => {
-            this.logger.info(sendRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            if (sendRes.error) {
-              this.logger.error('Error: ' + sendRes.payment_error);
-              const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
-              if (action.payload.fromDialog) {
-                this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
-              } else {
-                this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
-              }
-              return of({type: RTLActions.VOID});
-            } else {
-              this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
-              this.store.dispatch(new CLActions.FetchChannels());
-              this.store.dispatch(new CLActions.FetchBalance());
-              this.store.dispatch(new CLActions.FetchPayments());
-              this.store.dispatch(new CLActions.SetDecodedPayment({}));
-              return {
-                type: CLActions.SEND_PAYMENT_STATUS_CL,
-                payload: sendRes
-              };
-            }
-          }),
-          catchError((err: any) => {
-            this.logger.error('Error: ' + JSON.stringify(err));
-            const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+      this.store.dispatch(new CLActions.ClearEffectError('SendPayment'));
+      let paymentUrl = (action.payload.pubkey && action.payload.pubkey !== '') ? this.CHILD_API_URL + environment.PAYMENTS_API + '/keysend' : this.CHILD_API_URL + environment.PAYMENTS_API + '/invoice';
+      return this.httpClient.post(paymentUrl, action.payload).pipe(
+        map((sendRes: any) => {
+          this.logger.info(sendRes);
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          if (sendRes.error) {
+            this.logger.error('Error: ' + sendRes.payment_error);
+            const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
             if (action.payload.fromDialog) {
               this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
             } else {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
             }
             return of({type: RTLActions.VOID});
-          })
-        );
+          } else {
+            this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
+            this.store.dispatch(new CLActions.FetchChannels());
+            this.store.dispatch(new CLActions.FetchBalance());
+            this.store.dispatch(new CLActions.FetchPayments());
+            this.store.dispatch(new CLActions.SetDecodedPayment({}));
+            return {
+              type: CLActions.SEND_PAYMENT_STATUS_CL,
+              payload: sendRes
+            };
+          }
+        }),
+        catchError((err: any) => {
+          this.logger.error('Error: ' + JSON.stringify(err));
+          const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
+          if (action.payload.fromDialog) {
+            this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+          } else {
+            this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+          }
+          return of({type: RTLActions.VOID});
+        }));
     })
   );
 

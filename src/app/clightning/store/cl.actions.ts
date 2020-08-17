@@ -192,7 +192,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: { fromDialog: boolean, invoice: string, amount?: number }) {}
+  constructor(public payload: {fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
 }
 
 export class SendPaymentStatus implements Action {
