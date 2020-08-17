@@ -32,12 +32,13 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public filteredPeers: Observable<Peer[]>;
   public transactions: Transaction[] = [];
   public selUTXOs = [];
+  public flgUseAllBalance = false;  
   public totalSelectedUTXOAmount = 0;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
   public information: GetInfo;
   public totalBalance = 0;
-  public fundingAmount: number;
+  public fundingAmount = null;
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRateTypes = FEE_RATE_TYPES;
@@ -117,7 +118,20 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = (!this.flgMinConf && !this.selFeeRate) ? 'Advanced Options' : 'Advanced Options | ' + (this.flgMinConf ? 'Min Confirmation Blocks: ' : 'Fee Rate: ') + (this.flgMinConf ? this.minConfValue : (this.selFeeRate ? this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType : '') + ((this.selUTXOs.length && this.selUTXOs.length > 0) ? ' | Selected UTXOs: ' + this.selUTXOs.length + ' | Total Amount: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats' : ''));
+      if (!this.flgMinConf && !this.selFeeRate && (!this.selUTXOs.length || this.selUTXOs.length === 0)) {
+        this.advancedTitle = 'Advanced Options';
+      } else {
+        this.advancedTitle = 'Advanced Options';
+        if (this.flgMinConf) {
+          this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
+        }
+        if (this.selFeeRate) {
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType;
+        }
+        if (this.selUTXOs.length && this.selUTXOs.length > 0) {
+          this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
+        }
+      }
     } else {
       this.advancedTitle = 'Advanced Options';
     }
@@ -127,14 +141,25 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     let utxoNew = {value: 0}; 
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
+      if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
     } else {
       this.totalSelectedUTXOAmount = 0;
+      this.fundingAmount = null;
+      this.flgUseAllBalance = false;
+    }
+  }
+
+  onUTXOAllBalanceChange() {
+    if (this.flgUseAllBalance) {
+      this.fundingAmount = this.totalSelectedUTXOAmount;
+    } else {
+      this.fundingAmount = null;
     }
   }
 
   onOpenChannel() {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
-    let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
+    let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach(utxo => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));

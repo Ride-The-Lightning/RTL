@@ -7,7 +7,8 @@ exports.getPeers = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/peer/listPeers';
   request(options).then(function (body) {
-    let peers = ( body) ? common.sortDescByStrKey(body, 'alias') : [];
+    body.forEach(peer => { if (!peer.alias || peer.alias === '') { peer.alias = peer.id.substring(0, 20);}});
+    let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
     logger.info({fileName: 'Peers', msg: 'Peers with Alias: ' + JSON.stringify(peers)});
     res.status(200).json(peers);
   })

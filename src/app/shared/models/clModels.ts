@@ -106,7 +106,7 @@ export interface ListInvoices {
 
 export interface OnChain {
   address?:	string;
-  satoshis?: number;
+  satoshis?: string;
   feeRate?: string;
   minconf?: number;
   utxos?: string[];

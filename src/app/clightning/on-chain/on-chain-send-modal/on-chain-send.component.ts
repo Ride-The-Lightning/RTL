@@ -32,7 +32,8 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public addressTypes = [];
   public transactions: Transaction[] = [];
   public selUTXOs = [];
-  public totalSelectedUTXOAmount = 0;
+  public flgUseAllBalance = false;
+  public totalSelectedUTXOAmount = null;
   public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
@@ -84,16 +85,19 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   onSendFunds() {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
+    if (this.flgUseAllBalance) {
+      this.transaction.satoshis = 'all';
+    }
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.transaction.utxos = [];
       this.selUTXOs.forEach(utxo => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     if(this.transaction.satoshis && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(data => {
-        this.transaction.satoshis = parseInt(data[CurrencyUnitEnum.SATS]);
+        this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
       });
@@ -104,7 +108,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
 
   get invalidValues(): boolean {
     return (!this.transaction.address || this.transaction.address === '')
-        || ((!this.transaction.satoshis || this.transaction.satoshis <= 0))
+        || ((!this.transaction.satoshis || +this.transaction.satoshis <= 0))
         || (this.flgMinConf && (!this.transaction.minconf || this.transaction.minconf <= 0));
   }
 
@@ -112,16 +116,30 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     this.sendFundError = '';    
     this.transaction = {};
     this.flgMinConf = false;
-    this.totalSelectedUTXOAmount = 0;
+    this.totalSelectedUTXOAmount = null;
     this.selUTXOs = [];
+    this.flgUseAllBalance = false;
+    this.selAmountUnit = CURRENCY_UNITS[0];
   }
 
   onUTXOSelectionChange(event: any) {
     let utxoNew = {value: 0}; 
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {
       this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
+      if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
     } else {
-      this.totalSelectedUTXOAmount = 0;
+      this.totalSelectedUTXOAmount = null;
+      this.transaction.satoshis = null;
+      this.flgUseAllBalance = false;
+    }
+  }
+
+  onUTXOAllBalanceChange() {
+    if (this.flgUseAllBalance) {
+      this.transaction.satoshis = this.totalSelectedUTXOAmount;
+      this.selAmountUnit = CURRENCY_UNITS[0];
+    } else {
+      this.transaction.satoshis = null;
     }
   }
 
@@ -130,10 +148,10 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
-        self.transaction.satoshis = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+        self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       });
     }
     this.selAmountUnit = event.value;
@@ -141,7 +159,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = (this.selUTXOs.length && this.selUTXOs.length > 0) ? 'Advanced Options | Selected UTXOs: ' + this.selUTXOs.length + ' | Total Amount: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats' : 'Advanced Options';
+      this.advancedTitle = (this.selUTXOs.length && this.selUTXOs.length > 0) ? 'Advanced Options | Selected UTXOs: ' + this.selUTXOs.length + ' | Selected UTXO Amount: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats' : 'Advanced Options';
     } else {
       this.advancedTitle = 'Advanced Options';
     }
