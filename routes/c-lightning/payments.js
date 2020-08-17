@@ -5,6 +5,6 @@ const authCheck = require("../authCheck");
 
 router.get("/", authCheck, PaymentsController.listPayments);
 router.get("/:invoice", authCheck, PaymentsController.decodePayment);
-router.post("/", authCheck, PaymentsController.postPayment);
+router.post("/:type", authCheck, PaymentsController.postPayment);
 
 module.exports = router;

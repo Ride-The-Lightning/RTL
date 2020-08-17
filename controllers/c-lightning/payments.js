@@ -75,14 +75,18 @@ exports.decodePayment = (req, res, next) => {
 
 exports.postPayment = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/pay';
+  if (req.params.type === 'keysend') {
+    options.url = common.getSelLNServerUrl() + '/pay/keysend';
+  } else {
+    options.url = common.getSelLNServerUrl() + '/pay';
+  }
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.info({fileName: 'Payments', msg: 'Payment Post Response: ' + JSON.stringify(body)});
+    logger.info({fileName: 'Payments', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Payments', lineNum: 81, msg: 'Payment Post Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.error({fileName: 'Payments', lineNum: 81, msg: 'Send Payment Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
-        message: "Payment Post Failed!",
+        message: "Send Payment Failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
@@ -97,9 +101,9 @@ exports.postPayment = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Payments', lineNum: 97, msg: 'Payments Post Error: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Payments', lineNum: 97, msg: 'Send Payments Error: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: "Payment Post Failed!",
+      message: "Send Payment Failed!",
       error: err.error
     });
   });
