@@ -5,7 +5,7 @@ var options = {};
 
 getAliasFromPubkey = (hop) => {
   return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/graph/node/' + hop.pub_key;
+    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + hop.pub_key;
     request(options)
     .then(function(aliasBody) {
       logger.info({fileName: 'Graph', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
@@ -18,7 +18,7 @@ getAliasFromPubkey = (hop) => {
 
 exports.getDescribeGraph = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph';
+  options.url = common.getSelLNServerUrl() + '/v1/graph';
   request.get(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
@@ -51,7 +51,7 @@ exports.getDescribeGraph = (req, res, next) => {
 
 exports.getGraphInfo = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph/info';
+  options.url = common.getSelLNServerUrl() + '/v1/graph/info';
   request.get(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
@@ -89,7 +89,7 @@ exports.getGraphInfo = (req, res, next) => {
 
 exports.getGraphNode = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph/node/' + req.params.pubKey;
+  options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + req.params.pubKey;
   request(options).then((body) => {
     logger.info({fileName: 'Graph', msg: 'Node Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -122,7 +122,7 @@ exports.getGraphNode = (req, res, next) => {
 
 exports.getGraphEdge = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph/edge/' + req.params.chanid;
+  options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.info({fileName: 'Graph', msg: 'Edge Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -155,7 +155,7 @@ exports.getGraphEdge = (req, res, next) => {
 
 exports.getQueryRoutes = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
+  options.url = common.getSelLNServerUrl() + '/v1/graph/routes/' + req.params.destPubkey + '/' + req.params.amount;
   if(req.query.outgoing_chan_id) {
     options.url = options.url + '?outgoing_chan_id=' + req.query.outgoing_chan_id;
   }
@@ -218,7 +218,7 @@ exports.getQueryRoutes = (req, res, next) => {
 
 exports.getRemoteFeePolicy = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/graph/edge/' + req.params.chanid;
+  options.url = common.getSelLNServerUrl() + '/v1/graph/edge/' + req.params.chanid;
   request(options).then((body) => {
     logger.info({fileName: 'Graph', msg: 'Edge Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {

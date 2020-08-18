@@ -5,7 +5,7 @@ var options = {};
 
 exports.getBalance = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/getBalance';
+  options.url = common.getSelLNServerUrl() + '/v1/getBalance';
   request(options).then((body) => {
     logger.info({fileName: 'Balance', msg: 'Balance Received: ' + JSON.stringify(body)});
     if(!body.totalBalance) {

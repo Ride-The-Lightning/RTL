@@ -6,7 +6,7 @@ var options = {};
 getAliasForChannel = (channel) => {
   return new Promise(function(resolve, reject) {
     let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
-    options.url = common.getSelLNServerUrl() + '/graph/node/' + pubkey;
+    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
     request(options).then(function(aliasBody) {
       logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
       channel.remote_alias = aliasBody.node.alias;
@@ -21,7 +21,7 @@ getAliasForChannel = (channel) => {
 
 exports.getAllChannels = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channels';
+  options.url = common.getSelLNServerUrl() + '/v1/channels';
   options.qs = req.query;
   let local = 0;
   let remote = 0;
@@ -80,7 +80,7 @@ exports.getAllChannels = (req, res, next) => {
 
 exports.getPendingChannels = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channels/pending';
+  options.url = common.getSelLNServerUrl() + '/v1/channels/pending';
   options.qs = req.query;
   request(options).then(function (body) {
     if (!body.total_limbo_balance) {
@@ -139,7 +139,7 @@ exports.getPendingChannels = (req, res, next) => {
 
 exports.getClosedChannels = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channels/closed';
+  options.url = common.getSelLNServerUrl() + '/v1/channels/closed';
   options.qs = req.query;
   request(options).then(function (body) {
     if (body.channels && body.channels.length > 0) {
@@ -191,7 +191,7 @@ exports.getClosedChannels = (req, res, next) => {
 
 exports.postChannel = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channels';
+  options.url = common.getSelLNServerUrl() + '/v1/channels';
   options.form = { 
     node_pubkey_string: req.body.node_pubkey,
     local_funding_amount: req.body.local_funding_amount,
@@ -234,7 +234,7 @@ exports.postChannel = (req, res, next) => {
 
 exports.postTransactions = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channels/transactions';
+  options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
   if(req.body.paymentReq) {
     options.form = { 
       payment_request: req.body.paymentReq
@@ -291,7 +291,7 @@ exports.closeChannel = (req, res, next) => {
   req.setTimeout(60000 * 10); // timeout 10 mins
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
-  options.url = common.getSelLNServerUrl() + '/channels/' + channelpoint + '?force=' + req.query.force;
+  options.url = common.getSelLNServerUrl() + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
   if(req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
   if(req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
@@ -325,7 +325,7 @@ exports.closeChannel = (req, res, next) => {
 
 exports.postChanPolicy = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/chanpolicy';
+  options.url = common.getSelLNServerUrl() + '/v1/chanpolicy';
   if(req.body.chanPoint === 'all') {
     options.form = JSON.stringify({
       global: true, 
