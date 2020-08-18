@@ -6,7 +6,7 @@ var options = {};
 
 exports.getFees = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/fees';
+  options.url = common.getSelLNServerUrl() + '/v1/fees';
   request(options).then((body) => {
     logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {

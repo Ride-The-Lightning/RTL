@@ -5,7 +5,7 @@ var options = {};
 
 exports.getNewAddress = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/newaddr?addrType=' + req.query.type;
+  options.url = common.getSelLNServerUrl() + '/v1/newaddr?addrType=' + req.query.type;
   request(options).then((body) => {
     res.status(200).json(body);
   })
@@ -27,7 +27,7 @@ exports.getNewAddress = (req, res, next) => {
 
 exports.onChainWithdraw = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/withdraw';
+  options.url = common.getSelLNServerUrl() + '/v1/withdraw';
   options.body = req.body;
   logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
@@ -60,7 +60,7 @@ exports.onChainWithdraw = (req, res, next) => {
 
 exports.getTransactions = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/listFunds';
+  options.url = common.getSelLNServerUrl() + '/v1/listFunds';
   request(options).then((body) => {
     if (body.outputs) { body.outputs = common.sortDescByStrKey(body.outputs, 'status'); }
     res.status(200).json(body);

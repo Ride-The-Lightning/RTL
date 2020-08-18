@@ -5,7 +5,7 @@ var options = {};
 
 exports.getRoute = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/network/getRoute/' + req.params.destPubkey + '/' + req.params.amount;
+  options.url = common.getSelLNServerUrl() + '/v1/network/getRoute/' + req.params.destPubkey + '/' + req.params.amount;
   request(options).then((body) => {
     logger.info({fileName: 'Network', msg: 'Query Routes Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -35,7 +35,7 @@ exports.getRoute = (req, res, next) => {
 
 exports.listNode = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/network/listNode/' + req.params.id;
+  options.url = common.getSelLNServerUrl() + '/v1/network/listNode/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
     body.forEach(node => {
@@ -61,7 +61,7 @@ exports.listNode = (req, res, next) => {
 
 exports.listChannel = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/network/listChannel/' + req.params.channelShortId;
+  options.url = common.getSelLNServerUrl() + '/v1/network/listChannel/' + req.params.channelShortId;
   request(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Channel Lookup: ' + JSON.stringify(body)});
     body[0].last_update_str =  (body.length > 0 && body[0].last_update) ? common.convertTimestampToDate(body[0].last_update) : '';
@@ -86,7 +86,7 @@ exports.listChannel = (req, res, next) => {
 
 exports.feeRates = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/network/feeRates/' + req.params.feeRateStyle;
+  options.url = common.getSelLNServerUrl() + '/v1/network/feeRates/' + req.params.feeRateStyle;
   request(options).then(function (body) {
     res.status(200).json(body);
   })

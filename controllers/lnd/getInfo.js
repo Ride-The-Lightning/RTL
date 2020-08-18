@@ -7,7 +7,7 @@ var options = {};
 exports.getInfo = (req, res, next) => {
   common.setOptions();
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/getinfo';
+  options.url = common.getSelLNServerUrl() + '/v1/getinfo';
   logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   logger.info({fileName: 'GetInfo', msg: 'Calling Info from LND server url: ' + options.url});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {

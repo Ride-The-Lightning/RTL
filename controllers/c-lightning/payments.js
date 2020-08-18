@@ -5,7 +5,7 @@ var options = {};
 
 exports.listPayments = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/pay/listPayments';
+  options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
   request(options).then((body) => {
     logger.info({fileName: 'Payments', msg: 'Payment List Received: ' + JSON.stringify(body.payments)});
     if(!body || body.error) {
@@ -42,7 +42,7 @@ exports.listPayments = (req, res, next) => {
 
 exports.decodePayment = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/pay/decodePay/' + req.params.invoice;
+  options.url = common.getSelLNServerUrl() + '/v1/pay/decodePay/' + req.params.invoice;
   request(options).then((body) => {
     logger.info({fileName: 'Payments', msg: 'Payment Decode Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -76,9 +76,9 @@ exports.decodePayment = (req, res, next) => {
 exports.postPayment = (req, res, next) => {
   options = common.getOptions();
   if (req.params.type === 'keysend') {
-    options.url = common.getSelLNServerUrl() + '/pay/keysend';
+    options.url = common.getSelLNServerUrl() + '/v1/pay/keysend';
   } else {
-    options.url = common.getSelLNServerUrl() + '/pay';
+    options.url = common.getSelLNServerUrl() + '/v1/pay';
   }
   options.body = req.body;
   request.post(options).then((body) => {

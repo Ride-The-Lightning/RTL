@@ -5,7 +5,7 @@ var options = {};
 
 exports.getPeers = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/peer/listPeers';
+  options.url = common.getSelLNServerUrl() + '/v1/peer/listPeers';
   request(options).then(function (body) {
     body.forEach(peer => { if (!peer.alias || peer.alias === '') { peer.alias = peer.id.substring(0, 20);}});
     let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
@@ -30,7 +30,7 @@ exports.getPeers = (req, res, next) => {
 
 exports.postPeer = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/peer/connect';
+  options.url = common.getSelLNServerUrl() + '/v1/peer/connect';
   options.body = req.body;
   request.post(options, (error, response, body) => {
     if(!body || body.error) {
@@ -41,7 +41,7 @@ exports.postPeer = (req, res, next) => {
       });
     } else {
       logger.info({fileName: 'Peers', msg: 'Peer Added: ' + JSON.stringify(body)});
-      options.url = common.getSelLNServerUrl() + '/peer/listPeers';
+      options.url = common.getSelLNServerUrl() + '/v1/peer/listPeers';
       request(options).then(function (body) {
         let peers = ( body) ? common.sortDescByStrKey(body, 'alias') : [];
         peers = common.newestOnTop(peers, 'id', req.body.id);
@@ -68,7 +68,7 @@ exports.postPeer = (req, res, next) => {
 
 exports.deletePeer = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
+  options.url = common.getSelLNServerUrl() + '/v1/peer/disconnect/' + req.params.peerId + '?force=' + req.query.force;
   request.delete(options).then((body) => {
     logger.info({fileName: 'Peers', msg: 'Detach Peer Response: ' + JSON.stringify(body)});
     if(!body || body.error) {

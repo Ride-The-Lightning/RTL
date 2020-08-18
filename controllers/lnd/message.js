@@ -5,7 +5,7 @@ var options = {};
 
 exports.signMessage = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/signmessage';
+  options.url = common.getSelLNServerUrl() + '/v1/signmessage';
   options.form = JSON.stringify({ 
     msg: Buffer.from(req.body.message).toString('base64')
   });
@@ -39,7 +39,7 @@ exports.signMessage = (req, res, next) => {
 
 exports.verifyMessage = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/verifymessage';
+  options.url = common.getSelLNServerUrl() + '/v1/verifymessage';
   options.form = JSON.stringify({ 
     msg: Buffer.from(req.body.message).toString('base64'),
     signature: req.body.signature

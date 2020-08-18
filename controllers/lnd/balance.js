@@ -6,7 +6,7 @@ var options = {};
 
 exports.getBalance = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/balance/' + req.params.source;
+  options.url = common.getSelLNServerUrl() + '/v1/balance/' + req.params.source;
   options.qs = req.query;
   request(options).then((body) => {
     logger.info({fileName: 'Balance', msg: 'Request params: ' + JSON.stringify(req.params) + 'Request Query: ' + JSON.stringify(req.query) + ' Balance Received: ' + JSON.stringify(body)});

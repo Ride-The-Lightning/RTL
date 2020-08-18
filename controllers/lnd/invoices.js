@@ -5,7 +5,7 @@ var options = {};
 
 exports.getInvoice = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoice/' + req.params.rHashStr;
+  options.url = common.getSelLNServerUrl() + '/v1/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -35,7 +35,7 @@ exports.getInvoice = (req, res, next) => {
 
 exports.listInvoices = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset + 
+  options.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset + 
   '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
@@ -79,7 +79,7 @@ exports.listInvoices = (req, res, next) => {
 
 exports.addInvoice = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoices';
+  options.url = common.getSelLNServerUrl() + '/v1/invoices';
   options.form = { 
     memo: req.body.memo,
     private: req.body.private,

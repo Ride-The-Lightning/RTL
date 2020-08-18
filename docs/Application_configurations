@@ -32,8 +32,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "enableLogging": <Parameter to turn RTL logging off/on. Allowed values - true, false, default false, Required>,
         "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false, Required>,
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
-        "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080/v1 OR https://192.168.0.1:3001/v1 OR http://192.168.0.1:8080. Default 'https://localhost:8080/v1', Required",
-        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. http://localhost:8081/v1, Optional>",
+        "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://localhost:8080', Required",
+        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. http://localhost:8081, Optional>",
       }
     }
   ]
@@ -45,8 +45,8 @@ parameters have `default` values for initial setup and can be updated after RTL 
 PORT (port number for the rtl node server, default 3000, Required)
 HOST (host for the rtl node server, default localhost, Optional)
 LN_IMPLEMENTATION (LND/CLT/ECL. Default 'LND', Required)
-LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080/v1) (Required)
-SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081/v1) (Optional)
+LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080) (Required)
+SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081) (Optional)
 CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional for LND & CLT, Mandatory for ECL if LN_API_PASSWORD is undefined)
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Optional)

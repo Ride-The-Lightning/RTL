@@ -7,7 +7,7 @@ var swapServerUrl = '';
 exports.loopOut = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/out';
+  options.url = swapServerUrl + '/v1/loop/out';
   let body = {
     amt: req.body.amount,
     sweep_conf_target: req.body.targetConf,
@@ -53,7 +53,7 @@ exports.loopOut = (req, res, next) => {
 exports.loopOutTerms = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/out/terms';
+  options.url = swapServerUrl + '/v1/loop/out/terms';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -77,7 +77,7 @@ exports.loopOutTerms = (req, res, next) => {
 exports.loopOutQuote = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+  options.url = swapServerUrl + '/v1/loop/out/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.info({fileName: 'Loop', msg: 'Loop Out Quote URL: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Quote: ' + body});
@@ -105,13 +105,13 @@ exports.loopOutQuote = (req, res, next) => {
 exports.loopOutTermsAndQuotes = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/out/terms';
+  options.url = swapServerUrl + '/v1/loop/out/terms';
   request(options).then(function(terms) {
     logger.info({fileName: 'Loop', msg: 'Loop Out Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
-    options1.url = swapServerUrl + '/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.url = swapServerUrl + '/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options1.url = swapServerUrl + '/v1/loop/out/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options2.url = swapServerUrl + '/v1/loop/out/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     logger.info({fileName: 'Loop', msg: 'Loop Out Min Quote Options: ' + JSON.stringify(options1)});
     logger.info({fileName: 'Loop', msg: 'Loop Out Max Quote Options: ' + JSON.stringify(options2)});
     Promise.all([request(options1), request(options2)]).then(function(values) {
@@ -159,7 +159,7 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
 exports.loopIn = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/in';
+  options.url = swapServerUrl + '/v1/loop/in';
   options.body = JSON.stringify({
     amt: req.body.amount,
     max_swap_fee: req.body.swapFee,
@@ -196,7 +196,7 @@ exports.loopIn = (req, res, next) => {
 exports.loopInTerms = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Terms Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/in/terms';
+  options.url = swapServerUrl + '/v1/loop/in/terms';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(body)});
     res.status(200).json(body);
@@ -220,7 +220,7 @@ exports.loopInTerms = (req, res, next) => {
 exports.loopInQuote = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Quote Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+  options.url = swapServerUrl + '/v1/loop/in/quote/' + req.params.amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
   logger.info({fileName: 'Loop', msg: 'Loop In Quote Options: ' + options.url});
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In Quote: ' + JSON.stringify(body)});
@@ -248,13 +248,13 @@ exports.loopInQuote = (req, res, next) => {
 exports.loopInTermsAndQuotes = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop In Terms And Quotes Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/in/terms';
+  options.url = swapServerUrl + '/v1/loop/in/terms';
   request(options).then(function(terms) {
     logger.info({fileName: 'Loop', msg: 'Loop In Terms: ' + JSON.stringify(terms)});
     const options1 = {}; const options2 = {};
     terms = JSON.parse(terms);
-    options1.url = swapServerUrl + '/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
-    options2.url = swapServerUrl + '/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options1.url = swapServerUrl + '/v1/loop/in/quote/' + terms.min_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
+    options2.url = swapServerUrl + '/v1/loop/in/quote/' + terms.max_swap_amount + '?conf_target=' + (req.query.targetConf ? req.query.targetConf : '2') + '&swap_publication_deadline=' + req.query.swapPublicationDeadline;
     logger.info({fileName: 'Loop', msg: 'Loop In Min Quote Options: ' + JSON.stringify(options1)});
     logger.info({fileName: 'Loop', msg: 'Loop In Max Quote Options: ' + JSON.stringify(options2)});
     Promise.all([request(options1), request(options2)]).then(function(values) {
@@ -302,7 +302,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
 exports.swaps = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/swaps';
+  options.url = swapServerUrl + '/v1/loop/swaps';
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + body});
     body = JSON.parse(body);
@@ -335,7 +335,7 @@ exports.swaps = (req, res, next) => {
 exports.swap = (req, res, next) => {
   swapServerUrl = common.getSelSwapServerUrl();  
   if(swapServerUrl === '') { return res.status(500).json({message: "Loop Out Failed!",error: { message: 'Loop Server URL is missing in the configuration.'}}); }
-  options.url = swapServerUrl + '/loop/swap/' + req.params.id;
+  options.url = swapServerUrl + '/v1/loop/swap/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + body});
     body = JSON.parse(body);
