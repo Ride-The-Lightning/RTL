@@ -45,6 +45,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public payments: any;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns = [];
+  public mppColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -60,15 +61,19 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'msatoshi', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupAmtRecv', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['created_at', 'msatoshi_sent', 'msatoshi', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['created_at', 'payment_hash', 'msatoshi_sent', 'msatoshi', 'actions'];
+      this.mppColumns = ['groupTotal', 'groupHash', 'groupAmtSent', 'groupAmtRecv', 'groupAction'];
     }
   }
 
@@ -96,7 +101,10 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
+  }
 
+  is_group(index: number, payment: Payment) {
+    return payment.is_group;
   }
 
   onSendPayment() {
@@ -224,10 +232,9 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  onPaymentClick(selPayment: Payment, event: any) {
+  onPaymentClick(selPayment) {
     const reorderedPayment = [
       [{key: 'bolt11', value: selPayment.bolt11, title: 'Bolt 11', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING},
       {key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING}],
@@ -236,6 +243,13 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
+    if (selPayment.partid) {
+      reorderedPayment.unshift(
+        [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
+        {key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING}]);
+    } else {
+      reorderedPayment.unshift([{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}]);
+    }
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
@@ -249,7 +263,18 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      this.commonService.downloadFile(this.payments.data, 'Payments');
+      let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
+      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
+        if (curr.mpps) {
+          return acc.concat(curr.mpps);
+        } else {
+          delete curr.is_group;
+          delete curr.is_expanded;
+          delete curr.total_parts;
+          return acc.concat(curr);
+        }
+      }, []);
+      this.commonService.downloadFile(flattenedPayments, 'Payments');
     }
   }
 

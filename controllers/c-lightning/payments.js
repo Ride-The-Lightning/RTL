@@ -3,6 +3,36 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
+function paymentReducer (accumulator, currentPayment) {
+  let currPayHash = currentPayment.payment_hash;
+  if(!accumulator[currPayHash]) {
+    accumulator[currPayHash] = [currentPayment];
+  } else {
+    accumulator[currPayHash].push(currentPayment);
+  }
+  return accumulator;
+}
+
+function groupBy(payments) {
+  let temp = null;
+  let paymentsInGroups = payments.reduce(paymentReducer, {});
+  let paymentsgrpArray = Object.keys(paymentsInGroups).map(key => paymentsInGroups[key]);
+  return paymentsgrpArray.reduce((acc, curr) => {
+    if (curr.length && curr.length === 1) {
+      temp = JSON.parse(JSON.stringify(curr));
+      temp[0].is_group = false;
+      temp[0].is_expanded = false;
+      temp[0].total_parts = 1;
+    } else {
+      temp = {};
+      temp = {is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), payment_hash: curr[0].payment_hash, 
+      destination: curr[0].destination, msatoshi: curr[0].msatoshi, msatoshi_sent: curr[0].msatoshi_sent, created_at: curr[0].created_at, 
+      created_at_str: curr[0].created_at_str, mpps: curr};
+    }
+    return acc.concat(temp);
+  }, []);
+}
+
 exports.listPayments = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
@@ -18,10 +48,10 @@ exports.listPayments = (req, res, next) => {
       if ( body &&  body.payments && body.payments.length > 0) {
         body.payments.forEach(payment => {
           payment.created_at_str =  (!payment.created_at) ? '' : common.convertTimestampToDate(payment.created_at);
-        });
+        });        
         body.payments = common.sortDescByKey(body.payments, 'created_at');
       }
-      res.status(200).json(body.payments);
+      res.status(200).json(groupBy(body.payments));
     }
   })
   .catch(errRes => {

@@ -8,3 +8,15 @@
 .mat-column-actions {
   min-height: 4.8rem;
 }
+
+.mat-column-groupAction {
+  min-height: 4.8rem;
+
+  & .btn-mpp-info {
+    margin-top: 0.5rem;  
+  }
+}
+
+.mpp-row-span {
+  min-height: 4.2rem;
+}
