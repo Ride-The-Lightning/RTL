@@ -138,6 +138,26 @@ export interface Payment {
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
+  is_group?: boolean;
+  is_expanded?: boolean;
+  total_parts?: number;
+  mpps?: MPP[];
+}
+
+export interface MPP {
+  amount_msat?: string;
+  amount_sent_msat?: string;
+  bolt11?: string;
+  created_at?: number;
+  created_at_str?: string;
+  destination?: string;
+  id?: number;
+  msatoshi?: number;
+  msatoshi_sent?: number;
+  payment_hash?: string;
+  payment_preimage?: string;
+  status?: string;
+  partid?: number;
 }
 
 export interface PayRequest {
