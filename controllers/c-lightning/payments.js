@@ -3,8 +3,9 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
-function paymentReducer (accumulator, currentPayment) {
+function paymentReducer(accumulator, currentPayment) {
   let currPayHash = currentPayment.payment_hash;
+  if (!currentPayment.partid) { currentPayment.partid = 0; }
   if(!accumulator[currPayHash]) {
     accumulator[currPayHash] = [currentPayment];
   } else {
@@ -13,20 +14,31 @@ function paymentReducer (accumulator, currentPayment) {
   return accumulator;
 }
 
+function summaryReducer(accumulator, mpp) {
+  if (mpp.status === 'complete') {
+    accumulator.msatoshi = accumulator.msatoshi + mpp.msatoshi;
+    accumulator.msatoshi_sent = accumulator.msatoshi_sent + mpp.msatoshi_sent;
+    accumulator.status = mpp.status;
+  }
+  return accumulator;
+}
+
 function groupBy(payments) {
   let temp = null;
   let paymentsInGroups = payments.reduce(paymentReducer, {});
-  let paymentsgrpArray = Object.keys(paymentsInGroups).map(key => paymentsInGroups[key]);
-  return paymentsgrpArray.reduce((acc, curr) => {
+  let paymentsGrpArray = Object.keys(paymentsInGroups).map(key => (paymentsInGroups[key].length && paymentsInGroups[key].length > 1) ? common.sortDescByKey(paymentsInGroups[key], 'partid') : paymentsInGroups[key]);
+  return paymentsGrpArray.reduce((acc, curr) => {
     if (curr.length && curr.length === 1) {
       temp = JSON.parse(JSON.stringify(curr));
       temp[0].is_group = false;
       temp[0].is_expanded = false;
       temp[0].total_parts = 1;
+      delete temp[0].partid;
     } else {
       temp = {};
-      temp = {is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), payment_hash: curr[0].payment_hash, 
-      destination: curr[0].destination, msatoshi: curr[0].msatoshi, msatoshi_sent: curr[0].msatoshi_sent, created_at: curr[0].created_at, 
+      let paySummary = curr.reduce(summaryReducer, {msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed'});
+      temp = {is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), status: paySummary.status, payment_hash: curr[0].payment_hash, 
+      destination: curr[0].destination, msatoshi: paySummary.msatoshi, msatoshi_sent: paySummary.msatoshi_sent, created_at: curr[0].created_at, 
       created_at_str: curr[0].created_at_str, mpps: curr};
     }
     return acc.concat(temp);

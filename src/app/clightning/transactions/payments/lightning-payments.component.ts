@@ -78,7 +78,6 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new CLActions.FetchPayments());    
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -243,7 +242,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
-    if (selPayment.partid) {
+    if (selPayment.hasOwnProperty('partid')) {
       reorderedPayment.unshift(
         [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
         {key: 'partid', value: selPayment.partid, title: 'Part ID', width: 20, type: DataTypeEnum.STRING}]);

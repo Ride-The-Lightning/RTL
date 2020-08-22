@@ -164,8 +164,10 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         allChannels: modifiedChannels
       };
     case CLActions.SET_PAYMENTS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
+        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:

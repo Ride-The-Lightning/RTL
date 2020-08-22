@@ -52,11 +52,11 @@
         </ng-container>
         <ng-container matColumnDef="msatoshi">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice.msatoshi/1000 | number:'1.0-0'}}</span></td>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice.msatoshi/1000 | number:invoice.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="msatoshi_received">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount Settled (Sats) </th>
-          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice.msatoshi_received/1000 | number:'1.0-0'}}</span></td>
+          <td mat-cell *matCellDef="let invoice"><span fxLayoutAlign="end center"> {{invoice.msatoshi_received/1000 | number:invoice.msatoshi_received < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
