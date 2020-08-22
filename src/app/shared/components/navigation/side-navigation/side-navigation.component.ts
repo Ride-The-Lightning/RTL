@@ -19,6 +19,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import { AlertTypeEnum, UserPersonaEnum } from '../../../services/consts-enums-functions';
+import { CommonService } from '../../../services/common.service';
 
 @Component({
   selector: 'rtl-side-navigation',
@@ -52,7 +53,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -167,17 +168,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   }
 
   loadCLTMenu() {
-    let versionsArr = [];
-    if(this.information && this.information.api_version) { 
-      versionsArr = this.information.api_version.split('.'); 
-    }
     let clonedMenu = [];
     clonedMenu = JSON.parse(JSON.stringify(MENU_DATA.CLChildren));
     this.navMenus.data = clonedMenu.filter(navMenuData => {
       if(navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter(navMenuChild => {
           return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/signverify')
-          || (navMenuChild.link === '/cl/signverify' && (+versionsArr[0] > 0 || +versionsArr[1] > 2 || (+versionsArr[1] > 1 && +versionsArr[2] > 1)));
+          || (navMenuChild.link === '/cl/signverify' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2'));
         });
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;

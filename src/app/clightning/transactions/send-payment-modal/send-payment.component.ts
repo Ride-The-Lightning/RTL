@@ -44,6 +44,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
   public paymentError = '';
+  public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private rtlEffects: RTLEffects) {}
@@ -54,6 +55,9 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+      this.isCompatibleVersion = 
+        this.commonService.isVersionCompatible(rtlStore.information.version, '0.9.0')
+        && this.commonService.isVersionCompatible(rtlStore.information.api_version, '0.4.0');
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
