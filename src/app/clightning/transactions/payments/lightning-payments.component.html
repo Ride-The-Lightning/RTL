@@ -43,12 +43,12 @@
         <ng-container matColumnDef="msatoshi_sent">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:'1.0-4'}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="msatoshi">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:'1.0-4'}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
@@ -98,20 +98,20 @@
         </ng-container>
         <ng-container matColumnDef="groupAmtSent">
           <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:'1.0-4'}}</span>
+            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:payment?.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}</span>
             <span *ngIf="payment.is_expanded">
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                {{mpp.msatoshi_sent/1000 | number:'1.0-4'}}
+                {{mpp.msatoshi_sent/1000 | number:mpp.msatoshi_sent < 1000 ? '1.0-4' : '1.0-0'}}
               </span>
             </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="groupAmtRecv">
           <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:'1.0-4'}}</span>
+            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:payment?.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}</span>
             <span *ngIf="payment.is_expanded">
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                {{mpp.msatoshi/1000 | number:'1.0-4'}}
+                {{mpp.msatoshi/1000 | number:mpp.msatoshi < 1000 ? '1.0-4' : '1.0-0'}}
               </span>
             </span>
           </td>
