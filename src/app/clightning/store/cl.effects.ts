@@ -37,7 +37,7 @@ export class CLEffects implements OnDestroy {
       this.store.select('cl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 9) {
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
@@ -743,6 +743,7 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
     this.store.dispatch(new CLActions.FetchPeers());
     this.store.dispatch(new CLActions.FetchTransactions());
+    this.store.dispatch(new CLActions.FetchPayments());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/cl/');

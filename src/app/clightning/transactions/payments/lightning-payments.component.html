@@ -30,7 +30,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
           <td mat-cell *matCellDef="let payment">
             <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Incomplete" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+            <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             {{payment?.created_at_str}}
           </td>
         </ng-container>
@@ -43,12 +43,12 @@
         <ng-container matColumnDef="msatoshi_sent">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Sent</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:'1.0-0'}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi_sent/1000 | number:'1.0-4'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="msatoshi">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Sats Received</th>
           <td mat-cell *matCellDef="let payment"><span
-              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:'1.0-0'}}</span></td>
+              fxLayoutAlign="end center">{{payment?.msatoshi/1000 | number:'1.0-4'}}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
@@ -72,11 +72,15 @@
         <!-- Payment Group Row Start -->
         <ng-container matColumnDef="groupTotal">
           <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="start center" class="mpp-row-span">Total Attempts: {{payment?.total_parts}}</span>
+            <span fxLayoutAlign="start center" class="mpp-row-span">
+              <span *ngIf="payment.status === 'complete'" class="dot green mt-0" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+              <span *ngIf="payment.status !== 'complete'" class="dot yellow mt-0" matTooltip="Incomplete/Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+              Total Attempts: {{payment?.total_parts}}
+            </span>
             <ng-container *ngIf="payment.is_expanded">
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
-                <span *ngIf="mpp.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                <span *ngIf="mpp.status !== 'complete'" class="dot yellow" matTooltip="Incomplete" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                <span *ngIf="mpp.status === 'complete'" class="dot green mt-0" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                <span *ngIf="mpp.status !== 'complete'" class="dot yellow mt-0" matTooltip="Incomplete/Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 {{mpp.created_at_str}}
               </span>
             </ng-container>
@@ -94,20 +98,20 @@
         </ng-container>
         <ng-container matColumnDef="groupAmtSent">
           <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:'1.0-0'}}</span>
+            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi_sent/1000 | number:'1.0-4'}}</span>
             <span *ngIf="payment.is_expanded">
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                {{mpp.msatoshi_sent/1000 | number:'1.0-0'}}
+                {{mpp.msatoshi_sent/1000 | number:'1.0-4'}}
               </span>
             </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="groupAmtRecv">
           <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:'1.0-0'}}</span>
+            <span fxLayoutAlign="end center" class="mpp-row-span">{{payment?.msatoshi/1000 | number:'1.0-4'}}</span>
             <span *ngIf="payment.is_expanded">
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="end center" class="mpp-row-span">
-                {{mpp.msatoshi/1000 | number:'1.0-0'}}
+                {{mpp.msatoshi/1000 | number:'1.0-4'}}
               </span>
             </span>
           </td>
@@ -115,11 +119,11 @@
         <ng-container matColumnDef="groupAction">
           <td mat-cell *matCellDef="let payment" class="px-3">
             <span fxLayoutAlign="end center">
-              <button mat-stroked-button class="btn-mpp-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide Attemps' : 'Show Attemps'}}</button>
+              <button mat-flat-button class="btn-mpp-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
             </span>
             <div *ngIf="payment.is_expanded">
               <div *ngFor="let mpp of payment?.mpps; index as i" fxLayoutAlign="end center">
-                <button mat-stroked-button class="btn-mpp-info" color="primary" type="button" tabindex="6" (click)="onPaymentClick(mpp)">View Part {{mpp.partid ? mpp.partid : 0}}</button>
+                <button mat-stroked-button class="btn-mpp-info" color="primary" type="button" tabindex="6" (click)="onPaymentClick(mpp)">View {{mpp.partid ? mpp.partid : 0}}</button>
               </div>
             </div>
           </td>
