@@ -5,10 +5,10 @@ var options = {};
 
 function paymentReducer(accumulator, currentPayment) {
   let currPayHash = currentPayment.payment_hash;
+  if (!currentPayment.partid) { currentPayment.partid = 0; }
   if(!accumulator[currPayHash]) {
     accumulator[currPayHash] = [currentPayment];
   } else {
-    if (!currentPayment.partid) { currentPayment.partid = 0; }
     accumulator[currPayHash].push(currentPayment);
   }
   return accumulator;
@@ -33,6 +33,7 @@ function groupBy(payments) {
       temp[0].is_group = false;
       temp[0].is_expanded = false;
       temp[0].total_parts = 1;
+      delete temp[0].partid;
     } else {
       temp = {};
       let paySummary = curr.reduce(summaryReducer, {msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed'});
