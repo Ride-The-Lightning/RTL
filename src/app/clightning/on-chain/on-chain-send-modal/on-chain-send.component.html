@@ -40,7 +40,7 @@
             </div>
           </div>
         </div>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="isCompatibleVersion">
           <mat-expansion-panel fxLayout="column" fxFlex="100" class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
             <mat-expansion-panel-header>
               <mat-panel-title>

@@ -38,6 +38,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
+  public isCompatibleVersion = false;
   public newAddress = '';
   public transaction: OnChain = {};
   public feeRateTypes = FEE_RATE_TYPES;
@@ -64,6 +65,10 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
       this.amountUnits = rootStore.selNode.settings.currencyUnits;
       this.appConfig = rootStore.appConfig;
       this.nodeData = rootStore.nodeData;
+      this.information = rtlStore.information;
+      this.isCompatibleVersion = 
+        this.commonService.isVersionCompatible(this.information.version, '0.9.0')
+        && this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
       this.transactions = this.commonService.sortAscByKey(rtlStore.transactions.filter(tran => tran.status === 'confirmed'), 'value');
       this.logger.info(rootStore);
       this.logger.info(rtlStore);

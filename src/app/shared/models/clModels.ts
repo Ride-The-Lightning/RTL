@@ -28,6 +28,7 @@ export interface GetInfoChain {
 
 export interface GetInfo {
   id?: string;
+  api_version?: string;
   alias?: string;
   color?: string;
   num_peers?: number;

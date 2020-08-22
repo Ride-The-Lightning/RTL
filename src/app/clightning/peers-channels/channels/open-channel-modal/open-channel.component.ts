@@ -26,6 +26,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
+  public isCompatibleVersion = false;
   public peer: Peer;
   public peers: Peer[];
   public sortedPeers: Peer[];
@@ -50,6 +51,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private decimalPipe: DecimalPipe) {}
 
   ngOnInit() {
+    this.isCompatibleVersion = this.data.message.isCompatibleVersion;
     this.information = this.data.message.information;
     this.totalBalance = this.data.message.balance;
     this.transactions = this.data.message.transactions;

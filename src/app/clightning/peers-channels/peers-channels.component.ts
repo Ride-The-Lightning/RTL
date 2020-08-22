@@ -54,7 +54,9 @@ export class CLPeersChannelsComponent implements OnInit, OnDestroy {
       peers: this.peers, 
       information: this.information,
       balance: this.totalBalance,
-      transactions: this.transactions
+      transactions: this.transactions,
+      isCompatibleVersion: this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
+      this.commonService.isVersionCompatible(this.information.api_version, '0.4.0')
     };
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       alertTitle: 'Open Channel',
