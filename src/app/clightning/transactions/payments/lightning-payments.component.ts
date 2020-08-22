@@ -242,6 +242,9 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
+    if (selPayment.memo && selPayment.memo !== '') {
+      reorderedPayment.splice(2, 0, [{key: 'memo', value: selPayment.memo, title: 'Memo', width: 100, type: DataTypeEnum.STRING}]);
+    }
     if (selPayment.hasOwnProperty('partid')) {
       reorderedPayment.unshift(
         [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 80, type: DataTypeEnum.STRING},
