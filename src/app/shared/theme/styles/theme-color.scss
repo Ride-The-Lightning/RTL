@@ -18,7 +18,7 @@
   $background: map-get($theme, background);
   $background-color: mat-color($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
-  $hover-background-white: rgba(255, 255, 255, 0.06);
+  $hover-background-dark: rgba(255, 255, 255, 0.06);
 
   .bg-primary {
     @include _mat-toolbar-color($primary);

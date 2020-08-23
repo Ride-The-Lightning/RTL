@@ -10,32 +10,42 @@
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box my-2 p-2">
           <p fxLayoutAlign="start center" class="pb-1 word-break">Closing channel: {{channelToClose.channel_point}}</p>
-          <div fxLayoutAlign="space-between center">
-            <mat-form-field fxFlex.gt-sm="48">
-              <mat-select [(value)]="selTransType" tabindex="1" [disabled]="!channelToClose.active">
-                <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
-                  {{transType.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field fxFlex="48" *ngIf="selTransType=='0'">
-              <input matInput placeholder="Default" disabled>
-            </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType=='1'">
-              <input matInput [(ngModel)]="blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1"
-                min="0" required tabindex="2" #blcks="ngModel">
-              <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
-            </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType=='2'">
-              <input matInput [(ngModel)]="fees" placeholder="Fees (Sats/Byte)"
-                type="number" name="fees" step="1" min="0" required tabindex="3" #fee="ngModel">
-              <mat-error *ngIf="!fees">Fees is required.</mat-error>
-            </mat-form-field>
+          <div *ngIf="flgPendingHtlcs" fxLayoutAlign="start center">
+            <p fxFlex="100" fxLayoutAlign="start center" class="color-warn"><mat-icon class="mr-1 icon-small">close</mat-icon>{{errorMsg}}</p>
+          </div>
+          <div *ngIf="!flgPendingHtlcs" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+            <div *ngIf="!channelToClose.active" fxFlex="100" class="alert alert-info">
+              <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+              <span>Force closing an inactive channel uses a pre-defined fee.</span>
+            </div>
+            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+              <mat-form-field fxFlex.gt-sm="48">
+                <mat-select [(value)]="selTransType" tabindex="1" [disabled]="!channelToClose.active">
+                  <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
+                    {{transType.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field fxFlex="48" *ngIf="selTransType=='0'">
+                <input matInput placeholder="Default" disabled>
+              </mat-form-field>
+              <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType=='1'">
+                <input matInput [(ngModel)]="blocks" placeholder="Number of Blocks" type="number" name="blocks" step="1"
+                  min="0" required tabindex="2" #blcks="ngModel">
+                <mat-error *ngIf="!blocks">Number of blocks is required.</mat-error>
+              </mat-form-field>
+              <mat-form-field fxFlex.gt-sm="48" fxLayoutAlign="start end" *ngIf="selTransType=='2'">
+                <input matInput [(ngModel)]="fees" placeholder="Fees (Sats/Byte)"
+                  type="number" name="fees" step="1" min="0" required tabindex="3" #fee="ngModel">
+                <mat-error *ngIf="!fees">Fees is required.</mat-error>
+              </mat-form-field>
+            </div>
           </div>        
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
-          <button mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="2" default>Clear</button>
-          <button mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">Close Channel</button>
+          <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
+          <button *ngIf="!flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">Close Channel</button>
+          <button *ngIf="flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
         </div>
       </form>
     </mat-card-content>

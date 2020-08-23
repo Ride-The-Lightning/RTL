@@ -204,6 +204,9 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: Channel) {
+    if (channelToClose.active) {
+      this.store.dispatch(new LNDActions.FetchAllChannels()); //To get latest pending htlc status
+    }
     this.store.dispatch(new RTLActions.OpenAlert({width: '70%', data: {
       channel: channelToClose,
       component: CloseChannelComponent
