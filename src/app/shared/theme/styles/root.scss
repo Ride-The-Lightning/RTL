@@ -1039,3 +1039,9 @@ table {
   40%  {transform: translateY(20%)}
   50%  {transform: translateY(0)}
 }
+
+.mat-form-field-appearance-legacy.mat-form-field-disabled {
+  & input, mat-select, .mat-select-trigger, .mat-select-value, .mat-select-arro-wrapper, textarea, .mat-form-field-infix {
+    cursor: not-allowed;
+  }
+}  
