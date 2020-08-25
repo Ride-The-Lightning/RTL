@@ -3,16 +3,15 @@ var common = require('../../common');
 var logger = require('../logger');
 var options = {};
 
-getAliasFromPubkey = (hop) => {
+getAliasFromPubkey = (pubkey) => {
   return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + hop.pub_key;
+    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
     request(options)
-    .then(function(aliasBody) {
-      logger.info({fileName: 'Graph', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
-      hop.pubkey_alias = aliasBody.node.alias;
-      resolve(hop);
+    .then(function(res) {
+      logger.info({fileName: 'Graph', msg: 'Alias: ' + JSON.stringify(res.node.alias)});
+      resolve(res.node.alias);
     })
-    .catch(err => resolve(''));
+    .catch(err => resolve(pubkey.substring(0, 17) + '...'));
   });
 }
 
@@ -169,35 +168,33 @@ exports.getQueryRoutes = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     }
-    if (body.routes && body.routes.length > 0) {
-      body.routes.forEach(route => {
-        if ( route.hops) {
-          Promise.all(
-            route.hops.map((hop, i) => {
-              hop.hop_sequence = i + 1;
-              return getAliasFromPubkey(hop);
-            })
-          )
-          .then(function(values) {
-            logger.info({fileName: 'Graph', msg: 'Hops with Alias: ' + JSON.stringify(body)});
-            res.status(200).json(body);
-          })
-          .catch(errRes => {
-            let err = JSON.parse(JSON.stringify(errRes));
-            if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-              delete err.options.headers['Grpc-Metadata-macaroon'];
-            }
-            if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-              delete err.response.request.headers['Grpc-Metadata-macaroon'];
-            }
-            logger.error({fileName: 'Graph', lineNum: 187, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
-            return res.status(500).json({
-              message: "Fetching Query Routes Failed!",
-              error: err.error
-            });
-          });    
+    if(body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
+      Promise.all(body.routes[0].hops.map(hop => {return getAliasFromPubkey(hop.pub_key)}))
+      .then(function(values) {
+        body.routes[0].hops.map((hop, i) => { 
+          hop.hop_sequence = i + 1;
+          hop.pubkey_alias = values[i];
+          return hop;
+        });
+        logger.info({fileName: 'Graph', msg: 'Hops with Alias: ' + JSON.stringify(body)});
+        res.status(200).json(body);
+      })
+      .catch(errRes => {
+        let err = JSON.parse(JSON.stringify(errRes));
+        if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+          delete err.options.headers['Grpc-Metadata-macaroon'];
         }
-      });
+        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+          delete err.response.request.headers['Grpc-Metadata-macaroon'];
+        }
+        logger.error({fileName: 'Graph', lineNum: 196, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
+        return res.status(500).json({
+          message: "Fetching Query Routes Failed!",
+          error: err.error
+        });
+      });    
+    } else {
+      res.status(200).json(body);
     }
   })
   .catch(errRes => {
@@ -208,7 +205,7 @@ exports.getQueryRoutes = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 204, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Graph', lineNum: 214, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Query Routes Failed!",
       error: err.error
@@ -261,4 +258,31 @@ exports.getRemoteFeePolicy = (req, res, next) => {
       error: err.error
     });
   });
+};
+
+exports.getAliasesForPubkeys = (req, res, next) => {
+  options = common.getOptions();
+  if (req.params.pubKeys.length && req.params.pubKeys.length > 0) {
+    Promise.all(req.params.pubKeys.map(pubkey => {return getAliasFromPubkey(pubkey)}))
+    .then(function(values) {
+      logger.info({fileName: 'Graph', msg: 'Node Alias: ' + JSON.stringify(values)});
+      res.status(200).json(values);
+    })
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+        delete err.options.headers['Grpc-Metadata-macaroon'];
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+        delete err.response.request.headers['Grpc-Metadata-macaroon'];
+      }
+      logger.error({fileName: 'Graph', lineNum: 279, msg: 'Get Aliases for Pubkeys Failed: ' + JSON.stringify(err)});
+      return res.status(500).json({
+        message: "Getting Aliases for Pubkeys Failed!",
+        error: err.error
+      });
+    });    
+  } else {
+    res.status(200).json([]);
+  }
 };

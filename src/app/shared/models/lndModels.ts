@@ -246,10 +246,14 @@ export interface HopHint {
 }
 
 export interface HTLC {
-  incoming?: boolean;
-  amount?: number;
-  hash_lock?: string;
-  expiration_height?: number;
+  status?: string;
+  route?: Route; 
+  attempt_time_ns?: string;
+  resolve_time_ns?: string;
+  failure?: any;
+  preimage?: string;
+  attempt_time_str?: string;
+  resolve_time_str?: string;
 }
 
 export interface Invoice {
@@ -320,12 +324,21 @@ export interface Payment {
   creation_date?: number;
   creation_date_str?: string;
   payment_hash?: string;
+  payment_request?: string;
+  status?: string;
   path?: string[];
   fee?: number;
+  fee_sat?: number;
+	fee_msat?: number;
   value_msat?: number;
   value_sat?: number;
   value?: number;
   payment_preimage?: string;
+  creation_time_ns?: string;
+  payment_index?: string;
+  failure_reason?: string;
+  htlcs: HTLC[];
+  is_expanded?: boolean;
 }
 
 export interface PayRequest {
@@ -372,6 +385,9 @@ export interface Hop {
   amt_to_forward_msat?:	string;
   fee_msat?: string;
   pub_key?:	string;
+  tlv_payload?: boolean;
+  mpp_record?: { payment_addr?: string; total_amt_msat?: number; }
+  custom_records?: any;
 }
 
 export interface Route {
