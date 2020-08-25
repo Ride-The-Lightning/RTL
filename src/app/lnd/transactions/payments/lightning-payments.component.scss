@@ -8,3 +8,20 @@
   overflow: hidden;  
   text-overflow: ellipsis;
 }
+
+.mat-column-groupAction {
+  min-height: 4.8rem;
+
+  & .btn-htlc-expand {
+    width: 9rem; 
+  }
+
+  & .btn-htlc-info {
+    margin-top: 0.5rem; 
+    width: 9rem; 
+  }
+}
+
+.htlc-row-span {
+  min-height: 4.2rem;
+}

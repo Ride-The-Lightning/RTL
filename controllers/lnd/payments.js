@@ -9,7 +9,7 @@ exports.getPayments = (req, res, next) => {
   request(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    logger.info({fileName: 'Payments', msg: 'Payment Decoded Received: ' + body_str});
+    logger.info({fileName: 'Payments', msg: 'Payment List Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
       logger.error({fileName: 'Payments', lineNum: 14, msg: 'List Payments Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -20,9 +20,14 @@ exports.getPayments = (req, res, next) => {
       if ( body.payments && body.payments.length > 0) {
         body.payments.forEach(payment => {
           payment.creation_date_str =  (!payment.creation_date) ? '' : common.convertTimestampToDate(payment.creation_date);
+          payment.htlcs.forEach(htlc => {
+            htlc.attempt_time_str =  (!htlc.attempt_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.attempt_time_ns/1000000000));
+            htlc.resolve_time_str =  (!htlc.resolve_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.resolve_time_ns/1000000000));
+          });
         });
         body.payments = common.sortDescByKey(body.payments, 'creation_date');
       }
+      logger.info({fileName: 'Payments', msg: 'Payment List After Dates: ' + JSON.stringify(body.payments)});
       res.status(200).json(body.payments);
     }
   })

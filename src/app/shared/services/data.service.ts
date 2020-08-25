@@ -45,16 +45,12 @@ export class DataService implements OnInit, OnDestroy {
     return this.httpClient.get(environment.CONF_API + '/rates');
   }
 
-  getAliasesFromPubkeys(pubkeys: any) {
-    let nodes$: Array<Observable<any>> = [];
-    pubkeys.forEach(pubkey => {
-      nodes$.push(
-        this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/node/' + pubkey)
-        .pipe(takeUntil(this.unSubs[0]),
-        catchError(err => of({node: {alias: pubkey}})))
-      );
-    });
-    return nodes$;
+  getAliasesFromPubkeys(pubkeys: string[]) {
+    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/nodes/' + pubkeys)
+  }
+
+  getAliasFromPubkey(pubkey: string) {
+    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/node/' + pubkey)
   }
 
   signMessage(msg: string) {
