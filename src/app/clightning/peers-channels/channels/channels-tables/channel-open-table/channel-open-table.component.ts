@@ -146,7 +146,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
       this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new CLActions.ChannelLookup(channelToUpdate.short_channel_id));
+      this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: channelToUpdate.short_channel_id, showError: false}));
       this.clEffects.setLookupCL
       .pipe(take(1))
       .subscribe((resLookup: ChannelEdge[]) => {
