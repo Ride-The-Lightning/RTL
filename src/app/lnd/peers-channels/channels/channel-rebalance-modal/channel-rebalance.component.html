@@ -6,6 +6,14 @@
     </mat-card-header>
     <mat-card-content class="mt-5px">
       <div fxLayout="column">
+        <div class="padding-gap-x-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+          <div fxFlex="100" class="alert alert-info">
+            <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+            <span>Circular Rebalance is a payment you make to *yourselves* to affect a relative change in the balances of two channels.
+              This is accomplished by sending payment out from the selected channel and receiving it back on the channel with the selected peer.
+              Please note, you will be paying routing fee to balance the channels in this manner.</span>
+          </div>
+        </div>
         <div class="padding-gap-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
           <p fxFlex="40"><strong>Channel Peer:&nbsp;</strong>{{selChannel.remote_alias | titlecase}}</p>
           <p fxFlex="30"><strong>Channel ID:&nbsp;</strong>{{selChannel.chan_id}}</p>
