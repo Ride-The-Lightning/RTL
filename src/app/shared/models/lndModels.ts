@@ -38,6 +38,13 @@ export interface ChannelFeeReport {
   fee_rate?: number;
 }
 
+export interface ChannelHTLC {
+  incoming?: boolean;
+  amount?: string;
+  hash_lock?: string;
+  expiration_height?: number;
+}
+
 export interface Channel {
   active?: boolean;
   remote_pubkey?: string;
@@ -55,7 +62,7 @@ export interface Channel {
   total_satoshis_received?: number;
   num_updates?: number;
   private?: boolean;
-  pending_htlcs?: HTLC[];
+  pending_htlcs?: ChannelHTLC[];
   csv_delay?: number;
   initiator?: boolean;
   chan_status_flags?: string;
@@ -245,7 +252,7 @@ export interface HopHint {
   fee_base_msat?: number;
 }
 
-export interface HTLC {
+export interface PaymentHTLC {
   status?: string;
   route?: Route; 
   attempt_time_ns?: string;
@@ -256,13 +263,28 @@ export interface HTLC {
   resolve_time_str?: string;
 }
 
+export interface InvoiceHTLC {
+  chan_id?: string;
+  htlc_index?: string;
+  amt_msat?: string;
+  accept_height?: number;
+  accept_time?: string;
+  accept_time_str?: string;
+  resolve_time?: string;
+  resolve_time_str?: string;
+  expiry_height?: number;
+  state?: string;
+  custom_records?: any;
+  mpp_total_amt_msat?: string;
+}
+
 export interface Invoice {
   memo?: string;
-  receipt?: string;
   r_preimage?: string;
   r_hash?: string;
   value?: string;
   btc_value?: string;
+  value_msat?: string;
   settled?: boolean;
   creation_date?: string;
   creation_date_str?: string;
@@ -273,7 +295,6 @@ export interface Invoice {
   expiry?: string;
   fallback_addr?: string;
   cltv_expiry?: string;
-  state?: string;
   route_hints?: RouteHint[];
   private?: boolean;
   add_index?: string;
@@ -282,6 +303,10 @@ export interface Invoice {
   amt_paid_sat?: string;
   btc_amt_paid_sat?: string;
   amt_paid_msat?: string;
+  state?: string;
+  htlcs?: InvoiceHTLC[];
+  features?: any;
+  is_keysend?: boolean;  
 }
 
 export interface ListInvoices {
@@ -337,7 +362,7 @@ export interface Payment {
   creation_time_ns?: string;
   payment_index?: string;
   failure_reason?: string;
-  htlcs: HTLC[];
+  htlcs: PaymentHTLC[];
   is_expanded?: boolean;
 }
 

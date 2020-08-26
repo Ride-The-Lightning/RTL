@@ -16,7 +16,7 @@
           <div *ngIf="!flgPendingHtlcs" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div *ngIf="!channelToClose.active" fxFlex="100" class="alert alert-info">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-              <span>Force closing an inactive channel uses a pre-defined fee.</span>
+              <span>Force closing an inactive channel costs a pre-defined fee.</span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
               <mat-form-field fxFlex.gt-sm="48">
