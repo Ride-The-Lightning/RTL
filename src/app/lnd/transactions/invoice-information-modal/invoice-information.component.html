@@ -2,7 +2,7 @@
   <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
-  <div fxFlex="65" class="padding-gap-large">
+  <div fxLayout="column" fxFlex="65" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
@@ -15,74 +15,103 @@
         <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qrcode [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
-        <div fxLayout="row">
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
-            <span class="foreground-secondary-text">{{(invoice.value || 0) | number}} Sats<ng-container *ngIf="!invoice.value"> (zero amount) </ng-container></span>
+        <div perfectScrollbar [ngClass]="{'h-46': invoice.htlcs && invoice.htlcs.length > 0 && showAdvanced}" #scrollContainer>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
+              <span class="foreground-secondary-text">{{(invoice.value || 0) | number}} Sats<ng-container *ngIf="!invoice.value"> (zero amount) </ng-container></span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Memo</h4>
+              <span class="foreground-secondary-text">{{invoice.memo}}</span>
+            </div>
           </div>
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Memo</h4>
-            <span class="foreground-secondary-text">{{invoice.memo}}</span>
+          <mat-divider [inset]="true" class="my-1"></mat-divider>
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
+              <span class="foreground-secondary-text">{{invoice.creation_date_str}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
+              <span class="foreground-secondary-text">{{invoice.settle_date_str || '-'}}</span>
+            </div>
           </div>
-        </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
-        <div fxLayout="row">
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
-            <span class="foreground-secondary-text">{{invoice.creation_date_str}}</span>
-          </div>
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-            <span class="foreground-secondary-text">{{invoice.settle_date_str || '-'}}</span>
-          </div>
-        </div>
-        <mat-divider class="w-100 my-1"></mat-divider>        
-        <div fxLayout="row">
-          <div fxFlex="100">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_request}}</span>
-          </div>
-        </div>
-        <div *ngIf="showAdvanced">
-          <mat-divider class="w-100 my-1"></mat-divider>        
+          <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
-              <h4 fxLayoutAlign="start" class="font-bold-500">R Hash</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.r_hash}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_request}}</span>
             </div>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
-          <div fxLayout="row">
-            <div fxFlex="100">
-              <h4 fxLayoutAlign="start" class="font-bold-500">R Preimage</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.r_preimage || '-'}}</span>
+          <div *ngIf="showAdvanced">
+            <mat-divider [inset]="true" class="my-1"></mat-divider>
+            <div fxLayout="row">
+              <div fxFlex="100">
+                <h4 fxLayoutAlign="start" class="font-bold-500">R Preimage</h4>
+                <span class="overflow-wrap foreground-secondary-text">{{invoice.r_preimage || '-'}}</span>
+              </div>
             </div>
+            <mat-divider [inset]="true" class="my-1"></mat-divider>
+            <div fxLayout="row">
+              <div fxFlex="34">
+                <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
+                <span class="overflow-wrap foreground-secondary-text">{{invoice.state}}</span>
+              </div>
+              <div fxFlex="33">
+                <h4 fxLayoutAlign="start" class="font-bold-500">Expiry</h4>
+                <span class="overflow-wrap foreground-secondary-text">{{invoice.expiry}}</span>
+              </div>
+              <div fxFlex="33">
+                <h4 fxLayoutAlign="start" class="font-bold-500">Private Routing Hints</h4>
+                <span class="overflow-wrap foreground-secondary-text">{{invoice.private ? 'Yes' : 'No'}}</span>
+              </div>
+            </div>
+            <mat-divider [inset]="true" class="my-1"></mat-divider>
+            <div fxLayout="row" *ngIf="invoice.htlcs && invoice.htlcs.length > 0">
+              <mat-expansion-panel (opened)="flgOpened = true" (closed)="onExpansionClosed()" class="flat-expansion-panel" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <h4 fxLayoutAlign="start center" fxFlex="100" class="font-bold-500">HTLCs</h4>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+                  <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="mt-minus-1">
+                    <span fxFlex="60" class="foreground-secondary-text font-bold-500">Channel ID</span>
+                    <span fxFlex="40" class="foreground-secondary-text font-bold-500">Amount (Sats)</span>
+                  </div>
+                  <mat-divider [inset]="true" class="my-1"></mat-divider>
+                  <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" *ngFor="let htlc of invoice.htlcs">
+                    <div fxLayout="row" fxLayoutAlign="start start" fxFlex="100">
+                      <span fxFlex="60" class="foreground-secondary-text">
+                        <span *ngIf="htlc.state === 'SETTLED'" class="dot green" matTooltip="Settled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                        <span *ngIf="htlc.state === 'ACCEPTED'" class="dot yellow" matTooltip="Accepted" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                        <span *ngIf="htlc.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                        {{htlc.chan_id}}
+                      </span>
+                      <span fxFlex="40" class="foreground-secondary-text">{{htlc.amt_msat/1000 | number:htlc?.amt_msat < 1000 ? '1.0-4' : '1.0-0'}}</span>
+                    </div>
+                    <mat-divider [inset]="true" class="my-1"></mat-divider>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </div>
+            <mat-divider [inset]="true" class="my-1" *ngIf="invoice.htlcs && invoice.htlcs.length > 0"></mat-divider>
           </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
-          <div fxLayout="row">
-            <div fxFlex="34">
-              <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.state}}</span>
-            </div>
-            <div fxFlex="33">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Expiry</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.expiry}}</span>
-            </div>
-            <div fxFlex="33">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Private Routing Hints</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.private ? 'Yes' : 'No'}}</span>
-            </div>
-          </div>
-          <mat-divider class="w-100 my-1"></mat-divider>        
-        </div>
-        <div [ngClass]="{'mt-2': !showAdvanced, 'mt-1': showAdvanced}" fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
-          <button mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
-            <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
-            <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
-          </button>
-          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
         </div>
       </div>
     </mat-card-content>
+    <div *ngIf="invoice.htlcs && invoice.htlcs.length > 0 && showAdvanced && flgOpened" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container">
+      <button mat-mini-fab aria-label="Scroll Down" fxLayoutAlign="center center" (click)="onScrollDown()">
+        <mat-icon fxLayoutAlign="center center">arrow_downward</mat-icon>
+      </button>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end center" fxFlex="100">
+      <button mat-stroked-button color="primary" type="reset" (click)="onShowAdvanced()" tabindex="1" class="mr-1">
+        <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
+        <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
+      </button>
+      <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
+    </div>
   </div>
 </div>

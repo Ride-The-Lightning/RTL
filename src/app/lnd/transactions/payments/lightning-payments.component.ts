@@ -9,7 +9,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { GetInfo, Payment, PayRequest, Channel, HTLC, Peer, Hop } from '../../../shared/models/lndModels';
+import { GetInfo, Payment, PayRequest, Channel, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -279,7 +279,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }, []);
   }
 
-  onHTLCClick(selHtlc: HTLC, selPayment: Payment) {
+  onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
     const reorderedHTLC = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
