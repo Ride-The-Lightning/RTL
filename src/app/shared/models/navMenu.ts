@@ -13,8 +13,9 @@ export const MENU_DATA: MenuRootNode = {
       {id: 35, parentId: 3, name: 'Sign/Verify', iconType: 'FA', icon: faUserCheck, link: '/lnd/signverify', userPersona: UserPersonaEnum.ALL},
       {id: 36, parentId: 3, name: 'Backup', iconType: 'FA', icon: faDownload, link: '/lnd/backup', userPersona: UserPersonaEnum.ALL}
     ]},
-    {id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faCogs, link: '/lnd/loop', userPersona: UserPersonaEnum.ALL, children: [
-      {id: 41, parentId: 4, name: 'Channel Withdrawal/Deposit', iconType: 'FA', icon: faSync, link: '/lnd/loop', userPersona: UserPersonaEnum.ALL},
+    {id: 4, parentId: 0, name: 'Additional Services', iconType: 'FA', icon: faCogs, link: '/lnd/loop', userPersona: UserPersonaEnum.ALL, children: [
+      {id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faSync, link: '/lnd/loop', userPersona: UserPersonaEnum.ALL},
+      {id: 41, parentId: 4, name: 'Boltz', iconType: 'FA', icon: faSync, link: '/lnd/boltz', userPersona: UserPersonaEnum.ALL},
     ]},
     {id: 5, parentId: 0, name: 'Network', iconType: 'FA', icon: faProjectDiagram, link: '/lnd/network', userPersona: UserPersonaEnum.OPERATOR},
     {id: 6, parentId: 0, name: 'Node/Network', iconType: 'FA', icon: faServer, link: '/lnd/network', userPersona: UserPersonaEnum.MERCHANT},
