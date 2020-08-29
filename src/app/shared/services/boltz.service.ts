@@ -9,7 +9,6 @@ import { BOLTZ_API_URL, boltzEnvironment } from '../../../environments/environme
 import { CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { LoggerService } from '../../shared/services/logger.service';
-import { AlertTypeEnum } from '../../shared/services/consts-enums-functions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import { SwapTypeEnum } from '../../shared/services/consts-enums-functions';
