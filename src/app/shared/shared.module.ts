@@ -60,6 +60,7 @@ import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
+import { BoltzQuoteComponent } from '../lnd/boltz/boltz-quote/boltz-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MaxValidator } from './directive/max-amount.directive';
@@ -70,6 +71,9 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
 import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
 import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
 import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzStatusComponent } from '../lnd/boltz/boltz-status/boltz-status.component';
+import { WithdrawalInfoGraphicsComponent } from '../lnd/boltz/withdrawal-info-graphics/info-graphics.component';
+import { DepositInfoGraphicsComponent } from '../lnd/boltz/deposit-info-graphics/info-graphics.component';
 
 @NgModule({
   imports: [
@@ -167,9 +171,13 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     RemoveLeadingZerosPipe,
     PerfectScrollbarModule,
     LoopQuoteComponent,
+    BoltzQuoteComponent,
     LoopStatusComponent,
     LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent
+    LoopInInfoGraphicsComponent,
+    BoltzStatusComponent,
+    WithdrawalInfoGraphicsComponent,
+    DepositInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -189,9 +197,13 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     RemoveLeadingZerosPipe,
     AuthSettingsComponent,
     LoopQuoteComponent,
+    BoltzQuoteComponent,
     LoopStatusComponent,
     LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent
+    LoopInInfoGraphicsComponent,
+    BoltzStatusComponent,
+    WithdrawalInfoGraphicsComponent,
+    DepositInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

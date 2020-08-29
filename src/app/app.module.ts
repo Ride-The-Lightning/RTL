@@ -54,6 +54,7 @@ import { AlertMessageComponent } from './shared/components/data-modal/alert-mess
 import { ConfirmationMessageComponent } from './shared/components/data-modal/confirmation-message/confirmation-message.component';
 import { ErrorMessageComponent } from './shared/components/data-modal/error-message/error-message.component';
 import { LoopModalComponent } from './lnd/loop/loop-modal/loop-modal.component';
+import { BoltzModalComponent } from './lnd/boltz/boltz-modal/boltz-modal.component';
 import { TwoFactorAuthComponent } from './shared/components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './shared/components/data-modal/login-2fa-token/login-2fa-token.component';
 import { ECLInvoiceInformationComponent } from './eclair/transactions/invoice-information-modal/invoice-information.component';
@@ -100,6 +101,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     ErrorMessageComponent,
     CloseChannelComponent,
     LoopModalComponent,
+    BoltzModalComponent,
     TwoFactorAuthComponent,
     LoginTokenComponent,
     CreateInvoiceComponent,
@@ -131,6 +133,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     OnChainGeneratedAddressComponent,
     CloseChannelComponent,
     LoopModalComponent,
+    BoltzModalComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
     OpenChannelComponent,
