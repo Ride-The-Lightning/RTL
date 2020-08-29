@@ -137,6 +137,8 @@ export enum SwapProviderEnum {
 }
 
 export enum SwapTypeEnum {
+  LOOP_IN = 'LOOP_IN',
+  LOOP_OUT = 'LOOP_OUT',
   WITHDRAWAL = 'WITHDRAWAL',
   DEPOSIT = 'DEPOSIT'
 }
