@@ -23,13 +23,13 @@
         <h4 fxLayoutAlign="start" class="font-bold-500">{{quote?.htlc_sweep_fee_sat ? 'HTLC Sweep Fee (Sats)' : quote?.htlc_publish_fee_sat ? 'HTLC Publish Fee (Sats)' : ''}}</h4>
         <span class="foreground-secondary-text">{{(quote?.htlc_sweep_fee_sat ? quote.htlc_sweep_fee_sat : quote?.htlc_publish_fee_sat ? quote.htlc_publish_fee_sat : 0) | number}}</span>
       </div>
-      <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS && quote?.prepay_amt_sat" fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment">
+      <div fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment" *ngIf="quote?.prepay_amt_sat">
         <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
         <span class="foreground-secondary-text">{{quote?.prepay_amt_sat | number}}</span>
       </div>
     </div>
-    <mat-divider *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" class="w-100 my-1"></mat-divider>        
-    <div *ngIf="swapProvider === swapProviderEnum.LIGHTNING_LABS" fxLayout="row">
+    <mat-divider class="w-100 my-1"></mat-divider>        
+    <div fxLayout="row">
       <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the payment amount to the server">
         <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Swap Routing Fee (Sats)</h4>
         <span class="foreground-secondary-text">{{(quote?.amount * ((quote?.off_chain_swap_routing_fee_percentage ? quote?.off_chain_swap_routing_fee_percentage : 2) / 100)) | number}}</span>
