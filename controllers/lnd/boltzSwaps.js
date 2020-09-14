@@ -136,13 +136,26 @@ function handleSwapStatus (data, swap) {
       if(streamMap[swap.id]) deleteStreamObj(swap.id);
       break;
 
+    case 'transaction.mempool':
+      if(swap.fast) {
+        if(streamMap[swap.id]) deleteStreamObj(swap.id);
+        updateBoltzSwap({
+          id: swap.id,
+          state: 'Successful'
+        });
+        claimTransaction(data, swap);
+      }
+      break;
+
     case 'transaction.confirmed':
-      if(streamMap[swap.id]) deleteStreamObj(swap.id);
-      updateBoltzSwap({
-        id: swap.id,
-        state: 'Successful'
-      });
-      claimTransaction(data, swap);
+      if(swap.state !== 'Successful') {
+        if(streamMap[swap.id]) deleteStreamObj(swap.id);
+        updateBoltzSwap({
+          id: swap.id,
+          state: 'Successful'
+        });
+        claimTransaction(data, swap);
+      }
       break;
 
     case 'transaction.refunded':
