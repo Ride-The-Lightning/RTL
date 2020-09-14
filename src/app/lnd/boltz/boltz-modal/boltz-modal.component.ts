@@ -11,7 +11,7 @@ import { Actions } from '@ngrx/effects';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../shared/animation/opacity-animation';
-import { ScreenSizeEnum, SwapProviderEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
+import { ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../shared/models/loopModels';
 import { LoopAlert } from '../../../shared/models/alertData';
 import { LoopService } from '../../../shared/services/loop.service';
@@ -186,7 +186,7 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
             swapStatus,
             costServer: this.quote.swap_fee_sat,
             costOnchain: this.quote.htlc_publish_fee_sat,
-            swapInfo: {...swapInfo, newAddress},
+            swapInfo: {...swapInfo, newAddress, fast: this.inputFormGroup.controls.fast.value},
           });
           this.loopStatus = {
             id_bytes: swapStatus.id,
@@ -232,8 +232,7 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
         costOnchain,
         currency: 'BTC',
         type: this.direction,
-        state: SwapStateEnum.INITIATED,
-        provider: SwapProviderEnum.BOLTZ,
+        state: SwapStateEnum.INITIATED
       }
     }));
   }

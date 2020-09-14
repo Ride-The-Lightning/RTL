@@ -1,4 +1,4 @@
-import { SwapStateEnum, SwapTypeEnum, SwapProviderEnum } from '../services/consts-enums-functions';
+import { SwapStateEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 
 export interface ChannelStatus {
   channels?: number;
@@ -478,6 +478,5 @@ export interface SwapStatus {
   last_update_time?: string;
   last_update_time_str?: string;
   id?: string;
-  provider?: SwapProviderEnum
 }
 

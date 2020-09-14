@@ -131,11 +131,6 @@ export enum SwapStateEnum {
   INVOICE_SETTLED	= 'Invoice Settled'
 }
 
-export enum SwapProviderEnum {
-  BOLTZ = 'boltz',
-  LIGHTNING_LABS = 'lightningLabs'
-}
-
 export enum SwapTypeEnum {
   LOOP_IN = 'LOOP_IN',
   LOOP_OUT = 'LOOP_OUT',
