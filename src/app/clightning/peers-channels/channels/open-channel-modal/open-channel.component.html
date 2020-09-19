@@ -65,10 +65,10 @@
   <form fxLayout="column" #form="ngForm">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
       <mat-form-field fxFlex="70" fxLayoutAlign="start end">
-        <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel">
+        <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" [disabled]="flgUseAllBalance">
         <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
         <span matSuffix> {{information?.smaller_currency_unit}} </span>
-        <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
+        <mat-error *ngIf="amount.errors?.required || !fundingAmount">Amount is required.</mat-error>
         <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
       </mat-form-field>
       <div fxFlex="25" fxLayoutAlign="start center">
@@ -91,12 +91,23 @@
             </mat-select>
           </mat-form-field>
           <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="selFeeRate=null;" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
+            <mat-checkbox fxFlex="2" tabindex="5" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? selFeeRate=null : minConfValue=null" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
             <mat-form-field fxFlex="98">
               <input matInput [(ngModel)]="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
               <mat-error *ngIf="flgMinConf && !minConfValue">Min Confirmation Blocks is required.</mat-error>
             </mat-form-field>
           </div>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" *ngIf="isCompatibleVersion">
+          <mat-form-field fxFlex="48" fxLayoutAlign="start end">
+            <mat-select tabindex="6" placeholder="Coin Selection" (selectionChange)="onUTXOSelectionChange($event)" [(value)]="selUTXOs" multiple>
+              <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
+              <mat-option *ngFor="let transaction of transactions" [value]="transaction">{{transaction.value | number}} Sats</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-slide-toggle fxFlex="48" tabindex="7" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="above" [disabled]="selUTXOs.length < 1">
+            Use selected UTXOs balance
+          </mat-slide-toggle>
         </div>
       </div>
     </mat-expansion-panel>    

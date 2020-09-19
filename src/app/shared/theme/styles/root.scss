@@ -262,6 +262,10 @@ body {
   margin: 2px 0 !important;
 }
 
+.mt-0 {
+  margin-top: 0 !important;
+}
+
 .mt-1 {
   margin-top: 1rem !important;
 }
@@ -403,6 +407,10 @@ body {
   padding-top: 1rem !important;
 }
 
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+
 .pb-1 {
   padding-bottom: 1rem !important;
 }
@@ -449,6 +457,10 @@ body {
 
 .px-1 {
   padding: 0 1rem !important;
+}
+
+.py-0 {
+  padding: 1rem 0 !important;
 }
 
 .py-1 {
@@ -772,6 +784,10 @@ body {
   height: 40rem !important;
 }
 
+.h-46 {
+  height: 46rem !important;
+}
+
 .h-10 {
   height: 10rem !important;
 }
@@ -1035,3 +1051,9 @@ table {
   40%  {transform: translateY(20%)}
   50%  {transform: translateY(0)}
 }
+
+.mat-form-field-appearance-legacy.mat-form-field-disabled {
+  & input, mat-select, .mat-select-trigger, .mat-select-value, .mat-select-arro-wrapper, textarea, .mat-form-field-infix {
+    cursor: not-allowed;
+  }
+}  

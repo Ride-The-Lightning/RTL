@@ -27,6 +27,7 @@ common.getSelLNServerUrl = () => {
 
 common.getOptions = () => {
   common.selectedNode.options.method = common.selectedNode.ln_implementation.toUpperCase() !== 'ECL' ? 'GET' : 'POST';
+  delete common.selectedNode.options.form;
   common.selectedNode.options.qs = {};
   return common.selectedNode.options;
 };
@@ -39,7 +40,7 @@ common.updateSelectedNodeOptions = () => {
     url: '',
     rejectUnauthorized: false,
     json: true,
-    form: ''
+    form: null
   };
   try {
     if (common.selectedNode && common.selectedNode.ln_implementation) {
@@ -63,7 +64,7 @@ common.updateSelectedNodeOptions = () => {
       url: '',
       rejectUnauthorized: false,
       json: true,
-      form: ''
+      form: null
     };
     console.error('Common Update Selected Node Options Error:' + JSON.stringify(err));    
     return { status: 502, message: err };
@@ -78,7 +79,7 @@ common.setOptions = () => {
         url: '',
         rejectUnauthorized: false,
         json: true,
-        form: ''
+        form: null
       };
       try {
         if (node.ln_implementation) {

@@ -37,12 +37,12 @@
       <ng-container matColumnDef="msatoshi_to_us">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Balance (Sats) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_to_us/1000 | number:'1.0-0'}} </span></td>
+            {{channel?.msatoshi_to_us/1000 | number:channel?.msatoshi_to_us < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_to_them">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Remote Balance (Sats) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
-            {{channel?.msatoshi_to_them/1000 | number:'1.0-0'}} </span></td>
+            {{channel?.msatoshi_to_them/1000 | number:channel?.msatoshi_to_them < 1000 ? '1.0-4' : '1.0-0'}} </span></td>
       </ng-container>
       <ng-container matColumnDef="msatoshi_total">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Total mSatoshis </th>

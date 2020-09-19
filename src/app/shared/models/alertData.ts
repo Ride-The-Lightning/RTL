@@ -1,7 +1,7 @@
 import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer } from './lndModels';
-import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL } from './clModels';
+import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, Transaction as TransactionCL } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
 
@@ -44,7 +44,7 @@ export interface OpenChannelAlert {
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCL, balance: number, peer?: PeerCL, peers?: PeerCL[] };
+  message?: { information: GetInfoCL, balance: number, transactions: TransactionCL[], peer?: PeerCL, peers?: PeerCL[], isCompatibleVersion: boolean };
   newlyAdded?: boolean;
   component?: any;
 }

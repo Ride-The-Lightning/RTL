@@ -8,7 +8,7 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -54,9 +54,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   public totalInvoices = 100;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
-  public timeUnitEnum = TimeUnitEnum;
-  public timeUnits = TIME_UNITS;
-  public selTimeUnit = TimeUnitEnum.SECS;
   private firstOffset = -1;
   private lastOffset = -1;
   public screenSize = '';
@@ -76,7 +73,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'amt_paid_sat', 'settle_date', 'actions'];
+      this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'actions'];
     }
   }
 
@@ -104,9 +101,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
 
   onAddInvoice(form: any) {
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
-    if (this.selTimeUnit !== TimeUnitEnum.SECS) {
-      expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
-    }
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
@@ -139,7 +133,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
     this.private = false;
     this.expiry = undefined;
     this.invoiceValueHint = '';
-    this.selTimeUnit = TimeUnitEnum.SECS;
   }
 
   applyFilter(selFilter: string) {
@@ -169,13 +162,6 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       });
     }
-  }
-
-  onTimeUnitChange(event: any) {
-    if(this.expiry && this.selTimeUnit !== event.value) {
-      this.expiry = this.commonService.convertTime(this.expiry, this.selTimeUnit, event.value);
-    }
-    this.selTimeUnit = event.value;
   }
 
   onDownloadCSV() {

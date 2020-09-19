@@ -2,9 +2,9 @@
   *ngTemplateOutlet="stepNumber === 1 ? loopStepBlock1: stepNumber === 2 ? loopStepBlock2 : stepNumber === 3 ? loopStepBlock3 : stepNumber === 4 ? loopStepBlock4 : loopStepBlock5">
 </ng-container>
 <ng-template #loopStepBlock1>
-  <div fxLayout="column" fxFlex="100" class="step-container" (swipe)="onSwipe($event)"
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <svg viewBox="0 0 108 118" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 108 118" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <desc>Created with Sketch.</desc>
@@ -64,21 +64,21 @@
         </g>
       </g>
     </svg>
-    <div class="mt-6" fxLayout="column"
-      [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '40' : '30'"
-      fxLayoutAlign="start center">
+    <div fxFlex="20" fxLayoutAlign="center end">
       <mat-card-title>Loop In explained.</mat-card-title>
-      <mat-card-subtitle fxLayout="row" fxLayoutAlign="center start">
-        <p class="font-size-120 h-10" fxFlex="80">Lightning Loop is a non custodial service offered by Lightning Labs to bridge
-          on-chain and off-chain Bitcoin using Submarine swaps.</p>
+    </div>
+    <div fxFlex="40">
+      <mat-card-subtitle class="font-size-120">
+        Lightning Loop is a non custodial service offered by Lightning Labs to bridge
+          on-chain and off-chain Bitcoin using Submarine swaps.
       </mat-card-subtitle>
     </div>
   </div>
 </ng-template>
 <ng-template #loopStepBlock2>
-  <div fxLayout="column" fxFlex="100" class="step-container" (swipe)="onSwipe($event)"
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <svg viewBox="0 0 200 120" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 200 120" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <desc>Created with Sketch.</desc>
@@ -214,20 +214,20 @@
         </g>
       </g>
     </svg>
-    <div class="mt-6" fxLayout="column"
-      [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '40' : '30'"
-      fxLayoutAlign="start center">
+    <div fxFlex="20" fxLayoutAlign="center end">
       <mat-card-title>Step 1: Deciding to Loop In</mat-card-title>
-      <mat-card-subtitle fxLayout="row" fxLayoutAlign="center start">
-        <p class="font-size-120 h-10" fxFlex="80">Your outgoing capacity is depleted and you want to regain it without opening new channels.</p>
+    </div>
+    <div fxFlex="40">
+      <mat-card-subtitle class="font-size-120">
+        Your outgoing capacity is depleted and you want to regain it without opening new channels.
       </mat-card-subtitle>
     </div>
   </div>
 </ng-template>
 <ng-template #loopStepBlock3>
-  <div fxLayout="column" fxFlex="100" class="step-container" (swipe)="onSwipe($event)"
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <svg viewBox="0 0 364 120" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 364 120" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <desc>Created with Sketch.</desc>
@@ -420,20 +420,20 @@
         </g>
       </g>
     </svg>
-    <div class="mt-6" fxLayout="column"
-      [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '40' : '30'"
-      fxLayoutAlign="start center">
-      <mat-card-title>Step 2: Send on-chain payment out</mat-card-title>
-      <mat-card-subtitle fxLayout="row" fxLayoutAlign="center start">
-        <p class="font-size-120 h-10" fxFlex="80">Your node sends funds on-chain to loop server to be swapped with off-chain liquidity.</p>
+    <div fxFlex="20" fxLayoutAlign="center end">
+      <mat-card-title>Step 2: Send payment out</mat-card-title>
+    </div>
+    <div fxFlex="40">
+      <mat-card-subtitle class="font-size-120">
+        Your node sends funds on-chain to loop server to be swapped with off-chain liquidity.
       </mat-card-subtitle>
     </div>
   </div>
 </ng-template>
 <ng-template #loopStepBlock4>
-  <div fxLayout="column" fxFlex="100" class="step-container" (swipe)="onSwipe($event)"
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <svg viewBox="0 0 278 118" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 278 118" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <desc>Created with Sketch.</desc>
@@ -537,20 +537,20 @@
         </g>
       </g>
     </svg>
-    <div class="mt-6" fxLayout="column"
-      [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '40' : '30'"
-      fxLayoutAlign="start center">
+    <div fxFlex="20" fxLayoutAlign="center end">
       <mat-card-title>Step 3: Recieve Funds Off-chain</mat-card-title>
-      <mat-card-subtitle fxLayout="row" fxLayoutAlign="center start">
-        <p class="font-size-120 h-10" fxFlex="80">Loop server sends equivalent funds off-chain to your node by making a lightning payment to you.</p>
+    </div>
+    <div fxFlex="40">
+      <mat-card-subtitle class="font-size-120">
+        Loop server sends equivalent funds off-chain to your node by making a lightning payment to you.
       </mat-card-subtitle>
     </div>
   </div>
 </ng-template>
 <ng-template #loopStepBlock5>
-  <div fxLayout="column" fxFlex="100" class="step-container" (swipe)="onSwipe($event)"
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <svg viewBox="0 0 205 121" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg fxFlex="30" [ngClass]="{'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}" viewBox="0 0 205 121" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
       <desc>Created with Sketch.</desc>
@@ -649,13 +649,13 @@
         </g>
       </g>
     </svg>
-    <div class="mt-6" fxLayout="column"
-      [fxFlex]="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM ? '40' : '30'"
-      fxLayoutAlign="start center">
+    <div fxFlex="20" fxLayoutAlign="center end">
       <mat-card-title>Done!</mat-card-title>
-      <mat-card-subtitle fxLayout="row" fxLayoutAlign="center start">
-        <p class="font-size-120 h-10" fxFlex="80">You send the payment on-chain from your wallet and also move remote
-          balance to the local side of the node, gaining outgoing capacity.</p>
+    </div>
+    <div fxFlex="40">
+      <mat-card-subtitle class="font-size-120">
+        You send the payment on-chain from your wallet and also move remote
+          balance to the local side of the node, gaining outgoing capacity.
       </mat-card-subtitle>
     </div>
   </div>

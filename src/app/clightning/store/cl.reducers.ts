@@ -1,6 +1,6 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, Transaction } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
@@ -21,6 +21,7 @@ export interface CLState {
   forwardingHistory: ForwardingHistoryRes;
   invoices: ListInvoices;
   totalInvoices: number;
+  transactions: Transaction[];
 }
 
 export const initCLState: CLState = {
@@ -38,7 +39,8 @@ export const initCLState: CLState = {
   payments: [],
   forwardingHistory: {},
   invoices: { invoices: [] },
-  totalInvoices: -1
+  totalInvoices: -1,
+  transactions: []
 }
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
@@ -162,8 +164,10 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         allChannels: modifiedChannels
       };
     case CLActions.SET_PAYMENTS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
+        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:
@@ -173,11 +177,11 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         action.payload.forwarding_events.forEach(event => {
           if (storedChannels && storedChannels.length > 0) {
             for (let idx = 0; idx < storedChannels.length; idx++) {
-              if (storedChannels[idx].short_channel_id === event.in_channel) {
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id === event.in_channel) {
                 event.in_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.in_channel;
                 if (event.out_channel_alias) { return; }
               }
-              if (storedChannels[idx].short_channel_id.toString() === event.out_channel) {
+              if (storedChannels[idx].short_channel_id && storedChannels[idx].short_channel_id.toString() === event.out_channel) {
                 event.out_channel_alias = storedChannels[idx].alias ? storedChannels[idx].alias : event.out_channel;
                 if (event.in_channel_alias) { return; }
               }
@@ -210,6 +214,13 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       return {
         ...state,
         totalInvoices: action.payload
+      };
+    case CLActions.SET_TRANSACTIONS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'TRANSACTIONS'];
+      return {
+        ...state,
+        initialAPIResponseStatus: newAPIStatus,
+        transactions: action.payload
       };
     default:
       return state;

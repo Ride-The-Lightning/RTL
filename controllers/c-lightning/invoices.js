@@ -6,7 +6,7 @@ var options = {};
 exports.deleteExpiredInvoice = (req, res, next) => {
   options = common.getOptions();
   const queryStr = req.query.maxExpiry ? '?maxexpiry=' + req.query.maxExpiry : '';
-  options.url = common.getSelLNServerUrl() + '/invoice/delExpiredInvoice' + queryStr;
+  options.url = common.getSelLNServerUrl() + '/v1/invoice/delExpiredInvoice' + queryStr;
   request.delete(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices Deleted: ' + JSON.stringify(body)});
     if(!body || body.error) {
@@ -37,7 +37,7 @@ exports.deleteExpiredInvoice = (req, res, next) => {
 exports.listInvoices = (req, res, next) => {
   options = common.getOptions();
   const labelQuery = req.query.label ? '?label=' + req.query.label : '';
-  options.url = common.getSelLNServerUrl() + '/invoice/listInvoices' + labelQuery;
+  options.url = common.getSelLNServerUrl() + '/v1/invoice/listInvoices' + labelQuery;
   request(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body});
     if(!body || body.error) {
@@ -76,7 +76,7 @@ exports.listInvoices = (req, res, next) => {
 
 exports.addInvoice = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/invoice/genInvoice';
+  options.url = common.getSelLNServerUrl() + '/v1/invoice/genInvoice';
   options.body = req.body;
   request.post(options).then((body) => {
     logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});

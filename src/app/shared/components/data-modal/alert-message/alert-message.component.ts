@@ -13,7 +13,10 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapStateEnum } from '../.
   styleUrls: ['./alert-message.component.scss']
 })
 export class AlertMessageComponent implements OnInit, AfterViewChecked {
-  @ViewChild('scrollContainer', { static: true }) scrollContainer: ElementRef;
+  private scrollContainer: ElementRef;
+  @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
+    if(containerContent) { this.scrollContainer = containerContent; }
+  }  
   public swapStateEnum = SwapStateEnum;
   public showQRField = '';
   public showQRName = '';  
@@ -45,7 +48,9 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.shouldScroll = this.scrollContainer && this.scrollContainer.nativeElement ? this.scrollContainer.nativeElement.classList.value.includes('ps--active-y') : false;
+    setTimeout(() => {
+      this.shouldScroll = this.scrollContainer && this.scrollContainer.nativeElement ? this.scrollContainer.nativeElement.classList.value.includes('ps--active-y') : false;
+    });
   }
 
   onScrollDown() {

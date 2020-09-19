@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,6 +15,10 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   styleUrls: ['./invoice-information.component.scss']
 })
 export class InvoiceInformationComponent implements OnInit {
+  private scrollContainer: ElementRef;
+  @ViewChild('scrollContainer') set container(containerContent: ElementRef) {
+    if(containerContent) { this.scrollContainer = containerContent; }
+  }  
   public faReceipt = faReceipt;
   public showAdvanced = false;
   public newlyAdded = false;
@@ -22,6 +26,7 @@ export class InvoiceInformationComponent implements OnInit {
   public qrWidth = 240;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public flgOpened = false;
 
   constructor(public dialogRef: MatDialogRef<InvoiceInformationComponent>, @Inject(MAT_DIALOG_DATA) public data: InvoiceInformation, private logger: LoggerService, private commonService: CommonService, private snackBar: MatSnackBar) { }
 
@@ -40,6 +45,16 @@ export class InvoiceInformationComponent implements OnInit {
 
   onShowAdvanced() {
     this.showAdvanced = !this.showAdvanced;
+    this.flgOpened = false;
+  }  
+
+  onScrollDown() {
+    this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop + 60;
+  }
+
+  onExpansionClosed() {
+    this.flgOpened = false
+    this.scrollContainer.nativeElement.scrollTop = 0;
   }  
 
   onCopyPayment(payload: string) {

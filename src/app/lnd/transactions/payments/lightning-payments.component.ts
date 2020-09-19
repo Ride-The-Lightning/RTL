@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject, forkJoin } from 'rxjs';
-import { takeUntil, take, filter } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { GetInfo, Payment, PayRequest, Channel } from '../../../shared/models/lndModels';
+import { GetInfo, Payment, PayRequest, Channel, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -44,9 +44,11 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
+  public peers: Peer[] = [];
   public payments: any;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns = [];
+  public htlcColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -68,15 +70,19 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupValue', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupAction'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'path', 'actions'];
+      this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'hops', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupHash', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
     }
   }
 
@@ -91,6 +97,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
+      this.peers = rtlStore.peers;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
@@ -240,6 +247,10 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.feeLimit = null;
       this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     }
+  }
+
+  is_group(index: number, payment: Payment) {
+    return payment.htlcs && payment.htlcs.length > 1;
   }  
 
   resetData() {
@@ -251,31 +262,53 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  onPaymentClick(selPayment: Payment, event: any) {
-    let pathAliases = '';
-    if (selPayment.path && selPayment.path.length > 0) {
-      forkJoin(this.dataService.getAliasesFromPubkeys(selPayment.path))
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe((nodes: any) => {
-        nodes.forEach(node => {
-          pathAliases = pathAliases === '' ? node.node.alias : pathAliases + '\n' + node.node.alias;
+  getHopDetails(hops: Hop[]) {
+    let self = this;
+    return hops.reduce(function (accumulator, currentHop) {
+      let peerFound = self.peers.find(peer => peer.pub_key === currentHop.pub_key);
+      if (peerFound && peerFound.alias) {
+        accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
+      } else {
+        self.dataService.getAliasFromPubkey(currentHop.pub_key)
+        .pipe(takeUntil(self.unSubs[1]))
+        .subscribe((res: any) => {
+          accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
         });
-        this.openPaymentInModal(selPayment, pathAliases);
-      });
-    } else {
-      this.openPaymentInModal(selPayment, pathAliases);
-    }
+      }
+      return accumulator;
+    }, []);
   }
 
-  openPaymentInModal(selPayment: Payment, pathAliases: string) {
+  onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
+    const reorderedHTLC = [
+      [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'status', value: selHtlc.status, title: 'Status', width: 33, type: DataTypeEnum.STRING},
+        {key: 'attempt_time_str', value: selHtlc.attempt_time_str, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME},
+        {key: 'resolve_time_str', value: selHtlc.resolve_time_str, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME}],
+      [{key: 'total_amt', value: selHtlc.route.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+        {key: 'total_fees', value: selHtlc.route.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+        {key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER}],
+      [{key: 'hops', value: this.getHopDetails(selHtlc.route.hops), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY}]
+    ];
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'HTLC Information',
+      message: reorderedHTLC,
+      scrollable: selHtlc.route && selHtlc.route.hops && selHtlc.route.hops.length > 1
+    }}));
+  }
+
+  onPaymentClick(selPayment: Payment) {
     const reorderedPayment = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'creation_date_str', value: selPayment.creation_date_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'fee', value: selPayment.fee, title: 'Fee', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING},
+        {key: 'creation_date_str', value: selPayment.creation_date_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'value_sat', value: selPayment.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
+        {key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
@@ -290,7 +323,15 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      this.commonService.downloadFile(this.payments.data, 'Payments');
+      let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
+      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
+        if (curr.htlcs) {
+          return acc.concat(curr.htlcs);
+        } else {
+          return acc.concat(curr);
+        }
+      }, []);      
+      this.commonService.downloadFile(flattenedPayments, 'Payments');
     }
   }
 

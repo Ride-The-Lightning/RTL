@@ -23,8 +23,8 @@
         "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
         "boltzSwapsPath": "C:\\Users\\shaha\\backup\\boltz-swaps",
         "enableLogging": false,
-        "lnServerUrl": "https://localhost:8080/v1",
-        "swapServerUrl": "http://localhost:8081/v1",
+        "lnServerUrl": "https://localhost:8080",
+        "swapServerUrl": "http://localhost:8081",
         "boltzServerUrl": "https://testnet.boltz.exchange/api/",
         "fiatConversion": false
       }

@@ -15,7 +15,6 @@ import { Channel, QueryRoutes, ListInvoices } from '../../../../shared/models/ln
 import { FEE_LIMIT_TYPES, PAGE_SIZE } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({

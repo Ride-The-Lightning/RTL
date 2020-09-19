@@ -80,7 +80,7 @@ Ensure that the follow values are correct per your config:
         "bitcoindConfigPath": "",
         "enableLogging": true,
         "fiatConversion": false,
-        "lnServerUrl": "https://<cl-rest api server ip address>:3001/v1"
+        "lnServerUrl": "https://<cl-rest api server ip address>:3001"
       }
     }
   ],

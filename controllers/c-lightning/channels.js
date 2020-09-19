@@ -5,10 +5,11 @@ var options = {};
 
 exports.listChannels = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channel/listChannels';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/listChannels';
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'List Channels: ' + JSON.stringify(body)});
     body.map(channel => {
+      if (!channel.alias || channel.alias === '') { channel.alias = channel.id.substring(0, 20); }
       local = (channel.msatoshi_to_us) ? channel.msatoshi_to_us : 0;
       remote = (channel.msatoshi_to_them) ? channel.msatoshi_to_them : 0;
       total = channel.msatoshi_total ? channel.msatoshi_total : 0;
@@ -34,7 +35,7 @@ exports.listChannels = (req, res, next) => {
 
 exports.openChannel = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channel/openChannel';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/openChannel';
   options.body = req.body;
   logger.info({fileName: 'Channels', msg: 'Open Channel Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
@@ -67,7 +68,7 @@ exports.openChannel = (req, res, next) => {
 
 exports.setChannelFee = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channel/setChannelFee';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/setChannelFee';
   options.body = req.body;
   logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.body)});
   request.post(options).then((body) => {
@@ -101,7 +102,7 @@ exports.setChannelFee = (req, res, next) => {
 exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   const unilateralTimeoutQuery = req.query.unilateralTimeout ? '?unilateralTimeout=' + req.query.unilateralTimeout : '';
-  options.url = common.getSelLNServerUrl() + '/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;
+  options.url = common.getSelLNServerUrl() + '/v1/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;
   logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
@@ -133,7 +134,7 @@ exports.closeChannel = (req, res, next) => {
 
 exports.getLocalRemoteBalance = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channel/localremotebal';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/localremotebal';
   request(options).then(function (body) {
     logger.info({fileName: 'Channels', msg: 'Local Remote Balance: ' + JSON.stringify(body)});
     if(!body.localBalance) {
@@ -168,7 +169,7 @@ exports.getLocalRemoteBalance = (req, res, next) => {
 
 exports.listForwards = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/channel/listForwards/';
+  options.url = common.getSelLNServerUrl() + '/v1/channel/listForwards/';
   request.get(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Forwarding History Response: ' + JSON.stringify(body)});
     if(!body || body.error) {

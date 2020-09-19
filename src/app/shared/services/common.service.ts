@@ -32,6 +32,14 @@ export class CommonService implements OnInit {
     });
   }
 
+  sortAscByKey(array, key) {
+    return array.sort(function (a, b) {
+      const x = +a[key];
+      const y = +b[key];
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+  }
+
   camelCase(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => { 
         return index == 0 ? word.toLowerCase() : word.toUpperCase(); 
@@ -244,6 +252,14 @@ export class CommonService implements OnInit {
       csvStrArray += dataRow.slice(0, -1) + '\r\n';
     });
     return csvStrArray;
+  }
+
+  isVersionCompatible(currentVersion, checkVersion) {
+    let versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.');
+    let checkVersionsArr = checkVersion.split('.');
+    return (+versionsArr[0] > +checkVersionsArr[0])
+    || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] >= +checkVersionsArr[1])
+    || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
   }
 
 }

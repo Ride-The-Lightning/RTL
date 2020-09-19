@@ -1,7 +1,6 @@
 var request = require('request-promise');
 var common = require('../../common');
 var logger = require('../logger');
-const { resolve } = require('path');
 var options = {};
 
 simplifyAllChannels = (channels) => {
@@ -27,10 +26,13 @@ simplifyAllChannels = (channels) => {
   return new Promise(function(resolve, reject) {
     options.url = common.getSelLNServerUrl() + '/nodes';
     options.form = { nodeIds: channelNodeIds };
+    logger.info({fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
     request.post(options).then(function(nodes) {
       logger.info({fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
+      let foundPeer = {};
       simplifiedChannels.map(channel => {
-        channel.alias = nodes.find(channelWithAlias => channel.nodeId === channelWithAlias.nodeId).alias;
+        foundPeer = nodes.find(channelWithAlias => channel.nodeId === channelWithAlias.nodeId);
+        channel.alias = foundPeer ? foundPeer.alias : channel.nodeId.substring(0, 20);
       });
       resolve(simplifiedChannels);
     }).catch(err => {

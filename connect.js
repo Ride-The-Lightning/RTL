@@ -69,8 +69,8 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           boltzSwapsPath: boltzSwapsPath,
           enableLogging: false,
-          lnServerUrl: "https://localhost:8080/v1",
-          swapServerUrl: "http://localhost:8081/v1",
+          lnServerUrl: "https://localhost:8080",
+          swapServerUrl: "http://localhost:8081",
           boltzServerUrl: "https://testnet.boltz.exchange/api/",
           fiatConversion: false
         }
@@ -173,13 +173,13 @@ connect.validateNodeConfig = (config) => {
       }
 
       if(process.env.LN_SERVER_URL && process.env.LN_SERVER_URL.trim() !== '') {
-        common.nodes[idx].ln_server_url = process.env.LN_SERVER_URL;
+        common.nodes[idx].ln_server_url = process.env.LN_SERVER_URL.endsWith('/v1') ? process.env.LN_SERVER_URL.slice(0, -3) : process.env.LN_SERVER_URL;
       } else if(process.env.LND_SERVER_URL && process.env.LND_SERVER_URL.trim() !== '') {
-        common.nodes[idx].ln_server_url = process.env.LND_SERVER_URL;
+        common.nodes[idx].ln_server_url = process.env.LND_SERVER_URL.endsWith('/v1') ? process.env.LND_SERVER_URL.slice(0, -3) : process.env.LND_SERVER_URL;
       } else if(node.Settings.lnServerUrl && node.Settings.lnServerUrl.trim() !== '') {
-        common.nodes[idx].ln_server_url = node.Settings.lnServerUrl;
-      } else if(node.Settings.lndServerUrl && node.Settings.lndServerUrl.trim() !== '') {
-        common.nodes[idx].ln_server_url = node.Settings.lndServerUrl;
+        common.nodes[idx].ln_server_url = node.Settings.lnServerUrl.endsWith('/v1') ? node.Settings.lnServerUrl.slice(0, -3) : node.Settings.lnServerUrl;
+     } else if(node.Settings.lndServerUrl && node.Settings.lndServerUrl.trim() !== '') {
+        common.nodes[idx].ln_server_url = node.Settings.lndServerUrl.endsWith('/v1') ? node.Settings.lndServerUrl.slice(0, -3) : node.Settings.lndServerUrl;
       } else {
         errMsg = errMsg + '\nPlease set LN Server URL for node index ' + node.index + ' in RTL-Config.json!';
       }
@@ -190,7 +190,13 @@ connect.validateNodeConfig = (config) => {
       if(common.nodes[idx].fiat_conversion) {
         common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
       }
-      common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL ? process.env.SWAP_SERVER_URL : (node.Settings.swapServerUrl) ? node.Settings.swapServerUrl.trim() : '';
+      if(process.env.SWAP_SERVER_URL && process.env.SWAP_SERVER_URL.trim() !== '') {
+        common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL.endsWith('/v1') ? process.env.SWAP_SERVER_URL.slice(0, -3) : process.env.SWAP_SERVER_URL;
+      } else if(node.Settings.swapServerUrl && node.Settings.swapServerUrl.trim() !== '') {
+        common.nodes[idx].swap_server_url = node.Settings.swapServerUrl.endsWith('/v1') ? node.Settings.swapServerUrl.slice(0, -3) : node.Settings.swapServerUrl;
+      } else {
+        common.nodes[idx].swap_server_url = '';
+      }
       common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL ? process.env.BOLTZ_SERVER_URL : (node.Settings.boltzServerUrl) ? node.Settings.boltzServerUrl.trim() : '';
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
@@ -449,9 +455,9 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
         newNode.Settings.boltzServerUrl = node.Settings.boltzServerUrl;
       }
       if (node.Settings.lnServerUrl) {
-        newNode.Settings.lnServerUrl = node.Settings.lnServerUrl;
+        newNode.Settings.lnServerUrl = node.Settings.lnServerUrl.endsWith('/v1') ? node.Settings.lnServerUrl.slice(0, -3) : node.Settings.lnServerUrl;
       } else if (node.Settings.lndServerUrl) {
-        newNode.Settings.lnServerUrl = node.Settings.lndServerUrl;
+        newNode.Settings.lnServerUrl = node.Settings.lndServerUrl.endsWith('/v1') ? node.Settings.lndServerUrl.slice(0, -3) : node.Settings.lndServerUrl;
       }
       newConfig.nodes.push(newNode);
     });
@@ -520,11 +526,11 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
     newConfig.nodes[0].Settings.boltzServerUrl = config.Settings.boltzServerUrl;
   }
   if (config.Settings.lnServerUrl) {
-    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl;
+    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl.endsWith('/v1') ? config.Settings.lnServerUrl.slice(0, -3) : config.Settings.lnServerUrl;
   } else if (config.Settings.lndServerUrl) {
-    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lndServerUrl;
+    newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lndServerUrl.endsWith('/v1') ? config.Settings.lndServerUrl.slice(0, -3) : config.Settings.lndServerUrl;
   } else if (config.Authentication.lndServerUrl) {
-    newConfig.nodes[0].Settings.lnServerUrl = config.Authentication.lndServerUrl;
+    newConfig.nodes[0].Settings.lnServerUrl = config.Authentication.lndServerUrl.endsWith('/v1') ? config.Authentication.lndServerUrl.slice(0, -3) : config.Authentication.lndServerUrl;
   }
   newConfig.multiPassHashed = config.Authentication.rtlPassHashed ? config.Authentication.rtlPassHashed : config.Authentication.rtlPass ? hash.update(config.Authentication.rtlPass).digest('hex') : '';
   fs.writeFileSync(confFileFullPath, JSON.stringify(newConfig, null, 2), 'utf-8');

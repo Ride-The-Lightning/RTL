@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
+import { CommonService } from '../../../shared/services/common.service';
 
 @Component({
   selector: 'rtl-loop-in-info-graphics',
@@ -16,9 +17,11 @@ export class LoopInInfoGraphicsComponent implements OnInit {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor() {}
+  constructor(private commonService: CommonService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.screenSize = this.commonService.getScreenSize();    
+  }
 
   onSwipe(event: any) {
     if(event.direction === 2 && this.stepNumber < 5) {

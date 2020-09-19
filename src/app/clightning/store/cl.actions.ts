@@ -2,7 +2,9 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates, ForwardingHistoryRes, Invoice, ListInvoices, OnChain } from '../../shared/models/clModels';
+import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
+  ForwardingHistoryRes, Invoice, ListInvoices, OnChain, Transaction
+} from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
@@ -20,6 +22,8 @@ export const FETCH_LOCAL_REMOTE_BALANCE_CL = 'FETCH_LOCAL_REMOTE_BALANCE_CL';
 export const SET_LOCAL_REMOTE_BALANCE_CL = 'SET_LOCAL_REMOTE_BALANCE_CL';
 export const GET_NEW_ADDRESS_CL = 'GET_NEW_ADDRESS_CL';
 export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
+export const FETCH_TRANSACTIONS_CL = 'FETCH_TRANSACTIONS_CL';
+export const SET_TRANSACTIONS_CL = 'SET_TRANSACTIONS_CL';
 export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
 export const SET_PEERS_CL = 'SET_PEERS_CL';
 export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
@@ -188,7 +192,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: { fromDialog: boolean, invoice: string, amount?: number }) {}
+  constructor(public payload: {fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -222,7 +226,7 @@ export class UpdateChannels implements Action {
 
 export class SaveNewChannel implements Action {
   readonly type = SAVE_NEW_CHANNEL_CL;
-  constructor(public payload: {peerId: string, satoshis: number, feeRate: string, announce: boolean, minconf?: number}) {}
+  constructor(public payload: {peerId: string, satoshis: string, feeRate: string, announce: boolean, minconf?: number, utxos?: string[]}) {}
 }
 
 export class CloseChannel implements Action {
@@ -305,10 +309,19 @@ export class SetChannelTransactionRes implements Action {
   constructor(public payload: any) {}
 }
 
+export class FetchTransactions implements Action {
+  readonly type = FETCH_TRANSACTIONS_CL;
+}
+
+export class SetTransactions implements Action {
+  readonly type = SET_TRANSACTIONS_CL;
+  constructor(public payload: Transaction[]) {}
+}
+
 export type CLActions =   ClearEffectError | EffectError | ResetCLStore |
 SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
 FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
-GetNewAddress | SetNewAddress |
+GetNewAddress | SetNewAddress | FetchTransactions | SetTransactions |
 FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
 FetchChannels | SetChannels | UpdateChannels | SaveNewChannel | CloseChannel | RemoveChannel |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus | DecodePayment | SetDecodedPayment |

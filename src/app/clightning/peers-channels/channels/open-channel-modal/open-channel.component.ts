@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
@@ -7,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { Peer, GetInfo } from '../../../../shared/models/clModels';
+import { Peer, GetInfo, Transaction } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
 import { FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
 
@@ -25,15 +26,20 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
+  public isCompatibleVersion = false;
   public peer: Peer;
   public peers: Peer[];
   public sortedPeers: Peer[];
   public filteredPeers: Observable<Peer[]>;
+  public transactions: Transaction[] = [];
+  public selUTXOs = [];
+  public flgUseAllBalance = false;  
+  public totalSelectedUTXOAmount = 0;
   public channelConnectionError = '';
   public advancedTitle = 'Advanced Options';
   public information: GetInfo;
   public totalBalance = 0;
-  public fundingAmount: number;
+  public fundingAmount = null;
   public selectedPubkey = '';
   public isPrivate = false;
   public feeRateTypes = FEE_RATE_TYPES;
@@ -42,11 +48,13 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public minConfValue = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private decimalPipe: DecimalPipe) {}
 
   ngOnInit() {
+    this.isCompatibleVersion = this.data.message.isCompatibleVersion;
     this.information = this.data.message.information;
     this.totalBalance = this.data.message.balance;
+    this.transactions = this.data.message.transactions;
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
@@ -112,18 +120,54 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = (!this.flgMinConf && !this.selFeeRate) ? 'Advanced Options' : 'Advanced Options | ' + (this.flgMinConf ? 'Min Confirmation Blocks: ' : 'Fee Rate: ') + (this.flgMinConf ? this.minConfValue : (this.selFeeRate ? this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType : ''));
+      if (!this.flgMinConf && !this.selFeeRate && (!this.selUTXOs.length || this.selUTXOs.length === 0)) {
+        this.advancedTitle = 'Advanced Options';
+      } else {
+        this.advancedTitle = 'Advanced Options';
+        if (this.flgMinConf) {
+          this.advancedTitle = this.advancedTitle + ' | Min Confirmation Blocks: ' + this.minConfValue;
+        }
+        if (this.selFeeRate) {
+          this.advancedTitle = this.advancedTitle + ' | Fee Rate: ' + this.feeRateTypes.find(feeRateType => feeRateType.feeRateId === this.selFeeRate).feeRateType;
+        }
+        if (this.selUTXOs.length && this.selUTXOs.length > 0) {
+          this.advancedTitle = this.advancedTitle + ' | Total Selected: ' + this.selUTXOs.length + ' | Selected UTXOs: ' + this.decimalPipe.transform(this.totalSelectedUTXOAmount) + ' Sats';
+        }
+      }
     } else {
       this.advancedTitle = 'Advanced Options';
     }
   }
 
+  onUTXOSelectionChange(event: any) {
+    let utxoNew = {value: 0}; 
+    if (this.selUTXOs.length && this.selUTXOs.length > 0) {
+      this.totalSelectedUTXOAmount = this.selUTXOs.reduce((a, b) => {utxoNew.value = a.value + b.value; return utxoNew;}).value;
+      if (this.flgUseAllBalance) { this.onUTXOAllBalanceChange(); }
+    } else {
+      this.totalSelectedUTXOAmount = 0;
+      this.fundingAmount = null;
+      this.flgUseAllBalance = false;
+    }
+  }
+
+  onUTXOAllBalanceChange() {
+    if (this.flgUseAllBalance) {
+      this.fundingAmount = this.totalSelectedUTXOAmount;
+    } else {
+      this.fundingAmount = null;
+    }
+  }
+
   onOpenChannel() {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
+    let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
+    if (this.selUTXOs.length && this.selUTXOs.length > 0) {
+      newChannel['utxos'] = [];
+      this.selUTXOs.forEach(utxo => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
+    }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
-    this.store.dispatch(new CLActions.SaveNewChannel({
-      peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: this.fundingAmount, announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null
-    }));
+    this.store.dispatch(new CLActions.SaveNewChannel(newChannel));
   }
 
   ngOnDestroy() {

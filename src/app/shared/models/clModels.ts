@@ -28,6 +28,7 @@ export interface GetInfoChain {
 
 export interface GetInfo {
   id?: string;
+  api_version?: string;
   alias?: string;
   color?: string;
   num_peers?: number;
@@ -106,9 +107,10 @@ export interface ListInvoices {
 
 export interface OnChain {
   address?:	string;
-  satoshis?: number;
+  satoshis?: string;
   feeRate?: string;
   minconf?: number;
+  utxos?: string[];
 }
 
 export interface Hop {
@@ -137,6 +139,26 @@ export interface Payment {
   payment_hash?: string;
   payment_preimage?: string;
   status?: string;
+  is_group?: boolean;
+  is_expanded?: boolean;
+  total_parts?: number;
+  mpps?: MPP[];
+}
+
+export interface MPP {
+  amount_msat?: string;
+  amount_sent_msat?: string;
+  bolt11?: string;
+  created_at?: number;
+  created_at_str?: string;
+  destination?: string;
+  id?: number;
+  msatoshi?: number;
+  msatoshi_sent?: number;
+  payment_hash?: string;
+  payment_preimage?: string;
+  status?: string;
+  partid?: number;
 }
 
 export interface PayRequest {
@@ -254,4 +276,14 @@ export interface FeeRatePerObj {
   slow?: number;
   min_acceptable?: number;
   max_acceptable?: number;
+}
+
+export interface Transaction {
+  txid?: string;
+  output?: number;
+  value?: number;
+  status?: string;
+  blockheight?: string;
+  address?: string;
+  amount_msat?: string;
 }
