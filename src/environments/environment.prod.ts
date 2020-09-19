@@ -1,7 +1,6 @@
 import { VERSION } from './version';
 
 export const API_URL = './api';
-export const BOLTZ_API_URL = 'https://boltz.exchange/api/';
 
 export const environment = {
   production: true,
@@ -31,5 +30,6 @@ export const environment = {
 
 export const boltzEnvironment = {
   GET_PAIRS: 'getPairs',
+  GET_NODES: 'getNodes',
   CREATE_SWAP: 'createswap'
 }

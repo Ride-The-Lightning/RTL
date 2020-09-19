@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { throwError, forkJoin } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ECPair, crypto } from 'bitcoinjs-lib';
 
-import { BOLTZ_API_URL, boltzEnvironment } from '../../../environments/environment';
+import { boltzEnvironment, environment, API_URL } from '../../../environments/environment';
 import { CurrentyTypeSwapEnum } from '../../shared/services/consts-enums-functions';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -16,17 +16,21 @@ import { Actions } from '@ngrx/effects';
 
 @Injectable()
 export class BoltzService {
-  private BOLTZ_LND_NODE = '026165850492521f4ac8abd9bd8088123446d126f648ca35e60f88177dc149ceb2@104.196.200.39:9735';
-
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
 
-  getPairs() {
-    const pairsUrl = BOLTZ_API_URL + boltzEnvironment.GET_PAIRS;
+  getBoltzServerUrl() {
+    const CHILD_API_URL = API_URL + '/lnd';
+    return this.httpClient.get(CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/boltz/serverUrl');
+  }
+
+  getPairs(boltzServerUrl) {
+    const pairsUrl = boltzServerUrl + boltzEnvironment.GET_PAIRS;
     return this.httpClient.get(pairsUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Terms', err)));
   }
 
-  getLNDNode() {
-    return this.BOLTZ_LND_NODE;
+  getNodes(boltzServerUrl) {
+    const nodesUrl = boltzServerUrl + boltzEnvironment.GET_NODES;
+    return this.httpClient.get(nodesUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Boltz Nodes', err)));
   }
 
   getSwapInfo() {
@@ -38,10 +42,10 @@ export class BoltzService {
     }
   }
 
-  onSwap({direction, invoiceAmount, swapInfo, paymentRequest}) {
+  onSwap({boltzServerUrl, direction, invoiceAmount, swapInfo, paymentRequest}) {
     const {preimage, publicKey} = swapInfo;
     let requestBody = {};
-    const swapUrl = BOLTZ_API_URL + boltzEnvironment.CREATE_SWAP;
+    const swapUrl = boltzServerUrl + boltzEnvironment.CREATE_SWAP;
     if(direction === SwapTypeEnum.WITHDRAWAL) {
       requestBody = { 
         type: 'reversesubmarine',
@@ -62,7 +66,6 @@ export class BoltzService {
       };
       return this.httpClient.post(swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Deposit', err)));
     }
-    
   }
 
   randomBytes(size) {

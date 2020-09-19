@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -60,32 +60,35 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
 
   onSubmarine(channel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Pairs...'));
-    this.boltzService.getPairs()
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(response => {
-      const pairs = response['pairs']["BTC/BTC"];
-      const lndNode = this.boltzService.getLNDNode();
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      const minQuote = {
-        swap_fee_sat: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
-        htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
-        swap_payment_dest: lndNode,
-        amount: pairs.limits.minimal
-      };
-      const maxQuote = {
-        swap_fee_sat: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
-        htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
-        swap_payment_dest: lndNode,
-        amount: pairs.limits.maximal
-      };
-      this.store.dispatch(new RTLActions.OpenAlert({ data: {
-        channel,
-        minQuote,
-        maxQuote,
-        direction: SwapTypeEnum.WITHDRAWAL,
-        component: BoltzModalComponent
-      }}));
-    })
+    this.boltzService.getBoltzServerUrl()
+      .subscribe(boltzServerUrl => {
+        forkJoin(this.boltzService.getPairs(boltzServerUrl), this.boltzService.getNodes(boltzServerUrl))
+        .pipe(takeUntil(this.unSubs[0]))
+        .subscribe(response => {
+          const pairs = response[0]['pairs']["BTC/BTC"];
+          const lndNode = response[1]['nodes']['BTC']['nodeKey'];
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          const minQuote = {
+            swap_fee_sat: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
+            htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
+            swap_payment_dest: lndNode,
+            amount: pairs.limits.minimal
+          };
+          const maxQuote = {
+            swap_fee_sat: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
+            htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
+            swap_payment_dest: lndNode,
+            amount: pairs.limits.maximal
+          };
+          this.store.dispatch(new RTLActions.OpenAlert({ data: {
+            channel,
+            minQuote,
+            maxQuote,
+            direction: SwapTypeEnum.WITHDRAWAL,
+            component: BoltzModalComponent
+          }}));
+        })
+      })
   }  
 
   ngOnDestroy() {

@@ -127,8 +127,7 @@ export enum SwapStateEnum {
   PREIMAGE_REVEALED	= 'Preimage Revealed',
   HTLC_PUBLISHED	= 'HTLC Published',
   SUCCESS	= 'Successful',
-  FAILED	= 'Failed',
-  INVOICE_SETTLED	= 'Invoice Settled'
+  FAILED	= 'Failed'
 }
 
 export enum SwapTypeEnum {

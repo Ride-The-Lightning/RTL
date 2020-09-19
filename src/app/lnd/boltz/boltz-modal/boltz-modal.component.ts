@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, OnDestroy, ViewChild, AfterViewInit } from '
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatVerticalStepper } from '@angular/material/stepper';
@@ -134,93 +134,108 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     const swapInfo = this.boltzService.getSwapInfo();
-    if(this.direction === SwapTypeEnum.DEPOSIT) {
-      this.store.dispatch(new LNDActions.SaveNewInvoice({
-        memo: 'Sent to BTC Lightning',
-        invoiceValue: this.inputFormGroup.controls.amount.value, 
-        expiry: 3600, 
-        private: false,
-        pageSize: 10,
-        openModal: false
-      }));
-      this.actions$.pipe(takeUntil(this.unSubs[1]),
-      filter((action) => action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
-      .subscribe((action: LNDActions.NewlySavedInvoice) => {
-        this.boltzService.onSwap({
-          direction: this.direction,
-          invoiceAmount: this.inputFormGroup.controls.amount.value,
-          swapInfo,
-          paymentRequest: action.payload.paymentRequest
-        }).subscribe((swapStatus: any) => {
-          this.saveSwapFile({
-            swapStatus,
-            costServer: this.quote.swap_fee_sat,
-            costOnchain: this.quote.htlc_publish_fee_sat,
+    this.boltzService.getBoltzServerUrl()
+    .subscribe(boltzServerUrl => {
+      if(this.direction === SwapTypeEnum.DEPOSIT) {
+        this.store.dispatch(new LNDActions.SaveNewInvoice({
+          memo: 'Sent to BTC Lightning',
+          invoiceValue: this.inputFormGroup.controls.amount.value, 
+          expiry: 3600, 
+          private: false,
+          pageSize: 10,
+          openModal: false
+        }));
+        this.actions$.pipe(takeUntil(this.unSubs[1]),
+        filter((action) => action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
+        .subscribe((action: LNDActions.NewlySavedInvoice) => {
+          this.boltzService.onSwap({
+            boltzServerUrl,
+            direction: this.direction,
+            invoiceAmount: this.inputFormGroup.controls.amount.value,
             swapInfo,
+            paymentRequest: action.payload.paymentRequest
+          }).subscribe((swapStatus: any) => {
+            this.saveSwapFile({
+              swapStatus,
+              costServer: this.quote.swap_fee_sat,
+              costOnchain: this.quote.htlc_publish_fee_sat,
+              swapInfo,
+            });
+            this.loopStatus = {
+              id_bytes: swapStatus.id,
+              htlc_address: swapStatus.address
+            };
+            this.store.dispatch(new LNDActions.FetchBoltzSwaps());
+  
+            const paymentBody = {
+              address: swapStatus.address,
+              amount: swapStatus.expectedAmount
+            };
+            this.store.dispatch(new LNDActions.SetChannelTransaction(paymentBody));
+          })
+        });
+      } else {
+        if(this.addressFormGroup.controls.address.value !== '') {
+          this.processWithdrawalSwap(boltzServerUrl, swapInfo, this.addressFormGroup.controls.address);
+        } else {
+          this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
+          this.lndEffects.setNewAddress
+          .pipe(take(1))
+          .subscribe(newAddress => {
+            this.processWithdrawalSwap(boltzServerUrl, swapInfo, newAddress);
           });
-          this.loopStatus = {
-            id_bytes: swapStatus.id,
-            htlc_address: swapStatus.address
-          };
-          this.store.dispatch(new LNDActions.FetchBoltzSwaps());
+        }
+      }
+    })
+  }
 
-          const paymentBody = {
-            address: swapStatus.address,
-            amount: swapStatus.expectedAmount
-          };
-          this.store.dispatch(new LNDActions.SetChannelTransaction(paymentBody));
-        })
+  processWithdrawalSwap(boltzServerUrl, swapInfo, newAddress) {
+    this.boltzService.onSwap({
+      boltzServerUrl,
+      direction: this.direction,
+      invoiceAmount: this.inputFormGroup.controls.amount.value,
+      swapInfo,
+      paymentRequest: null
+    }).subscribe((swapStatus: any) => {
+      console.log('swapStatus', swapStatus);
+      this.saveSwapFile({
+        swapStatus,
+        costServer: this.quote.swap_fee_sat,
+        costOnchain: this.quote.htlc_publish_fee_sat,
+        swapInfo: {...swapInfo, newAddress, fast: this.inputFormGroup.controls.fast.value},
       });
-    } else {
-      this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
-      this.lndEffects.setNewAddress
-      .pipe(take(1))
-      .subscribe(newAddress => {
-        this.boltzService.onSwap({
-          direction: this.direction,
-          invoiceAmount: this.inputFormGroup.controls.amount.value,
-          swapInfo,
-          paymentRequest: null
-        }).subscribe((swapStatus: any) => {
-          this.saveSwapFile({
-            swapStatus,
-            costServer: this.quote.swap_fee_sat,
-            costOnchain: this.quote.htlc_publish_fee_sat,
-            swapInfo: {...swapInfo, newAddress, fast: this.inputFormGroup.controls.fast.value},
-          });
-          this.loopStatus = {
-            id_bytes: swapStatus.id,
-            htlc_address: swapStatus.lockupAddress
-          };
-          this.flgEditable = true;
-          this.store.dispatch(new LNDActions.FetchBoltzSwaps());
-            
-          const paymentBody = {
-            fromDialog: true,
-            paymentReq: swapStatus.invoice,
-            paymentDecoded: {},
-            zeroAmtInvoice: false,
-            allowSelfPayment: true
-          }
-          if(this.channel && this.channel.chan_id) {
-            paymentBody['outgoingChannel'] = this.channel;
-          }
-          this.store.dispatch(new LNDActions.SendPayment(paymentBody));
-          this.actions$.pipe(takeUntil(this.unSubs[5]),
-          filter((action) => action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
-          .subscribe((action: LNDActions.SendPaymentStatus) => {
-            const error = action.payload.error;
-            if(error && error.error !== 'payment is in transition') {
-              this.loopStatus = { error: error.error };
-            }
-          });
-        }, (err) => {
-          this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
-          this.flgEditable = true;
-          this.logger.error(err);
-        })
+      this.loopStatus = {
+        id_bytes: swapStatus.id,
+        htlc_address: swapStatus.lockupAddress
+      };
+      this.flgEditable = true;
+      this.store.dispatch(new LNDActions.FetchBoltzSwaps());
+        
+      const paymentBody = {
+        fromDialog: true,
+        paymentReq: swapStatus.invoice,
+        paymentDecoded: {},
+        zeroAmtInvoice: false,
+        allowSelfPayment: true
+      }
+      if(this.channel && this.channel.chan_id) {
+        paymentBody['outgoingChannel'] = this.channel;
+      }
+      this.store.dispatch(new LNDActions.SendPayment(paymentBody));
+      this.actions$.pipe(takeUntil(this.unSubs[5]),
+      filter((action) => action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
+      .subscribe((action: LNDActions.SendPaymentStatus) => {
+        const error = action.payload.error;
+        if(error && error.error !== 'payment is in transition') {
+          this.loopStatus = { error: error.error };
+          // TODO Update swap file with Failed Status
+        }
       });
-    }
+    }, (err) => {
+      this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
+      this.flgEditable = true;
+      this.logger.error(err);
+    })
   }
 
   saveSwapFile({swapStatus, costServer, costOnchain, swapInfo}) {
@@ -247,19 +262,22 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
-    this.boltzService.getPairs()
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(response => {
-      const pairs = response['pairs']["BTC/BTC"];
-      const lndNode = this.boltzService.getLNDNode();
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.quote = {
-        swap_fee_sat: (this.inputFormGroup.controls.amount.value * pairs.fees.percentage * 0.01).toString(),
-        htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
-        swap_payment_dest: lndNode,
-        amount: this.inputFormGroup.controls.amount.value
-      }
-    })
+    this.boltzService.getBoltzServerUrl()
+      .subscribe(boltzServerUrl => {
+        forkJoin(this.boltzService.getPairs(boltzServerUrl), this.boltzService.getNodes(boltzServerUrl)) 
+        .pipe(takeUntil(this.unSubs[0]))
+        .subscribe(response => {
+          const pairs = response[0]['pairs']["BTC/BTC"];
+          const lndNode = response[1]['nodes']['BTC']['nodeKey'];
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.quote = {
+            swap_fee_sat: (this.inputFormGroup.controls.amount.value * pairs.fees.percentage * 0.01).toString(),
+            htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
+            swap_payment_dest: lndNode,
+            amount: this.inputFormGroup.controls.amount.value
+          }
+        })  
+      })
   }
 
   stepSelectionChanged(event: any) {

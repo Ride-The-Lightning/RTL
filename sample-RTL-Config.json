@@ -25,6 +25,7 @@
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080/v1",
         "swapServerUrl": "http://localhost:8081/v1",
+        "boltzServerUrl": "https://testnet.boltz.exchange/api/",
         "fiatConversion": false
       }
     }

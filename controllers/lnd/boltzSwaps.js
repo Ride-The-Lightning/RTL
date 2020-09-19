@@ -3,19 +3,35 @@ var fs = require('fs');
 var common = require('../../common');
 var logger = require('../logger');
 var EventSource = require('eventsource');
-var options = {};
 var bitcoinjs = require('bitcoinjs-lib');
 var boltzCore = require('boltz-core');
 var streamMap = {};
-const BOLTZ_API_URL = 'https://testnet.boltz.exchange/api/';
+let network = undefined;
 const SWAP_STATUS = 'swapstatus';
 const STREAM_SWAP_STATUS = 'streamswapstatus';
 const GET_FEE_ESTIMATION = 'getfeeestimation';
 const GET_SWAP_TRANSACTION = 'getswaptransaction';
 const BROADCAST_TRANSACTION = 'broadcasttransaction';
 const currency = 'BTC';
-const network = 'testnet';
 const swapExpiredSec = 86400000; // one day
+const infoController = require("../../controllers/lnd/getInfo");
+
+
+
+function getBoltzServerUrl() {
+  if(common.selectedNode.boltz_server_url) {
+    return common.selectedNode.boltz_server_url;
+  } else {
+    switch(network) {
+      case 'mainnet':
+        return 'https://boltz.exchange/api/';
+      case 'regtest':
+        return 'http://localhost:9001/'
+      case 'testnet':
+        return 'https://testnet.boltz.exchange/api/';
+    }
+  }
+}
 
 
 function getFilesList(callback) {
@@ -65,7 +81,7 @@ function checkAllSwaps(callback) {
       for(let i=0; i < boltzFiles.length; i++) {
         fs.readFile(common.selectedNode.boltz_swaps_path + common.path_separator + boltzFiles[i], 'utf8', function read(err, data) {
           const swap = JSON.parse(data);
-          if(['Successful', 'Invoice Settled', 'Failed'].indexOf(swap.state) === -1) {
+          if(['Successful', 'Failed'].indexOf(swap.state) === -1) {
             fetchSwapStatus(swap);
           }
         });
@@ -75,8 +91,7 @@ function checkAllSwaps(callback) {
 }
 
 function fetchSwapStatus(swap) {
-  console.log('fetching', swap);
-  const swapStatusUrl = BOLTZ_API_URL + SWAP_STATUS;
+  const swapStatusUrl = getBoltzServerUrl() + SWAP_STATUS;
   request({
     method: 'POST',
     url: swapStatusUrl,
@@ -106,7 +121,7 @@ function mapToSwapTableData(swap) {
 
 function createSwapEventStream(swap) {
     streamMap[swap.id] = {
-      stream: new EventSource(`${BOLTZ_API_URL}${STREAM_SWAP_STATUS}?id=${swap.id}`),
+      stream: new EventSource(`${getBoltzServerUrl()}${STREAM_SWAP_STATUS}?id=${swap.id}`),
       timeoutFn: setTimeout(() => {
         if(streamMap[swap.id]) {
           refundTransaction(swap);
@@ -131,7 +146,7 @@ function handleSwapStatus (data, swap) {
     case 'transaction.claimed':
       updateBoltzSwap({
         id: swap.id,
-        state: 'Invoice Settled'
+        state: 'Successful'
       });
       if(streamMap[swap.id]) deleteStreamObj(swap.id);
       break;
@@ -185,8 +200,8 @@ function deleteStreamObj(swapId) {
 }
 
 function refundTransaction(swap) {
-  const feeEstimationUrl = BOLTZ_API_URL + GET_FEE_ESTIMATION;
-  const getTransactionUrl = BOLTZ_API_URL + GET_SWAP_TRANSACTION;
+  const feeEstimationUrl = getBoltzServerUrl() + GET_FEE_ESTIMATION;
+  const getTransactionUrl = getBoltzServerUrl() + GET_SWAP_TRANSACTION;
   const { ECPair, crypto, Transaction, address } = bitcoinjs;
   const { detectSwap, constructRefundTransaction } = boltzCore;
   let feeEstimation = null;
@@ -228,7 +243,7 @@ function refundTransaction(swap) {
 }
 
 function claimTransaction(data, swap) {
-  const feeEstimationUrl = BOLTZ_API_URL + GET_FEE_ESTIMATION;
+  const feeEstimationUrl = getBoltzServerUrl() + GET_FEE_ESTIMATION;
   const { ECPair, crypto, Transaction, address } = bitcoinjs;
   const { detectSwap, constructClaimTransaction } = boltzCore;
   request({
@@ -261,7 +276,7 @@ function claimTransaction(data, swap) {
 }
 
 function broadcastTransaction(body) {
-  const broadcastTransactionUrl = BOLTZ_API_URL + BROADCAST_TRANSACTION;
+  const broadcastTransactionUrl = getBoltzServerUrl() + BROADCAST_TRANSACTION;
   request({
     method: 'POST',
     url: broadcastTransactionUrl,
@@ -283,6 +298,10 @@ function getNetwork() {
   return Networks[`bitcoin${capitalizeFirstLetter(network)}`];
 };
 
+exports.getServerUrl = (req, res, next) => {
+  return res.status(200).json(getBoltzServerUrl())
+}
+
 exports.getSwapsList = (req, res, next) => {
   getFilesList(getFilesListRes => {
     if (getFilesListRes.error) {
@@ -303,7 +322,7 @@ exports.addSwap = (req, res, next) => {
   }, req.body)
 }
 
-exports.checkBoltzSwaps = () => {
-  console.log('check');
+exports.checkBoltzSwaps = (lndNetwork) => {
+  network = lndNetwork;
   checkAllSwaps();
 }

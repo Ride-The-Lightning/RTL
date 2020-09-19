@@ -6,7 +6,6 @@ var hash = crypto.createHash('sha256');
 var common = require('./common');
 var path = require('path');
 var logger = require('./controllers/logger');
-var boltzController = require('./controllers/lnd/boltzSwaps');
 var connect = {};
 var errMsg = '';
 var request = require('request');
@@ -72,6 +71,7 @@ connect.setDefaultConfig = () => {
           enableLogging: false,
           lnServerUrl: "https://localhost:8080/v1",
           swapServerUrl: "http://localhost:8081/v1",
+          boltzServerUrl: "https://testnet.boltz.exchange/api/",
           fiatConversion: false
         }
       }
@@ -191,6 +191,7 @@ connect.validateNodeConfig = (config) => {
         common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
       }
       common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL ? process.env.SWAP_SERVER_URL : (node.Settings.swapServerUrl) ? node.Settings.swapServerUrl.trim() : '';
+      common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL ? process.env.BOLTZ_SERVER_URL : (node.Settings.boltzServerUrl) ? node.Settings.boltzServerUrl.trim() : '';
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
@@ -375,10 +376,6 @@ connect.getAllNodeAllChannelBackup = (node) => {
   })
 };
 
-connect.checkBoltzSwaps = (node) => {
-  boltzController.checkBoltzSwaps();
-}
-
 connect.setSelectedNode = (config) => {
   if(config.defaultNodeIndex) {
     common.selectedNode = common.findNode(config.defaultNodeIndex);
@@ -448,6 +445,9 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
       if (node.Settings.boltzSwapsPath) {
         newNode.Settings.boltzSwapsPath = node.Settings.boltzSwapsPath;
       }
+      if (node.Settings.boltzServerUrl) {
+        newNode.Settings.boltzServerUrl = node.Settings.boltzServerUrl;
+      }
       if (node.Settings.lnServerUrl) {
         newNode.Settings.lnServerUrl = node.Settings.lnServerUrl;
       } else if (node.Settings.lndServerUrl) {
@@ -515,6 +515,9 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
   }
   if (config.Settings.boltzSwapsPath) {
     newConfig.nodes[0].Settings.boltzSwapsPath = config.Settings.boltzSwapsPath;
+  }
+  if (config.Settings.boltzServerUrl) {
+    newConfig.nodes[0].Settings.boltzServerUrl = config.Settings.boltzServerUrl;
   }
   if (config.Settings.lnServerUrl) {
     newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl;
