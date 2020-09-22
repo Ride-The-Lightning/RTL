@@ -5,6 +5,7 @@ var options = {};
 var pendingInvoices = [];
 
 getReceivedPaymentInfo = (invoice) => {
+  logger.info({fileName: 'Invoice', msg: 'Invoice Received: ' + JSON.stringify(invoice)});
   let idx = -1;
   return new Promise(function(resolve, reject) {
     invoice.timestampStr =  (!invoice.timestamp) ? '' : common.convertTimestampToDate(invoice.timestamp);

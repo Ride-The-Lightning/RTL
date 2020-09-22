@@ -1,10 +1,32 @@
-.mat-column-id, .mat-column-recipientNodeId, .mat-column-paymentHash {
-  flex: 1 1 20%;
-  white-space: nowrap;
-  overflow: hidden;  
-  text-overflow: ellipsis;
+.mat-column-id, .mat-column-recipientNodeAlias,
+.mat-column-groupId, .mat-column-groupChannelAlias {
+  padding: 0 1rem;
+  flex: 0 0 25%;
+  width: 25%;
+  & .ellipsis-parent {
+    display: flex;
+  }
 }
 
 .mat-column-actions {
   min-height: 4.8rem;
+}
+
+.mat-column-groupAction {
+  min-height: 4.8rem;
+
+  & .btn-part-expand {
+    width: 9rem; 
+  }
+
+  & .btn-part-info {
+    margin-top: 0.5rem; 
+    width: 9rem; 
+  }
+}
+
+.part-row-span {
+  min-height: 4.2rem;
+  place-content: center flex-start;
+  align-items: center;  
 }

@@ -53,7 +53,8 @@ export const NODE_SETTINGS = {
     {id: 'PURPLE', name: 'Diogo'}, 
     {id: 'TEAL', name: 'My2Sats'},
     {id: 'INDIGO', name: 'RTL'},
-    {id: 'PINK', name: 'BK'}
+    {id: 'PINK', name: 'BK'},
+    {id: 'YELLOW', name: 'Gold'}
   ],
   modes: [{id: 'DAY', name: 'Day'}, {id: 'NIGHT', name: 'Night'}]
 };

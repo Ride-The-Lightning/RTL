@@ -8,7 +8,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { GetInfo, PayRequest, PaymentSent } from '../../../shared/models/eclModels';
+import { GetInfo, PayRequest, PaymentSent, PaymentSentPart } from '../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -47,6 +47,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
   public displayedColumns = [];
+  public partColumns = [];
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public flgSticky = false;
@@ -61,15 +62,19 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['firstPartTimestamp', 'actions'];
+      this.partColumns = ['groupTotal', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['firstPartTimestamp', 'recipientAmount', 'actions'];
+      this.partColumns = ['groupTotal', 'groupAmount', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientAmount', 'actions'];
+      this.partColumns = ['groupTotal', 'groupId', 'groupAmount', 'groupAction'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientNodeId', 'recipientAmount', 'actions'];
+      this.displayedColumns = ['firstPartTimestamp', 'id', 'recipientNodeAlias', 'recipientAmount', 'actions'];
+      this.partColumns = ['groupTotal', 'groupId', 'groupChannelAlias', 'groupAmount', 'groupAction'];
     }
   }
 
@@ -84,6 +89,18 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
+      if (rtlStore.payments.sent) {
+        rtlStore.payments.sent.map(sentPayment => {
+          let peerFound = rtlStore.peers.find(peer => peer.nodeId === sentPayment.recipientNodeId);
+          sentPayment.recipientNodeAlias = peerFound ? peerFound.alias : sentPayment.recipientNodeId;
+          if (sentPayment.parts) {
+            sentPayment.parts.map(part => {
+              let channelFound = rtlStore.activeChannels.find(channel => channel.channelId === part.toChannelId);
+              part.toChannelAlias = channelFound ? channelFound.alias : part.toChannelId;
+            });
+          }
+        });
+      }
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
       this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
@@ -222,20 +239,50 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  onPaymentClick(selPayment: PaymentSent, event: any) {
+  is_group(index: number, payment: PaymentSent) {
+    return payment.parts && payment.parts.length > 1;
+  }  
+
+  onPaymentClick(selPayment: PaymentSent) {
+    console.warn(selPayment);
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       payment: selPayment,
       component: ECLPaymentInformationComponent
     }}));
   }
 
+  onPartClick(selPart: PaymentSentPart, payment: PaymentSent) {
+    const reorderedPart = [
+      [{key: 'paymentHash', value: payment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'paymentPreimage', value: payment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING},
+        {key: 'timestampStr', value: selPart.timestampStr, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME}],
+      [{key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
+      ];
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      type: AlertTypeEnum.INFORMATION,
+      alertTitle: 'Payment Part Information',
+      message: reorderedPart
+    }}));
+  }
+  
   applyFilter(selFilter: string) {
     this.payments.filter = selFilter;
   }
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      this.commonService.downloadFile(this.payments.data, 'Payments');
+      let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
+      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
+        if (curr.parts) {
+          return acc.concat(curr.parts);
+        } else {
+          return acc.concat(curr);
+        }
+      }, []);      
+      this.commonService.downloadFile(flattenedPayments, 'Payments');      
     }
   }
 
