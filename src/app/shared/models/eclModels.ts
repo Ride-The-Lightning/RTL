@@ -40,6 +40,7 @@ export interface PaymentSent {
   paymentPreimage?: string;
   recipientAmount?: number;
   recipientNodeId?: string;
+  recipientNodeAlias?: string;
   firstPartTimestamp?: number;
   firstPartTimestampStr?: string;  
   parts: PaymentSentPart[];
@@ -50,6 +51,7 @@ export interface PaymentSentPart {
   amount?: number;
   feesPaid?: number;
   toChannelId?: string;
+  toChannelAlias?: string;
   timestamp?: number;
   timestampStr?: string;
 }

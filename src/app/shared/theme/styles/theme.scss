@@ -103,4 +103,20 @@
       @include theme-color($pink-night-theme);
     }
   }
+  &.yellow{
+    @import "../skins/yellow";
+    &.small {@include theme-font($small-typography);}
+    &.medium {@include theme-font($medium-typography);}
+    &.large {@include theme-font($large-typography);}
+    &.day {
+      @include angular-material-theme($yellow-day-theme);
+      @include theme-mode-light($yellow-day-theme);
+      @include theme-color($yellow-day-theme);
+    }
+    &.night {
+      @include angular-material-theme($yellow-night-theme);
+      @include theme-mode-dark($yellow-night-theme);
+      @include theme-color($yellow-night-theme);
+    }
+  }
 }
