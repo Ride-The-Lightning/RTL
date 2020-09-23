@@ -85,19 +85,15 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
     this.confirmFormGroup = this.formBuilder.group({}); 
     this.sendFundFormGroup.controls.selTransType.valueChanges.pipe(takeUntil(this.unSubs[0])).subscribe(transType => {
       if (transType === '1') {
-        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
         this.sendFundFormGroup.controls.transactionBlocks.setValidators([Validators.required]);
-        this.sendFundFormGroup.controls.transactionBlocks.setErrors(null);
-        this.sendFundFormGroup.controls.transactionFees.setValue(null);
-        this.sendFundFormGroup.controls.transactionFees.setValidators(null);
-        this.sendFundFormGroup.controls.transactionFees.setErrors(null);
-      } else {
         this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
-        this.sendFundFormGroup.controls.transactionBlocks.setValidators(null);
-        this.sendFundFormGroup.controls.transactionBlocks.setErrors(null);
+        this.sendFundFormGroup.controls.transactionFees.setValidators(null);
         this.sendFundFormGroup.controls.transactionFees.setValue(null);
+      } else {
+        this.sendFundFormGroup.controls.transactionBlocks.setValidators(null);
+        this.sendFundFormGroup.controls.transactionBlocks.setValue(null);
         this.sendFundFormGroup.controls.transactionFees.setValidators([Validators.required]);
-        this.sendFundFormGroup.controls.transactionFees.setErrors(null);
+        this.sendFundFormGroup.controls.transactionFees.setValue(null);
       }
     });
     this.store.select('root')
