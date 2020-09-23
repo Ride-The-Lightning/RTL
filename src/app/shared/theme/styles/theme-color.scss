@@ -211,15 +211,28 @@
     }
   }
 
+  .mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: 1px;
+  }
+
+  .mat-badge-medium.mat-badge-after .mat-badge-content {
+    margin-left: 0.4rem;
+    right: auto;
+  }
+  
   .tab-badge {
     & .mat-badge-content {
-      width: $dot-size * 1.5;
-      height: $dot-size * 1.5;
-      border-radius: $dot-size * 1.5;
-      line-height: $dot-size * 1.5;
-      margin-top: 1.2rem;
+      width: auto;
+      min-width: $badge-size;
+      height: $badge-size;
+      line-height: $badge-size;
+      border-radius: $badge-size * 1.2;
+      margin: auto;
+      padding: 0.5rem;
       font-size: 80%;
       font-weight: 500;
+      overflow: visible;
+      text-overflow: inherit;
     }
   }
 
