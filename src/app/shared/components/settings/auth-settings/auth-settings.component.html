@@ -1,42 +1,39 @@
-<div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
-  <form (ngSubmit)="onChangePassword()" fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #authForm="ngForm">
-    <div fxFlex="100">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="overflow-x-hidden">
+  <form (ngSubmit)="onChangePassword()" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="page-sub-title-container mt-1" #authForm="ngForm">
+    <div fxLayout="row" fxLayoutAlign="start start" class="mb-2">
       <fa-icon [icon]="faUserLock" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Password</span>
     </div>
-    <div fxLayout="row">
-      <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxLayoutAlign="space-between stretch">
-        <mat-form-field>
-          <input autoFocus matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="4" required>
-          <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
-        </mat-form-field>
-        <mat-divider [inset]="true"></mat-divider>
-        <mat-form-field>
-          <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="5" required>
-          <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="6" required>
-          <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
-        </mat-form-field>
-      </div>
+    <mat-form-field>
+      <input autoFocus matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="4" required>
+      <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="5" required>
+      <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="6" required>
+      <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
+      <button mat-flat-button color="primary" tabindex="8" type="submit">Change Password</button>
     </div>
-    <div fxLayout="row">
-      <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
-        <button mat-flat-button color="primary" tabindex="8" type="submit">Change Password</button>
-      </div> 
-    </div> 
   </form>
-  <mat-divider class="my-2" [inset]="true"></mat-divider>
-  <div fxFlex="100" class="mb-1 settings-container page-sub-title-container mt-1">
-    <fa-icon [icon]="faUserClock" class="page-title-img mr-1"></fa-icon>
-    <span class="page-title">Two Factor Authentication</span>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="end stretch" class="my-2">
+    <mat-divider [inset]="true"></mat-divider>
   </div>
-  <div fxFlex="100" class="w-100 alert alert-info">
-    <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
-    <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
-  </div>
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
-    <button mat-flat-button color="primary" tabindex="3" (click)="on2FAuth()">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+    <div class="mb-1 settings-container page-sub-title-container mt-1">
+      <fa-icon [icon]="faUserClock" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Two Factor Authentication</span>
+    </div>
+    <div class="alert alert-info">
+      <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
+      <span>Protect your account from unauthorized access by requiring a second authentication method in addition to your password.</span>
+    </div>
+    <div class="mt-1">
+      <button mat-flat-button color="primary" tabindex="3" (click)="on2FAuth()">{{appConfig.enable2FA ? 'Disable 2FA' : 'Enable 2FA'}}</button>
+    </div>
   </div>
 </div>
