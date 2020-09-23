@@ -23,9 +23,16 @@
         <mat-tab label="Send">
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
             <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal()">Send Funds</button>
+              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal(false)">Send Funds</button>
             </div>  
           </div>          
+        </mat-tab>
+        <mat-tab label="Sweep All">
+          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+            <div fxLayout="row">
+              <button mat-flat-button color="primary" type="button" tabindex="3" (click)="openSendFundsModal(true)">Sweep All</button>
+            </div>
+          </div>
         </mat-tab>
       </mat-tab-group>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
