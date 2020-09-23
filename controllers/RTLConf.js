@@ -204,7 +204,10 @@ exports.getFile = (req, res, next) => {
   logger.info({fileName: 'Conf', msg: 'Channel Point: ' + req.query.channel + ', File Path: ' + file});
   fs.readFile(file, 'utf8', function(err, data) {
     if (err) {
-      logger.error({fileName: 'Conf', lineNum: 207, msg: 'Reading File Failed!'});
+      logger.error({fileName: 'Conf', lineNum: 207, msg: 'Reading File Failed!' + JSON.stringify(err)});
+      if (err.code && err.code === 'ENOENT') {
+        err.code = 'Backup File Not Found!';
+      }
       res.status(500).json({
         message: "Reading File Failed!",
         error: err
