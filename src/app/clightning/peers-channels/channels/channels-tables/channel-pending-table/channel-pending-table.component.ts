@@ -2,19 +2,20 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
-
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
+
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
+import * as CLActions from '../../../../store/cl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
@@ -95,6 +96,24 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       showCopy: true,
       component: CLChannelInformationComponent
     }}));
+  }
+
+  onChannelClose(channelToClose: Channel) {
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Close Channel',
+      titleMessage: 'Closing channel: ' + channelToClose.channel_id,
+      noBtnText: 'Cancel',
+      yesBtnText: 'Close Channel'
+    }}));
+    this.rtlEffects.closeConfirm
+    .pipe(takeUntil(this.unSubs[3]))
+    .subscribe(confirmRes => {
+      if (confirmRes) {
+        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, timeoutSec: 10}));
+      }
+    });
   }
 
   loadChannelsTable(mychannels) {
