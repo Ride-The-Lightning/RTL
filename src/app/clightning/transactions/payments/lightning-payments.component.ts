@@ -203,7 +203,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.msatoshi) {
-          this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+          this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[1]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {
