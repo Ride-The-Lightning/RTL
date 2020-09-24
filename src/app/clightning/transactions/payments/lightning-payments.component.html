@@ -78,7 +78,7 @@
               Total Attempts: {{payment?.total_parts}}
             </span>
             <ng-container *ngIf="payment.is_expanded">
-              <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
+              <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span pl-3">
                 <span *ngIf="mpp.status === 'complete'" class="dot green mt-0" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="mpp.status !== 'complete'" class="dot yellow mt-0" matTooltip="Incomplete/Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 {{mpp.created_at_str}}
