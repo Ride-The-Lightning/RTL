@@ -9,7 +9,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { GetInfo, Payment, PayRequest, Channel, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
+import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -261,6 +261,22 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
+    if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
+      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
+      this.lndEffects.setDecodedPayment
+      .pipe(take(1))
+      .subscribe(decodedPayment => {
+        this.showHTLCView(selHtlc, selPayment, decodedPayment);
+      }, (error) => {
+        this.showHTLCView(selHtlc, selPayment, null);
+      });
+    } else {
+      this.showHTLCView(selHtlc, selPayment, null);
+    }
+  }
+
+  showHTLCView(selHtlc: PaymentHTLC, selPayment: Payment, decodedPayment?: PayRequest) {
     const reorderedHTLC = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
@@ -273,6 +289,9 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
         {key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER}],
       [{key: 'hops', value: this.getHopDetails(selHtlc.route.hops), title: 'Hops', width: 100, type: DataTypeEnum.ARRAY}]
     ];
+    if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
+      reorderedHTLC.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+    }
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'HTLC Information',
@@ -282,6 +301,22 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onPaymentClick(selPayment: Payment) {
+    if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
+      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
+      this.lndEffects.setDecodedPayment
+      .pipe(take(1))
+      .subscribe(decodedPayment => {
+        this.showPaymentView(selPayment, decodedPayment);
+      }, (error) => {
+        this.showPaymentView(selPayment, null);
+      });
+    } else {
+      this.showPaymentView(selPayment, null);
+    }
+  }
+
+  showPaymentView(selPayment: Payment, decodedPayment?: PayRequest) {
     const reorderedPayment = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
@@ -291,6 +326,9 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
+    if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
+      reorderedPayment.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+    }
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
