@@ -35,7 +35,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecodedHint = '';
   public showAdvanced = false;
   public selActiveChannel: Channel = {};
-  public activeChannels = {};
+  public activeChannels = [];
+  public filteredMinAmtActvChannels = [];
   public feeLimit = null;
   public selFeeLimitType = FEE_LIMIT_TYPES[0];
   public feeLimitTypes = FEE_LIMIT_TYPES;
@@ -51,6 +52,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.selNode = rtlStore.nodeSettings;
       this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
+      this.filteredMinAmtActvChannels = this.activeChannels;
       this.logger.info(rtlStore);
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
@@ -84,12 +86,14 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
       this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+        this.selActiveChannel = {};
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
           this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
         }
         if(this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
           this.zeroAmtInvoice = false;
+          this.filteredMinAmtActvChannels = this.activeChannels.filter(actvChannel => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
           if(this.selNode.fiatConversion) {
             this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
@@ -101,6 +105,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           }
         } else {
           this.zeroAmtInvoice = true;
+          this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
       });
@@ -139,11 +144,13 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
+        this.selActiveChannel = {};
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
           this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
         }
         if(this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
           this.zeroAmtInvoice = false;
+          this.filteredMinAmtActvChannels = this.activeChannels.filter(actvChannel => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
           if(this.selNode.fiatConversion) {
             this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
@@ -155,6 +162,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           }
         } else {
           this.zeroAmtInvoice = true;
+          this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
       });
@@ -173,6 +181,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     this.paymentDecoded = {};
     this.paymentRequest = '';
     this.selActiveChannel = null;
+    this.filteredMinAmtActvChannels = this.activeChannels;
     this.feeLimit = null;
     this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     this.advancedTitle = 'Advanced Options';

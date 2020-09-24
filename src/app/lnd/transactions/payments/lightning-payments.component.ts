@@ -35,7 +35,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class LightningPaymentsComponent implements OnInit, OnDestroy {
   @Input() showDetails = true;
-  @ViewChild('sendPaymentForm', { static: true }) form;
+  @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public faHistory = faHistory;
@@ -52,12 +52,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
   public paymentDecodedHint = '';
-  public showAdvanced = false;
-  public selActiveChannel: Channel = {};
-  public activeChannels = {};
-  public feeLimit = null;
-  public selFeeLimitType = FEE_LIMIT_TYPES[0];
-  public feeLimitTypes = FEE_LIMIT_TYPES;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -98,7 +92,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
-      this.activeChannels = rtlStore.allChannels.filter(channel => channel.active);
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
       this.payments = (rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
       this.payments.data = this.paymentJSONArr;
@@ -173,7 +166,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
+            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, fromDialog: false}));
             this.resetData();
           }
         });
@@ -199,7 +192,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: false}));
+          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, fromDialog: false}));
           this.resetData();
         }
       });
@@ -240,15 +233,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onShowAdvanced() {
-    this.showAdvanced = !this.showAdvanced;
-    if (!this.showAdvanced) {
-      this.selActiveChannel = null;
-      this.feeLimit = null;
-      this.selFeeLimitType = FEE_LIMIT_TYPES[0];
-    }
-  }
-
   is_group(index: number, payment: Payment) {
     return payment.htlcs && payment.htlcs.length > 1;
   }  
@@ -256,9 +240,6 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   resetData() {
     this.paymentDecoded = {};
     this.paymentRequest = '';
-    this.selActiveChannel = null;
-    this.feeLimit = null;
-    this.selFeeLimitType = FEE_LIMIT_TYPES[0];
     this.form.resetForm();
   }
 
