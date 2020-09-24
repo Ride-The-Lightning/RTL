@@ -220,7 +220,7 @@ export class ECLEffects implements OnDestroy {
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? (postRes.filter(peer => peer.state !== 'DISCONNECTED')) : []));
+            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? postRes : []));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
               payload: { peer: postRes[0] }

@@ -103,6 +103,11 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       }
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
       this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
+      // if(this.paymentJSONArr[0] && this.paymentJSONArr[0].parts) {
+      //   this.paymentJSONArr[0].parts.push({
+      //     id: 'ID', amount: 100, feesPaid: 0, toChannelId: 'toChannel', toChannelAlias: 'Alias', timestampStr: 'str'
+      //   });
+      // }
       this.payments.data = this.paymentJSONArr;
       this.payments.sort = this.sort;
       this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];

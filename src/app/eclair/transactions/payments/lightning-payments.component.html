@@ -76,7 +76,7 @@
             Total Attempts: {{payment?.parts?.length}}
           </span>
           <ng-container *ngIf="payment.is_expanded">
-            <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
+            <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span pl-3">
               {{part.timestampStr}}
             </span>
           </ng-container>
