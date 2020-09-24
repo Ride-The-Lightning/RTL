@@ -57,7 +57,7 @@
             <mat-select placeholder="Actions" tabindex="4" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>
-              <mat-option (click)="onChannelClose(channel)">Close Channel</mat-option>
+              <mat-option (click)="onChannelClose(channel)" *ngIf="!channel.connected && channel.state === 'CHANNELD_NORMAL'">Close Channel</mat-option>
             </mat-select>
           </div>
         </td>
