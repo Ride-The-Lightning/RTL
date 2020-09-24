@@ -111,7 +111,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, timeoutSec: 10}));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, timeoutSec: 1}));
       }
     });
   }
