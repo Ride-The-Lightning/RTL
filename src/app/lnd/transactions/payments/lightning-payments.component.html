@@ -78,7 +78,7 @@
               Total Attempts: {{payment?.htlcs?.length}}
             </span>
             <ng-container *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
                 <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 {{htlc.attempt_time_str}}

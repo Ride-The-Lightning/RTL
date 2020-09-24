@@ -104,6 +104,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
             .subscribe(data => {
+              console.warn(data);
               if(this.selNode.fiatConversion) {
                 this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
               } else {

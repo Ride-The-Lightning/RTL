@@ -14,6 +14,7 @@
         </mat-form-field>
         <mat-form-field fxFlex="30">
           <input matInput [(ngModel)]="transaction.satoshis" placeholder="Amount" name="amount" [type]="flgUseAllBalance ? 'text' : 'number'" step="100" min="0" tabindex="2" required #amount="ngModel" [disabled]="flgUseAllBalance">
+          <mat-hint *ngIf="flgUseAllBalance">Amount replaced by UTXO balance</mat-hint>
           <span matSuffix> {{selAmountUnit}} </span>
           <mat-error *ngIf="!transaction.satoshis">Amount is required.</mat-error>
         </mat-form-field>
