@@ -249,7 +249,6 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
   }  
 
   onPaymentClick(selPayment: PaymentSent) {
-    console.warn(selPayment);
     this.store.dispatch(new RTLActions.OpenAlert({ data: { 
       payment: selPayment,
       component: ECLPaymentInformationComponent

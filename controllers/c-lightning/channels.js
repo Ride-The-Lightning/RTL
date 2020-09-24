@@ -100,6 +100,7 @@ exports.setChannelFee = (req, res, next) => {
 }
 
 exports.closeChannel = (req, res, next) => {
+  req.setTimeout(60000 * 10); // timeout 10 mins
   options = common.getOptions();
   const unilateralTimeoutQuery = req.query.unilateralTimeout ? '?unilateralTimeout=' + req.query.unilateralTimeout : '';
   options.url = common.getSelLNServerUrl() + '/v1/channel/closeChannel/' + req.params.channelId + unilateralTimeoutQuery;

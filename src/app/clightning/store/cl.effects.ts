@@ -330,7 +330,7 @@ export class CLEffects implements OnDestroy {
   closeChannelCL = this.actions$.pipe(
     ofType(CLActions.CLOSE_CHANNEL_CL),
     mergeMap((action: CLActions.CloseChannel) => {
-      const queryParam = action.payload.timeoutSec ? '?unilateralTimeout =' + action.payload.timeoutSec : '';
+      const queryParam = action.payload.timeoutSec ? '?unilateralTimeout=' + action.payload.timeoutSec : '';
       return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '/' + action.payload.channelId + queryParam)
         .pipe(
           map((postRes: any) => {
