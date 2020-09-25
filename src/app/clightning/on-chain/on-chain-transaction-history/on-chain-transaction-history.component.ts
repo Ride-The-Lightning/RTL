@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -28,7 +28,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  faHistory = faHistory;
+  faMoneyBillWave = faMoneyBillWave;
   public displayedColumns = [];
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];

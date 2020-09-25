@@ -459,6 +459,15 @@ export interface Transaction {
   amount?: string;
 }
 
+export interface UTXO {
+  address_type?: string;
+  address?: string;
+  amount_sat?: string;
+  pk_script?: string;
+  outpoint?: string;
+  confirmations?: string;
+}
+
 export interface SwitchReq {
   num_max_events?: number;
   index_offset?: number;

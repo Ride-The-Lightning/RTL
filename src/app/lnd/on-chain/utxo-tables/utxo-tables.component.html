@@ -1,0 +1,16 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="bordered-box">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{utxos?.length}}" matBadgeOverlap="false" class="tab-badge">UTXOs</span>
+      </ng-template>
+      <rtl-on-chain-utxos [utxos]="utxos" [errorLoading]="flgLoading[0]" fxLayout="row" fxFlex="100"></rtl-on-chain-utxos>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{transactions?.length}}" matBadgeOverlap="false" class="tab-badge">Transactions</span>
+      </ng-template>
+      <rtl-on-chain-transaction-history [transactions]="transactions" [errorLoading]="flgLoading[1]" fxLayout="row" fxFlex="100"></rtl-on-chain-transaction-history>
+    </mat-tab>
+  </mat-tab-group>
+</div>

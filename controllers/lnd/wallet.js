@@ -117,3 +117,25 @@ exports.updateSelNodeOptions = (req, res, next) => {
   let response = common.updateSelectedNodeOptions();
   res.status(response.status).json({updateMessage: response.message});
 }
+
+exports.getUTXOs = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos';
+  request.post(options).then((body) => {
+    res.status(200).json(body.utxos ? body.utxos : []);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Wallet', lineNum: 143, msg: 'UTXOs Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "UTXO list failed!",
+      error: err.error
+    });
+  });
+}

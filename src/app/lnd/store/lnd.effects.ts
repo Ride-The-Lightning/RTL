@@ -12,7 +12,7 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
+import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
@@ -584,6 +584,26 @@ export class LNDEffects implements OnDestroy {
     }),
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
+
+  @Effect()
+  utxosFetch = this.actions$.pipe(
+    ofType(LNDActions.FETCH_UTXOS_LND),
+    mergeMap((action: LNDActions.FetchUTXOs) => {
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchUTXOs'));
+      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs');
+    }),
+    map((utxos) => {
+      this.logger.info(utxos);
+      return {
+        type: LNDActions.SET_UTXOS_LND,
+        payload: (utxos && utxos.length > 0) ? utxos : []
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchUTXOs', 'Fetching UTXOs Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));

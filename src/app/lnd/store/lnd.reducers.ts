@@ -2,7 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus, UTXO
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -30,6 +30,7 @@ export interface LNDState {
   totalRemoteBalance: number;
   totalInvoices: number;
   transactions: Transaction[];
+  utxos: UTXO[];
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
@@ -58,6 +59,7 @@ export const initLNDState: LNDState = {
   totalRemoteBalance: -1,
   totalInvoices: -1,
   transactions: [],
+  utxos: [],
   payments: [],
   invoices: {invoices: []},
   forwardingHistory: {},
@@ -231,6 +233,11 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         transactions: action.payload
+      };
+    case LNDActions.SET_UTXOS_LND:
+      return {
+        ...state,
+        utxos: action.payload
       };
     case LNDActions.SET_PAYMENTS_LND:
       newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
