@@ -249,29 +249,63 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
   }  
 
   onPaymentClick(selPayment: PaymentSent) {
-    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+    if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Sent Payment Information...'));
+      this.store.dispatch(new ECLActions.GetSentPaymentInformation({paymentHash: selPayment.paymentHash}));
+      this.eclEffects.setSentPaymentInformation.pipe(take(1))
+      .subscribe(sentPaymentInfo => {
+        this.showPaymentView(selPayment, sentPaymentInfo);
+      }, (error) => {
+        this.showPaymentView(selPayment, []);
+      });
+    } else {
+      this.showPaymentView(selPayment, []);
+    }
+  }
+
+  showPaymentView(selPayment: PaymentSent, sentPaymentInfo?: any[]) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      sentPaymentInfo: sentPaymentInfo, 
       payment: selPayment,
       component: ECLPaymentInformationComponent
     }}));
   }
 
-  onPartClick(selPart: PaymentSentPart, payment: PaymentSent) {
+  onPartClick(selPart: PaymentSentPart, selPayment: PaymentSent) {
+    if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Sent Payment Information...'));
+      this.store.dispatch(new ECLActions.GetSentPaymentInformation({paymentHash: selPayment.paymentHash}));
+      this.eclEffects.setSentPaymentInformation.pipe(take(1))
+      .subscribe(sentPaymentInfo => {
+        this.showPartView(selPart, selPayment, sentPaymentInfo);
+      }, (error) => {
+        this.showPartView(selPart, selPayment, []);
+      });
+    } else {
+      this.showPartView(selPart, selPayment, []);
+    }
+  }
+  
+  showPartView(selPart: PaymentSentPart, selPayment: PaymentSent, sentPaymentInfo?: any[]) {
     const reorderedPart = [
-      [{key: 'paymentHash', value: payment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'paymentPreimage', value: payment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'paymentHash', value: selPayment.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING},
         {key: 'timestampStr', value: selPart.timestampStr, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
-      ];
+    ];
+    if (sentPaymentInfo.length > 0 && sentPaymentInfo[0].paymentRequest && sentPaymentInfo[0].paymentRequest.description && sentPaymentInfo[0].paymentRequest.description !== '') {
+      reorderedPart.splice(3, 0, [{key: 'description', value: sentPaymentInfo[0].paymentRequest.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+    }
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Part Information',
       message: reorderedPart
     }}));
   }
-  
+
   applyFilter(selFilter: string) {
     this.payments.filter = selFilter;
   }
