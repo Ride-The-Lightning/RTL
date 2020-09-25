@@ -64,13 +64,13 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['timestamp', 'amount', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestamp', 'amount', 'amountSettled', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'receivedAt', 'description', 'amount', 'actions'];
+      this.displayedColumns = ['timestamp', 'receivedAt', 'description', 'amount', 'amountSettled', 'actions'];
     }
   }
 
