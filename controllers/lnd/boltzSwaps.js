@@ -57,6 +57,11 @@ function createBoltzSwap(callback, swap) {
     if (err) throw err;
     createSwapEventStream(swapToWrite);
     callback([swapToWrite]);
+    if(swap.type === 'WITHDRAWAL') {
+      sendPayment(swap);
+    } else {
+      sendCoins(swap);
+    }
   });
 }
 
@@ -68,6 +73,71 @@ function updateBoltzSwap(swap) {
     newSwap.lastUpdateTime = new Date().toLocaleString();
     fs.writeFile(filePath, JSON.stringify(newSwap), 'utf8', (err) => {
       if (err) throw err;
+    });
+  });
+}
+
+function sendPayment(swap) {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
+  options.form = {
+    payment_request: swap.invoice,
+  };
+  if(swap.outgoingChannel) {
+    options.form.outgoingChannel = swap.outgoingChannel;
+  }
+  options.form = JSON.stringify(options.form);
+  logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
+    if(!body || body.error) {
+      logger.error({fileName: 'Channels', lineNum: 200, msg: 'Send Payment  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      updateBoltzSwap({
+        id: swap.id,
+        state: 'Failed'
+      });
+    } else if (body.payment_error) {
+      logger.error({fileName: 'Channels', lineNum: 206, msg: 'Send Payment Error: ' + JSON.stringify(body.payment_error)});
+      updateBoltzSwap({
+        id: swap.id,
+        state: 'Failed'
+      });
+    }
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    logger.error({fileName: 'Channels', lineNum: 222, msg: 'Send Payment Error: ' + JSON.stringify(err)});
+    updateBoltzSwap({
+      id: swap.id,
+      state: 'Failed'
+    });
+  });
+}
+
+function sendCoins(swap) {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v1/transactions';
+  options.form = { 
+    amount: swap.expectedAmount,
+    addr: swap.address
+  };
+  options.form = JSON.stringify(options.form);
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Transactions', msg: 'Transaction Post Response: ' + JSON.stringify(body)});
+    if(!body || body.error) {
+      logger.error({fileName: 'Transactions', lineNum: 60, msg: 'Post Transaction Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      updateBoltzSwap({
+        id: swap.id,
+        state: 'Failed'
+      });
+    }
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    logger.error({fileName: 'Transactions', lineNum: 76, msg: 'Transaction Post Error: ' + JSON.stringify(err)});
+    updateBoltzSwap({
+      id: swap.id,
+      state: 'Failed'
     });
   });
 }

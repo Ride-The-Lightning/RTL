@@ -166,12 +166,6 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
               htlc_address: swapStatus.address
             };
             this.store.dispatch(new LNDActions.FetchBoltzSwaps());
-  
-            const paymentBody = {
-              address: swapStatus.address,
-              amount: swapStatus.expectedAmount
-            };
-            this.store.dispatch(new LNDActions.SetChannelTransaction(paymentBody));
           })
         });
       } else {
@@ -197,12 +191,18 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
       swapInfo,
       paymentRequest: null
     }).subscribe((swapStatus: any) => {
-      console.log('swapStatus', swapStatus);
+      if(this.channel && this.channel.chan_id) {
+        swapInfo = {...swapInfo, outgoingChannel: this.channel.chan_id};
+      }
       this.saveSwapFile({
         swapStatus,
         costServer: this.quote.swap_fee_sat,
         costOnchain: this.quote.htlc_publish_fee_sat,
-        swapInfo: {...swapInfo, newAddress, fast: this.inputFormGroup.controls.fast.value},
+        swapInfo: {
+          ...swapInfo,
+          newAddress,
+          fast: this.inputFormGroup.controls.fast.value
+        },
       });
       this.loopStatus = {
         id_bytes: swapStatus.id,
@@ -210,27 +210,6 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
       };
       this.flgEditable = true;
       this.store.dispatch(new LNDActions.FetchBoltzSwaps());
-        
-      const paymentBody = {
-        fromDialog: true,
-        paymentReq: swapStatus.invoice,
-        paymentDecoded: {},
-        zeroAmtInvoice: false,
-        allowSelfPayment: true
-      }
-      if(this.channel && this.channel.chan_id) {
-        paymentBody['outgoingChannel'] = this.channel;
-      }
-      this.store.dispatch(new LNDActions.SendPayment(paymentBody));
-      this.actions$.pipe(takeUntil(this.unSubs[5]),
-      filter((action) => action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
-      .subscribe((action: LNDActions.SendPaymentStatus) => {
-        const error = action.payload.error;
-        if(error && error.error !== 'payment is in transition') {
-          this.loopStatus = { error: error.error };
-          // TODO Update swap file with Failed Status
-        }
-      });
     }, (err) => {
       this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
       this.flgEditable = true;
