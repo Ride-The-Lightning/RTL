@@ -193,6 +193,7 @@ export interface Invoice {
   paymentHash?: string;
   expiry?: number;
   amount?: number;
+  amountSettled?: number;
   features?: { activated: Feature[], unknown: Feature[] }
 }
 
