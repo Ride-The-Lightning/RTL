@@ -47,10 +47,17 @@
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
+        <div fxLayout="row" *ngIf="description">
+          <div fxFlex="100">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Description</h4>
+            <span class="foreground-secondary-text">{{description}}</span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1" *ngIf="description"></mat-divider>   
         <div fxLayout="row">
           <div fxFlex="100">
             <mat-accordion>
-              <mat-expansion-panel (opened)="onExpansionOpen(true)" (closed)="onExpansionOpen(false)" class="flat-expansion-panel my-1" *ngFor="let part of payment.parts; index as i">
+              <mat-expansion-panel [expanded]="expansionOpen" (opened)="onExpansionOpen(true)" (closed)="onExpansionOpen(false)" class="flat-expansion-panel my-1" *ngFor="let part of payment.parts; index as i">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <h4 fxFlex="30" fxLayoutAlign="start" class="font-bold-500">Part {{i + 1}}</h4>
@@ -89,7 +96,7 @@
         </div>
       </div>
     </mat-card-content>
-    <div *ngIf="expansionOpen || (payment.parts && payment.parts.length > 2)" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container">
+    <div fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container">
       <button mat-mini-fab aria-label="Scroll Down" fxLayoutAlign="center center" (click)="onScrollDown()">
         <mat-icon fxLayoutAlign="center center">arrow_downward</mat-icon>
       </button>

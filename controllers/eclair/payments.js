@@ -105,3 +105,33 @@ exports.queryPaymentRoute = (req, res, next) => {
     });
   });
 };
+
+
+exports.getSentPaymentInformation = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/getsentinfo';
+  options.form = { paymentHash: req.params.paymentHash };
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Payments', msg: 'Payment Sent Information Received: ' + JSON.stringify(body)});
+    body.forEach(sentPayment => {
+      sentPayment.createdAtStr =  (!sentPayment.createdAt) ? '' : common.convertTimestampToDate(sentPayment.createdAt);
+      if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount/1000); }
+      if (sentPayment.recipientAmount) { sentPayment.recipientAmount = Math.round(sentPayment.recipientAmount/1000); }
+    });
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers.authorization) {
+      delete err.options.headers.authorization;
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+      delete err.response.request.headers.authorization;
+    }
+    logger.error({fileName: 'Payments', lineNum: 131, msg: 'Payment Sent Information Error: ' + JSON.stringify(err)});
+    return res.status(err.statusCode ? err.statusCode : 500).json({
+      message: "Payment Sent Information Failed!",
+      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+    });
+  });
+};
