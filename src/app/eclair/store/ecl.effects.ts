@@ -409,6 +409,38 @@ export class ECLEffects implements OnDestroy {
   );
 
   @Effect()
+  fetchSentPaymentInformation = this.actions$.pipe(
+    ofType(ECLActions.GET_SENT_PAYMENT_INFO_ECL),
+    mergeMap((action: ECLActions.GetSentPaymentInformation) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('SentPaymentInformation'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/getsentinfo/' + action.payload.paymentHash)
+        .pipe(
+          map((sentPaymentInfo) => {
+            this.logger.info(sentPaymentInfo);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            return {
+              type: ECLActions.SET_SENT_PAYMENT_INFO_ECL,
+              payload: sentPaymentInfo ? sentPaymentInfo : []
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('SentPaymentInformation', 'Sent Payment Information Failed', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+    })
+  );
+
+  @Effect({ dispatch: false })
+  setSentPaymentInformation = this.actions$.pipe(
+    ofType(ECLActions.SET_SENT_PAYMENT_INFO_ECL),
+    map((action: ECLActions.SetSentPaymentInformation) => {
+      this.logger.info(action.payload);
+      return action.payload;
+    })
+  );
+
+  @Effect()
   sendPayment = this.actions$.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
