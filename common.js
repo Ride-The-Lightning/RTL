@@ -1,7 +1,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
-var ini = require('ini');
 var common = {};
 
 common.rtl_conf_file_path = '';
@@ -17,8 +16,12 @@ common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
 
-common.getSelSwapServerUrl = () => {
-  return common.selectedNode.swap_server_url;
+common.getSwapServerOptions = () => {
+  return {
+    url: common.selectedNode.swap_server_url,
+    rejectUnauthorized: false,
+    json: true
+  };
 };
 
 common.getSelLNServerUrl = () => {

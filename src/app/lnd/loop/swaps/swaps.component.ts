@@ -38,6 +38,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   public storedSwaps: SwapStatus[] = [];
   public filteredSwaps: SwapStatus[] = [];
   public flgLoading: Array<Boolean | 'error'> = [true];
+  public emptyTableMessage = 'No swaps available.';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -68,7 +69,10 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchSwaps') { this.flgLoading[0] = 'error'; }
+        if (effectsErr.action === 'FetchSwaps') { 
+          this.flgLoading[0] = 'error';
+          this.emptyTableMessage = 'ERROR: ' + effectsErr.message;
+        }
       });
       if (rtlStore.loopSwaps) {
         this.storedSwaps = rtlStore.loopSwaps;
@@ -76,7 +80,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
         this.loadSwapsTable(this.filteredSwaps);
       }
       if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.transactions) ? false : true;
+        this.flgLoading[0] = (rtlStore.loopSwaps) ? false : true;
       }
       this.logger.info(rtlStore);
     });
@@ -84,7 +88,8 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-    this.swapCaption = (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out'
+    this.swapCaption = (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
+    this.emptyTableMessage = 'No ' + this.swapCaption.toLowerCase() + ' swaps available.';
     this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
     this.loadSwapsTable(this.filteredSwaps);
   }

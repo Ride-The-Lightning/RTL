@@ -190,6 +190,16 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.dialogRef.close(false);
   }
 
+  onRestart() {
+    this.flgInvoiceGenerated=false;
+    this.flgPaymentSent=false;
+    this.flgEditable=true;
+    this.stepper.reset();
+    this.inputFormGroup.reset();
+    this.feeFormGroup.reset();
+    this.statusFormGroup.reset();
+  }
+
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
       completeSub.next();

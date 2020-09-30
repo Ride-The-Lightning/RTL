@@ -106,7 +106,7 @@
               </div>
               <h4 *ngIf="flgInvoiceGenerated && flgPaymentSent" fxLayoutAlign="start" class="font-bold-500 mt-1">{{paymentStatus && paymentStatus.payment_hash ? 'Rebalance Successful.' : 'Rebalance Failed.'}}</h4>
               <div class="mt-1" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="flgInvoiceGenerated=false;flgPaymentSent=false;stepper.reset()">Start Again</button>
+                <button *ngIf="paymentStatus && paymentStatus.error" mat-flat-button color="primary" tabindex="11" type="button" (click)="onRestart()">Start Again</button>
               </div>
             </form>
           </mat-step>
