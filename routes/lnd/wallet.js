@@ -5,6 +5,7 @@ const authCheck = require("../authCheck");
 
 router.get("/genseed/:passphrase?", authCheck, WalletController.genSeed);
 router.get("/updateSelNodeOptions", authCheck, WalletController.updateSelNodeOptions);
+router.get("/getUTXOs", authCheck, WalletController.getUTXOs);
 router.post("/:operation", authCheck, WalletController.operateWallet);
 
 module.exports = router;

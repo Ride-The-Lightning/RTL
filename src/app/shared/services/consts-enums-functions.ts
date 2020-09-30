@@ -119,6 +119,13 @@ export const CHANNEL_CLOSURE_TYPE = {
   ABANDONED: { name: 'Abandoned', tooltip: 'Channel abandoned by the local node' }
 }
 
+export const WALLET_ADDRESS_TYPE = {
+  WITNESS_PUBKEY_HASH: { name: 'Witness Pubkey Hash', tooltip: '' },
+  NESTED_PUBKEY_HASH: { name: 'Nested Pubkey Hash', tooltip: '' },
+  UNUSED_WITNESS_PUBKEY_HASH: { name: 'Unused Witness Pubkey Hash', tooltip: '' },
+  UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
+}
+
 export enum SwapStateEnum {
   INITIATED	= 'Initiated',
   PREIMAGE_REVEALED	= 'Preimage Revealed',
