@@ -44,13 +44,13 @@ export class OnChainUTXOsComponent implements OnChanges {
       this.displayedColumns = ['amount_sat', 'confirmations', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['address_type', 'address', 'amount_sat', 'actions'];
+      this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['address_type', 'address', 'amount_sat', 'confirmations', 'actions'];
+      this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'confirmations', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['address_type', 'address', 'amount_sat', 'confirmations', 'actions'];
+      this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'confirmations', 'actions'];
     }
   }
 
@@ -66,11 +66,12 @@ export class OnChainUTXOsComponent implements OnChanges {
 
   onUTXOClick(selUTXO: UTXO, event: any) {
     const reorderedUTXOs = [
+      [{key: 'txid', value: selUTXO.outpoint.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'output_index', value: selUTXO.outpoint.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER},
+        {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+        {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER}],
       [{key: 'address_type', value: this.addressType[selUTXO.address_type].name, title: 'Address Type', width: 34},
-      {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-      {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER}],
-      [{key: 'address', value: selUTXO.address, title: 'Address', width: 100}],
-      [{key: 'outpoint', value: selUTXO.outpoint.txid_str, title: 'Outpoint', width: 100, type: DataTypeEnum.STRING}],
+        {key: 'address', value: selUTXO.address, title: 'Address', width: 66}],
       [{key: 'pk_script', value: selUTXO.pk_script, title: 'PK Script', width: 100, type: DataTypeEnum.STRING}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
@@ -82,6 +83,12 @@ export class OnChainUTXOsComponent implements OnChanges {
 
   loadUTXOsTable(UTXOs) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
+    this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
+      const newUTXO = ((utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
+      + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes : '') + (utxo.address ? utxo.address : '') + (utxo.address_type ? utxo.address_type : '')
+      + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
+      return newUTXO.includes(fltr.toLowerCase());
+    };
     this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.listUTXOs.paginator = this.paginator;

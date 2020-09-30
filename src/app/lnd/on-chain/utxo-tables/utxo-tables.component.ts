@@ -17,6 +17,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class UTXOTablesComponent implements OnInit, OnDestroy {
   public transactions: Transaction[] = [];
   public utxos: UTXO[] = [];
+  public numUtxos = 0;
+  public numTransactions = 0;
   public flgLoading: Array<Boolean | 'error'> = [true, true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
@@ -36,11 +38,17 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
           this.flgLoading[1] = 'error';
         }
       });
-      this.utxos = rtlStore.utxos;
+      if (rtlStore.utxos && rtlStore.utxos.length > 0) {
+        this.utxos = rtlStore.utxos;
+        this.numUtxos = this.utxos.length;
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.utxos) ? false : true;
       }
-      this.transactions = rtlStore.transactions;
+      if (rtlStore.transactions && rtlStore.transactions.length > 0) {
+        this.transactions = rtlStore.transactions;
+        this.numTransactions = this.transactions.length;
+      }
       if (this.flgLoading[1] !== 'error') {
         this.flgLoading[1] = (rtlStore.transactions) ? false : true;
       }
