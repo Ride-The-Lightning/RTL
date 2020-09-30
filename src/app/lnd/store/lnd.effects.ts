@@ -1105,7 +1105,7 @@ export class LNDEffects implements OnDestroy {
   getLoopSwaps = this.actions$.pipe(
     ofType(LNDActions.FETCH_LOOP_SWAPS_LND),
     mergeMap((action: LNDActions.FetchLoopSwaps) => {
-      this.store.dispatch(new LNDActions.ClearEffectError('LoopSwaps'));
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchSwaps'));
       return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/swaps')
         .pipe(
           map((swaps: any) => {
@@ -1116,7 +1116,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('LoopSwaps', 'Fetching Swaps Failed.', err);
+            this.handleErrorWithoutAlert('FetchSwaps', 'Fetching Swaps Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
