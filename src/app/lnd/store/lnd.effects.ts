@@ -591,9 +591,10 @@ export class LNDEffects implements OnDestroy {
   @Effect()
   utxosFetch = this.actions$.pipe(
     ofType(LNDActions.FETCH_UTXOS_LND),
-    mergeMap((action: LNDActions.FetchUTXOs) => {
+    withLatestFrom(this.store.select('lnd')),
+    mergeMap(([action, lndData]: [LNDActions.FetchUTXOs, fromLNDReducers.LNDState]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchUTXOs'));
-      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs');
+      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs?max_confs=' + (lndData.information && lndData.information.block_height ? lndData.information.block_height : 1000000000));
     }),
     map((utxos) => {
       this.logger.info(utxos);

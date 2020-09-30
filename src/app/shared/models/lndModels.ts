@@ -464,7 +464,7 @@ export interface UTXO {
   address?: string;
   amount_sat?: string;
   pk_script?: string;
-  outpoint?: string;
+  outpoint?: {txid_bytes?: string; txid_str?: string; output_index?: number;};
   confirmations?: string;
 }
 

@@ -67,10 +67,10 @@ export class OnChainUTXOsComponent implements OnChanges {
   onUTXOClick(selUTXO: UTXO, event: any) {
     const reorderedUTXOs = [
       [{key: 'address_type', value: this.addressType[selUTXO.address_type].name, title: 'Address Type', width: 34},
-      {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.STRING},
-      {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.STRING}],
+      {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
+      {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER}],
       [{key: 'address', value: selUTXO.address, title: 'Address', width: 100}],
-      [{key: 'outpoint', value: selUTXO.outpoint, title: 'Outpoint', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'outpoint', value: selUTXO.outpoint.txid_str, title: 'Outpoint', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'pk_script', value: selUTXO.pk_script, title: 'PK Script', width: 100, type: DataTypeEnum.STRING}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {

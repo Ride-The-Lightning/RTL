@@ -120,7 +120,7 @@ exports.updateSelNodeOptions = (req, res, next) => {
 
 exports.getUTXOs = (req, res, next) => {
   options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos';
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
   request.post(options).then((body) => {
     res.status(200).json(body.utxos ? body.utxos : []);
   })
