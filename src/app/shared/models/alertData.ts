@@ -84,6 +84,7 @@ export interface ECLInvoiceInformation {
 }
 
 export interface ECLPaymentInformation {
+  sentPaymentInfo: any[];
   payment: PaymentSentECL;
   component?: any;
 }

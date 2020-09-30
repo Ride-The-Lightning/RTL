@@ -12,7 +12,9 @@ import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
-import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
+import { UTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
+import { OnChainUTXOsComponent } from './on-chain/utxo-tables/utxos/utxos.component';
+import { OnChainTransactionHistoryComponent } from './on-chain/utxo-tables/on-chain-transaction-history/on-chain-transaction-history.component';
 import { WalletComponent } from './wallet/wallet.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
@@ -78,6 +80,8 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     QueryRoutesComponent,
     OnChainReceiveComponent,
     OnChainComponent,
+    UTXOTablesComponent,
+    OnChainUTXOsComponent,
     OnChainTransactionHistoryComponent,
     ChannelsTablesComponent,
     ChannelOpenTableComponent,

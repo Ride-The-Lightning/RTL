@@ -16,15 +16,25 @@
           <qrcode [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
         <div fxLayout="row">
-          <div fxFlex="40">
-            <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested</h4>
             <span class="foreground-secondary-text">{{(invoice.amount || 0) | number}} Sats<ng-container *ngIf="!invoice.amount"> (zero amount) </ng-container></span>
           </div>
-          <div fxFlex="40">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Amount Settled</h4>
+            <span class="foreground-secondary-text">
+              <ng-container *ngIf="invoice.amountSettled">{{invoice.amountSettled | number}} Sats</ng-container>
+              <ng-container *ngIf="!invoice.amountSettled">-</ng-container>
+            </span>
+          </div>
+        </div>
+        <mat-divider class="w-100 my-1"></mat-divider>   
+        <div fxLayout="row">
+          <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
             <span class="overflow-wrap foreground-secondary-text">{{invoice.timestampStr}}</span>
           </div>
-          <div fxFlex="20">
+          <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Status</h4>
             <span class="overflow-wrap foreground-secondary-text">{{invoice.status | titlecase}}</span>
           </div>

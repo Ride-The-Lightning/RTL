@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, SwapStatus } from '../../shared/models/lndModels';
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, SwapStatus, UTXO } from '../../shared/models/lndModels';
   
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
@@ -49,6 +49,8 @@ export const SET_INVOICES_LND = 'SET_INVOICES_LND';
 export const SET_TOTAL_INVOICES_LND = 'SET_TOTAL_INVOICES_LND';
 export const FETCH_TRANSACTIONS_LND = 'FETCH_TRANSACTIONS_LND';
 export const SET_TRANSACTIONS_LND = 'SET_TRANSACTIONS_LND';
+export const FETCH_UTXOS_LND = 'FETCH_UTXOS_LND';
+export const SET_UTXOS_LND = 'SET_UTXOS_LND';
 export const FETCH_PAYMENTS_LND = 'FETCH_PAYMENTS_LND';
 export const SET_PAYMENTS_LND = 'SET_PAYMENTS_LND';
 export const DECODE_PAYMENT_LND = 'DECODE_PAYMENT_LND';
@@ -289,6 +291,15 @@ export class SetTransactions implements Action {
   constructor(public payload: Transaction[]) {}
 }
 
+export class FetchUTXOs implements Action {
+  readonly type = FETCH_UTXOS_LND;
+}
+
+export class SetUTXOs implements Action {
+  readonly type = SET_UTXOS_LND;
+  constructor(public payload: UTXO[]) {}
+}
+
 export class FetchPayments implements Action {
   readonly type = FETCH_PAYMENTS_LND;
 }
@@ -433,7 +444,7 @@ FetchAllChannels | SetAllChannels | FetchPendingChannels | SetPendingChannels | 
 SaveNewChannel | CloseChannel | RemoveChannel |
 BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
 RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
-FetchTransactions | SetTransactions |
+FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
 FetchInvoices | SetInvoices | SetTotalInvoices |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
 DecodePayment | SetDecodedPayment |

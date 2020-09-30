@@ -53,8 +53,15 @@
         </ng-container>
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-3"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let invoice" class="pr-3"><span fxLayoutAlign="end center"> {{invoice.amount | number:'1.0-0'}}
-            </span></td>
+          <td mat-cell *matCellDef="let invoice" class="pr-3">
+            <span fxLayoutAlign="end center"> {{invoice.amount ? (invoice.amount | number:'1.0-0') : '-'}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="amountSettled">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-3"> Amount Settled (Sats) </th>
+          <td mat-cell *matCellDef="let invoice" class="pr-3">
+            <span fxLayoutAlign="end center"> {{invoice.amountSettled ? (invoice.amountSettled | number:'1.0-0') : '-'}}</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
