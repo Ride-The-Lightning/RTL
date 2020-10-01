@@ -167,7 +167,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
       });
     }
-    console.warn(this.inputFormGroup);
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
   }

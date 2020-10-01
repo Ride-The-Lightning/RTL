@@ -511,12 +511,12 @@ export class LNDEffects implements OnDestroy {
               type: LNDActions.SET_PENDING_CHANNELS_LND,
               payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
             };
-          },
+          }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchChannels/pending', 'Fetching Pending Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
-      ));
+      );
     }
   ));
 

@@ -22,10 +22,10 @@
         <mat-card-content class="dashboard-card-content" fxLayout="column" fxFlex="95">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
-            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
-            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-capacity-info>
+            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[3]==='error'}"></rtl-balances-info>
+            <rtl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [ngClass]="{'error-border': flgLoading[3]==='error'}"></rtl-channel-capacity-info>
             <rtl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-fee-info>
-            <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[5]==='error' || flgLoading[6]==='error'}"></rtl-channel-status-info>
+            <rtl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[3]==='error' || flgLoading[4]==='error'}"></rtl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>
@@ -56,9 +56,9 @@
         <mat-card-content class="dashboard-card-content" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
             <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
-            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[5]==='error'}"></rtl-balances-info>
-            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
-            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-channel-liquidity-info>
+            <rtl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [ngClass]="{'error-border': flgLoading[2]==='error' || flgLoading[3]==='error'}"></rtl-balances-info>
+            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [ngClass]="{'error-border': flgLoading[3]==='error'}"></rtl-channel-liquidity-info>
+            <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[3]==='error'}"></rtl-channel-liquidity-info>
             <span perfectScrollbar fxLayout="column" fxFlex="100" fxLayoutAlign="start start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" fxFlex="100" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive"><rtl-lightning-invoices class="h-100" [showDetails]="false"></rtl-lightning-invoices></mat-tab>
