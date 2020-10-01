@@ -101,17 +101,17 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
   onChannelClose(channelToClose: Channel) {
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channel_id,
+      alertTitle: 'Force Close Channel',
+      titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
       noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
+      yesBtnText: 'Force Close'
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, timeoutSec: 1}));
+        this.store.dispatch(new RTLActions.OpenSpinner('Force Closing Channel...'));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: true}));
       }
     });
   }

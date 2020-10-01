@@ -202,7 +202,7 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     .subscribe(confirmRes => {
       if (confirmRes) {
         this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
-        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id}));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: false}));
       }
     });
   }

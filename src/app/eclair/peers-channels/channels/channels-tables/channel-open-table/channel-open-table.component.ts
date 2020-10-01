@@ -130,18 +130,21 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onChannelClose(channelToClose: Channel, forceClose: boolean) {
+    const alertTitle = (forceClose) ? 'Force Close Channel' : 'Close Channel';
+    const titleMessage = (forceClose) ? ('Force closing channel: ' + channelToClose.channelId) : ('Closing channel: ' + channelToClose.channelId);
+    const yesBtnText = (forceClose) ? 'Force Close' : 'Close Channel';
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
-      alertTitle: 'Close Channel',
-      titleMessage: 'Closing channel: ' + channelToClose.channelId,
+      alertTitle: alertTitle,
+      titleMessage: titleMessage,
       noBtnText: 'Cancel',
-      yesBtnText: 'Close Channel'
+      yesBtnText: yesBtnText
     }}));
     this.rtlEffects.closeConfirm
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
+        this.store.dispatch(new RTLActions.OpenSpinner((forceClose) ? 'Force Closing Channel...' : 'Closing Channel...'));
         this.store.dispatch(new ECLActions.CloseChannel({channelId: channelToClose.channelId, force: forceClose}));
       }
     });
