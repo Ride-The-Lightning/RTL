@@ -170,7 +170,7 @@ export class BoltzModalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       } else {
         if(this.addressFormGroup.controls.address.value !== '') {
-          this.processWithdrawalSwap(boltzServerUrl, swapInfo, this.addressFormGroup.controls.address);
+          this.processWithdrawalSwap(boltzServerUrl, swapInfo, this.addressFormGroup.controls.address.value);
         } else {
           this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
           this.lndEffects.setNewAddress
