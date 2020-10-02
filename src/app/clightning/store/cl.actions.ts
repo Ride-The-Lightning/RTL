@@ -231,7 +231,7 @@ export class SaveNewChannel implements Action {
 
 export class CloseChannel implements Action {
   readonly type = CLOSE_CHANNEL_CL;
-  constructor(public payload: {channelId: string, timeoutSec?: number}) {}
+  constructor(public payload: {channelId: string, force: boolean}) {}
 }
 
 export class RemoveChannel implements Action {

@@ -202,6 +202,7 @@ exports.closeChannel = (req, res, next) => {
     options.url = common.getSelLNServerUrl() + '/forceclose';
   }
   options.form = { channelId: req.query.channelId };
+  logger.info({fileName: 'Channels', msg: 'Close Channel URL: ' + JSON.stringify(options.url)});
   logger.info({fileName: 'Channels', msg: 'Close Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
     logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
