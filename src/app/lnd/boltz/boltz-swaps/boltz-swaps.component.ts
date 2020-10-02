@@ -12,7 +12,6 @@ import { SwapStatus } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { LoopService } from '../../../shared/services/loop.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -45,7 +44,7 @@ export class BoltzSwapsComponent implements OnInit, OnChanges, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private loopService: LoopService) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -104,8 +103,8 @@ export class BoltzSwapsComponent implements OnInit, OnChanges, OnDestroy {
     const reorderedSwap = [
       [{key: 'state', value: SwapStateEnum[selSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING},
         {key: 'amt', value: selSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'initiation_time_str', value: selSwap.initiation_time_str, title: 'Initiation Time', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'last_update_time_str', value: selSwap.last_update_time_str, title: 'Last Update Time', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'initiation_time_str', value: selSwap.initiation_time_str, title: 'Initiation Time', width: 50, type: DataTypeEnum.STRING},
+        {key: 'last_update_time_str', value: selSwap.last_update_time_str, title: 'Last Update Time', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'cost_server', value: selSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
         {key: 'cost_offchain', value: selSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
         {key: 'cost_onchain', value: selSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER}],
