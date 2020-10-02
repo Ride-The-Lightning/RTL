@@ -34,6 +34,7 @@ import { SignComponent } from './sign-verify-message/sign/sign.component';
 import { VerifyComponent } from './sign-verify-message/verify/verify.component';
 import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { ChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
 import { InitializeWalletComponent } from './wallet/initialize/initialize.component';
 import { NodeInfoComponent } from './home/node-info/node-info.component';
@@ -85,6 +86,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     OnChainTransactionHistoryComponent,
     ChannelsTablesComponent,
     ChannelOpenTableComponent,
+    ChannelActiveHTLCsTableComponent,
     UnlockWalletComponent,
     InitializeWalletComponent,
     NodeInfoComponent,
