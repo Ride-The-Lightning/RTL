@@ -28,6 +28,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked {
   public dataTypeEnum = DataTypeEnum;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public scrollDirection = 'DOWN';
   public shouldScroll = true;
 
   constructor(public dialogRef: MatDialogRef<AlertMessageComponent>, @Inject(MAT_DIALOG_DATA) public data: AlertData, private logger: LoggerService, private snackBar: MatSnackBar, private commonService: CommonService) { }
@@ -53,8 +54,18 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  onScrollDown() {
-    this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop + 62.6;
+  onScroll() {
+    this.scrollContainer.nativeElement.addEventListener('ps-y-reach-end', (event) => {
+      this.scrollDirection = 'UP';
+    });
+    this.scrollContainer.nativeElement.addEventListener('ps-y-reach-start', (event) => {
+      this.scrollDirection = 'DOWN';
+    });
+    if (this.scrollDirection === 'DOWN') {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop + 62.6;
+    } else {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollTop - 62.6;
+    }
   }
 
   onCopyField(payload: string) {

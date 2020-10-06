@@ -1,5 +1,5 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subject, of, Observable } from 'rxjs';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -11,6 +11,7 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 import * as LNDActions from '../../lnd/store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import { options } from 'otplib/totp';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
@@ -45,8 +46,9 @@ export class DataService implements OnInit, OnDestroy {
     return this.httpClient.get(environment.CONF_API + '/rates');
   }
 
-  getAliasesFromPubkeys(pubkeys: string[]) {
-    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/nodes/' + pubkeys)
+  getAliasesFromPubkeys(pubkeys: string) {
+    let pubkey_params = new HttpParams().set('pubkeys', pubkeys);
+    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/nodes', {params: pubkey_params});
   }
 
   getAliasFromPubkey(pubkey: string) {

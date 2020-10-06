@@ -351,7 +351,6 @@ export interface Payment {
   payment_hash?: string;
   payment_request?: string;
   status?: string;
-  path?: string[];
   fee?: number;
   fee_sat?: number;
 	fee_msat?: number;
