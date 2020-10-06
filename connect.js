@@ -150,7 +150,9 @@ connect.validateNodeConfig = (config) => {
           let exists = fs.existsSync(common.nodes[idx].config_path);
           if (exists) {
             try {
-              common.nodes[idx].ln_api_password = ini.parse(fs.readFileSync(common.nodes[idx].config_path, 'utf-8'))['eclair.api.password'];
+              let configFile = fs.readFileSync(common.nodes[idx].config_path, 'utf-8');
+              let iniParsed = ini.parse(configFile);
+              common.nodes[idx].ln_api_password = iniParsed['eclair.api.password'] ? iniParsed['eclair.api.password'] : common.parseHocon(configFile).eclair.api.password;
             } catch (err) {
               errMsg = errMsg + '\nSomething went wrong while reading config file: \n' + err;
             }
