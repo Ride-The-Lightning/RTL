@@ -36,7 +36,7 @@ export class ECLEffects implements OnDestroy {
       this.store.select('ecl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 5) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 4) { // Num of Initial APIs + 1
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
@@ -125,6 +125,9 @@ export class ECLEffects implements OnDestroy {
           this.store.dispatch(new ECLActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
           this.store.dispatch(new ECLActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
           this.store.dispatch(new ECLActions.SetLightningBalance(channelsRes.lightningBalances));
+          if (action.payload.fetchPayments) {
+            this.store.dispatch(new ECLActions.FetchPayments());
+          }
           return {
             type: ECLActions.SET_CHANNELS_STATUS_ECL,
             payload: channelsRes.channelStatus
@@ -348,7 +351,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new ECLActions.FetchChannels());
+              this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: false}));
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
             }, 2000);
             return {
@@ -485,7 +488,7 @@ export class ECLEffects implements OnDestroy {
               setTimeout(() => {
                 this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
                 this.store.dispatch(new RTLActions.CloseSpinner());
-                this.store.dispatch(new ECLActions.FetchChannels());
+                this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
                 this.store.dispatch(new ECLActions.SetDecodedPayment({}));
                 this.store.dispatch(new ECLActions.FetchPayments());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
@@ -650,11 +653,10 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
     this.store.dispatch(new ECLActions.FetchFees());
-    this.store.dispatch(new ECLActions.FetchChannels());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());
     this.store.dispatch(new ECLActions.FetchPeers());
-    this.store.dispatch(new ECLActions.FetchPayments());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/ecl/');

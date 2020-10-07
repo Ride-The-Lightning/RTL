@@ -13,7 +13,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer, Transaction } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -37,7 +37,7 @@ export class CLEffects implements OnDestroy {
       this.store.select('cl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 9) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 9) { // Num of Initial APIs + 1
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
