@@ -279,8 +279,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   showHTLCView(selHtlc: PaymentHTLC, selPayment: Payment, decodedPayment?: PayRequest) {
     const reorderedHTLC = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'status', value: selHtlc.status, title: 'Status', width: 33, type: DataTypeEnum.STRING},
         {key: 'attempt_time_str', value: selHtlc.attempt_time_str, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME},
         {key: 'resolve_time_str', value: selHtlc.resolve_time_str, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME}],
@@ -301,22 +301,19 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onPaymentClick(selPayment: Payment) {
-    if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
-      this.lndEffects.setDecodedPayment
-      .pipe(take(1))
-      .subscribe(decodedPayment => {
-        this.showPaymentView(selPayment, decodedPayment);
-      }, (error) => {
-        this.showPaymentView(selPayment, null);
-      });
+    if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
+      let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key }, '');
+      forkJoin(this.dataService.getAliasesFromPubkeys(nodePubkeys)
+      .pipe(takeUntil(this.unSubs[3]))
+      .subscribe((nodes: any) => {
+        this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node }, ''));
+      }));
     } else {
-      this.showPaymentView(selPayment, null);
+      this.showPaymentView(selPayment, '');
     }
   }
 
-  showPaymentView(selPayment: Payment, decodedPayment?: PayRequest) {
+  showPaymentView(selPayment: Payment, pathAliases: string) {
     const reorderedPayment = [
       [{key: 'payment_hash', value: selPayment.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
@@ -324,15 +321,30 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING},
         {key: 'creation_date_str', value: selPayment.creation_date_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
+        {key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}]
     ];
-    if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
-      reorderedPayment.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+    if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
+      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
+      this.lndEffects.setDecodedPayment
+      .pipe(take(1)).subscribe(decodedPayment => {
+        if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
+          reorderedPayment.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
+        }
+        this.openPaymentAlert(reorderedPayment, (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 1));
+      });
+    } else {
+      this.openPaymentAlert(reorderedPayment, false);
     }
+  }
+
+  openPaymentAlert(data: any, shouldScroll: boolean) {
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,
       alertTitle: 'Payment Information',
-      message: reorderedPayment
+      message: data,
+      scrollable: shouldScroll
     }}));
   }
 
