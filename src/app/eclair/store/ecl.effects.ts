@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -72,23 +72,44 @@ export class ECLEffects implements OnDestroy {
   ));
 
   @Effect()
-  fetchAudit = this.actions$.pipe(
-    ofType(ECLActions.FETCH_AUDIT_ECL),
-    mergeMap((action: ECLActions.FetchAudit) => {
-      this.store.dispatch(new ECLActions.ClearEffectError('FetchAudit'));
-      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API);
-    }),
-    map((audit: Audit) => {
-      this.logger.info(audit);
-      this.store.dispatch(new ECLActions.SetPayments(audit.payments));
-      return {
-        type: ECLActions.SET_FEES_ECL,
-        payload: audit && audit.fees ? audit.fees : {}
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchAudit', 'Fetching Fees Failed.', err);
-      return of({type: RTLActions.VOID});
+  fetchFees = this.actions$.pipe(
+    ofType(ECLActions.FETCH_FEES_ECL),
+    mergeMap((action: ECLActions.FetchFees) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchFees'));
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/fees')
+      .pipe(map((fees: any) => {
+          this.logger.info(fees);
+          return {
+            type: ECLActions.SET_FEES_ECL,
+            payload: fees ? fees : {}
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
+    }
+  ));
+
+  @Effect()
+  fetchPayments = this.actions$.pipe(
+    ofType(ECLActions.FETCH_PAYMENTS_ECL),
+    mergeMap((action: ECLActions.FetchPayments) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchPayments'));
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/payments')
+      .pipe(map((payments: any) => {
+          this.logger.info(payments);
+          return {
+            type: ECLActions.SET_PAYMENTS_ECL,
+            payload: payments ? payments : {}
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
     }
   ));
 
@@ -466,7 +487,7 @@ export class ECLEffects implements OnDestroy {
                 this.store.dispatch(new RTLActions.CloseSpinner());
                 this.store.dispatch(new ECLActions.FetchChannels());
                 this.store.dispatch(new ECLActions.SetDecodedPayment({}));
-                this.store.dispatch(new ECLActions.FetchAudit());
+                this.store.dispatch(new ECLActions.FetchPayments());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
               }, 3000);
               return { type: RTLActions.VOID };
@@ -629,10 +650,11 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLActions.FetchAudit());
+    this.store.dispatch(new ECLActions.FetchFees());
     this.store.dispatch(new ECLActions.FetchChannels());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());
     this.store.dispatch(new ECLActions.FetchPeers());
+    this.store.dispatch(new ECLActions.FetchPayments());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {
       newRoute = newRoute.replace('/lnd/', '/ecl/');
