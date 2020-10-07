@@ -83,7 +83,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchAudit') {
+        if (effectsErr.action === 'FetchPayments') {
           this.flgLoading[0] = 'error';
         }
       });
