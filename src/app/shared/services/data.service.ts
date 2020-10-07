@@ -1,6 +1,6 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject, of, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -11,7 +11,6 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 import * as LNDActions from '../../lnd/store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { options } from 'otplib/totp';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
