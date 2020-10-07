@@ -10,6 +10,7 @@ var connect = {};
 var errMsg = '';
 var request = require('request');
 var ini = require('ini');
+var parseHocon = require('hocon-parser');
 common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 connect.setDefaultConfig = () => {
@@ -152,7 +153,7 @@ connect.validateNodeConfig = (config) => {
             try {
               let configFile = fs.readFileSync(common.nodes[idx].config_path, 'utf-8');
               let iniParsed = ini.parse(configFile);
-              common.nodes[idx].ln_api_password = iniParsed['eclair.api.password'] ? iniParsed['eclair.api.password'] : common.parseHocon(configFile).eclair.api.password;
+              common.nodes[idx].ln_api_password = iniParsed['eclair.api.password'] ? iniParsed['eclair.api.password'] : parseHocon(configFile).eclair.api.password;
             } catch (err) {
               errMsg = errMsg + '\nSomething went wrong while reading config file: \n' + err;
             }
