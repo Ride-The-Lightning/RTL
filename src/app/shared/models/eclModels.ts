@@ -77,7 +77,11 @@ export interface PaymentRelayed {
   amountOut?: number;
   paymentHash?: string;
   fromChannelId?: string;
+  fromShortChannelId?: string;
+  fromChannelAlias?: string;
   toChannelId?: string;
+  toShortChannelId?: string;
+  toChannelAlias?: string;
   timestamp?: number;
   timestampStr?: string;
 }

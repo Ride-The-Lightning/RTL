@@ -99,6 +99,7 @@ export class SetFees implements Action {
 
 export class FetchChannels implements Action {
   readonly type = FETCH_CHANNELS_ECL;
+  constructor(public payload: {fetchPayments: boolean}) {}  
 }
 
 export class SetActiveChannels implements Action {

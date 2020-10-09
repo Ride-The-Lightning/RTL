@@ -21,7 +21,7 @@ exports.getFees = (req, res, next) => {
     let day_start_time = current_time - 86400000;
     let fee = 0;
     body.relayed.forEach(relayedEle => {
-      logger.info({fileName: 'Fees', msg: 'Relayed Transaction: ' + JSON.stringify(relayedEle)});
+      logger.info({fileName: 'Fees', msg: 'Fee Relayed Transaction: ' + JSON.stringify(relayedEle)});
       fee = Math.round((relayedEle.amountIn - relayedEle.amountOut)/1000);
       if (relayedEle.timestamp >= day_start_time) {
         fees.daily_fee = fees.daily_fee + fee;
@@ -89,7 +89,7 @@ exports.getPayments = (req, res, next) => {
       });      
     });
     payments.relayed.forEach(relayedEle => {
-      logger.info({fileName: 'Fees', msg: 'Relayed Transaction: ' + JSON.stringify(relayedEle)});
+      logger.info({fileName: 'Fees', msg: 'Payment Relayed Transaction: ' + JSON.stringify(relayedEle)});
       relayedEle.timestampStr =  (!relayedEle.timestamp) ? '' : common.convertTimestampToDate(Math.round(relayedEle.timestamp / 1000));
       if (relayedEle.amountIn) { relayedEle.amountIn = Math.round(relayedEle.amountIn/1000); }
       if (relayedEle.amountOut) { relayedEle.amountOut = Math.round(relayedEle.amountOut/1000); }

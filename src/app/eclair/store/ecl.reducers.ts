@@ -156,7 +156,30 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         activeChannels: modifiedChannels
       };
     case ECLActions.SET_PAYMENTS_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
+      if (action.payload && action.payload.relayed) {
+        const storedChannels = [...state.activeChannels, ...state.pendingChannels, ...state.inactiveChannels];
+        action.payload.relayed.forEach(event => {
+          if (storedChannels && storedChannels.length > 0) {
+            for (let idx = 0; idx < storedChannels.length; idx++) {
+              if (storedChannels[idx].channelId.toString() === event.fromChannelId) {
+                event.fromChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.fromChannelId;
+                event.fromShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (event.toChannelAlias) { return; }
+              }
+              if (storedChannels[idx].channelId.toString() === event.toChannelId) {
+                event.toChannelAlias = storedChannels[idx].alias ? storedChannels[idx].alias : event.toChannelId;
+                event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
+                if (event.fromChannelAlias) { return; }
+              }
+            }
+          } else {
+            event.fromChannelAlias = event.fromChannelId;
+            event.fromShortChannelId = '';
+            event.toChannelAlias = event.toChannelId;
+            event.toShortChannelId = '';
+          }
+        });
+      }
       return {
         ...state,
         initialAPIResponseStatus: newAPIStatus,
