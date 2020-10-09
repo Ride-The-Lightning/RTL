@@ -480,7 +480,9 @@ export interface ForwardingEvent {
   chan_id_out?: string;
   alias_out?: string;
   amt_out?: string;
+  amt_out_msat?: string; 
   amt_in?: string;
+  amt_in_msat?: string;  
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;

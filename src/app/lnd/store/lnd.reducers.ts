@@ -260,6 +260,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
                 event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
                 if (event.alias_in) { return; }
               }
+              if(idx === storedChannels.length-1) {
+                if (!event.alias_in) { event.alias_in = event.chan_id_in; }
+                if (!event.alias_out) { event.alias_out = event.chan_id_out; }
+              }
             }
           }
         });
