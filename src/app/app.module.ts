@@ -164,4 +164,5 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {}
