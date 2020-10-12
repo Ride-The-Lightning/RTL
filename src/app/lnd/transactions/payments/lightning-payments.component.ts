@@ -57,7 +57,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
@@ -111,11 +111,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     if ( this.paymentDecoded.timestamp_str) {
       this.sendPayment();
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.lndEffects.setDecodedPayment
-      .pipe(take(1))
-      .subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp_str) {
           if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -209,9 +206,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if(this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
           this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
@@ -250,7 +246,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       if (peerFound && peerFound.alias) {
         accumulator.push('<pre>Channel: ' + peerFound.alias.padEnd(20) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
       } else {
-        self.dataService.getAliasFromPubkey(currentHop.pub_key)
+        self.dataService.getAliasesFromPubkeys(currentHop.pub_key, false)
         .pipe(takeUntil(self.unSubs[1]))
         .subscribe((res: any) => {
           accumulator.push('<pre>Channel: ' + (res.node && res.node.alias ? res.node.alias.padEnd(20) : (currentHop.pub_key.substring(0, 17) + '...')) + '&Tab;&Tab;&Tab;Amount (Sats): ' + self.decimalPipe.transform(currentHop.amt_to_forward) + '</pre>');
@@ -262,11 +258,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
 
   onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
-      this.lndEffects.setDecodedPayment
-      .pipe(take(1))
-      .subscribe(decodedPayment => {
+      this.dataService.decodePayment(selPayment.payment_request, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.showHTLCView(selHtlc, selPayment, decodedPayment);
       }, (error) => {
         this.showHTLCView(selHtlc, selPayment, null);
@@ -303,7 +296,7 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key }, '');
-      forkJoin(this.dataService.getAliasesFromPubkeys(nodePubkeys)
+      forkJoin(this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe((nodes: any) => {
         this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node }, ''));
@@ -325,10 +318,8 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
       [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}]
     ];
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: selPayment.payment_request, fromDialog: false}));
-      this.lndEffects.setDecodedPayment
-      .pipe(take(1)).subscribe(decodedPayment => {
+      this.dataService.decodePayment(selPayment.payment_request, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         if (decodedPayment && decodedPayment.description && decodedPayment.description !== '') {
           reorderedPayment.splice(3, 0, [{key: 'description', value: decodedPayment.description, title: 'Description', width: 100, type: DataTypeEnum.STRING}]);
         }
@@ -355,14 +346,25 @@ export class LightningPaymentsComponent implements OnInit, OnDestroy {
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
       let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
-        if (curr.htlcs) {
-          return acc.concat(curr.htlcs);
-        } else {
-          return acc.concat(curr);
+      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => { 
+        if (payment.payment_request && payment.payment_request.trim() !== '') {
+          paymentReqs = (paymentReqs === '') ? payment.payment_request : paymentReqs + ',' + payment.payment_request;
         }
-      }, []);      
-      this.commonService.downloadFile(flattenedPayments, 'Payments');
+        return paymentReqs;
+      }, '');
+      forkJoin(this.dataService.decodePayments(paymentRequests)
+      .pipe(takeUntil(this.unSubs[4]))
+      .subscribe((decodedPayments: PayRequest[]) => {
+        let increament = 0;
+        decodedPayments.forEach((decodedPayment, idx) => {
+          while (paymentsDataCopy[idx + increament].payment_hash !== decodedPayment.payment_hash) {
+            increament = increament + 1;
+          }
+          paymentsDataCopy[idx + increament].description = decodedPayment.description;
+        });
+        let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
+        this.commonService.downloadFile(flattenedPayments, 'Payments');
+      }));
     }
   }
 

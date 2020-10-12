@@ -397,74 +397,6 @@ export class ECLEffects implements OnDestroy {
   );
 
   @Effect()
-  decodePayment = this.actions$.pipe(
-    ofType(ECLActions.DECODE_PAYMENT_ECL),
-    mergeMap((action: ECLActions.DecodePayment) => {
-      this.store.dispatch(new ECLActions.ClearEffectError('DecodePayment'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
-        .pipe(
-          map((decodedPayment) => {
-            this.logger.info(decodedPayment);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: ECLActions.SET_DECODED_PAYMENT_ECL,
-              payload: decodedPayment ? decodedPayment : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam, err);
-            }
-            return of({type: RTLActions.VOID});
-          })
-        );
-    })
-  );
-
-  @Effect({ dispatch: false })
-  setDecodedPayment = this.actions$.pipe(
-    ofType(ECLActions.SET_DECODED_PAYMENT_ECL),
-    map((action: ECLActions.SetDecodedPayment) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  );
-
-  @Effect()
-  fetchSentPaymentInformation = this.actions$.pipe(
-    ofType(ECLActions.GET_SENT_PAYMENT_INFO_ECL),
-    mergeMap((action: ECLActions.GetSentPaymentInformation) => {
-      this.store.dispatch(new ECLActions.ClearEffectError('SentPaymentInformation'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/getsentinfo/' + action.payload.paymentHash)
-        .pipe(
-          map((sentPaymentInfo) => {
-            this.logger.info(sentPaymentInfo);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: ECLActions.SET_SENT_PAYMENT_INFO_ECL,
-              payload: sentPaymentInfo ? sentPaymentInfo : []
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('SentPaymentInformation', 'Sent Payment Information Failed', err);
-            return of({type: RTLActions.VOID});
-          })
-        );
-    })
-  );
-
-  @Effect({ dispatch: false })
-  setSentPaymentInformation = this.actions$.pipe(
-    ofType(ECLActions.SET_SENT_PAYMENT_INFO_ECL),
-    map((action: ECLActions.SetSentPaymentInformation) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  );
-
-  @Effect()
   sendPayment = this.actions$.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
@@ -489,7 +421,6 @@ export class ECLEffects implements OnDestroy {
                 this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
                 this.store.dispatch(new RTLActions.CloseSpinner());
                 this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
-                this.store.dispatch(new ECLActions.SetDecodedPayment({}));
                 this.store.dispatch(new ECLActions.FetchPayments());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
               }, 3000);

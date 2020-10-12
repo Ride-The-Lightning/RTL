@@ -630,42 +630,6 @@ export class LNDEffects implements OnDestroy {
   ));
 
   @Effect()
-  decodePayment = this.actions$.pipe(
-    ofType(LNDActions.DECODE_PAYMENT_LND),
-    mergeMap((action: LNDActions.DecodePayment) => {
-      this.store.dispatch(new LNDActions.ClearEffectError('DecodePayment'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam)
-        .pipe(
-          map((decodedPayment) => {
-            this.logger.info(decodedPayment);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: LNDActions.SET_DECODED_PAYMENT_LND,
-              payload: decodedPayment ? decodedPayment : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam, err);
-            }
-            return of({type: RTLActions.VOID});
-          })
-        );
-    })
-  );
-
-  @Effect({ dispatch: false })
-  setDecodedPayment = this.actions$.pipe(
-    ofType(LNDActions.SET_DECODED_PAYMENT_LND),
-    map((action: LNDActions.SetDecodedPayment) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  );
-
-  @Effect()
   sendPayment = this.actions$.pipe(
     ofType(LNDActions.SEND_PAYMENT_LND),
     withLatestFrom(this.store.select('root')),
@@ -706,7 +670,6 @@ export class LNDEffects implements OnDestroy {
                 return of({type: RTLActions.VOID});
               }
             } else {
-              this.store.dispatch(new LNDActions.SetDecodedPayment({}));
               this.store.dispatch(new LNDActions.FetchAllChannels());
               this.store.dispatch(new LNDActions.FetchBalance('channels'));
               this.store.dispatch(new LNDActions.FetchPayments());

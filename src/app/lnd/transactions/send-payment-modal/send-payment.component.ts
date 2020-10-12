@@ -13,8 +13,8 @@ import { PayRequest, Channel } from '../../../shared/models/lndModels';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { DataService } from '../../../shared/services/data.service';
 
-import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -44,7 +44,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private dataService: DataService) {}
 
   ngOnInit() {
     this.store.select('lnd')
@@ -66,10 +66,6 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           delete this.paymentDecoded.num_satoshis;          
           this.paymentError = action.payload.message;
         }
-        if (action.payload.action === 'DecodePayment') {
-          this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
-          this.paymentReq.control.setErrors({'decodeError': true});
-        }
       }
     });
   }
@@ -83,9 +79,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentError = '';
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, true)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.selActiveChannel = {};
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -108,6 +103,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
+      }, err => {
+        this.logger.error(err);
+        this.paymentDecodedHint = 'ERROR: ' + err.message;
+        this.paymentReq.control.setErrors({'decodeError': true});
       });
     }
   }
@@ -140,9 +139,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new LNDActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.lndEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, true)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         this.selActiveChannel = {};
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -165,6 +163,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
+      }, err => {
+        this.logger.error(err);
+        this.paymentDecodedHint = 'ERROR: ' + err.message;
+        this.paymentReq.control.setErrors({'decodeError': true});
       });
     }
   }
