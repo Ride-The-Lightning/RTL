@@ -40,10 +40,6 @@ export const FETCH_PAYMENTS_ECL = 'FETCH_PAYMENTS_ECL';
 export const SET_PAYMENTS_ECL = 'SET_PAYMENTS_ECL';
 export const GET_QUERY_ROUTES_ECL = 'GET_QUERY_ROUTES_ECL';
 export const SET_QUERY_ROUTES_ECL = 'SET_QUERY_ROUTES_ECL';
-export const DECODE_PAYMENT_ECL = 'DECODE_PAYMENT_ECL';
-export const SET_DECODED_PAYMENT_ECL = 'SET_DECODED_PAYMENT_ECL';
-export const GET_SENT_PAYMENT_INFO_ECL = 'GET_SENT_PAYMENT_INFO_ECL';
-export const SET_SENT_PAYMENT_INFO_ECL = 'SET_SENT_PAYMENT_INFO_ECL';
 export const SEND_PAYMENT_ECL = 'SEND_PAYMENT_ECL';
 export const SEND_PAYMENT_STATUS_ECL = 'SEND_PAYMENT_STATUS_ECL';
 export const FETCH_TRANSACTIONS_ECL = 'FETCH_TRANSACTIONS_ECL';
@@ -227,26 +223,6 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: Route[]) {}
 }
 
-export class DecodePayment implements Action {
-  readonly type = DECODE_PAYMENT_ECL;
-  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // payload = routeParam
-}
-
-export class SetDecodedPayment implements Action {
-  readonly type = SET_DECODED_PAYMENT_ECL;
-  constructor(public payload: PayRequest) {}
-}
-
-export class GetSentPaymentInformation implements Action {
-  readonly type = GET_SENT_PAYMENT_INFO_ECL;
-  constructor(public payload: {paymentHash: string}) {}
-}
-
-export class SetSentPaymentInformation implements Action {
-  readonly type = SET_SENT_PAYMENT_INFO_ECL;
-  constructor(public payload: any[]) {}
-}
-
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_ECL;
   constructor(public payload: { fromDialog: boolean, invoice: string, amountMsat?: number }) {}
@@ -314,5 +290,5 @@ export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChi
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
-  FetchPayments | SetPayments | DecodePayment | SetDecodedPayment | GetSentPaymentInformation | SetSentPaymentInformation | SendPayment | SendPaymentStatus |
+  FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;

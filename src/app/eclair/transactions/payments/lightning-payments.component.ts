@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { Subject } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,7 @@ import { GetInfo, PayRequest, PaymentSent, PaymentSentPart } from '../../../shar
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { ECLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
@@ -57,7 +58,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private decimalPipe: DecimalPipe, private dataService: DataService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -103,7 +104,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
       }
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
       this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
-      // if(this.paymentJSONArr[0] && this.paymentJSONArr[0].parts) {
+      // if(this.paymentJSONArr[0] && this.paymentJSONArr[0].parts) { // FOR MPP TESTING
       //   this.paymentJSONArr[0].parts.push({
       //     id: 'ID', amount: 100, feesPaid: 0, toChannelId: 'toChannel', toChannelAlias: 'Alias', timestampStr: 'str'
       //   });
@@ -126,10 +127,8 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.eclEffects.setDecodedPayment.pipe(take(1))
-      .subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp) {
           if (!this.paymentDecoded.amount) {
@@ -211,9 +210,8 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if(this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
-      this.eclEffects.setDecodedPayment.subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, false)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.amount) {
           this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
@@ -250,9 +248,8 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onPaymentClick(selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Sent Payment Information...'));
-      this.store.dispatch(new ECLActions.GetSentPaymentInformation({paymentHash: selPayment.paymentHash}));
-      this.eclEffects.setSentPaymentInformation.pipe(take(1))
+      this.dataService.decodePayment(selPayment.paymentHash, false)
+      .pipe(take(1))
       .subscribe(sentPaymentInfo => {
         this.showPaymentView(selPayment, sentPaymentInfo);
       }, (error) => {
@@ -273,9 +270,8 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onPartClick(selPart: PaymentSentPart, selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Sent Payment Information...'));
-      this.store.dispatch(new ECLActions.GetSentPaymentInformation({paymentHash: selPayment.paymentHash}));
-      this.eclEffects.setSentPaymentInformation.pipe(take(1))
+      this.dataService.decodePayment(selPayment.paymentHash, false)
+      .pipe(take(1))
       .subscribe(sentPaymentInfo => {
         this.showPartView(selPart, selPayment, sentPaymentInfo);
       }, (error) => {
@@ -312,16 +308,26 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
-      let paymentsDataCopy = JSON.parse(JSON.stringify(this.payments.data));
-      let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => {
-        if (curr.parts) {
-          return acc.concat(curr.parts);
-        } else {
-          return acc.concat(curr);
+      let paymentsDataCopy: PaymentSent[] = JSON.parse(JSON.stringify(this.payments.data));
+      let paymentRequests = paymentsDataCopy.reduce((paymentReqs, payment) => { 
+        if (payment.paymentHash && payment.paymentHash.trim() !== '') {
+          paymentReqs = (paymentReqs === '') ? payment.paymentHash : paymentReqs + ',' + payment.paymentHash;
         }
-      }, []);      
-      this.commonService.downloadFile(flattenedPayments, 'Payments');      
+        return paymentReqs;
+      }, '');
+      forkJoin(this.dataService.decodePayments(paymentRequests)
+      .pipe(takeUntil(this.unSubs[2]))
+      .subscribe((decodedPayments: any[][]) => {
+        decodedPayments.forEach((decodedPayment, idx) => {
+          if (decodedPayment.length > 0 && decodedPayment[0].paymentRequest && decodedPayment[0].paymentRequest.description && decodedPayment[0].paymentRequest.description !== '') {
+            paymentsDataCopy[idx].description = decodedPayment[0].paymentRequest.description;
+          }
+        });
+        let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
+        this.commonService.downloadFile(flattenedPayments, 'Payments');
+      }));
     }
+
   }
 
   ngOnDestroy() {

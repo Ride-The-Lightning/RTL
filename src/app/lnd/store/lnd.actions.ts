@@ -53,10 +53,8 @@ export const FETCH_UTXOS_LND = 'FETCH_UTXOS_LND';
 export const SET_UTXOS_LND = 'SET_UTXOS_LND';
 export const FETCH_PAYMENTS_LND = 'FETCH_PAYMENTS_LND';
 export const SET_PAYMENTS_LND = 'SET_PAYMENTS_LND';
-export const DECODE_PAYMENT_LND = 'DECODE_PAYMENT_LND';
 export const SEND_PAYMENT_LND = 'SEND_PAYMENT_LND';
 export const SEND_PAYMENT_STATUS_LND = 'SEND_PAYMENT_STATUS_LND';
-export const SET_DECODED_PAYMENT_LND = 'SET_DECODED_PAYMENT_LND';
 export const FETCH_GRAPH_NODE_LND = 'FETCH_GRAPH_NODE_LND';
 export const SET_GRAPH_NODE_LND = 'SET_GRAPH_NODE_LND';
 export const GET_NEW_ADDRESS_LND = 'GET_NEW_ADDRESS_LND';
@@ -309,16 +307,6 @@ export class SetPayments implements Action {
   constructor(public payload: Payment[]) {}
 }
 
-export class DecodePayment implements Action {
-  readonly type = DECODE_PAYMENT_LND;
-  constructor(public payload: {routeParam: string, fromDialog: boolean}) {}
-}
-
-export class SetDecodedPayment implements Action {
-  readonly type = SET_DECODED_PAYMENT_LND;
-  constructor(public payload: PayRequest) {}
-}
-
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_LND;
   constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
@@ -447,7 +435,6 @@ RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsL
 FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
 FetchInvoices | SetInvoices | SetTotalInvoices |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
-DecodePayment | SetDecodedPayment |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |

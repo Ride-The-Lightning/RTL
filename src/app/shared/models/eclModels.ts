@@ -36,6 +36,7 @@ export interface Payments {
 export interface PaymentSent {
   type?: string;
   id?: string;
+  description?: string;
   paymentHash?: string;
   paymentPreimage?: string;
   recipientAmount?: number;
