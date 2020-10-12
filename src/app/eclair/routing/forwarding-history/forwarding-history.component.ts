@@ -39,10 +39,10 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
       this.displayedColumns = ['timestamp', 'amountIn', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'actions'];
+      this.displayedColumns = ['timestamp', 'amountIn', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'paymentHash', 'actions'];
+      this.displayedColumns = ['timestamp', 'amountIn', 'fee', 'fromAlias', 'toAlias', 'actions'];
     }
   }
 
@@ -54,11 +54,16 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
 
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
     const reorderedFHEvent = [
-      [{key: 'timestampStr', value: selFEvent.timestampStr, title: 'Date/Time', width: 34, type: DataTypeEnum.DATE_TIME},
-        {key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 33, type: DataTypeEnum.NUMBER}],
       [{key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'timestampStr', value: selFEvent.timestampStr, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+        {key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+        {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'fromChannelAlias', value: selFEvent.fromChannelAlias, title: 'From Channel Alias', width: 50, type: DataTypeEnum.STRING},
+        {key: 'fromShortChannelId', value: selFEvent.fromShortChannelId, title: 'From Short Channel ID', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'fromChannelId', value: selFEvent.fromChannelId, title: 'From Channel Id', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'toChannelAlias', value: selFEvent.toChannelAlias, title: 'To Channel Alias', width: 50, type: DataTypeEnum.STRING},
+        {key: 'toShortChannelId', value: selFEvent.toShortChannelId, title: 'To Short Channel ID', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'toChannelId', value: selFEvent.toChannelId, title: 'To Channel Id', width: 100, type: DataTypeEnum.STRING}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {

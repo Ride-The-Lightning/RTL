@@ -2,21 +2,27 @@
   <mat-tab-group>
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadge="{{openChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+        <span matBadge="{{numOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
       </ng-template>
       <rtl-channel-open-table></rtl-channel-open-table>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadge="{{pendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
+        <span matBadge="{{numPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
       </ng-template>
       <rtl-channel-pending-table></rtl-channel-pending-table>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
-        <span matBadge="{{closedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
+        <span matBadge="{{numClosedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
       </ng-template>
       <rtl-channel-closed-table></rtl-channel-closed-table>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numActiveHTLCs}}" matBadgeOverlap="false" class="tab-badge">Active HTLCs</span>
+      </ng-template>
+      <rtl-channel-active-htlcs-table></rtl-channel-active-htlcs-table>
     </mat-tab>
   </mat-tab-group>
 </div>

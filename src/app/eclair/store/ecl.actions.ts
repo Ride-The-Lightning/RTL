@@ -10,7 +10,7 @@ export const EFFECT_ERROR_ECL = 'EFFECT_ERROR_ECL';
 export const SET_CHILD_NODE_SETTINGS_ECL = 'SET_CHILD_NODE_SETTINGS_ECL';
 export const FETCH_INFO_ECL = 'FETCH_INFO_ECL';
 export const SET_INFO_ECL = 'SET_INFO_ECL';
-export const FETCH_AUDIT_ECL = 'FETCH_AUDIT_ECL';
+export const FETCH_FEES_ECL = 'FETCH_FEES_ECL';
 export const SET_FEES_ECL = 'SET_FEES_ECL';
 export const FETCH_CHANNELS_ECL = 'FETCH_CHANNELS_ECL';
 export const SET_ACTIVE_CHANNELS_ECL = 'SET_ACTIVE_CHANNELS_ECL';
@@ -36,11 +36,10 @@ export const SAVE_NEW_CHANNEL_ECL = 'SAVE_NEW_CHANNEL_ECL';
 export const UPDATE_CHANNELS_ECL = 'UPDATE_CHANNELS_ECL';
 export const CLOSE_CHANNEL_ECL = 'CLOSE_CHANNEL_ECL';
 export const REMOVE_CHANNEL_ECL = 'REMOVE_CHANNEL_ECL';
+export const FETCH_PAYMENTS_ECL = 'FETCH_PAYMENTS_ECL';
 export const SET_PAYMENTS_ECL = 'SET_PAYMENTS_ECL';
 export const GET_QUERY_ROUTES_ECL = 'GET_QUERY_ROUTES_ECL';
 export const SET_QUERY_ROUTES_ECL = 'SET_QUERY_ROUTES_ECL';
-export const DECODE_PAYMENT_ECL = 'DECODE_PAYMENT_ECL';
-export const SET_DECODED_PAYMENT_ECL = 'SET_DECODED_PAYMENT_ECL';
 export const SEND_PAYMENT_ECL = 'SEND_PAYMENT_ECL';
 export const SEND_PAYMENT_STATUS_ECL = 'SEND_PAYMENT_STATUS_ECL';
 export const FETCH_TRANSACTIONS_ECL = 'FETCH_TRANSACTIONS_ECL';
@@ -85,8 +84,8 @@ export class SetInfo implements Action {
   constructor(public payload: GetInfo) {}
 }
 
-export class FetchAudit implements Action {
-  readonly type = FETCH_AUDIT_ECL;
+export class FetchFees implements Action {
+  readonly type = FETCH_FEES_ECL;
 }
 
 export class SetFees implements Action {
@@ -96,6 +95,7 @@ export class SetFees implements Action {
 
 export class FetchChannels implements Action {
   readonly type = FETCH_CHANNELS_ECL;
+  constructor(public payload: {fetchPayments: boolean}) {}  
 }
 
 export class SetActiveChannels implements Action {
@@ -204,6 +204,10 @@ export class RemoveChannel implements Action {
   constructor(public payload: {channelId: string}) {}
 }
 
+export class FetchPayments implements Action {
+  readonly type = FETCH_PAYMENTS_ECL;
+}
+
 export class SetPayments implements Action {
   readonly type = SET_PAYMENTS_ECL;
   constructor(public payload: Payments) {}
@@ -217,16 +221,6 @@ export class GetQueryRoutes implements Action {
 export class SetQueryRoutes implements Action {
   readonly type = SET_QUERY_ROUTES_ECL;
   constructor(public payload: Route[]) {}
-}
-
-export class DecodePayment implements Action {
-  readonly type = DECODE_PAYMENT_ECL;
-  constructor(public payload: {routeParam: string, fromDialog: boolean}) {} // payload = routeParam
-}
-
-export class SetDecodedPayment implements Action {
-  readonly type = SET_DECODED_PAYMENT_ECL;
-  constructor(public payload: PayRequest) {}
 }
 
 export class SendPayment implements Action {
@@ -288,7 +282,7 @@ export class SetLookup implements Action {
 }
 
 export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChildNodeSettings |
-  FetchInfo | SetInfo | FetchAudit | SetFees |
+  FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
   SetChannelsStatus | FetchChannelStats | SetChannelStats |
@@ -296,5 +290,5 @@ export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChi
   SendOnchainFunds | SendOnchainFundsRes | FetchTransactions | SetTransactions |
   SetLightningBalance | FetchPeers | SetPeers | PeerLookup | SetLookup |
   SaveNewChannel | UpdateChannels | CloseChannel | RemoveChannel |
-  SetPayments | DecodePayment | SetDecodedPayment | SendPayment | SendPaymentStatus |
+  FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
   FetchInvoices | SetInvoices | CreateInvoice | AddInvoice;

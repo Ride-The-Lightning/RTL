@@ -66,10 +66,10 @@
         </ng-container>
         <ng-container matColumnDef="no_peer">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!peers.data || peers.data.length<1">No connected peers.</p>
+            <p *ngIf="!peers?.data || peers?.data?.length<1">No connected peers.</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers.data && peers.data.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.pub_key === newlyAddedPeer && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>

@@ -53,7 +53,8 @@ export const NODE_SETTINGS = {
     {id: 'PURPLE', name: 'Diogo'}, 
     {id: 'TEAL', name: 'My2Sats'},
     {id: 'INDIGO', name: 'RTL'},
-    {id: 'PINK', name: 'BK'}
+    {id: 'PINK', name: 'BK'},
+    {id: 'YELLOW', name: 'Gold'}
   ],
   modes: [{id: 'DAY', name: 'Day'}, {id: 'NIGHT', name: 'Night'}]
 };
@@ -116,6 +117,13 @@ export const CHANNEL_CLOSURE_TYPE = {
   BREACH_CLOSE: { name: 'Breach Close', tooltip: 'Remote node attempted to broadcast a prior revoked channel state' },
   FUNDING_CANCELED: { name: 'Funding Canceled', tooltip: 'Channel never fully opened' },
   ABANDONED: { name: 'Abandoned', tooltip: 'Channel abandoned by the local node' }
+}
+
+export const WALLET_ADDRESS_TYPE = {
+  WITNESS_PUBKEY_HASH: { name: 'Witness Pubkey Hash', tooltip: '' },
+  NESTED_PUBKEY_HASH: { name: 'Nested Pubkey Hash', tooltip: '' },
+  UNUSED_WITNESS_PUBKEY_HASH: { name: 'Unused Witness Pubkey Hash', tooltip: '' },
+  UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
 }
 
 export enum SwapStateEnum {

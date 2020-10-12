@@ -351,7 +351,6 @@ export interface Payment {
   payment_hash?: string;
   payment_request?: string;
   status?: string;
-  path?: string[];
   fee?: number;
   fee_sat?: number;
 	fee_msat?: number;
@@ -459,6 +458,15 @@ export interface Transaction {
   amount?: string;
 }
 
+export interface UTXO {
+  address_type?: string;
+  address?: string;
+  amount_sat?: string;
+  pk_script?: string;
+  outpoint?: {txid_bytes?: string; txid_str?: string; output_index?: number;};
+  confirmations?: string;
+}
+
 export interface SwitchReq {
   num_max_events?: number;
   index_offset?: number;
@@ -472,7 +480,9 @@ export interface ForwardingEvent {
   chan_id_out?: string;
   alias_out?: string;
   amt_out?: string;
+  amt_out_msat?: string; 
   amt_in?: string;
+  amt_in_msat?: string;  
   chan_id_in?: string;
   alias_in?: string;
   fee?: string;

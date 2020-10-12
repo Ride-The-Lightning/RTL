@@ -26,7 +26,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "Settings": {
         "userPersona": "<User persona to tailor the data on UI. Allowed values MERCHANT, OPERATOR. Default MERCHANT, Required>",
         "themeMode": "<Theme modes, Allowed values DAY, NIGHT. Default DAY, Required>",
-        "themeColor": "<Theme colors, Allowed values PURPLE, TEAL, INDIGO, PINK. Default PURPLE, Required>",
+        "themeColor": "<Theme colors, Allowed values PURPLE, TEAL, INDIGO, PINK, YELLOW. Default PURPLE, Required>",
         "channelBackupPath": "<Path to save channel backup file. Only for LND implementation, Default <RTL root>\backup\node-1, Optional>",
         "bitcoindConfigPath": "<Path of bitcoind.conf path if available locally>",
         "enableLogging": <Parameter to turn RTL logging off/on. Allowed values - true, false, default false, Required>,

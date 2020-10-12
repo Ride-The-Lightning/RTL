@@ -176,4 +176,15 @@
       background-color: $hover-background;
     }
   }  
+
+  .mat-slide-toggle.mat-disabled {
+    opacity: 1;
+    & .mat-slide-toggle-content {
+      background-color: $hover-background;
+    }
+    & .mat-slide-toggle-label {
+      cursor: not-allowed !important;
+    }
+  }
+
 }

@@ -12,7 +12,7 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup } from '../../shared/models/lndModels';
+import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
@@ -42,7 +42,7 @@ export class LNDEffects implements OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) {
+      if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 8) { // Num of Initial APIs + 1
         rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
         this.store.dispatch(new RTLActions.CloseSpinner());
       }
@@ -511,12 +511,12 @@ export class LNDEffects implements OnDestroy {
               type: LNDActions.SET_PENDING_CHANNELS_LND,
               payload: channels ? { channels: channels, pendingChannels: pendingChannels } : {channels: {}, pendingChannels: pendingChannels}
             };
-          },
+          }),
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchChannels/pending', 'Fetching Pending Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
-      ));
+      );
     }
   ));
 
@@ -589,6 +589,27 @@ export class LNDEffects implements OnDestroy {
   ));
 
   @Effect()
+  utxosFetch = this.actions$.pipe(
+    ofType(LNDActions.FETCH_UTXOS_LND),
+    withLatestFrom(this.store.select('lnd')),
+    mergeMap(([action, lndData]: [LNDActions.FetchUTXOs, fromLNDReducers.LNDState]) => {
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchUTXOs'));
+      return this.httpClient.get<UTXO[]>(this.CHILD_API_URL + environment.WALLET_API + '/getUTXOs?max_confs=' + (lndData.information && lndData.information.block_height ? lndData.information.block_height : 1000000000));
+    }),
+    map((utxos) => {
+      this.logger.info(utxos);
+      return {
+        type: LNDActions.SET_UTXOS_LND,
+        payload: (utxos && utxos.length > 0) ? utxos : []
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchUTXOs', 'Fetching UTXOs Failed.', err);
+      return of({type: RTLActions.VOID});
+    }
+  ));
+
+  @Effect()
   paymentsFetch = this.actions$.pipe(
     ofType(LNDActions.FETCH_PAYMENTS_LND),
     mergeMap((action: LNDActions.FetchPayments) => {
@@ -607,42 +628,6 @@ export class LNDEffects implements OnDestroy {
       return of({type: RTLActions.VOID});
     }
   ));
-
-  @Effect()
-  decodePayment = this.actions$.pipe(
-    ofType(LNDActions.DECODE_PAYMENT_LND),
-    mergeMap((action: LNDActions.DecodePayment) => {
-      this.store.dispatch(new LNDActions.ClearEffectError('DecodePayment'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam)
-        .pipe(
-          map((decodedPayment) => {
-            this.logger.info(decodedPayment);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: LNDActions.SET_DECODED_PAYMENT_LND,
-              payload: decodedPayment ? decodedPayment : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYREQUEST_API + '/' + action.payload.routeParam, err);
-            }
-            return of({type: RTLActions.VOID});
-          })
-        );
-    })
-  );
-
-  @Effect({ dispatch: false })
-  setDecodedPayment = this.actions$.pipe(
-    ofType(LNDActions.SET_DECODED_PAYMENT_LND),
-    map((action: LNDActions.SetDecodedPayment) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  );
 
   @Effect()
   sendPayment = this.actions$.pipe(
@@ -685,7 +670,6 @@ export class LNDEffects implements OnDestroy {
                 return of({type: RTLActions.VOID});
               }
             } else {
-              this.store.dispatch(new LNDActions.SetDecodedPayment({}));
               this.store.dispatch(new LNDActions.FetchAllChannels());
               this.store.dispatch(new LNDActions.FetchBalance('channels'));
               this.store.dispatch(new LNDActions.FetchPayments());
@@ -1105,7 +1089,7 @@ export class LNDEffects implements OnDestroy {
   getLoopSwaps = this.actions$.pipe(
     ofType(LNDActions.FETCH_LOOP_SWAPS_LND),
     mergeMap((action: LNDActions.FetchLoopSwaps) => {
-      this.store.dispatch(new LNDActions.ClearEffectError('LoopSwaps'));
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchSwaps'));
       return this.httpClient.get(this.CHILD_API_URL + environment.LOOP_API + '/swaps')
         .pipe(
           map((swaps: any) => {
@@ -1116,7 +1100,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('LoopSwaps', 'Fetching Swaps Failed.', err);
+            this.handleErrorWithoutAlert('FetchSwaps', 'Fetching Swaps Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );

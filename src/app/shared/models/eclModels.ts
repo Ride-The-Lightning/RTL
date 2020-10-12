@@ -36,10 +36,12 @@ export interface Payments {
 export interface PaymentSent {
   type?: string;
   id?: string;
+  description?: string;
   paymentHash?: string;
   paymentPreimage?: string;
   recipientAmount?: number;
   recipientNodeId?: string;
+  recipientNodeAlias?: string;
   firstPartTimestamp?: number;
   firstPartTimestampStr?: string;  
   parts: PaymentSentPart[];
@@ -50,6 +52,7 @@ export interface PaymentSentPart {
   amount?: number;
   feesPaid?: number;
   toChannelId?: string;
+  toChannelAlias?: string;
   timestamp?: number;
   timestampStr?: string;
 }
@@ -75,7 +78,11 @@ export interface PaymentRelayed {
   amountOut?: number;
   paymentHash?: string;
   fromChannelId?: string;
+  fromShortChannelId?: string;
+  fromChannelAlias?: string;
   toChannelId?: string;
+  toShortChannelId?: string;
+  toChannelAlias?: string;
   timestamp?: number;
   timestampStr?: string;
 }
@@ -191,6 +198,7 @@ export interface Invoice {
   paymentHash?: string;
   expiry?: number;
   amount?: number;
+  amountSettled?: number;
   features?: { activated: Feature[], unknown: Feature[] }
 }
 

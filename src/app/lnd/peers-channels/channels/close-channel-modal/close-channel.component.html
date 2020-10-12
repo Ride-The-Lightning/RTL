@@ -2,21 +2,21 @@
   <div fxFlex="100" class="padding-gap-large">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
-        <span class="page-title">Close Channel</span>
+        <span class="page-title">{{channelToClose.active ? 'Close Channel' : 'Force Close Channel'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>    
     <mat-card-content class="mt-5px">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box my-2 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">Closing channel: {{channelToClose.channel_point}}</p>
+          <p fxLayoutAlign="start center" class="pb-1 word-break">{{channelToClose.active ? ('Closing channel: ' + channelToClose.channel_point) : ('Force closing channel: ' + channelToClose.channel_point)}}</p>
           <div *ngIf="flgPendingHtlcs" fxLayoutAlign="start center">
             <p fxFlex="100" fxLayoutAlign="start center" class="color-warn"><mat-icon class="mr-1 icon-small">close</mat-icon>{{errorMsg}}</p>
           </div>
           <div *ngIf="!flgPendingHtlcs" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div *ngIf="!channelToClose.active" fxFlex="100" class="alert alert-info">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
-              <span>Priority/Fee for closing inactive channels cannot be modified.</span>
+              <span>Priority/Fee for force closing inactive channels cannot be modified.</span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
               <mat-form-field fxFlex.gt-sm="48">
@@ -44,7 +44,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="end center">
           <button *ngIf="channelToClose.active && !flgPendingHtlcs" mat-stroked-button color="primary" type="reset" class="mr-1" (click)="resetData()" tabindex="3" default>Clear</button>
-          <button *ngIf="!flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">Close Channel</button>
+          <button *ngIf="!flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="4" (click)="onCloseChannel()">{{channelToClose.active ? 'Close Channel' : 'Force Close'}}</button>
           <button *ngIf="flgPendingHtlcs" mat-flat-button color="primary" type="submit" tabindex="5" (click)="onClose()">Ok</button>
         </div>
       </form>

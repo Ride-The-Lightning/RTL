@@ -56,7 +56,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     let closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
     if (this.blocks) { closeChannelParams.targetConf = this.blocks; }
     if (this.fees) { closeChannelParams.satPerByte = this.fees; }
-    this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(this.channelToClose.active ? 'Closing Channel...' : 'Force Closing Channel...'));
     this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
     this.dialogRef.close(false);
   }

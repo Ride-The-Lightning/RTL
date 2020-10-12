@@ -101,7 +101,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
           } else {
             this.zeroAmtInvoice = false;
-            this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
             .subscribe(data => {
               if(this.selNode.fiatConversion) {
@@ -148,7 +148,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
         } else {
           this.zeroAmtInvoice = false;
-          this.commonService.convertCurrency(+this.paymentDecoded.msatoshi, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+          this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
           .pipe(takeUntil(this.unSubs[3]))
           .subscribe(data => {
             if(this.selNode.fiatConversion) {

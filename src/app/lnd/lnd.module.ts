@@ -12,7 +12,9 @@ import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
-import { OnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
+import { UTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
+import { OnChainUTXOsComponent } from './on-chain/utxo-tables/utxos/utxos.component';
+import { OnChainTransactionHistoryComponent } from './on-chain/utxo-tables/on-chain-transaction-history/on-chain-transaction-history.component';
 import { WalletComponent } from './wallet/wallet.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
@@ -32,6 +34,7 @@ import { SignComponent } from './sign-verify-message/sign/sign.component';
 import { VerifyComponent } from './sign-verify-message/verify/verify.component';
 import { QueryRoutesComponent } from './transactions/query-routes/query-routes.component';
 import { ChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
+import { ChannelActiveHTLCsTableComponent } from './peers-channels/channels/channels-tables/channel-active-htlcs-table/channel-active-htlcs-table.component';
 import { UnlockWalletComponent } from './wallet/unlock/unlock.component';
 import { InitializeWalletComponent } from './wallet/initialize/initialize.component';
 import { NodeInfoComponent } from './home/node-info/node-info.component';
@@ -78,9 +81,12 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     QueryRoutesComponent,
     OnChainReceiveComponent,
     OnChainComponent,
+    UTXOTablesComponent,
+    OnChainUTXOsComponent,
     OnChainTransactionHistoryComponent,
     ChannelsTablesComponent,
     ChannelOpenTableComponent,
+    ChannelActiveHTLCsTableComponent,
     UnlockWalletComponent,
     InitializeWalletComponent,
     NodeInfoComponent,

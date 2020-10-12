@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -36,7 +36,7 @@ export class ECLEffects implements OnDestroy {
       this.store.select('ecl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 5) {
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 4) { // Num of Initial APIs + 1
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
@@ -72,23 +72,44 @@ export class ECLEffects implements OnDestroy {
   ));
 
   @Effect()
-  fetchAudit = this.actions$.pipe(
-    ofType(ECLActions.FETCH_AUDIT_ECL),
-    mergeMap((action: ECLActions.FetchAudit) => {
-      this.store.dispatch(new ECLActions.ClearEffectError('FetchAudit'));
-      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API);
-    }),
-    map((audit: Audit) => {
-      this.logger.info(audit);
-      this.store.dispatch(new ECLActions.SetPayments(audit.payments));
-      return {
-        type: ECLActions.SET_FEES_ECL,
-        payload: audit && audit.fees ? audit.fees : {}
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchAudit', 'Fetching Fees Failed.', err);
-      return of({type: RTLActions.VOID});
+  fetchFees = this.actions$.pipe(
+    ofType(ECLActions.FETCH_FEES_ECL),
+    mergeMap((action: ECLActions.FetchFees) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchFees'));
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/fees')
+      .pipe(map((fees: any) => {
+          this.logger.info(fees);
+          return {
+            type: ECLActions.SET_FEES_ECL,
+            payload: fees ? fees : {}
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
+    }
+  ));
+
+  @Effect()
+  fetchPayments = this.actions$.pipe(
+    ofType(ECLActions.FETCH_PAYMENTS_ECL),
+    mergeMap((action: ECLActions.FetchPayments) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchPayments'));
+      return this.httpClient.get<Audit>(this.CHILD_API_URL + environment.FEES_API + '/payments')
+      .pipe(map((payments: any) => {
+          this.logger.info(payments);
+          return {
+            type: ECLActions.SET_PAYMENTS_ECL,
+            payload: payments ? payments : {}
+          };
+        },
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      ));
     }
   ));
 
@@ -104,6 +125,9 @@ export class ECLEffects implements OnDestroy {
           this.store.dispatch(new ECLActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
           this.store.dispatch(new ECLActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
           this.store.dispatch(new ECLActions.SetLightningBalance(channelsRes.lightningBalances));
+          if (action.payload.fetchPayments) {
+            this.store.dispatch(new ECLActions.FetchPayments());
+          }
           return {
             type: ECLActions.SET_CHANNELS_STATUS_ECL,
             payload: channelsRes.channelStatus
@@ -220,7 +244,7 @@ export class ECLEffects implements OnDestroy {
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? (postRes.filter(peer => peer.state !== 'DISCONNECTED')) : []));
+            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? postRes : []));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
               payload: { peer: postRes[0] }
@@ -327,7 +351,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
-              this.store.dispatch(new ECLActions.FetchChannels());
+              this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: false}));
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
             }, 2000);
             return {
@@ -373,42 +397,6 @@ export class ECLEffects implements OnDestroy {
   );
 
   @Effect()
-  decodePayment = this.actions$.pipe(
-    ofType(ECLActions.DECODE_PAYMENT_ECL),
-    mergeMap((action: ECLActions.DecodePayment) => {
-      this.store.dispatch(new ECLActions.ClearEffectError('DecodePayment'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
-        .pipe(
-          map((decodedPayment) => {
-            this.logger.info(decodedPayment);
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: ECLActions.SET_DECODED_PAYMENT_ECL,
-              payload: decodedPayment ? decodedPayment : {}
-            };
-          }),
-          catchError((err: any) => {
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('DecodePayment', 'Decode Payment Failed.', err);
-            } else {
-              this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam, err);
-            }
-            return of({type: RTLActions.VOID});
-          })
-        );
-    })
-  );
-
-  @Effect({ dispatch: false })
-  setDecodedPayment = this.actions$.pipe(
-    ofType(ECLActions.SET_DECODED_PAYMENT_ECL),
-    map((action: ECLActions.SetDecodedPayment) => {
-      this.logger.info(action.payload);
-      return action.payload;
-    })
-  );
-
-  @Effect()
   sendPayment = this.actions$.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
@@ -432,9 +420,8 @@ export class ECLEffects implements OnDestroy {
               setTimeout(() => {
                 this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
                 this.store.dispatch(new RTLActions.CloseSpinner());
-                this.store.dispatch(new ECLActions.FetchChannels());
-                this.store.dispatch(new ECLActions.SetDecodedPayment({}));
-                this.store.dispatch(new ECLActions.FetchAudit());
+                this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
+                this.store.dispatch(new ECLActions.FetchPayments());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
               }, 3000);
               return { type: RTLActions.VOID };
@@ -597,8 +584,8 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new ECLActions.FetchAudit());
-    this.store.dispatch(new ECLActions.FetchChannels());
+    this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
+    this.store.dispatch(new ECLActions.FetchFees());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());
     this.store.dispatch(new ECLActions.FetchPeers());
     let newRoute = this.location.path();

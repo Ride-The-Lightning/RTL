@@ -29,7 +29,7 @@ export class ECLRoutingComponent implements OnInit, OnDestroy {
     .subscribe((rtlStore) => {
       this.errorMessage = '';
       rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchAudit') {
+        if (effectsErr.action === 'FetchPayments') {
           this.flgLoading[0] = 'error';
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }

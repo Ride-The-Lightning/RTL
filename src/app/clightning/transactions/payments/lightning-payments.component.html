@@ -78,7 +78,7 @@
               Total Attempts: {{payment?.total_parts}}
             </span>
             <ng-container *ngIf="payment.is_expanded">
-              <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span">
+              <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span pl-3">
                 <span *ngIf="mpp.status === 'complete'" class="dot green mt-0" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="mpp.status !== 'complete'" class="dot yellow mt-0" matTooltip="Incomplete/Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 {{mpp.created_at_str}}
@@ -130,7 +130,7 @@
         </ng-container>
         <tr mat-row *matRowDef="let row; columns: mppColumns; when: is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
         <!-- Payment Group Row End -->
-        <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments.data && payments.data.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>

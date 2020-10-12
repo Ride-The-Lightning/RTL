@@ -2,19 +2,20 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
-
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
+
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as RTLActions from '../../../../../store/rtl.actions';
+import * as CLActions from '../../../../store/cl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
@@ -28,6 +29,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
@@ -72,6 +74,9 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      if (this.information.api_version) {
+        this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
+      }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       if (rtlStore.allChannels) {
@@ -95,6 +100,24 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       showCopy: true,
       component: CLChannelInformationComponent
     }}));
+  }
+
+  onChannelClose(channelToClose: Channel) {
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Force Close Channel',
+      titleMessage: 'Force closing channel: ' + channelToClose.channel_id,
+      noBtnText: 'Cancel',
+      yesBtnText: 'Force Close'
+    }}));
+    this.rtlEffects.closeConfirm
+    .pipe(takeUntil(this.unSubs[3]))
+    .subscribe(confirmRes => {
+      if (confirmRes) {
+        this.store.dispatch(new RTLActions.OpenSpinner('Force Closing Channel...'));
+        this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: true}));
+      }
+    });
   }
 
   loadChannelsTable(mychannels) {

@@ -2,7 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus, UTXO
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -30,6 +30,7 @@ export interface LNDState {
   totalRemoteBalance: number;
   totalInvoices: number;
   transactions: Transaction[];
+  utxos: UTXO[];
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
@@ -58,6 +59,7 @@ export const initLNDState: LNDState = {
   totalRemoteBalance: -1,
   totalInvoices: -1,
   transactions: [],
+  utxos: [],
   payments: [],
   invoices: {invoices: []},
   forwardingHistory: {},
@@ -232,6 +234,11 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         ...state,
         transactions: action.payload
       };
+    case LNDActions.SET_UTXOS_LND:
+      return {
+        ...state,
+        utxos: action.payload
+      };
     case LNDActions.SET_PAYMENTS_LND:
       newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
@@ -252,6 +259,10 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
               if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
                 event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
                 if (event.alias_in) { return; }
+              }
+              if(idx === storedChannels.length-1) {
+                if (!event.alias_in) { event.alias_in = event.chan_id_in; }
+                if (!event.alias_out) { event.alias_out = event.chan_id_out; }
               }
             }
           }

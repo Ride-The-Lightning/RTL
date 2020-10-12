@@ -13,6 +13,7 @@ import { PayRequest, Channel } from '../../../shared/models/eclModels';
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
@@ -41,7 +42,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private dataService: DataService) {}
 
   ngOnInit() {
     this.store.select('ecl')
@@ -62,10 +63,6 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
           delete this.paymentDecoded.amount;
           this.paymentError = action.payload.message;
         }
-        if (action.payload.action === 'DecodePayment') {
-          this.paymentDecodedHint = 'ERROR: ' + action.payload.message;
-          this.paymentReq.control.setErrors({'decodeError': true});
-        }
       }
     });
   }
@@ -79,9 +76,8 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentError = '';
       this.paymentDecodedHint = '';
       this.paymentReq.control.setErrors(null);      
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.eclEffects.setDecodedPayment.pipe(take(1)).subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, true)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
           this.paymentDecoded.amount = 0;
@@ -99,6 +95,10 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             }
           });
         }
+      }, err => {
+        this.logger.error(err);
+        this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
+        this.paymentReq.control.setErrors({'decodeError': true});
       });
     }
   }
@@ -120,9 +120,8 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-      this.store.dispatch(new ECLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
-      this.eclEffects.setDecodedPayment.subscribe(decodedPayment => {
+      this.dataService.decodePayment(this.paymentRequest, true)
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         if (this.paymentDecoded.timestamp && !this.paymentDecoded.amount) {
           this.paymentDecoded.amount = 0;
@@ -140,6 +139,10 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
             }
           });
         }
+      }, err => {
+        this.logger.error(err);
+        this.paymentDecodedHint = 'ERROR: ' + ((err.message) ? err.message : ((typeof err === 'string') ? err : JSON.stringify(err)));
+        this.paymentReq.control.setErrors({'decodeError': true});
       });
     }
   }

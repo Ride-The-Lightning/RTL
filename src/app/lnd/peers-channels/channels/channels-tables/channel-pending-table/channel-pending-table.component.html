@@ -32,10 +32,10 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_open">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingOpenChannels || !pendingOpenChannels.data || pendingOpenChannels.data.length<1">No pending channels.</p>
+              <p *ngIf="!pendingOpenChannels || !pendingOpenChannels?.data || pendingOpenChannels?.data?.length<1">No pending channels.</p>
             </td>
           </ng-container>
-          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_open']" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels.data && pendingOpenChannels.data.length>0}"></tr>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_open']" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels?.data && pendingOpenChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedOpenColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedOpenColumns;"></mat-row>
         </mat-table>
@@ -72,10 +72,10 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_force_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingForceClosingChannels || !pendingForceClosingChannels.data || pendingForceClosingChannels.data.length<1">No pending channels.</p>
+              <p *ngIf="!pendingForceClosingChannels || !pendingForceClosingChannels?.data || pendingForceClosingChannels?.data?.length<1">No pending channels.</p>
             </td>
           </ng-container>
-          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_force_closing']" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels.data && pendingForceClosingChannels.data.length>0}"></tr>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_force_closing']" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels?.data && pendingForceClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedForceClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedForceClosingColumns;"></mat-row>
         </mat-table>
@@ -119,10 +119,10 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingClosingChannels || !pendingClosingChannels.data || pendingClosingChannels.data.length<1">No pending channels.</p>
+              <p *ngIf="!pendingClosingChannels || !pendingClosingChannels?.data || pendingClosingChannels?.data?.length<1">No pending channels.</p>
             </td>
           </ng-container>
-          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_closing']" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels.data && pendingClosingChannels.data.length>0}"></tr>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_closing']" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels?.data && pendingClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedClosingColumns;"></mat-row>
         </mat-table>
@@ -172,10 +172,10 @@
           </ng-container>
           <ng-container matColumnDef="no_pending_wait_closing">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!pendingWaitClosingChannels || !pendingWaitClosingChannels.data || pendingWaitClosingChannels.data.length<1">No pending channels.</p>
+              <p *ngIf="!pendingWaitClosingChannels || !pendingWaitClosingChannels?.data || pendingWaitClosingChannels?.data?.length<1">No pending channels.</p>
             </td>
           </ng-container>
-          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_wait_closing']" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels.data && pendingWaitClosingChannels.data.length>0}"></tr>
+          <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_wait_closing']" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels?.data && pendingWaitClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedWaitClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedWaitClosingColumns;"></mat-row>
         </mat-table>

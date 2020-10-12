@@ -34,6 +34,11 @@ export interface OnChainSendFunds {
   component?: any;
 }
 
+export interface CLOnChainSendFunds {
+  sweepAll: boolean;
+  component?: any;
+}
+
 export interface OpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
@@ -79,6 +84,7 @@ export interface ECLInvoiceInformation {
 }
 
 export interface ECLPaymentInformation {
+  sentPaymentInfo: any[];
   payment: PaymentSentECL;
   component?: any;
 }
@@ -171,5 +177,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

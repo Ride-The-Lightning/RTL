@@ -1,7 +1,7 @@
 <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70">
-      <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
+      <fa-icon [icon]="faMoneyBillWave" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">UTXOs</span>
     </div>
     <mat-form-field fxFlex="30">
@@ -55,10 +55,10 @@
         </ng-container>
         <ng-container matColumnDef="no_transaction">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listTransactions.data || listTransactions.data.length<1">No transactions available.</p>
+            <p *ngIf="!listTransactions?.data || listTransactions?.data?.length<1">No transactions available.</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions.data && listTransactions.data.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>

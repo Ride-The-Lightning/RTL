@@ -94,7 +94,7 @@
               <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
-                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="stepper.reset()">Start Again</button>
+                <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="onRestart()">Start Again</button>
               </div>
             </form>
           </mat-step>

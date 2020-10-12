@@ -32,11 +32,19 @@
         </ng-container>
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-          <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{payment?.id}}</td>
+          <td mat-cell *matCellDef="let payment">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+              <span class="ellipsis-child">{{payment.id}}</span>
+            </div>
+          </td>
         </ng-container>
-        <ng-container matColumnDef="recipientNodeId">
+        <ng-container matColumnDef="recipientNodeAlias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
-          <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{payment?.recipientNodeId}}</td>
+          <td mat-cell *matCellDef="let payment">
+            <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+              <span class="ellipsis-child">{{payment.recipientNodeAlias}}</span>
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="recipientAmount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount (Sats)</th>
@@ -52,15 +60,82 @@
             </div>
           </th>
           <td mat-cell *matCellDef="let payment" class="px-3" fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment,$event)">View Info</button>          
+            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment)">View Info</button>          
           </td>
         </ng-container>
         <ng-container matColumnDef="no_payment">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!payments.data || payments.data.length<1">No payments available.</p>
+            <p *ngIf="!payments?.data || payments?.data?.length<1">No payments available.</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments.data && payments.data.length>0}"></tr>
+
+       <!-- Payment Group Row Start -->
+       <ng-container matColumnDef="groupTotal">
+        <td mat-cell *matCellDef="let payment">
+          <span fxLayoutAlign="start center" class="part-row-span">
+            Total Attempts: {{payment?.parts?.length}}
+          </span>
+          <ng-container *ngIf="payment.is_expanded">
+            <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span pl-3">
+              {{part.timestampStr}}
+            </span>
+          </ng-container>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="groupId">
+        <td mat-cell *matCellDef="let payment">
+          <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+            <span class="ellipsis-child">{{payment.id}}</span>
+          </div>
+          <span *ngIf="payment.is_expanded">
+            <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
+              <span fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+                <span class="ellipsis-child">{{part.id}}</span>
+              </span>
+            </span>
+          </span>          
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="groupChannelAlias">
+        <td mat-cell *matCellDef="let payment">
+          <div fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+            <span class="ellipsis-child">{{payment?.recipientNodeAlias}}</span>
+          </div>
+          <span *ngIf="payment.is_expanded">
+            <span *ngFor="let part of payment?.parts" fxLayoutAlign="start center" class="part-row-span">
+              <span  fxLayoutAlign="start center" class="ellipsis-parent part-row-span" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+                <span class="ellipsis-child">{{part.toChannelAlias}}</span>
+              </span>
+            </span>
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="groupAmount">
+        <td mat-cell *matCellDef="let payment">
+          <span fxLayoutAlign="end center" class="part-row-span">{{payment?.recipientAmount | number:'1.0-0'}}</span>
+          <span *ngIf="payment.is_expanded">
+            <span *ngFor="let part of payment?.parts" fxLayoutAlign="end center" class="part-row-span">
+              {{part.amount | number:'1.0-0'}}
+            </span>
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="groupAction">
+        <td mat-cell *matCellDef="let payment" class="px-3">
+          <span fxLayoutAlign="end start">
+            <button mat-flat-button class="btn-part-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
+          </span>
+          <div *ngIf="payment.is_expanded">
+            <div *ngFor="let part of payment?.parts; index as i" fxLayoutAlign="end start">
+              <button mat-stroked-button class="btn-part-info" color="primary" type="button" tabindex="6" (click)="onPartClick(part, payment)">View {{i + 1}}</button>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-row *matRowDef="let row; columns: partColumns; when: is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
+      <!-- Payment Group Row End -->
+
+        <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>

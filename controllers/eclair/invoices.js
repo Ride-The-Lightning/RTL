@@ -5,6 +5,7 @@ var options = {};
 var pendingInvoices = [];
 
 getReceivedPaymentInfo = (invoice) => {
+  logger.info({fileName: 'Invoice', msg: 'Invoice Received: ' + JSON.stringify(invoice)});
   let idx = -1;
   return new Promise(function(resolve, reject) {
     invoice.timestampStr =  (!invoice.timestamp) ? '' : common.convertTimestampToDate(invoice.timestamp);
@@ -17,10 +18,10 @@ getReceivedPaymentInfo = (invoice) => {
       options.form = { paymentHash: invoice.paymentHash };
       request(options).then(response => {
         invoice.status = response.status.type;
-        invoice.amount = Math.round(response.status.amount/1000);
-        if (response.status.receivedAt) {
-          invoice.receivedAt = Math.round(response.status.receivedAt / 1000);
-          invoice.receivedAtStr = common.convertTimestampToDate(invoice.receivedAt);
+        if (response.status && response.status.type === 'received') {
+          invoice.amountSettled = response.status.amount ? Math.round(response.status.amount/1000) : 0;
+          invoice.receivedAt = response.status.receivedAt ? Math.round(response.status.receivedAt / 1000) : 0;
+          invoice.receivedAtStr = response.status.receivedAt ? common.convertTimestampToDate(invoice.receivedAt) : '';
         }
         resolve(invoice);
       }).catch(err => {

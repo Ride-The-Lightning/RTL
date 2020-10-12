@@ -69,7 +69,12 @@ exports.connectPeer = (req, res, next) => {
     if (body === 'already connected') {
       return res.status(500).json({
         message: "Connect Peer Failed!",
-        error: "already connected"
+        error: "Already connected"
+      });
+    } else if (typeof body === 'string' && body.includes('connection failed')) {
+      return res.status(500).json({
+        message: "Connect Peer Failed!",
+        error: body.charAt(0).toUpperCase() + body.slice(1)
       });
     }
     options.url = common.getSelLNServerUrl() + '/peers';
@@ -87,7 +92,7 @@ exports.connectPeer = (req, res, next) => {
             peer.alias = foundPeer ? foundPeer.alias : peer.nodeId.substring(0, 20);
           });
           let peers = (body) ? common.sortDescByStrKey(body, 'alias') : [];
-          peers = common.newestOnTop(peers, 'nodeId', req.query.uri ? req.query.uri.substring(0, req.query.uri.indexOf('@')) : req.query.nodeId ? req.query.nodeId : '');
+          peers = common.newestOnTop(peers, 'nodeId', req.query.nodeId ? req.query.nodeId : '');
           logger.info({fileName: 'Peers', msg: 'Peer with Newest On Top: ' + JSON.stringify(peers)});
           logger.info({fileName: 'Peers', msg: 'Peer Added Successfully'});
           res.status(201).json(peers);

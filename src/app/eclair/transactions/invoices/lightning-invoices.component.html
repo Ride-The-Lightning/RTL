@@ -53,8 +53,15 @@
         </ng-container>
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-3"> Amount (Sats) </th>
-          <td mat-cell *matCellDef="let invoice" class="pr-3"><span fxLayoutAlign="end center"> {{invoice.amount | number:'1.0-0'}}
-            </span></td>
+          <td mat-cell *matCellDef="let invoice" class="pr-3">
+            <span fxLayoutAlign="end center"> {{invoice.amount ? (invoice.amount | number:'1.0-0') : '-'}}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="amountSettled">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pr-3"> Amount Settled (Sats) </th>
+          <td mat-cell *matCellDef="let invoice" class="pr-3">
+            <span fxLayoutAlign="end center"> {{invoice.amountSettled ? (invoice.amountSettled | number:'1.0-0') : '-'}}</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="px-3">
@@ -71,10 +78,10 @@
         </ng-container>
         <ng-container matColumnDef="no_invoice">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!invoices.data || invoices.data.length<1">No invoices available.</p>
+            <p *ngIf="!invoices?.data || invoices?.data?.length<1">No invoices available.</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices.data && invoices.data.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.label == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>

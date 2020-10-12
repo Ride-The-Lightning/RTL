@@ -1,6 +1,6 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Subject, of, Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Subject, throwError } from 'rxjs';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -14,8 +14,9 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
+  private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService,) {}
 
@@ -25,7 +26,12 @@ export class DataService implements OnInit, OnDestroy {
     return this.childAPIUrl;
   }
 
+  getLnImplementation() {
+    return this.lnImplementation;
+  }
+
   setChildAPIUrl(lnImplementation: string) {
+    this.lnImplementation = lnImplementation;    
     switch (lnImplementation) {
       case 'CLT':
         this.childAPIUrl = API_URL + '/cl';
@@ -45,12 +51,55 @@ export class DataService implements OnInit, OnDestroy {
     return this.httpClient.get(environment.CONF_API + '/rates');
   }
 
-  getAliasesFromPubkeys(pubkeys: string[]) {
-    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/nodes/' + pubkeys)
+  decodePayment(payment: string, fromDialog: boolean) {
+    let url = this.childAPIUrl + environment.PAYREQUEST_API + '/' + payment;
+    if (this.getLnImplementation() === 'ECL') {
+      url = this.childAPIUrl + environment.PAYMENTS_API + '/getsentinfo/' + payment;
+    }
+    this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+    return this.httpClient.get(url)
+    .pipe(takeUntil(this.unSubs[3]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());      
+      return res;
+    }),
+    catchError(err => {
+      if (fromDialog) {
+        this.handleErrorWithoutAlert('Decode Payment', err);
+      } else {
+        this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.childAPIUrl + environment.PAYREQUEST_API, err);
+      }
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
   }
 
-  getAliasFromPubkey(pubkey: string) {
-    return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/node/' + pubkey)
+  decodePayments(payments: string) {
+    let url = this.childAPIUrl + environment.PAYREQUEST_API;
+    let msg = 'Decoding Payments';
+    if (this.getLnImplementation() === 'ECL') {
+      url = this.childAPIUrl + environment.PAYMENTS_API + '/getsentinfos';
+      msg = 'Getting Sent Payments';
+    }
+    this.store.dispatch(new RTLActions.OpenSpinner(msg + '...'));
+    return this.httpClient.post(url, {payments: payments})
+    .pipe(takeUntil(this.unSubs[0]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());      
+      return res;
+    }),
+    catchError(err => {
+      this.handleErrorWithAlert('ERROR', msg + ' Failed', url, err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
+  }
+
+  getAliasesFromPubkeys(pubkey: string, multiple: boolean) {
+    if (multiple) {
+      let pubkey_params = new HttpParams().set('pubkeys', pubkey);
+      return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/nodes', {params: pubkey_params});
+    } else {
+      return this.httpClient.get(this.childAPIUrl + environment.NETWORK_API + '/node/' + pubkey);
+    }
   }
 
   signMessage(msg: string) {
@@ -63,7 +112,7 @@ export class DataService implements OnInit, OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Sign Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/sign', err);
-      throw err;
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
     }));
   }
 
@@ -77,7 +126,7 @@ export class DataService implements OnInit, OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Verify Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/verify', err);
-      throw err;
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
     }));    
   }
 
@@ -87,8 +136,6 @@ export class DataService implements OnInit, OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else {
-      this.store.dispatch(new LNDActions.EffectError({ action: actionName, code: err.status.toString(), message: err.error.error }));
     }
   }
 

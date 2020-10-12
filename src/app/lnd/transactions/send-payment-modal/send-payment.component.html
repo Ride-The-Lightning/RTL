@@ -38,8 +38,8 @@
               <mat-error *ngIf="selFeeLimitType !== feeLimitTypes[0] && !feeLimit">{{selFeeLimitType.placeholder}} is required.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="40" fxLayoutAlign="start end">
-              <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel">
-                <mat-option *ngFor="let activeChannel of activeChannels" [value]="activeChannel">
+              <mat-select tabindex="7" [(value)]="selActiveChannel" placeholder="First Outgoing Channel" [disabled]="filteredMinAmtActvChannels && filteredMinAmtActvChannels.length < 1">
+                <mat-option *ngFor="let activeChannel of filteredMinAmtActvChannels" [value]="activeChannel">
                   {{activeChannel.remote_alias || activeChannel.chan_id}}
                 </mat-option>
               </mat-select>

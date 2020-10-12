@@ -262,8 +262,9 @@ exports.getRemoteFeePolicy = (req, res, next) => {
 
 exports.getAliasesForPubkeys = (req, res, next) => {
   options = common.getOptions();
-  if (req.params.pubKeys.length && req.params.pubKeys.length > 0) {
-    Promise.all(req.params.pubKeys.map(pubkey => {return getAliasFromPubkey(pubkey)}))
+  if (req.query.pubkeys) {
+    let pubkeyArr = req.query.pubkeys.split(',');
+    Promise.all(pubkeyArr.map(pubkey => {return getAliasFromPubkey(pubkey)}))
     .then(function(values) {
       logger.info({fileName: 'Graph', msg: 'Node Alias: ' + JSON.stringify(values)});
       res.status(200).json(values);
