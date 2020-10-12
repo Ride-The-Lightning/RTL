@@ -48,10 +48,10 @@
       </ng-container>
       <ng-container matColumnDef="no_closed_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!closedChannels.data || closedChannels.data.length<1">No closed channels available.</p>
+          <p *ngIf="!closedChannels?.data || closedChannels?.data?.length<1">No closed channels available.</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_closed_channel']" [ngClass]="{'display-none': closedChannels.data && closedChannels.data.length>0}"></tr>
+      <tr mat-footer-row *matFooterRowDef="['no_closed_channel']" [ngClass]="{'display-none': closedChannels?.data && closedChannels?.data?.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>

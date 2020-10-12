@@ -46,10 +46,10 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!forwardingHistoryEvents.data || forwardingHistoryEvents.data.length<1">No forwarding event available.</p>
+          <p *ngIf="!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1">No forwarding event available.</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents.data && forwardingHistoryEvents.data.length>0}"></tr>
+      <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
