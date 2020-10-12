@@ -29,6 +29,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  public isCompatibleVersion = false;
   public totalBalance = 0;
   public displayedColumns = [];
   public channels: any;
@@ -73,6 +74,9 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
         }
       });
       this.information = rtlStore.information;
+      if (this.information.api_version) {
+        this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');
+      }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       if (rtlStore.allChannels) {

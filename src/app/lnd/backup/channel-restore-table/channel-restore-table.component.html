@@ -5,11 +5,11 @@
       <button mat-flat-button color="primary" tabindex="1" (click)="onRestoreChannels({})">Restore All</button>
     </div>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && (!channels || channels.data.length<=0)">
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && (!channels || channels?.data?.length<=0)">
     <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
     <h4 fxFlex="100" class="mt-1">All channel backup file not found! To perform channel restoration, channel backup file/s must be placed at the above location.</h4>
   </div>
-  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && channels && channels.data.length && channels.data.length>0">
+  <div fxLayout="column" fxLayoutAlign="space-between start" fxLayout.gt-md="row wrap" *ngIf="!allRestoreExists && channels && channels?.data?.length && channels?.data?.length>0">
     <h4 fxFlex="100">Restore folder location: {{selNode.channelBackupPath}}/restore</h4>
   </div>
   <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
@@ -35,10 +35,10 @@
       </ng-container>
       <ng-container matColumnDef="no_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!channels || !channels.data || channels.data.length<1">No singular channel backups available.</p>
+          <p *ngIf="!channels || !channels.data || channels?.data?.length<1">No singular channel backups available.</p>
         </td>
       </ng-container>
-      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels && channels.data && channels.data.length>0}"></tr>
+      <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels && channels.data && channels?.data?.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>

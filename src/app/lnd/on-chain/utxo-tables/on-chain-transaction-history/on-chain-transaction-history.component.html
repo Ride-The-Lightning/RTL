@@ -49,10 +49,10 @@
         </ng-container>
         <ng-container matColumnDef="no_transaction">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listTransactions?.data || listTransactions?.data.length<1">No transactions available.</p>
+            <p *ngIf="!listTransactions?.data || listTransactions?.data?.length<1">No transactions available.</p>
           </td>
         </ng-container>
-        <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data.length>0}"></tr>
+        <tr mat-footer-row *matFooterRowDef="['no_transaction']" [ngClass]="{'display-none': listTransactions?.data && listTransactions?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
