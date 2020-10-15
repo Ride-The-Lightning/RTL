@@ -1,13 +1,6 @@
 ## Contributing to RTL
 Thanks for your interest in contributing to the development of RTL. RTL is a community project and aspires to remain free and open source for the benefit of the community. With that objective in mind, this document provides contribution guidelines which the community can utilize to contribute towards the development and maintenance of this software.
 
-Table Of Contents
-* [How Can I Contribute](#how)
-* [Getting Started](#start)
-* [Dependencies](#dependency)
-* [UI & UX Design Decisions](#design)
-* [Style Guidlines](#guidlines)
-
 ### <a name="how"></a>How Can I Contribute
 There are multiple ways you can contribute towards the development and not all of those methods involve coding. Below are a few examples on how meaningful contributions can be made.
 * [Bug Report](#bug) - While using RTL, if you notice something is not working correctly create a bug report, by creating an issue.
@@ -15,6 +8,7 @@ There are multiple ways you can contribute towards the development and not all o
 * [Testing](#testing) - Testing is one the easiest and most sought after method of contribution. Testing can be done on release branches, so that releases are relatively bug free.
 * [Design](#design) - Design inputs can be made based on user enhancement suggestions or novel ideas which you get while using RTL.
 * [Code](#code) - Development contributions are made via making coding changes to the software and getting it tested, reviewed and merged.
+* [Code Review](#codereview) - Code review contributions are made by reviewing the code changes submitted via PRs to address bugs or feature requests
 
 #### <a name="bug"></a>Bug Report
 Bug reports are reports of technical or functional issues with the software. Bug reports help with the removal of defects from the software and improve its quality. Guidelines for submitting a bug report:
