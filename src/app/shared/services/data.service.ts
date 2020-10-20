@@ -54,7 +54,7 @@ export class DataService implements OnInit, OnDestroy {
   decodePayment(payment: string, fromDialog: boolean) {
     let url = this.childAPIUrl + environment.PAYREQUEST_API + '/' + payment;
     if (this.getLnImplementation() === 'ECL') {
-      url = this.childAPIUrl + environment.PAYMENTS_API + '/getsentinfo/' + payment;
+      url = this.childAPIUrl + environment.PAYMENTS_API + '/' + payment;
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
     return this.httpClient.get(url)
