@@ -78,7 +78,7 @@
 <ng-template #sweepAllBlock>
   <div fxLayout="column">
     <mat-vertical-stepper [linear]="true" #stepper (selectionChange)="stepSelectionChanged($event)">
-      <mat-step [stepControl]="passwordFormGroup" [editable]="flgEditable">
+      <mat-step *ngIf="!appConfig.sso.rtlSSO" [stepControl]="passwordFormGroup" [editable]="flgEditable">
         <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayoutAlign="space-between" class="my-1 pr-1">
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
