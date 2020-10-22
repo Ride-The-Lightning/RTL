@@ -18,7 +18,7 @@ exports.authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else {
       logger.error({fileName: 'Authenticate', lineNum: 20, msg: 'SSO Authentication Failed!'});
-      res.status(401).json({
+      res.status(406).json({
         message: "Login Failure!",
         error: "SSO Authentication Failed!"
       });
