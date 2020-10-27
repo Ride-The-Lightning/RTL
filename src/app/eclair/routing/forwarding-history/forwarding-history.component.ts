@@ -78,10 +78,6 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.forwardingHistoryEvents.paginator = this.paginator;
-    this.forwardingHistoryEvents.filterPredicate = (event: PaymentRelayed, fltr: string) => {
-      const newEvent = event.amountIn + event.amountOut + event.paymentHash + event.fromChannelId + event.toChannelId + event.timestampStr;
-      return newEvent.includes(fltr.toLowerCase());
-    };    
     this.logger.info(this.forwardingHistoryEvents);
   }
 
