@@ -196,7 +196,7 @@ exports.updateChannelRelayFee = (req, res, next) => {
 
 exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
-  if (!req.query.force) {
+  if (req.query.force !== 'true') {
     options.url = common.getSelLNServerUrl() + '/close';
   } else {
     options.url = common.getSelLNServerUrl() + '/forceclose';
