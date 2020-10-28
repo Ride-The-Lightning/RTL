@@ -109,6 +109,7 @@ export interface Channel {
   toLocal?: number;
   toRemote?: number;
   shortChannelId?: string;
+  isFunder?: boolean;
   buried?: boolean;
   feeBaseMsat?: number;
   feeProportionalMillionths?: number;
@@ -217,4 +218,12 @@ export interface LookupNode {
   alias?: string;
   addresses?: string[];
   unknownFields?: string;
+}
+
+export interface RoutingPeers {
+  channelId?: string;
+  alias?: string;
+  events?: number;
+  totalAmount?: number;
+  totalFee?: number;
 }

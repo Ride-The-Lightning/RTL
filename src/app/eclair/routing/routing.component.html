@@ -12,6 +12,10 @@
               <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
               <rtl-ecl-forwarding-history *ngIf="errorMessage === ''" [successfulEvents]="events"></rtl-ecl-forwarding-history>
             </mat-tab>
+            <mat-tab label="Routing Peers">
+              <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+              <rtl-ecl-routing-peers *ngIf="errorMessage === '' && events" [routingPeersData]="events"></rtl-ecl-routing-peers>
+            </mat-tab>
           </mat-tab-group>
         </div>
       </mat-card-content>

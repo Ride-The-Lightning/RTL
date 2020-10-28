@@ -37,12 +37,15 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amountIn', 'actions'];
-    } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
+    } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['timestamp', 'amountIn', 'fee', 'actions'];
+    } else if(this.screenSize === ScreenSizeEnum.MD) {
+      this.flgSticky = false;
+      this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'amountIn', 'fee', 'fromAlias', 'toAlias', 'actions'];
+      this.displayedColumns = ['timestamp', 'fromAlias', 'toAlias', 'amountIn', 'amountOut', 'fee', 'actions'];
     }
   }
 
