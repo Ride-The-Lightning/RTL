@@ -919,7 +919,7 @@ export class LNDEffects implements OnDestroy {
   initWallet = this.actions$.pipe(
     ofType(LNDActions.INIT_WALLET_LND),
     mergeMap((action: LNDActions.InitWallet) => {
-      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/initwallet',
+      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/wallet/initwallet',
         {
           wallet_password: action.payload.pwd,
           cipher_seed_mnemonic: action.payload.cipher ? action.payload.cipher : '',
@@ -946,7 +946,7 @@ export class LNDEffects implements OnDestroy {
   unlockWallet = this.actions$.pipe(
     ofType(LNDActions.UNLOCK_WALLET_LND),
     mergeMap((action: LNDActions.UnlockWallet) => {
-      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/unlockwallet', { wallet_password: action.payload.pwd })
+      return this.httpClient.post(this.CHILD_API_URL + environment.WALLET_API + '/wallet/unlockwallet', { wallet_password: action.payload.pwd })
         .pipe(
           map((postRes) => {
             this.logger.info(postRes);

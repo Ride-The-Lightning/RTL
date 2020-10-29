@@ -139,3 +139,36 @@ exports.getUTXOs = (req, res, next) => {
     });
   });
 }
+
+exports.bumpFee = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/bumpfee';
+  options.form = {};
+  options.form.outpoint = {
+    txid_str: req.body.txid,
+    output_index: req.body.outputIndex
+  };
+  if (req.body.targetConf) {
+    options.form.target_conf = req.body.targetConf;
+  } else if (req.body.satPerByte) {
+    options.form.sat_per_byte = req.body.satPerByte;
+  }
+  options.form = JSON.stringify(options.form);
+  request.post(options).then((body) => {
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Wallet', lineNum: 170, msg: 'Bump Fee Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Bump fee failed!",
+      error: err.error
+    });
+  });
+}

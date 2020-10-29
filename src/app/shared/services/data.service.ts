@@ -3,12 +3,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subject, throwError } from 'rxjs';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
-import * as LNDActions from '../../lnd/store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -18,7 +18,7 @@ export class DataService implements OnInit, OnDestroy {
   private childAPIUrl = API_URL;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService,) {}
+  constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
 
   ngOnInit() {}
 
@@ -126,6 +126,24 @@ export class DataService implements OnInit, OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Verify Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/verify', err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));    
+  }
+
+  bumpFee(txid: string, outputIndex: number, targetConf: number, satPerByte: number) {
+    let bumpFeeBody: any = {txid: txid, outputIndex: outputIndex};
+    if (targetConf) { bumpFeeBody.targetConf = targetConf; }
+    if (satPerByte) { bumpFeeBody.satPerByte = satPerByte; }
+    this.store.dispatch(new RTLActions.OpenSpinner('Bumping Fee...'));
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/bumpfee', bumpFeeBody)
+    .pipe(takeUntil(this.unSubs[2]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.snackBar.open('Successfully bumped the fee. Use the block explorer to verify transaction.');
+      return res;
+    }),
+    catchError(err => {
+      this.handleErrorWithoutAlert('Bump Fee', err);
       return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
     }));    
   }
