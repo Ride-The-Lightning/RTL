@@ -265,6 +265,9 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
                 if (!event.alias_out) { event.alias_out = event.chan_id_out; }
               }
             }
+          } else {
+            event.alias_in = event.chan_id_in;
+            event.alias_out = event.chan_id_out;
           }
         });
       } else {

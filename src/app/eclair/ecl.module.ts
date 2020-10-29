@@ -27,6 +27,7 @@ import { ECLLightningPaymentsComponent } from './transactions/payments/lightning
 import { ECLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { ECLRoutingComponent } from './routing/routing.component';
 import { ECLForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
+import { ECLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { ECLLookupsComponent } from './lookups/lookups.component';
 import { ECLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
 import { ECLUnlockedGuard } from '../shared/services/auth.guard';
@@ -57,6 +58,7 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLChannelInactiveTableComponent,
     ECLRoutingComponent,
     ECLForwardingHistoryComponent,
+    ECLRoutingPeersComponent,
     ECLTransactionsComponent,
     ECLQueryRoutesComponent,
     ECLLightningPaymentsComponent,

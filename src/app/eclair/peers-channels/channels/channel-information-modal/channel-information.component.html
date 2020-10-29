@@ -55,8 +55,8 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.channelFlags === 0 ? 'Yes' : 'No'}}</span>
           </div>
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Buried</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Funder</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.isFunder ? 'Yes' : 'No'}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced && channelsType === 'open'">
