@@ -9,7 +9,7 @@
     <mat-card-content class="mt-5px">
       <form fxLayout="column">
         <div fxLayout="column" class="bordered-box my-2 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel: {{bumpFeeChannel?.channel?.channel_point}}</p>
+          <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel point: {{bumpFeeChannel?.channel?.channel_point}}</p>
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div fxFlex="100" class="alert alert-info">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
@@ -23,12 +23,12 @@
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
               <mat-form-field fxFlex.gt-sm="32" fxLayoutAlign="start end">
-                <input matInput [(ngModel)]="outputIndex" placeholder="Output Index" type="number" step="1" min="0" tabindex="1" required name="outputIdx" #outputIdx="ngModel">
-                <mat-error *ngIf="outputIdx.errors?.required">Output index is required.</mat-error>
-                <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid output index value.</mat-error>
+                <input matInput [(ngModel)]="outputIndex" placeholder="Index for Change Output" type="number" step="1" min="0" tabindex="1" required name="outputIdx" #outputIdx="ngModel">
+                <mat-error *ngIf="outputIdx.errors?.required">Index for change output is required.</mat-error>
+                <mat-error *ngIf="outputIdx.errors?.pendingChannelOutputIndex">Invalid index value.</mat-error>
               </mat-form-field>
               <mat-form-field fxFlex.gt-sm="32">
-                <mat-select [(value)]="selTransType" tabindex="2">
+                <mat-select [(value)]="selTransType" (selectionChange)="blocks = null;fees = null;" tabindex="2">
                   <mat-option *ngFor="let transType of transTypes" [value]="transType.id">
                     {{transType.name}}
                   </mat-option>

@@ -1,6 +1,6 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -145,7 +145,7 @@ export class DataService implements OnInit, OnDestroy {
     catchError(err => {
       this.handleErrorWithoutAlert('Bump Fee', err);
       return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    }));    
+    }));
   }
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
