@@ -16,9 +16,10 @@
               <span fxLayout="column" fxFlex="100">Bumping fee on pending open channels is an advanced feature, attempt it only if you are familiar with the functionality of Bitcoin transactions.
                 <div>Before attempting fee bump ensure the following:</div>
                 <div class="pl-1">1: Use a Bitcoin block explorer to ensure that channel opening transaction is not confirmed.</div>
-                <div class="pl-1">2: The channel opening transaction must have a sizable change output, which can be spent further.</div>
-                <div class="pl-1">3: Confirm the index value of the change output via a block explorer.</div>
-                <div class="pl-1">4: Upon successful fee bump, use the block explorer to verify transaction inclusion on the block.</div>
+                <div class="pl-1">2: The channel opening transaction must have a sizable change output, which can be spent further. The fee cannot be bumped without the change output.</div>
+                <div class="pl-1">3: Find the index value of the change output via a block explorer.</div>
+                <div class="pl-1">4: Enter the index value of the change output in the form below and the desired fee rate.</div>
+                <div class="pl-1">5: Upon successful fee bump, use your block explorer to track the child transaction in the mempool, which should be linked with the change output transaction.</div>
               </span>
             </div>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
