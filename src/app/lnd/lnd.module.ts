@@ -18,6 +18,7 @@ import { OnChainTransactionHistoryComponent } from './on-chain/utxo-tables/on-ch
 import { WalletComponent } from './wallet/wallet.component';
 import { LightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { ChannelPendingTableComponent } from './peers-channels/channels/channels-tables/channel-pending-table/channel-pending-table.component';
+import { BumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-fee.component';
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
@@ -64,6 +65,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     WalletComponent,
     LightningPaymentsComponent,
     ChannelPendingTableComponent,
+    BumpFeeComponent,
     ChannelClosedTableComponent,
     TransactionsComponent,
     LookupsComponent,

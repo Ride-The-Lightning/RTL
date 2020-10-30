@@ -5,10 +5,11 @@ import { Store } from '@ngrx/store';
 
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Channel, GetInfo, PendingChannels } from '../../../../../shared/models/lndModels';
+import { Channel, GetInfo, PendingChannels, PendingOpenChannel } from '../../../../../shared/models/lndModels';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
+import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
@@ -121,6 +122,13 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
     }}));
   }
 
+  onBumpFee(selChannel: PendingOpenChannel) {
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      pendingChannel: selChannel,
+      component: BumpFeeComponent
+    }}));
+  }
+  
   onForceClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['closing_txid', 'limbo_balance', 'maturity_height', 'blocks_til_maturity', 'recovered_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
