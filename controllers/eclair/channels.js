@@ -16,6 +16,7 @@ simplifyAllChannels = (channels) => {
       toLocal: (channel.data.commitments.localCommit.spec.toLocal) ? Math.round(+channel.data.commitments.localCommit.spec.toLocal/1000) : 0,
       toRemote: (channel.data.commitments.localCommit.spec.toRemote) ? Math.round(+channel.data.commitments.localCommit.spec.toRemote/1000) : 0,
       shortChannelId: channel.data && channel.data.shortChannelId ? channel.data.shortChannelId : '',
+      isFunder: channel.data && channel.data.commitments && channel.data.commitments.localParams && channel.data.commitments.localParams.isFunder ? channel.data.commitments.localParams.isFunder : false,
       buried: channel.data && channel.data.buried ? channel.data.buried : false,
       feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
       feeProportionalMillionths: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeProportionalMillionths ? channel.data.channelUpdate.feeProportionalMillionths : 0,
@@ -196,7 +197,7 @@ exports.updateChannelRelayFee = (req, res, next) => {
 
 exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
-  if (!req.query.force) {
+  if (req.query.force !== 'true') {
     options.url = common.getSelLNServerUrl() + '/close';
   } else {
     options.url = common.getSelLNServerUrl() + '/forceclose';

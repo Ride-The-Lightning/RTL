@@ -25,9 +25,15 @@
             <mat-cell fxLayoutAlign="end center" *matCellDef="let channel">{{channel.channel.capacity | number}}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <mat-header-cell fxLayoutAlign="end center" class="px-4" *matHeaderCellDef>Actions</mat-header-cell>            
-            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="px-4">
-              <button mat-stroked-button color="primary" type="button" tabindex="1" (click)="onOpenClick(channel)">View Info</button>
+            <mat-header-cell fxLayoutAlign="end center" class="pl-3 pr-4" *matHeaderCellDef>Actions</mat-header-cell>            
+            <mat-cell fxLayoutAlign="end center" *matCellDef="let channel" class="px-3">
+              <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+                <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                  <mat-select-trigger></mat-select-trigger>
+                  <mat-option (click)="onOpenClick(channel)">View Info</mat-option>
+                  <mat-option (click)="onBumpFee(channel)">Bump Fee</mat-option>
+                </mat-select>
+              </div>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="no_pending_open">

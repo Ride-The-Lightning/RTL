@@ -171,11 +171,21 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
                 event.toShortChannelId = storedChannels[idx].shortChannelId ? storedChannels[idx].shortChannelId : '';
                 if (event.fromChannelAlias) { return; }
               }
+              if (idx === storedChannels.length-1) {
+                if (!event.fromChannelAlias) {
+                  event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
+                  event.fromShortChannelId = '';
+                }
+                if (!event.toChannelAlias) {
+                  event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
+                  event.toShortChannelId = '';
+                }
+              }
             }
           } else {
-            event.fromChannelAlias = event.fromChannelId;
+            event.fromChannelAlias = event.fromChannelId.substring(0, 17) + '...';
             event.fromShortChannelId = '';
-            event.toChannelAlias = event.toChannelId;
+            event.toChannelAlias = event.toChannelId.substring(0, 17) + '...';
             event.toShortChannelId = '';
           }
         });

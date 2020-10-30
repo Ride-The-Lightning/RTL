@@ -352,7 +352,7 @@ export class ECLEffects implements OnDestroy {
             setTimeout(() => {
               this.store.dispatch(new RTLActions.CloseSpinner());
               this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: false}));
-              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Closed Successfully!'));
+              this.store.dispatch(new RTLActions.OpenSnackBar(action.payload.force ? 'Channel Force Closed Successfully!' : 'Channel Closed Successfully!'));
             }, 2000);
             return {
               type: RTLActions.VOID
