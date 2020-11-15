@@ -293,19 +293,11 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   onLoopOut(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
-    this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe(response => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
-        channel: selChannel,
-        minQuote: response[0],
-        maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
-        component: LoopModalComponent
-      }}));    
-    });
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      channel: selChannel,
+      direction: SwapTypeEnum.WITHDRAWAL,
+      component: LoopModalComponent
+    }}));
   }
 
   onDownloadCSV() {

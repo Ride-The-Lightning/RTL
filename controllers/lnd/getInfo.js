@@ -2,6 +2,7 @@ var request = require('request-promise');
 var common = require('../../common');
 var logger = require('../logger');
 var connect = require('../../connect');
+var boltzController = require('../../controllers/lnd/boltzSwaps');
 var options = {};
 
 exports.getInfo = (req, res, next) => {
@@ -20,6 +21,7 @@ exports.getInfo = (req, res, next) => {
     common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
     request(options).then((body) => {
       logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});
+      boltzController.checkBoltzSwaps(body.chains[0].network);
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if(!body || search_idx > -1 || body.error) {

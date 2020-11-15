@@ -1107,6 +1107,59 @@ export class LNDEffects implements OnDestroy {
       }
     ));
 
+    @Effect()
+    getBoltzSwaps = this.actions$.pipe(
+      ofType(LNDActions.FETCH_BOLTZ_SWAPS),
+      mergeMap((action: LNDActions.FetchBoltzSwaps) => {
+        this.store.dispatch(new LNDActions.ClearEffectError('FetchBoltzSwaps'));
+        return this.httpClient.get(this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/list')
+          .pipe(
+            map((resRestoreList) => {
+              this.logger.info(resRestoreList);
+              this.store.dispatch(new RTLActions.CloseSpinner());
+              return {
+                type: LNDActions.SET_BOLTZ_SWAPS,
+                payload: resRestoreList ? resRestoreList : []
+              };
+            }),
+            catchError((err: any) => {
+              this.store.dispatch(new LNDActions.EffectError({ action: 'FetchBoltzSwaps', code: err.status, message: err.error.message }));
+              this.handleErrorWithAlert('ERROR', 'Fetching Boltz Swaps Failed', this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/list', err);
+              return of({type: RTLActions.VOID});
+            })
+          );
+      })
+    );
+  
+    @Effect({ dispatch: false })
+    setBoltzSwaps = this.actions$.pipe(
+      ofType(LNDActions.SET_BOLTZ_SWAPS),
+      map((action: LNDActions.SetBoltzSwaps) => {
+        this.logger.info(action.payload);
+        return action.payload;
+      })
+    );
+  
+    @Effect({ dispatch: false })
+    addBoltzSwap = this.actions$.pipe(
+      ofType(LNDActions.ADD_BOLTZ_SWAP),
+      mergeMap((action: LNDActions.AddBoltzSwap) => {
+        this.store.dispatch(new LNDActions.ClearEffectError('AddBoltzSwaps'));
+        return this.httpClient.post(this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/add', action.payload.swap)
+          .pipe(
+            map((createBoltzSwapRes) => {
+              this.logger.info(createBoltzSwapRes);
+              return of({type: RTLActions.VOID});
+            }),
+            catchError((err: any) => {
+              this.store.dispatch(new LNDActions.EffectError({ action: 'AddBoltzSwaps', code: err.status, message: err.error.message }));
+              this.handleErrorWithAlert('ERROR', 'Adding Boltz Swap Failed', this.CHILD_API_URL + environment.BOLTZ_SWAPS_API + '/swaps/add', err);
+              return of({type: RTLActions.VOID});
+            })
+          );
+      })
+    );
+
     initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     if (info.chains) {

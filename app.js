@@ -29,6 +29,7 @@ const invoiceRoutes = require("./routes/lnd/invoices");
 const switchRoutes = require("./routes/lnd/switch");
 const loopRoutes = require('./routes/lnd/loop');
 const messageRoutes = require("./routes/lnd/message");
+const boltzRoutes = require("./routes/lnd/boltzSwaps")
 
 const infoCLRoutes = require("./routes/c-lightning/getInfo");
 const feesCLRoutes = require("./routes/c-lightning/fees");
@@ -88,6 +89,7 @@ app.use(apiLNDRoot + "invoices", invoiceRoutes);
 app.use(apiLNDRoot + "switch", switchRoutes);
 app.use(apiLNDRoot + "loop", loopRoutes);
 app.use(apiLNDRoot + "message", messageRoutes);
+app.use(apiLNDRoot + "boltz", boltzRoutes);
 
 app.use(apiCLRoot + "getinfo", infoCLRoutes);
 app.use(apiCLRoot + "fees", feesCLRoutes);

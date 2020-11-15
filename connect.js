@@ -18,26 +18,31 @@ connect.setDefaultConfig = () => {
   var macaroonPath = '';
   var configPath = '';
   var channelBackupPath = '';
+  var boltzSwapsPath = '';
   switch (platform) {
     case 'win32':
       macaroonPath = homeDir + '\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet';
       configPath = homeDir + '\\AppData\\Local\\Lnd\\lnd.conf';
       channelBackupPath = homeDir + '\\backup\\node-1';
+      boltzSwapsPath = homeDir + '\\boltz';
       break;
     case 'darwin':
       macaroonPath = homeDir + '/Library/Application Support/Lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/Library/Application Support/Lnd/lnd.conf';
       channelBackupPath = homeDir + '/backup/node-1';
+      boltzSwapsPath = homeDir + '/boltz';
       break;
     case 'linux':
       macaroonPath = homeDir + '/.lnd/data/chain/bitcoin/mainnet';
       configPath = homeDir + '/.lnd/lnd.conf';
       channelBackupPath = homeDir + '/backup/node-1';
+      boltzSwapsPath = homeDir + '/boltz';
       break;
     default:
       macaroonPath = '';
       configPath = '';
       channelBackupPath = '';
+      boltzSwapsPath = '';
       break;
   }  
   return {
@@ -63,9 +68,11 @@ connect.setDefaultConfig = () => {
           themeMode: "DAY",
           themeColor: "PURPLE",
           channelBackupPath: channelBackupPath,
+          boltzSwapsPath: boltzSwapsPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080",
           swapServerUrl: "http://localhost:8081",
+          boltzServerUrl: "https://testnet.boltz.exchange/api/",
           fiatConversion: false
         }
       }
@@ -193,9 +200,11 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].swap_server_url = '';
       }
+      common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL ? process.env.BOLTZ_SERVER_URL : (node.Settings.boltzServerUrl) ? node.Settings.boltzServerUrl.trim() : '';
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
+      common.nodes[idx].boltz_swaps_path = process.env.BOLTZ_SWAPS_PATH ? process.env.BOLTZ_SWAPS_PATH : (node.Settings.boltzSwapsPath) ? node.Settings.boltzSwapsPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
         let exists = fs.existsSync(common.nodes[idx].channel_backup_path + common.path_separator + 'channel-all.bak');
@@ -209,6 +218,12 @@ connect.validateNodeConfig = (config) => {
         }    
       } catch (err) {
         console.error('Something went wrong while creating the backup directory: \n' + err);
+      }
+
+      try {
+        connect.createDirectory(common.nodes[idx].boltz_swaps_path);
+      } catch (err) {
+        console.error('Something went wrong while creating the boltz swaps directory: \n' + err);
       }
 
       if (common.nodes[idx].enable_logging) {
@@ -436,6 +451,12 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
       if (node.Settings.channelBackupPath) {
         newNode.Settings.channelBackupPath = node.Settings.channelBackupPath;
       }
+      if (node.Settings.boltzSwapsPath) {
+        newNode.Settings.boltzSwapsPath = node.Settings.boltzSwapsPath;
+      }
+      if (node.Settings.boltzServerUrl) {
+        newNode.Settings.boltzServerUrl = node.Settings.boltzServerUrl;
+      }
       if (node.Settings.lnServerUrl) {
         newNode.Settings.lnServerUrl = node.Settings.lnServerUrl.endsWith('/v1') ? node.Settings.lnServerUrl.slice(0, -3) : node.Settings.lnServerUrl;
       } else if (node.Settings.lndServerUrl) {
@@ -500,6 +521,12 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
 
   if (config.Settings.channelBackupPath) {
     newConfig.nodes[0].Settings.channelBackupPath = config.Settings.channelBackupPath;
+  }
+  if (config.Settings.boltzSwapsPath) {
+    newConfig.nodes[0].Settings.boltzSwapsPath = config.Settings.boltzSwapsPath;
+  }
+  if (config.Settings.boltzServerUrl) {
+    newConfig.nodes[0].Settings.boltzServerUrl = config.Settings.boltzServerUrl;
   }
   if (config.Settings.lnServerUrl) {
     newConfig.nodes[0].Settings.lnServerUrl = config.Settings.lnServerUrl.endsWith('/v1') ? config.Settings.lnServerUrl.slice(0, -3) : config.Settings.lnServerUrl;

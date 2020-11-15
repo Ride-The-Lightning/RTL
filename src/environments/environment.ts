@@ -12,6 +12,7 @@ export const environment = {
   PEERS_API: '/peers',
   CHANNELS_API: '/channels',
   CHANNELS_BACKUP_API: '/channels/backup',
+  BOLTZ_SWAPS_API: '/boltz',
   GETINFO_API: '/getinfo',
   WALLET_API: '/wallet',
   NETWORK_API: '/network',
@@ -26,3 +27,9 @@ export const environment = {
   MESSAGE_API: '/message',
   VERSION: VERSION
 };
+
+export const boltzEnvironment = {
+  GET_PAIRS: 'getPairs',
+  GET_NODES: 'getNodes',
+  CREATE_SWAP: 'createswap'
+}

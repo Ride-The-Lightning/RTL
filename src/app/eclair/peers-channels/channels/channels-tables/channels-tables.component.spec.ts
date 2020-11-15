@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ECLChannelsTablesComponent } from './channels-tables.component';
 
 describe('ECLChannelsTablesComponent', () => {

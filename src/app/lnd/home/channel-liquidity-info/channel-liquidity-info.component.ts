@@ -1,13 +1,16 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
+import { BoltzModalComponent } from '../../boltz/boltz-modal/boltz-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
+import { BoltzService } from '../../../shared/services/boltz.service';
+
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -25,7 +28,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   private targetConf = 6;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private router: Router, private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private router: Router, private loopService: LoopService, private boltzService: BoltzService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.store.select('lnd')
@@ -53,6 +56,39 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         component: LoopModalComponent
       }}));    
     });
+  }  
+
+  onSubmarine(channel: Channel) {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Pairs...'));
+    this.boltzService.getBoltzServerUrl()
+      .subscribe(boltzServerUrl => {
+        forkJoin(this.boltzService.getPairs(boltzServerUrl), this.boltzService.getNodes(boltzServerUrl))
+        .pipe(takeUntil(this.unSubs[0]))
+        .subscribe(response => {
+          const pairs = response[0]['pairs']["BTC/BTC"];
+          const lndNode = response[1]['nodes']['BTC']['nodeKey'];
+          this.store.dispatch(new RTLActions.CloseSpinner());
+          const minQuote = {
+            swap_fee_sat: (pairs.limits.minimal * pairs.fees.percentage * 0.01).toString(),
+            htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
+            swap_payment_dest: lndNode,
+            amount: pairs.limits.minimal
+          };
+          const maxQuote = {
+            swap_fee_sat: (pairs.limits.maximal * pairs.fees.percentage * 0.01).toString(),
+            htlc_publish_fee_sat: pairs.fees.minerFees.baseAsset.normal.toString(),
+            swap_payment_dest: lndNode,
+            amount: pairs.limits.maximal
+          };
+          this.store.dispatch(new RTLActions.OpenAlert({ data: {
+            channel,
+            minQuote,
+            maxQuote,
+            direction: SwapTypeEnum.WITHDRAWAL,
+            component: BoltzModalComponent
+          }}));
+        })
+      })
   }  
 
   ngOnDestroy() {

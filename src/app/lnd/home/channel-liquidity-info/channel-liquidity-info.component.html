@@ -11,8 +11,15 @@
         <span class="dashboard-capacity-header" matTooltip="{{channel.remote_alias || channel.remote_pubkey}}" matTooltipDisabled="{{(channel.remote_alias || channel.remote_pubkey).length < 26}}">{{(channel.remote_alias || channel.remote_pubkey) | slice:0:24}}{{(channel.remote_alias || channel.remote_pubkey).length > 25 ? '...' : ''}}</span>
         <div fxLayout="row" fxLayoutAlign="space-between stretch" class="w-100">
           <mat-hint *ngIf="direction === 'In'" fxFlex="100" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
-          <mat-hint [fxFlex]="showLoop ? '85' : '100'"  *ngIf="direction === 'Out'" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <button *ngIf="showLoop && direction === 'Out'" fxLayout="column" fxLayoutAlign="center end" class="button-link-dashboard" color="primary" fxFlex="15" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
+          <mat-hint [fxFlex]="showLoop ? '50' : '100'"  *ngIf="direction === 'Out'" fxLayoutAlign="start center" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <button *ngIf="showLoop && direction === 'Out'" fxFlex="50" fxLayoutAlign="end center" mat-icon-button [matMenuTriggerFor]="menuOperator" aria-label="Swap Out" class="font-size-90 color-primary">
+            <span>Swap Out</span>
+            <mat-icon class="mr-1 icon-small">arrow_drop_down</mat-icon>
+          </button>
+          <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
+            <button mat-menu-item (click)="onLoopOut(channel)">Loop</button>
+            <button mat-menu-item (click)="onSubmarine(channel)">Boltz</button>
+          </mat-menu> 
         </div>
         <mat-progress-bar *ngIf="direction === 'In'" fxFlex="100" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
         <mat-progress-bar *ngIf="direction === 'Out'" fxFlex="100" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.local_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>
