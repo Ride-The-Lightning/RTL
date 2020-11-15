@@ -47,8 +47,6 @@ import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/cha
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
 import { SwapsComponent } from './loop/swaps/swaps.component';
-import { BoltzComponent } from './boltz/boltz.component';
-import { BoltzSwapsComponent } from './boltz/boltz-swaps/boltz-swaps.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -101,9 +99,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
     LoopComponent,
-    SwapsComponent,
-    BoltzComponent,
-    BoltzSwapsComponent
+    SwapsComponent
   ],  
   providers: [
     LNDUnlockedGuard

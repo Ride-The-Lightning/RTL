@@ -11,7 +11,6 @@ import { RoutingComponent } from './routing/routing.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
-import { BoltzComponent } from './boltz/boltz.component';
 import { BackupComponent } from './backup/backup.component';
 import { SignVerifyMessageComponent } from './sign-verify-message/sign-verify-message.component';
 import { NotFoundComponent } from '../shared/components/not-found/not-found.component';
@@ -31,8 +30,7 @@ export const LndRoutes: Routes = [
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },   
-    { path: 'boltz', component: BoltzComponent, canActivate: [LNDUnlockedGuard] },   
+    { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },    
     { path: '**', component: NotFoundComponent },
     { path: 'rates', redirectTo: 'network' }
   ]}

@@ -35,7 +35,6 @@ export interface LNDState {
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
   loopSwaps: SwapStatus[];
-  boltzSwaps: SwapStatus[];
 }
 
 export const initLNDState: LNDState = {
@@ -64,8 +63,7 @@ export const initLNDState: LNDState = {
   payments: [],
   invoices: {invoices: []},
   forwardingHistory: {},
-  loopSwaps: [],
-  boltzSwaps: []
+  loopSwaps: []
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
@@ -283,11 +281,6 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         loopSwaps: action.payload
-      };
-    case LNDActions.SET_BOLTZ_SWAPS:
-      return {
-        ...state,
-        boltzSwaps: action.payload
       };
     default:
       return state;

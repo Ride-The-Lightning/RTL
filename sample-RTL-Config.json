@@ -21,11 +21,9 @@
         "themeMode": "DAY",
         "themeColor": "PURPLE",
         "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
-        "boltzSwapsPath": "C:\\Users\\shaha\\backup\\boltz-swaps",
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080",
         "swapServerUrl": "http://localhost:8081",
-        "boltzServerUrl": "https://testnet.boltz.exchange/api/",
         "fiatConversion": false
       }
     }

@@ -93,10 +93,6 @@ export enum CurrencyUnitEnum {
   OTHER = 'OTHER'
 }
 
-export enum CurrentyTypeSwapEnum {
-  BTC_BTC = 'BTC/BTC'
-}
-
 export enum DataTypeEnum {
   ARRAY = 'ARRAY',
   NUMBER = 'NUMBER',
@@ -135,12 +131,11 @@ export enum SwapStateEnum {
   PREIMAGE_REVEALED	= 'Preimage Revealed',
   HTLC_PUBLISHED	= 'HTLC Published',
   SUCCESS	= 'Successful',
-  FAILED	= 'Failed'
+  FAILED	= 'Failed',
+  INVOICE_SETTLED	= 'Invoice Settled'
 }
 
 export enum SwapTypeEnum {
-  LOOP_IN = 'LOOP_IN',
   LOOP_OUT = 'LOOP_OUT',
-  WITHDRAWAL = 'WITHDRAWAL',
-  DEPOSIT = 'DEPOSIT'
+  LOOP_IN = 'LOOP_IN'
 }

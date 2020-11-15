@@ -522,7 +522,7 @@ export interface SwapStatus {
   cost_server?: string;
   cost_offchain?: string;
   htlc_address?: string;
-  state?: SwapStateEnum | string;
+  state?: SwapStateEnum;
   amt?: string;
   cost_onchain?: string;
   initiation_time?: string;

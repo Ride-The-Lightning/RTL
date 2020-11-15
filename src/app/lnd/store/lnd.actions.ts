@@ -76,9 +76,6 @@ export const GET_QUERY_ROUTES_LND = 'GET_QUERY_ROUTES_LND';
 export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
 export const FETCH_LOOP_SWAPS_LND = 'FETCH_LOOP_SWAPS_LND';
 export const SET_LOOP_SWAPS_LND = 'SET_LOOP_SWAPS_LND';
-export const FETCH_BOLTZ_SWAPS = 'FETCH_BOLTZ_SWAPS';
-export const SET_BOLTZ_SWAPS = 'SET_BOLTZ_SWAPS';
-export const ADD_BOLTZ_SWAP = 'ADD_BOLTZ_SWAP';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_LND;
@@ -425,20 +422,6 @@ export class SetLoopSwaps implements Action {
   constructor(public payload: SwapStatus[]) {}
 }
 
-export class FetchBoltzSwaps implements Action {
-  readonly type = FETCH_BOLTZ_SWAPS;
-}
-
-export class SetBoltzSwaps implements Action {
-  readonly type = SET_BOLTZ_SWAPS;
-  constructor(public payload: SwapStatus[]) {}
-}
-
-export class AddBoltzSwap implements Action {
-  readonly type = ADD_BOLTZ_SWAP;
-  constructor(public payload: any) {}
-}
-
 export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
@@ -456,4 +439,4 @@ FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
 PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-FetchLoopSwaps | SetLoopSwaps | FetchBoltzSwaps | SetBoltzSwaps | AddBoltzSwap;
+FetchLoopSwaps | SetLoopSwaps;

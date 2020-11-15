@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "importHelpers": true,
     "outDir": "./angular",
     "sourceMap": true,
@@ -17,10 +16,7 @@
     "lib": [
       "es2018",
       "dom"
-    ],
-    "paths": {
-      "stream": ["./node_modules/readable-stream"]
-    }
+    ]
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

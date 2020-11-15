@@ -13,6 +13,7 @@ import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-en
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as CLActions from '../store/cl.actions';
+import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
