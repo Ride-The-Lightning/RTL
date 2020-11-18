@@ -109,7 +109,7 @@ export class ChannelBackupTableComponent implements OnInit, OnDestroy {
   onDownloadBackup(selChannel: Channel) {
     this.selectedChannel = selChannel;
     this.store.dispatch(new RTLActions.OpenSpinner('Downloading Backup File...'));
-    this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all'}));
   }
 
   onChannelClick(selChannel: Channel, event: any) {
