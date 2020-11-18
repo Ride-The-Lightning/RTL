@@ -65,7 +65,6 @@ connect.setDefaultConfig = () => {
           channelBackupPath: channelBackupPath,
           enableLogging: false,
           lnServerUrl: "https://localhost:8080",
-          swapServerUrl: "http://localhost:8081",
           fiatConversion: false
         }
       }
@@ -188,10 +187,13 @@ connect.validateNodeConfig = (config) => {
       }
       if(process.env.SWAP_SERVER_URL && process.env.SWAP_SERVER_URL.trim() !== '') {
         common.nodes[idx].swap_server_url = process.env.SWAP_SERVER_URL.endsWith('/v1') ? process.env.SWAP_SERVER_URL.slice(0, -3) : process.env.SWAP_SERVER_URL;
+        common.nodes[idx].swap_macaroon_path = process.env.SWAP_MACAROON_PATH;
       } else if(node.Settings.swapServerUrl && node.Settings.swapServerUrl.trim() !== '') {
         common.nodes[idx].swap_server_url = node.Settings.swapServerUrl.endsWith('/v1') ? node.Settings.swapServerUrl.slice(0, -3) : node.Settings.swapServerUrl;
+        common.nodes[idx].swap_macaroon_path = node.Authentication.swapMacaroonPath ? node.Authentication.swapMacaroonPath : '';
       } else {
         common.nodes[idx].swap_server_url = '';
+        common.nodes[idx].swap_macaroon_path = '';
       }
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
