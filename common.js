@@ -17,11 +17,22 @@ common.nodes = [];
 common.selectedNode = {};
 
 common.getSwapServerOptions = () => {
-  return {
+  let swapOptions = {
     url: common.selectedNode.swap_server_url,
     rejectUnauthorized: false,
-    json: true
+    json: true,
+    headers: {
+      'Grpc-Metadata-macaroon': ''
+    }
   };
+  if (common.selectedNode.swap_macaroon_path) {
+    try {
+      swapOptions.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.swap_macaroon_path, 'loop.macaroon')).toString('hex')};
+    } catch(err) {
+      console.error('Loop macaroon Error: ' + JSON.stringify(err));
+    }
+  }
+  return swapOptions;
 };
 
 common.getSelLNServerUrl = () => {

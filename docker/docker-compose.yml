@@ -85,6 +85,7 @@ services:
       CONFIG_PATH: ''
       LN_IMPLEMENTATION: LND
       SWAP_SERVER_URL: http://${LIGHTNING_HOST}:${LIGHTNING_LOOP_PORT}
+      SWAP_MACAROON_PATH: /shared
       RTL_SSO: 0
       RTL_COOKIE_PATH: ''
       LOGOUT_REDIRECT_LINK: ''

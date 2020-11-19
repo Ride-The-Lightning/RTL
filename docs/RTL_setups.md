@@ -27,6 +27,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
+        "swapMacaroonPath": "<Path of the folder containing 'loop.macaroon' on the device running RTL>",
         "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
       "Settings": {
