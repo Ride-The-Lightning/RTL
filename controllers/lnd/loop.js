@@ -15,7 +15,8 @@ exports.loopOut = (req, res, next) => {
     max_prepay_routing_fee: req.body.prepayRoutingFee,
     max_prepay_amt: req.body.prepayAmt,
     max_swap_fee: req.body.swapFee,
-    swap_publication_deadline: req.body.swapPublicationDeadline
+    swap_publication_deadline: req.body.swapPublicationDeadline,
+    label: 'RTL'
   };
   if (req.body.chanId !== '') { options.body['loop_out_channel'] = req.body.chanId; }
   if (req.body.destAddress !== '') { options.body['dest'] = req.body.destAddress; }
@@ -157,8 +158,10 @@ exports.loopIn = (req, res, next) => {
   options.body = {
     amt: req.body.amount,
     max_swap_fee: req.body.swapFee,
-    max_miner_fee: req.body.minerFee
+    max_miner_fee: req.body.minerFee,
+    label: 'RTL'
   };
+  logger.info({fileName: 'Loop', msg: 'Loop In Body: ' + JSON.stringify(options.body)});
   request.post(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop In: ' + JSON.stringify(body)});
     if(!body || body.error) {
