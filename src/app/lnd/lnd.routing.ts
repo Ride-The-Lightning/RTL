@@ -8,6 +8,7 @@ import { WalletComponent } from './wallet/wallet.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
 import { RoutingComponent } from './routing/routing.component';
+import { ReportsComponent } from './reports/reports.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
@@ -28,6 +29,7 @@ export const LndRoutes: Routes = [
     { path: 'signverify', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'backup', component: BackupComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },    

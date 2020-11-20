@@ -58,6 +58,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
@@ -159,6 +160,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
+    HorizontalScrollerComponent,
     ClipboardDirective,
     AutoFocusDirective,
     MaxValidator,
@@ -181,6 +183,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
+    HorizontalScrollerComponent,
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,

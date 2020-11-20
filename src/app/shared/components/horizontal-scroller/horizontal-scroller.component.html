@@ -1,0 +1,27 @@
+<div fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="100">
+  <div fxLayout="row" fxLayoutAlign="start center" fxFlex="33">
+    <button mat-icon-button color="primary" type="button" tabindex="1" class="pr-4" (click)="onStepChange('FIRST')"><mat-icon>skip_previous</mat-icon></button>
+    <button mat-icon-button color="primary" type="button" tabindex="2" (click)="onStepChange('PREVIOUS')"><mat-icon>navigate_before</mat-icon></button>
+  </div>
+  <ng-container *ngTemplateOutlet="animationDirection === 'forward' ? forwardBlock : animationDirection === 'backward' ? backwardBlock : noAnimationBlock"></ng-container>
+  <ng-template #backwardBlock>
+    <div fxLayout="row" fxLayoutAlign="center center" fxFlex="34" [@sliderAnimation]="animationDirection">
+      <div class="font-weight-900 font-size-120">{{selectedValue}}</div>
+    </div>
+  </ng-template>
+  <ng-template #forwardBlock>
+    <div fxLayout="row" fxLayoutAlign="center center" fxFlex="34" [@sliderAnimation]="animationDirection">
+      <div class="font-weight-900 font-size-120">{{selectedValue}}</div>
+    </div>
+  </ng-template>
+  <ng-template #noAnimationBlock>
+    <div fxLayout="row" fxLayoutAlign="center center" fxFlex="34">
+      <div class="font-weight-900 font-size-120">{{selectedValue}}</div>
+    </div>
+  </ng-template>
+  <div fxLayout="row" fxLayoutAlign="end center" fxFlex="33">
+    <button mat-icon-button color="primary" type="button" tabindex="3" class="pr-4" (click)="onStepChange('NEXT')"><mat-icon>navigate_next</mat-icon></button>
+    <button mat-icon-button color="primary" type="button" tabindex="4" (click)="onStepChange('LAST')"><mat-icon>skip_next</mat-icon></button>
+  </div>
+</div>
+

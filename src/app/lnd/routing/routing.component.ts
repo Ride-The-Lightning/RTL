@@ -21,11 +21,8 @@ export class RoutingComponent implements OnInit, OnDestroy {
   public lastOffsetIndex = 0;
   public eventsData = [];
   public today = new Date(Date.now());
-  public lastMonthDay = new Date(
-    this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 30,
-    this.today.getHours(), this.today.getMinutes(), this.today.getSeconds()
-  );
-  public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, this.today.getHours(), this.today.getMinutes(), this.today.getSeconds());
+  public lastMonthDay = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate() + 1, 0, 0, 0);
+  public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, 0, 0, 0);
   public endDate = this.today;
   public startDate = this.lastMonthDay;
   public flgLoading: Array<Boolean | 'error'> = [true];
