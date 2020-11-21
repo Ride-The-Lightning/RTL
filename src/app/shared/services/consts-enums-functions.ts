@@ -106,8 +106,8 @@ export enum DataTypeEnum {
 export enum ScreenSizeEnum {
   XS = 'XS', // < 600 => mobile handsets
   SM = 'SM', // 600 - 839 => tab portrait
-  MD = 'MD', // 840 - 1439 => tab landscape & small laptops
-  LG = 'LG'  // >1440 => big laptops
+  MD = 'MD', // 840 - 1239 => tab landscape & small laptops
+  LG = 'LG'  // >1240 => big laptops
 }
 
 export const CHANNEL_CLOSURE_TYPE = {

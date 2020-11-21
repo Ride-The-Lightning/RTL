@@ -163,6 +163,7 @@
       & .fill-color-primary-lighter { fill: $primary-lighter; }
       & .fill-color-primary-darker { fill: $primary-color; }
     }
+  
   }
   
   & .mat-form-field-disabled {
@@ -186,5 +187,5 @@
       cursor: not-allowed !important;
     }
   }
-
+  
 }

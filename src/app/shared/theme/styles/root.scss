@@ -1059,4 +1059,13 @@ table {
   & input, mat-select, .mat-select-trigger, .mat-select-value, .mat-select-arro-wrapper, textarea, .mat-form-field-infix {
     cursor: not-allowed;
   }
-}  
+}
+
+.ngx-charts-tooltip-content {
+  &.type-tooltip {
+    background: rgba(50, 50, 50, 0.9) !important;
+  }
+  & .tooltip-caret {
+    border-top-color : rgba(50, 50, 50, 0.9) !important;
+  }
+}

@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
@@ -29,7 +27,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.onEventsFetch();
@@ -43,7 +41,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      if ( rtlStore.forwardingHistory &&  rtlStore.forwardingHistory.forwarding_events) {
+      if (rtlStore.forwardingHistory &&  rtlStore.forwardingHistory.forwarding_events) {
         this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
         this.eventsData = rtlStore.forwardingHistory.forwarding_events;
       } else {
@@ -61,7 +59,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   onEventsFetch() {
     if (!this.endDate) { this.endDate = new Date(); }
     if (!this.startDate) {
-      this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30);
+      this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth() - 1, this.endDate.getDate() + 1, 0, 0, 0);
     }
     this.store.dispatch(new LNDActions.GetForwardingHistory({
       end_time: Math.round(this.endDate.getTime() / 1000).toString(),

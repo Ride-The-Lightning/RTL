@@ -1,18 +1,22 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
 
 @Component({
   selector: 'rtl-horizontal-scroller',
   templateUrl: './horizontal-scroller.component.html',
   styleUrls: ['./horizontal-scroller.component.scss'],
-  animations: [sliderAnimation]  
+  animations: [sliderAnimation]
 })
 export class HorizontalScrollerComponent implements OnInit {
-  @Input() animationDirection = 'forward';
-  @Input() showValue = 'MONTH';
-  @Input() selectedValue = 1;
+  public today = new Date(Date.now());
+  public first = new Date(2018, 0, 1, 0, 0, 0);
+  public last = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate(), 0, 0, 0);
+  public disablePrev = false;
+  public disableNext = true;
+  public animationDirection = '';
+  public selectedValue = this.last;
   @Output() stepChanged = new EventEmitter();
-
+  
   constructor() {}
 
   ngOnInit() {}
@@ -20,37 +24,37 @@ export class HorizontalScrollerComponent implements OnInit {
   onStepChange(direction: string) {
     switch (direction) {
       case 'FIRST':
-        this.selectedValue = 0;
         this.animationDirection = 'backward';
-        this.stepChanged.emit(this.selectedValue);
+        if (this.selectedValue !== this.first) {
+          this.selectedValue = this.first;
+          this.stepChanged.emit(this.selectedValue);
+        }
         break;
     
       case 'PREVIOUS':
-        this.selectedValue--;
+        this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, this.selectedValue.getDate(), 0, 0, 0);
         this.animationDirection = 'backward';
         this.stepChanged.emit(this.selectedValue);
         break;
 
       case 'NEXT':
-        this.selectedValue++;
+        this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , this.selectedValue.getDate(), 0, 0, 0);
         this.animationDirection = 'forward';
         this.stepChanged.emit(this.selectedValue);
         break;
 
       default:
-        this.selectedValue = 100;
         this.animationDirection = 'forward';
-        this.stepChanged.emit(this.selectedValue);
+        if (this.selectedValue !== this.last) {
+          this.selectedValue = this.last;
+          this.stepChanged.emit(this.selectedValue);
+        }
         break;
     }
-    console.warn(this.selectedValue);
-    console.warn(this.animationDirection);
+    this.disablePrev = this.selectedValue <= this.first;
+    this.disableNext = this.selectedValue >= this.last;
     setTimeout(() => {
       this.animationDirection = '';
     }, 800);
-  }
-
-  onAnimationEvent( event: AnimationEvent ) {
-    console.warn(event);
   }
 }

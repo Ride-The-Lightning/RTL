@@ -79,6 +79,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if (this.dialogRef) { this.dialogRef.close(); }
+      this.dialog.closeAll();
     }
   ));
 

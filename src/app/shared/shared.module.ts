@@ -37,6 +37,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -110,6 +111,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     MatTabsModule,
     MatSnackBarModule,
     MatAutocompleteModule,
+    NgxChartsModule,
     QRCodeModule,
     RouterModule,
     HttpClientModule,
@@ -165,6 +167,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     AutoFocusDirective,
     MaxValidator,
     MinValidator,
+    NgxChartsModule,
     QRCodeModule,
     RemoveLeadingZerosPipe,
     PerfectScrollbarModule,
