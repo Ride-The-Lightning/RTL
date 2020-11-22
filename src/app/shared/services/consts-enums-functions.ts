@@ -139,3 +139,5 @@ export enum SwapTypeEnum {
   LOOP_OUT = 'LOOP_OUT',
   LOOP_IN = 'LOOP_IN'
 }
+
+export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];

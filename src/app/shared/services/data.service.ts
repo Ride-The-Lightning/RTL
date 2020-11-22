@@ -1,7 +1,7 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject, throwError } from 'rxjs';
-import { map, takeUntil, catchError } from 'rxjs/operators';
+import { Subject, throwError, of } from 'rxjs';
+import { map, takeUntil, catchError, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -10,8 +10,10 @@ import { environment, API_URL } from '../../../environments/environment';
 
 import { SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
+
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
+import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
@@ -150,39 +152,38 @@ export class DataService implements OnInit, OnDestroy {
   }
 
   getForwardingHistory(start: string, end: string) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Forwarding History...'));
     const queryHeaders: SwitchReq = {end_time: end, start_time: start};
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders)
     .pipe(takeUntil(this.unSubs[5]),
-    map((res: any) => {
-      // if (res.forwarding_events) {
-      //   const storedChannels = [...lndData.allChannels, ...lndData.closedChannels];
-      //   res.forwarding_events.forEach(event => {
-      //     if (storedChannels && storedChannels.length > 0) {
-      //       for (let idx = 0; idx < storedChannels.length; idx++) {
-      //         if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
-      //           event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
-      //           if (event.alias_out) { return; }
-      //         }
-      //         if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
-      //           event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
-      //           if (event.alias_in) { return; }
-      //         }
-      //         if(idx === storedChannels.length-1) {
-      //           if (!event.alias_in) { event.alias_in = event.chan_id_in; }
-      //           if (!event.alias_out) { event.alias_out = event.chan_id_out; }
-      //         }
-      //       }
-      //     } else {
-      //       event.alias_in = event.chan_id_in;
-      //       event.alias_out = event.chan_id_out;
-      //     }
-      //   });
-      // } else {
-      //   res = {};
-      // }
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      return res;
+    withLatestFrom(this.store.select('lnd')),
+    mergeMap(([res, lndData]: [any, fromLNDReducers.LNDState]) => {
+      if (res.forwarding_events) {
+        const storedChannels = [...lndData.allChannels, ...lndData.closedChannels];
+        res.forwarding_events.forEach(event => {
+          if (storedChannels && storedChannels.length > 0) {
+            for (let idx = 0; idx < storedChannels.length; idx++) {
+              if (storedChannels[idx].chan_id.toString() === event.chan_id_in) {
+                event.alias_in = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_in;
+                if (event.alias_out) { return; }
+              }
+              if (storedChannels[idx].chan_id.toString() === event.chan_id_out) {
+                event.alias_out = storedChannels[idx].remote_alias ? storedChannels[idx].remote_alias : event.chan_id_out;
+                if (event.alias_in) { return; }
+              }
+              if(idx === storedChannels.length-1) {
+                if (!event.alias_in) { event.alias_in = event.chan_id_in; }
+                if (!event.alias_out) { event.alias_out = event.chan_id_out; }
+              }
+            }
+          } else {
+            event.alias_in = event.chan_id_in;
+            event.alias_out = event.chan_id_out;
+          }
+        });
+      } else {
+        res = {};
+      }
+      return of(res);
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);

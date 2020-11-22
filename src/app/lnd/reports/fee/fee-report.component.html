@@ -1,7 +1,8 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap">
-  <rtl-horizontal-scroller (stepChanged)="onScroll($event)"></rtl-horizontal-scroller>
-  <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-3'}} Sats</div>
-  <div class="mt-3">
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-bold-700"
+  [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-3'}} Sats</div>
+  <div class="mt-2">
     <ngx-charts-bar-vertical
       [view]="view"
       [results]="feeReportData"
@@ -12,10 +13,10 @@
       [showYAxisLabel]="showYAxisLabel"
       [xAxisLabel]="xAxisLabel"
       [yAxisLabel]="yAxisLabel"
-      (select)="onSelect($event)">
+      (select)="onDateSelected($event)">
     </ngx-charts-bar-vertical>
   </div>
-  <div class="mt-3">
-    <rtl-forwarding-history *ngIf="events && events?.forwarding_events" [forwardingHistoryData]="events?.forwarding_events"></rtl-forwarding-history>
+  <div class="mt-1">
+    <rtl-forwarding-history *ngIf="events && events?.forwarding_events" [forwardingHistoryData]="events?.forwarding_events" [filterValue]="eventFilterValue"></rtl-forwarding-history>
   </div>
 </div>

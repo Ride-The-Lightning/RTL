@@ -15,7 +15,7 @@ export class HorizontalScrollerComponent implements OnInit {
   public disableNext = true;
   public animationDirection = '';
   public selectedValue = this.last;
-  @Output() stepChanged = new EventEmitter();
+  @Output() stepChanged = new EventEmitter<{value: Date, animationDirection: String}>();
   
   constructor() {}
 
@@ -27,27 +27,27 @@ export class HorizontalScrollerComponent implements OnInit {
         this.animationDirection = 'backward';
         if (this.selectedValue !== this.first) {
           this.selectedValue = this.first;
-          this.stepChanged.emit(this.selectedValue);
+          this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
         }
         break;
     
       case 'PREVIOUS':
         this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, this.selectedValue.getDate(), 0, 0, 0);
         this.animationDirection = 'backward';
-        this.stepChanged.emit(this.selectedValue);
+        this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
         break;
 
       case 'NEXT':
         this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , this.selectedValue.getDate(), 0, 0, 0);
         this.animationDirection = 'forward';
-        this.stepChanged.emit(this.selectedValue);
+        this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
         break;
 
       default:
         this.animationDirection = 'forward';
         if (this.selectedValue !== this.last) {
           this.selectedValue = this.last;
-          this.stepChanged.emit(this.selectedValue);
+          this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
         }
         break;
     }

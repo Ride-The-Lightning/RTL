@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -24,6 +24,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @Input() forwardingHistoryData: any;
+  @Input() filterValue = '';
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -48,8 +49,11 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
 
   ngOnInit() {}
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     this.loadForwardingEventsTable(this.forwardingHistoryData);
+    if (changes.filterValue) {
+      this.applyFilter();
+    }
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -84,8 +88,8 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter() {
+    this.forwardingHistoryEvents.filter = this.filterValue;
   }
 
 }
