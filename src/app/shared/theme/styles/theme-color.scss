@@ -408,4 +408,10 @@
   .mat-expansion-panel-header[aria-disabled='true'] {
     color: $foreground-text;
   }
+
+  ngx-charts-bar-vertical {
+    & text {
+      fill: $foreground-text;
+    }
+  }
 }

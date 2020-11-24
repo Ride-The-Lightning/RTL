@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -24,7 +24,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   public endDate = new Date(Date.now());
   public startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), 1, 0, 0, 0);
   public feeReportData: any = [];
-  public view: any[] = [700, 400];
+  public view: any[] = [700, 350];
   public gradient = true;
   public xAxisLabel = 'Date';
   public yAxisLabel = 'Fee (Sats)';
@@ -41,7 +41,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.XS:
-        this.view = [320, 400];
+        this.view = [320, 350];
         this.xAxisShow = true;
         this.yAxisShow = true;
         this.showXAxisLabel = true;
@@ -49,7 +49,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         break;
     
       case ScreenSizeEnum.SM:
-        this.view = [500, 400];
+        this.view = [500, 350];
         this.xAxisShow = true;
         this.yAxisShow = true;
         this.showXAxisLabel = true;
@@ -57,7 +57,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         break;
 
       case ScreenSizeEnum.MD:
-        this.view = [800, 400];
+        this.view = [800, 350];
         this.xAxisShow = true;
         this.yAxisShow = true;
         this.showXAxisLabel = true;
@@ -65,7 +65,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         break;
 
       case ScreenSizeEnum.LG:
-        this.view = [1200, 400];
+        this.view = [1200, 350];
         this.xAxisShow = true;
         this.yAxisShow = true;
         this.showXAxisLabel = true;
@@ -73,7 +73,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         break;
   
       default:
-        this.view = [900, 400];
+        this.view = [900, 350];
         this.xAxisShow = true;
         this.yAxisShow = true;
         this.showXAxisLabel = true;
@@ -90,44 +90,58 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
-    this.dataService.getForwardingHistory(Math.round(start.getTime() / 1000).toString(), Math.round(end.getTime() / 1000).toString())
+    const startDateInSeconds = (Math.round(start.getTime()/1000) - (start.getTimezoneOffset() * 60)).toString();
+    const endDateInSeconds = (Math.round(end.getTime()/1000) - (end.getTimezoneOffset() * 60)).toString();
+    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
     .pipe(takeUntil(this.unSubs[1])).subscribe(res => { 
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
         this.events = res;
         this.feeReportData = this.prepareFeeReport(start);
+      } else {
+        this.events = {};
+        this.feeReportData = [];
       }
     });    
   }
 
-  onDateSelected(event) {
-    this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()] + '/' + this.startDate.getFullYear();
+  @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
+    if (e.srcElement.toString() === '[object SVGSVGElement]') {
+      this.eventFilterValue = '';
+      Object.assign(this, this.eventFilterValue);
+    }
+  }
+  
+  onChartBarSelected(event) {
+    this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     Object.assign(this, this.eventFilterValue);
   }
 
   prepareFeeReport(start: Date) {
     const startDateInSeconds = Math.round(start.getTime()/1000) - (start.getTimezoneOffset() * 60);
-    return this.events.forwarding_events.reduce((feeReport, event) => {
-      let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay) + 1;
-      let indexDateExist = feeReport.findIndex(e => e.name === dateNumber);
-      if (indexDateExist > -1) {
-        feeReport[indexDateExist].value = feeReport[indexDateExist].value + (+event.fee_msat / 1000);
-      } else {
-        feeReport.push({
-          name: dateNumber,
-          value: +event.fee_msat / 1000
-        });
-      }
+    let feeReport = [];
+    for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
+      feeReport.push({name: i + 1, value: 0});
+    }
+    this.events.forwarding_events.map(event => {
+      let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+      feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
       this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
-      return feeReport;
-    }, []);
+    });
+    return feeReport;
   }
 
   onSelectionChange(event: {value: Date, animationDirection: string}) {
-    this.startDate = new Date(event.value.getFullYear(), event.value.getMonth(), 1, 0, 0, 0);
-    this.endDate = new Date(event.value.getFullYear(), event.value.getMonth() + 1, 0, 23, 59, 59);
+    const selMonth = event.value.getMonth();
+    const selYear = event.value.getFullYear();
+    this.startDate = new Date(selYear, selMonth, 1, 0, 0, 0);
+    this.endDate = new Date(selYear, selMonth, this.getMonthDays(selMonth, selYear), 23, 59, 59);
     this.fetchEvents(this.startDate, this.endDate);
     this.eventFilterValue = '';
+  }
+
+  getMonthDays(selMonth: number, selYear: number) {
+    return (selMonth === 1 && selYear%4 === 0) ? (MONTHS[selMonth].days+1) : MONTHS[selMonth].days;
   }
 
   ngOnDestroy() {

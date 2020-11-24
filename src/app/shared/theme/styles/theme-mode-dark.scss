@@ -168,13 +168,10 @@
       & .fill-color-primary-lighter { fill: $primary-lighter; }
       & .fill-color-primary-darker { fill: $primary-darker; }
     }
-
-    ngx-charts-bar-vertical {
-      text {
-        fill: $foreground-text;
-      }
+    & .mat-select-value, & .mat-select-arrow {
+      color: $primary-darker;
     }
-
+  
   }
 
   & .mat-form-field-disabled {

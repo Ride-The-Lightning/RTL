@@ -1,19 +1,29 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
-  <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-bold-700"
-  [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-3'}} Sats</div>
-  <div class="mt-2">
+  <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-bold-700 mt-1"
+  [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-3'}} Sats/{{(events?.forwarding_events?.length || 0) | number}} Events</div>
+  <div class="mt-1" *ngIf="!events || !events.forwarding_events">No fee report for the selected period</div>
+  <div class="mt-1" *ngIf="events?.forwarding_events">
     <ngx-charts-bar-vertical
       [view]="view"
       [results]="feeReportData"
-      [gradient]="gradient"
+      [gradient]="false"
+      [scheme]="'forest'"
       [xAxis]="xAxisShow"
       [yAxis]="yAxisShow"
       [showXAxisLabel]="showXAxisLabel"
       [showYAxisLabel]="showYAxisLabel"
       [xAxisLabel]="xAxisLabel"
       [yAxisLabel]="yAxisLabel"
-      (select)="onDateSelected($event)">
+      [showGridLines]="false"
+      [showDataLabel]="false"
+      (select)="onChartBarSelected($event)"
+      (mouseup)="onChartMouseUp($event)">
+      <ng-template #tooltipTemplate let-model="model">
+        <span>
+          <span class="tooltip-label">{{(model.value || 0) | number:'1.0-3'}}</span>
+        </span>
+      </ng-template>
     </ngx-charts-bar-vertical>
   </div>
   <div class="mt-1">

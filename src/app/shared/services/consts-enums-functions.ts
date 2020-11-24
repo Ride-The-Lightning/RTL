@@ -140,4 +140,19 @@ export enum SwapTypeEnum {
   LOOP_IN = 'LOOP_IN'
 }
 
-export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+export const MONTHS = [
+  {name: 'JAN', days: 31}, 
+  {name: 'FEB', days: 28},
+  {name: 'MAR', days: 31},
+  {name: 'APR', days: 30},
+  {name: 'MAY', days: 31},
+  {name: 'JUN', days: 30},
+  {name: 'JUL', days: 31},
+  {name: 'AUG', days: 31},
+  {name: 'SEP', days: 30},
+  {name: 'OCT', days: 31},
+  {name: 'NOV', days: 30},
+  {name: 'DEC', days: 31}
+];
+
+export const SCROLL_RANGES = [{range: 'MONTHLY'},{range: 'YEARLY'}];
