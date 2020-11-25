@@ -3,7 +3,7 @@
   <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-bold-700 mt-1"
   [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-3'}} Sats/{{(events?.forwarding_events?.length || 0) | number}} Events</div>
   <div class="mt-1" *ngIf="!events || !events.forwarding_events">No fee report for the selected period</div>
-  <div class="mt-1" *ngIf="events?.forwarding_events">
+  <div class="mt-1" *ngIf="flgDataReady" name="container" id="container" #container>
     <ngx-charts-bar-vertical
       [view]="view"
       [results]="feeReportData"
@@ -21,7 +21,8 @@
       (mouseup)="onChartMouseUp($event)">
       <ng-template #tooltipTemplate let-model="model">
         <span>
-          <span class="tooltip-label">{{(model.value || 0) | number:'1.0-3'}}</span>
+          <span class="tooltip-label">Events: {{(model.extra.totalEvents || 0) | number}}</span>
+          <span class="tooltip-label">Fee: {{(model.value || 0) | number:'1.0-3'}}</span>
         </span>
       </ng-template>
     </ngx-charts-bar-vertical>

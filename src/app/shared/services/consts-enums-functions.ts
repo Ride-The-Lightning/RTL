@@ -141,18 +141,18 @@ export enum SwapTypeEnum {
 }
 
 export const MONTHS = [
-  {name: 'JAN', days: 31}, 
-  {name: 'FEB', days: 28},
-  {name: 'MAR', days: 31},
-  {name: 'APR', days: 30},
-  {name: 'MAY', days: 31},
-  {name: 'JUN', days: 30},
-  {name: 'JUL', days: 31},
-  {name: 'AUG', days: 31},
-  {name: 'SEP', days: 30},
-  {name: 'OCT', days: 31},
-  {name: 'NOV', days: 30},
-  {name: 'DEC', days: 31}
+  {name: 'Jan', days: 31}, 
+  {name: 'Feb', days: 28},
+  {name: 'Mar', days: 31},
+  {name: 'Apr', days: 30},
+  {name: 'May', days: 31},
+  {name: 'Jun', days: 30},
+  {name: 'Jul', days: 31},
+  {name: 'Aug', days: 31},
+  {name: 'Sep', days: 30},
+  {name: 'Oct', days: 31},
+  {name: 'Nov', days: 30},
+  {name: 'Dec', days: 31}
 ];
 
-export const SCROLL_RANGES = [{range: 'MONTHLY'},{range: 'YEARLY'}];
+export const SCROLL_RANGES = ['MONTHLY','YEARLY'];

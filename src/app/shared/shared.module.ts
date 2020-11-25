@@ -64,6 +64,7 @@ import { AuthSettingsComponent } from './components/settings/auth-settings/auth-
 import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
+import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
@@ -165,6 +166,8 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     HorizontalScrollerComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
     MaxValidator,
     MinValidator,
     NgxChartsModule,
@@ -190,6 +193,8 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,

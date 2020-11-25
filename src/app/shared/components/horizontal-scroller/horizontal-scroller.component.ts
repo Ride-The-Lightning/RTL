@@ -1,62 +1,7 @@
-import { Component, Output, EventEmitter, OnInit, Directive } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { NativeDateAdapter, MatDateFormats } from '@angular/material/core';
-import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { Component, Output, EventEmitter, OnInit, ViewChild, HostListener } from '@angular/core';
 
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
-import { MONTHS, SCROLL_RANGES } from '../../services/consts-enums-functions';
-
-export class CustomDateAdapter extends NativeDateAdapter {
-  format(date: Date, displayFormat: Object): string {
-    if (displayFormat === 'MMM YYYY') {
-      return MONTHS[date.getMonth()].name + ', ' + date.getFullYear();
-    } else if (displayFormat === 'YYYY') {
-      return date.getFullYear().toString();
-    }
-  }
-}
-
-export const MONTHLY_DATE_FORMATS: MatDateFormats = {
-  parse: {
-    dateInput: 'LL'
-  },
-  display: {
-    dateInput: 'MMM YYYY',
-    monthYearLabel: 'YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'YYYY'
-  }
-};
-
-export const YEARLY_DATE_FORMATS: MatDateFormats = {
-  parse: {
-    dateInput: 'LL'
-  },
-  display: {
-    dateInput: 'MMM YYYY',
-    monthYearLabel: 'YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'YYYY'
-  }
-};
-
-@Directive({
-  selector: '[monthlyDateFormat]',
-  providers: [
-    {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: MONTHLY_DATE_FORMATS}
-  ],
-})
-export class monthlyDateFormat {}
-
-@Directive({
-  selector: '[yearlyDateFormat]',
-  providers: [
-    {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: YEARLY_DATE_FORMATS}
-  ],
-})
-export class yearlyDateFormat {}
+import { SCROLL_RANGES } from '../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-horizontal-scroller',
@@ -65,8 +10,10 @@ export class yearlyDateFormat {}
   animations: [sliderAnimation]
 })
 export class HorizontalScrollerComponent implements OnInit {
+  @ViewChild('monthlyDatepicker') monthlyDatepicker;
+  @ViewChild('yearlyDatepicker') yearlyDatepicker;
   public scrollRanges = SCROLL_RANGES;
-  public selScrollRange = this.scrollRanges[0].range;
+  public selScrollRange = this.scrollRanges[0];
   public today = new Date(Date.now());
   public first = new Date(2018, 0, 1, 0, 0, 0);
   public last = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate(), 0, 0, 0);
@@ -74,20 +21,27 @@ export class HorizontalScrollerComponent implements OnInit {
   public disableNext = true;
   public animationDirection = '';
   public selectedValue = this.last;
-  date1 = new FormControl(new Date());
-  date2 = new FormControl(new Date());
-  @Output() stepChanged = new EventEmitter<{value: Date, animationDirection: String}>();
+  @Output() stepChanged = new EventEmitter<{selDate:Date, selScrollRange:string}>();
   
   constructor() {}
 
   ngOnInit() {}
 
-  onYearSelected(event: any) {
-    console.warn(event);
+  onRangeChanged(event: any) {
+    this.selScrollRange = event.value;
+    this.onStepChange('LAST');
   }
 
-  onMonthSelected(event: any) {
-    console.warn(event);
+  onMonthSelected(event: Date) {
+    this.selectedValue = event;
+    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.monthlyDatepicker.close();
+  }
+
+  onYearSelected(event: Date) {
+    this.selectedValue = event;
+    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.yearlyDatepicker.close();
   }
 
   onStepChange(direction: string) {
@@ -96,34 +50,51 @@ export class HorizontalScrollerComponent implements OnInit {
         this.animationDirection = 'backward';
         if (this.selectedValue !== this.first) {
           this.selectedValue = this.first;
-          this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
+          this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         }
         break;
     
       case 'PREVIOUS':
-        this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, this.selectedValue.getDate(), 0, 0, 0);
+        if (this.selScrollRange === SCROLL_RANGES[1]) {
+          this.selectedValue = new Date(this.selectedValue.getFullYear() - 1, 0, 1, 0, 0, 0);
+        } else {
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, this.selectedValue.getDate(), 0, 0, 0);
+        }
         this.animationDirection = 'backward';
-        this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
+        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
 
       case 'NEXT':
-        this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , this.selectedValue.getDate(), 0, 0, 0);
+        if (this.selScrollRange === SCROLL_RANGES[1]) {
+          this.selectedValue = new Date(this.selectedValue.getFullYear() + 1, 0, 1, 0, 0, 0);
+        } else {
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , this.selectedValue.getDate(), 0, 0, 0);
+        }
         this.animationDirection = 'forward';
-        this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
+        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
 
       default:
         this.animationDirection = 'forward';
         if (this.selectedValue !== this.last) {
           this.selectedValue = this.last;
-          this.stepChanged.emit({value: this.selectedValue, animationDirection: this.animationDirection});
+          this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         }
         break;
     }
-    this.disablePrev = this.selectedValue <= this.first;
-    this.disableNext = this.selectedValue >= this.last;
+    this.disablePrev = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() <= this.first.getFullYear() : this.selectedValue.getMonth() <= this.first.getMonth();
+    this.disableNext = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() >= this.last.getFullYear() : this.selectedValue.getMonth() >= this.last.getMonth();
     setTimeout(() => {
       this.animationDirection = '';
     }, 800);
   }
+
+  @HostListener('click', ['$event']) onChartMouseUp(e) {
+    if(e.srcElement.name === 'monthlyDate') {
+      this.monthlyDatepicker.open();
+    } else if(e.srcElement.name === 'yearlyDate') {
+      this.yearlyDatepicker.open();
+    }
+  }
+
 }

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { SwitchRes } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -18,11 +18,15 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   animations: [fadeIn]
 })
 export class FeeReportComponent implements OnInit, OnDestroy {
+  public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
+  public flgDataReady = false;
   public events: SwitchRes = {};
   public eventFilterValue = '';
-  public endDate = new Date(Date.now());
-  public startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), 1, 0, 0, 0);
+  public today = new Date(Date.now());
+  public timezoneOffset = this.today.getTimezoneOffset() * 60;
+  public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
+  public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
   public view: any[] = [700, 350];
   public gradient = true;
@@ -90,8 +94,9 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - (start.getTimezoneOffset() * 60)).toString();
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - (end.getTimezoneOffset() * 60)).toString();
+    this.flgDataReady = false;
+    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset).toString();
+    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
     .pipe(takeUntil(this.unSubs[1])).subscribe(res => { 
       if (res.forwarding_events && res.forwarding_events.length) {
@@ -102,40 +107,65 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         this.events = {};
         this.feeReportData = [];
       }
+      this.flgDataReady = true;
     });    
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
-    if (e.srcElement.toString() === '[object SVGSVGElement]') {
+    if (e.srcElement.tagName === 'svg' && e.srcElement.classList.length > 0 && e.srcElement.classList[0] === 'ngx-charts') {
       this.eventFilterValue = '';
       Object.assign(this, this.eventFilterValue);
     }
   }
   
   onChartBarSelected(event) {
-    this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
-    Object.assign(this, this.eventFilterValue);
+    if(this.reportPeriod === SCROLL_RANGES[1]) {
+      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
+      Object.assign(this, this.eventFilterValue);
+    } else {
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
+      Object.assign(this, this.eventFilterValue);
+    }
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - (start.getTimezoneOffset() * 60);
+    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
     let feeReport = [];
-    for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-      feeReport.push({name: i + 1, value: 0});
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
+      for (let i = 0; i < 12; i++) {
+        feeReport.push({name: MONTHS[i].name, value: 0, extra: {totalEvents: 0}});
+      }
+      this.events.forwarding_events.map(event => {
+        let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
+        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
+        feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+      });
+    } else {
+      for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
+        feeReport.push({name: i + 1, value: 0, extra: {totalEvents: 0}});
+      }
+      this.events.forwarding_events.map(event => {
+        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
+        feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
+        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+      });
     }
-    this.events.forwarding_events.map(event => {
-      let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
-      feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
-      this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
-    });
     return feeReport;
   }
 
-  onSelectionChange(event: {value: Date, animationDirection: string}) {
-    const selMonth = event.value.getMonth();
-    const selYear = event.value.getFullYear();
-    this.startDate = new Date(selYear, selMonth, 1, 0, 0, 0);
-    this.endDate = new Date(selYear, selMonth, this.getMonthDays(selMonth, selYear), 23, 59, 59);
+  onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
+    const selMonth = selectedValues.selDate.getMonth();
+    const selYear = selectedValues.selDate.getFullYear();
+    this.reportPeriod = selectedValues.selScrollRange;
+    if (this.reportPeriod === SCROLL_RANGES[1]) {
+      this.startDate = new Date(selYear, 0, 1, 0, 0, 0);
+      this.endDate = new Date(selYear, 11, 31, 23, 59, 59);
+    } else {
+      this.startDate = new Date(selYear, selMonth, 1, 0, 0, 0);
+      this.endDate = new Date(selYear, selMonth, this.getMonthDays(selMonth, selYear), 23, 59, 59);
+    }
     this.fetchEvents(this.startDate, this.endDate);
     this.eventFilterValue = '';
   }
