@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter, startWith, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
@@ -23,6 +23,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class OpenChannelComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;
   public selectedPeer = new FormControl();
+  public amount = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
   public peer: Peer;
@@ -111,6 +112,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   }
 
   onOpenChannel() {
+    console.warn('HERE');
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new LNDActions.SaveNewChannel({

@@ -1,9 +1,13 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
+import { OpenChannelComponent } from '../open-channel-modal/open-channel.component';
+import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { LoggerService } from '../../../../shared/services/logger.service';
+
+import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
@@ -16,7 +20,10 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
   public numPendingChannels = 0;
   public numClosedChannels = 0;
   public numActiveHTLCs = 0;
-  private unSubs: Array<Subject<void>> = [new Subject()];
+  public peers: Peer[] = [];
+  public information: GetInfo = {};
+  public totalBalance = 0;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
@@ -30,8 +37,29 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
       this.numActiveHTLCs = rtlStore.allChannels.reduce((totalHTLCs, channel) => {
         return totalHTLCs + (channel.pending_htlcs && channel.pending_htlcs.length > 0 ? channel.pending_htlcs.length : 0);
       }, 0);
+      this.information = rtlStore.information;
+      this.totalBalance = +rtlStore.blockchainBalance.total_balance;
+      this.peers = rtlStore.peers;
+      this.peers.forEach(peer => {
+        if (!peer.alias || peer.alias === '') {
+          peer.alias = peer.pub_key.substring(0, 15) + '...';
+        }
+      });
       this.logger.info(rtlStore);
     });
+  }
+
+  onOpenChannel() {
+    const peerToAddChannelMessage = {
+      peers: this.peers, 
+      information: this.information,
+      balance: this.totalBalance
+    };
+    this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+      alertTitle: 'Open Channel',
+      message: peerToAddChannelMessage,
+      component: OpenChannelComponent
+    }}));
   }
 
   ngOnDestroy() {

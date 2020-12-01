@@ -3,7 +3,9 @@ import { ModuleWithProviders } from '@angular/core';
 
 import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
-import { PeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { ConnectionsComponent } from './peers-channels/connections.component';
+import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
+import { PeersComponent } from './peers-channels/peers/peers.component';
 import { WalletComponent } from './wallet/wallet.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
@@ -31,9 +33,13 @@ export const LndRoutes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'receive' },
       { path: 'receive', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
       { path: 'send', component: OnChainSendComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] },
-      { path: 'sweep', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] },
+      { path: 'sweep', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] }
     ] },
-    { path: 'peerschannels', component: PeersChannelsComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'connections', component: ConnectionsComponent, canActivate: [LNDUnlockedGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'channels' },
+      { path: 'channels', component: ChannelsTablesComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'peers', component: PeersComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] }
+    ] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'signverify', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'backup', component: BackupComponent, canActivate: [LNDUnlockedGuard] },

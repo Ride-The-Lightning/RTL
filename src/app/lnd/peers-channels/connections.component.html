@@ -16,25 +16,21 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
+      <mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
             <span matBadge="{{activeChannels}}" matBadgeOverlap="false" class="tab-badge">Channels</span>
           </ng-template>
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
-            </div>  
-            <rtl-channels-tables fxLayout="row" fxFlex="100"></rtl-channels-tables>
-          </div>
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>
             <span matBadge="{{activePeers}}" matBadgeOverlap="false" class="tab-badge">Peers</span>
           </ng-template>
-          <rtl-peers></rtl-peers>
         </mat-tab>
       </mat-tab-group>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
+        <router-outlet></router-outlet>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

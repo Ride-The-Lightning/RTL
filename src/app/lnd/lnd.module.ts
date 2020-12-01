@@ -6,7 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
-import { PeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { ConnectionsComponent } from './peers-channels/connections.component';
 import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
@@ -63,7 +63,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     LNDRootComponent,
     HomeComponent,
     PeersComponent,
-    PeersChannelsComponent,
+    ConnectionsComponent,
     LightningInvoicesComponent,
     WalletComponent,
     LightningPaymentsComponent,

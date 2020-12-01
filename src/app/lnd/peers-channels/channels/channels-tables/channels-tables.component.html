@@ -1,28 +1,33 @@
-<div fxLayout="column" fxFlex="100" class="mt-2 bordered-box">
-  <mat-tab-group>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span matBadge="{{numOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
-      </ng-template>
-      <rtl-channel-open-table></rtl-channel-open-table>
-    </mat-tab>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span matBadge="{{numPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
-      </ng-template>
-      <rtl-channel-pending-table></rtl-channel-pending-table>
-    </mat-tab>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span matBadge="{{numClosedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
-      </ng-template>
-      <rtl-channel-closed-table></rtl-channel-closed-table>
-    </mat-tab>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span matBadge="{{numActiveHTLCs}}" matBadgeOverlap="false" class="tab-badge">Active HTLCs</span>
-      </ng-template>
-      <rtl-channel-active-htlcs-table></rtl-channel-active-htlcs-table>
-    </mat-tab>
-  </mat-tab-group>
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+  <div fxLayout="row">
+    <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
+  </div>
+  <div fxLayout="column" fxFlex="100" class="mt-2 bordered-box">
+    <mat-tab-group>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span matBadge="{{numOpenChannels}}" matBadgeOverlap="false" class="tab-badge">Open</span>
+        </ng-template>
+        <rtl-channel-open-table></rtl-channel-open-table>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span matBadge="{{numPendingChannels}}" matBadgeOverlap="false" class="tab-badge">Pending</span>
+        </ng-template>
+        <rtl-channel-pending-table></rtl-channel-pending-table>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span matBadge="{{numClosedChannels}}" matBadgeOverlap="false" class="tab-badge">Closed</span>
+        </ng-template>
+        <rtl-channel-closed-table></rtl-channel-closed-table>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span matBadge="{{numActiveHTLCs}}" matBadgeOverlap="false" class="tab-badge">Active HTLCs</span>
+        </ng-template>
+        <rtl-channel-active-htlcs-table></rtl-channel-active-htlcs-table>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

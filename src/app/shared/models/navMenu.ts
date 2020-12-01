@@ -5,8 +5,8 @@ export const MENU_DATA: MenuRootNode = {
   LNDChildren: [
     {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/lnd/home', userPersona: UserPersonaEnum.ALL},
     {id: 2, parentId: 0, name: 'On-chain', iconType: 'FA', icon: faLink, link:  '/lnd/onchain', userPersona: UserPersonaEnum.ALL},
-    {id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/lnd/peerschannels', userPersona: UserPersonaEnum.ALL, children: [
-      {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/lnd/peerschannels', userPersona: UserPersonaEnum.ALL},
+    {id: 3, parentId: 0, name: 'Lightning', iconType: 'FA', icon: faBolt, link: '/lnd/connections', userPersona: UserPersonaEnum.ALL, children: [
+      {id: 31, parentId: 3, name: 'Peers/Channels', iconType: 'FA', icon: faUsers, link: '/lnd/connections', userPersona: UserPersonaEnum.ALL},
       {id: 32, parentId: 3, name: 'Transactions', iconType: 'FA', icon: faExchangeAlt, link: '/lnd/transactions', userPersona: UserPersonaEnum.ALL},
       {id: 33, parentId: 3, name: 'Routing', iconType: 'FA', icon: faMapSigns, link: '/lnd/routing', userPersona: UserPersonaEnum.ALL},
       {id: 34, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/lnd/reports', userPersona: UserPersonaEnum.ALL},

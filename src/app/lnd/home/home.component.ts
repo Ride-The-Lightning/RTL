@@ -64,41 +64,41 @@ export class HomeComponent implements OnInit, OnDestroy {
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
         { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'status', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
         { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 6, rows: 6 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
         { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'status', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
         { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 3, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'capacity', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
         { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'status', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
         { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 2, rows: 5 }
       ];
     }
