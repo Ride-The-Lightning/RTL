@@ -46,25 +46,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) { return; }
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0);
-    });    
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium])
+    });
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
     .pipe(takeUntil(this.unSubs[5]))
     .subscribe((matches) => {
       if(matches.breakpoints[Breakpoints.XSmall]) {
         this.commonService.setScreenSize(ScreenSizeEnum.XS);
-        this.xSmallScreen = true;
         this.smallScreen = true;
       } else if(matches.breakpoints[Breakpoints.TabletPortrait]) {
         this.commonService.setScreenSize(ScreenSizeEnum.SM);
-        this.xSmallScreen = false;
         this.smallScreen = true;
       } else if(matches.breakpoints[Breakpoints.Small] || matches.breakpoints[Breakpoints.Medium]) {
         this.commonService.setScreenSize(ScreenSizeEnum.MD);
-        this.xSmallScreen = false;
+        this.smallScreen = false;
+      } else if(matches.breakpoints[Breakpoints.Large]) {
+        this.commonService.setScreenSize(ScreenSizeEnum.LG);
         this.smallScreen = false;
       } else {
-        this.commonService.setScreenSize(ScreenSizeEnum.LG);
-        this.xSmallScreen = false;
+        this.commonService.setScreenSize(ScreenSizeEnum.XL);
         this.smallScreen = false;
       }
     });
@@ -122,9 +121,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     if (this.smallScreen) {
       this.sideNavigation.close();
+      this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
     } else {
       setTimeout(() => {
         this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width
+        this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
       }, 100);
     }
   }

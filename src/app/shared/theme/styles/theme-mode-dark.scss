@@ -42,6 +42,9 @@
         background: $foreground-secondary-text;
       }  
     }
+    .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+      background-color: $primary-darker;
+    }
     .cc-data-block .cc-data-title {
       color: $primary-darker;
     }    

@@ -30,52 +30,6 @@ body {
   .mat-nested-tree-node-child>.mat-tree-node {
     padding-left: 4rem;
   }
-  &.horizontal {
-    .horizontal-nav {
-      height: $horizontal-toolbar-height !important;
-    }
-    .inner-sidenav-content {
-      top: $gap;
-    }
-    .mat-sidenav-container .mat-drawer-content.mat-sidenav-content {
-      margin-left: 0;
-    }
-  }    
-  &.compact {
-    .mat-sidenav-container .mat-sidenav-content {
-      margin-left: $compact-sidenav-width;
-    }
-    .sidenav{
-      width: $compact-sidenav-width;
-    }
-    .mat-tree-node, .mat-nested-tree-node-parent {
-      min-height: 4rem;
-      height: 4rem;
-      padding: 0 1.6rem 0 1.6rem;
-    }
-    .mat-nested-tree-node-child>.mat-tree-node {
-      padding-left: 3.2rem;
-    }
-  }
-  &.mini {
-    .mat-sidenav-container .mat-sidenav-content {
-      margin-left: $mini-sidenav-width;
-    }
-    .sidenav {
-      width: $mini-sidenav-width;
-    }
-    .mat-select.multi-node-select {
-      width: 84%;
-    }
-    .mat-tree-node, .mat-nested-tree-node-parent {
-      min-height: 5.4rem;
-      height: 5.4rem;
-      padding: 0 2.4rem 0 2.4rem;
-    }
-    .mat-nested-tree-node-child>.mat-tree-node {
-      padding: 0 0.8rem 1.2rem 4rem;
-    }
-  }      
 }
 
 .mat-sidenav-container .mat-sidenav-content {
@@ -127,7 +81,7 @@ body {
   bottom:0;
   left:0;
   right:0;  
-  padding: 1rem;
+  padding: $gap;
   min-height: calc(100% - (#{$toolbar-height} + #{$gap}*4));
   max-height: 90vh;
 }
@@ -164,6 +118,12 @@ body {
 
 .padding-gap-x {
   padding: 0 $gap 0 $gap !important;
+  @include for_screensize(tab-port) {
+    padding: 0 $gap/2 0 $gap/2 !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 $gap/4 0 $gap/4 !important;
+  }
 }
 
 .padding-gap-large {
@@ -190,8 +150,14 @@ body {
 }
 
 .mat-tab-body-wrapper, .card-content-gap {
-  padding: 1.2rem 2.4rem !important;
+  padding: $gap*1.2 $gap*3 !important;
   height: 100%;
+  @include for_screensize(tab-port) {
+    padding: $gap $gap*2 !important;
+  }
+  @include for_screensize(phone) {
+    padding: $gap $gap !important;
+  }
 }
 
 .routing-tabs-block .mat-tab-body-wrapper {

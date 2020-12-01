@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -17,10 +17,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./fee-report.component.scss'],
   animations: [fadeIn]
 })
-export class FeeReportComponent implements OnInit, OnDestroy {
+export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
-  public flgDataReady = false;
   public events: SwitchRes = {};
   public eventFilterValue = '';
   public today = new Date(Date.now());
@@ -28,62 +27,21 @@ export class FeeReportComponent implements OnInit, OnDestroy {
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
-  public view: any[] = [700, 350];
+  public view: any[] = [350, 350];
+  public screenPaddingX = 100;
   public gradient = true;
   public xAxisLabel = 'Date';
   public yAxisLabel = 'Fee (Sats)';
-  public xAxisShow = true;
-  public yAxisShow = true;
-  public showXAxisLabel = true;
   public showYAxisLabel = true;
   public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
-    switch (this.screenSize) {
-      case ScreenSizeEnum.XS:
-        this.view = [320, 350];
-        this.xAxisShow = true;
-        this.yAxisShow = true;
-        this.showXAxisLabel = true;
-        this.showYAxisLabel = false;
-        break;
-    
-      case ScreenSizeEnum.SM:
-        this.view = [500, 350];
-        this.xAxisShow = true;
-        this.yAxisShow = true;
-        this.showXAxisLabel = true;
-        this.showYAxisLabel = false;
-        break;
-
-      case ScreenSizeEnum.MD:
-        this.view = [800, 350];
-        this.xAxisShow = true;
-        this.yAxisShow = true;
-        this.showXAxisLabel = true;
-        this.showYAxisLabel = true;
-        break;
-
-      case ScreenSizeEnum.LG:
-        this.view = [1200, 350];
-        this.xAxisShow = true;
-        this.yAxisShow = true;
-        this.showXAxisLabel = true;
-        this.showYAxisLabel = true;
-        break;
-  
-      default:
-        this.view = [900, 350];
-        this.xAxisShow = true;
-        this.yAxisShow = true;
-        this.showXAxisLabel = true;
-        this.showYAxisLabel = true;
-        break;
-    }
+    this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -93,12 +51,29 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    const CONTAINER_SIZE = this.commonService.getContainerSize();
+    switch (this.screenSize) {
+      case ScreenSizeEnum.MD:
+        this.screenPaddingX = CONTAINER_SIZE.width/10;
+        break;
+
+      case ScreenSizeEnum.LG:
+        this.screenPaddingX = CONTAINER_SIZE.width/16;
+        break;
+
+      default:
+        this.screenPaddingX = CONTAINER_SIZE.width/20;
+        break;
+    }
+    this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
+  }
+
   fetchEvents(start: Date, end: Date) {
-    this.flgDataReady = false;
     const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset).toString();
     const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe(res => { 
+    .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
         this.events = res;
@@ -107,7 +82,6 @@ export class FeeReportComponent implements OnInit, OnDestroy {
         this.events = {};
         this.feeReportData = [];
       }
-      this.flgDataReady = true;
     });    
   }
 
@@ -133,7 +107,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
     let feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
-        feeReport.push({name: MONTHS[i].name, value: 0, extra: {totalEvents: 0}});
+        feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
         let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
@@ -143,7 +117,7 @@ export class FeeReportComponent implements OnInit, OnDestroy {
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({name: i + 1, value: 0, extra: {totalEvents: 0}});
+        feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
         let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);

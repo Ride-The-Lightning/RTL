@@ -76,10 +76,8 @@ export class HorizontalScrollerComponent implements OnInit {
 
       default:
         this.animationDirection = 'forward';
-        if (this.selectedValue !== this.last) {
-          this.selectedValue = this.last;
-          this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
-        }
+        this.selectedValue = this.last;
+        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
     }
     this.disablePrev = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() <= this.first.getFullYear() : this.selectedValue.getMonth() <= this.first.getMonth();

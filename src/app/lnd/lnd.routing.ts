@@ -9,7 +9,11 @@ import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ReportsComponent } from './reports/reports.component';
+import { FeeReportComponent } from './reports/fee/fee-report.component';
+import { PaymentsReportComponent } from './reports/payments/payments-report.component';
 import { OnChainComponent } from './on-chain/on-chain.component';
+import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
+import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
 import { BackupComponent } from './backup/backup.component';
@@ -23,13 +27,22 @@ export const LndRoutes: Routes = [
     children: [
     { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
     { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'receive' },
+      { path: 'receive', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'send', component: OnChainSendComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] },
+      { path: 'sweep', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] },
+    ] },
     { path: 'peerschannels', component: PeersChannelsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'transactions', component: TransactionsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'signverify', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'backup', component: BackupComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'fees' },
+      { path: 'fees', component: FeeReportComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'payments', component: PaymentsReportComponent, canActivate: [LNDUnlockedGuard] }
+    ] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },    

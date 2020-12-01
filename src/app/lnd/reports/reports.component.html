@@ -5,10 +5,10 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Fee"><rtl-fee-report></rtl-fee-report></mat-tab>
-        <mat-tab label="Payments"><rtl-payments-report></rtl-payments-report></mat-tab>
-      </mat-tab-group>
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link" (click)="activeLink = link" routerLink="{{link}}">{{link | titlecase}}</div>
+      </nav>
+      <router-outlet></router-outlet>      
     </mat-card-content>
   </mat-card>
 </div>

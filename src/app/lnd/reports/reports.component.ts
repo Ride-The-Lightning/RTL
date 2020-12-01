@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -8,7 +9,13 @@ import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 })
 export class ReportsComponent {
   public faChartBar = faChartBar;
+  public links = ['fees', 'payments'];
+  public activeLink = this.links[0];
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.activeLink = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+  }
 
 }

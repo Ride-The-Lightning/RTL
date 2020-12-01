@@ -12,8 +12,8 @@
       </button>
     </div>
     <div>
-      <span *ngIf="xSmallScreen">{{information.alias ? 'RTL - ' + information.alias : 'RTL'}}</span>
-      <span *ngIf="!xSmallScreen">{{information.alias ? 'Ride The Lightning - ' + information.alias : 'Ride The Lightning'}}</span>
+      <span *ngIf="smallScreen">{{information.alias ? 'RTL - ' + information.alias : 'RTL'}}</span>
+      <span *ngIf="!smallScreen">{{information.alias ? 'Ride The Lightning - ' + information.alias : 'Ride The Lightning'}}</span>
     </div>
     <div>
       <rtl-top-menu></rtl-top-menu>
@@ -24,7 +24,7 @@
       <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
     <mat-sidenav-content perfectScrollbar #sideNavContent>
-      <div [ngClass]="{'mt-minus-1': smallScreen, 'inner-sidenav-content': true}">
+      <div [ngClass]="{'mt-minus-1 p-0': smallScreen, 'inner-sidenav-content': true}">
         <router-outlet></router-outlet>
       </div>
     </mat-sidenav-content>>

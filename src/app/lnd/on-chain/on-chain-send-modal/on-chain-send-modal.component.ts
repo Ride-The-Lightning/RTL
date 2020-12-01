@@ -26,11 +26,11 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-on-chain-send',
-  templateUrl: './on-chain-send.component.html',
-  styleUrls: ['./on-chain-send.component.scss']
+  selector: 'rtl-on-chain-send-modal',
+  templateUrl: './on-chain-send-modal.component.html',
+  styleUrls: ['./on-chain-send-modal.component.scss']
 })
-export class OnChainSendComponent implements OnInit, OnDestroy {
+export class OnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
@@ -68,7 +68,7 @@ export class OnChainSendComponent implements OnInit, OnDestroy {
   confirmFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions$: Actions, private formBuilder: FormBuilder) {}
+  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions$: Actions, private formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
