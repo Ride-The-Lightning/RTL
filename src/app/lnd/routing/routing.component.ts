@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
-
-import { LoggerService } from '../../shared/services/logger.service';
 
 import * as LNDActions from '../store/lnd.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -16,43 +15,23 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 })
 export class RoutingComponent implements OnInit, OnDestroy {
   public faMapSigns = faMapSigns;
-  public lastOffsetIndex = 0;
-  public eventsData = [];
   public today = new Date(Date.now());
   public lastMonthDay = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate() + 1, 0, 0, 0);
   public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, 0, 0, 0);
   public endDate = this.today;
   public startDate = this.lastMonthDay;
-  public flgLoading: Array<Boolean | 'error'> = [true];
-  public errorMessage = '';
+  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'routingpeers', name: 'Routing Peers'}];
+  public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 
   ngOnInit() {
     this.onEventsFetch();
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistory') {
-          this.flgLoading[0] = 'error';
-          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-        }
-      });
-      if (rtlStore.forwardingHistory &&  rtlStore.forwardingHistory.forwarding_events) {
-        this.lastOffsetIndex = rtlStore.forwardingHistory.last_offset_index;
-        this.eventsData = rtlStore.forwardingHistory.forwarding_events;
-      } else {
-        // To reset table after other Forwarding history calls
-        this.lastOffsetIndex = 0;
-        this.eventsData = [];
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.forwardingHistory) ? false : true;
-      }
-      this.logger.info(rtlStore);
+    this.activeLink = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
+    .subscribe((value: ResolveEnd) => {
+      this.activeLink = value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1);
     });
   }
 
@@ -70,7 +49,6 @@ export class RoutingComponent implements OnInit, OnDestroy {
   resetData() {
     this.endDate = this.today;
     this.startDate = this.lastMonthDay;
-    this.lastOffsetIndex = 0;
   }
 
   ngOnDestroy() {

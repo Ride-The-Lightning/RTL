@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { OpenChannelComponent } from '../open-channel-modal/open-channel.component';
@@ -23,13 +24,20 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
   public peers: Peer[] = [];
   public information: GetInfo = {};
   public totalBalance = 0;
+  public links = [{link: 'open', name: 'Open'}, {link: 'pending', name: 'Pending'}, {link: 'closed', name: 'Closed'}, {link: 'activehtlcs', name: 'Active HTLCs'}];
+  public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 
   ngOnInit() {
+    this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
+    .subscribe((value: ResolveEnd) => {
+      this.activeLink = this.links.findIndex(link => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+    });
     this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.numOpenChannels = (rtlStore.allChannels && rtlStore.allChannels.length) ? rtlStore.allChannels.length : 0;
       this.numPendingChannels = (rtlStore.numberOfPendingChannels.total_channels) ? rtlStore.numberOfPendingChannels.total_channels : 0;
@@ -60,6 +68,10 @@ export class ChannelsTablesComponent implements OnInit, OnDestroy {
       message: peerToAddChannelMessage,
       component: OpenChannelComponent
     }}));
+  }
+
+  onSelectedTabChange(event) {
+    this.router.navigateByUrl('/lnd/connections/channels/' + this.links[event.index].link);
   }
 
   ngOnDestroy() {

@@ -114,6 +114,12 @@ body {
 
 .padding-gap {
   padding: $gap !important;
+  @include for_screensize(tab-port) {
+    padding: $gap/2 !important;
+  }
+  @include for_screensize(phone) {
+    padding: $gap/4 !important;
+  }
 }
 
 .padding-gap-x {
@@ -128,10 +134,22 @@ body {
 
 .padding-gap-large {
   padding: $gap * 2 !important;
+  @include for_screensize(tab-port) {
+    padding: $gap !important;
+  }
+  @include for_screensize(phone) {
+    padding: $gap/4 !important;
+  }
 }
 
 .padding-gap-x-large {
   padding: 0 ($gap*2) 0 ($gap*2) !important;
+  @include for_screensize(tab-port) {
+    padding: 0 $gap 0 $gap !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 $gap/4 0 $gap/4 !important;
+  }
 }
 
 .overflow-wrap {
@@ -156,7 +174,27 @@ body {
     padding: $gap $gap*2 !important;
   }
   @include for_screensize(phone) {
-    padding: $gap $gap !important;
+    padding: $gap/2 $gap/4 !important;
+  }
+}
+
+th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type,
+mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
+  @include for_screensize(tab-port) {
+    padding-left: $gap/2 !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: $gap/4 !important;
+  }
+}
+
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type,
+mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-type {
+  @include for_screensize(tab-port) {
+    padding-right: $gap/2 !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: $gap/4 !important;
   }
 }
 
@@ -164,7 +202,6 @@ body {
   padding: 0 !important;
   min-height: 10rem;
 }
-
 
 .mat-card-actions{
   display: block;
@@ -234,6 +271,12 @@ body {
 
 .mt-1 {
   margin-top: 1rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: 0.4rem !important;
+  }
 }
 
 .mb-0 {
@@ -250,10 +293,22 @@ body {
 
 .mb-1 {
   margin-bottom: 1rem !important;
+  @include for_screensize(tab-port) {
+    margin-bottom: 0.5rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-bottom: 0.4rem !important;
+  }
 }
 
 .mb-6 {
   margin-bottom: 6rem !important;
+  @include for_screensize(tab-port) {
+    margin-bottom: 3rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-bottom: 2rem !important;
+  }
 }
 
 .ml-0 {
@@ -262,6 +317,12 @@ body {
 
 .ml-1 {
   margin-left: 1rem !important;
+  @include for_screensize(tab-port) {
+    margin-left: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-left: 0.2rem !important;
+  }
 }
 
 .ml-minus-1 {
@@ -282,70 +343,172 @@ body {
 
 .mr-1 {
   margin-right: 1rem !important;
+  @include for_screensize(tab-port) {
+    margin-right: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-right: 0.2rem !important;
+  }
 }
 
 .mx-1 {
   margin: 0 1rem !important;
+  @include for_screensize(tab-port) {
+    margin: 0 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0 0.2rem !important;
+  }
 }
 
 .my-1 {
   margin: 1rem 0 !important;
+  @include for_screensize(tab-port) {
+    margin: 0.4rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.2rem 0 !important;
+  }
 }
 
 .m-1 {
   margin: 1rem !important;
+  @include for_screensize(tab-port) {
+    margin: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.2rem !important;
+  }
 }
 
 .mt-2 {
   margin-top: 2rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: 0.4rem !important;
+  }
 }
 
 .mt-3 {
   margin-top: 3rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: 1.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: 0.6rem !important;
+  }
 }
 
 .mt-4 {
   margin-top: 4rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: 0.8rem !important;
+  }
 }
 
 .mt-6 {
   margin-top: 6rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: 2.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: 1.2rem !important;
+  }
 }
 
 .mt-minus-1 {
   margin-top: -1rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: -0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: -0.2rem !important;
+  }
 }
 
 .mt-minus-2 {
   margin-top: -2rem !important;
+  @include for_screensize(tab-port) {
+    margin-top: -0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-top: -0.4rem !important;
+  }
 }
 
 .mb-2 {
   margin-bottom: 2rem !important;
+  @include for_screensize(tab-port) {
+    margin-bottom: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-bottom: 0.4rem !important;
+  }
 }
 
 .mb-4 {
   margin-bottom: 4rem !important;
+  @include for_screensize(tab-port) {
+    margin-bottom: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-bottom: 0.8rem !important;
+  }
 }
 
 .ml-2 {
   margin-left: 2rem !important;
+  @include for_screensize(tab-port) {
+    margin-left: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-left: 0.4rem !important;
+  }
 }
 
 .mr-2 {
   margin-right: 2rem !important;
+  @include for_screensize(tab-port) {
+    margin-right: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-right: 0.4rem !important;
+  }
 }
 
 .ml-4 {
   margin-left: 4rem !important;
+  @include for_screensize(tab-port) {
+    margin-left: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-left: 0.8rem !important;
+  }
 }
 
 .mr-4 {
   margin-right: 4rem !important;
+  @include for_screensize(tab-port) {
+    margin-right: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    margin-right: 0.8rem !important;
+  }
 }
 
 .mx-2 {
   margin: 0 2rem !important;
+  @include for_screensize(tab-port) {
+    margin: 0 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0 0.4rem !important;
+  }
 }
 
 .my-0 {
@@ -355,22 +518,52 @@ body {
 
 .my-2 {
   margin: 2rem 0 !important;
+  @include for_screensize(tab-port) {
+    margin: 0.8rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.4rem 0 !important;
+  }
 }
 
 .my-3 {
   margin: 3rem 0 !important;
+  @include for_screensize(tab-port) {
+    margin: 1.2rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.6rem 0 !important;
+  }
 }
 
 .my-4 {
   margin: 4rem 0 !important;
+  @include for_screensize(tab-port) {
+    margin: 1.6rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.8rem 0 !important;
+  }
 }
 
 .m-2 {
   margin: 2rem !important;
+  @include for_screensize(tab-port) {
+    margin: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    margin: 0.4rem !important;
+  }
 }
 
 .pt-1 {
   padding-top: 1rem !important;
+  @include for_screensize(tab-port) {
+    padding-top: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-top: 0.2rem !important;
+  }
 }
 
 .pb-0 {
@@ -379,14 +572,32 @@ body {
 
 .pb-1 {
   padding-bottom: 1rem !important;
+  @include for_screensize(tab-port) {
+    padding-bottom: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-bottom: 0.2rem !important;
+  }
 }
 
 .pl-1 {
   padding-left: 1rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.2rem !important;
+  }
 }
 
 .pl-15px {
   padding-left: 1.5rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 0.6rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.4rem !important;
+  }
 }
 
 .pr-0 {
@@ -395,14 +606,32 @@ body {
 
 .pr-1 {
   padding-right: 1rem !important;
+  @include for_screensize(tab-port) {
+    padding-right: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: 0.2rem !important;
+  }
 }
 
 .pr-3 {
   padding-right: 3rem !important;
+  @include for_screensize(tab-port) {
+    padding-right: 1.2rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: 0.6rem !important;
+  }
 }
 
 .pr-4 {
   padding-right: 4rem !important;
+  @include for_screensize(tab-port) {
+    padding-right: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: 0.8rem !important;
+  }
 }
 
 .pr-4px {
@@ -423,82 +652,202 @@ body {
 
 .px-1 {
   padding: 0 1rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 0.2rem !important;
+  }
 }
 
 .py-0 {
   padding: 1rem 0 !important;
+  @include for_screensize(tab-port) {
+    padding: 0.4rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.2rem 0 !important;
+  }
 }
 
 .py-1 {
   padding: 1rem 0 !important;
+  @include for_screensize(tab-port) {
+    padding: 0.4rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.2rem 0 !important;
+  }
 }
 
 .p-1 {
   padding: 1rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0.4rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.2rem !important;
+  }
 }
 
 .p-16 {
   padding: 1.6rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.4rem !important;
+  }
 }
 
 .pt-2 {
   padding-top: 2rem !important;
+  @include for_screensize(tab-port) {
+    padding-top: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-top: 0.4rem !important;
+  }
 }
 
 .pt-3 {
   padding-top: 3rem !important;
+  @include for_screensize(tab-port) {
+    padding-top: 1.2rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-top: 0.6rem !important;
+  }
 }
 
 .pb-2 {
   padding-bottom: 2rem !important;
+  @include for_screensize(tab-port) {
+    padding-bottom: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-bottom: 0.4rem !important;
+  }
 }
 
 .pl-2 {
   padding-left: 2rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.4rem !important;
+  }
 }
 
 .pt-4 {
   padding-top: 3.2rem !important;
+  @include for_screensize(tab-port) {
+    padding-top: 1.2rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-top: 0.6rem !important;
+  }
 }
 
 .pl-3 {
   padding-left: 3rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 1.2rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.6rem !important;
+  }
 }
 
 .pl-4 {
   padding-left: 4rem !important;
+  @include for_screensize(tab-port) {
+    padding-left: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-left: 0.8rem !important;
+  }
 }
 
 .pr-2 {
   padding-right: 2rem !important;
+  @include for_screensize(tab-port) {
+    padding-right: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: 0.4rem !important;
+  }
 }
 
 .pr-5 {
   padding-right: 4rem !important;
+  @include for_screensize(tab-port) {
+    padding-right: 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    padding-right: 0.8rem !important;
+  }
 }
 
 .px-2 {
   padding: 0 2rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 0.4rem !important;
+  }
 }
 
 .px-3 {
   padding: 0 3rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0 1.2rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 0.6rem !important;
+  }
 }
 
 .px-4 {
   padding: 0 4rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0 1.6rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0 0.8rem !important;
+  }
 }
 
 .py-2 {
   padding: 2rem 0 !important;
+  @include for_screensize(tab-port) {
+    padding: 0.8rem 0 !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.4rem 0 !important;
+  }
 }
 
 .p-2 {
   padding: 2rem !important;
+  @include for_screensize(tab-port) {
+    padding: 0.8rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.4rem !important;
+  }
 }
 
 .p-24 {
   padding: 2.4rem !important;
+  @include for_screensize(tab-port) {
+    padding: 1.0rem !important;
+  }
+  @include for_screensize(phone) {
+    padding: 0.5rem !important;
+  }
 }
 
 .m-1px {
@@ -864,7 +1213,13 @@ a {
 }
 
 .page-title-container {
-  margin-bottom: 0.5rem;
+  margin-bottom: $gap;
+  @include for_screensize(tab-port) {
+    margin: $gap 0;
+  }
+  @include for_screensize(phone) {
+    margin: $gap 0;
+  }
 }
 
 table {
@@ -1035,3 +1390,37 @@ table {
     border-top-color : rgba(50, 50, 50, 0.9) !important;
   }
 }
+
+.mat-expansion-panel.flat-expansion-panel {
+  box-shadow: none;
+  padding: 0;
+  border-radius: 4px;
+  background: none;
+  & .mat-expansion-panel-header {
+    padding: 0 $gap*3 0 $gap*3;
+    @include for_screensize(tab-port) {
+      padding: 0 $gap 0 $gap;
+    }
+    @include for_screensize(phone) {
+      padding: 0 $gap/2 0 $gap/2;
+    }
+  }
+  & .mat-expansion-panel-body {
+    padding: 0 $gap*3 $gap*2 $gap*3;
+    @include for_screensize(tab-port) {
+      padding: 0 $gap $gap $gap;
+    }
+    @include for_screensize(phone) {
+      padding: 0 $gap/2 $gap/4 $gap/2;
+    }
+    & .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+      @include for_screensize(tab-port) {
+        margin-right: $gap;
+      }
+      @include for_screensize(phone) {
+        margin-right: $gap/2;
+      }
+    }
+  }
+}
+

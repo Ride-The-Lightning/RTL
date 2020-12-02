@@ -1,5 +1,6 @@
-<div fxLayout="column" fxLayoutAlign="start stretch">
-  <div fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x page-sub-title-container">
+<div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== ''}">
+  <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x page-sub-title-container">
     <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
@@ -28,7 +29,7 @@
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="pr-3"><span fxLayoutAlign="end center">Actions</span></th>
-            <td mat-cell *matCellDef="let rPeer" class="pl-2">
+            <td mat-cell *matCellDef="let rPeer" class="pl-2" fxLayoutAlign="end center">
               <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onRoutingPeerClick(rPeer, $event, 'in')">View Info</button>
             </td>
           </ng-container>

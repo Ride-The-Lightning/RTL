@@ -14,12 +14,12 @@
     <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="4">Send Payment</button>
   </div>
   <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
-    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
-      <div fxFlex="70">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
+      <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Payments History</span>
       </div>
-      <mat-form-field fxFlex="30">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
       </mat-form-field>
     </div>

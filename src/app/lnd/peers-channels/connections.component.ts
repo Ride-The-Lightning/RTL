@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
@@ -23,13 +23,17 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
   public faChartPie = faChartPie;
   public balances = [{title: 'Total Balance', dataValue: 0}, {title: 'Confirmed', dataValue: 0}, {title: 'Unconfirmed', dataValue: 0}];
   public links = [{link: 'channels', name: 'Channels'}, {link: 'peers', name: 'Peers'}];
-  public activeLink = this.links[0].link;
+  public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private router: Router) {}
 
   ngOnInit() {
-    this.activeLink = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+    this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
+    .subscribe((value: ResolveEnd) => {
+      this.activeLink = this.links.findIndex(link => link.link === value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1));
+    });
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
@@ -41,9 +45,8 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSelectedIndexChange(event) {
-    console.warn(event);
-    this.router.navigateByUrl('/lnd/connections/' + this.links[event].link);
+  onSelectedTabChange(event) {
+    this.router.navigateByUrl('/lnd/connections/' + this.links[event.index].link);
   }
 
   ngOnDestroy() {

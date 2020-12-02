@@ -1,5 +1,6 @@
 .mat-column-amount, .mat-column-expiration_height {
-  width: 15%;
+  flex: 0 0 30%;
+  width: 30%;
 }
 
 .mat-column-incoming, .mat-column-hash_lock {
