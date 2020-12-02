@@ -6,7 +6,7 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar>
-        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link" (click)="activeLink = link" routerLink="{{link}}">{{link | titlecase}}</div>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
       </nav>
       <router-outlet></router-outlet>      
     </mat-card-content>

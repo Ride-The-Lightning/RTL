@@ -11,17 +11,19 @@ import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public faChartBar = faChartBar;
-  public links = ['fees', 'payments'];
-  public activeLink = this.links[0];
+  public links = [{link: 'fees', name: 'Fees'}, {link: 'payments', name: 'Payments'}];
+  public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.activeLink = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
     .subscribe((value: ResolveEnd) => {
-      this.activeLink = value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1);
+      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
+      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     });
   }
 

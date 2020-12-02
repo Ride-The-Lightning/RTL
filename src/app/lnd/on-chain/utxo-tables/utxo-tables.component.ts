@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -15,6 +15,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./utxo-tables.component.scss']
 })
 export class UTXOTablesComponent implements OnInit, OnDestroy {
+  @Input() selectedTableIndex = 0;
+  @Output() selectedTableIndexChange = new EventEmitter<number>();
   public transactions: Transaction[] = [];
   public utxos: UTXO[] = [];
   public numUtxos = 0;
@@ -54,6 +56,10 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  onSelectedIndexChanged(event) {
+    this.selectedTableIndexChange.emit(event);
   }
 
   ngOnDestroy() {

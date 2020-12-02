@@ -18,10 +18,12 @@ export class BackupComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.activeLink = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
     .subscribe((value: ResolveEnd) => {
-      this.activeLink = value.urlAfterRedirects.substring(value.urlAfterRedirects.lastIndexOf('/') + 1);
+      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
+      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     });
   }
 

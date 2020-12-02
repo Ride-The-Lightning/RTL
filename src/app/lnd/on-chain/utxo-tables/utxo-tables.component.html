@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="bordered-box">
-  <mat-tab-group>
+  <mat-tab-group [selectedIndex]="selectedTableIndex" (selectedIndexChange)="onSelectedIndexChanged($event)">
     <mat-tab>
       <ng-template mat-tab-label>
         <span matBadge="{{numUtxos}}" matBadgeOverlap="false" class="tab-badge">UTXOs</span>

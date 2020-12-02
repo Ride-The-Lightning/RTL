@@ -40,13 +40,14 @@ import { AuthGuard, LNDUnlockedGuard } from '../shared/services/auth.guard';
 export const LndRoutes: Routes = [
   { path: '', component: LNDRootComponent,
     children: [
-    { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
+    { path: '', pathMatch: 'full', redirectTo: 'home' },
     { path: 'home', component: HomeComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'wallet', component: WalletComponent, canActivate: [AuthGuard] },
     { path: 'onchain', component: OnChainComponent, canActivate: [LNDUnlockedGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'receive' },
-      { path: 'receive', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
-      { path: 'send', component: OnChainSendComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] },
-      { path: 'sweep', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] }
+      { path: '', pathMatch: 'full', redirectTo: 'receive/utxos' },
+      { path: 'receive/:selTab', component: OnChainReceiveComponent, canActivate: [LNDUnlockedGuard] },
+      { path: 'send/:selTab', component: OnChainSendComponent, data : {sweepAll : false}, canActivate: [LNDUnlockedGuard] },
+      { path: 'sweep/:selTab', component: OnChainSendComponent, data : {sweepAll : true}, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'connections', component: ConnectionsComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'channels' },
