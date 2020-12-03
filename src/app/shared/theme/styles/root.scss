@@ -1060,9 +1060,12 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   100% {-webkit-transform: rotate(360deg)} 
 }
 
-.top-toolbar-icon .top-toolbar-img {
-  padding-right: 0.7rem;
-  cursor:pointer;
+.mat-icon-button.top-toolbar-icon {
+  margin-right: 2rem;
+  & .top-toolbar-img {
+    padding-right: 0.7rem;
+    cursor:pointer;
+  }
 }
 
 .mt-minus-5 {
@@ -1213,11 +1216,14 @@ a {
 }
 
 .page-title-container {
+  padding: 0 $gap*1.5;
   margin-bottom: $gap;
   @include for_screensize(tab-port) {
+    padding: 0 $gap;
     margin: $gap 0;
   }
   @include for_screensize(phone) {
+    padding: 0 $gap;
     margin: $gap 0;
   }
 }

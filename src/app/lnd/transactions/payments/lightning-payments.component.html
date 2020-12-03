@@ -1,5 +1,5 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form *ngIf="!showDetails" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
+  <form *ngIf="calledFrom === 'home'" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field fxFlex="100">
       <textarea matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
@@ -10,10 +10,10 @@
       <button mat-flat-button color="primary" (click)="onSendPayment()" tabindex="3">Send Payment</button>
     </div>
   </form>
-  <div *ngIf="showDetails" fxLayout="row">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="row">
     <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="4">Send Payment</button>
   </div>
-  <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="column" fxLayoutAlign="start stretch">
     <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
       <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>

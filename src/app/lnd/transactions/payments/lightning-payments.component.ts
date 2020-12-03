@@ -34,7 +34,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class LightningPaymentsComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
