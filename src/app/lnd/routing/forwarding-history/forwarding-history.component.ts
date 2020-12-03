@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,10 +22,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ForwardingHistoryComponent implements OnInit, OnChanges {
+export class ForwardingHistoryComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() forwardingHistoryData: any;
+  @Input() eventsData = [];
+  @Input() filterValue = '';
+  public forwardingHistoryData = [];
+  public errorMessage = '';
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -31,6 +36,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -46,10 +52,37 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('lnd')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      if (this.eventsData.length <= 0) {
+        this.errorMessage = '';
+        rtlStore.effectErrors.forEach(effectsErr => {
+          if (effectsErr.action === 'GetForwardingHistory') {
+            this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+          }
+        });
+        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
+          this.forwardingHistoryData = rtlStore.forwardingHistory.forwarding_events;
+        } else {
+          this.forwardingHistoryData = [];
+        }
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
+        this.logger.info(rtlStore);
+      }
+    });
+  }
 
-  ngOnChanges() {
-    this.loadForwardingEventsTable(this.forwardingHistoryData);
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.eventsData = changes.eventsData.currentValue;
+      this.forwardingHistoryData = this.eventsData;
+      this.loadForwardingEventsTable(this.forwardingHistoryData);
+    }
+    if (changes.filterValue) {
+      this.applyFilter();
+    }
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -84,8 +117,16 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter() {
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue;
+    }
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

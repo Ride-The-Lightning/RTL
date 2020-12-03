@@ -42,6 +42,9 @@
         background: $foreground-secondary-text;
       }  
     }
+    .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+      background-color: $primary-darker;
+    }
     .cc-data-block .cc-data-title {
       color: $primary-darker;
     }    
@@ -168,6 +171,10 @@
       & .fill-color-primary-lighter { fill: $primary-lighter; }
       & .fill-color-primary-darker { fill: $primary-darker; }
     }
+    & .mat-select-value, & .mat-select-arrow {
+      color: $primary-darker;
+    }
+  
   }
 
   & .mat-form-field-disabled {

@@ -42,7 +42,8 @@ import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './lnd/peers-channels/channels/open-channel-modal/open-channel.component';
 import { ChannelInformationComponent } from './lnd/peers-channels/channels/channel-information-modal/channel-information.component';
-import { OnChainSendComponent } from './lnd/on-chain/on-chain-send-modal/on-chain-send.component';
+import { OnChainSendModalComponent } from './lnd/on-chain/on-chain-send-modal/on-chain-send-modal.component';
+import { OnChainSendComponent } from './lnd/on-chain/on-chain-send/on-chain-send.component';
 import { LightningSendPaymentsComponent } from './lnd/transactions/send-payment-modal/send-payment.component';
 import { CreateInvoiceComponent } from './lnd/transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './lnd/peers-channels/connect-peer/connect-peer.component';
@@ -103,6 +104,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     LoginTokenComponent,
     CreateInvoiceComponent,
     OnChainSendComponent,
+    OnChainSendModalComponent,
     CLInvoiceInformationComponent,
     CLOpenChannelComponent,
     CLConnectPeerComponent,
@@ -137,6 +139,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     LightningSendPaymentsComponent,
     CreateInvoiceComponent,
     OnChainSendComponent,
+    OnChainSendModalComponent,
     ChannelInformationComponent,
     CLInvoiceInformationComponent,
     CLOpenChannelComponent,

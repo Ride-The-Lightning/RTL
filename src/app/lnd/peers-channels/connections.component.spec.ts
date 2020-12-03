@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PeersChannelsComponent } from './peers-channels.component';
+import { ConnectionsComponent } from './connections.component';
 
-describe('PeersChannelsComponent', () => {
-  let component: PeersChannelsComponent;
-  let fixture: ComponentFixture<PeersChannelsComponent>;
+describe('ConnectionsComponent', () => {
+  let component: ConnectionsComponent;
+  let fixture: ComponentFixture<ConnectionsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PeersChannelsComponent ]
+      declarations: [ ConnectionsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PeersChannelsComponent);
+    fixture = TestBed.createComponent(ConnectionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

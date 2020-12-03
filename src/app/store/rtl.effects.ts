@@ -79,6 +79,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if (this.dialogRef) { this.dialogRef.close(); }
+      this.dialog.closeAll();
     }
   ));
 
@@ -306,7 +307,7 @@ export class RTLEffects implements OnDestroy {
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
     if (initialPass) {
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
-      this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
+      this.router.navigate(['/settings/auth'], {state: { initial: true }});
     } else {
       this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
     }

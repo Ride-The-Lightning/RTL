@@ -24,11 +24,8 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   public failedData = [];
   public filteredData = false;
   public today = new Date(Date.now());
-  public lastMonthDay = new Date(
-    this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 30,
-    this.today.getHours(), this.today.getMinutes(), this.today.getSeconds()
-  );
-  public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, this.today.getHours(), this.today.getMinutes(), this.today.getSeconds());
+  public lastMonthDay = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate() + 1, 0, 0, 0);
+  public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, 0, 0, 0);
   public endDate = this.today;
   public startDate = this.lastMonthDay;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -77,13 +74,13 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
 
   onEventsFetch() {
     if (!this.endDate) { this.endDate = new Date(); }
-    if (!this.startDate) { this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 30); }
+    if (!this.startDate) { this.startDate = this.lastMonthDay; }
     this.store.dispatch(new CLActions.GetForwardingHistory());
   }
 
   resetData() {
     this.endDate = new Date();
-    this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate() - 1);
+    this.startDate = this.lastMonthDay;
     this.successfulData = [];
     this.failedData = [];
     this.lastOffsetIndex = 0;

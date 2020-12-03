@@ -6,7 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
-import { PeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { ConnectionsComponent } from './peers-channels/connections.component';
 import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
@@ -22,6 +22,9 @@ import { BumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
+import { ReportsComponent } from './reports/reports.component';
+import { FeeReportComponent } from './reports/fee/fee-report.component';
+import { PaymentsReportComponent } from './reports/payments/payments-report.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
@@ -60,7 +63,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     LNDRootComponent,
     HomeComponent,
     PeersComponent,
-    PeersChannelsComponent,
+    ConnectionsComponent,
     LightningInvoicesComponent,
     WalletComponent,
     LightningPaymentsComponent,
@@ -80,6 +83,9 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     SignVerifyMessageComponent,
     SignComponent,
     VerifyComponent,
+    ReportsComponent,
+    FeeReportComponent,
+    PaymentsReportComponent,
     QueryRoutesComponent,
     OnChainReceiveComponent,
     OnChainComponent,

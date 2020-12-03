@@ -1,7 +1,4 @@
 <ng-container *ngTemplateOutlet="showPanel ? informationBlock : quoteDetailsBlock"></ng-container>
-<!-- <ng-template #expansionPanelBlock>
-  <ng-container *ngTemplateOutlet="quote?.htlc_sweep_fee_sat < 0 ? errorBlock : informationBlock"></ng-container>
-</ng-template> -->
 <ng-template #informationBlock>
   <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
     <mat-expansion-panel-header>

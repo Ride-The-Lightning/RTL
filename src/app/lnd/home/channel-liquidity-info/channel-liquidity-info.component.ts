@@ -36,7 +36,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   }
 
   goToChannels() {
-    this.router.navigateByUrl('/lnd/peerschannels');
+    this.router.navigateByUrl('/lnd/connections');
   }
 
   onLoopOut(channel: Channel) {

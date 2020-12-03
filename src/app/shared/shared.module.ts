@@ -37,6 +37,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -58,10 +59,12 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
+import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
+import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
@@ -109,6 +112,7 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     MatTabsModule,
     MatSnackBarModule,
     MatAutocompleteModule,
+    NgxChartsModule,
     QRCodeModule,
     RouterModule,
     HttpClientModule,
@@ -159,10 +163,14 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
+    HorizontalScrollerComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
     MaxValidator,
     MinValidator,
+    NgxChartsModule,
     QRCodeModule,
     RemoveLeadingZerosPipe,
     PerfectScrollbarModule,
@@ -181,9 +189,12 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     HelpComponent,
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
+    HorizontalScrollerComponent,
     ErrorComponent,
     ClipboardDirective,
     AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
     MaxValidator,
     MinValidator,
     RemoveLeadingZerosPipe,

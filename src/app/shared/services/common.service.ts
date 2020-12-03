@@ -11,6 +11,7 @@ export class CommonService implements OnInit {
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
   private screenSize = ScreenSizeEnum.MD;
+  private containerSize = {width: 1200, height: 800};
 
   constructor(private dataService: DataService) {}
 
@@ -22,6 +23,14 @@ export class CommonService implements OnInit {
 
   setScreenSize(screenSize: ScreenSizeEnum) {
     this.screenSize = screenSize;
+  }
+
+  getContainerSize() {
+    return this.containerSize;
+  }
+
+  setContainerSize(width: number, height) {
+    this.containerSize = {width: width, height: height};
   }
 
   sortDescByKey(array, key) {

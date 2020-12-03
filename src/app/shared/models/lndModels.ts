@@ -500,6 +500,7 @@ export interface RoutingPeers {
 
 export interface SwitchRes {
   last_offset_index?: number;
+  total_fee_msat?: number;
   forwarding_events?: ForwardingEvent[];
 }
 
