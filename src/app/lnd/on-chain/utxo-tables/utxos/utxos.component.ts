@@ -81,7 +81,7 @@ export class OnChainUTXOsComponent implements OnChanges {
     }}));
   }
 
-  loadUTXOsTable(UTXOs) {
+  loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
       const newUTXO = ((utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
@@ -89,8 +89,14 @@ export class OnChainUTXOsComponent implements OnChanges {
       + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
       return newUTXO.includes(fltr.toLowerCase());
     };
+    this.listUTXOs.sortingDataAccessor = (data, sortHeaderId) => {
+      switch (sortHeaderId) {
+        case 'tx_id': return data.outpoint.txid_str.toLocaleLowerCase();
+        case 'output': return +data.outpoint.output_index;
+        default: return (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      }
+    }
     this.listUTXOs.sort = this.sort;
-    this.listUTXOs.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
     this.listUTXOs.paginator = this.paginator;
     this.logger.info(this.listUTXOs);
   }
