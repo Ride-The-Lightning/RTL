@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { SwitchRes } from '../../../shared/models/lndModels';
+import { Payment, Invoice } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
@@ -12,21 +12,22 @@ import { fadeIn } from '../../../shared/animation/opacity-animation';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-payments-report',
-  templateUrl: './payments-report.component.html',
-  styleUrls: ['./payments-report.component.scss'],
+  selector: 'rtl-transactions-report',
+  templateUrl: './transactions-report.component.html',
+  styleUrls: ['./transactions-report.component.scss'],
   animations: [fadeIn]
 })
-export class PaymentsReportComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
-  public events: SwitchRes = {};
+  public payments: Payment[] = [];
+  public invoices: Invoice[] = [];
   public eventFilterValue = '';
   public today = new Date(Date.now());
   public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
-  public feeReportData: any = [];
+  public transactionsReportData: any = [];
   public view: any[] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
@@ -46,7 +47,12 @@ export class PaymentsReportComponent implements OnInit, AfterViewInit, OnDestroy
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.fetchEvents(this.startDate, this.endDate);
+        this.dataService.getTransactionsForReport()
+        .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
+            this.payments = res.payments;
+            this.invoices = res.invoices;
+            this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
+        });    
       }
     });
   }
@@ -69,22 +75,6 @@ export class PaymentsReportComponent implements OnInit, AfterViewInit, OnDestroy
     this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
   }
 
-  fetchEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset).toString();
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset).toString();
-    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-      if (res.forwarding_events && res.forwarding_events.length) {
-        res.forwarding_events = res.forwarding_events.reverse();
-        this.events = res;
-        this.feeReportData = this.prepareFeeReport(start);
-      } else {
-        this.events = {};
-        this.feeReportData = [];
-      }
-    });    
-  }
-
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
     if (e.srcElement.tagName === 'svg' && e.srcElement.classList.length > 0 && e.srcElement.classList[0] === 'ngx-charts') {
       this.eventFilterValue = '';
@@ -102,31 +92,32 @@ export class PaymentsReportComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  prepareFeeReport(start: Date) {
+  filterTransactionsForSelectedPeriod(start: Date, end: Date) {
     const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
-    let feeReport = [];
+    const endDateInSeconds = Math.round(end.getTime()/1000) - this.timezoneOffset;
+    let transactionsReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
-      for (let i = 0; i < 12; i++) {
-        feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
-      }
-      this.events.forwarding_events.map(event => {
-        let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
-        feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
-      });
+    //   for (let i = 0; i < 12; i++) {
+    //     feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
+    //   }
+    //   this.events.forwarding_events.map(event => {
+    //     let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
+    //     feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
+    //     feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
+    //     this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+    //   });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
+        transactionsReport.push({name: i + 1, value: 0.000000001, extra: {totalPayments: 0, totalInvoices: 0}});
       }
-      this.events.forwarding_events.map(event => {
-        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
-        feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+      this.payments.map(payment => {
+        let dateNumber = Math.floor((+payment.creation_date - startDateInSeconds) / this.secondsInADay);
+        transactionsReport[dateNumber].value = transactionsReport[dateNumber].value + (+payment.fee_msat / 1000);
+        transactionsReport[dateNumber].extra.totalPayments = transactionsReport[dateNumber].extra.totalPayments + 1;
+        transactionsReport[dateNumber].extra.totalInvoices = transactionsReport[dateNumber].extra.totalInvoices + 1;
       });
     }
-    return feeReport;
+    return transactionsReport;
   }
 
   onSelectionChange(selectedValues: {selDate: Date, selScrollRange: string}) {
@@ -140,7 +131,7 @@ export class PaymentsReportComponent implements OnInit, AfterViewInit, OnDestroy
       this.startDate = new Date(selYear, selMonth, 1, 0, 0, 0);
       this.endDate = new Date(selYear, selMonth, this.getMonthDays(selMonth, selYear), 23, 59, 59);
     }
-    this.fetchEvents(this.startDate, this.endDate);
+    this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
     this.eventFilterValue = '';
   }
 

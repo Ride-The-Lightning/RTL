@@ -24,7 +24,7 @@ import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
 import { ReportsComponent } from './reports/reports.component';
 import { FeeReportComponent } from './reports/fee/fee-report.component';
-import { PaymentsReportComponent } from './reports/payments/payments-report.component';
+import { TransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
@@ -85,7 +85,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     VerifyComponent,
     ReportsComponent,
     FeeReportComponent,
-    PaymentsReportComponent,
+    TransactionsReportComponent,
     QueryRoutesComponent,
     OnChainReceiveComponent,
     OnChainComponent,

@@ -1,0 +1,44 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
+    <div *ngIf="transactionsReportData.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportData.totalPayments">
+      <div fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        {{(transactionsReportData.totalAmountPaid / 1000 || 0) | number:'1.0-0'}} Sats/{{(transactionsReportData.totalPayments || 0) | number}} Payments
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        {{(transactionsReportData.totalAmountReceived / 1000 || 0) | number:'1.0-0'}} Sats/{{(transactionsReportData.totalInvoices || 0) | number}} Invoices
+      </div>
+    </div>
+    <div *ngIf="transactionsReportData.length <= 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No transactions report for the selected period</div>
+    <div class="mt-1">
+      <ngx-charts-bar-vertical
+        *ngIf="transactionsReportData.length > 0"
+        [view]="view"
+        [results]="transactionsReportData"
+        [gradient]="false"
+        [scheme]="'forest'"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [showGridLines]="false"
+        [showDataLabel]="false"
+        (select)="onChartBarSelected($event)"
+        (mouseup)="onChartMouseUp($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <span>
+            <span class="tooltip-label">Amount Paid: {{(model.value || 0) | number:'1.0-0'}}</span>
+            <span class="tooltip-label"># Payments: {{(model.extra.totalPayments || 0) | number}}</span>
+            <span class="tooltip-label">Amount Received: {{(model.value || 0) | number:'1.0-0'}}</span>
+            <span class="tooltip-label"># Invoices: {{(model.extra.totalInvoices || 0) | number}}</span>
+          </span>
+        </ng-template>
+      </ngx-charts-bar-vertical>
+    </div>
+    <div class="mt-1">
+      <rtl-transactions-report-table *ngIf="transactionsReportData.length > 0" [dataList]="transactionsReportData"></rtl-transactions-report-table>
+    </div>
+  </div>
+</div>
