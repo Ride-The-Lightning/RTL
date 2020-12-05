@@ -39,7 +39,7 @@ import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QRCodeModule } from 'angularx-qrcode';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -212,7 +212,7 @@ import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.s
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    DecimalPipe, TitleCasePipe
+    DecimalPipe, TitleCasePipe, DatePipe
   ]
 })
 export class SharedModule { }
