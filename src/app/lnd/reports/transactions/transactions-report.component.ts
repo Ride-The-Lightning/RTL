@@ -24,7 +24,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
   public payments: Payment[] = [];
   public invoices: Invoice[] = [];
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
-  public filterValue = '';
+  public transactionFilterValue = '';
   public today = new Date(Date.now());
   public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
@@ -81,18 +81,15 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
     if (e.srcElement.tagName === 'svg' && e.srcElement.classList.length > 0 && e.srcElement.classList[0] === 'ngx-charts') {
-      this.filterValue = '';
-      Object.assign(this, this.filterValue);
+      this.transactionFilterValue = '';
     }
   }
-  
+
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.filterValue = event.name + '/' + this.startDate.getFullYear();
-      Object.assign(this, this.filterValue);
+      this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
-      this.filterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
-      Object.assign(this, this.filterValue);
+      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -101,8 +98,8 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
     const endDateInSeconds = Math.round(end.getTime()/1000) - this.timezoneOffset;
     let transactionsReport = [];
     this.transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
-    let filteredPayments = this.payments.filter(payment => payment.creation_date >= startDateInSeconds && payment.creation_date < endDateInSeconds);
-    let filteredInvoices = this.invoices.filter(invoice => +invoice.creation_date >= startDateInSeconds && +invoice.creation_date < endDateInSeconds);
+    let filteredPayments = this.payments.filter(payment => payment.status === 'SUCCEEDED' && payment.creation_date >= startDateInSeconds && payment.creation_date < endDateInSeconds);
+    let filteredInvoices = this.invoices.filter(invoice => invoice.settled && +invoice.creation_date >= startDateInSeconds && +invoice.creation_date < endDateInSeconds);
     this.transactionsReportSummary.paymentsSelectedPeriod = filteredPayments.length;
     this.transactionsReportSummary.invoicesSelectedPeriod = filteredInvoices.length;
     if (this.reportPeriod === SCROLL_RANGES[1]) {
@@ -111,8 +108,8 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
       }
       filteredPayments.map(payment => {
         let monthNumber = new Date((+payment.creation_date + this.timezoneOffset)*1000).getMonth();
-        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat);
-        transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + (+payment.value_msat / 1000);
+        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
+        transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
@@ -123,12 +120,12 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({name: (i + 1).toString(), date: new Date(((i*this.secondsInADay) + startDateInSeconds + this.timezoneOffset)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
+        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
         let dateNumber = Math.floor((+payment.creation_date - startDateInSeconds) / this.secondsInADay);
-        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat);
-        transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + (+payment.value_msat / 1000);
+        this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
+        transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
@@ -144,7 +141,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
   prepareTableData() {
     return this.transactionsReportData.reduce((acc, curr) => {
       if (curr.series[0].value > 0 || curr.series[1].value >0) {
-        return acc.concat({date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
+        return acc.concat({date: curr.date, date_str: this.commonService.convertTimestampToDate(curr.date.getTime()/1000), amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
       }
       return acc;
     }, []);
@@ -163,7 +160,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
     }
     this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
     this.transactionsNonZeroReportData = this.prepareTableData();
-    this.filterValue = '';
+    this.transactionFilterValue = '';
   }
 
   getMonthDays(selMonth: number, selYear: number) {

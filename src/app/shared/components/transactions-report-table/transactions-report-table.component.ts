@@ -1,11 +1,11 @@
-import { Component, ViewChild, Input, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, Input, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SCROLL_RANGES } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
@@ -19,10 +19,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
-export class TransactionsReportTableComponent implements AfterViewInit {
+export class TransactionsReportTableComponent implements AfterViewInit, OnChanges {
+  @Input() dataRange = SCROLL_RANGES[0];
   @Input() dataList = [];
+  @Input() filterValue = '';
   @ViewChild(MatSort, {static: false}) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  public scrollRanges = SCROLL_RANGES;
   public transactions: any;
   public displayedColumns = [];
   public flgSticky = false;
@@ -51,12 +54,21 @@ export class TransactionsReportTableComponent implements AfterViewInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.dataList) {
+      this.loadTransactionsTable(this.dataList);
+    }
+    if (changes.filterValue) {
+      this.applyFilter();
+    }
+  }  
+
   onTransactionClick(selTransaction: any) {
     const reorderedTransactions = [
-      [{key: 'date', value: this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE}],
-      [{key: 'amount_paid', value: selTransaction.amount_paid, title: 'Amount Paid (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+      [{key: 'date', value: this.dataRange === SCROLL_RANGES[1] ?  this.datePipe.transform(selTransaction.date, 'MMM/yyyy') : this.datePipe.transform(selTransaction.date, 'dd/MMM/yyyy'), title: 'Date', width: 100, type: DataTypeEnum.DATE}],
+      [{key: 'amount_paid', value: Math.round(selTransaction.amount_paid), title: 'Amount Paid (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'num_payments', value: selTransaction.num_payments, title: '# Payments', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'amount_received', value: selTransaction.amount_received, title: 'Amount Received (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+      [{key: 'amount_received', value: Math.round(selTransaction.amount_received), title: 'Amount Received (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'num_invoices', value: selTransaction.num_invoices, title: '# Invoices', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
@@ -66,8 +78,10 @@ export class TransactionsReportTableComponent implements AfterViewInit {
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.transactions.filter = selFilter;
+  applyFilter() {
+    if (this.transactions) {
+      this.transactions.filter = this.filterValue;
+    }    
   }
 
   loadTransactionsTable(transactions: any[]) {
@@ -80,7 +94,7 @@ export class TransactionsReportTableComponent implements AfterViewInit {
 
   onDownloadCSV() {
     if(this.transactions.data && this.transactions.data.length > 0) {
-      this.commonService.downloadFile(this.dataList, 'Transactions-report');
+      this.commonService.downloadFile(this.dataList, 'Transactions-report-' + this.dataRange.toLowerCase());
     }
   }
 

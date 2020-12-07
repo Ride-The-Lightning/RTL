@@ -88,17 +88,14 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
     if (e.srcElement.tagName === 'svg' && e.srcElement.classList.length > 0 && e.srcElement.classList[0] === 'ngx-charts') {
       this.eventFilterValue = '';
-      Object.assign(this, this.eventFilterValue);
     }
   }
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
       this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
-      Object.assign(this, this.eventFilterValue);
     } else {
       this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
-      Object.assign(this, this.eventFilterValue);
     }
   }
 
