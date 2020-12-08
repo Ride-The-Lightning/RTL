@@ -410,5 +410,8 @@
     & text {
       fill: $foreground-text;
     }
+    .ngx-charts .grid-panel.odd rect {
+      fill: none;
+    }  
   }
 }

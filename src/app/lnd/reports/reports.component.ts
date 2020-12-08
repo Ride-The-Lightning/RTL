@@ -11,7 +11,7 @@ import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public faChartBar = faChartBar;
-  public links = [{link: 'fees', name: 'Fees'}, {link: 'transactions', name: 'Transactions'}];
+  public links = [{link: 'routingfees', name: 'Routing Fees'}, {link: 'transactions', name: 'Transactions'}];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 

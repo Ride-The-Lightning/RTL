@@ -82,8 +82,8 @@ export const LndRoutes: Routes = [
       { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'fees' },
-      { path: 'fees', component: FeeReportComponent, canActivate: [LNDUnlockedGuard] },
+      { path: '', pathMatch: 'full', redirectTo: 'routingfees' },
+      { path: 'routingfees', component: FeeReportComponent, canActivate: [LNDUnlockedGuard] },
       { path: 'transactions', component: TransactionsReportComponent, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },

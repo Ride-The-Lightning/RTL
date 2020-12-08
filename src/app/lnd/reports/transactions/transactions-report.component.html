@@ -14,8 +14,8 @@
       <ngx-charts-bar-vertical-2d
         *ngIf="transactionsNonZeroReportData.length > 0"
         [view]="view"
-        [scheme]="'forest'"
         [results]="transactionsReportData"
+        [noBarWhenZero]="false"
         [gradient]="false"
         [xAxis]="true"
         [yAxis]="true"
