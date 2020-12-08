@@ -14,8 +14,10 @@
           <td mat-cell *matCellDef="let utxo">{{utxo.outpoint.txid_str}}</td>
         </ng-container>
         <ng-container matColumnDef="output">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Output </th>
-          <td mat-cell *matCellDef="let utxo">{{utxo.outpoint.output_index}}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Output </th>
+          <td mat-cell *matCellDef="let utxo">
+            <span fxLayoutAlign="end center">{{utxo.outpoint.output_index}}</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="amount_sat">
           <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Amount (Sats) </th>

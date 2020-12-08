@@ -79,16 +79,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.balance.totalBalance || 0;
-      this.peers = new MatTableDataSource([]);
-      this.peers.data = [];
-      if ( rtlStore.peers) {
-        this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
-        this.peers.data = rtlStore.peers;
-        setTimeout(() => { this.flgAnimate = false; }, 3000);
-      }
-      this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.peers.paginator = this.paginator;
+      this.loadPeersTable(rtlStore.peers ? rtlStore.peers : []);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
@@ -162,6 +153,25 @@ export class CLPeersComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.peers.filter = selFilter;
+  }
+
+  loadPeersTable(peersArr: Peer[]) {
+    this.peers = new MatTableDataSource<Peer>([...peersArr]);
+    this.peers.sortingDataAccessor = (data, sortHeaderId) => {
+      switch (sortHeaderId) {
+        case 'netaddr': 
+          if (data.netaddr && data.netaddr[0]) {
+            let firstSplit = data.netaddr[0].toString().split('.');
+            return (firstSplit[0]) ? +firstSplit[0] : data.netaddr[0];
+          } else {
+            return ''; 
+          }
+
+        default: return (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      }
+    }
+    this.peers.sort = this.sort;
+    this.peers.paginator = this.paginator;
   }
 
   onDownloadCSV() {

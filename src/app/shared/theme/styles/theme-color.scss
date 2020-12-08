@@ -406,9 +406,12 @@
     color: $foreground-text;
   }
 
-  ngx-charts-bar-vertical {
+  ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;
     }
+    .ngx-charts .grid-panel.odd rect {
+      fill: none;
+    }  
   }
 }

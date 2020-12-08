@@ -39,7 +39,7 @@ import { MatTreeModule } from '@angular/material/tree';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { QRCodeModule } from 'angularx-qrcode';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -62,6 +62,11 @@ import { CurrencyUnitConverterComponent } from './components/currency-unit-conve
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
+import { TransactionsReportTableComponent } from './components/transactions-report-table/transactions-report-table.component';
+
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
 import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-formats.directive';
@@ -70,9 +75,6 @@ import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
 
 import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 @NgModule({
   imports: [
@@ -177,7 +179,8 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     LoopQuoteComponent,
     LoopStatusComponent,
     LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent
+    LoopInInfoGraphicsComponent,
+    TransactionsReportTableComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -202,13 +205,14 @@ import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/i
     LoopQuoteComponent,
     LoopStatusComponent,
     LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent
+    LoopInInfoGraphicsComponent,
+    TransactionsReportTableComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
-    DecimalPipe, TitleCasePipe
+    DecimalPipe, TitleCasePipe, DatePipe
   ]
 })
 export class SharedModule { }

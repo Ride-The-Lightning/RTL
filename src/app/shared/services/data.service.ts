@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 
-import { SwitchReq } from '../models/lndModels';
+import { ListInvoices, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -187,6 +187,19 @@ export class DataService implements OnInit, OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
+  }
+
+  getTransactionsForReport() {
+    return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
+    .pipe(takeUntil(this.unSubs[5]),
+    withLatestFrom(this.store.select('lnd')),
+    mergeMap(([res, lndData]: [any, fromLNDReducers.LNDState]) => {
+      return of({payments: lndData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : []});
+    }),
+    catchError(err => {
+      this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
       return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
     }));
   }
