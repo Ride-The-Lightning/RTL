@@ -14,13 +14,14 @@ import { GetInfo, Invoice } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
+import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { RTLEffects } from '../../../store/rtl.effects';
+
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 
 @Component({
   selector: 'rtl-cl-lightning-invoices',

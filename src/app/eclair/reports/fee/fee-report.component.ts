@@ -93,9 +93,9 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toUpperCase() + '/' + this.startDate.getFullYear();
     } else {
-      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
     }
   }
 
