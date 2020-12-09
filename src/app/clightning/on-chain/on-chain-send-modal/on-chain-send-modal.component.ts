@@ -26,11 +26,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as sha256 from 'sha256';
 
 @Component({
-  selector: 'rtl-cl-on-chain-send',
-  templateUrl: './on-chain-send.component.html',
-  styleUrls: ['./on-chain-send.component.scss']
+  selector: 'rtl-cl-on-chain-send-modal',
+  templateUrl: './on-chain-send-modal.component.html',
+  styleUrls: ['./on-chain-send-modal.component.scss']
 })
-export class CLOnChainSendComponent implements OnInit, OnDestroy {
+export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
@@ -71,7 +71,7 @@ export class CLOnChainSendComponent implements OnInit, OnDestroy {
   confirmFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOnChainSendComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;

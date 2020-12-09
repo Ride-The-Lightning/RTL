@@ -36,7 +36,7 @@ import { CLInvoiceInformationComponent } from './clightning/transactions/invoice
 import { CLConnectPeerComponent } from './clightning/peers-channels/connect-peer/connect-peer.component';
 import { CLLightningSendPaymentsComponent } from './clightning/transactions/send-payment-modal/send-payment.component';
 import { CLCreateInvoiceComponent } from './clightning/transactions/create-invoice-modal/create-invoice.component';
-import { CLOnChainSendComponent } from './clightning/on-chain/on-chain-send-modal/on-chain-send.component';
+import { CLOnChainSendModalComponent } from './clightning/on-chain/on-chain-send-modal/on-chain-send-modal.component';
 import { InvoiceInformationComponent } from './lnd/transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './lnd/peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './lnd/peers-channels/channels/close-channel-modal/close-channel.component';
@@ -62,7 +62,7 @@ import { ECLOpenChannelComponent } from './eclair/peers-channels/channels/open-c
 import { ECLConnectPeerComponent } from './eclair/peers-channels/connect-peer/connect-peer.component';
 import { ECLLightningSendPaymentsComponent } from './eclair/transactions/send-payment-modal/send-payment.component';
 import { ECLCreateInvoiceComponent } from './eclair/transactions/create-invoice-modal/create-invoice.component';
-import { ECLOnChainSendComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send.component';
+import { ECLOnChainSendModalComponent } from './eclair/on-chain/on-chain-send-modal/on-chain-send-modal.component';
 import { ECLChannelInformationComponent } from './eclair/peers-channels/channels/channel-information-modal/channel-information.component';
 
 @NgModule({
@@ -110,7 +110,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
-    CLOnChainSendComponent,
+    CLOnChainSendModalComponent,
     CLChannelInformationComponent,
     ECLInvoiceInformationComponent,
     ECLPaymentInformationComponent,
@@ -118,7 +118,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     ECLConnectPeerComponent,
     ECLLightningSendPaymentsComponent,
     ECLCreateInvoiceComponent,
-    ECLOnChainSendComponent,
+    ECLOnChainSendModalComponent,
     ECLChannelInformationComponent
   ],
   entryComponents: [
@@ -146,7 +146,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     CLConnectPeerComponent,
     CLLightningSendPaymentsComponent,
     CLCreateInvoiceComponent,
-    CLOnChainSendComponent,
+    CLOnChainSendModalComponent,
     CLChannelInformationComponent,
     ECLInvoiceInformationComponent,
     ECLPaymentInformationComponent,
@@ -154,7 +154,7 @@ import { ECLChannelInformationComponent } from './eclair/peers-channels/channels
     ECLConnectPeerComponent,
     ECLLightningSendPaymentsComponent,
     ECLCreateInvoiceComponent,
-    ECLOnChainSendComponent,
+    ECLOnChainSendModalComponent,
     ECLChannelInformationComponent
   ],  
   providers: [

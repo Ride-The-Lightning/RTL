@@ -66,20 +66,20 @@ export const LndRoutes: Routes = [
       { path: 'invoices', component: LightningInvoicesComponent, canActivate: [LNDUnlockedGuard] },
       { path: 'queryroutes', component: QueryRoutesComponent, canActivate: [LNDUnlockedGuard] }
     ] },
-    { path: 'signverify', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard], children: [
+    { path: 'messages', component: SignVerifyMessageComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'sign' },
       { path: 'sign', component: SignComponent, canActivate: [LNDUnlockedGuard] },
       { path: 'verify', component: VerifyComponent, canActivate: [LNDUnlockedGuard] }
     ] },
-    { path: 'backup', component: BackupComponent, canActivate: [LNDUnlockedGuard], children: [
-      { path: '', pathMatch: 'full', redirectTo: 'backup' },
-      { path: 'backup', component: ChannelBackupTableComponent, canActivate: [LNDUnlockedGuard] },
+    { path: 'channelbackup', component: BackupComponent, canActivate: [LNDUnlockedGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'bckup' },
+      { path: 'bckup', component: ChannelBackupTableComponent, canActivate: [LNDUnlockedGuard] },
       { path: 'restore', component: ChannelRestoreTableComponent, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'routing', component: RoutingComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'forwardinghistory' },
       { path: 'forwardinghistory', component: ForwardingHistoryComponent, canActivate: [LNDUnlockedGuard] },
-      { path: 'routingpeers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
+      { path: 'peers', component: RoutingPeersComponent, canActivate: [LNDUnlockedGuard] }
     ] },
     { path: 'reports', component: ReportsComponent, canActivate: [LNDUnlockedGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'routingfees' },

@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
   faHistory = faHistory;

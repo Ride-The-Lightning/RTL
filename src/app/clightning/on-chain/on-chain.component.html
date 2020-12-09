@@ -16,29 +16,14 @@
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Receive">
-          <rtl-cl-on-chain-receive></rtl-cl-on-chain-receive>
-        </mat-tab>
-        <mat-tab label="Send">
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal(false)">Send Funds</button>
-            </div>  
-          </div>          
-        </mat-tab>
-        <mat-tab label="Sweep All">
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="3" (click)="openSendFundsModal(true)">Sweep All</button>
-            </div>
-          </div>
-        </mat-tab>
-      </mat-tab-group>
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+      </nav>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large mt-2">
+        <router-outlet></router-outlet>
+      </div>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
-        <div fxLayout="row">
-          <rtl-cl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-cl-on-chain-transaction-history>
-        </div>
+        <rtl-cl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-cl-on-chain-transaction-history>
       </div>
     </mat-card-content>
   </mat-card>

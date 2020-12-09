@@ -173,8 +173,8 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.navMenus.data = clonedMenu.filter(navMenuData => {
       if(navMenuData.children && navMenuData.children.length) {
         navMenuData.children = navMenuData.children.filter(navMenuChild => {
-          return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/signverify')
-          || (navMenuChild.link === '/cl/signverify' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2'));
+          return ((navMenuChild.userPersona === UserPersonaEnum.ALL || navMenuChild.userPersona === this.settings.userPersona) && navMenuChild.link !== '/cl/messages')
+          || (navMenuChild.link === '/cl/messages' && this.information.api_version && this.commonService.isVersionCompatible(this.information.api_version, '0.2.2'));
         });
       }
       return navMenuData.userPersona === UserPersonaEnum.ALL || navMenuData.userPersona === this.settings.userPersona;

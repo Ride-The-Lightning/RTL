@@ -36,7 +36,7 @@ export class ServerConfigComponent implements OnInit, OnDestroy {
     .subscribe((config: any) => {
       const configFile = config.data;
       this.fileFormat = config.format;
-      if (configFile !== '' &&  configFile && this.fileFormat === 'INI') {
+      if (configFile !== '' &&  configFile && (this.fileFormat === 'INI' || this.fileFormat === 'HOCON')) {
         this.configData = configFile.split('\n');
       } else if (configFile !== '' &&  configFile && this.fileFormat === 'JSON') {
         this.configData = configFile;

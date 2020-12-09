@@ -15,7 +15,7 @@ import { ECLChannelLiquidityInfoComponent } from './home/channel-liquidity-info/
 import { ECLOnChainComponent } from './on-chain/on-chain.component';
 import { ECLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { ECLOnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
-import { ECLPeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { ECLConnectionsComponent } from './peers-channels/connections.component';
 import { ECLPeersComponent } from './peers-channels/peers/peers.component';
 import { ECLChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { ECLChannelOpenTableComponent } from './peers-channels/channels/channels-tables/channel-open-table/channel-open-table.component';
@@ -30,6 +30,10 @@ import { ECLForwardingHistoryComponent } from './routing/forwarding-history/forw
 import { ECLRoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
 import { ECLLookupsComponent } from './lookups/lookups.component';
 import { ECLNodeLookupComponent } from './lookups/node-lookup/node-lookup.component';
+import { ECLReportsComponent } from './reports/reports.component';
+import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
+import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
+import { ECLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { ECLUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -51,7 +55,7 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLOnChainReceiveComponent,
     ECLOnChainTransactionHistoryComponent,
     ECLPeersComponent,
-    ECLPeersChannelsComponent,
+    ECLConnectionsComponent,
     ECLChannelsTablesComponent,
     ECLChannelOpenTableComponent,
     ECLChannelPendingTableComponent,
@@ -64,7 +68,11 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLLightningPaymentsComponent,
     ECLLightningInvoicesComponent,
     ECLLookupsComponent,
-    ECLNodeLookupComponent
+    ECLNodeLookupComponent,
+    ECLReportsComponent,
+    ECLFeeReportComponent,
+    ECLTransactionsReportComponent,
+    ECLOnChainSendComponent
   ],
   providers: [
     ECLUnlockedGuard

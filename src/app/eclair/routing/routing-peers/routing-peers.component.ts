@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
@@ -16,16 +18,18 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   templateUrl: './routing-peers.component.html',
   styleUrls: ['./routing-peers.component.scss']
 })
-export class ECLRoutingPeersComponent implements OnInit, OnChanges {
+export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sortIn: MatSort;
   @ViewChild('tableOut', {read: MatSort, static: true}) sortOut: MatSort;
-  @Input() routingPeersData: any;
+  public routingPeersData = [];
+  public errorMessage = '';
   public displayedColumns = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
@@ -44,10 +48,20 @@ export class ECLRoutingPeersComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {}
-
-  ngOnChanges() {
-    this.loadRoutingPeersTable(this.routingPeersData);
+  ngOnInit() {
+    this.store.select('ecl')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPayments') {
+          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+        }
+      });
+      this.routingPeersData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+      this.loadRoutingPeersTable(this.routingPeersData);
+      this.logger.info(rtlStore);
+    });
   }
 
   loadRoutingPeersTable(forwardingEvents: PaymentRelayed[]) {
@@ -98,4 +112,10 @@ export class ECLRoutingPeersComponent implements OnInit, OnChanges {
     this.RoutingPeersOutgoing.filter = selFilter;
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

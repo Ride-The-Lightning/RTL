@@ -62,7 +62,7 @@
             <rtl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[3]==='error'}"></rtl-channel-liquidity-info>
             <span perfectScrollbar fxLayout="column" fxFlex="100" fxLayoutAlign="start start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" fxFlex="100" class="w-100 dashboard-tabs-group">
-                <mat-tab label="Receive"><rtl-lightning-invoices class="h-100" [showDetails]="false"></rtl-lightning-invoices></mat-tab>
+                <mat-tab label="Receive"><rtl-lightning-invoices class="h-100" [calledFrom]="'home'"></rtl-lightning-invoices></mat-tab>
                 <mat-tab label="Pay"><rtl-lightning-payments [calledFrom]="'home'"></rtl-lightning-payments></mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>

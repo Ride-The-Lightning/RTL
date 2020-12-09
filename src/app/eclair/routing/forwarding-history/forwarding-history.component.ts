@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,10 +22,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
+export class ECLForwardingHistoryComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() successfulEvents: any;
+  public successfulEvents = [];
+  public errorMessage = '';
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -31,6 +34,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -49,7 +53,21 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('ecl')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'FetchPayments') {
+          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+        }
+      });
+      this.successfulEvents = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+      this.loadForwardingEventsTable(this.successfulEvents);
+      this.logger.info(rtlStore);
+    });
+  }
 
   ngOnChanges() {
     this.loadForwardingEventsTable(this.successfulEvents);
@@ -94,4 +112,10 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     this.forwardingHistoryEvents.filter = selFilter;
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

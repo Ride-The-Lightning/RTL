@@ -15,6 +15,7 @@
             </button>
             <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
               <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+              <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/cl/reports')" mat-menu-item>Summary Report</button>
               <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
             </mat-menu>            
           </mat-card-title>
@@ -61,8 +62,8 @@
             <rtl-cl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [ngClass]="{'error-border': flgLoading[5]==='error'}"></rtl-cl-channel-liquidity-info>
             <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
-                <mat-tab label="Receive"><rtl-cl-lightning-invoices class="h-100" [showDetails]="false"></rtl-cl-lightning-invoices></mat-tab>
-                <mat-tab label="Pay"><rtl-cl-lightning-payments [showDetails]="false"></rtl-cl-lightning-payments></mat-tab>
+                <mat-tab label="Receive"><rtl-cl-lightning-invoices class="h-100" [calledFrom]="'home'"></rtl-cl-lightning-invoices></mat-tab>
+                <mat-tab label="Pay"><rtl-cl-lightning-payments [calledFrom]="'home'"></rtl-cl-lightning-payments></mat-tab>
                 <mat-tab [disabled]="true">
                   <ng-template mat-tab-label>
                     <button mat-icon-button class="more-button" [matMenuTriggerFor]="menuTransactions" aria-label="Toggle menu" style="max-width: 20px;">

@@ -25,6 +25,13 @@
     @include _mat-toolbar-color($primary);
   }
 
+  .mat-expansion-panel.flat-expansion-panel {
+    box-shadow: none;
+    padding: 0;
+    border-radius: 4px;
+    background: none;
+  }
+
   .mat-progress-bar-buffer {
     background-color: mat-color($primary, 100);
   }
