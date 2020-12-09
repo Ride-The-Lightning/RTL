@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class LightningInvoicesComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};

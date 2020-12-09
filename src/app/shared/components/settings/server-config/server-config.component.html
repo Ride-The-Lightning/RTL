@@ -4,7 +4,7 @@
       <pre class="pre-wrap">{{configData | json}}</pre>
       <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
     </div>
-    <div *ngIf="configData !== '' && fileFormat === 'INI'" fxFlex="100">
+    <div *ngIf="configData !== '' && (fileFormat === 'INI' || fileFormat === 'HOCON')" fxFlex="100">
       <mat-list>
         <mat-list-item *ngFor="let conf of configData; index as i;">
           <mat-card-subtitle class="my-1">

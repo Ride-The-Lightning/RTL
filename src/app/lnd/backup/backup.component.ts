@@ -11,7 +11,7 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 })
 export class BackupComponent implements OnInit, OnDestroy {
   public faDownload = faDownload;
-  public links = [{link: 'backup', name: 'Backup'}, {link: 'restore', name: 'Restore'}];
+  public links = [{link: 'bckup', name: 'Backup'}, {link: 'restore', name: 'Restore'}];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 

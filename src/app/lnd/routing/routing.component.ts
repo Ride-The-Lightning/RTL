@@ -20,7 +20,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
   public yesterday = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() - 1, 0, 0, 0);
   public endDate = this.today;
   public startDate = this.lastMonthDay;
-  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'routingpeers', name: 'Routing Peers'}];
+  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'peers', name: 'Routing Peers'}];
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 

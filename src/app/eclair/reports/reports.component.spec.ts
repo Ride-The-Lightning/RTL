@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ECLPeersChannelsComponent } from './peers-channels.component';
+import { ECLReportsComponent } from './reports.component';
 
-describe('ECLPeersChannelsComponent', () => {
-  let component: ECLPeersChannelsComponent;
-  let fixture: ComponentFixture<ECLPeersChannelsComponent>;
+describe('ECLReportsComponent', () => {
+  let component: ECLReportsComponent;
+  let fixture: ComponentFixture<ECLReportsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPeersChannelsComponent ]
+      declarations: [ ECLReportsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ECLPeersChannelsComponent);
+    fixture = TestBed.createComponent(ECLReportsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

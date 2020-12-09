@@ -32,7 +32,7 @@ import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice
   ]  
 })
 export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
   faHistory = faHistory;

@@ -13,7 +13,6 @@ import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-en
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as CLActions from '../store/cl.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
@@ -63,28 +62,28 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 10, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 10, rows: 1 },
         { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 10, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'status', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels', cols: 10, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 6, rows: 4 },
         { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 6, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 6, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 6, rows: 8 }
       ];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
         { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
+        { id: 'status', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
         { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 3, rows: 4 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
       ];
     } else {
       this.operatorCardHeight = ((window.screen.height * 0.77) / 2) + 'px';
@@ -92,14 +91,14 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.operatorCards = [
         { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-        { id: 'capacity', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
+        { id: 'capacity', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
         { id: 'fee', goTo: 'Routing', link: '/cl/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
-        { id: 'status', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+        { id: 'status', goTo: 'Channels', link: '/cl/connections', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
       ];
       this.merchantCards = [
         { id: 'balance', goTo: 'On-Chain', link: '/cl/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/peerschannels', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'inboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
+        { id: 'outboundLiq', goTo: 'Channels', link: '/cl/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
         { id: 'transactions', goTo: 'Transactions', link: '/cl/transactions', title: '', cols: 2, rows: 5 }
       ];
     }

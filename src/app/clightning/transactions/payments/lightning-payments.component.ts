@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
+  @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: true }) form;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;

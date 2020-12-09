@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
-
 
 @Component({
   selector: 'rtl-ecl-routing',
@@ -19,26 +19,19 @@ export class ECLRoutingComponent implements OnInit, OnDestroy {
   public events = [];
   public flgLoading: Array<Boolean | 'error'> = [true];
   public errorMessage = '';
+  public links = [{link: 'forwardinghistory', name: 'Forwarding History'}, {link: 'peers', name: 'Routing Peers'}];
+  public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    this.store.select('ecl')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-        }
-      });
-      this.events = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.payments) ? false : true;
-      }
-      this.logger.info(rtlStore);
+    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
+    .subscribe((value: ResolveEnd) => {
+      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
+      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
     });
   }
 

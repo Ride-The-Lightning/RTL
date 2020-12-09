@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd, ActivatedRoute } from '@angular/router';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -24,7 +24,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
   public selectedTable = this.tables[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router, private route: ActivatedRoute) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));

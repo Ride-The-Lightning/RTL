@@ -19,11 +19,11 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-ecl-on-chain-send',
-  templateUrl: './on-chain-send.component.html',
-  styleUrls: ['./on-chain-send.component.scss']
+  selector: 'rtl-ecl-on-chain-send-modal',
+  templateUrl: './on-chain-send-modal.component.html',
+  styleUrls: ['./on-chain-send-modal.component.scss']
 })
-export class ECLOnChainSendComponent implements OnInit, OnDestroy {
+export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: false }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
@@ -45,7 +45,7 @@ export class ECLOnChainSendComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOnChainSendComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
 
   ngOnInit() {
     this.store.select('root')

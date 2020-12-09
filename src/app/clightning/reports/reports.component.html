@@ -1,0 +1,15 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
+  <fa-icon [icon]="faChartBar" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Reports</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+      </nav>
+      <router-outlet></router-outlet>      
+    </mat-card-content>
+  </mat-card>
+</div>
+  

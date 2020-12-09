@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,10 +22,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLFailedTransactionsComponent implements OnInit, OnChanges {
+export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() failedEvents: any;
+  public failedEvents: any;
+  public errorMessage = '';
   public displayedColumns = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -31,6 +34,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -46,10 +50,29 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {}
-
-  ngOnChanges() {
-    this.loadForwardingEventsTable(this.failedEvents);
+  ngOnInit() {
+    this.store.select('cl')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'GetForwardingHistory') {
+          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+        }
+      });
+      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
+        this.failedEvents = [];
+        rtlStore.forwardingHistory.forwarding_events.forEach(event => {
+          if (event.status !== 'settled') {
+            this.failedEvents.push(event);
+          }
+        });
+      } else {
+        this.failedEvents = [];
+      }
+      this.loadForwardingEventsTable(this.failedEvents);
+      this.logger.info(rtlStore);
+    });
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -93,4 +116,10 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     this.forwardingHistoryEvents.filter = selFilter;
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }
