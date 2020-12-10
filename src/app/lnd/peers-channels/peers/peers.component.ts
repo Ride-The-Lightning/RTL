@@ -31,8 +31,8 @@ import { isNumber } from 'util';
   ]
 })
 export class PeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public availableBalance = 0;
   public faUsers = faUsers;
   public displayedColumns = [];
@@ -81,7 +81,7 @@ export class PeersComponent implements OnInit, OnDestroy {
         this.peers.data = rtlStore.peers;
       }
       this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;

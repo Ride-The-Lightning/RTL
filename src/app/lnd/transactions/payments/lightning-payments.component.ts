@@ -353,7 +353,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.payments.sortingDataAccessor = (data, sortHeaderId) => {
       switch (sortHeaderId) {
         case 'hops': return (data.htlcs.length && data.htlcs[0] && data.htlcs[0].route && data.htlcs[0].route.hops && data.htlcs[0].route.hops.length ) ? data.htlcs[0].route.hops.length : 0;
-        default: return (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+        default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
     this.payments.sort = this.sort;

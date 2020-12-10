@@ -24,8 +24,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class ChannelActiveHTLCsTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public channels: any;
   public channelsJSONArr: Channel[] = [];

@@ -33,7 +33,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class LightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = null;
@@ -122,7 +122,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   loadInvoicesTable(invoices) {
     this.invoices = new MatTableDataSource<Invoice>([...invoices]);
     this.invoices.sort = this.sort;
-    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }

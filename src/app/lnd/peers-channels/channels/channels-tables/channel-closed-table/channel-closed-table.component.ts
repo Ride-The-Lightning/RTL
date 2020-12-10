@@ -25,8 +25,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class ChannelClosedTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public channelClosureType = CHANNEL_CLOSURE_TYPE;
   public faHistory = faHistory;
   public displayedColumns = [];
@@ -102,7 +102,7 @@ export class ChannelClosedTableComponent implements OnInit, OnDestroy {
   loadClosedChannelsTable(closedChannels) {
     this.closedChannels = new MatTableDataSource<ClosedChannel>([...closedChannels]);
     this.closedChannels.sort = this.sort;
-    this.closedChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.closedChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.closedChannels.paginator = this.paginator;
     this.logger.info(this.closedChannels);
   }

@@ -25,7 +25,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./send-payment.component.scss'],
 })
 export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
-  @ViewChild('paymentReq', { static: true }) paymentReq: NgModel;
+  @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public paymentDecoded: PayRequest = {};

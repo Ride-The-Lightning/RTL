@@ -23,8 +23,8 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]  
 })
 export class OnChainUTXOsComponent implements OnChanges {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @Input() utxos: UTXO[];
   @Input() errorLoading: any;
   public addressType = WALLET_ADDRESS_TYPE;
@@ -93,7 +93,7 @@ export class OnChainUTXOsComponent implements OnChanges {
       switch (sortHeaderId) {
         case 'tx_id': return data.outpoint.txid_str.toLocaleLowerCase();
         case 'output': return +data.outpoint.output_index;
-        default: return (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+        default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
     this.listUTXOs.sort = this.sort;

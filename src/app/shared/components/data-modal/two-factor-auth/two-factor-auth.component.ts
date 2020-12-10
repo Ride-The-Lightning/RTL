@@ -23,7 +23,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./two-factor-auth.component.scss']
 })
 export class TwoFactorAuthComponent implements OnInit, OnDestroy {
-  @ViewChild('twoFAForm', { static: true }) twoFAForm: any;
+  @ViewChild('twoFAForm', { static: false }) twoFAForm: any;
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public faCopy = faCopy;

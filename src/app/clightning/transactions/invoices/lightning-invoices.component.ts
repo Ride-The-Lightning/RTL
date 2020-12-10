@@ -34,8 +34,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;  
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -96,7 +96,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
       this.invoices.data = this.invoiceJSONArr;
       this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.invoices.paginator = this.paginator;    
       setTimeout(() => { this.flgAnimate = false; }, 5000);
       this.logger.info(this.invoices);

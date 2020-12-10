@@ -26,8 +26,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ChannelRestoreTableComponent implements OnInit {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
@@ -60,7 +60,7 @@ export class ChannelRestoreTableComponent implements OnInit {
       this.channels = new MatTableDataSource([...resRCList.files]);
       this.channels.data = resRCList.files;
       this.channels.sort = this.sort;
-      this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.channels.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
         this.flgLoading[0] = false;

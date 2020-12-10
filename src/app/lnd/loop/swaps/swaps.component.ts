@@ -28,8 +28,8 @@ import * as LNDActions from '../../store/lnd.actions';
 })
 export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public swapStateEnum = SwapStateEnum;
   public faHistory = faHistory;
   public swapCaption = 'Loop Out';
@@ -124,7 +124,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   loadSwapsTable(swaps) {
     this.listSwaps = new MatTableDataSource<SwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
-    this.listSwaps.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.listSwaps.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

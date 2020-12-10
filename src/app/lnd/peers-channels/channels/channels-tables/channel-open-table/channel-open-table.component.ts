@@ -34,8 +34,8 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
   ]  
 })
 export class ChannelOpenTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild = {};
@@ -241,7 +241,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

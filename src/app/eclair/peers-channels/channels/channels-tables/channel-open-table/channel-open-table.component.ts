@@ -28,8 +28,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public activeChannels: Channel[];
@@ -169,7 +169,7 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
     });
     this.channels = new MatTableDataSource<Channel>([...this.activeChannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

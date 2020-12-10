@@ -26,8 +26,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   faMoneyBillWave = faMoneyBillWave;
   public displayedColumns = [];
   public listTransactions: any;
@@ -100,7 +100,7 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

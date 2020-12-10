@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./connect-peer.component.scss']
 })
 export class ECLConnectPeerComponent implements OnInit, OnDestroy {
-  @ViewChild('peersForm', {static: true}) form: any;
+  @ViewChild('peersForm', {static: false}) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';

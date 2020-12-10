@@ -10,7 +10,7 @@ import { ECLPaymentInformation } from '../../../shared/models/alertData';
   styleUrls: ['./payment-information.component.scss']
 })
 export class ECLPaymentInformationComponent implements OnInit, AfterViewChecked {
-  @ViewChild('scrollContainer', { static: true }) scrollContainer: ElementRef;
+  @ViewChild('scrollContainer', { static: false }) scrollContainer: ElementRef;
   public payment: PaymentSent;
   public description: string = null;
   public shouldScroll = true;

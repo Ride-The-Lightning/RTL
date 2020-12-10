@@ -84,6 +84,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
     const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset);
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
+    this.totalFeeMsat = null;
     if (this.events && this.events.forwarding_events  && this.events.forwarding_events.length > 0) {
       this.events.forwarding_events.forEach(event => {
         if (event.status === 'settled' && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {

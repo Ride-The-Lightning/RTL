@@ -33,8 +33,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ECLPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
@@ -81,7 +81,7 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
       this.availableBalance = rtlStore.onchainBalance.total || 0;
       this.peers = (rtlStore.peers) ? new MatTableDataSource<Peer>([...rtlStore.peers]) : new MatTableDataSource([]);
       this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;

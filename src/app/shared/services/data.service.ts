@@ -194,9 +194,9 @@ export class DataService implements OnInit, OnDestroy {
   getTransactionsForReport() {
     return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
     .pipe(takeUntil(this.unSubs[5]),
-    withLatestFrom(this.store.select(this.childAPIUrl !== 'lnd' ? 'cl' : 'lnd')),
-    mergeMap(([res, storeData]: [any, fromLNDReducers.LNDState]) => {
-      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : []});
+    withLatestFrom(this.store.select(this.lnImplementation === 'CLT' ? 'cl' : (this.lnImplementation === 'ECL' ? 'ecl' : 'lnd'))),
+    mergeMap(([res, storeData]: [any, any]) => {
+      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
