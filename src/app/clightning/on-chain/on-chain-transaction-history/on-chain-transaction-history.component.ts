@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -13,7 +13,6 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
@@ -25,11 +24,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
-export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
+export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   faMoneyBillWave = faMoneyBillWave;
   public displayedColumns = [];
+  public transactionsData: Transaction[] = [];
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
@@ -57,7 +57,6 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.store.dispatch(new CLActions.FetchTransactions());
     this.store.select('cl')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
@@ -66,8 +65,9 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
           this.flgLoading[0] = 'error';
         }
       });
-      if (rtlStore.transactions) {
-        this.loadTransactionsTable(rtlStore.transactions);
+      this.transactionsData = rtlStore.transactions;
+      if (this.transactionsData.length > 0) {
+        this.loadTransactionsTable(this.transactionsData);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.transactions) ? false : true;
@@ -75,6 +75,12 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
 
+  }
+
+  ngAfterViewInit() {
+    if (this.transactionsData.length > 0) {
+      this.loadTransactionsTable(this.transactionsData);
+    }
   }
 
   applyFilter(selFilter: string) {

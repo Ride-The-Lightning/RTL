@@ -40,6 +40,7 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
   public flgAnimate = true;
   public displayedColumns = [];
   public peerAddress = '';
+  public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
@@ -79,10 +80,8 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.onchainBalance.total || 0;
-      this.peers = (rtlStore.peers) ? new MatTableDataSource<Peer>([...rtlStore.peers]) : new MatTableDataSource([]);
-      this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-      this.peers.paginator = this.paginator;
+      this.peersData = rtlStore.peers;
+      this.loadPeersTable(this.peersData);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
@@ -97,6 +96,12 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
       this.peerAddress = undefined;
       this.flgAnimate = true;
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.peersData.length > 0) {
+      this.loadPeersTable(this.peersData);
+    }
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -169,6 +174,13 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.peers.filter = selFilter;
+  }
+
+  loadPeersTable(peers: Peer[]) {
+    this.peers = (peers) ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
+    this.peers.sort = this.sort;
+    this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.peers.paginator = this.paginator;
   }
 
   onDownloadCSV() {

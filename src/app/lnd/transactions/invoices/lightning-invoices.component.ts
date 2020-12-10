@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
-export class LightningInvoicesComponent implements OnInit, OnDestroy {
+export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   faHistory = faHistory;
@@ -45,6 +45,7 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
   public invoiceValueHint = '';
   public displayedColumns = [];
   public invoicePaymentReq = '';
+  public invoicesData: Invoice[] = [];
   public invoices: any;
   public information: GetInfo = {};
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -91,13 +92,23 @@ export class LightningInvoicesComponent implements OnInit, OnDestroy {
       this.totalInvoices = rtlStore.totalInvoices;
       this.firstOffset = +rtlStore.invoices.first_index_offset;
       this.lastOffset = +rtlStore.invoices.last_index_offset;
-      this.logger.info(rtlStore);
-      this.loadInvoicesTable(rtlStore.invoices.invoices ? rtlStore.invoices.invoices : []);
+      this.invoicesData = rtlStore.invoices.invoices ? rtlStore.invoices.invoices : [];
+      if (this.invoicesData.length > 0) {
+        this.loadInvoicesTable(this.invoicesData);
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
       }
+      this.logger.info(rtlStore);
     });
   }
+
+  ngAfterViewInit() {
+    if (this.invoicesData.length > 0) {
+      this.loadInvoicesTable(this.invoicesData);
+    }
+  }
+
 
   onAddInvoice(form: any) {
     let expiryInSecs = (this.expiry ? this.expiry : 3600);

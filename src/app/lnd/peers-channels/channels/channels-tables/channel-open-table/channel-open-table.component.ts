@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -33,7 +33,7 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ChannelOpenTableComponent implements OnInit, OnDestroy {
+export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public timeUnit = 'mins:secs';
@@ -41,12 +41,12 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public totalBalance = 0;
   public displayedColumns = [];
+  public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -90,14 +90,21 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if (rtlStore.allChannels) {
-        this.loadChannelsTable(this.calculateUptime(rtlStore.allChannels));
+      this.channelsData = this.calculateUptime(rtlStore.allChannels);
+      if (this.channelsData.length > 0) {
+        this.loadChannelsTable(this.channelsData);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.channelsData.length > 0) {
+      this.loadChannelsTable(this.channelsData);
+    }
   }
 
   onViewRemotePolicy(selChannel: Channel) {
@@ -214,7 +221,6 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 

@@ -34,13 +34,13 @@ export class HorizontalScrollerComponent implements OnInit {
 
   onMonthSelected(event: Date) {
     this.selectedValue = event;
-    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.onStepChange('SELECTED');
     this.monthlyDatepicker.close();
   }
 
   onYearSelected(event: Date) {
     this.selectedValue = event;
-    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.onStepChange('SELECTED');
     this.yearlyDatepicker.close();
   }
 
@@ -74,9 +74,14 @@ export class HorizontalScrollerComponent implements OnInit {
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
 
-      default:
+      case 'LAST':
         this.animationDirection = 'forward';
         this.selectedValue = this.last;
+        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        break;
+
+      default:
+        this.animationDirection = 'forward';
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
     }

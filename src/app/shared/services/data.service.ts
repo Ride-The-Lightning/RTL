@@ -60,10 +60,9 @@ export class DataService implements OnInit, OnDestroy {
       url = this.childAPIUrl + environment.PAYMENTS_API + '/' + payment;
     }
     this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
-    return this.httpClient.get(url)
-    .pipe(takeUntil(this.unSubs[0]),
+    return this.httpClient.get(url).pipe(takeUntil(this.unSubs[0]),
     map((res: any) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());      
+      this.store.dispatch(new RTLActions.CloseSpinner());
       return res;
     }),
     catchError(err => {

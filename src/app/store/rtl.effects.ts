@@ -79,7 +79,15 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if (this.dialogRef) { this.dialogRef.close(); }
-      this.dialog.closeAll();
+      try {
+        this.dialog.openDialogs.forEach(localDialog => {
+          if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage.includes('...')) {
+            localDialog.close();
+          }
+        });
+      } catch (err) {
+        this.logger.error(err);
+      }
     }
   ));
 

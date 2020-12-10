@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, Input, SimpleChanges, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ECLForwardingHistoryComponent implements OnInit, OnDestroy {
+export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @Input() eventsData = [];
@@ -51,7 +51,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnDestroy {
       this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'fromAlias', 'toAlias', 'amountIn', 'amountOut', 'fee', 'actions'];
+      this.displayedColumns = ['timestamp', 'fromChannelAlias', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'actions'];
     }
   }
 
@@ -67,10 +67,18 @@ export class ECLForwardingHistoryComponent implements OnInit, OnDestroy {
           }
         });
         this.successfulEvents = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-        this.loadForwardingEventsTable(this.successfulEvents);
+        if (this.successfulEvents.length > 0) {
+          this.loadForwardingEventsTable(this.successfulEvents);
+        }
         this.logger.info(rtlStore);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.successfulEvents.length > 0) {
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -108,7 +116,15 @@ export class ECLForwardingHistoryComponent implements OnInit, OnDestroy {
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => {
+      switch (sortHeaderId) {
+        case 'fee':
+          return data.amountIn - data.amountOut;
+      
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    }
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }

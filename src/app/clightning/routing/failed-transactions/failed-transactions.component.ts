@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
+export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public failedEvents: any;
@@ -60,19 +60,22 @@ export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-        this.failedEvents = [];
-        rtlStore.forwardingHistory.forwarding_events.forEach(event => {
-          if (event.status !== 'settled') {
-            this.failedEvents.push(event);
-          }
-        });
-      } else {
-        this.failedEvents = [];
+      this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+      if (this.failedEvents.length > 0) {
+        this.loadForwardingEventsTable(this.failedEvents);
       }
-      this.loadForwardingEventsTable(this.failedEvents);
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.failedEvents.length > 0) {
+      this.loadForwardingEventsTable(this.failedEvents);
+    }
+  }
+
+  filterFailedEvents(events) {
+    return events.filter(event => event.status !== 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -20,7 +20,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shar
   templateUrl: './channel-pending-table.component.html',
   styleUrls: ['./channel-pending-table.component.scss']
 })
-export class ChannelPendingTableComponent implements OnInit, OnDestroy {
+export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   public selNode: SelNodeChild = {};
   public selectedFilter = 0;
@@ -78,16 +78,16 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       if (this.pendingChannels.total_limbo_balance) {
         this.flgLoading[1] = false;
       }
-      if (this.pendingChannels.pending_open_channels) {
+      if (this.pendingChannels.pending_open_channels.length > 0) {
         this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
       }
-      if (this.pendingChannels.pending_force_closing_channels) {
+      if (this.pendingChannels.pending_force_closing_channels.length > 0) {
         this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
       }
-      if (this.pendingChannels.pending_closing_channels) {
+      if (this.pendingChannels.pending_closing_channels.length > 0) {
         this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
       }
-      if (this.pendingChannels.waiting_close_channels) {
+      if (this.pendingChannels.waiting_close_channels.length > 0) {
         this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
       }
       if (this.flgLoading[0] !== 'error') {
@@ -96,6 +96,21 @@ export class ChannelPendingTableComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
 
+  }
+
+  ngAfterViewInit() {
+    if (this.pendingChannels.pending_open_channels.length > 0) {
+      this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
+    }
+    if (this.pendingChannels.pending_force_closing_channels.length > 0) {
+      this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
+    }
+    if (this.pendingChannels.pending_closing_channels.length > 0) {
+      this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
+    }
+    if (this.pendingChannels.waiting_close_channels.length > 0) {
+      this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
+    }
   }
 
   onOpenClick(selChannel: any) {

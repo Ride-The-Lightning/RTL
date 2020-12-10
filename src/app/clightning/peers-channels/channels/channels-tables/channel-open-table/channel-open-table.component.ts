@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -27,20 +27,20 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
+export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public totalBalance = 0;
   public displayedColumns = [];
+  public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -78,8 +78,9 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
-      if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected));
+      this.channelsData = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
+      if (this.channelsData.length > 0) {
+        this.loadChannelsTable(this.channelsData);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -88,6 +89,12 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.channelsData.length > 0) {
+      this.loadChannelsTable(this.channelsData);
+    }
+  }
+  
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
@@ -208,7 +215,6 @@ export class CLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 

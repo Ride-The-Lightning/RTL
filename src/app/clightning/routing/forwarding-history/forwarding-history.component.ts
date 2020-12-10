@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
+export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @Input() eventsData = [];
@@ -63,20 +63,19 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
             this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
           }
         });
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-          this.successfulEvents = [];
-          rtlStore.forwardingHistory.forwarding_events.forEach(event => {
-            if (event.status === 'settled') {
-              this.successfulEvents.push(event);
-            }
-          });
-        } else {
-          this.successfulEvents = [];
+        this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+        if (this.successfulEvents.length > 0) {
+          this.loadForwardingEventsTable(this.successfulEvents);
         }
-        this.loadForwardingEventsTable(this.successfulEvents);
         this.logger.info(rtlStore);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.successfulEvents.length > 0) {
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -88,6 +87,10 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     if (changes.filterValue) {
       this.applyFilter();
     }
+  }
+
+  filterSuccessfulEvents(events) {
+    return events.filter(event => event.status === 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {

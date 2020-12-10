@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -27,7 +27,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
+export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public faEye = faEye;
@@ -41,7 +41,6 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -86,6 +85,12 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.activeChannels.length > 0) {
+      this.loadChannelsTable();
+    }
   }
 
   onChannelUpdate(channelToUpdate: any) {
@@ -151,7 +156,6 @@ export class ECLChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 

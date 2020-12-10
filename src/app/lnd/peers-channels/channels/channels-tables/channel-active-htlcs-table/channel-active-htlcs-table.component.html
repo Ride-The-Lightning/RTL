@@ -34,7 +34,9 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="expiration_height">
-        <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="end center" class="htlc-row-span">Expiration Height</span></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">
+          <span fxLayoutAlign="end center" class="htlc-row-span">Expiration Height</span>
+        </th>
         <td mat-cell *matCellDef="let channel">
           <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
@@ -45,18 +47,20 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="hash_lock">
-        <th mat-header-cell *matHeaderCellDef class="pl-3 htlc-row-span">Hash Lock</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="pl-3 htlc-row-span">
+          <span fxLayoutAlign="end center" class="htlc-row-span">Hash Lock</span>
+        </th>
         <td mat-cell *matCellDef="let channel" class="pl-3">
-          <span fxLayoutAlign="start center" class="htlc-row-span">{{' '}}</span>
+          <span fxLayoutAlign="end center" class="htlc-row-span">{{' '}}</span>
           <span *ngIf="channel.is_expanded">
-            <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="start center" class="htlc-row-span">
+            <span *ngFor="let htlc of channel?.pending_htlcs" fxLayoutAlign="end center" class="htlc-row-span">
               {{htlc?.hash_lock}}
             </span>
           </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="pl-1 pr-3">
+        <th mat-header-cell *matHeaderCellDef class="px-2">
           <div class="bordered-box table-actions-select">
             <mat-select placeholder="Actions" tabindex="1" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
@@ -64,7 +68,7 @@
             </mat-select>
           </div>
         </th>
-        <td mat-cell *matCellDef="let channel" class="pl-1 pr-3">
+        <td mat-cell *matCellDef="let channel" class="px-2">
           <span fxLayoutAlign="end center">
             <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="channel.is_expanded = !channel.is_expanded">{{channel.is_expanded ? 'Hide' : 'Show'}}</button>
           </span>

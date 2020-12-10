@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -26,7 +26,7 @@ import * as LNDActions from '../../store/lnd.actions';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
+export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
@@ -77,7 +77,9 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
       if (rtlStore.loopSwaps) {
         this.storedSwaps = rtlStore.loopSwaps;
         this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
-        this.loadSwapsTable(this.filteredSwaps);
+        if (this.filteredSwaps.length > 0) {
+          this.loadSwapsTable(this.filteredSwaps);
+        }
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.loopSwaps) ? false : true;
@@ -85,6 +87,12 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
       this.logger.info(rtlStore);
     });
 
+  }
+
+  ngAfterViewInit() {
+    if (this.filteredSwaps.length > 0) {
+      this.loadSwapsTable(this.filteredSwaps);
+    }
   }
 
   ngOnChanges() {

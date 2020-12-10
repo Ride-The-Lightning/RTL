@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { Payments } from '../../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -31,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]  
 })
-export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
+export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
   @ViewChild(MatSort, { static: false }) sort: MatSort;
@@ -89,17 +90,21 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
-      this.payments.data = this.paymentJSONArr;
-      this.payments.sort = this.sort;
-      this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-      this.payments.paginator = this.paginator;
+      if (this.paymentJSONArr.length > 0) {
+        this.loadPaymentsTable(this.paymentJSONArr);
+      }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.paymentJSONArr.length > 0) {
+      this.loadPaymentsTable(this.paymentJSONArr);
+    }
   }
 
   is_group(index: number, payment: Payment) {
@@ -261,6 +266,14 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.payments.filter = selFilter;
+  }
+
+  loadPaymentsTable(payments: Payment[]) {
+    this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
+    this.payments.data = this.paymentJSONArr;
+    this.payments.sort = this.sort;
+    this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.payments.paginator = this.paginator;
   }
 
   onDownloadCSV() {

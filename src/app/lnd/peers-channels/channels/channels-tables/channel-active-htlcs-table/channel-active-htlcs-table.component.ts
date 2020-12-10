@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('HTLCs') }
   ]  
 })
-export class ChannelActiveHTLCsTableComponent implements OnInit, OnDestroy {
+export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -65,20 +65,20 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, OnDestroy {
         }
       });
       this.channelsJSONArr = (rtlStore.allChannels && rtlStore.allChannels.length > 0) ? rtlStore.allChannels.filter(channel => { if (channel.pending_htlcs && channel.pending_htlcs.length > 0) { return channel; }}) : [];
-      this.channels = (rtlStore.allChannels) ?  new MatTableDataSource([]) : new MatTableDataSource<Channel>([...this.channelsJSONArr]);
-      this.channels.data = this.channelsJSONArr;
-      this.channels.sort = this.sort;
-      this.channels.sortingDataAccessor = (data, sortHeaderId) => (sortHeaderId === 'amount' && data.pending_htlcs && data.pending_htlcs.length) ? data.pending_htlcs.length : (sortHeaderId === 'incoming' ? data.remote_alias.toLocaleLowerCase() : data);
-      this.channels.paginator = this.paginator;
-      this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-        const newChannel = channel.remote_alias + channel.pending_htlcs.map(htlc => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
-        return newChannel.includes(fltr.toLowerCase());
-      };    
+      if (this.channelsJSONArr.length > 0) {
+        this.loadHTLCsTable(this.channelsJSONArr);
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( this.channelsJSONArr) ? false : true;
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.channelsJSONArr.length > 0) {
+      this.loadHTLCsTable(this.channelsJSONArr);
+    }
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {
@@ -106,6 +106,38 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, OnDestroy {
 
   applyFilter(selFilter: string) {
     this.channels.filter = selFilter;
+  }
+
+  loadHTLCsTable(channels: Channel[]) {
+    this.channels = (channels) ? new MatTableDataSource<Channel>([...channels]) : new MatTableDataSource([]);
+    this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => {
+      switch (sortHeaderId) {
+        case 'amount':
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          return data.pending_htlcs && data.pending_htlcs.length ? data.pending_htlcs.length : null;
+      
+        case 'incoming':
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'boolean', this.sort.direction);
+          return data.remote_alias ? data.remote_alias : data.remote_pubkey ? data.remote_pubkey : null;
+
+        case 'expiration_height':
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          return data;
+
+        case 'hash_lock':
+          this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);
+          return data;
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    };
+    this.channels.paginator = this.paginator;
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => {
+      const newChannel = channel.remote_alias + channel.pending_htlcs.map(htlc => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
+      return newChannel.includes(fltr.toLowerCase());
+    };    
   }
 
   onDownloadCSV() {

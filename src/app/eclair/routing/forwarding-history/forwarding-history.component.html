@@ -12,11 +12,11 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>
         <td mat-cell *matCellDef="let fhEvent">{{fhEvent?.timestampStr}}</td>
       </ng-container>
-      <ng-container matColumnDef="fromAlias">
+      <ng-container matColumnDef="fromChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>In Channel</th>
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.fromChannelAlias}}</td>
       </ng-container>
-      <ng-container matColumnDef="toAlias">
+      <ng-container matColumnDef="toChannelAlias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Out Channel</th>
         <td mat-cell *matCellDef="let fhEvent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '20rem'}">{{fhEvent?.toChannelAlias}}</td>
       </ng-container>
