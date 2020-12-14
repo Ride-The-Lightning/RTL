@@ -33,6 +33,22 @@ export class CommonService implements OnInit {
     this.containerSize = {width: width, height: height};
   }
 
+  sortByKey(array: any[], key: string, keyDataType: string, direction = 'asc') {
+    if (keyDataType === 'number') {
+      if (direction === 'desc') {
+        return array.sort((a, b) => +a[key] > +b[key] ? -1 : 1);
+      } else {
+        return array.sort((a, b) => +a[key] > +b[key] ? 1 : -1);
+      }
+    } else {
+      if (direction === 'desc') {
+        return array.sort((a, b) => a[key] > b[key] ? -1 : 1);
+      } else {
+        return array.sort((a, b) => a[key] > b[key] ? 1 : -1);
+      }
+    }
+  }
+
   sortDescByKey(array, key) {
     return array.sort(function (a, b) {
       const x = +a[key];

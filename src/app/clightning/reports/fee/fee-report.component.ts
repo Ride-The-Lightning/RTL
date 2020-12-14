@@ -3,9 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { SwitchRes } from '../../../shared/models/lndModels';
-import { CommonService } from '../../../shared/services/common.service';
+import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -20,8 +21,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
-  public events: SwitchRes = {};
+  public events: ForwardingHistoryRes = {};
+  public filteredEventsBySelectedPeriod: ForwardingEvent[] = [];
   public eventFilterValue = '';
+  public errorMessage = '';
+  public totalFeeMsat = null;
   public today = new Date(Date.now());
   public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
@@ -37,17 +41,23 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('lnd')
+    this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.fetchEvents(this.startDate, this.endDate);
-      }
+      this.errorMessage = '';
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'GetForwardingHistory') {
+          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+        }
+      });
+      this.events = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory : {};
+      this.filterForwardingEvents(this.startDate, this.endDate);
+      this.logger.info(rtlStore);
     });
   }
 
@@ -69,20 +79,20 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
     this.view = [CONTAINER_SIZE.width - this.screenPaddingX, CONTAINER_SIZE.height/2.2];
   }
 
-  fetchEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset).toString();
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset).toString();
-    this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-      if (res.forwarding_events && res.forwarding_events.length) {
-        res.forwarding_events = res.forwarding_events.reverse();
-        this.events = res;
-        this.feeReportData = this.prepareFeeReport(start);
-      } else {
-        this.events = {};
-        this.feeReportData = [];
-      }
-    });    
+  filterForwardingEvents(start: Date, end: Date) {
+    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset);
+    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset);
+    this.filteredEventsBySelectedPeriod = [];
+    this.feeReportData = [];
+    this.totalFeeMsat = null;
+    if (this.events && this.events.forwarding_events  && this.events.forwarding_events.length > 0) {
+      this.events.forwarding_events.forEach(event => {
+        if (event.status === 'settled' && event.received_time >= startDateInSeconds && event.received_time < endDateInSeconds) {
+          this.filteredEventsBySelectedPeriod.push(event);
+        }
+      });
+      this.feeReportData = this.prepareFeeReport(start);
+    }
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -93,9 +103,9 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toUpperCase() + '/' + this.startDate.getFullYear();
     } else {
-      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -106,21 +116,21 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
       for (let i = 0; i < 12; i++) {
         feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
-      this.events.forwarding_events.map(event => {
-        let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
-        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
+      this.filteredEventsBySelectedPeriod.map(event => {
+        let monthNumber = new Date((+event.received_time + this.timezoneOffset)*1000).getMonth();
+        feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
-      this.events.forwarding_events.map(event => {
-        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
-        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
+      this.filteredEventsBySelectedPeriod.map(event => {
+        let dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
+        feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
-        this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
+        this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
       });
     }
     return feeReport;
@@ -137,7 +147,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
       this.startDate = new Date(selYear, selMonth, 1, 0, 0, 0);
       this.endDate = new Date(selYear, selMonth, this.getMonthDays(selMonth, selYear), 23, 59, 59);
     }
-    this.fetchEvents(this.startDate, this.endDate);
+    this.filterForwardingEvents(this.startDate, this.endDate);
     this.eventFilterValue = '';
   }
 

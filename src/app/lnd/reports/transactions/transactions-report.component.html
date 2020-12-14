@@ -2,11 +2,11 @@
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div *ngIf="transactionsNonZeroReportData.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportSummary">
-      <div fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
-        Paid {{(transactionsReportSummary.amountPaidSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{(transactionsReportSummary.paymentsSelectedPeriod || 0) | number}} Payments
+      <div *ngIf="transactionsReportSummary.paymentsSelectedPeriod > 0" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        Paid {{(transactionsReportSummary.amountPaidSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{transactionsReportSummary.paymentsSelectedPeriod | number}} Payments
       </div>
-      <div fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
-        Received {{(transactionsReportSummary.amountReceivedSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{(transactionsReportSummary.invoicesSelectedPeriod || 0) | number}} Invoices
+      <div *ngIf="transactionsReportSummary.invoicesSelectedPeriod" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        Received {{(transactionsReportSummary.amountReceivedSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{transactionsReportSummary.invoicesSelectedPeriod | number}} Invoices
       </div>
     </div>
     <div *ngIf="transactionsNonZeroReportData.length <= 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No transactions report for the selected period</div>

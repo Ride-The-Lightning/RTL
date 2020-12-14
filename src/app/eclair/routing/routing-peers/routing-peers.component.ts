@@ -19,8 +19,8 @@ import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions'
   styleUrls: ['./routing-peers.component.scss']
 })
 export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sortIn: MatSort;
-  @ViewChild('tableOut', {read: MatSort, static: true}) sortOut: MatSort;
+  @ViewChild(MatSort, { static: false }) sortIn: MatSort;
+  @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
   public routingPeersData = [];
   public errorMessage = '';
   public displayedColumns = [];

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,9 +22,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @Input() eventsData = [];
+  @Input() filterValue = '';
   public successfulEvents = [];
   public errorMessage = '';
   public displayedColumns = [];
@@ -54,29 +56,41 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      this.errorMessage = '';
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistory') {
-          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-        }
-      });
-      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-        this.successfulEvents = [];
-        rtlStore.forwardingHistory.forwarding_events.forEach(event => {
-          if (event.status === 'settled') {
-            this.successfulEvents.push(event);
+      if (this.eventsData.length <= 0) {
+        this.errorMessage = '';
+        rtlStore.effectErrors.forEach(effectsErr => {
+          if (effectsErr.action === 'GetForwardingHistory') {
+            this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
           }
         });
-      } else {
-        this.successfulEvents = [];
+        this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+        if (this.successfulEvents.length > 0) {
+          this.loadForwardingEventsTable(this.successfulEvents);
+        }
+        this.logger.info(rtlStore);
       }
-      this.loadForwardingEventsTable(this.successfulEvents);
-      this.logger.info(rtlStore);
     });
   }
 
-  ngOnChanges() {
-    this.loadForwardingEventsTable(this.successfulEvents);
+  ngAfterViewInit() {
+    if (this.successfulEvents.length > 0) {
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.eventsData = changes.eventsData.currentValue;
+      this.successfulEvents = this.eventsData;
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
+    if (changes.filterValue) {
+      this.applyFilter();
+    }
+  }
+
+  filterSuccessfulEvents(events) {
+    return events.filter(event => event.status === 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -101,10 +115,10 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
+      const newEvent = event.received_time_str.toLowerCase() + event.resolved_time_str.toLowerCase() + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
       return newEvent.includes(fltr.toLowerCase());
     };    
     this.logger.info(this.forwardingHistoryEvents);
@@ -116,8 +130,8 @@ export class CLForwardingHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter() {
+    this.forwardingHistoryEvents.filter = this.filterValue;
   }
 
   ngOnDestroy() {

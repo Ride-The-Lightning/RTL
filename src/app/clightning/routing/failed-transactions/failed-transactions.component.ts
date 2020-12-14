@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,9 +22,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public failedEvents: any;
   public errorMessage = '';
   public displayedColumns = [];
@@ -60,19 +60,22 @@ export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
           this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
         }
       });
-      if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-        this.failedEvents = [];
-        rtlStore.forwardingHistory.forwarding_events.forEach(event => {
-          if (event.status !== 'settled') {
-            this.failedEvents.push(event);
-          }
-        });
-      } else {
-        this.failedEvents = [];
+      this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+      if (this.failedEvents.length > 0) {
+        this.loadForwardingEventsTable(this.failedEvents);
       }
-      this.loadForwardingEventsTable(this.failedEvents);
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.failedEvents.length > 0) {
+      this.loadForwardingEventsTable(this.failedEvents);
+    }
+  }
+
+  filterFailedEvents(events) {
+    return events.filter(event => event.status !== 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -97,7 +100,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnDestroy {
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;

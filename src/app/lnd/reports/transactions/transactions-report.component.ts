@@ -56,7 +56,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
             this.invoices = res.invoices;
             this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
             this.transactionsNonZeroReportData = this.prepareTableData();
-        });    
+        });
       }
     });
   }
@@ -87,9 +87,9 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
 
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series.toUpperCase() + '/' + this.startDate.getFullYear();
     } else {
-      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
     }
   }
 

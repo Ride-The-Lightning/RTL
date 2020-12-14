@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./query-routes.component.scss']
 })
 export class QueryRoutesComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
@@ -65,7 +65,7 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     });
   }
 

@@ -32,7 +32,7 @@ export const cipherSeedLength: ValidatorFn = (control: FormGroup): ValidationErr
   }]
 })
 export class InitializeWalletComponent implements OnInit, OnDestroy {
-  @ViewChild(MatStepper, { static: true }) stepper: MatStepper;
+  @ViewChild(MatStepper, { static: false }) stepper: MatStepper;
   public insecureLND = false;
   public genSeedResponse = [];
   public initWalletResponse = '';

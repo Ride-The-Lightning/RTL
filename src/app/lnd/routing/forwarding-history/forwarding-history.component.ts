@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,9 +22,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ForwardingHistoryComponent implements OnInit, OnChanges, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public forwardingHistoryData = [];
@@ -63,15 +63,19 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges, OnDestroy 
             this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
           }
         });
-        if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
-          this.forwardingHistoryData = rtlStore.forwardingHistory.forwarding_events;
-        } else {
-          this.forwardingHistoryData = [];
+        this.forwardingHistoryData = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory.forwarding_events : [];
+        if (this.forwardingHistoryData.length > 0) {
+          this.loadForwardingEventsTable(this.forwardingHistoryData);
         }
-        this.loadForwardingEventsTable(this.forwardingHistoryData);
         this.logger.info(rtlStore);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.forwardingHistoryData.length > 0) {
+      this.loadForwardingEventsTable(this.forwardingHistoryData);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -106,7 +110,7 @@ export class ForwardingHistoryComponent implements OnInit, OnChanges, OnDestroy 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }

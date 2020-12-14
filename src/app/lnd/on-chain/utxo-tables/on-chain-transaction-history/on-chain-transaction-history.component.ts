@@ -23,8 +23,8 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]  
 })
 export class OnChainTransactionHistoryComponent implements OnChanges {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @Input() transactions: Transaction[];
   @Input() errorLoading: any;
   faHistory = faHistory;
@@ -85,7 +85,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

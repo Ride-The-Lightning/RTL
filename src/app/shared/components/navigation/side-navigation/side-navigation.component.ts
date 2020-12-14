@@ -27,7 +27,7 @@ import { CommonService } from '../../../services/common.service';
   styleUrls: ['./side-navigation.component.scss']
 })
 export class SideNavigationComponent implements OnInit, OnDestroy {
-  @ViewChild(MatTree, { static: true }) tree: any;
+  @ViewChild(MatTree, { static: false }) tree: any;
   @Output() ChildNavClicked = new EventEmitter<any>();
   faEject = faEject;
   faEye = faEye;

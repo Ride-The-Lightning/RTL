@@ -21,7 +21,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
   styleUrls: ['./query-routes.component.scss']
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild('queryRoutesForm', { static: false }) form: any;  
   public destinationPubkey = '';
   public amount = null;
@@ -66,7 +66,7 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     });
   }
 

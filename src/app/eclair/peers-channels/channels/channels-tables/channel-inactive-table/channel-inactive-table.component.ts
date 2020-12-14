@@ -1,21 +1,21 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
-// import { Channel, GetInfo, ChannelEdge } from '../../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { ECLEffects } from '../../../../store/ecl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
-import * as ECLActions from '../../../../store/ecl.actions';
+
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -27,9 +27,9 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public inactiveChannels: Channel[];
   public totalBalance = 0;
   public displayedColumns = [];
@@ -39,7 +39,6 @@ export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -86,8 +85,13 @@ export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.inactiveChannels.length > 0) {
+      this.loadChannelsTable();
+    }
+  }
+
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 
@@ -105,7 +109,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, OnDestroy {
     });
     this.channels = new MatTableDataSource<Channel>([...this.inactiveChannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

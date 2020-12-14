@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -32,14 +32,15 @@ import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
   ]
 })
-export class CLPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
   public displayedColumns = [];
   public peerAddress = '';
+  public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
@@ -79,7 +80,10 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.balance.totalBalance || 0;
-      this.loadPeersTable(rtlStore.peers ? rtlStore.peers : []);
+      this.peersData = rtlStore.peers ? rtlStore.peers : [];
+      if (this.peersData.length > 0) {
+        this.loadPeersTable(this.peersData);
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
@@ -93,6 +97,12 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.peerAddress = undefined;
       this.flgAnimate = true;
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.peersData.length > 0) {
+      this.loadPeersTable(this.peersData);
+    }
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -167,7 +177,7 @@ export class CLPeersComponent implements OnInit, OnDestroy {
             return ''; 
           }
 
-        default: return (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+        default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
     this.peers.sort = this.sort;

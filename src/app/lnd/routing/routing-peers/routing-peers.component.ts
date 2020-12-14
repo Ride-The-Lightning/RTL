@@ -20,8 +20,8 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
   styleUrls: ['./routing-peers.component.scss']
 })
 export class RoutingPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sortIn: MatSort;
-  @ViewChild('tableOut', {read: MatSort, static: true}) sortOut: MatSort;
+  @ViewChild(MatSort, { static: false }) sortIn: MatSort;
+  @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
   public routingPeersData = [];
   public errorMessage = '';
   public displayedColumns = [];

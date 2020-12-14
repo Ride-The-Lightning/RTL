@@ -1,12 +1,12 @@
-<!-- <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
-    <div *ngIf="feeReportData.length > 0 && events.forwarding_events" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
-    [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-0'}} Sats/{{(events?.forwarding_events?.length || 0) | number}} Events</div>
-    <div *ngIf="feeReportData.length <= 0 || !events.forwarding_events" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
+    <div *ngIf="feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
+    [@fadeIn]="totalFeeMsat">{{(totalFeeMsat / 1000 || 0) | number:'1.0-0'}} Sats/{{(filteredEventsBySelectedPeriod.length || 0) | number}} Events</div>
+    <div *ngIf="feeReportData.length <= 0 || filteredEventsBySelectedPeriod.length <= 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
     <div class="mt-1">
       <ngx-charts-bar-vertical
-        *ngIf="feeReportData.length > 0 && events.forwarding_events"
+        *ngIf="feeReportData.length > 0 && filteredEventsBySelectedPeriod.length > 0"
         [view]="view"
         [results]="feeReportData"
         [gradient]="false"
@@ -29,7 +29,7 @@
       </ngx-charts-bar-vertical>
     </div>
     <div class="mt-1">
-      <rtl-forwarding-history *ngIf="events && events?.forwarding_events" [eventsData]="events?.forwarding_events" [filterValue]="eventFilterValue"></rtl-forwarding-history>
+      <rtl-cl-forwarding-history *ngIf="filteredEventsBySelectedPeriod && filteredEventsBySelectedPeriod.length > 0" [eventsData]="filteredEventsBySelectedPeriod" [filterValue]="eventFilterValue"></rtl-cl-forwarding-history>
     </div>
   </div>
-</div> -->
+</div>

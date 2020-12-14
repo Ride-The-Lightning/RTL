@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, OnInit, ViewChild, HostListener } from
 
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
 import { SCROLL_RANGES } from '../../services/consts-enums-functions';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'rtl-horizontal-scroller',
@@ -23,7 +24,7 @@ export class HorizontalScrollerComponent implements OnInit {
   public selectedValue = this.last;
   @Output() stepChanged = new EventEmitter<{selDate:Date, selScrollRange:string}>();
   
-  constructor() {}
+  constructor(private logger: LoggerService) {}
 
   ngOnInit() {}
 
@@ -34,17 +35,18 @@ export class HorizontalScrollerComponent implements OnInit {
 
   onMonthSelected(event: Date) {
     this.selectedValue = event;
-    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.onStepChange('SELECTED');
     this.monthlyDatepicker.close();
   }
 
   onYearSelected(event: Date) {
     this.selectedValue = event;
-    this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+    this.onStepChange('SELECTED');
     this.yearlyDatepicker.close();
   }
 
   onStepChange(direction: string) {
+    this.logger.info(direction);
     switch (direction) {
       case 'FIRST':
         this.animationDirection = 'backward';
@@ -58,7 +60,7 @@ export class HorizontalScrollerComponent implements OnInit {
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() - 1, 0, 1, 0, 0, 0);
         } else {
-          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, this.selectedValue.getDate(), 0, 0, 0);
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() - 1, 1, 0, 0, 0);
         }
         this.animationDirection = 'backward';
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
@@ -68,20 +70,27 @@ export class HorizontalScrollerComponent implements OnInit {
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() + 1, 0, 1, 0, 0, 0);
         } else {
-          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , this.selectedValue.getDate(), 0, 0, 0);
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , 1, 0, 0, 0);
         }
         this.animationDirection = 'forward';
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
 
-      default:
+      case 'LAST':
         this.animationDirection = 'forward';
         this.selectedValue = this.last;
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
         break;
+
+      default:
+        this.animationDirection = '';
+        this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});
+        break;
     }
-    this.disablePrev = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() <= this.first.getFullYear() : this.selectedValue.getMonth() <= this.first.getMonth();
-    this.disableNext = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() >= this.last.getFullYear() : this.selectedValue.getMonth() >= this.last.getMonth();
+    this.disablePrev = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() <= this.first.getFullYear() : (this.selectedValue.getFullYear() <= this.first.getFullYear() && this.selectedValue.getMonth() <= this.first.getMonth());
+    this.disableNext = (this.selScrollRange === SCROLL_RANGES[1]) ? this.selectedValue.getFullYear() >= this.last.getFullYear() : (this.selectedValue.getFullYear() >= this.last.getFullYear() && this.selectedValue.getMonth() >= this.last.getMonth());
+    this.logger.info(this.disablePrev);
+    this.logger.info(this.disableNext);
     setTimeout(() => {
       this.animationDirection = '';
     }, 800);

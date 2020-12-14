@@ -33,8 +33,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;  
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -86,21 +86,16 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices && rtlStore.invoices.length > 0) ? rtlStore.invoices : [];
-      this.invoices = (rtlStore.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
-      this.invoices.data = this.invoiceJSONArr;
-      this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.invoices.paginator = this.paginator;    
-      setTimeout(() => { this.flgAnimate = false; }, 5000);
-      this.logger.info(this.invoices);
-  
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
+      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0) {
+        this.loadInvoicesTable(this.invoiceJSONArr);
       }
+      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
+      }
+      this.logger.info(rtlStore);
     });
-
   }
 
   openCreateInvoiceModal() {
@@ -133,6 +128,14 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
         newlyAdded: false,
         component: ECLInvoiceInformationComponent
     }}));
+  }
+
+  loadInvoicesTable(invoices: Invoice[]) {
+    invoices[0].amountSettled
+    this.invoices = new MatTableDataSource<Invoice>([...invoices]);
+    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.sort = this.sort;
+    this.invoices.paginator = this.paginator;
   }
 
   resetData() {
