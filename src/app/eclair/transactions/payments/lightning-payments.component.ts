@@ -291,10 +291,10 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   onPaymentClick(selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.dataService.decodePayment(selPayment.paymentHash, false)
+      this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
       .subscribe(sentPaymentInfo => {
-        this.showPaymentView(selPayment, sentPaymentInfo);
+        this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
       }, (error) => {
         this.showPaymentView(selPayment, []);
       });
@@ -313,7 +313,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
 
   onPartClick(selPart: PaymentSentPart, selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.dataService.decodePayment(selPayment.paymentHash, false)
+      this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
       .subscribe(sentPaymentInfo => {
         this.showPartView(selPart, selPayment, sentPaymentInfo);
