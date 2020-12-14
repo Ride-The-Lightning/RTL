@@ -51,8 +51,8 @@ const paymentsECLRoutes = require("./routes/eclair/payments");
 const networkECLRoutes = require("./routes/eclair/network");
 
 app.use(cookieParser(common.secret_key));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '25mb'}));
+app.use(bodyParser.urlencoded({extended: false, limit: '25mb'}));
 app.use(baseHref, express.static(path.join(__dirname, "angular")));
 
 // CORS fix, Only required for developement due to separate backend and frontend servers
