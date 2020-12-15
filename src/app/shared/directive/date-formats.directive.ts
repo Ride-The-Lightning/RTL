@@ -1,8 +1,6 @@
 import { Directive, Injectable } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
 import { MONTHS } from '../services/consts-enums-functions';
-import { CommonService } from '../services/common.service';
 
 @Injectable() class CustomDateAdapter extends NativeDateAdapter {
   format(date: Date, displayFormat: Object): string {
@@ -10,6 +8,8 @@ import { CommonService } from '../services/common.service';
       return MONTHS[date.getMonth()].name + ', ' + date.getFullYear();
     } else if (displayFormat === 'YYYY') {
       return date.getFullYear().toString();
+    } else {
+      return date.getDate() + '/' + MONTHS[date.getMonth()].name + '/' + date.getFullYear();
     }
   }
 }

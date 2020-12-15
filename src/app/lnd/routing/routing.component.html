@@ -9,16 +9,18 @@
         <form fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mb-1" (ngSubmit)="onEventsFetch()" #routingForm="ngForm">
           <div fxFlex="100" fxLayoutAlign="space-between stretch">
             <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="yesterday"
+              <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [max]="today"
                 name="startDate" [(ngModel)]="startDate" tabindex="1" #strtDate="ngModel">
               <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
               <mat-datepicker #startDatepicker [startAt]="startDate"></mat-datepicker>
+              <mat-error *ngIf="strtDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
             <mat-form-field fxFlex="49" fxLayoutAlign="start">
-              <input matInput [matDatepicker]="endDatepicker" [max]="today" placeholder="End Date" name="endDate"
+              <input matInput [matDatepicker]="endDatepicker" [min]="startDate" [max]="today" placeholder="End Date" name="endDate"
                 [(ngModel)]="endDate" tabindex="2" #enDate="ngModel">
               <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
               <mat-datepicker #endDatepicker [startAt]="endDate"></mat-datepicker>
+              <mat-error *ngIf="enDate.errors">Invalid date format.</mat-error>
             </mat-form-field>
           </div>
           <div fxLayout="row" class="mt-2">
