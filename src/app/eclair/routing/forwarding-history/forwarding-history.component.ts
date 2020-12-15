@@ -67,9 +67,7 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
           }
         });
         this.successfulEvents = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-        if (this.successfulEvents.length > 0) {
-          this.loadForwardingEventsTable(this.successfulEvents);
-        }
+        this.loadForwardingEventsTable(this.successfulEvents);
         this.logger.info(rtlStore);
       }
     });

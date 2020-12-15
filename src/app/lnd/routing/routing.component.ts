@@ -38,7 +38,10 @@ export class RoutingComponent implements OnInit, OnDestroy {
   }
 
   onEventsFetch() {
-    if (!this.endDate) { this.endDate = new Date(); }
+    this.store.dispatch(new LNDActions.SetForwardingHistory({}));
+    if (!this.endDate) {
+      this.endDate = this.today;
+    }
     if (!this.startDate) {
       this.startDate = new Date(this.endDate.getFullYear(), this.endDate.getMonth() - 1, this.endDate.getDate() + 1, 0, 0, 0);
     }

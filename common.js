@@ -2,6 +2,7 @@ var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
 var common = {};
+const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 common.rtl_conf_file_path = '';
 common.rtl_pass = '';
@@ -139,7 +140,27 @@ common.convertToBTC = (num) => {
 };
 
 common.convertTimestampToDate = (num) => {
-  return new Date(+num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
+  let myDate = new Date(+num * 1000);
+  let days = myDate.getDate().toString();
+  days = +days < 10 ? '0' + days : days;
+  let hours = myDate.getHours().toString();
+  hours = +hours < 10 ? '0' + hours : hours;
+  let minutes = myDate.getMinutes().toString();
+  minutes = +minutes < 10 ? '0' + minutes : minutes;
+  return days + "/" + MONTH_NAMES[myDate.getMonth()] + "/" + myDate.getFullYear() + " " + hours + ":" + minutes;
+};
+
+common.convertTimestampToLocalDate = (num) => {
+  let myDate = new Date(+num * 1000);
+  let days = myDate.getDate().toString();
+  days = +days < 10 ? '0' + days : days;
+  let hours = myDate.getHours().toString();
+  hours = +hours < 10 ? '0' + hours : hours;
+  let minutes = myDate.getMinutes().toString();
+  minutes = +minutes < 10 ? '0' + minutes : minutes;
+  let seconds = myDate.getSeconds().toString();
+  seconds = +seconds < 10 ? '0' + seconds : seconds;
+  return days + "/" + (MONTH_NAMES[myDate.getMonth()]) + "/" + myDate.getFullYear() + " " + hours + ":" + minutes + ":" + seconds;
 };
 
 common.sortAscByKey = (array, key) => {
@@ -180,5 +201,14 @@ common.newestOnTop = (array, key, value) => {
   array.unshift(newlyAddedRecord[0]);
   return array;
 }
+
+common.getRequestIP = (req) => {
+  return (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift())
+    || req.ip
+    || req.connection.remoteAddress
+    || req.socket.remoteAddress
+    || (req.connection.socket ? req.connection.socket.remoteAddress : null);
+}
+
 
 module.exports = common;

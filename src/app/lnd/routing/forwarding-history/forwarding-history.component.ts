@@ -64,9 +64,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
           }
         });
         this.forwardingHistoryData = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory.forwarding_events : [];
-        if (this.forwardingHistoryData.length > 0) {
-          this.loadForwardingEventsTable(this.forwardingHistoryData);
-        }
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
         this.logger.info(rtlStore);
       }
     });

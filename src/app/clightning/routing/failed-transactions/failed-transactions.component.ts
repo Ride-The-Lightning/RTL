@@ -61,9 +61,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
         }
       });
       this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
-      if (this.failedEvents.length > 0) {
-        this.loadForwardingEventsTable(this.failedEvents);
-      }
+      this.loadForwardingEventsTable(this.failedEvents);
       this.logger.info(rtlStore);
     });
   }

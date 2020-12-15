@@ -1,9 +1,29 @@
 var common = require('../common');
 var connect = require('../connect');
-const jwt = require("jsonwebtoken");
-var crypto = require('crypto');
 var logger = require('./logger');
+const jwt = require("jsonwebtoken");
 const otplib = require("otplib");
+var crypto = require('crypto');
+var ONE_MINUTE = 60000;
+var LOCKING_PERIOD = 30 * ONE_MINUTE; // HALF AN HOUR
+var ALLOWED_LOGIN_ATTEMPTS = 5;
+var failedLoginAttempts = {};
+
+setInterval(() => {
+  for (var ip in failedLoginAttempts) {
+    if (new Date().getTime() > (failedLoginAttempts[ip].lastTried + LOCKING_PERIOD)) {
+      delete failedLoginAttempts[ip];
+    }
+  }
+}, LOCKING_PERIOD);
+
+getFailedInfo = (reqIP, currentTime) => {
+  let failed = failedLoginAttempts[reqIP] ? failedLoginAttempts[reqIP] : failedLoginAttempts[reqIP] = {count: 0, lastTried: currentTime};
+  if (currentTime > (failed.lastTried + LOCKING_PERIOD)) {
+    failed = failedLoginAttempts[reqIP] = {count: 0, lastTried: currentTime};
+  }
+  return failed;
+}
 
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
@@ -24,20 +44,33 @@ exports.authenticateUser = (req, res, next) => {
       });
     }
   } else {
+    const currentTime = new Date().getTime();
+    const reqIP = common.getRequestIP(req);
+    let failed = getFailedInfo(reqIP, currentTime);
     const password = req.body.authenticationValue;
-    if (common.rtl_pass === password) {
-      var rpcUser = 'NODE_USER';
+    if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
+      delete failedLoginAttempts[reqIP];
+      let rpcUser = 'NODE_USER';
       const token = jwt.sign(
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 36, msg: 'Invalid Password!'});
-      res.status(401).json({
-        message: "Authentication Failed!",
-        error: "Invalid Password!"
-      });
+      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'Invalid Password! Failed IP ' + reqIP});
+      failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
+      failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
+      if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
+        res.status(401).json({
+          message: "Multiple Failed Login Attempts!",
+          error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToLocalDate((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+        });
+      } else {
+        res.status(401).json({
+          message: "Authentication Failed!",
+          error: "Invalid password! Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more failed attempts!"
+        });
+      }
     }
   }
 };

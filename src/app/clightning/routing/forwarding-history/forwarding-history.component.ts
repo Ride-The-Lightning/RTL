@@ -64,9 +64,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
           }
         });
         this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
-        if (this.successfulEvents.length > 0) {
-          this.loadForwardingEventsTable(this.successfulEvents);
-        }
+        this.loadForwardingEventsTable(this.successfulEvents);
         this.logger.info(rtlStore);
       }
     });
