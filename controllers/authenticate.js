@@ -68,7 +68,7 @@ exports.authenticateUser = (req, res, next) => {
       } else {
         res.status(401).json({
           message: "Authentication Failed!",
-          error: "Invalid password! Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more failed attempts!"
+          error: "Invalid password! Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more unsuccessful attempts!"
         });
       }
     }
