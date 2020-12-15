@@ -68,4 +68,4 @@ export const EclRoutes: Routes = [
   }
 ];
 
-export const ECLRouting: ModuleWithProviders = RouterModule.forChild(EclRoutes);
+export const ECLRouting: ModuleWithProviders<RouterModule> = RouterModule.forChild(EclRoutes);

@@ -9,7 +9,7 @@
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
-          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
+          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
             <mat-card-content fxFlex="100" class="dashboard-card-content">
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
                 <rtl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="true" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-node-info>
@@ -28,7 +28,7 @@
   </div>
   <mat-grid-list cols="3" rowHeight="250px">
     <mat-grid-tile fxLayout="row" *ngFor="let card of networkCards" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 h-93">
+      <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card h-93">
         <mat-card-content fxFlex="100" class="dashboard-card-content">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <div fxFlex="100" *ngSwitchCase="'general'" [ngClass]="{'error-border': flgLoading[1]==='error'}"><ng-container *ngTemplateOutlet="generalBlock"></ng-container></div>

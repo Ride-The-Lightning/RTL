@@ -80,4 +80,4 @@ export const ClRoutes: Routes = [
   }
 ];
 
-export const CLRouting: ModuleWithProviders = RouterModule.forChild(ClRoutes);
+export const CLRouting: ModuleWithProviders<RouterModule> = RouterModule.forChild(ClRoutes);

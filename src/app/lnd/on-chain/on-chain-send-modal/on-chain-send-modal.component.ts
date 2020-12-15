@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class OnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('form', { static: true }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;

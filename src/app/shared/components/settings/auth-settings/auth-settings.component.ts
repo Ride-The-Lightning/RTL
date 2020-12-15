@@ -20,7 +20,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./auth-settings.component.scss']
 })
 export class AuthSettingsComponent implements OnInit, OnDestroy {
-  @ViewChild('authForm', { static: false }) form: any;
+  @ViewChild('authForm', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
   public faUserLock = faUserLock;
   public faUserClock = faUserClock;

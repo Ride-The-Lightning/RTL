@@ -34,6 +34,15 @@ import { ECLReportsComponent } from './reports/reports.component';
 import { ECLFeeReportComponent } from './reports/fee/fee-report.component';
 import { ECLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { ECLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { ECLInvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
+import { ECLPaymentInformationComponent } from './transactions/payment-information-modal/payment-information.component';
+import { ECLOpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
+import { ECLConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
+import { ECLLightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
+import { ECLCreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
+import { ECLOnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
+import { ECLChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
+
 import { ECLUnlockedGuard } from '../shared/services/auth.guard';
 
 @NgModule({
@@ -72,7 +81,15 @@ import { ECLUnlockedGuard } from '../shared/services/auth.guard';
     ECLReportsComponent,
     ECLFeeReportComponent,
     ECLTransactionsReportComponent,
-    ECLOnChainSendComponent
+    ECLOnChainSendComponent,
+    ECLInvoiceInformationComponent,
+    ECLPaymentInformationComponent,
+    ECLOpenChannelComponent,
+    ECLConnectPeerComponent,
+    ECLLightningSendPaymentsComponent,
+    ECLCreateInvoiceComponent,
+    ECLOnChainSendModalComponent,
+    ECLChannelInformationComponent
   ],
   providers: [
     ECLUnlockedGuard

@@ -13,7 +13,7 @@
               <div fxLayout="row">
                 <mat-form-field fxFlex="100">
                   <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
-                  <mat-error *ngIf="passwordFormGroup.controls.password.errors?.required">Password is required.</mat-error>
+                  <mat-error *ngIf="passwordFormGroup?.controls?.password?.errors?.required">Password is required.</mat-error>
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row">
@@ -25,7 +25,7 @@
             <form [formGroup]="secretFormGroup" fxLayout="column" class="my-1 pr-1">
               <ng-template matStepLabel disabled="true">{{secretFormLabel}}</ng-template>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="start">
-                <qrcode [qrdata]="otpauth" [margin]="1" [width]="180" [errorCorrectionLevel]="'L'"></qrcode>
+                <qrcode [qrdata]="otpauth" [margin]="1" [width]="180" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
               </div>
               <div fxFlex="100" class="w-100 alert alert-info">
                 <fa-icon [icon]="faInfoCircle" class="mt-1 mr-1 alert-icon"></fa-icon>
@@ -34,8 +34,8 @@
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
                 <mat-form-field fxFlex="100">
                   <input autoFocus matInput placeholder="Secret Code" type="text" tabindex="4" formControlName="secret" required>
-                  <fa-icon [icon]="faCopy" matSuffix rtlClipboard [payload]="secretFormGroup.controls.secret.value" (copied)="onCopySecret($event)"></fa-icon>
-                  <mat-error *ngIf="secretFormGroup.controls.secret.errors?.required">Secret Code is required.</mat-error>
+                  <fa-icon [icon]="faCopy" matSuffix rtlClipboard [payload]="secretFormGroup?.controls?.secret?.value" (copied)="onCopySecret($event)"></fa-icon>
+                  <mat-error *ngIf="secretFormGroup?.controls?.secret?.errors?.required">Secret Code is required.</mat-error>
                 </mat-form-field>
               </div>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
@@ -50,12 +50,12 @@
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between stretch">              
                   <mat-form-field fxFlex="100">
                     <input autoFocus matInput placeholder="Token" type="text" tabindex="7" formControlName="token" required>
-                    <mat-error *ngIf="tokenFormGroup.controls.token.errors?.required">Token is required.</mat-error>
-                    <mat-error *ngIf="tokenFormGroup.controls.token.errors?.notValid">Token is invalid.</mat-error>
+                    <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.required">Token is required.</mat-error>
+                    <mat-error *ngIf="tokenFormGroup?.controls?.token?.errors?.notValid">Token is invalid.</mat-error>
                   </mat-form-field>
                 </div>
                 <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                  <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">{{tokenFormGroup.controls.token.errors.notValid ? 'Retry' : 'Verify'}}</button>
+                  <button mat-stroked-button color="primary" tabindex="8" type="button" (click)="onVerifyToken()">{{tokenFormGroup?.controls?.token?.errors?.notValid ? 'Retry' : 'Verify'}}</button>
                 </div>
               </div>
               <div *ngIf="flgValidated && isTokenValid">

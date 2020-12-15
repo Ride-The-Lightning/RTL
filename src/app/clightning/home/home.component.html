@@ -5,7 +5,7 @@
   </div>
   <mat-grid-list cols="10" [rowHeight]="operatorCardHeight">
     <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-24">
+      <mat-card fxLayout="column" fxLayoutAlign="start start" class="h-100 dashboard-card">
         <mat-card-header>
           <mat-card-title>
             <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>

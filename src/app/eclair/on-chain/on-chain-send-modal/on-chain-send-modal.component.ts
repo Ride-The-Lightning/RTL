@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;
+  @ViewChild('form', { static: true }) form: any;
   public faExclamationTriangle = faExclamationTriangle;
   public selNode: SelNodeChild = {};
   public appConfig: RTLConfiguration;

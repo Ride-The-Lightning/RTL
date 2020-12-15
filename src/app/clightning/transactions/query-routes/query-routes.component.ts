@@ -22,7 +22,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild('queryRoutesForm', { static: false }) form: any;  
+  @ViewChild('queryRoutesForm', { static: true }) form: any;  
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;

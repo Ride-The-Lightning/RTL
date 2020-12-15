@@ -8,6 +8,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { LayoutModule } from '@angular/cdk/layout';
 
 import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,6 +46,11 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
+import { ThemeOverlay } from './theme/overlay-container/theme-overlay';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { LoggerService, ConsoleLoggerService } from './services/logger.service';
+import { MONTHS } from './services/consts-enums-functions';
+
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
@@ -62,6 +68,14 @@ import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.compone
 import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
 import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 import { TransactionsReportTableComponent } from './components/transactions-report-table/transactions-report-table.component';
+import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
+import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
+import { SpinnerDialogComponent } from './components/data-modal/spinner-dialog/spinner-dialog.component';
+import { AlertMessageComponent } from './components/data-modal/alert-message/alert-message.component';
+import { ConfirmationMessageComponent } from './components/data-modal/confirmation-message/confirmation-message.component';
+import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
+import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
+import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -69,9 +83,6 @@ import { MonthlyDateDirective, YearlyDateDirective } from './directive/date-form
 import { MaxValidator } from './directive/max-amount.directive';
 import { MinValidator } from './directive/min-amount.directive';
 import { RemoveLeadingZerosPipe } from './pipes/app.pipe';
-
-import { LoggerService, ConsoleLoggerService } from '../shared/services/logger.service';
-import { MONTHS } from '../shared/services/consts-enums-functions';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: false,
@@ -109,6 +120,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     FontAwesomeModule,
     FlexLayoutModule,
     LayoutModule,
+    MatDialogModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -151,6 +163,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     FontAwesomeModule,
     FlexLayoutModule,
     LayoutModule,
+    MatDialogModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -231,14 +244,24 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoopStatusComponent,
     LoopOutInfoGraphicsComponent,
     LoopInInfoGraphicsComponent,
-    TransactionsReportTableComponent
+    TransactionsReportTableComponent,
+    OnChainGeneratedAddressComponent,
+    ShowPubkeyComponent,
+    SpinnerDialogComponent,
+    AlertMessageComponent,
+    ConfirmationMessageComponent,
+    ErrorMessageComponent,
+    TwoFactorAuthComponent,
+    LoginTokenComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000, verticalPosition: 'bottom', panelClass: 'rtl-snack-bar' } },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: true, disableClose: true, role: 'dialog', width: '55%' } },
     { provide: DateAdapter, useClass: DefaultDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: DEFAULT_DATE_FORMAT },
+    { provide: OverlayContainer, useClass: ThemeOverlay },
     DecimalPipe, TitleCasePipe, DatePipe
   ]
 })

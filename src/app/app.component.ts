@@ -67,7 +67,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.smallScreen = false;
       }
     });
-    
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')

@@ -168,10 +168,10 @@ body {
 }
 
 .mat-tab-body-wrapper, .card-content-gap {
-  padding: $gap*1.2 $gap*3 !important;
+  padding: $gap*1.2 $gap*2 !important;
   height: 100%;
   @include for_screensize(tab-port) {
-    padding: $gap $gap*2 !important;
+    padding: $gap $gap !important;
   }
   @include for_screensize(phone) {
     padding: $gap/2 $gap/4 !important;
@@ -1395,6 +1395,18 @@ table {
   & .tooltip-caret {
     border-top-color : rgba(50, 50, 50, 0.9) !important;
   }
+}
+
+.dashboard-card {
+  padding: $gap*3;
+  margin: $gap;
+  .mat-card-header-text {
+    width: 100%;
+  }
+}
+
+.dashboard-card-content {
+  text-align: left;
 }
 
 .mat-expansion-panel.flat-expansion-panel {

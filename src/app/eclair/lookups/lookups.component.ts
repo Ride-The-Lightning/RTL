@@ -20,7 +20,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./lookups.component.scss']
 })
 export class ECLLookupsComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;
+  @ViewChild('form', { static: true }) form: any;
   public lookupKeyCtrl = new FormControl();
   // public lookupKey = '';
   public nodeLookupValue = {nodeid: ''};

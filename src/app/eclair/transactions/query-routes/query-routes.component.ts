@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLQueryRoutesComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild('queryRoutesForm', { static: false }) form: any;  
+  @ViewChild('queryRoutesForm', { static: true }) form: any;  
   public nodeId = '';
   public amount = null;
   public qrHops: any;

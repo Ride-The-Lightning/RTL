@@ -31,7 +31,7 @@ import * as sha256 from 'sha256';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('form', { static: true }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
