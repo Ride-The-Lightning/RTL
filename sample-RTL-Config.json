@@ -14,6 +14,7 @@
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
+        "swapMacaroonPath": "C:\\Users\\shaha\\AppData\\Local\\Loop\\mainnet",
         "configPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\lnd.conf"
       },
       "Settings": {
@@ -23,7 +24,7 @@
         "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080",
-        "swapServerUrl": "http://localhost:8081",
+        "swapServerUrl": "https://localhost:8081",
         "fiatConversion": false
       }
     }
