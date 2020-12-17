@@ -70,7 +70,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if ( this.paymentDecoded.timestamp_str) {
       this.sendPayment();

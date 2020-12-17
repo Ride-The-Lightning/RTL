@@ -24,12 +24,12 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public flgLoading: Array<Boolean | 'error'> = [true];
   public channels: any;
   public channelsJSONArr: Channel[] = [];
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public htlcColumns = [];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -64,10 +64,8 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
           this.flgLoading[0] = 'error';
         }
       });
-      this.channelsJSONArr = (rtlStore.allChannels && rtlStore.allChannels.length > 0) ? rtlStore.allChannels.filter(channel => { if (channel.pending_htlcs && channel.pending_htlcs.length > 0) { return channel; }}) : [];
-      if (this.channelsJSONArr.length > 0) {
-        this.loadHTLCsTable(this.channelsJSONArr);
-      }
+      this.channelsJSONArr = (rtlStore.allChannels && rtlStore.allChannels.length > 0) ? rtlStore.allChannels.filter(channel => channel.pending_htlcs && channel.pending_htlcs.length > 0) : [];
+      this.loadHTLCsTable(this.channelsJSONArr);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( this.channelsJSONArr) ? false : true;
       }
@@ -76,9 +74,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   ngAfterViewInit() {
-    if (this.channelsJSONArr.length > 0) {
-      this.loadHTLCsTable(this.channelsJSONArr);
-    }
+    this.loadHTLCsTable(this.channelsJSONArr);
   }
 
   onHTLCClick(selHtlc: ChannelHTLC, selChannel: Channel) {
@@ -104,14 +100,14 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.channels.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.channels.filter = selFilter.value;
   }
 
   loadHTLCsTable(channels: Channel[]) {
     this.channels = (channels) ? new MatTableDataSource<Channel>([...channels]) : new MatTableDataSource([]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => {
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'amount':
           this.commonService.sortByKey(data.pending_htlcs, sortHeaderId, 'number', this.sort.direction);

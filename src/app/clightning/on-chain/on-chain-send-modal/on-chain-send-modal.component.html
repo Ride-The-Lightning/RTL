@@ -13,7 +13,7 @@
           <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="30">
-          <input matInput [(ngModel)]="transaction.satoshis" placeholder="Amount" name="amount" [type]="flgUseAllBalance ? 'text' : 'number'" step="100" min="0" tabindex="2" required #amount="ngModel" [disabled]="flgUseAllBalance">
+          <input matInput [(ngModel)]="transaction.satoshis" placeholder="Amount" name="amount" [type]="flgUseAllBalance ? 'text' : 'number'" [step]="100" [min]="0" tabindex="2" required #amount="ngModel" [disabled]="flgUseAllBalance">
           <mat-hint *ngIf="flgUseAllBalance">Amount replaced by UTXO balance</mat-hint>
           <span matSuffix> {{selAmountUnit}} </span>
           <mat-error *ngIf="!transaction.satoshis">Amount is required.</mat-error>
@@ -34,7 +34,7 @@
           <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
             <mat-checkbox fxFlex="2" tabindex="7" color="primary" [(ngModel)]="flgMinConf" (change)="flgMinConf ? transaction.feeRate=null : transaction.minconf=null" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
             <mat-form-field fxFlex="98">
-              <input matInput [(ngModel)]="transaction.minconf" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
+              <input matInput [(ngModel)]="transaction.minconf" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" [required]="flgMinConf" [disabled]="!flgMinConf">
               <mat-error *ngIf="flgMinConf && !transaction.minconf">Min Confirmation Blocks is required.</mat-error>
             </mat-form-field>
           </div>
@@ -112,7 +112,7 @@
               <div fxFlex.gt-sm="48" fxLayout="row" fxLayoutAlign="start center">
                 <mat-checkbox fxFlex="2" tabindex="6" color="primary" formControlName="flgMinConf" name="flgMinCon" class="mr-2"></mat-checkbox>
                 <mat-form-field fxFlex="98">
-                  <input matInput formControlName="transactionBlocks" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="7" required>
+                  <input matInput formControlName="transactionBlocks" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="7" required>
                   <mat-error *ngIf="sendFundFormGroup.controls.transactionBlocks.errors?.required">Min confirmation blocks is required.</mat-error>
                 </mat-form-field>
               </div>

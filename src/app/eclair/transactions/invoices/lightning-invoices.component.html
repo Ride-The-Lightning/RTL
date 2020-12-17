@@ -5,7 +5,7 @@
       <mat-error *ngIf="!description">Description is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" step="100" min="1" tabindex="3" name="invoiceValue">
+      <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3" name="invValue" #invcVal="ngModel">
       <span matSuffix> {{information?.smaller_currency_unit}} </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>
     </mat-form-field>
@@ -24,10 +24,10 @@
         <span class="page-title">Invoices History</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
         <ng-container matColumnDef="timestamp">

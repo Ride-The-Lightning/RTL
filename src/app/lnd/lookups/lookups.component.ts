@@ -58,7 +58,7 @@ export class LookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup() {
+  onLookup():boolean|void {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.lookupValue = {};

@@ -133,7 +133,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
 
   }
 
-  onAuthenticate() {
+  onAuthenticate():boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -150,7 +150,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendFunds() {
+  onSendFunds():boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     if (this.flgUseAllBalance) {

@@ -67,7 +67,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     });    
   }
 
-  onChangePassword() {
+  onChangePassword():boolean|void {
     if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }

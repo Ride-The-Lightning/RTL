@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     });    
   }
 
-  onLogin() {
+  onLogin():boolean|void {
     if(!this.password) { return true; }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {

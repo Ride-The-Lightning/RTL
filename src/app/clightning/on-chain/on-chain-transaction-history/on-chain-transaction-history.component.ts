@@ -25,10 +25,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   faMoneyBillWave = faMoneyBillWave;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public transactionsData: Transaction[] = [];
   public listTransactions: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -83,8 +83,8 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewIn
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.listTransactions.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.listTransactions.filter = selFilter.value;
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
@@ -106,7 +106,7 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewIn
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

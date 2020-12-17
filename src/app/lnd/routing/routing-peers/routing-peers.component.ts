@@ -24,7 +24,7 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
   public routingPeersData = [];
   public errorMessage = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
@@ -127,12 +127,12 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     return [this.commonService.sortDescByKey(incomingResults, 'total_amount'), this.commonService.sortDescByKey(outgoingResults, 'total_amount')];
   }
 
-  applyIncomingFilter(selFilter: string) {
-    this.RoutingPeersIncoming.filter = selFilter;
+  applyIncomingFilter(selFilter: any) {
+    this.RoutingPeersIncoming.filter = selFilter.value;
   }
 
-  applyOutgoingFilter(selFilter: string) {
-    this.RoutingPeersOutgoing.filter = selFilter;
+  applyOutgoingFilter(selFilter: any) {
+    this.RoutingPeersOutgoing.filter = selFilter.value;
   }
 
   ngOnDestroy() {

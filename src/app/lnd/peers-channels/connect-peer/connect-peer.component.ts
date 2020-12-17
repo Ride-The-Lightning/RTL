@@ -95,7 +95,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onConnectPeer() {
+  onConnectPeer():boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     const deviderIndex = this.peerFormGroup.controls.peerAddress.value.search('@');
@@ -123,7 +123,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new LNDActions.SaveNewPeer({pubkey: pubkey, host: host, perm: false}));
   }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));

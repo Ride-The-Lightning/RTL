@@ -159,7 +159,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || (this.flgMinConf && !this.minConfValue))) { return true; }
     let newChannel = { peerId: ((!this.peer || !this.peer.id) ? this.selectedPubkey : this.peer.id), satoshis: (this.flgUseAllBalance) ? 'all' : this.fundingAmount.toString(), announce: !this.isPrivate, feeRate: this.selFeeRate, minconf: this.flgMinConf ? this.minConfValue : null };
     if (this.selUTXOs.length && this.selUTXOs.length > 0) {

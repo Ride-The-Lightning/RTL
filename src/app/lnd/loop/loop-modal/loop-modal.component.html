@@ -24,7 +24,7 @@
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
                 <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '30' : '48'">
-                  <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
+                  <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
@@ -32,12 +32,12 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
                 <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '20' : '48'">
-                  <input matInput placeholder="Sweep Confirmation Target" type="number" step="1" tabindex="2" formControlName="sweepConfTarget" required>
+                  <input matInput placeholder="Sweep Confirmation Target" type="number" [step]="1" tabindex="2" formControlName="sweepConfTarget" required>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.min">Confirmation target must be a positive number.</mat-error>
                 </mat-form-field>
                 <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30">
-                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" step="1" tabindex="3" formControlName="routingFeePercent" required>
+                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" [step]="1" tabindex="3" formControlName="routingFeePercent" required>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.max">Percentage must be less than or equal to {{maxRoutingFeePercentage}}.</mat-error>
@@ -81,7 +81,7 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{loopDirectionCaption}} Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopStatus">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!loopStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{(!loopStatus) ? ('Waiting for ' + loopDirectionCaption + ' request...') : (loopStatus.id_bytes) ? (loopDirectionCaption + ' request details') : (loopDirectionCaption + ' error details')}}<mat-icon *ngIf="loopStatus" class="ml-1 icon-small">{{(loopStatus && loopStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>

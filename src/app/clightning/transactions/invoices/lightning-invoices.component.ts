@@ -34,8 +34,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;  
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -43,9 +43,9 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public flgAnimate = true;
   public description = '';
   public expiry: number;
-  public invoiceValue: number;
+  public invoiceValue: number = null;
   public invoiceValueHint = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];  
@@ -96,7 +96,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
       this.invoices.data = this.invoiceJSONArr;
       this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       this.invoices.paginator = this.paginator;    
       setTimeout(() => { this.flgAnimate = false; }, 5000);
       this.logger.info(this.invoices);
@@ -169,8 +169,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.invoiceValueHint = '';
   }
 
-  applyFilter(selFilter: string) {
-    this.invoices.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.invoices.filter = selFilter.value;
   }
 
   onInvoiceValueChange() {

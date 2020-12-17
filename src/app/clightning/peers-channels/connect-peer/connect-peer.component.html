@@ -31,7 +31,7 @@
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                   <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-                    <input matInput autoFocus formControlName="fundingAmount" placeholder="Amount" type="number" step="1000" tabindex="1" required>
+                    <input matInput autoFocus formControlName="fundingAmount" placeholder="Amount" type="number" [step]="1000" tabindex="1" required>
                     <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
@@ -53,7 +53,7 @@
                   <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
                     <mat-checkbox fxFlex="2" tabindex="5" color="primary" formControlName="flgMinConf" name="flgMinConf" fxLayoutAlign="stretch start" class="mr-2"></mat-checkbox>
                     <mat-form-field fxFlex="98">
-                      <input matInput formControlName="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" [required]="channelFormGroup.controls.flgMinConf.value">
+                      <input matInput formControlName="minConfValue" placeholder="Min Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" [required]="channelFormGroup.controls.flgMinConf.value">
                       <mat-error *ngIf="channelFormGroup.controls.flgMinConf.value && !channelFormGroup.controls.minConfValue.value">Min Confirmation Blocks is required.</mat-error>
                     </mat-form-field>
                   </div>

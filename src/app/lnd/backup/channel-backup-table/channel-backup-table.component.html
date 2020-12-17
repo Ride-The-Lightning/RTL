@@ -20,10 +20,10 @@
       <span class="page-title">Backups</span>
     </div>
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="channel_point">

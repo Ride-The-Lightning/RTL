@@ -6,7 +6,7 @@
       <input matInput [(ngModel)]="filterValue" (input)="applyFilter()" (keyup)="applyFilter()" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div *ngIf="errorMessage === ''" perfectScrollbar fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
     <ng-container matColumnDef="timestamp">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>

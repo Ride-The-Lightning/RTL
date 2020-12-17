@@ -33,13 +33,13 @@ export class HorizontalScrollerComponent implements OnInit {
     this.onStepChange('LAST');
   }
 
-  onMonthSelected(event: Date) {
+  onMonthSelected(event: any) {
     this.selectedValue = event;
     this.onStepChange('SELECTED');
     this.monthlyDatepicker.close();
   }
 
-  onYearSelected(event: Date) {
+  onYearSelected(event: any) {
     this.selectedValue = event;
     this.onStepChange('SELECTED');
     this.yearlyDatepicker.close();

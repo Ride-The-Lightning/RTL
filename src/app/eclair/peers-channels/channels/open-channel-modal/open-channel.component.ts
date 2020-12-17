@@ -112,7 +112,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new ECLActions.SaveNewChannel({

@@ -9,7 +9,7 @@
       <mat-error *ngIf="!destinationPubkey">Destination pubkey is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="29" fxLayoutAlign="start end">
-      <input matInput placeholder="Amount (Sats)" name="amount" [(ngModel)]="amount" tabindex="2" type="number" step="1000" min="0" required #destAmount="ngModel">
+      <input matInput placeholder="Amount (Sats)" [(ngModel)]="amount" tabindex="2" type="number" [step]="1000" [min]="0" required>
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-2">
@@ -23,7 +23,7 @@
       <span class="page-title">Transaction Route</span>
     </div>
   </div>
-  <div perfectScrollbar class="table-container mb-6">
+  <div [perfectScrollbar] class="table-container mb-6">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="qrHops" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="id">

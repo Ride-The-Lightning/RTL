@@ -31,7 +31,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
-  public view: any[] = [350, 350];
+  public view: [number, number] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
   public xAxisLabel = 'Date';

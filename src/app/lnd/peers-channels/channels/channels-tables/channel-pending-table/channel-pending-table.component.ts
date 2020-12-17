@@ -21,7 +21,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shar
   styleUrls: ['./channel-pending-table.component.scss']
 })
 export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   public selNode: SelNodeChild = {};
   public selectedFilter = 0;
   public information: GetInfo = {};
@@ -218,7 +218,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingOpenChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingOpenChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingOpenChannels.sort = this.sort;
-    this.pendingOpenChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingOpenChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.logger.info(this.pendingOpenChannels);
   }
 
@@ -229,7 +229,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingForceClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingForceClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingForceClosingChannels.sort = this.sort;
-    this.pendingForceClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingForceClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.logger.info(this.pendingForceClosingChannels);
   }
 
@@ -240,7 +240,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingClosingChannels.sort = this.sort;
-    this.pendingClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.logger.info(this.pendingClosingChannels);
   }
 
@@ -251,7 +251,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingWaitClosingChannelsLength = (channels.length) ? channels.length : 0;
     this.pendingWaitClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingWaitClosingChannels.sort = this.sort;
-    this.pendingWaitClosingChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingWaitClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.logger.info(this.pendingWaitClosingChannels);
   }
 

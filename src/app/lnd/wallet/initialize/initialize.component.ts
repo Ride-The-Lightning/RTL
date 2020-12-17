@@ -107,7 +107,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   }
 
-  onInitWallet() {
+  onInitWallet():boolean|void {
     if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing...'));
     if (this.cipherFormGroup.controls.existingCipher.value) {

@@ -35,8 +35,8 @@ import { Payments } from '../../../shared/models/eclModels';
 export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -45,7 +45,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: Payment[] = [];
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public mppColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -107,11 +107,11 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  is_group(index: number, payment: Payment) {
+  is_group(index: number, payment: Payment):boolean {
     return payment.is_group;
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if (this.paymentDecoded.created_at_str) {
       this.sendPayment();
@@ -264,15 +264,15 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.payments.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.payments.filter = selFilter.value;
   }
 
   loadPaymentsTable(payments: Payment[]) {
     this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
     this.payments.data = this.paymentJSONArr;
     this.payments.sort = this.sort;
-    this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.payments.paginator = this.paginator;
   }
 

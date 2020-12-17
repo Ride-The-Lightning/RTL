@@ -5,7 +5,7 @@
       <input matInput (keyup)="applyFilter()" [(ngModel)]="selFilter" name="filter" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+  <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="state">

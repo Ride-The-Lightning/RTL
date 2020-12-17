@@ -7,7 +7,7 @@
       </mat-form-field>
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
-      <div perfectScrollbar fxLayout="column" class="table-container" fxFlex="100">
+      <div [perfectScrollbar] fxLayout="column" class="table-container" fxFlex="100">
         <table mat-table #table fxFlex="100" [dataSource]="transactions" matSort class="overflow-auto">
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>

@@ -29,8 +29,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faInfoCircle = faInfoCircle;
   public faExclamationTriangle = faExclamationTriangle;
   public faArchive = faArchive;
@@ -113,14 +113,14 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.channels.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.channels.filter = selFilter.value;
   }
 
   loadBackupTable(channels: any[]) {
     this.channels = channels ? new MatTableDataSource<Channel>([...channels]) : new MatTableDataSource([]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point : '') + (channel.chan_id ? channel.chan_id : '') +

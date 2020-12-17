@@ -66,7 +66,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     return secret2fa;
   }
 
-  onAuthenticate() {
+  onAuthenticate():boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -87,7 +87,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     this.snackBar.open('Secret code ' + this.secretFormGroup.controls.secret.value + ' copied.');
   }
 
-  onVerifyToken() {
+  onVerifyToken():boolean|void {
     if (this.appConfig.enable2FA) {
       this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
       this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));

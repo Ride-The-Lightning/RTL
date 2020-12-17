@@ -33,7 +33,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = null;
@@ -43,7 +43,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public expiry: number;
   public invoiceValue: number;
   public invoiceValueHint = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoicesData: Invoice[] = [];
   public invoices: any;
@@ -133,7 +133,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   loadInvoicesTable(invoices) {
     this.invoices = new MatTableDataSource<Invoice>([...invoices]);
     this.invoices.sort = this.sort;
-    this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }
@@ -146,8 +146,8 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoiceValueHint = '';
   }
 
-  applyFilter(selFilter: string) {
-    this.invoices.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.invoices.filter = selFilter.value;
   }
 
   onPageChange(event: any) {

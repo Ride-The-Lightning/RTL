@@ -111,7 +111,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.form.resetForm();  
   }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new LNDActions.SaveNewChannel({

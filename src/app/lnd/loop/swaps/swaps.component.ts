@@ -28,12 +28,12 @@ import * as LNDActions from '../../store/lnd.actions';
 })
 export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public swapStateEnum = SwapStateEnum;
   public faHistory = faHistory;
   public swapCaption = 'Loop Out';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public listSwaps: any;
   public storedSwaps: SwapStatus[] = [];
   public filteredSwaps: SwapStatus[] = [];
@@ -102,8 +102,8 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.loadSwapsTable(this.filteredSwaps);
   }
     
-  applyFilter(selFilter: string) {
-    this.listSwaps.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.listSwaps.filter = selFilter.value;
   }
 
   onSwapClick(selSwap: SwapStatus, event: any) {
@@ -132,7 +132,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   loadSwapsTable(swaps) {
     this.listSwaps = new MatTableDataSource<SwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
-    this.listSwaps.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

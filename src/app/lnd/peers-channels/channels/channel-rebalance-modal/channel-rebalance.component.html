@@ -25,7 +25,7 @@
               <ng-template matStepLabel>{{inputFormLabel}}</ng-template>
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">              
                 <mat-form-field fxFlex="48">
-                  <input autoFocus matInput (change)="filterActiveChannels()" placeholder="Amount" type="number" step="100" tabindex="1" formControlName="rebalanceAmount" required>
+                  <input autoFocus matInput (change)="filterActiveChannels()" placeholder="Amount" type="number" [step]="100" tabindex="1" formControlName="rebalanceAmount" required>
                   <mat-hint>(Local Bal: {{selChannel?.local_balance}}, Remaining: {{selChannel?.local_balance - ((inputFormGroup.controls.rebalanceAmount.value) ? inputFormGroup.controls.rebalanceAmount.value : 0)}})</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.rebalanceAmount.errors?.required">Amount is required.</mat-error>
@@ -70,7 +70,7 @@
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field fxFlex="48">
-                    <input matInput formControlName="feeLimit" placeholder="{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}" type="number" step="1" tabindex="7" required>
+                    <input matInput formControlName="feeLimit" placeholder="{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}}" type="number" [step]="1" tabindex="7" required>
                     <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.required">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} is required.</mat-error>
                     <mat-error *ngIf="feeFormGroup.controls.feeLimit.errors?.min">{{feeFormGroup.controls.selFeeLimitType.value ? feeFormGroup.controls.selFeeLimitType.value.placeholder : feeLimitTypes[0].placeholder}} must be a positive number.</mat-error>
                   </mat-form-field>

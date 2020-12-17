@@ -13,6 +13,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 import { FormControl } from '@angular/forms';
+import { LookupNode } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -23,7 +24,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
   public lookupKeyCtrl = new FormControl();
   // public lookupKey = '';
-  public nodeLookupValue = {nodeid: ''};
+  public nodeLookupValue: LookupNode = {};
   public channelLookupValue = [];
   public flgSetLookupValue = false;
   public temp: any;
@@ -67,13 +68,13 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
         }
     });
     this.lookupKeyCtrl.valueChanges.pipe(takeUntil(this.unSubs[1])).subscribe(value => {
-      this.nodeLookupValue = {nodeid: ''};
+      this.nodeLookupValue = {};
       this.channelLookupValue = [];
       this.flgSetLookupValue = false;
     });
   }
 
-  onLookup() {
+  onLookup():boolean|void {
     if (!this.lookupKeyCtrl.value) {
       this.lookupKeyCtrl.setErrors({required: true});
       return true;
@@ -85,7 +86,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
         this.selectedFieldId = 0;
       }
       this.flgSetLookupValue = false;
-      this.nodeLookupValue = {nodeid: ''};
+      this.nodeLookupValue = {};
       this.channelLookupValue = [];
       this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
       switch (this.selectedFieldId) {
@@ -108,7 +109,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.flgSetLookupValue = false;
-    this.nodeLookupValue = {nodeid: ''};
+    this.nodeLookupValue = {};
     this.channelLookupValue = [];
     this.lookupKeyCtrl.setValue('');
     this.lookupKeyCtrl.setErrors(null);
@@ -116,7 +117,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   }
 
   clearLookupValue() {
-    this.nodeLookupValue = {nodeid: ''};
+    this.nodeLookupValue = {};
     this.channelLookupValue = [];
     this.flgSetLookupValue = false;
   }

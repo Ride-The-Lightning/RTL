@@ -23,13 +23,13 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]  
 })
 export class OnChainUTXOsComponent implements OnChanges {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() utxos: UTXO[];
   @Input() errorLoading: any;
   public addressType = WALLET_ADDRESS_TYPE;
   faMoneyBillWave = faMoneyBillWave;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public listUTXOs: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -60,8 +60,8 @@ export class OnChainUTXOsComponent implements OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.listUTXOs.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.listUTXOs.filter = selFilter.value;
   }
 
   onUTXOClick(selUTXO: UTXO, event: any) {
@@ -89,7 +89,7 @@ export class OnChainUTXOsComponent implements OnChanges {
       + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
       return newUTXO.includes(fltr.toLowerCase());
     };
-    this.listUTXOs.sortingDataAccessor = (data, sortHeaderId) => {
+    this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'tx_id': return data.outpoint.txid_str.toLocaleLowerCase();
         case 'output': return +data.outpoint.output_index;

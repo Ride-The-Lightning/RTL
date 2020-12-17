@@ -28,12 +28,12 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
@@ -99,7 +99,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
-    .subscribe((resLookup: ChannelEdge[])  => {
+    .subscribe((resLookup: ChannelEdge[]):boolean|void => {
       if(resLookup.length === 0) { return false; }
       let remoteNode: ChannelEdge = {};
       if(resLookup[0].source !== this.information.id) {
@@ -241,7 +241,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       return newChannel.includes(fltr.toLowerCase());
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

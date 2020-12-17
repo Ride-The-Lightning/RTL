@@ -31,7 +31,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [];
   public transactionsNonZeroReportData: any = [];
-  public view: any[] = [350, 350];
+  public view: [number, number] = [350, 350];
   public screenPaddingX = 100;
   public gradient = true;
   public xAxisLabel = 'Date';

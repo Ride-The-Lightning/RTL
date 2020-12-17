@@ -113,7 +113,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.addressFormGroup.setErrors({'Invalid': true});
   }
 
-  onLoop() {
+  onLoop():boolean|void {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (this.direction === SwapTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage)) || (this.direction === SwapTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
@@ -146,7 +146,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onEstimateQuote() {
+  onEstimateQuote():boolean|void {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
     let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);

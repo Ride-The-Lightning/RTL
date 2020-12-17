@@ -5,7 +5,7 @@
     "outDir": "./angular",
     "forceConsistentCasingInFileNames": true,
     "strict": false,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
@@ -25,7 +25,7 @@
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": false,
+    "strictInputAccessModifiers": true,
     "strictTemplates": false
   }
 }

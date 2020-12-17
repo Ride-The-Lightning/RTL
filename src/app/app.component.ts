@@ -140,7 +140,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  copiedText(payload) {
+  copiedText(payload: string) {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);

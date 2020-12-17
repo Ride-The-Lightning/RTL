@@ -70,7 +70,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendFunds() {
+  onSendFunds():boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));

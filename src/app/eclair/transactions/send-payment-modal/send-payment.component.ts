@@ -67,7 +67,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();

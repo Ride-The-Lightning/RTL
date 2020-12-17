@@ -10,7 +10,7 @@
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
     <ng-container *ngIf="data.scrollable">
-      <mat-card-content perfectScrollbar class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.scrollable}" #scrollContainer>
+      <mat-card-content [perfectScrollbar] class="mt-5px mb-0 pr-2" [ngClass]="{'h-40': data.scrollable}" #scrollContainer>
         <ng-container *ngTemplateOutlet="contentBlock"></ng-container>        
       </mat-card-content>
     </ng-container>

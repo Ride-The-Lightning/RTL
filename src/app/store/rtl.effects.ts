@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of, Subject, forkJoin } from 'rxjs';
+import { of, Subject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -201,10 +201,11 @@ export class RTLEffects implements OnDestroy {
         let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
         return forkJoin([settingsRes, defaultNodeRes]);      
       } else if(action.payload.settings && !action.payload.defaultNodeIndex) {
-        return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+        return this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings });
       } else if(!action.payload.settings && action.payload.defaultNodeIndex) {
         return this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
       }
+      return of({type: RTLActions.VOID});
     }),
     map((updateStatus: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());

@@ -31,11 +31,11 @@ import { isNumber } from 'util';
   ]
 })
 export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public availableBalance = 0;
   public faUsers = faUsers;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
@@ -148,14 +148,14 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  applyFilter(selFilter: string) {
-    this.peers.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.peers.filter = selFilter.value;
   }
 
   loadPeersTable(peers: Peer[]) {
     this.peers = peers ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
     this.peers.sort = this.sort;
-    this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.peers.paginator = this.paginator;
   }
 

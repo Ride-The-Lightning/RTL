@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public userPersonaEnum = UserPersonaEnum;
   public activeChannels = 0;
   public inactiveChannels = 0;
-  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
+  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
   public showLoop = false;
   public fees: Fees;
@@ -161,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       let local = (rtlStore.totalLocalBalance) ? +rtlStore.totalLocalBalance : 0;
       let remote = (rtlStore.totalRemoteBalance) ? +rtlStore.totalRemoteBalance : 0;
       let total = local + remote;
-      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
       this.balances.lightning = rtlStore.totalLocalBalance;
       this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);

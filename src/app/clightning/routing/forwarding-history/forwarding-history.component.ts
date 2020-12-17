@@ -23,13 +23,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public successfulEvents = [];
   public errorMessage = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -113,7 +113,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.received_time_str.toLowerCase() + event.resolved_time_str.toLowerCase() + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;

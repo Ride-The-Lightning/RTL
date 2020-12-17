@@ -61,4 +61,8 @@ export class InvoiceInformationComponent implements OnInit {
     this.snackBar.open('Payment request copied.');
     this.logger.info('Copied Text: ' + payload);
   }
+
+  getDecimalFormat(htlc: any):string {
+    return htlc.amt_msat < 1000 ? '1.0-4' : '1.0-0';
+  }
 }

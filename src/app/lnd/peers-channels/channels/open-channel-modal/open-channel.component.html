@@ -22,7 +22,7 @@
         <div fxLayout="column">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
             <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel" max="{{totalBalance}}">
+              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" [step]="1000" [min]="1" [max]="totalBalance" tabindex="1" required name="amnt" #amt="ngModel">
               <mat-hint>(Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}})</mat-hint>
               <span matSuffix> {{information?.smaller_currency_unit}}</span>
               <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
@@ -48,7 +48,7 @@
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="transTypeValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" step="1" min="0" tabindex="4" name="transTypeValue" #transTypeVal="ngModel">
+                  <input matInput [(ngModel)]="transTypeValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" [step]="1" [min]="0" tabindex="4" name="transTpValue" #transTypeVal="ngModel">
                   <mat-error *ngIf="selTransType!=='0' && !transTypeValue">{{selTransType === '1' ? 'Target Confirmation Blocks' : 'Fee'}} is required.</mat-error>
                 </mat-form-field>
               </div>

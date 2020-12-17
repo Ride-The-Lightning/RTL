@@ -79,7 +79,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if ((this.paymentType === 'invoice' && !this.paymentRequest) || (this.paymentType === 'keysend' && (!this.pubkey || this.pubkey.trim() === '' || !this.keysendAmount || this.keysendAmount <= 0))) { return true; } 
     if (this.paymentType === 'keysend') {
       this.keysendPayment();

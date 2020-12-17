@@ -21,7 +21,7 @@ export class CLSignComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  onSign() {
+  onSign():boolean|void {
     if (!this.message || this.message === '') { return true; }
     this.dataService.signMessage(this.message).pipe(takeUntil(this.unSubs[0])).subscribe(res => { 
       this.signedMessage = this.message;
