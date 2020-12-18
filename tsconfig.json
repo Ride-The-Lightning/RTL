@@ -2,7 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./angular",
+    "outDir": "./angular/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": false,
     "noImplicitReturns": true,

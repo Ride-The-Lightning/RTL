@@ -1,9 +1,6 @@
 @import '~material-design-icons/iconfont/material-icons.css';
 @import '~roboto-fontface/css/roboto/roboto-fontface.css';
+@import "./perfect-scrollbar.scss";
 
 @import "./root.scss";
-@import "./perfect-scrollbar.scss";
 @import "./theme.scss";
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

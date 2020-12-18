@@ -27,18 +27,18 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
+            "allowedCommonJsDependencies": [
+              "hammerjs",
+              "sha256",
+              "qrcode",
+              "otplib"
+            ],
             "assets": [
               "src/assets"
             ],
             "styles": [
               "src/app/shared/theme/styles/styles.scss"
             ],
-            "allowedCommonJsDependencies": [
-              "hammerjs",
-              "sha256",
-              "qrcode",
-              "otplib"
-            ],            
             "scripts": []
           },
           "configurations": {
@@ -59,12 +59,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "4mb",
+                  "maximumWarning": "5mb",
                   "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4mb",
+                  "maximumWarning": "1mb",
                   "maximumError": "5mb"
                 }
               ]

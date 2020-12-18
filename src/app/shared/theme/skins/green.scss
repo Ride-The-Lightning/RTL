@@ -4,7 +4,6 @@
 @import './color-swatches/green-primary.swatch.scss';
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
-@include mat-core();
 
 $green-primary: mat-palette($green-primary, 500, 300, A200);
 $green-accent:  mat-palette($mat-gray, 800, 600, 900);

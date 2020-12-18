@@ -4,9 +4,9 @@
 @import 'theme-mode-light';
 @import 'theme-color';
 @import 'typography';
-@include mat-core();
 
 .rtl-container{
+  @include mat-core(); //CHECK IF MATERIAL STYLES BEHAVE STRANGELY
   &.purple {
     @import "../skins/purple";
     &.small {@include theme-font($small-typography);}

@@ -1,8 +1,6 @@
 @import "constants";
-@include mat-core();
 
 @mixin theme-font($typography) {
-  @include mat-core($typography);
   &.small {
     .mat-header-cell {
       font-weight: 700;
