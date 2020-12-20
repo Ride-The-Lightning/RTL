@@ -32,7 +32,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faNetworkWired = faNetworkWired;  
   public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
-  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: '0'};
+  public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
   public fees: Fees;
   public information: GetInfo = {};
@@ -139,7 +139,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       let local = (rtlStore.lightningBalance.localBalance) ? +rtlStore.lightningBalance.localBalance : 0;
       let remote = (rtlStore.lightningBalance.remoteBalance) ? +rtlStore.lightningBalance.remoteBalance : 0;
       let total = local + remote;
-      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: (1 - Math.abs((local-remote)/total)).toFixed(3) };
+      this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
       this.channelsStatus = rtlStore.channelsStatus;
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;

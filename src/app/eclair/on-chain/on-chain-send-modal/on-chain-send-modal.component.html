@@ -9,11 +9,11 @@
     <mat-card-content class="mt-5px">
       <form fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start" class="padding-gap overflow-x-hidden" (submit)="onSendFunds()" (reset)="resetData()" #form="ngForm">
         <mat-form-field fxFlex="55">
-          <input matInput autoFocus [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="address" required #address="ngModel">
+          <input matInput autoFocus [(ngModel)]="transaction.address" placeholder="Bitcoin Address" tabindex="1" name="addr" required #addrs="ngModel">
           <mat-error *ngIf="!transaction.address">Bitcoin address is required.</mat-error>
         </mat-form-field>
         <mat-form-field fxFlex="30">
-          <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amount" type="number" step="100" min="0" tabindex="2" required #amount="ngModel">
+          <input matInput [(ngModel)]="transaction.amount" placeholder="Amount" name="amt" type="number" [step]="100" [min]="0" tabindex="2" required #amnt="ngModel">
           <span matSuffix> {{selAmountUnit}} </span>
           <mat-error *ngIf="!transaction.amount">Amount is required.</mat-error>
         </mat-form-field>
@@ -24,7 +24,7 @@
         </mat-form-field>
         <div fxFlex="60" fxLayoutAlign="space-between stretch" fxLayout="row wrap">
           <mat-form-field fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" step="1" min="0" tabindex="8" #blocks="ngModel" required="true">
+            <input matInput [(ngModel)]="transaction.blocks" placeholder="Target Confirmation Blocks" type="number" name="blocks" [step]="1" [min]="0" tabindex="8" #blocks="ngModel" required="true">
             <mat-error *ngIf="!transaction.blocks">Target Confirmation Blocks is required.</mat-error>
           </mat-form-field>
         </div>

@@ -3,7 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
-@include mat-core();
 
 $teal-primary: mat-palette($mat-teal, 800, 300, A200);
 $teal-accent:  mat-palette($mat-gray, 800, 600, 900);

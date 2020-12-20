@@ -51,7 +51,7 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     });
   }
 
-  onCloseChannel() {
+  onCloseChannel():boolean|void {
     if ((this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) { return true; }
     let closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
     if (this.blocks) { closeChannelParams.targetConf = this.blocks; }

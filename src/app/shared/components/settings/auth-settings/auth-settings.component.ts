@@ -20,7 +20,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./auth-settings.component.scss']
 })
 export class AuthSettingsComponent implements OnInit, OnDestroy {
-  @ViewChild('authForm', { static: false }) form: any;
+  @ViewChild('authForm', { static: true }) form: any;
   public faInfoCircle = faInfoCircle;
   public faUserLock = faUserLock;
   public faUserClock = faUserClock;
@@ -67,7 +67,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     });    
   }
 
-  onChangePassword() {
+  onChangePassword():boolean|void {
     if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }

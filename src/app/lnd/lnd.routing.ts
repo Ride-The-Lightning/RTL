@@ -94,4 +94,4 @@ export const LndRoutes: Routes = [
   ]}
 ];
 
-export const LNDRouting: ModuleWithProviders = RouterModule.forChild(LndRoutes);
+export const LNDRouting: ModuleWithProviders<RouterModule> = RouterModule.forChild(LndRoutes);

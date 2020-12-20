@@ -23,11 +23,11 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   @Input() dataRange = SCROLL_RANGES[0];
   @Input() dataList = [];
   @Input() filterValue = '';
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public scrollRanges = SCROLL_RANGES;
   public transactions: any;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -87,7 +87,7 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   loadTransactionsTable(transactions: any[]) {
     this.transactions = (transactions) ?  new MatTableDataSource([]) : new MatTableDataSource([...transactions]);
     this.transactions.data = transactions;
-    this.transactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.transactions.sort = this.sort;
     this.transactions.paginator = this.paginator;
 }

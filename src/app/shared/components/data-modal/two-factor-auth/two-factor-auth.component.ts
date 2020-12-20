@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatVerticalStepper } from '@angular/material/stepper';
-import { authenticator } from 'otplib/otplib-browser';
 import { faInfoCircle, faCopy, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { authenticator } from 'otplib';
 import * as sha256 from 'sha256';
 
 import { RTLConfiguration } from '../../../models/RTLconfig';
@@ -23,7 +23,6 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./two-factor-auth.component.scss']
 })
 export class TwoFactorAuthComponent implements OnInit, OnDestroy {
-  @ViewChild('twoFAForm', { static: false }) twoFAForm: any;
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public faCopy = faCopy;
@@ -38,10 +37,17 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public secretFormLabel = 'Scan or copy the secret';
   public tokenFormLabel = 'Verify your authentication is working';
   public disableFormLabel = 'Disable two factor authentication';
-  passwordFormGroup: FormGroup;
-  secretFormGroup: FormGroup;  
-  tokenFormGroup: FormGroup;  
-  disableFormGroup: FormGroup;  
+  passwordFormGroup: FormGroup = this.formBuilder.group({
+    hiddenPassword: ['', [Validators.required]],
+    password: ['', [Validators.required]]
+  });
+  secretFormGroup: FormGroup = this.formBuilder.group({
+    secret: [{value: '', disabled: true}, Validators.required]
+  });
+  tokenFormGroup: FormGroup = this.formBuilder.group({
+    token: ['', Validators.required]      
+  });
+  disableFormGroup: FormGroup = this.formBuilder.group({});
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<TwoFactorAuthComponent>, @Inject(MAT_DIALOG_DATA) public data: AuthConfig, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
@@ -49,17 +55,9 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.appConfig = this.data.appConfig;
     this.showDisableStepper = !!this.appConfig.enable2FA;
-    this.passwordFormGroup = this.formBuilder.group({
-      hiddenPassword: ['', [Validators.required]],
-      password: ['', [Validators.required]]
-    });
-    this.secretFormGroup = this.formBuilder.group({
+    this.secretFormGroup =  this.formBuilder.group({
       secret: [{value: !this.appConfig.enable2FA ? this.generateSecret() : '', disabled: true}, Validators.required]
-    });    
-    this.tokenFormGroup = this.formBuilder.group({
-      token: ['', Validators.required]      
-    }); 
-    this.disableFormGroup = this.formBuilder.group({}); 
+    });
   }
 
   generateSecret() {
@@ -68,7 +66,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     return secret2fa;
   }
 
-  onAuthenticate() {
+  onAuthenticate():boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -89,7 +87,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
     this.snackBar.open('Secret code ' + this.secretFormGroup.controls.secret.value + ' copied.');
   }
 
-  onVerifyToken() {
+  onVerifyToken():boolean|void {
     if (this.appConfig.enable2FA) {
       this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
       this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));

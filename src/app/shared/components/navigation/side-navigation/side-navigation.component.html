@@ -1,4 +1,4 @@
-<div perfectScrollbar fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start">
+<div [perfectScrollbar] fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start">
   <div fxLayout="column" fxFlex="90" fxLayoutAlign="start stretch" class="w-100">
     <mat-select *ngIf="appConfig.nodes.length > 1" [value]="selNode" (selectionChange)="onNodeSelectionChange($event.value)" class="m-2 multi-node-select">
       <mat-option *ngFor="let node of appConfig.nodes" [value]="node" tabindex="1">

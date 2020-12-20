@@ -33,7 +33,7 @@
             <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
           </div>
           <div [ngSwitch]="selectedFieldId" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-            <span fxFlex="100" *ngSwitchCase="0"><div *ngIf="nodeLookupValue.nodeid !== ''; else errorBlock"><rtl-ecl-node-lookup [lookupResult]="nodeLookupValue"></rtl-ecl-node-lookup></div></span>
+            <span fxFlex="100" *ngSwitchCase="0"><div *ngIf="nodeLookupValue.nodeId; else errorBlock"><rtl-ecl-node-lookup [lookupResult]="nodeLookupValue"></rtl-ecl-node-lookup></div></span>
             <!-- <span fxFlex="100" *ngSwitchCase="1"><div *ngIf="channelLookupValue.length>0; else errorBlock"><rtl-cl-channel-lookup [lookupResult]="channelLookupValue"></rtl-cl-channel-lookup></div></span> -->
             <span fxFlex="100" *ngSwitchDefault><h3>Error! Unable to find details!</h3></span>
           </div>

@@ -3,8 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
-@include mat-core();
-
 
 $indigo-primary: mat-palette($mat-indigo, 500, 200, A200);
 $indigo-accent:  mat-palette($mat-gray, 800, 600, 900);

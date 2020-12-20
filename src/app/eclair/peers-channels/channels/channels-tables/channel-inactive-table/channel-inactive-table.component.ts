@@ -28,11 +28,11 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public inactiveChannels: Channel[];
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
@@ -109,7 +109,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     });
     this.channels = new MatTableDataSource<Channel>([...this.inactiveChannels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

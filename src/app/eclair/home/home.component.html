@@ -6,24 +6,28 @@
   </div>
   <mat-grid-list cols="10" [rowHeight]="operatorCardHeight">
     <mat-grid-tile *ngFor="let card of operatorCards" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card p-24">
+      <mat-card fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" class="h-100 dashboard-card mt-4">
         <mat-card-header>
-          <mat-card-title>
-            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
-            <span>{{card.title}}</span>
-            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuOperator"
-              aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
-              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
-              <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/ecl/reports')" mat-menu-item>Summary Report</button>
-              <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By
-                {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
-            </mat-menu>
+          <mat-card-title fxLayoutAlign="space-between center">
+            <div>
+              <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+              <span>{{card.title}}</span>
+            </div>
+            <div>
+              <button *ngIf="card.link" mat-icon-button class="more-button" [matMenuTriggerFor]="menuOperator"
+                aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
+                <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/ecl/reports')" mat-menu-item>Fees Summary</button>
+                <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By
+                  {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
+              </mat-menu>
+            </div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content class="dashboard-card-content w-100" fxFlex="95">
+        <mat-card-content class="dashboard-card-content" fxLayout="column" fxFlex="{{card.id === 'capacity' ? 90 : 70}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
               [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}">
@@ -51,22 +55,25 @@
   </div>
   <mat-grid-list cols="6" [rowHeight]="merchantCardHeight">
     <mat-grid-tile *ngFor="let card of merchantCards" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card fxLayout="column" fxLayoutAlign="start start" class="dashboard-card"
-        [ngClass]="{'p-24': card.id !== 'transactions'}">
+      <mat-card fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch" class="h-100 dashboard-card mt-4" [ngClass]="{'p-0': card.id === 'transactions'}">
         <mat-card-header *ngIf="card.id !== 'transactions'">
-          <mat-card-title>
-            <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
-            <span>{{card.title}}</span>
-            <button *ngIf="card.link" mat-icon-button class="more-button mt-1" [matMenuTriggerFor]="menuMerchant"
-              aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
-              <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
-            </mat-menu>
+          <mat-card-title fxLayoutAlign="space-between center">
+            <div>
+              <fa-icon [icon]="card.icon" class="mr-1"></fa-icon>
+              <span>{{card.title}}</span>
+            </div>
+            <div>
+              <button *ngIf="card.link" mat-icon-button class="more-button" [matMenuTriggerFor]="menuMerchant"
+                aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuMerchant="matMenu" class="dashboard-vert-menu" xPosition="before">
+                <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+              </mat-menu>
+            </div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content class="dashboard-card-content w-100" fxFlex="{{card.id !== 'transactions' ? 95 : 100}}">
+        <mat-card-content class="dashboard-card-content" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="{{card.id === 'transactions' ? 100 : card.id === 'balance' ? 70: 90}}">
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"
               [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-ecl-node-info>
@@ -94,6 +101,7 @@
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
                       <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                      <button mat-menu-item (click)="onNavigateTo('/ecl/reports/transactions')">Transactions Summary</button>
                     </mat-menu>
                   </ng-template>
                 </mat-tab>

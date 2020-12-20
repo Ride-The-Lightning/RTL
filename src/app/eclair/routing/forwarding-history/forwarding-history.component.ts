@@ -23,13 +23,13 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
   public successfulEvents = [];
   public errorMessage = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -114,7 +114,7 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => {
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'fee':
           return data.amountIn - data.amountOut;

@@ -25,7 +25,7 @@
         [yAxisLabel]="yAxisLabel"
         [showGridLines]="false"
         [showDataLabel]="false"
-        groupPadding="{{reportPeriod === scrollRanges[0] ? 2 : 4}}"
+        [groupPadding]="reportPeriod === scrollRanges[0] ? 2 : 4"
         (select)="onChartBarSelected($event)"
         (mouseup)="onChartMouseUp($event)">
         <ng-template #tooltipTemplate let-model="model">

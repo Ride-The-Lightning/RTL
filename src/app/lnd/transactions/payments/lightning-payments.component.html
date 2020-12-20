@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
   <form *ngIf="calledFrom === 'home'" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field fxFlex="100">
-      <textarea matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
+      <textarea [perfectScrollbar] matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
@@ -20,11 +20,11 @@
         <span class="page-title">Payments History</span>
       </div>
       <mat-form-field fxFlex="30" fxLayoutAlign="start end">
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
     <div fxLayout="row" fxLayoutAlign="start start">
-      <div perfectScrollbar fxLayout="column" class="table-container" fxFlex="100">
+      <div [perfectScrollbar] fxLayout="column" class="table-container" fxFlex="100">
         <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
         <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
           <ng-container matColumnDef="creation_date">

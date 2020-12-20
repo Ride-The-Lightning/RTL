@@ -27,7 +27,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public description = '';
   public expiry: number;
-  public invoiceValue: number;
+  public invoiceValue: number = null;
   public invoiceValueHint = '';
   public invoicePaymentReq = '';
   public invoices: any;
@@ -63,7 +63,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  onAddInvoice(form: any) {
+  onAddInvoice(form: any):boolean|void {
     this.invoiceError = '';
     if(!this.description) { return true; }
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
@@ -82,7 +82,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.description = '';
-    this.invoiceValue = undefined;
+    this.invoiceValue = null;
     this.private = false;
     this.expiry = undefined;
     this.invoiceValueHint = '';

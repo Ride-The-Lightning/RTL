@@ -26,8 +26,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
@@ -80,14 +80,14 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
     this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }  
 
-  applyFilter(selFilter: string) {
-    this.channels.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.channels.filter = selFilter.value;
   }
 
   loadRestoreTable(channels: any[]) {
     this.channels = new MatTableDataSource([...channels]);
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
   }
 

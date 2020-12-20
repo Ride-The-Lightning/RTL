@@ -67,7 +67,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.smallScreen = false;
       }
     });
-    
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')
@@ -141,7 +140,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  copiedText(payload) {
+  copiedText(payload: string) {
     this.flgCopied = true;
     setTimeout(() => {this.flgCopied = false; }, 5000);
     this.logger.info('Copied Text: ' + payload);

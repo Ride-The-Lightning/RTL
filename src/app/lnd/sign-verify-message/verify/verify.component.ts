@@ -24,7 +24,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  onVerify() {
+  onVerify():boolean|void {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
     this.dataService.verifyMessage(this.message, this.signature).pipe(takeUntil(this.unSubs[0]))
     .subscribe(res => { 

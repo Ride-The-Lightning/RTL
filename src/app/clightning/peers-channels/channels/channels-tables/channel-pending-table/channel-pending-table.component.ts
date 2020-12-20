@@ -27,11 +27,11 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]  
 })
 export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public isCompatibleVersion = false;
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
@@ -141,7 +141,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       return newChannel.includes(fltr.toLowerCase());
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

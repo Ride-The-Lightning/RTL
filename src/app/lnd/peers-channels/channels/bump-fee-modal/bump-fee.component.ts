@@ -42,7 +42,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
     this.bumpFeeChannel.channel.output_index = channelPointArr[1] ? +channelPointArr[1] : null;
   }
 
-  onBumpFee() {
+  onBumpFee():boolean|void {
     if (this.outputIndex === this.bumpFeeChannel.channel.output_index) {
       this.outputIdx.control.setErrors({'pendingChannelOutputIndex': true});
       return true;

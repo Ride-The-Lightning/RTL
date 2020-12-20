@@ -1,11 +1,11 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap-x-large">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="end stretch" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <mat-form-field fxFlex="30">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
-    <div perfectScrollbar class="table-container" fxFlex="100">
+    <div [perfectScrollbar] class="table-container" fxFlex="100">
       <mat-progress-bar *ngIf="errorLoading===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="listUTXOs" matSort
         [ngClass]="{'overflow-auto error-border': errorLoading==='error','overflow-auto': true}">

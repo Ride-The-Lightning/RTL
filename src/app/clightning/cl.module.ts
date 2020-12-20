@@ -39,6 +39,13 @@ import { CLReportsComponent } from './reports/reports.component';
 import { CLFeeReportComponent } from './reports/fee/fee-report.component';
 import { CLTransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { CLOnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { CLOpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
+import { CLChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
+import { CLInvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
+import { CLConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
+import { CLLightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
+import { CLCreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
+import { CLOnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
 
 import { CLUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -83,7 +90,14 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLReportsComponent,
     CLFeeReportComponent,
     CLTransactionsReportComponent,
-    CLOnChainSendComponent
+    CLOnChainSendComponent,
+    CLInvoiceInformationComponent,
+    CLOpenChannelComponent,
+    CLConnectPeerComponent,
+    CLLightningSendPaymentsComponent,
+    CLCreateInvoiceComponent,
+    CLOnChainSendModalComponent,
+    CLChannelInformationComponent
   ],
   providers: [
     CLUnlockedGuard

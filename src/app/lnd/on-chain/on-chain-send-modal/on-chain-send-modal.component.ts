@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./on-chain-send-modal.component.scss']
 })
 export class OnChainSendModalComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;  
+  @ViewChild('form', { static: true }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
@@ -119,7 +119,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
   }
 
-  onAuthenticate() {
+  onAuthenticate():boolean|void {
     if (!this.passwordFormGroup.controls.password.value) { return true; }
     this.flgValidated = false;
     this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.passwordFormGroup.controls.password.value)));
@@ -136,7 +136,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSendFunds() {
+  onSendFunds():boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
     let amount = this.transactionAmount ? this.transactionAmount : 0;

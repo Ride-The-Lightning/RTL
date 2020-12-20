@@ -15,7 +15,7 @@
         <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qrcode [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
         </div>
-        <div perfectScrollbar [ngClass]="{'h-46': invoice.htlcs && invoice.htlcs.length > 0 && showAdvanced}" #scrollContainer>
+        <div [perfectScrollbar] [ngClass]="{'h-46': invoice.htlcs && invoice.htlcs.length > 0 && showAdvanced}" #scrollContainer>
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">{{screenSize === screenSizeEnum.XS ? 'Amount' : 'Amount Requested'}}</h4>
@@ -89,7 +89,7 @@
                         <span *ngIf="htlc.state === 'CANCELED'" class="dot red" matTooltip="Cancelled" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                         {{htlc.chan_id}}
                       </span>
-                      <span fxFlex="40" class="foreground-secondary-text">{{htlc.amt_msat/1000 | number:htlc?.amt_msat < 1000 ? '1.0-4' : '1.0-0'}}</span>
+                      <span fxFlex="40" class="foreground-secondary-text">{{((+htlc.amt_msat/1000) || 0) | number:getDecimalFormat(htlc)}}</span>
                     </div>
                     <mat-divider [inset]="true" class="my-1"></mat-divider>
                   </div>

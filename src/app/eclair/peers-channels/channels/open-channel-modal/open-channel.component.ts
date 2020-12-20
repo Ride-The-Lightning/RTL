@@ -20,7 +20,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./open-channel.component.scss']
 })
 export class ECLOpenChannelComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;
+  @ViewChild('form', { static: true }) form: any;
   public selectedPeer = new FormControl();
   public faExclamationTriangle = faExclamationTriangle;
   public alertTitle: string;
@@ -112,7 +112,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new ECLActions.SaveNewChannel({

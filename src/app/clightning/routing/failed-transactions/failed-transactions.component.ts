@@ -23,11 +23,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]
 })
 export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public failedEvents: any;
   public errorMessage = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -98,7 +98,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
@@ -113,8 +113,8 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.forwardingHistoryEvents.filter = selFilter.value;
   }
 
   ngOnDestroy() {

@@ -25,11 +25,11 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   ]
 })
 export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public channelClosureType = CHANNEL_CLOSURE_TYPE;
   public faHistory = faHistory;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public closedChannelsData: ClosedChannel[] =[];
   public closedChannels: any;
   public flgLoading: Array<Boolean | 'error'> = [true];
@@ -80,8 +80,8 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.closedChannels.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.closedChannels.filter = selFilter.value;
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {
@@ -107,7 +107,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   loadClosedChannelsTable(closedChannels) {
     this.closedChannels = new MatTableDataSource<ClosedChannel>([...closedChannels]);
     this.closedChannels.sort = this.sort;
-    this.closedChannels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.closedChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.closedChannels.paginator = this.paginator;
     this.logger.info(this.closedChannels);
   }

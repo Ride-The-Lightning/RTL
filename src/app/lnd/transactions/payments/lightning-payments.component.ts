@@ -36,8 +36,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -47,7 +47,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public peers: Peer[] = [];
   public payments: any;
   public paymentJSONArr: Payment[] = [];
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public htlcColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -110,7 +110,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if ( this.paymentDecoded.timestamp_str) {
       this.sendPayment();
@@ -343,14 +343,14 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.payments.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.payments.filter = selFilter.value;
   }
 
   loadPaymentsTable(payments) {
     this.payments = (payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...payments]);
     this.payments.data = payments;
-    this.payments.sortingDataAccessor = (data, sortHeaderId) => {
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
           return (data.htlcs.length && data.htlcs[0] && data.htlcs[0].route && data.htlcs[0].route.hops && data.htlcs[0].route.hops.length ) ? data.htlcs[0].route.hops.length : 0;

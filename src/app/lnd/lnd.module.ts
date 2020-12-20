@@ -50,6 +50,17 @@ import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/cha
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
 import { SwapsComponent } from './loop/swaps/swaps.component';
+import { InvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
+import { ChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
+import { OpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
+import { ChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
+import { OnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
+import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { LightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
+import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
+import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
+import { LoopModalComponent } from './loop/loop-modal/loop-modal.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -105,7 +116,18 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
     LoopComponent,
-    SwapsComponent
+    SwapsComponent,
+    InvoiceInformationComponent,
+    ChannelRebalanceComponent,
+    OpenChannelComponent,
+    ChannelInformationComponent,
+    LightningSendPaymentsComponent,
+    ConnectPeerComponent,
+    CloseChannelComponent,
+    CreateInvoiceComponent,
+    OnChainSendComponent,
+    OnChainSendModalComponent,
+    LoopModalComponent
   ],  
   providers: [
     LNDUnlockedGuard

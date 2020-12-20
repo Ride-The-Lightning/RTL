@@ -1,8 +1,6 @@
 @import "constants";
-@include mat-core();
 
 @mixin theme-font($typography) {
-  @include mat-core($typography);
   &.small {
     .mat-header-cell {
       font-weight: 700;
@@ -78,9 +76,6 @@
   &.medium {
     .mat-header-cell {
       font-weight: 700;
-    }
-    .inner-sidenav-content {
-      padding-top: $medium-font-size;
     }
     .mat-tree .mat-tree-node, .mat-tree .mat-nested-tree-node-parent {
       min-height: $tree-node-height;

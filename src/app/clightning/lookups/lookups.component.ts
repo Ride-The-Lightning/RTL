@@ -19,7 +19,7 @@ import { CommonService } from '../../shared/services/common.service';
   styleUrls: ['./lookups.component.scss']
 })
 export class CLLookupsComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: false }) form: any;
+  @ViewChild('form', { static: true }) form: any;
   public lookupKey = '';
   public nodeLookupValue = {nodeid: ''};
   public channelLookupValue = [];
@@ -69,7 +69,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onLookup() {
+  onLookup():boolean|void {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.nodeLookupValue = {nodeid: ''};

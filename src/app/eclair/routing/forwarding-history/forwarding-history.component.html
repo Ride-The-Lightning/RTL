@@ -3,10 +3,10 @@
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
-      <input matInput [(ngModel)]="filterValue" (input)="applyFilter()" (keyup)="applyFilter()" placeholder="Filter">
+      <input matInput [(ngModel)]="filterValue" (input)="applyFilter()" (keyup)="applyFilter()" name="filter" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div *ngIf="errorMessage === ''" perfectScrollbar fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+  <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Time</th>

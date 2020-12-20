@@ -21,13 +21,13 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/ser
   styleUrls: ['./query-routes.component.scss']
 })
 export class CLQueryRoutesComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild('queryRoutesForm', { static: false }) form: any;  
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild('queryRoutesForm', { static: true }) form: any;  
   public destinationPubkey = '';
-  public amount = null;
+  public amount:number = null;
   public qrHops: any;
   public flgSticky = false;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
   public faExclamationTriangle = faExclamationTriangle;
@@ -66,11 +66,11 @@ export class CLQueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     });
   }
 
-  onQueryRoutes() {
+  onQueryRoutes():boolean|void {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
     this.store.dispatch(new CLActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount*1000}));

@@ -42,7 +42,7 @@ export class LoginTokenComponent implements OnInit, OnDestroy {
     this.dialogRef.close(false);
   }
 
-  onVerifyToken() {
+  onVerifyToken():boolean|void {
     if (!this.token) { return true; }
     this.tokenErrorMessage = '';
     this.store.dispatch(new RTLActions.VerifyTwoFA({token: this.token, authResponse: this.authRes}));

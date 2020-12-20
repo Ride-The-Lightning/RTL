@@ -23,12 +23,12 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   ]  
 })
 export class OnChainTransactionHistoryComponent implements OnChanges {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() transactions: Transaction[];
   @Input() errorLoading: any;
   faHistory = faHistory;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public listTransactions: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -59,8 +59,8 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.listTransactions.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.listTransactions.filter = selFilter.value;
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
@@ -85,7 +85,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   loadTransactionsTable(transactions) {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
-    this.listTransactions.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

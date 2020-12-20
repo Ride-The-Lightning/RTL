@@ -19,7 +19,7 @@ export class UnlockWalletComponent implements OnInit {
     this.walletPassword = '';
   }
 
-  onUnlockWallet() {
+  onUnlockWallet():boolean|void {
     if(!this.walletPassword) { return true; }
     this.store.dispatch(new RTLActions.OpenSpinner('Unlocking...'));
     this.store.dispatch(new LNDActions.UnlockWallet({pwd: window.btoa(this.walletPassword)}));

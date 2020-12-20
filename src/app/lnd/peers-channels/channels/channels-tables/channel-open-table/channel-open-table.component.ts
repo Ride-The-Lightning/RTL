@@ -34,13 +34,13 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
   ]  
 })
 export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild = {};
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
@@ -111,7 +111,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch(new LNDActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
     .pipe(take(1))
-    .subscribe(resLookup => {
+    .subscribe((resLookup):boolean|void => {
       if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }        
       const reorderedChannelPolicy = [
         [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
@@ -247,7 +247,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

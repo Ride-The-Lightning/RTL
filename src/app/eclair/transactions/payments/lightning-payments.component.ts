@@ -36,8 +36,8 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form;
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -47,7 +47,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public payments: any;
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public partColumns = [];
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -140,7 +140,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   loadPaymentsTable(payments: PaymentSent[]) {
     this.payments = new MatTableDataSource<PaymentSent>([...payments]);
     this.payments.sort = this.sort;
-    this.payments.sortingDataAccessor = (data, sortHeaderId) => {
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'firstPartTimestamp':
           this.commonService.sortByKey(data.parts, 'timestamp', 'number', this.sort.direction);
@@ -165,7 +165,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.payments.paginator = this.paginator;
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
@@ -285,7 +285,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.form.resetForm();
   }
 
-  is_group(index: number, payment: PaymentSent) {
+  is_group(index: number, payment: PaymentSent):boolean {
     return payment.parts && payment.parts.length > 1;
   }  
 
@@ -345,8 +345,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.payments.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.payments.filter = selFilter.value;
   }
 
   onDownloadCSV() {

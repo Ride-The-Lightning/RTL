@@ -33,12 +33,12 @@ import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
   ]
 })
 export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public peerAddress = '';
   public peersData: Peer[] = [];
   public peers: any;
@@ -161,13 +161,13 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  applyFilter(selFilter: string) {
-    this.peers.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.peers.filter = selFilter.value;
   }
 
   loadPeersTable(peersArr: Peer[]) {
     this.peers = new MatTableDataSource<Peer>([...peersArr]);
-    this.peers.sortingDataAccessor = (data, sortHeaderId) => {
+    this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'netaddr': 
           if (data.netaddr && data.netaddr[0]) {
