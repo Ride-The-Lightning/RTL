@@ -39,7 +39,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
         "enableLogging": false,
         "fiatConversion": false,
         "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080; e.g. https://192.168.0.1:8080>",
-        "swapServerUrl": "<http://<localhost>:8081>",
+        "swapServerUrl": "<https://<localhost>:8081>",
       }
     }
   ]

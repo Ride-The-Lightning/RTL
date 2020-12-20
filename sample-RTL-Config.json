@@ -13,17 +13,18 @@
       "lnNode": "Node 1",
       "lnImplementation": "LND",
       "Authentication": {
-        "macaroonPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
-        "configPath": "C:\\Users\\shaha\\AppData\\Local\\Lnd\\lnd.conf"
+        "macaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
+        "configPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\lnd.conf",
+        "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet"
       },
       "Settings": {
         "userPersona": "MERCHANT",
         "themeMode": "DAY",
         "themeColor": "PURPLE",
-        "channelBackupPath": "C:\\Users\\shaha\\backup\\node-1",
+        "channelBackupPath": "C:\\Users\\xyz\\backup\\node-1",
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080",
-        "swapServerUrl": "http://localhost:8081",
+        "swapServerUrl": "https://localhost:8081",
         "fiatConversion": false
       }
     }
