@@ -50,11 +50,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public animationDirection = 'forward';
   public flgEditable = true;
+  public localBalanceToCompare = null;
   inputFormGroup: FormGroup;
   quoteFormGroup: FormGroup;
   addressFormGroup: FormGroup;
   statusFormGroup: FormGroup;  
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
@@ -79,6 +80,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.statusFormGroup = this.formBuilder.group({});
     this.onFormValueChanges();
+    this.store.select('lnd')
+    .pipe(takeUntil(this.unSubs[6]))
+    .subscribe((rtlStore) => {
+      this.localBalanceToCompare = (this.channel) ? +this.channel.local_balance : +rtlStore.totalLocalBalance;
+    });
   }
 
   ngAfterViewInit() {
@@ -111,6 +117,12 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addressFormGroup.controls.address.setValue('');
     }
     this.addressFormGroup.setErrors({'Invalid': true});
+  }
+
+  onValidateAmount() {
+    if (this.inputFormGroup.controls.amount.value <= this.localBalanceToCompare) {
+      this.stepper.next();
+    }
   }
 
   onLoop():boolean|void {

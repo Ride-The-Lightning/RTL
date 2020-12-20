@@ -177,23 +177,32 @@ exports.getConfig = (req, res, next) => {
         jsonConfig = JSON.parse(data);
       } else {
         jsonConfig = ini.parse(data);
-        if (jsonConfig['eclair.api.password']) {
-          fileFormat = 'INI';
-          if (jsonConfig['eclair.api.password']) {
-            jsonConfig['eclair.api.password'] = jsonConfig['eclair.api.password'].replace(/./g, '*');
-          }      
-          if (jsonConfig['eclair.bitcoind.rpcpassword']) {
-            jsonConfig['eclair.bitcoind.rpcpassword'] = jsonConfig['eclair.bitcoind.rpcpassword'].replace(/./g, '*');
-          }      
-        } else {
-          fileFormat = 'HOCON';
-          jsonConfig = parseHocon(data);
-          if (jsonConfig.eclair.api.password) {
-            jsonConfig.eclair.api.password = jsonConfig.eclair.api.password.replace(/./g, '*');
-          }      
-          if (jsonConfig.eclair.bitcoind.rpcpassword) {
-            jsonConfig.eclair.bitcoind.rpcpassword = jsonConfig.eclair.bitcoind.rpcpassword.replace(/./g, '*');
-          }      
+        console.warn();
+        console.warn(jsonConfig);
+        switch (common.selectedNode.ln_implementation) {
+          case 'ECL':
+            if (jsonConfig['eclair.api.password']) {
+              if (jsonConfig['eclair.api.password']) {
+                jsonConfig['eclair.api.password'] = jsonConfig['eclair.api.password'].replace(/./g, '*');
+              }      
+              if (jsonConfig['eclair.bitcoind.rpcpassword']) {
+                jsonConfig['eclair.bitcoind.rpcpassword'] = jsonConfig['eclair.bitcoind.rpcpassword'].replace(/./g, '*');
+              }      
+            } else {
+              fileFormat = 'HOCON';
+              jsonConfig = parseHocon(data);
+              if (jsonConfig.eclair && jsonConfig.eclair.api && jsonConfig.eclair.api.password) {
+                jsonConfig.eclair.api.password = jsonConfig.eclair.api.password.replace(/./g, '*');
+              }      
+              if (jsonConfig.eclair && jsonConfig.eclair.bitcoind && jsonConfig.eclair.bitcoind.rpcpassword) {
+                jsonConfig.eclair.bitcoind.rpcpassword = jsonConfig.eclair.bitcoind.rpcpassword.replace(/./g, '*');
+              }      
+            }
+            break;
+        
+         default:
+            fileFormat = 'INI';
+            break;
         }
       }
       if (jsonConfig.Bitcoind && jsonConfig.Bitcoind['bitcoind.rpcpass']) {

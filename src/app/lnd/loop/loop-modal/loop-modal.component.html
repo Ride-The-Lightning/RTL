@@ -53,8 +53,9 @@
             <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <p *ngIf="inputFormGroup.controls.amount.value > localBalanceToCompare" fxFlex="100" class="color-warn mt-2" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Local balance amount is insufficient for swap.</p>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
+                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" (click)="onValidateAmount()">Next</button>
                 <button *ngIf="direction === swapTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>

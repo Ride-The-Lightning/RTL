@@ -20,7 +20,7 @@
               </button>
               <mat-menu #menuOperator="matMenu" class="dashboard-vert-menu" xPosition="before">
                 <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
-                <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/ecl/reports')" mat-menu-item>Summary Report</button>
+                <button *ngIf="card.id === 'fee'" (click)="onNavigateTo('/ecl/reports')" mat-menu-item>Fees Summary</button>
                 <button *ngIf="card.id === 'capacity'" (click)="onsortChannelsBy()" mat-menu-item>Sort By
                   {{sortField === 'Balance Score' ? 'Capacity' : 'Balance Score'}}</button>
               </mat-menu>
@@ -101,6 +101,7 @@
                     </button>
                     <mat-menu #menuTransactions="matMenu" class="dashboard-vert-menu" xPosition="before">
                       <button mat-menu-item (click)="onNavigateTo(card.link)">Go To {{card.goTo}}</button>
+                      <button mat-menu-item (click)="onNavigateTo('/ecl/reports/transactions')">Transactions Summary</button>
                     </mat-menu>
                   </ng-template>
                 </mat-tab>
