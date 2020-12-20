@@ -1,5 +1,5 @@
 <div fxLayout="column">
-  <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutAlign.gt-sm="start end">
+  <div fxLayout="row" fxLayoutAlign="start end">
     <mat-form-field fxFlex="48" fxFlex.gt-md="25" fxLayoutAlign="start end" class="mr-2">
       <mat-select [(ngModel)]="selectedAddressType" placeholder="Address Type" name="address_type" tabindex="1">
         <mat-option *ngFor="let addressType of addressTypes" [value]="addressType">

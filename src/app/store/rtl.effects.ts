@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of, Subject, forkJoin } from 'rxjs';
+import { of, Subject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -79,6 +79,15 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if (this.dialogRef) { this.dialogRef.close(); }
+      try {
+        this.dialog.openDialogs.forEach(localDialog => {
+          if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage.includes('...')) {
+            localDialog.close();
+          }
+        });
+      } catch (err) {
+        this.logger.error(err);
+      }
     }
   ));
 
@@ -192,10 +201,11 @@ export class RTLEffects implements OnDestroy {
         let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
         return forkJoin([settingsRes, defaultNodeRes]);      
       } else if(action.payload.settings && !action.payload.defaultNodeIndex) {
-        return this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
+        return this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings });
       } else if(!action.payload.settings && action.payload.defaultNodeIndex) {
         return this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
       }
+      return of({type: RTLActions.VOID});
     }),
     map((updateStatus: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner());
@@ -306,7 +316,7 @@ export class RTLEffects implements OnDestroy {
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
     if (initialPass) {
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
-      this.router.navigate(['/settings'], { state: { loadTab: 'authSettings', initializeNodeData: true }});
+      this.router.navigate(['/settings/auth'], {state: { initial: true }});
     } else {
       this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
     }

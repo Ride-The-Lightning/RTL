@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -32,14 +32,15 @@ import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
   ]
 })
-export class CLPeersComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faUsers = faUsers;
   public newlyAddedPeer = '';
   public flgAnimate = true;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public peerAddress = '';
+  public peersData: Peer[] = [];
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
@@ -79,16 +80,10 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       });
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.balance.totalBalance || 0;
-      this.peers = new MatTableDataSource([]);
-      this.peers.data = [];
-      if ( rtlStore.peers) {
-        this.peers = new MatTableDataSource<Peer>([...rtlStore.peers]);
-        this.peers.data = rtlStore.peers;
-        setTimeout(() => { this.flgAnimate = false; }, 3000);
+      this.peersData = rtlStore.peers ? rtlStore.peers : [];
+      if (this.peersData.length > 0) {
+        this.loadPeersTable(this.peersData);
       }
-      this.peers.sort = this.sort;
-      this.peers.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.peers.paginator = this.paginator;
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = false;
       }
@@ -102,6 +97,12 @@ export class CLPeersComponent implements OnInit, OnDestroy {
       this.peerAddress = undefined;
       this.flgAnimate = true;
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.peersData.length > 0) {
+      this.loadPeersTable(this.peersData);
+    }
   }
 
   onPeerClick(selPeer: Peer, event: any) {
@@ -160,8 +161,27 @@ export class CLPeersComponent implements OnInit, OnDestroy {
     });
   }
 
-  applyFilter(selFilter: string) {
-    this.peers.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.peers.filter = selFilter.value;
+  }
+
+  loadPeersTable(peersArr: Peer[]) {
+    this.peers = new MatTableDataSource<Peer>([...peersArr]);
+    this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'netaddr': 
+          if (data.netaddr && data.netaddr[0]) {
+            let firstSplit = data.netaddr[0].toString().split('.');
+            return (firstSplit[0]) ? +firstSplit[0] : data.netaddr[0];
+          } else {
+            return ''; 
+          }
+
+        default: return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    }
+    this.peers.sort = this.sort;
+    this.peers.paginator = this.paginator;
   }
 
   onDownloadCSV() {

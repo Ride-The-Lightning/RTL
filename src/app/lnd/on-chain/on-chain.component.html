@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
   <fa-icon [icon]="faChartPie" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">On-chain Balance</span>
 </div>
@@ -9,34 +9,21 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
   <fa-icon [icon]="faExchangeAlt" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">On-chain Transactions</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Receive">
-          <rtl-on-chain-receive></rtl-on-chain-receive>
-        </mat-tab>
-        <mat-tab label="Send">
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal(false)">Send Funds</button>
-            </div>  
-          </div>          
-        </mat-tab>
-        <mat-tab label="Sweep All">
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="3" (click)="openSendFundsModal(true)">Sweep All</button>
-            </div>
-          </div>
-        </mat-tab>
-      </mat-tab-group>
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" [routerLink]="[link.link, selectedTable.name]">{{link.name}}</div>
+      </nav>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
+        <router-outlet></router-outlet>
+      </div>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
-        <rtl-utxo-tables fxLayout="row" fxFlex="100"></rtl-utxo-tables>
+        <rtl-utxo-tables [selectedTableIndex]="selectedTable.id" (selectedTableIndexChange)="onSelectedTableIndexChanged($event)" fxLayout="row" fxFlex="100"></rtl-utxo-tables>
       </div>
     </mat-card-content>
   </mat-card>

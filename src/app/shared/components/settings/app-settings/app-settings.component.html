@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" class="overflow-x-hidden">
+<div [perfectScrollbar] fxLayout="column" fxFlex="100">
   <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxLayout="row">
       <fa-icon [icon]="faTools" class="page-title-img mr-1"></fa-icon>
@@ -21,9 +21,9 @@
         </mat-form-field>
       </div>
     </div>
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="start stretch">
+    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
       <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between stretch" class="settings-container page-sub-title-container mt-1">
-        <div class="mt-2">
+        <div class="mt-1">
           <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
           <span class="page-title">Customization</span>
         </div>
@@ -38,7 +38,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <mat-divider [inset]="true" class="mb-2" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1"></mat-divider>
+          <mat-divider [inset]="true" class="mb-1" *ngIf="appConfig.nodes.length && appConfig.nodes.length > 1"></mat-divider>
           <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
             <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
@@ -53,7 +53,7 @@
               </mat-radio-group>
             </div>
           </div>
-          <mat-divider [inset]="true" class="mt-2 mb-1"></mat-divider>
+          <mat-divider [inset]="true" class="mt-1"></mat-divider>
           <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
             <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
               <h4>Mode</h4>
@@ -77,7 +77,7 @@
       </div>
     </div>
   </form>
-  <div fxLayout="row" class="mt-2">
+  <div fxLayout="row" class="mt-1">
     <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="10">Reset</button>
     <button mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="11">Update</button>
   </div>

@@ -32,9 +32,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   ]  
 })
 export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;  
+  @Input() calledFrom = 'transactions'; // transactions/home
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = '';
@@ -42,9 +42,9 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   public flgAnimate = true;
   public description = '';
   public expiry: number;
-  public invoiceValue: number;
+  public invoiceValue: number = null;
   public invoiceValueHint = '';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public invoicePaymentReq = '';
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];  
@@ -86,21 +86,16 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices && rtlStore.invoices.length > 0) ? rtlStore.invoices : [];
-      this.invoices = (rtlStore.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
-      this.invoices.data = this.invoiceJSONArr;
-      this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.invoices.paginator = this.paginator;    
-      setTimeout(() => { this.flgAnimate = false; }, 5000);
-      this.logger.info(this.invoices);
-  
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
+      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0) {
+        this.loadInvoicesTable(this.invoiceJSONArr);
       }
+      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
+      }
+      this.logger.info(rtlStore);
     });
-
   }
 
   openCreateInvoiceModal() {
@@ -110,7 +105,7 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  onAddInvoice(form: any) {
+  onAddInvoice(form: any):boolean|void {
     if(!this.description) { return true; }     
     let expiryInSecs = (this.expiry ? this.expiry : 3600);
     this.flgAnimate = true;
@@ -135,15 +130,23 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
     }}));
   }
 
+  loadInvoicesTable(invoices: Invoice[]) {
+    invoices[0].amountSettled
+    this.invoices = new MatTableDataSource<Invoice>([...invoices]);
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.sort = this.sort;
+    this.invoices.paginator = this.paginator;
+  }
+
   resetData() {
     this.description = '';
-    this.invoiceValue = undefined;
-    this.expiry = undefined;
+    this.invoiceValue = null;
+    this.expiry = null;
     this.invoiceValueHint = '';
   }
 
-  applyFilter(selFilter: string) {
-    this.invoices.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.invoices.filter = selFilter.value;
   }
 
   onInvoiceValueChange() {

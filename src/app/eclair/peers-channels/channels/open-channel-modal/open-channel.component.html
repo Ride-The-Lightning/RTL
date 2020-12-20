@@ -12,14 +12,43 @@
           <mat-form-field fxFlex="100" *ngIf="!peer && peers && peers.length > 0">
             <input type="text" placeholder="Peer Alias" aria-label="Peers" matInput [formControl]="selectedPeer" (change)="onSelectedPeerChanged()" [matAutocomplete]="auto" tabindex="1" required>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedPeerChanged()">
-              <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.id ? peer.id : ''}}</mat-option>
+              <mat-option *ngFor="let peer of filteredPeers | async" [value]="peer">{{peer.alias ? peer.alias : peer.nodeId ? peer.nodeId : ''}}</mat-option>
             </mat-autocomplete>
             <mat-error *ngIf="selectedPeer.errors?.required">Peer alias is required.</mat-error>
             <mat-error *ngIf="selectedPeer.errors?.notfound">Peer not found in the list.</mat-error>
           </mat-form-field>
         </div>
         <ng-container *ngTemplateOutlet="peerDetailsExpansionBlock"></ng-container>
-        <ng-container *ngTemplateOutlet="openChannelBlock"></ng-container>
+        <div fxLayout="column">
+          <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+            <mat-form-field fxFlex="70" fxLayoutAlign="start end">
+              <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" [step]="1000" [min]="1" [max]="totalBalance" tabindex="1" required name="amount" #amount="ngModel">
+              <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
+              <span matSuffix> {{information?.smaller_currency_unit}} </span>
+              <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
+              <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
+            </mat-form-field>
+            <div fxFlex="25" fxLayoutAlign="start center">
+              <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
+            </div>
+          </div>
+          <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span>{{advancedTitle}}</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
+                <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
+                  <mat-form-field fxFlex="100">
+                    <input matInput [(ngModel)]="feeRate" placeholder="Fee (Sats/Byte)" type="number" name="fee" [step]="1" [min]="0" tabindex="7" #fee="ngModel">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>    
+        </div>
         <div fxFlex="100" class="alert alert-danger mt-1" *ngIf="channelConnectionError !== ''">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span *ngIf="channelConnectionError !== ''">{{channelConnectionError}}</span>
@@ -60,36 +89,4 @@
       </div>
     </div>
   </mat-expansion-panel>
-</ng-template>
-<ng-template #openChannelBlock>
-  <form fxLayout="column" #form="ngForm">
-    <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-      <mat-form-field fxFlex="70" fxLayoutAlign="start end">
-        <input matInput [(ngModel)]="fundingAmount" placeholder="Amount" type="number" step="1000" min="1" max="{{totalBalance}}" tabindex="1" required name="amount" #amount="ngModel">
-        <mat-hint>Remaining Bal: {{totalBalance - ((fundingAmount) ? fundingAmount : 0) | number}}</mat-hint>
-        <span matSuffix> {{information?.smaller_currency_unit}} </span>
-        <mat-error *ngIf="amount.errors?.required">Amount is required.</mat-error>
-        <mat-error *ngIf="amount.errors?.max">Amount must be less than or equal to {{totalBalance}}.</mat-error>
-      </mat-form-field>
-      <div fxFlex="25" fxLayoutAlign="start center">
-        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="isPrivate" name="isPrivate">Private Channel</mat-slide-toggle>
-      </div>
-    </div>
-    <mat-expansion-panel class="flat-expansion-panel mt-2" expanded="false" (closed)="onAdvancedPanelToggle(true)" (opened)="onAdvancedPanelToggle(false)">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span>{{advancedTitle}}</span>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
-          <div fxFlex="48" fxLayout="row" fxLayoutAlign="start center">
-            <mat-form-field fxFlex="100">
-              <input matInput [(ngModel)]="feeRate" placeholder="Fee (Sats/Byte)" type="number" name="fee" step="1" min="0" tabindex="7" #fee="ngModel">
-            </mat-form-field>
-          </div>
-        </div>
-      </div>
-    </mat-expansion-panel>    
-  </form>
 </ng-template>

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,13 +19,22 @@ export class CLTransactionsComponent implements OnInit, OnDestroy {
   faChartPie = faChartPie;
   currencyUnits = [];
   balances = [{title: 'Local Capacity', dataValue: 0, tooltip: 'Amount you can send'}, {title: 'Remote Capacity', dataValue: 0, tooltip: 'Amount you can receive'}];
+  public links = [{link: 'payments', name: 'Payments'}, {link: 'invoices', name: 'Invoices'}, {link: 'queryroutes', name: 'Query Routes'}];
+  public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
 
   ngOnInit() {
+    let linkFound = this.links.find(link => this.router.url.includes(link.link));
+    this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+    this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
+    .subscribe((value: ResolveEnd) => {
+      let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
+      this.activeLink = linkFound ? linkFound.link : this.links[0].link;
+    });
     this.store.select('cl')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.currencyUnits = rtlStore.nodeSettings.currencyUnits;
       if(rtlStore.nodeSettings.userPersona === UserPersonaEnum.OPERATOR) {

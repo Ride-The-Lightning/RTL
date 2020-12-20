@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -25,14 +25,15 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]
 })
-export class ChannelRestoreTableComponent implements OnInit {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public selNode: SelNodeChild = {};
   public displayedColumns = ['channel_point', 'actions'];
   public selChannel: Channel;
+  public channelsData = [];
   public channels: any;
   public allRestoreExists = false;
   public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
@@ -57,11 +58,10 @@ export class ChannelRestoreTableComponent implements OnInit {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((resRCList) => {
       this.allRestoreExists = resRCList.all_restore_exists;
-      this.channels = new MatTableDataSource([...resRCList.files]);
-      this.channels.data = resRCList.files;
-      this.channels.sort = this.sort;
-      this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.channels.paginator = this.paginator;
+      this.channelsData = resRCList.files;
+      if (this.channelsData.length > 0) {
+        this.loadRestoreTable(this.channelsData);
+      }
       if (this.flgLoading[0] !== 'error' || (resRCList && resRCList.files)) {
         this.flgLoading[0] = false;
       }
@@ -69,13 +69,26 @@ export class ChannelRestoreTableComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.channelsData.length > 0) {
+      this.loadRestoreTable(this.channelsData);
+    }
+  }
+
   onRestoreChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Restoring Channels...'));
     this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }  
 
-  applyFilter(selFilter: string) {
-    this.channels.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.channels.filter = selFilter.value;
+  }
+
+  loadRestoreTable(channels: any[]) {
+    this.channels = new MatTableDataSource([...channels]);
+    this.channels.sort = this.sort;
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.paginator = this.paginator;
   }
 
   ngOnDestroy() {

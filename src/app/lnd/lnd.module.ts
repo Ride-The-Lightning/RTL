@@ -6,7 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { LNDRootComponent } from './lnd-root.component';
 import { HomeComponent } from './home/home.component';
-import { PeersChannelsComponent } from './peers-channels/peers-channels.component';
+import { ConnectionsComponent } from './peers-channels/connections.component';
 import { ChannelsTablesComponent } from './peers-channels/channels/channels-tables/channels-tables.component';
 import { PeersComponent } from './peers-channels/peers/peers.component';
 import { LightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
@@ -22,6 +22,9 @@ import { BumpFeeComponent } from './peers-channels/channels/bump-fee-modal/bump-
 import { ChannelClosedTableComponent } from './peers-channels/channels/channels-tables/channel-closed-table/channel-closed-table.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { LookupsComponent } from './lookups/lookups.component';
+import { ReportsComponent } from './reports/reports.component';
+import { FeeReportComponent } from './reports/fee/fee-report.component';
+import { TransactionsReportComponent } from './reports/transactions/transactions-report.component';
 import { RoutingComponent } from './routing/routing.component';
 import { ForwardingHistoryComponent } from './routing/forwarding-history/forwarding-history.component';
 import { RoutingPeersComponent } from './routing/routing-peers/routing-peers.component';
@@ -47,6 +50,17 @@ import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/cha
 import { NetworkInfoComponent } from './network-info/network-info.component';
 import { LoopComponent } from './loop/loop.component';
 import { SwapsComponent } from './loop/swaps/swaps.component';
+import { InvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
+import { ChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
+import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
+import { OpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
+import { ChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
+import { OnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
+import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
+import { LightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
+import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
+import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
+import { LoopModalComponent } from './loop/loop-modal/loop-modal.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -60,7 +74,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     LNDRootComponent,
     HomeComponent,
     PeersComponent,
-    PeersChannelsComponent,
+    ConnectionsComponent,
     LightningInvoicesComponent,
     WalletComponent,
     LightningPaymentsComponent,
@@ -80,6 +94,9 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     SignVerifyMessageComponent,
     SignComponent,
     VerifyComponent,
+    ReportsComponent,
+    FeeReportComponent,
+    TransactionsReportComponent,
     QueryRoutesComponent,
     OnChainReceiveComponent,
     OnChainComponent,
@@ -99,7 +116,18 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
     LoopComponent,
-    SwapsComponent
+    SwapsComponent,
+    InvoiceInformationComponent,
+    ChannelRebalanceComponent,
+    OpenChannelComponent,
+    ChannelInformationComponent,
+    LightningSendPaymentsComponent,
+    ConnectPeerComponent,
+    CloseChannelComponent,
+    CreateInvoiceComponent,
+    OnChainSendComponent,
+    OnChainSendModalComponent,
+    LoopModalComponent
   ],  
   providers: [
     LNDUnlockedGuard

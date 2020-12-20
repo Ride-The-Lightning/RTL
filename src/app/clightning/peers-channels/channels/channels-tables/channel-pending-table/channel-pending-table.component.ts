@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -26,19 +26,19 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public isCompatibleVersion = false;
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
+  public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -79,8 +79,9 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
-      if (rtlStore.allChannels) {
-        this.loadChannelsTable(rtlStore.allChannels.filter(channel => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)));
+      this.channelsData = rtlStore.allChannels.filter(channel => !(channel.state === 'CHANNELD_NORMAL' && channel.connected));
+      if (this.channelsData.length > 0) {
+        this.loadChannelsTable(this.channelsData);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -89,8 +90,13 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.channelsData.length > 0) {
+      this.loadChannelsTable(this.channelsData);
+    }
+  }
+
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 
@@ -135,7 +141,7 @@ export class CLChannelPendingTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr.toLowerCase());
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

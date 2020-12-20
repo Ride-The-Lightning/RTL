@@ -91,7 +91,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     });
   }
 
-  onEstimateFee() {
+  onEstimateFee():boolean|void {
     if(!this.inputFormGroup.controls.selRebalancePeer.value || !this.inputFormGroup.controls.rebalanceAmount.value) { return true; }
     if (this.stepper.selectedIndex === 0) {
       this.inputFormGroup.controls.hiddenAmount.setValue(this.inputFormGroup.controls.rebalanceAmount.value);
@@ -151,7 +151,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
     this.feeFormGroup.controls.feeLimit.setValue((this.queryRoute.routes && this.queryRoute.routes.length > 0 && this.queryRoute.routes[0].total_fees_msat) ? Math.ceil(+this.queryRoute.routes[0].total_fees_msat/1000) : 0);
   }
 
-  onRebalance() {
+  onRebalance():boolean|void {
     if (!this.inputFormGroup.controls.rebalanceAmount.value || this.inputFormGroup.controls.rebalanceAmount.value <= 0 || this.inputFormGroup.controls.rebalanceAmount.value > +this.selChannel.local_balance || !this.feeFormGroup.controls.feeLimit.value || this.feeFormGroup.controls.feeLimit.value < 0 || !this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey) { return true; }
     this.feeFormGroup.controls.hiddenFeeLimit.setValue(this.feeFormGroup.controls.feeLimit.value);
     this.stepper.next();

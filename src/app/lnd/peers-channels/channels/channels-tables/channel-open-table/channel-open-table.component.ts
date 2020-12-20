@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -33,20 +33,20 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Channels') }
   ]  
 })
-export class ChannelOpenTableComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public timeUnit = 'mins:secs';
   public userPersonaEnum = UserPersonaEnum;
   public selNode: SelNodeChild = {};
   public totalBalance = 0;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
+  public channelsData: Channel[] = [];
   public channels: any;
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
   public flgLoading: Array<Boolean | 'error'> = [true];
-  public selectedFilter = '';
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -90,8 +90,9 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = +rtlStore.blockchainBalance.total_balance;
-      if (rtlStore.allChannels) {
-        this.loadChannelsTable(this.calculateUptime(rtlStore.allChannels));
+      this.channelsData = this.calculateUptime(rtlStore.allChannels);
+      if (this.channelsData.length > 0) {
+        this.loadChannelsTable(this.channelsData);
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
@@ -100,11 +101,17 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.channelsData.length > 0) {
+      this.loadChannelsTable(this.channelsData);
+    }
+  }
+
   onViewRemotePolicy(selChannel: Channel) {
     this.store.dispatch(new LNDActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
     this.lndEffects.setLookup
     .pipe(take(1))
-    .subscribe(resLookup => {
+    .subscribe((resLookup):boolean|void => {
       if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }        
       const reorderedChannelPolicy = [
         [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
@@ -214,7 +221,6 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
   }
 
   applyFilter() {
-    this.selectedFilter = this.selFilter;
     this.channels.filter = this.selFilter;
   }
 
@@ -241,7 +247,7 @@ export class ChannelOpenTableComponent implements OnInit, OnDestroy {
       return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
-    this.channels.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

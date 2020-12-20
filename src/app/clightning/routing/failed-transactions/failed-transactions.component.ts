@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, OnDestroy, AfterViewInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,17 +22,19 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLFailedTransactionsComponent implements OnInit, OnChanges {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() failedEvents: any;
-  public displayedColumns = [];
+export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  public failedEvents: any;
+  public errorMessage = '';
+  public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -46,10 +50,30 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('cl')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      rtlStore.effectErrors.forEach(effectsErr => {
+        if (effectsErr.action === 'GetForwardingHistory') {
+          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+        }
+      });
+      this.failedEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterFailedEvents(rtlStore.forwardingHistory.forwarding_events) : [];
+      this.loadForwardingEventsTable(this.failedEvents);
+      this.logger.info(rtlStore);
+    });
+  }
 
-  ngOnChanges() {
-    this.loadForwardingEventsTable(this.failedEvents);
+  ngAfterViewInit() {
+    if (this.failedEvents.length > 0) {
+      this.loadForwardingEventsTable(this.failedEvents);
+    }
+  }
+
+  filterFailedEvents(events) {
+    return events.filter(event => event.status !== 'settled');
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
@@ -74,7 +98,7 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
@@ -89,8 +113,14 @@ export class CLFailedTransactionsComponent implements OnInit, OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.forwardingHistoryEvents.filter = selFilter.value;
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

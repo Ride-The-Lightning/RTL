@@ -27,6 +27,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
       "lnImplementation": "LND",
       "Authentication": {
         "macaroonPath": "<Path of the folder containing 'admin.macaroon' on the device running RTL>",
+        "swapMacaroonPath": "<Path of the folder containing 'loop.macaroon' on the device running RTL>",
         "configPath": "<Optional:Path of the lnd.conf if present locally or empty>"
       },
       "Settings": {
@@ -38,7 +39,7 @@ If your running RTL and LND on different devices on your local LAN, certain conf
         "enableLogging": false,
         "fiatConversion": false,
         "lnServerUrl": "<https://<ip-address-of-device-running-lnd>:8080; e.g. https://192.168.0.1:8080>",
-        "swapServerUrl": "<http://<localhost>:8081>",
+        "swapServerUrl": "<https://<localhost>:8081>",
       }
     }
   ]

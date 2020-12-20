@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -26,14 +26,14 @@ import * as LNDActions from '../../store/lnd.actions';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
+export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.LOOP_OUT;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public swapStateEnum = SwapStateEnum;
   public faHistory = faHistory;
   public swapCaption = 'Loop Out';
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public listSwaps: any;
   public storedSwaps: SwapStatus[] = [];
   public filteredSwaps: SwapStatus[] = [];
@@ -77,7 +77,9 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
       if (rtlStore.loopSwaps) {
         this.storedSwaps = rtlStore.loopSwaps;
         this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
-        this.loadSwapsTable(this.filteredSwaps);
+        if (this.filteredSwaps.length > 0) {
+          this.loadSwapsTable(this.filteredSwaps);
+        }
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.loopSwaps) ? false : true;
@@ -87,6 +89,12 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  ngAfterViewInit() {
+    if (this.filteredSwaps.length > 0) {
+      this.loadSwapsTable(this.filteredSwaps);
+    }
+  }
+
   ngOnChanges() {
     this.swapCaption = (this.selectedSwapType === SwapTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
     this.emptyTableMessage = 'No ' + this.swapCaption.toLowerCase() + ' swaps available.';
@@ -94,8 +102,8 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
     this.loadSwapsTable(this.filteredSwaps);
   }
     
-  applyFilter(selFilter: string) {
-    this.listSwaps.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.listSwaps.filter = selFilter.value;
   }
 
   onSwapClick(selSwap: SwapStatus, event: any) {
@@ -124,7 +132,7 @@ export class SwapsComponent implements OnInit, OnChanges, OnDestroy {
   loadSwapsTable(swaps) {
     this.listSwaps = new MatTableDataSource<SwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
-    this.listSwaps.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

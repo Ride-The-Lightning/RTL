@@ -4,10 +4,11 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { ScreenSizeEnum, SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
+import { CommonService } from '../../../shared/services/common.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -23,11 +24,14 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() allChannels: Channel[];
   public showLoop: boolean;
   private targetConf = 6;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private router: Router, private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private router: Router, private loopService: LoopService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
+    this.screenSize = this.commonService.getScreenSize();
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -36,7 +40,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   }
 
   goToChannels() {
-    this.router.navigateByUrl('/lnd/peerschannels');
+    this.router.navigateByUrl('/lnd/connections');
   }
 
   onLoopOut(channel: Channel) {

@@ -3,7 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
-@include mat-core();
 
 $blue-primary: mat-palette($mat-blue, 700, 200, A200);
 $blue-accent:  mat-palette($mat-gray, 800, 600, 900);

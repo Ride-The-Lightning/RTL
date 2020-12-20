@@ -1,4 +1,6 @@
-import { Component, OnInit, OnChanges, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, Input, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,17 +22,21 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @Input() successfulEvents: any;
-  public displayedColumns = [];
+export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @Input() eventsData = [];
+  @Input() filterValue = '';
+  public successfulEvents = [];
+  public errorMessage = '';
+  public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
@@ -45,14 +51,43 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
       this.displayedColumns = ['timestamp', 'amountIn', 'amountOut', 'fee', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['timestamp', 'fromAlias', 'toAlias', 'amountIn', 'amountOut', 'fee', 'actions'];
+      this.displayedColumns = ['timestamp', 'fromChannelAlias', 'toChannelAlias', 'amountIn', 'amountOut', 'fee', 'actions'];
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.store.select('ecl')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      if (this.eventsData.length <= 0) {
+        this.errorMessage = '';
+        rtlStore.effectErrors.forEach(effectsErr => {
+          if (effectsErr.action === 'FetchPayments') {
+            this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
+          }
+        });
+        this.successfulEvents = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+        this.loadForwardingEventsTable(this.successfulEvents);
+        this.logger.info(rtlStore);
+      }
+    });
+  }
 
-  ngOnChanges() {
-    this.loadForwardingEventsTable(this.successfulEvents);
+  ngAfterViewInit() {
+    if (this.successfulEvents.length > 0) {
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.eventsData) {
+      this.eventsData = changes.eventsData.currentValue;
+      this.successfulEvents = this.eventsData;
+      this.loadForwardingEventsTable(this.successfulEvents);
+    }
+    if (changes.filterValue) {
+      this.applyFilter();
+    }
   }
 
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
@@ -79,7 +114,15 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
   loadForwardingEventsTable(forwardingEvents: PaymentRelayed[]) {
     this.forwardingHistoryEvents = new MatTableDataSource<PaymentRelayed>([...forwardingEvents]);
     this.forwardingHistoryEvents.sort = this.sort;
-    this.forwardingHistoryEvents.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+    this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'fee':
+          return data.amountIn - data.amountOut;
+      
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    }
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -90,8 +133,14 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  applyFilter(selFilter: string) {
-    this.forwardingHistoryEvents.filter = selFilter;
+  applyFilter() {
+    this.forwardingHistoryEvents.filter = this.filterValue;
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

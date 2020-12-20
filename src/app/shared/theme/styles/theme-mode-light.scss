@@ -20,149 +20,147 @@
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
 
-  &.day {
-    .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
-      background-color: mat-color($accent, 700);
-    }
-    .mat-progress-bar.this-channel-bar .mat-progress-bar-buffer {
-      background-color: mat-color($accent, 200);
-    }
-    .rtl-top-toolbar {
-      border-bottom: 1px solid white;
-    }
-    .mat-tab-label {
-      &.mat-tab-label-active {
-        color: $primary-color;
-        & .tab-badge .mat-badge-content {
-          background: $primary-color;
-        }          
-      }
+  .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
+    background-color: mat-color($accent, 700);
+  }
+  .mat-progress-bar.this-channel-bar .mat-progress-bar-buffer {
+    background-color: mat-color($accent, 200);
+  }
+  .rtl-top-toolbar {
+    border-bottom: 1px solid white;
+  }
+  .mat-tab-label {
+    &.mat-tab-label-active {
+      color: $primary-color;
       & .tab-badge .mat-badge-content {
-        background: $foreground-secondary-text;
-      }  
+        background: $primary-color;
+      }          
     }
-    .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
-      color: $foreground-secondary-text;
+    & .tab-badge .mat-badge-content {
+      background: $foreground-secondary-text;
+    }  
+  }
+  .ng-fa-icon, .mat-nested-tree-node-parent .mat-icon, .mat-form-field-suffix {
+    color: $foreground-secondary-text;
+  }
+  .mat-stroked-button.mat-primary {
+    border-color: $primary-color;
+  }
+  .mat-stroked-button.mat-accent {
+    border-color: $accent-color;
+  }
+  .mat-stroked-button.mat-warn {
+    border-color: $warn-color;
+  }
+  .selected-color {
+    border-color: $primary-lighter;
+  }
+  .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
+    opacity: 0.06;
+  }    
+  .page-title-container, .page-sub-title-container {
+    & .page-title-img {
+      color: $foreground-disabled;  
     }
-    .mat-stroked-button.mat-primary {
-      border-color: $primary-color;
-    }
-    .mat-stroked-button.mat-accent {
-      border-color: $accent-color;
-    }
-    .mat-stroked-button.mat-warn {
-      border-color: $warn-color;
-    }
-    .selected-color {
-      border-color: $primary-lighter;
-    }
-    .mat-stroked-button.mat-primary:hover .mat-button-focus-overlay {
-      opacity: 0.06;
-    }    
-    .page-title-container, .page-sub-title-container {
-      & .page-title-img {
-        color: $foreground-disabled;  
-      }
-      color: $foreground-secondary-text;
-    }
-    .cc-data-block .cc-data-title {
+    color: $foreground-secondary-text;
+  }
+  .cc-data-block .cc-data-title {
+    color: $primary-color;
+  }    
+  .active-link, .active-link .fa-icon-small {
+    color: $primary-color; 
+    font-weight: 500;
+    cursor: pointer;
+    fill: $primary-color; 
+  }
+  .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
+    color: $primary-color; 
+    cursor: pointer;
+    background: $hover-background;
+    & .ng-fa-icon, & .mat-icon {
       color: $primary-color;
-    }    
-    .active-link, .active-link .fa-icon-small {
-      color: $primary-color; 
-      font-weight: 500;
-      cursor: pointer;
-      fill: $primary-color; 
     }
-    .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
-      color: $primary-color; 
-      cursor: pointer;
-      background: $hover-background;
-      & .ng-fa-icon, & .mat-icon {
-        color: $primary-color;
-      }
-      & .sidenav-img svg {
-        fill: $primary-color;
-      }
+    & .sidenav-img svg {
+      fill: $primary-color;
     }
-    .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
-    .page-title-container .page-title-img, svg.top-icon-small {
-      fill:  $foreground-text;
-    }
-    .mat-progress-bar-fill::after {
-      background-color: mat-color($primary, 900);
-    }
-    .modal-qr-code-container {
-      background: $foreground-divider;
-    }
-    .mat-tab-label, .mat-tab-link {
-      color: $foreground-secondary-text;
-    }
-    .mat-card, .mat-card:not([class*='mat-elevation-z']){
-      box-shadow: none;
-      border: 1px solid $foreground-divider;
-    }
-    .dashboard-card .mat-card-header .mat-card-title {
+  }
+  .mat-tree-node .sidenav-img, .mat-nested-tree-node .sidenav-img, .mat-nested-tree-node-parent .sidenav-img,
+  .page-title-container .page-title-img, svg.top-icon-small {
+    fill:  $foreground-text;
+  }
+  .mat-progress-bar-fill::after {
+    background-color: mat-color($primary, 900);
+  }
+  .modal-qr-code-container {
+    background: $foreground-divider;
+  }
+  .mat-tab-label, .mat-tab-link {
+    color: $foreground-secondary-text;
+  }
+  .mat-card, .mat-card:not([class*='mat-elevation-z']){
+    box-shadow: none;
+    border: 1px solid $foreground-divider;
+  }
+  .dashboard-card .mat-card-header .mat-card-title {
+    color:  $foreground-disabled;
+    & .ng-fa-icon {
       color:  $foreground-disabled;
-      & .ng-fa-icon {
-        color:  $foreground-disabled;
-      }
     }
-    & .dashboard-info-title {
-      color: $primary-color;
-    }
-    & .dashboard-info-value {
-      color: $foreground-secondary-text;
-    }
-    .color-primary {
-      color:  $primary-color !important;
-    }
-    .dot-primary {
-      background-color:  $primary-color !important;
-    }
-    .dot-primary-lighter {
-      background-color:  $primary-lighter !important;
-    }
-    .mat-expansion-panel.flat-expansion-panel {
-      border: 1px solid $foreground-divider;
-    }
-    svg {
-      & .fill-color-1 { fill: #FFFFFF; }
-      & .fill-color-2 { fill: #F1F1F1; }
-      & .fill-color-3 { fill: #F2F2F2; }
-      & .fill-color-4 { fill: #F2F2F2; }
-      & .fill-color-5 { fill: #F2F2F2; }
-      & .fill-color-6 { fill: #FFFFFF; }
-      & .fill-color-7 { fill: #CBCBCB; }
-      & .fill-color-8 { fill: #CBCBCB; }
-      & .fill-color-9 { fill: #FFFFFF; }
-      & .fill-color-10 { fill: #E6E6E6; }
-      & .fill-color-11 { fill: #E6E6E6; }
-      & .fill-color-12 { fill: #5B5B5B; }
-      & .fill-color-13 { fill: #4A4A4A; }
-      & .fill-color-14 { fill: #4A4A4A; }
-      & .fill-color-15 { fill: #4A4A4A; }
-      & .fill-color-16 { fill: #404040; }
-      & .fill-color-17 { fill: #404040; }
-      & .fill-color-18 { fill: #000000; }
-      & .fill-color-19 { fill: #4A4A4A; }
-      & .fill-color-20 { fill: #4A4A4A; }
-      & .fill-color-21 { fill: #5B5B5B; }
-      & .fill-color-22 { fill: #CBCBCB; }
-      & .fill-color-23 { fill: #CBCBCB; }
-      & .fill-color-24 { fill: #000000; }
-      & .fill-color-25 { fill: #F2F2F2; }
-      & .fill-color-26 { fill: #6F6F6F; }
-      & .fill-color-27 { fill: #000000; }
-      & .fill-color-28 { fill: #313131; }
-      & .fill-color-29 { fill: #5B5B5B; }
-      & .fill-color-30 { fill: #FFFFFF; }
-      & .fill-color-31 { fill: $primary-color; }
-      & .fill-color-green-light { fill: #6ECB48; }
-      & .fill-color-primary { fill: $primary-color; }
-      & .fill-color-primary-lighter { fill: $primary-lighter; }
-      & .fill-color-primary-darker { fill: $primary-color; }
-    }
+  }
+  & .dashboard-info-title {
+    color: $primary-color;
+  }
+  & .dashboard-info-value {
+    color: $foreground-secondary-text;
+  }
+  .color-primary {
+    color:  $primary-color !important;
+  }
+  .dot-primary {
+    background-color:  $primary-color !important;
+  }
+  .dot-primary-lighter {
+    background-color:  $primary-lighter !important;
+  }
+  .mat-expansion-panel.flat-expansion-panel {
+    border: 1px solid $foreground-divider;
+  }
+  svg {
+    & .fill-color-1 { fill: #FFFFFF; }
+    & .fill-color-2 { fill: #F1F1F1; }
+    & .fill-color-3 { fill: #F2F2F2; }
+    & .fill-color-4 { fill: #F2F2F2; }
+    & .fill-color-5 { fill: #F2F2F2; }
+    & .fill-color-6 { fill: #FFFFFF; }
+    & .fill-color-7 { fill: #CBCBCB; }
+    & .fill-color-8 { fill: #CBCBCB; }
+    & .fill-color-9 { fill: #FFFFFF; }
+    & .fill-color-10 { fill: #E6E6E6; }
+    & .fill-color-11 { fill: #E6E6E6; }
+    & .fill-color-12 { fill: #5B5B5B; }
+    & .fill-color-13 { fill: #4A4A4A; }
+    & .fill-color-14 { fill: #4A4A4A; }
+    & .fill-color-15 { fill: #4A4A4A; }
+    & .fill-color-16 { fill: #404040; }
+    & .fill-color-17 { fill: #404040; }
+    & .fill-color-18 { fill: #000000; }
+    & .fill-color-19 { fill: #4A4A4A; }
+    & .fill-color-20 { fill: #4A4A4A; }
+    & .fill-color-21 { fill: #5B5B5B; }
+    & .fill-color-22 { fill: #CBCBCB; }
+    & .fill-color-23 { fill: #CBCBCB; }
+    & .fill-color-24 { fill: #000000; }
+    & .fill-color-25 { fill: #F2F2F2; }
+    & .fill-color-26 { fill: #6F6F6F; }
+    & .fill-color-27 { fill: #000000; }
+    & .fill-color-28 { fill: #313131; }
+    & .fill-color-29 { fill: #5B5B5B; }
+    & .fill-color-30 { fill: #FFFFFF; }
+    & .fill-color-31 { fill: $primary-color; }
+    & .fill-color-green-light { fill: #6ECB48; }
+    & .fill-color-primary { fill: $primary-color; }
+    & .fill-color-primary-lighter { fill: $primary-lighter; }
+    & .fill-color-primary-darker { fill: $primary-color; }
   }
   
   & .mat-form-field-disabled {
@@ -186,5 +184,16 @@
       cursor: not-allowed !important;
     }
   }
-
+  
+  ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
+    & text {
+      fill: $foreground-text;
+    }
+    & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
+      fill: mat-color($primary, 900);
+    }
+    & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
+      fill: mat-color($primary, 200);
+    }
+  }
 }

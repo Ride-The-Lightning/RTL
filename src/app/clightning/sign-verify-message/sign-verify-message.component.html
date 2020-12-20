@@ -1,14 +1,16 @@
-<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
   <fa-icon [icon]="faUserCheck" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">Sign/Verify Message</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Sign"><rtl-cl-sign></rtl-cl-sign></mat-tab>
-        <mat-tab label="Verify"><rtl-cl-verify></rtl-cl-verify></mat-tab>
-      </mat-tab-group>
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+      </nav>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
+        <router-outlet></router-outlet>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

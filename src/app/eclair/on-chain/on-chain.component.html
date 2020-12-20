@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
   <fa-icon [icon]="faChartPie" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">On-chain Balance</span>
 </div>
@@ -9,29 +9,21 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-title-container">
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
   <fa-icon [icon]="faExchangeAlt" class="page-title-img mr-1"></fa-icon>
   <span class="page-title">On-chain Transactions</span>
 </div>
 <div fxLayout="column" class="padding-gap-x">
   <mat-card>
     <mat-card-content fxLayout="column">
-      <mat-tab-group>
-        <mat-tab label="Receive">
-          <rtl-ecl-on-chain-receive></rtl-ecl-on-chain-receive>
-        </mat-tab>
-        <mat-tab label="Send">
-          <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-            <div fxLayout="row">
-              <button mat-flat-button color="primary" type="button" tabindex="1" (click)="openSendFundsModal()">Send Funds</button>
-            </div>  
-          </div>          
-        </mat-tab>
-      </mat-tab-group>
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" routerLink="{{link.link}}">{{link.name}}</div>
+      </nav>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large mt-2">
+        <router-outlet></router-outlet>
+      </div>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
-        <div fxLayout="row">
-          <rtl-ecl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-ecl-on-chain-transaction-history>
-        </div>
+        <rtl-ecl-on-chain-transaction-history fxLayout="row" fxFlex="100"></rtl-ecl-on-chain-transaction-history>
       </div>
     </mat-card-content>
   </mat-card>

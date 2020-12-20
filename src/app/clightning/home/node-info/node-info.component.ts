@@ -9,7 +9,7 @@ import { CommonService } from '../../../shared/services/common.service';
 })
 export class CLNodeInfoComponent implements OnChanges {
   @Input() information: GetInfo;
-  @Input() showColorFieldSeparately: false;
+  @Input() showColorFieldSeparately: boolean;
   public chains: Array<string> = [''];
 
   constructor(private commonService: CommonService) { }

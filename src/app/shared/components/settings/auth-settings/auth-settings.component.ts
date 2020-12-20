@@ -29,21 +29,23 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public confirmPassword = '';
   public errorMsg = '';
   public errorConfirmMsg = '';
+  public initializeNodeData = false;
   public appConfig: RTLConfiguration;
   public selNode: ConfigSettingsNode;
-  unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
+  unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router) {}
 
   ngOnInit() {
+    this.initializeNodeData = !!history.state.initial;
     this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
       if (this.currPassword.toLowerCase() === 'password') {
@@ -65,7 +67,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     });    
   }
 
-  onChangePassword() {
+  onChangePassword():boolean|void {
     if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }
@@ -118,6 +120,9 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if(this.initializeNodeData) {
+      this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: this.selNode, isInitialSetup: true}));
+    }
     this.unSubs.forEach(unsub => {
       unsub.next();
       unsub.complete();

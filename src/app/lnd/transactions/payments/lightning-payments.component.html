@@ -1,7 +1,7 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form *ngIf="!showDetails" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
+  <form *ngIf="calledFrom === 'home'" fxLayoutAlign="space-between stretch" fxLayout="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field fxFlex="100">
-      <textarea matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
+      <textarea [perfectScrollbar] matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
@@ -10,142 +10,143 @@
       <button mat-flat-button color="primary" (click)="onSendPayment()" tabindex="3">Send Payment</button>
     </div>
   </form>
-  <div *ngIf="showDetails" fxLayout="row">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="row">
     <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="4">Send Payment</button>
   </div>
-  <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
-    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
-      <div fxFlex="70">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="column" fxLayoutAlign="start stretch">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
+      <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Payments History</span>
       </div>
-      <mat-form-field fxFlex="30">
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
-        <ng-container matColumnDef="creation_date">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Creation Date</th>
-          <td mat-cell *matCellDef="let payment">
-            <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{payment?.creation_date_str}}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="payment_hash">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
-          <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '35rem'}">{{payment?.payment_hash}}</td>
-        </ng-container>
-        <ng-container matColumnDef="fee">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
-          <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.fee | number}}</span></td>
-        </ng-container>
-        <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Value (Sats)</th>
-          <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.value | number}}</span></td>
-        </ng-container>
-        <ng-container matColumnDef="hops">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">#Hops</th>
-          <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.htlcs[0]?.route?.hops?.length || 0}}</span></td>
-        </ng-container>        
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="px-3">
-            <div class="bordered-box table-actions-select">
-              <mat-select placeholder="Actions" tabindex="1" class="mr-0">
-                <mat-select-trigger></mat-select-trigger>
-                <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
-              </mat-select>
-            </div>
-          </th>
-          <td mat-cell *matCellDef="let payment" class="px-3" fxLayoutAlign="end center">
-            <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment)">View Info</button>          
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="no_payment">
-          <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!payments?.data || payments?.data?.length<1">No payments available.</p>
-          </td>
-        </ng-container>
-
-        <!-- Payment Group Row Start -->
-        <ng-container matColumnDef="groupTotal">
-          <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="start center" class="htlc-row-span">
+    <div fxLayout="row" fxLayoutAlign="start start">
+      <div [perfectScrollbar] fxLayout="column" class="table-container" fxFlex="100">
+        <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
+        <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+          <ng-container matColumnDef="creation_date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Creation Date</th>
+            <td mat-cell *matCellDef="let payment">
               <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
               <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-              Total Attempts: {{payment?.htlcs?.length}}
-            </span>
-            <ng-container *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
-                <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                {{htlc.attempt_time_str}}
-              </span>
-            </ng-container>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="groupHash">
-          <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="start center" class="htlc-row-span">{{payment?.payment_hash}}</span>
-            <span *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="start center" class="htlc-row-span">
-                HTLC {{i + 1}}
-              </span>
-            </span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="groupFee">
-          <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.fee | number:'1.0-0'}}</span>
-            <span *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
-                {{htlc.route?.total_fees | number:'1.0-0'}}
-              </span>
-            </span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="groupValue">
-          <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.value | number:'1.0-0'}}</span>
-            <span *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
-                {{htlc.route?.total_amt | number:'1.0-0'}}
-              </span>
-            </span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="groupHops">
-          <td mat-cell *matCellDef="let payment">
-            <span fxLayoutAlign="end center" class="htlc-row-span">-</span>
-            <span *ngIf="payment.is_expanded">
-              <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
-                {{(htlc.route?.hops?.length || 0) | number:'1.0-0'}}
-              </span>
-            </span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="groupAction">
-          <td mat-cell *matCellDef="let payment" class="px-3">
-            <span fxLayoutAlign="end center">
-              <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
-            </span>
-            <div *ngIf="payment.is_expanded">
-              <div *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="end center">
-                <button mat-stroked-button class="btn-htlc-info" color="primary" type="button" tabindex="6" (click)="onHTLCClick(htlc, payment)">View {{i + 1}}</button>
+              {{payment?.creation_date_str}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="payment_hash">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Hash</th>
+            <td mat-cell *matCellDef="let payment" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '35rem'}">{{payment?.payment_hash}}</td>
+          </ng-container>
+          <ng-container matColumnDef="fee">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (Sats)</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.fee | number}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Value (Sats)</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.value | number}}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="hops">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">#Hops</th>
+            <td mat-cell *matCellDef="let payment"><span fxLayoutAlign="end center">{{payment?.htlcs[0]?.route?.hops?.length || 0}}</span></td>
+          </ng-container>        
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="px-2">
+              <div class="bordered-box table-actions-select">
+                <mat-select placeholder="Actions" tabindex="1" class="mr-0">
+                  <mat-select-trigger></mat-select-trigger>
+                  <mat-option (click)="onDownloadCSV()">Download CSV</mat-option>
+                </mat-select>
               </div>
-            </div>
-          </td>
-        </ng-container>
-        <tr mat-row *matRowDef="let row; columns: htlcColumns; when: is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
-        <!-- Payment Group Row End -->
+            </th>
+            <td mat-cell *matCellDef="let payment" class="px-2" fxLayoutAlign="end center">
+              <button mat-stroked-button color="primary" type="button" tabindex="4" (click)="onPaymentClick(payment)">View Info</button>          
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="no_payment">
+            <td mat-footer-cell *matFooterCellDef colspan="4">
+              <p *ngIf="!payments?.data || payments?.data?.length<1">No payments available.</p>
+            </td>
+          </ng-container>
 
-        <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
-      </table>
+          <!-- Payment Group Row Start -->
+          <ng-container matColumnDef="groupTotal">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="start center" class="htlc-row-span">
+                <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                Total Attempts: {{payment?.htlcs?.length}}
+              </span>
+              <ng-container *ngIf="payment.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
+                  <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                  <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
+                  {{htlc.attempt_time_str}}
+                </span>
+              </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="groupHash">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="start center" class="htlc-row-span">{{payment?.payment_hash}}</span>
+              <span *ngIf="payment.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="start center" class="htlc-row-span">
+                  HTLC {{i + 1}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="groupFee">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.fee | number:'1.0-0'}}</span>
+              <span *ngIf="payment.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+                  {{htlc.route?.total_fees | number:'1.0-0'}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="groupValue">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="end center" class="htlc-row-span">{{payment?.value | number:'1.0-0'}}</span>
+              <span *ngIf="payment.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+                  {{htlc.route?.total_amt | number:'1.0-0'}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="groupHops">
+            <td mat-cell *matCellDef="let payment">
+              <span fxLayoutAlign="end center" class="htlc-row-span">-</span>
+              <span *ngIf="payment.is_expanded">
+                <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="end center" class="htlc-row-span">
+                  {{(htlc.route?.hops?.length || 0) | number:'1.0-0'}}
+                </span>
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="groupAction">
+            <td mat-cell *matCellDef="let payment" class="px-2">
+              <span fxLayoutAlign="end center">
+                <button mat-flat-button class="btn-htlc-expand" color="primary" type="button" tabindex="5" (click)="payment.is_expanded = !payment.is_expanded">{{payment.is_expanded ? 'Hide' : 'Show'}}</button>
+              </span>
+              <div *ngIf="payment.is_expanded">
+                <div *ngFor="let htlc of payment?.htlcs; index as i" fxLayoutAlign="end center">
+                  <button mat-stroked-button class="btn-htlc-info" color="primary" type="button" tabindex="6" (click)="onHTLCClick(htlc, payment)">View {{i + 1}}</button>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-row *matRowDef="let row; columns: htlcColumns; when: is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
+          <!-- Payment Group Row End -->
+          <tr mat-footer-row *matFooterRowDef="['no_payment']" [ngClass]="{'display-none': payments?.data && payments?.data?.length>0}"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        </table>
+        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+      </div>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
   </div>
 </div>

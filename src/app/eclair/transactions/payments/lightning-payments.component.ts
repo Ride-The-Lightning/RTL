@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { forkJoin, Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
@@ -33,11 +33,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]  
 })
-export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
-  @ViewChild('sendPaymentForm', { static: true }) form;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() calledFrom = 'transactions'; // transactions/home
+  @ViewChild('sendPaymentForm', { static: false }) form;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -47,7 +47,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
   public payments: any;
   public paymentJSONArr: PaymentSent[] = [];
   public paymentDecoded: PayRequest = {};
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public partColumns = [];
   public paymentRequest = '';
   public paymentDecodedHint = '';
@@ -103,16 +103,27 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
         });
       }
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.sent && rtlStore.payments.sent.length > 0) ? rtlStore.payments.sent : [];
-      this.payments = new MatTableDataSource<PaymentSent>([...this.paymentJSONArr]);
-      // if(this.paymentJSONArr[0] && this.paymentJSONArr[0].parts) { // FOR MPP TESTING
-      //   this.paymentJSONArr[0].parts.push({
-      //     id: 'ID', amount: 100, feesPaid: 0, toChannelId: 'toChannel', toChannelAlias: 'Alias', timestampStr: 'str'
+      // FOR MPP TESTING START
+      // if(this.paymentJSONArr.length > 0) { 
+      //   this.paymentJSONArr[3].parts.push({
+      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075, timestampStr: "02/AUG/2020 17:37"
+      //   });
+      //   this.paymentJSONArr[3].parts.push({
+      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075, timestampStr: "02/AUG/2020 17:36"
+      //   });
+      //   this.paymentJSONArr[5].parts.push({
+      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075, timestampStr: "02/AUG/2020 17:38"
+      //   });
+      //   this.paymentJSONArr[5].parts.push({
+      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075, timestampStr: "02/AUG/2020 17:34"
+      //   });
+      //   this.paymentJSONArr[5].parts.push({
+      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075, timestampStr: "02/AUG/2020 17:35"
       //   });
       // }
-      this.payments.data = this.paymentJSONArr;
-      this.payments.sort = this.sort;
-      this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.payments.paginator = this.paginator;
+      // this.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
+      // FOR MPP TESTING END
+      this.loadPaymentsTable(this.paymentJSONArr);
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (this.paymentJSONArr) ? false : true;
@@ -122,7 +133,39 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   }
 
-  onSendPayment() {
+  ngAfterViewInit() {
+    this.loadPaymentsTable(this.paymentJSONArr);
+  }
+
+  loadPaymentsTable(payments: PaymentSent[]) {
+    this.payments = new MatTableDataSource<PaymentSent>([...payments]);
+    this.payments.sort = this.sort;
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
+      switch (sortHeaderId) {
+        case 'firstPartTimestamp':
+          this.commonService.sortByKey(data.parts, 'timestamp', 'number', this.sort.direction);
+          return data.firstPartTimestamp;
+      
+        case 'id':
+          this.commonService.sortByKey(data.parts, 'id', 'string', this.sort.direction);
+          return data.id;
+
+        case 'recipientNodeAlias':
+          this.commonService.sortByKey(data.parts, 'toChannelAlias', 'string', this.sort.direction);
+          return data.recipientNodeAlias;
+
+        case 'recipientAmount':
+          this.commonService.sortByKey(data.parts, 'amount', 'number', this.sort.direction);
+          return data.recipientAmount;
+
+        default:
+          return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      }
+    }
+    this.payments.paginator = this.paginator;
+  }
+
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
@@ -242,16 +285,16 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     this.form.resetForm();
   }
 
-  is_group(index: number, payment: PaymentSent) {
+  is_group(index: number, payment: PaymentSent):boolean {
     return payment.parts && payment.parts.length > 1;
   }  
 
   onPaymentClick(selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.dataService.decodePayment(selPayment.paymentHash, false)
+      this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
       .subscribe(sentPaymentInfo => {
-        this.showPaymentView(selPayment, sentPaymentInfo);
+        this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
       }, (error) => {
         this.showPaymentView(selPayment, []);
       });
@@ -270,7 +313,7 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
 
   onPartClick(selPart: PaymentSentPart, selPayment: PaymentSent) {
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
-      this.dataService.decodePayment(selPayment.paymentHash, false)
+      this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
       .subscribe(sentPaymentInfo => {
         this.showPartView(selPart, selPayment, sentPaymentInfo);
@@ -302,8 +345,8 @@ export class ECLLightningPaymentsComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.payments.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.payments.filter = selFilter.value;
   }
 
   onDownloadCSV() {

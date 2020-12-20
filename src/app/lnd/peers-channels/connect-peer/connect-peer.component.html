@@ -31,7 +31,7 @@
               <div fxLayout="column" fxLayout.gt-sm="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
                 <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
                   <mat-form-field fxFlex="60" fxLayoutAlign="start end">
-                    <input matInput formControlName="fundingAmount" placeholder="Amount" type="number" step="1000" tabindex="1" required>
+                    <input matInput formControlName="fundingAmount" placeholder="Amount" type="number" [step]="1000" tabindex="1" required>
                     <mat-hint>Remaining Bal: {{totalBalance - ((channelFormGroup.controls.fundingAmount.value) ? channelFormGroup.controls.fundingAmount.value : 0)}}</mat-hint>
                     <span matSuffix> Sats </span>
                     <mat-error *ngIf="channelFormGroup.controls.fundingAmount.errors?.required">Amount is required.</mat-error>
@@ -51,7 +51,7 @@
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field fxFlex="30">
-                    <input matInput formControlName="transTypeValue" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" name="transTypeValue" step="1" tabindex="4" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                    <input matInput formControlName="transTypeValue" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" name="transTypeValue" [step]="1" tabindex="4" [required]="channelFormGroup.controls.selTransType.value !== '0'">
                     <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'}} is required.</mat-error>
                   </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">

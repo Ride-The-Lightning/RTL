@@ -1,0 +1,40 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
+  <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
+    <div *ngIf="transactionsNonZeroReportData.length > 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportSummary">
+      <div *ngIf="transactionsReportSummary.paymentsSelectedPeriod > 0" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        Paid {{(transactionsReportSummary.amountPaidSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{transactionsReportSummary.paymentsSelectedPeriod | number}} Payments
+      </div>
+      <div *ngIf="transactionsReportSummary.invoicesSelectedPeriod" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
+        Received {{(transactionsReportSummary.amountReceivedSelectedPeriod / 1000 || 0) | number:'1.0-0'}} Sats/{{transactionsReportSummary.invoicesSelectedPeriod | number}} Invoices
+      </div>
+    </div>
+    <div *ngIf="transactionsNonZeroReportData.length <= 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No transactions report for the selected period</div>
+    <div class="mt-1">
+      <ngx-charts-bar-vertical-2d
+        *ngIf="transactionsNonZeroReportData.length > 0"
+        [view]="view"
+        [results]="transactionsReportData"
+        [noBarWhenZero]="false"
+        [gradient]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [showGridLines]="false"
+        [showDataLabel]="false"
+        [groupPadding]="(reportPeriod === scrollRanges[0]) ? 2 : 8"
+        (select)="onChartBarSelected($event)"
+        (mouseup)="onChartMouseUp($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <span class="tooltip-label">{{model.name}}: {{(model.value || 0) | number:'1.0-0'}}/# {{model.name === 'Paid' ? 'Payments' : 'Invoices'}}: {{(model.extra?.total || 0) | number}}</span>
+        </ng-template>
+      </ngx-charts-bar-vertical-2d>      
+    </div>
+    <div class="mt-1">
+      <rtl-transactions-report-table *ngIf="transactionsNonZeroReportData.length > 0" [dataList]="transactionsNonZeroReportData" [dataRange]="reportPeriod" [filterValue]="transactionFilterValue"></rtl-transactions-report-table>
+    </div>
+  </div>
+</div>

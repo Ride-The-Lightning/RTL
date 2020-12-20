@@ -24,7 +24,7 @@
               </div>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">              
                 <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '30' : '48'">
-                  <input autoFocus matInput placeholder="Amount" type="number" step="1000" tabindex="1" formControlName="amount" required>
+                  <input autoFocus matInput placeholder="Amount" type="number" [step]="1000" tabindex="1" formControlName="amount" required>
                   <mat-hint>Range: {{minQuote.amount | number}}-{{maxQuote.amount | number}}</mat-hint>
                   <span matSuffix>Sats</span>
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.required">Amount is required.</mat-error>
@@ -32,12 +32,12 @@
                   <mat-error *ngIf="inputFormGroup.controls.amount.errors?.max">Amount must be less than or equal to {{maxQuote.amount | number}}.</mat-error>
                 </mat-form-field>
                 <mat-form-field [fxFlex]="direction === swapTypeEnum.LOOP_OUT ? '20' : '48'">
-                  <input matInput placeholder="Sweep Confirmation Target" type="number" step="1" tabindex="2" formControlName="sweepConfTarget" required>
+                  <input matInput placeholder="Sweep Confirmation Target" type="number" [step]="1" tabindex="2" formControlName="sweepConfTarget" required>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.required">Confirmation target is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.sweepConfTarget.errors?.min">Confirmation target must be a positive number.</mat-error>
                 </mat-form-field>
                 <mat-form-field *ngIf="direction === swapTypeEnum.LOOP_OUT" fxFlex="30">
-                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" step="1" tabindex="3" formControlName="routingFeePercent" required>
+                  <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" [step]="1" tabindex="3" formControlName="routingFeePercent" required>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.max">Percentage must be less than or equal to {{maxRoutingFeePercentage}}.</mat-error>
@@ -53,8 +53,9 @@
             <form [formGroup]="quoteFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{quoteFormLabel}}</ng-template>
               <rtl-loop-quote [quote]="quote" [showPanel]="false"></rtl-loop-quote>
+              <p *ngIf="inputFormGroup.controls.amount.value > localBalanceToCompare" fxFlex="100" class="color-warn mt-2" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>Local balance amount is insufficient for swap.</p>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
-                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" matStepperNext>Next</button>
+                <button *ngIf="direction === swapTypeEnum.LOOP_OUT" mat-stroked-button color="primary" tabindex="6" type="button" (click)="onValidateAmount()">Next</button>
                 <button *ngIf="direction === swapTypeEnum.LOOP_IN" mat-stroked-button color="primary" tabindex="7" type="button" (click)="onLoop()">Initiate {{loopDirectionCaption}}</button>
               </div>
             </form>
@@ -81,7 +82,7 @@
             <form [formGroup]="statusFormGroup" fxLayout="column" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="my-1">
               <ng-template matStepLabel>{{loopDirectionCaption}} Status</ng-template>
               <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between stretch">
-                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="loopStatus">
+                <mat-expansion-panel class="flat-expansion-panel" fxFlex="100" [expanded]="!!loopStatus">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span fxLayoutAlign="start center" fxFlex="100">{{(!loopStatus) ? ('Waiting for ' + loopDirectionCaption + ' request...') : (loopStatus.id_bytes) ? (loopDirectionCaption + ' request details') : (loopDirectionCaption + ' error details')}}<mat-icon *ngIf="loopStatus" class="ml-1 icon-small">{{(loopStatus && loopStatus?.id_bytes) ? 'check' : 'close'}}</mat-icon></span>
@@ -91,7 +92,7 @@
                 </mat-expansion-panel>
                 <mat-progress-bar fxFlex="100" *ngIf="!loopStatus" color="primary" mode="indeterminate"></mat-progress-bar>
               </div>
-              <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. Go to loop to check it\'s status.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
+              <h4 *ngIf="loopStatus" fxLayoutAlign="start" class="font-bold-500 mt-2">{{(loopStatus && loopStatus.error) ? (loopDirectionCaption + ' failed.') : (loopStatus && loopStatus.id_bytes && channel) ? (loopDirectionCaption + ' request placed successfully. You can check the status of the request on the \'Loop\' menu.') : (loopDirectionCaption + ' request placed successfully.')}}</h4>
               <div class="mt-2" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
                 <button *ngIf="loopStatus && loopStatus.id_bytes && channel" mat-flat-button color="primary" tabindex="12" type="button" (click)="goToLoop()">Check Status</button>
                 <button *ngIf="loopStatus && (loopStatus.error || !loopStatus.id_bytes)" mat-flat-button color="primary" tabindex="13" type="button" (click)="onRestart()">Start Again</button>

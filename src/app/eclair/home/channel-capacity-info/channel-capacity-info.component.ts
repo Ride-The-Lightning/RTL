@@ -19,7 +19,7 @@ export class ECLChannelCapacityInfoComponent {
   constructor(private router: Router) {}
 
   goToChannels() {
-    this.router.navigateByUrl('/ecl/peerschannels');
+    this.router.navigateByUrl('/ecl/connections');
   }
 
 }

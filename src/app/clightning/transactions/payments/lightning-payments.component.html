@@ -1,29 +1,29 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
-    <mat-form-field fxFlex="100" *ngIf="!showDetails">
-      <textarea matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
+  <form *ngIf="calledFrom === 'home'" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
+    <mat-form-field fxFlex="100">
+      <textarea [perfectScrollbar] matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
       <mat-hint *ngIf="paymentRequest && paymentDecodedHint !== ''">{{paymentDecodedHint}}</mat-hint>
       <mat-error *ngIf="!paymentRequest">Payment request is required.</mat-error>
     </mat-form-field>
-    <div fxLayout="row" *ngIf="!showDetails" class="mt-1">
+    <div fxLayout="row" class="mt-1">
       <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear Field</button>
       <button mat-flat-button color="primary" (click)="onSendPayment()" tabindex="3">Send Payment</button>
     </div>
-    <div fxLayout="row" *ngIf="showDetails">
-      <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="3">Send Payment</button>
-    </div>
   </form>
-  <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'display-none': !showDetails}">
-    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-2">
-      <div fxFlex="70">
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="row">
+    <button mat-flat-button color="primary" (click)="openSendPaymentModal()" tabindex="3">Send Payment</button>
+  </div>
+  <div *ngIf="calledFrom === 'transactions'" fxLayout="column" fxLayoutAlign="start stretch">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
+      <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Payments History</span>
       </div>
-      <mat-form-field fxFlex="30">
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="payments" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
         <ng-container matColumnDef="created_at">

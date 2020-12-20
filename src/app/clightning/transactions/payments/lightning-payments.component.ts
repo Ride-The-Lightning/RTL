@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { Payments } from '../../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -31,11 +32,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Payments') }
   ]  
 })
-export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
-  @Input() showDetails = true;
-  @ViewChild('sendPaymentForm', { static: true }) form;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() calledFrom = 'transactions'; // transactions/home
+  @ViewChild('sendPaymentForm', { static: false }) form;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -44,7 +45,7 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: Payment[] = [];
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public mppColumns = [];
   public paymentDecoded: PayRequest = {};
   public paymentRequest = '';
@@ -89,11 +90,9 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
-      this.payments = (!rtlStore.payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...this.paymentJSONArr]);
-      this.payments.data = this.paymentJSONArr;
-      this.payments.sort = this.sort;
-      this.payments.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
-      this.payments.paginator = this.paginator;
+      if (this.paymentJSONArr.length > 0) {
+        this.loadPaymentsTable(this.paymentJSONArr);
+      }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
@@ -102,11 +101,17 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  is_group(index: number, payment: Payment) {
+  ngAfterViewInit() {
+    if (this.paymentJSONArr.length > 0) {
+      this.loadPaymentsTable(this.paymentJSONArr);
+    }
+  }
+
+  is_group(index: number, payment: Payment):boolean {
     return payment.is_group;
   }
 
-  onSendPayment() {
+  onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
     if (this.paymentDecoded.created_at_str) {
       this.sendPayment();
@@ -259,8 +264,16 @@ export class CLLightningPaymentsComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  applyFilter(selFilter: string) {
-    this.payments.filter = selFilter;
+  applyFilter(selFilter: any) {
+    this.payments.filter = selFilter.value;
+  }
+
+  loadPaymentsTable(payments: Payment[]) {
+    this.payments = (payments) ? new MatTableDataSource<Payment>([...payments]) : new MatTableDataSource([]);
+    this.payments.data = this.paymentJSONArr;
+    this.payments.sort = this.sort;
+    this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.payments.paginator = this.paginator;
   }
 
   onDownloadCSV() {

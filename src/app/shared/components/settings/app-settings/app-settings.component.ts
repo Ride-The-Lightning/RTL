@@ -87,7 +87,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings.themeMode = this.selectedThemeMode.id;
   }
 
-  onUpdateSettings() {
+  onUpdateSettings():boolean|void {
     if(this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) { return true; }
     let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);

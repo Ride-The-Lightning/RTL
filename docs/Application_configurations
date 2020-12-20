@@ -20,6 +20,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "lnImplementation": "<LNP implementation, Allowed values LND/CLT/ECL. Default 'LND', Required>",
       "Authentication": {
         "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT>",
+        "swapMacaroonPath": "<Path for the folder containing 'loop.macaroon' (LND), Required for LND Loop>",
         "configPath": "<Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally, Optional, only mandatory for ECL if the lnApiPassword is missing>",
         "lnApiPassword": "<Password to be used for ECL API authentication. Mandatory only for ECL if the configPath is missing>"
       },
@@ -33,7 +34,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "fiatConversion": <parameter to turn fiat conversion off/on. Allowed values - true, false, default false, Required>,
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
         "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://localhost:8080', Required",
-        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. http://localhost:8081, Optional>",
+        "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://localhost:8081, Optional>",
       }
     }
   ]

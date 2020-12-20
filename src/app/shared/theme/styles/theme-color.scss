@@ -1,4 +1,5 @@
 @import "constants";
+@import "mixins";
 
 @mixin theme-color($theme) {
   $primary: map-get($theme, primary);
@@ -202,7 +203,8 @@
       padding-right: 0;
       & .more-button {
         position: absolute;
-        right: 0
+        right: 0;
+        top: 0.4rem;
       }
     }
   }
@@ -219,11 +221,6 @@
     top: 1px;
   }
 
-  .mat-badge-medium.mat-badge-after .mat-badge-content {
-    margin-left: 0.4rem;
-    right: auto;
-  }
-  
   .tab-badge {
     & .mat-badge-content {
       width: auto;
@@ -237,6 +234,14 @@
       font-weight: 500;
       overflow: visible;
       text-overflow: inherit;
+    }
+  }
+
+  .mat-badge-medium.mat-badge-after .mat-badge-content {
+    right: unset;
+    margin-left: 1rem !important;
+    @include for_screensize(phone) {
+      margin-left: 0 !important;
     }
   }
 
@@ -283,8 +288,9 @@
       border-top-width: 2px;
     }
     & .mat-card-header .mat-card-title {
+      min-height: 4rem;
       font-size: 180%;
-      margin-bottom: 2.4rem;
+      margin-bottom: 0 0 0.8rem 0;
     }
     & .dashboard-info-value {
       font-weight: 700;
@@ -309,6 +315,9 @@
       &.this-channel-capacity {
         font-size: 120%;
       }
+    }
+    & .mat-icon-button.more-button {
+      width: 2rem;
     }
   }
 
@@ -407,5 +416,14 @@
 
   .mat-expansion-panel-header[aria-disabled='true'] {
     color: $foreground-text;
+  }
+
+  ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
+    & text {
+      fill: $foreground-text;
+    }
+    .ngx-charts .grid-panel.odd rect {
+      fill: none;
+    }  
   }
 }

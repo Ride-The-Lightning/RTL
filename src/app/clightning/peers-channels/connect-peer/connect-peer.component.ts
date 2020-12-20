@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./connect-peer.component.scss']
 })
 export class CLConnectPeerComponent implements OnInit, OnDestroy {
-  @ViewChild('peersForm', {static: true}) form: any;
+  @ViewChild('peersForm', {static: false}) form: any;
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
@@ -97,14 +97,14 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onConnectPeer() {
+  onConnectPeer():boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
     this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
-  onOpenChannel() {
+  onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
     this.channelConnectionError = '';
     this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));

@@ -1,20 +1,18 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
   <div fxLayout="row">
     <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onConnectPeer()">Add Peer</button>
   </div>
   <div fxLayout="column">
-    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container mt-1">
-      <div fxFlex="70">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
+      <div fxFlex="70" fxLayoutAlign="start start" fxLayoutAlign.gt-sm="start center">
         <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Connected Peers</span>
       </div>
-      <mat-form-field fxFlex="30">
-        <div fxLayout="row" fxLayoutAlign="start start">
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </div>
+      <mat-form-field fxFlex="30" fxLayoutAlign="start end">
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div perfectScrollbar fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
       <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
         <ng-container matColumnDef="alias">
@@ -50,7 +48,7 @@
               </div>
             </th>
             <td mat-cell *matCellDef="let peer" fxLayoutAlign="end center" class="px-3">
-              <div fxFlex="100" class="bordered-box table-actions-select">
+              <div class="bordered-box table-actions-select">
                 <mat-select placeholder="Actions" tabindex="1" class="mr-0">
                   <mat-select-trigger></mat-select-trigger>
                   <mat-option (click)="onPeerClick(peer, $event)">View Info</mat-option>

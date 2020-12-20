@@ -9,7 +9,7 @@
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
-          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
+          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
             <mat-card-content fxFlex="100" class="dashboard-card-content">
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
-          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card p-24 w-96 h-93">
+          <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
             <mat-card-content fxFlex="100" class="dashboard-card-content">
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>

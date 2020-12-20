@@ -1,0 +1,38 @@
+<div fxLayout="row" fxLayoutAlign="space-between stretch" fxFlex="100" class="padding-gap-x">
+  <div fxLayout="row" fxLayoutAlign="start center" fxFlex="22">
+    <button mat-icon-button color="primary" type="button" tabindex="1" class="pr-4" (click)="onStepChange('FIRST')"><mat-icon>skip_previous</mat-icon></button>
+    <button mat-icon-button color="primary" type="button" tabindex="2" (click)="onStepChange('PREVIOUS')" [disabled]="disablePrev"><mat-icon>navigate_before</mat-icon></button>
+  </div>
+  <ng-container *ngIf="animationDirection === 'forward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'forward'}"></ng-container>
+  <ng-container *ngIf="animationDirection === 'backward'" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:'backward'}"></ng-container>
+  <ng-container *ngIf="animationDirection === ''" [ngTemplateOutlet]="controlsPanel" [ngTemplateOutletContext]="{animationDirection:''}"></ng-container>
+  <div fxLayout="row" fxLayoutAlign="end center" fxFlex="22">
+    <button mat-icon-button color="primary" type="button" tabindex="5" class="pr-4" (click)="onStepChange('NEXT')" [disabled]="disableNext"><mat-icon>navigate_next</mat-icon></button>
+    <button mat-icon-button color="primary" type="button" tabindex="6" (click)="onStepChange('LAST')"><mat-icon>skip_next</mat-icon></button>
+  </div>
+</div>
+<ng-template #controlsPanel let-item='animationDirection'>
+  <div fxLayout="row" fxLayoutAlign="center center" fxFlex="56" [@sliderAnimation]="animationDirection">
+    <div fxFlex="50" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="end center" class="font-bold-700">
+      <mat-select fxFlex="80" fxFlex.gt-md="30" [(ngModel)]="selScrollRange" name="selScrlRange" (selectionChange)="onRangeChanged($event)" placeholder="Range" tabindex="3" class="font-bold-700">
+        <mat-option *ngFor="let scrollRange of scrollRanges" [value]="scrollRange">
+          {{scrollRange | titlecase}}
+        </mat-option>
+      </mat-select>
+    </div>
+    <div fxFlex="50" fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="start center">
+      <mat-form-field monthlyDate *ngIf="selScrollRange === scrollRanges[0]" fxFlex="80" fxFlex.gt-md="30" fxLayoutAlign="center center">
+        <input matInput [matDatepicker]="monthlyDatepicker" [min]="first" [max]="last"
+        name="monthlyDate" [(ngModel)]="selectedValue" tabindex="4" #monthlyDt="ngModel" readonly>
+        <mat-datepicker-toggle matSuffix [for]="monthlyDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #monthlyDatepicker startView="year" [startAt]="selectedValue" (monthSelected)="onMonthSelected($event)" (dateSelected)="onMonthSelected($event)"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field yearlyDate *ngIf="selScrollRange === scrollRanges[1]" fxFlex="80" fxFlex.gt-md="30" fxLayoutAlign="center center">
+        <input matInput [matDatepicker]="yearlyDatepicker" [min]="first" [max]="last"
+        name="yearlyDate" [(ngModel)]="selectedValue" tabindex="4" #yearlyDt="ngModel" readonly>
+        <mat-datepicker-toggle matSuffix [for]="yearlyDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #yearlyDatepicker startView="multi-year" [startAt]="selectedValue" (yearSelected)="onYearSelected($event)" (monthSelected)="onYearSelected($event)" (dateSelected)="onYearSelected($event)"></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+</ng-template>

@@ -21,12 +21,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./query-routes.component.scss']
 })
 export class QueryRoutesComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   public destinationPubkey = '';
   public amount = null;
   public qrHops: any;
   public flgSticky = false;
-  public displayedColumns = [];
+  public displayedColumns: any[] = [];
   public flgLoading: Array<Boolean | 'error'> = [false]; // 0: peers
   public faRoute = faRoute;
   public faExclamationTriangle = faExclamationTriangle;
@@ -65,11 +65,11 @@ export class QueryRoutesComponent implements OnInit, OnDestroy {
         this.flgLoading[0] = 'error';
       }
       this.qrHops.sort = this.sort;
-      this.qrHops.sortingDataAccessor = (data, sortHeaderId) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : +data[sortHeaderId];
+      this.qrHops.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     });
   }
 
-  onQueryRoutes() {
+  onQueryRoutes():boolean|void {
     if(!this.destinationPubkey || !this.amount) { return true; }
     this.flgLoading[0] = true;
     this.store.dispatch(new LNDActions.GetQueryRoutes({destPubkey: this.destinationPubkey, amount: this.amount}));

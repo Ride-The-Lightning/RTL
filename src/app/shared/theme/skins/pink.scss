@@ -3,7 +3,6 @@
 @import './color-swatches/red-warn.swatch.scss';
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
-@include mat-core();
 
 $pink-primary: mat-palette($mat-pink, 500, 300, A200);
 $pink-accent:  mat-palette($mat-gray, 800, 600, 900);

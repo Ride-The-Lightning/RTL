@@ -9,7 +9,7 @@
       <mat-error *ngIf="!destinationPubkey">Destination pubkey is required.</mat-error>
     </mat-form-field>
     <mat-form-field fxFlex="29" fxLayoutAlign="start end">
-      <input matInput placeholder="Amount (Sats)" name="amount" [(ngModel)]="amount" tabindex="2" type="number" step="1000" min="0" required #destAmount="ngModel">
+      <input matInput placeholder="Amount (Sats)" [(ngModel)]="amount" name="amount" tabindex="2" type="number" [step]="1000" [min]="0" required>
       <mat-error *ngIf="!amount">Amount is required.</mat-error>
     </mat-form-field>
     <div fxLayout="row" class="mt-2">
@@ -17,13 +17,13 @@
       <button mat-flat-button color="primary" type="submit" tabindex="4">Query Route</button>
     </div>
   </form>
-  <div fxLayout="row" fxLayoutAlign="start center" class="padding-gap-x page-sub-title-container mt-2 mb-1">
-    <div fxFlex="70">
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxLayout.gt-sm="row wrap" class="page-sub-title-container mt-1">
+    <div fxFlex="70" fxLayoutAlign="start center">
       <fa-icon [icon]="faRoute" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Transaction Route</span>
     </div>
   </div>
-  <div perfectScrollbar class="table-container mb-6">
+  <div [perfectScrollbar] class="table-container mb-6">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="qrHops" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
       <ng-container matColumnDef="hop_sequence">
