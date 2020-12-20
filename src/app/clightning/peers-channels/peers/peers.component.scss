@@ -1,12 +1,12 @@
 .mat-column-alias {
-  flex: 1 1 10%;
+  flex: 1 1 20%;
   white-space: nowrap;
   overflow: hidden;  
   text-overflow: ellipsis;
 }
 
 .mat-column-id {
-  flex: 1 1 10%;
+  flex: 1 1 20%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -14,8 +14,8 @@
 }
 
 .mat-column-netaddr {
-  flex: 1 1 15%;
-  width: 15%;
+  flex: 1 1 25%;
+  width: 25%;
 }
 
 .mat-column-actions {

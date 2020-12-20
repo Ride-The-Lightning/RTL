@@ -1,10 +1,10 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form *ngIf="calledFrom === 'home'" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" #addInvoiceForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
+  <form *ngIf="calledFrom === 'home'" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100" #addInvoiceForm="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="space-between stretch">
       <input matInput [(ngModel)]="description" placeholder="Description" tabindex="2" name="description">
     </mat-form-field>
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
-      <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3">
+      <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" name="invoiceValue" type="number" [step]="100" [min]="1" tabindex="3">
       <span matSuffix> {{information?.smaller_currency_unit}} </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>
     </mat-form-field>

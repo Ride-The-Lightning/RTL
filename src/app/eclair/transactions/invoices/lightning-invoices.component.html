@@ -1,5 +1,5 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
-  <form *ngIf="calledFrom === 'home'" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" #addInvoiceForm="ngForm">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
+  <form *ngIf="calledFrom === 'home'" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100" #addInvoiceForm="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="space-between stretch">
       <input matInput [(ngModel)]="description" placeholder="Description" tabindex="2" name="description" required="true">
       <mat-error *ngIf="!description">Description is required.</mat-error>

@@ -18,7 +18,7 @@
             <mat-hint>{{invoiceValueHint}}</mat-hint>
           </mat-form-field>
           <mat-form-field fxFlex="30">
-            <input matInput [(ngModel)]="expiry" placeholder="Expiry" type="number" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" tabindex="4">
+            <input matInput [(ngModel)]="expiry" name="expiry" placeholder="Expiry" type="number" [step]="selTimeUnit === timeUnitEnum.SECS ? 300 : selTimeUnit === timeUnitEnum.MINS ? 10 : selTimeUnit === timeUnitEnum.HOURS ? 2 : 1" [min]="1" tabindex="4">
             <span matSuffix> {{selTimeUnit | titlecase}} </span>
           </mat-form-field>
           <mat-form-field fxFlex="26">
