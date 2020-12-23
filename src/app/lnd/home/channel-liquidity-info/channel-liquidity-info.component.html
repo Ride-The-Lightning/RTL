@@ -11,8 +11,16 @@
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
         <mat-hint *ngIf="direction === 'In'" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         <div *ngIf="direction === 'Out'" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <mat-hint fxFlex="85" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <button *ngIf="showLoop" fxFlex="15" fxLayoutAlign="end start" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
+          <mat-hint fxFlex="75" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <div *ngIf="showLoop && showBoltz" fxFlex="25" fxLayoutAlign="end end">
+            <mat-select [(ngModel)]="selectedSwapService" (selectionChange)="onSwapOut(channel)" placeholder="Swaps" name="swap_services" tabindex="1" class="mr-0">
+              <mat-option *ngFor="let swapServiceType of swapServiceTypes" [value]="swapServiceType">
+                {{swapServiceType}}
+              </mat-option>
+            </mat-select>
+          </div>
+          <button *ngIf="showLoop && !showBoltz" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onSwapOut(channel)">Loop Out</button>
+          <button *ngIf="showBoltz && !showLoop" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onSwapOut(channel)">Swap Out</button>
         </div>
       </div>
       <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>

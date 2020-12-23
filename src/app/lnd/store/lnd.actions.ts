@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, SwapStatus, UTXO } from '../../shared/models/lndModels';
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, LoopSwapStatus, UTXO } from '../../shared/models/lndModels';
   
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
@@ -419,7 +419,7 @@ export class FetchLoopSwaps implements Action {
 
 export class SetLoopSwaps implements Action {
   readonly type = SET_LOOP_SWAPS_LND;
-  constructor(public payload: SwapStatus[]) {}
+  constructor(public payload: LoopSwapStatus[]) {}
 }
 
 export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |

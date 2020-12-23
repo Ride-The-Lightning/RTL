@@ -9,26 +9,26 @@ import { MatVerticalStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { opacityAnimation } from '../../../shared/animation/opacity-animation';
-import { ScreenSizeEnum, LoopTypeEnum } from '../../../shared/services/consts-enums-functions';
-import { LoopQuote, LoopStatus } from '../../../shared/models/loopModels';
-import { LoopAlert } from '../../../shared/models/alertData';
-import { LoopService } from '../../../shared/services/loop.service';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
-import { Channel } from '../../../shared/models/lndModels';
+import { opacityAnimation } from '../../../animation/opacity-animation';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../services/consts-enums-functions';
+import { LoopQuote, LoopStatus } from '../../../models/loopModels';
+import { LoopAlert } from '../../../models/alertData';
+import { LoopService } from '../../../services/loop.service';
+import { LoggerService } from '../../../services/logger.service';
+import { CommonService } from '../../../services/common.service';
+import { Channel } from '../../../models/lndModels';
 
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as LNDActions from '../../../../lnd/store/lnd.actions';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-loop-modal',
-  templateUrl: './loop-modal.component.html',
-  styleUrls: ['./loop-modal.component.scss'],
+  selector: 'rtl-boltz-swap-modal',
+  templateUrl: './swap-modal.component.html',
+  styleUrls: ['./swap-modal.component.scss'],
   animations: [opacityAnimation]
 })
-export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
   public faInfoCircle = faInfoCircle;
   public quote: LoopQuote;
@@ -57,7 +57,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LoopModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
+  constructor(public dialogRef: MatDialogRef<SwapModalComponent>, @Inject(MAT_DIALOG_DATA) public data: LoopAlert, private store: Store<fromRTLReducer.RTLState>, private loopService: LoopService, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe, private logger: LoggerService, private router: Router, private commonService: CommonService) { }
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

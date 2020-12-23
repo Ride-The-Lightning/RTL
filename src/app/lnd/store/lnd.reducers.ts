@@ -2,7 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus, UTXO
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, LoopSwapStatus, UTXO
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -34,7 +34,7 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
-  loopSwaps: SwapStatus[];
+  loopSwaps: LoopSwapStatus[];
 }
 
 export const initLNDState: LNDState = {

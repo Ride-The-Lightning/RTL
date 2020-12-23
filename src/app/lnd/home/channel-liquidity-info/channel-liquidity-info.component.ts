@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ScreenSizeEnum, SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
 import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
@@ -22,7 +22,10 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
+  public swapServiceTypes = ['Loop', 'Boltz']
+  public selectedSwapService = '';
   public showLoop: boolean;
+  public showBoltz: boolean;
   private targetConf = 6;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -36,6 +39,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
+      this.showBoltz = (rtlStore.nodeSettings.boltzServerUrl && rtlStore.nodeSettings.boltzServerUrl.trim() !== '') ? true : false;
     });
   }
 
@@ -43,7 +47,22 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/lnd/connections');
   }
 
-  onLoopOut(channel: Channel) {
+  onSwapOut(channel: Channel) {
+    switch (this.selectedSwapService) {
+      case this.swapServiceTypes[0]:
+        this.callLoopOut(channel);
+        break;
+
+      case this.swapServiceTypes[1]:
+        this.callBoltzSwapOut(channel);
+        break;
+          
+      default:
+        break;
+    }
+  }  
+
+  callLoopOut(channel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
     .pipe(takeUntil(this.unSubs[1]))
@@ -53,11 +72,15 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         channel: channel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
       }}));    
     });
-  }  
+  }
+
+  callBoltzSwapOut(channel: Channel) {
+    console.warn('BOLTZ CALL');
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {

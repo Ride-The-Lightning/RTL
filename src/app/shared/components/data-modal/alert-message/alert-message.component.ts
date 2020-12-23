@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 import { AlertData } from '../../../models/alertData';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapStateEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopStateEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-alert-message',
@@ -29,7 +29,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   }
   private unlistenStart: () => void;
   private unlistenEnd: () => void;
-  public swapStateEnum = SwapStateEnum;
+  public LoopStateEnum = LoopStateEnum;
   public showQRField = '';
   public showQRName = '';  
   public showCopyName = '';

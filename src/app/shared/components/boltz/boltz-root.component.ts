@@ -4,29 +4,29 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faInfinity } from '@fortawesome/free-solid-svg-icons';
 
-import { LoopTypeEnum } from '../../shared/services/consts-enums-functions';
-import { LoopModalComponent } from './loop-modal/loop-modal.component';
-import { LoopQuote } from '../../shared/models/loopModels';
-import { LoopService } from '../../shared/services/loop.service';
+import { LoopTypeEnum } from '../../services/consts-enums-functions';
+import { SwapModalComponent } from './swap-modal/swap-modal.component';
+import { BoltzQuote } from '../../models/boltzModels';
+import { BoltzService } from '../../services/boltz.service';
 
-import * as fromRTLReducer from '../../store/rtl.reducers';
-import * as RTLActions from '../../store/rtl.actions';
+import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as RTLActions from '../../../store/rtl.actions';
 
 @Component({
-  selector: 'rtl-loop',
-  templateUrl: './loop.component.html',
-  styleUrls: ['./loop.component.scss']
+  selector: 'rtl-boltz-root',
+  templateUrl: './boltz-root.component.html',
+  styleUrls: ['./boltz-root.component.scss']
 })
-export class LoopComponent implements OnInit {
+export class BoltzRootComponent implements OnInit {
   public faInfinity = faInfinity;
   private targetConf = 2;
   public inAmount = 250000;
-  public quotes: LoopQuote[] = [];
+  public quotes: BoltzQuote[] = [];
   public LoopTypeEnum = LoopTypeEnum;
   public selectedSwapType: LoopTypeEnum = LoopTypeEnum.LOOP_OUT;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private loopService: LoopService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private boltzService: BoltzService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {}
 
@@ -41,7 +41,7 @@ export class LoopComponent implements OnInit {
   onLoop(direction: LoopTypeEnum) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
     if(direction === LoopTypeEnum.LOOP_IN) {
-      this.loopService.getLoopInTermsAndQuotes(this.targetConf)
+      this.boltzService.getLoopInTermsAndQuotes(this.targetConf)
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
@@ -49,11 +49,11 @@ export class LoopComponent implements OnInit {
           minQuote: response[0],
           maxQuote: response[1],
           direction: direction,
-          component: LoopModalComponent
+          component: SwapModalComponent
         }}));    
       });
     } else {
-      this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
+      this.boltzService.getLoopOutTermsAndQuotes(this.targetConf)
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(response => {
         this.store.dispatch(new RTLActions.CloseSpinner());
@@ -61,7 +61,7 @@ export class LoopComponent implements OnInit {
           minQuote: response[0],
           maxQuote: response[1],
           direction: direction,
-          component: LoopModalComponent
+          component: SwapModalComponent
         }}));    
       });
     }

@@ -1,4 +1,4 @@
-import { SwapStateEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+import { LoopStateEnum, LoopTypeEnum } from '../services/consts-enums-functions';
 
 export interface ChannelStatus {
   channels?: number;
@@ -518,12 +518,12 @@ export interface PendingChannelsData {
   limbo_balance: number;
 }
 
-export interface SwapStatus {
-  type?: SwapTypeEnum;
+export interface LoopSwapStatus {
+  type?: LoopTypeEnum;
   cost_server?: string;
   cost_offchain?: string;
   htlc_address?: string;
-  state?: SwapStateEnum;
+  state?: LoopStateEnum;
   amt?: string;
   cost_onchain?: string;
   initiation_time?: string;

@@ -61,6 +61,10 @@ import { LightningSendPaymentsComponent } from './transactions/send-payment-moda
 import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
 import { LoopModalComponent } from './loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -127,7 +131,11 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     CreateInvoiceComponent,
     OnChainSendComponent,
     OnChainSendModalComponent,
-    LoopModalComponent
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent
   ],  
   providers: [
     LNDUnlockedGuard

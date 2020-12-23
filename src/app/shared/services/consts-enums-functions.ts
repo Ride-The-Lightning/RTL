@@ -127,7 +127,7 @@ export const WALLET_ADDRESS_TYPE = {
   UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
 }
 
-export enum SwapStateEnum {
+export enum LoopStateEnum {
   INITIATED	= 'Initiated',
   PREIMAGE_REVEALED	= 'Preimage Revealed',
   HTLC_PUBLISHED	= 'HTLC Published',
@@ -136,9 +136,23 @@ export enum SwapStateEnum {
   INVOICE_SETTLED	= 'Invoice Settled'
 }
 
-export enum SwapTypeEnum {
+export enum LoopTypeEnum {
   LOOP_OUT = 'LOOP_OUT',
   LOOP_IN = 'LOOP_IN'
+}
+
+export enum BoltzStateEnum {
+  INITIATED	= 'Initiated',
+  PREIMAGE_REVEALED	= 'Preimage Revealed',
+  HTLC_PUBLISHED	= 'HTLC Published',
+  SUCCESS	= 'Successful',
+  FAILED	= 'Failed',
+  INVOICE_SETTLED	= 'Invoice Settled'
+}
+
+export enum BoltzTypeEnum {
+  SWAP_OUT = 'SWAP_OUT',
+  SWAP_IN = 'SWAP_IN'
 }
 
 export const MONTHS = [

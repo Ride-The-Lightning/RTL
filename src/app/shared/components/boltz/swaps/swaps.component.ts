@@ -8,18 +8,18 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { LoopSwapStatus } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopTypeEnum, LoopStateEnum } from '../../../shared/services/consts-enums-functions';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
-import { LoopService } from '../../../shared/services/loop.service';
+import { LoopSwapStatus } from '../../../models/lndModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopTypeEnum, LoopStateEnum } from '../../../services/consts-enums-functions';
+import { LoggerService } from '../../../services/logger.service';
+import { CommonService } from '../../../services/common.service';
+import { LoopService } from '../../../services/loop.service';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as LNDActions from '../../store/lnd.actions';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as LNDActions from '../../../../lnd/store/lnd.actions';
 
 @Component({
-  selector: 'rtl-swaps',
+  selector: 'rtl-boltz-swaps',
   templateUrl: './swaps.component.html',
   styleUrls: ['./swaps.component.scss'],
   providers: [

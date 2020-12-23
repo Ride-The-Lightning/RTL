@@ -10,7 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -308,7 +308,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
       }}));    
     });
