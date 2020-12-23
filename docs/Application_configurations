@@ -21,6 +21,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
       "Authentication": {
         "macaroonPath": "<Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT>",
         "swapMacaroonPath": "<Path for the folder containing 'loop.macaroon' (LND), Required for LND Loop>",
+        "boltzMacaroonPath": "<Path for the folder containing 'admin.macaroon' (Boltz), Required for Boltz Swaps>",
         "configPath": "<Full path of the lnd.conf/c-lightning config/eclair.conf file including the file name, if present locally, Optional, only mandatory for ECL if the lnApiPassword is missing>",
         "lnApiPassword": "<Password to be used for ECL API authentication. Mandatory only for ECL if the configPath is missing>"
       },
@@ -35,6 +36,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
         "currencyUnit": "<Optional: Fiat current Unit for currency conversion, default 'USD' If fiatConversion is true, Required if fiatConversion is true>",
         "lnServerUrl": "<Service url for LND/CLightning REST APIs for the node, e.g. https://192.168.0.1:8080 OR https://192.168.0.1:3001 OR http://192.168.0.1:8080. Default 'https://localhost:8080', Required",
         "swapServerUrl": "<Service url for swap server REST APIs for the node, e.g. https://localhost:8081, Optional>",
+        "boltzServerUrl": "<Service url for boltz server REST APIs for the node, e.g. https://localhost:9003, Optional>"
       }
     }
   ]
@@ -48,8 +50,11 @@ HOST (host for the rtl node server, default localhost, Optional)
 LN_IMPLEMENTATION (LND/CLT/ECL. Default 'LND', Required)
 LN_SERVER_URL (LN server URL for LNP REST APIs, default https://localhost:8080) (Required)
 SWAP_SERVER_URL (Swap server URL for REST APIs, default http://localhost:8081) (Optional)
+BOLTZ_SERVER_URL (Boltz server URL for REST APIs, default http://localhost:9003) (Optional)
 CONFIG_PATH (Full path of the LNP .conf file including the file name) (Optional for LND & CLT, Mandatory for ECL if LN_API_PASSWORD is undefined)
 MACAROON_PATH (Path for the folder containing 'admin.macaroon' (LND)/'access.macaroon' (CLT) file, Required for LND & CLT)
+SWAP_MACAROON_PATH (Path for the folder containing Loop's 'loop.macaroon', optional)
+BOLTZ_MACAROON_PATH (Path for the folder containing Boltz's 'admin.macaroon', optional)
 RTL_SSO (1 - single sign on via an external cookie, 0 - stand alone RTL authentication, Optional)
 RTL_COOKIE_PATH (Full path of the cookie file including the file name, Required if RTL_SSO=1 else Optional)
 LOGOUT_REDIRECT_LINK (URL to re-direct to after logout/timeout from RTL, Required if RTL_SSO=1 else Optional)

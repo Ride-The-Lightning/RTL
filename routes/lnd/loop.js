@@ -1,7 +1,7 @@
 const LoopController = require("../../controllers/lnd/loop");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/in/terms", authCheck, LoopController.loopInTerms);
 router.get("/in/quote/:amount", authCheck, LoopController.loopInQuote);

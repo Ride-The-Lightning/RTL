@@ -2,7 +2,7 @@ var ini = require('ini');
 var parseHocon = require('hocon-parser');
 var fs = require('fs');
 var logger = require('./logger');
-var common = require('../common');
+var common = require('../../common');
 var request = require('request-promise');
 var options = {};
 
@@ -51,6 +51,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
           settings.lnServerUrl = node.ln_server_url;
           settings.swapServerUrl = node.swap_server_url;
+          settings.boltzServerUrl = node.boltz_server_url;
           settings.channelBackupPath = node.channel_backup_path;
           settings.currencyUnit = node.currency_unit;
           nodesArr.push({

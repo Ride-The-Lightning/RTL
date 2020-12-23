@@ -1,5 +1,5 @@
 var fs = require('fs');
-var common = require('../common');
+var common = require('../../common');
 
 exports.info = (msgJSON, selNode = common.selectedNode) => {
   const msgStr = '\r\nINFO: ' +  msgJSON.fileName + ' => ' + msgJSON.msg;

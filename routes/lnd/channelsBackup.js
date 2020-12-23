@@ -1,7 +1,7 @@
 const ChannelsBackupController = require("../../controllers/lnd/channelsBackup");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/:channelPoint", authCheck, ChannelsBackupController.getBackup);
 router.get("/restore/list", authCheck, ChannelsBackupController.getRestoreList);

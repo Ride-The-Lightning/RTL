@@ -36,6 +36,25 @@ common.getSwapServerOptions = () => {
   return swapOptions;
 };
 
+common.getBoltzServerOptions = () => {
+  let boltzOptions = {
+    url: common.selectedNode.boltz_server_url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: {
+      'Grpc-Metadata-macaroon': ''
+    }
+  };
+  if (common.selectedNode.boltz_macaroon_path) {
+    try {
+      boltzOptions.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex')};
+    } catch(err) {
+      console.error('Boltz macaroon Error: ' + JSON.stringify(err));
+    }
+  }
+  return boltzOptions;
+};
+
 common.getSelLNServerUrl = () => {
   return common.selectedNode.ln_server_url;
 };

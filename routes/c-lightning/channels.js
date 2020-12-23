@@ -1,7 +1,7 @@
 const ChannelsController = require("../../controllers/c-lightning/channels");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/listChannels", authCheck, ChannelsController.listChannels);
 router.post("/", authCheck, ChannelsController.openChannel);

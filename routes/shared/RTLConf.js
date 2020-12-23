@@ -1,4 +1,4 @@
-const RTLConfController = require("../controllers/RTLConf");
+const RTLConfController = require("../../controllers/shared/RTLConf");
 const express = require("express");
 const router = express.Router();
 const authCheck = require("./authCheck");

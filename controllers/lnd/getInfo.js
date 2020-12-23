@@ -1,6 +1,6 @@
 var request = require('request-promise');
 var common = require('../../common');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var connect = require('../../connect');
 var options = {};
 

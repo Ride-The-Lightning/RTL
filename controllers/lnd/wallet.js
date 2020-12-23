@@ -1,7 +1,7 @@
 var request = require('request-promise');
 var common = require('../../common');
 var atob = require('atob');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var options = {};
 
 exports.genSeed = (req, res, next) => {

@@ -1,7 +1,7 @@
 const WalletController = require("../../controllers/lnd/wallet");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/genseed/:passphrase?", authCheck, WalletController.genSeed);
 router.get("/updateSelNodeOptions", authCheck, WalletController.updateSelNodeOptions);

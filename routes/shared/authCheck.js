@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-var common = require('../common');
+var common = require('../../common');
 
 module.exports = (req, res, next) => {
   try {

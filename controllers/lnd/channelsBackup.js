@@ -1,7 +1,7 @@
 var request = require('request-promise');
 var fs = require('fs');
 var common = require('../../common');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var options = {};
 
 function getFilesList(callback) {
