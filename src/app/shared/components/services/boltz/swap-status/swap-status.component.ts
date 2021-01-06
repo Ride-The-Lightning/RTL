@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoopStatus } from '../../../models/loopModels';
+import { LoopStatus } from '../../../../models/loopModels';
 
 @Component({
   selector: 'rtl-boltz-swap-status',

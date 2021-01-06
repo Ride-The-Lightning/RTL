@@ -2,8 +2,9 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, LoopSwapStatus, UTXO
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO
 } from '../../shared/models/lndModels';
+import { LoopSwapStatus } from '../../shared/models/loopModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 import * as LNDActions from './lnd.actions';

@@ -1100,7 +1100,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchSwaps', 'Fetching Swaps Failed.', err);
+            this.handleErrorWithoutAlert('FetchSwaps', (err && err.error && err.error.error && err.error.error.errno && err.error.error.errno === 'ECONNREFUSED') ? 'Loop Connection Refused.' : 'Fetching Swaps Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );

@@ -63,7 +63,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'remote_alias', 'actions'];
+      this.displayedColumns = [ 'remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
@@ -312,6 +312,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         component: LoopModalComponent
       }}));    
     });
+  }
+
+  onBoltzSwapOut(channel: Channel) {
+    console.warn('BOLTZ CALL');
   }
 
   onDownloadCSV() {

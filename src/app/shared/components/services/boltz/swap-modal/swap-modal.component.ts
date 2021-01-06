@@ -9,18 +9,18 @@ import { MatVerticalStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { opacityAnimation } from '../../../animation/opacity-animation';
-import { ScreenSizeEnum, LoopTypeEnum } from '../../../services/consts-enums-functions';
-import { LoopQuote, LoopStatus } from '../../../models/loopModels';
-import { LoopAlert } from '../../../models/alertData';
-import { LoopService } from '../../../services/loop.service';
-import { LoggerService } from '../../../services/logger.service';
-import { CommonService } from '../../../services/common.service';
-import { Channel } from '../../../models/lndModels';
+import { opacityAnimation } from '../../../../animation/opacity-animation';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../../services/consts-enums-functions';
+import { LoopQuote, LoopStatus } from '../../../../models/loopModels';
+import { LoopAlert } from '../../../../models/alertData';
+import { LoopService } from '../../../../services/loop.service';
+import { LoggerService } from '../../../../services/logger.service';
+import { CommonService } from '../../../../services/common.service';
+import { Channel } from '../../../../models/lndModels';
 
-import * as LNDActions from '../../../../lnd/store/lnd.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import * as LNDActions from '../../../../../lnd/store/lnd.actions';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-boltz-swap-modal',

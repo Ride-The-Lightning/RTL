@@ -2,9 +2,13 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, LoopSwapStatus, UTXO } from '../../shared/models/lndModels';
-  
+import { 
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
+  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
+  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO }
+from '../../shared/models/lndModels';
+import { LoopSwapStatus } from '../../shared/models/loopModels';
+
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
 export const EFFECT_ERROR_LND = 'EFFECT_ERROR_LND';

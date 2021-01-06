@@ -22,8 +22,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
-  public swapServiceTypes = ['Loop', 'Boltz']
-  public selectedSwapService = '';
   public showLoop: boolean;
   public showBoltz: boolean;
   private targetConf = 6;
@@ -47,22 +45,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/lnd/connections');
   }
 
-  onSwapOut(channel: Channel) {
-    switch (this.selectedSwapService) {
-      case this.swapServiceTypes[0]:
-        this.callLoopOut(channel);
-        break;
-
-      case this.swapServiceTypes[1]:
-        this.callBoltzSwapOut(channel);
-        break;
-          
-      default:
-        break;
-    }
-  }  
-
-  callLoopOut(channel: Channel) {
+  onLoopOut(channel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
     .pipe(takeUntil(this.unSubs[1]))
@@ -74,11 +57,11 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         maxQuote: response[1],
         direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
-      }}));    
+      }}));
     });
   }
 
-  callBoltzSwapOut(channel: Channel) {
+  onBoltzSwapOut(channel: Channel) {
     console.warn('BOLTZ CALL');
   }
 

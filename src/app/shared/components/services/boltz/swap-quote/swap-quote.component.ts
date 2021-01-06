@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoopQuote } from '../../../models/loopModels';
+import { LoopQuote } from '../../../../models/loopModels';
 
 @Component({
   selector: 'rtl-boltz-swap-quote',

@@ -1,16 +1,16 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ScreenSizeEnum } from '../../../services/consts-enums-functions';
+import { ScreenSizeEnum } from '../../../../services/consts-enums-functions';
 
-import { sliderAnimation } from '../../../animation/slider-animation';
-import { CommonService } from '../../../services/common.service';
+import { sliderAnimation } from '../../../../animation/slider-animation';
+import { CommonService } from '../../../../services/common.service';
 
 @Component({
-  selector: 'rtl-boltz-swapin-info-graphics',
+  selector: 'rtl-loop-out-info-graphics',
   templateUrl: './info-graphics.component.html',
   styleUrls: ['./info-graphics.component.scss'],
   animations: [sliderAnimation]  
 })
-export class SwapInInfoGraphicsComponent implements OnInit {
+export class SwapOutInfoGraphicsComponent implements OnInit {
   @Input() animationDirection = 'forward';
   @Input() stepNumber = 1;
   @Output() stepNumberChange = new EventEmitter();
@@ -20,7 +20,7 @@ export class SwapInInfoGraphicsComponent implements OnInit {
   constructor(private commonService: CommonService) {}
 
   ngOnInit() {
-    this.screenSize = this.commonService.getScreenSize();    
+    this.screenSize = this.commonService.getScreenSize();
   }
 
   onSwipe(event: any) {

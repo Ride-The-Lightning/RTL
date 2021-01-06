@@ -5,9 +5,11 @@ import { SettingsComponent } from './shared/components/settings/settings.compone
 import { AppSettingsComponent } from './shared/components/settings/app-settings/app-settings.component';
 import { AuthSettingsComponent } from './shared/components/settings/auth-settings/auth-settings.component';
 import { ServerConfigComponent } from './shared/components/settings/server-config/server-config.component';
-import { NotFoundComponent } from './shared/components/not-found/not-found.component';
+import { ServicesComponent } from './shared/components/services/services.component';
+import { BoltzRootComponent } from './shared/components/services/boltz/boltz-root.component';
 import { HelpComponent } from './shared/components/help/help.component';
 import { LoginComponent } from './shared/components/login/login.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { ErrorComponent } from './shared/components/error/error.component';
 import { AuthGuard } from './shared/services/auth.guard';
 
@@ -22,7 +24,12 @@ export const routes: Routes = [
     { path: 'auth', component: AuthSettingsComponent, canActivate: [AuthGuard] },
     { path: 'lnconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
     { path: 'bconfig', component: ServerConfigComponent, canActivate: [AuthGuard] }
-  ] },
+  ]},
+  { path: 'services', component: ServicesComponent, canActivate: [AuthGuard], children: [
+    { path: '', pathMatch: 'full', redirectTo: 'boltz' },
+    { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
+    { path: 'boltz/:selTab', component: BoltzRootComponent },
+  ]},
   { path: 'help', component: HelpComponent },
   { path: 'login', component: LoginComponent },
   { path: 'error', component: ErrorComponent },

@@ -114,7 +114,7 @@ export class LoopService {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.errno === 'ECONNREFUSED') {
+    } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

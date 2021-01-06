@@ -20,6 +20,17 @@
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
 
+  .cdk-overlay-container {
+    & .cdk-overlay-dark-backdrop {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    & .cdk-global-overlay-wrapper .mat-dialog-container .spinner-container {
+      color: white;
+      & .mat-progress-spinner circle, .mat-spinner circle {
+        stroke: white;
+      }
+    }
+  }
   .mat-progress-bar.this-channel-bar .mat-progress-bar-fill::after {
     background-color: mat-color($accent, 700);
   }

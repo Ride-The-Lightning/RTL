@@ -198,6 +198,17 @@
     color: $foreground-disabled;
   }
 
+  .mat-icon-button.more-button-short {
+    height: 1.6rem;
+    line-height: 1.6rem;
+    & .material-icons {
+      font-size: 1.6rem;
+    }
+    & .mat-icon {
+      line-height: 1.6rem;
+    }
+  }
+
   .dashboard-tabs-group {
     & .mat-tab-label:last-child {
       padding-right: 0;

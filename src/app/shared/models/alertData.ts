@@ -1,10 +1,10 @@
-import { DataTypeEnum, LoopTypeEnum, BoltzTypeEnum } from '../services/consts-enums-functions';
+import { DataTypeEnum, LoopTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
 import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel } from './lndModels';
 import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, Transaction as TransactionCL } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
-import { BoltzQuote } from './boltzModels';
+import { BoltzServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;
@@ -140,9 +140,8 @@ export interface LoopAlert {
 
 export interface BoltzSwapAlert {
   channel: Channel;
-  minQuote: BoltzQuote;
-  maxQuote: BoltzQuote;
-  direction?: BoltzTypeEnum;
+  serviceInfo: BoltzServiceInfo;
+  direction?: SwapTypeEnum;
   component?: any;
 }
 

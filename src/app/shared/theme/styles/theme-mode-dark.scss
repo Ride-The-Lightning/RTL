@@ -91,9 +91,17 @@
   .chart-legend .legend-label:hover, .chart-legend .legend-label .active .legend-label-text {
     color: $foreground-text !important;
   } 
-  .cdk-overlay-dark-backdrop {
-    background: rgba(255, 255, 255, 0.32);
-  }   
+  .cdk-overlay-container {
+    & .cdk-overlay-dark-backdrop {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    & .cdk-global-overlay-wrapper .mat-dialog-container .spinner-container {
+      color: $foreground-secondary-text;
+      & .mat-progress-spinner circle, .mat-spinner circle {
+        stroke: $foreground-secondary-text;
+      }
+    }
+  }
   .mat-tree {
     background: mat-color($background, dialog);
   }

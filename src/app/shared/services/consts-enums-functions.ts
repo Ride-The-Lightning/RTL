@@ -141,18 +141,27 @@ export enum LoopTypeEnum {
   LOOP_IN = 'LOOP_IN'
 }
 
-export enum BoltzStateEnum {
-  INITIATED	= 'Initiated',
-  PREIMAGE_REVEALED	= 'Preimage Revealed',
-  HTLC_PUBLISHED	= 'HTLC Published',
-  SUCCESS	= 'Successful',
-  FAILED	= 'Failed',
-  INVOICE_SETTLED	= 'Invoice Settled'
-}
-
-export enum BoltzTypeEnum {
+export enum SwapTypeEnum {
   SWAP_OUT = 'SWAP_OUT',
   SWAP_IN = 'SWAP_IN'
+}
+
+export enum SwapStateEnum {
+	'swap.created' = 'Swap Created',
+	'swap.expired' = 'Swap Expired',
+	'invoice.set' = 'Invoice Set',
+	'invoice.paid' = 'Invoice Paid',
+	'invoice.pending' = 'Invoice Pending',
+	'invoice.settled' = 'Invoice Settled',
+	'invoice.failedToPay' = 'Invoice Failed To Pay',
+	'channel.created' = 'Channel Created',
+	'transaction.failed' = 'Transaction Failed',
+	'transaction.mempool' = 'Transaction Mempool',
+	'transaction.claimed' = 'Transaction Claimed',
+	'transaction.refunded' = 'Transaction Refunded',
+	'transaction.confirmed' = 'Transaction Confirmed',
+	'swap.refunded' = 'Swap Refunded',
+	'swap.abandoned' = 'Swap Abandoned'
 }
 
 export const MONTHS = [

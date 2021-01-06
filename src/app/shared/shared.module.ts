@@ -73,13 +73,14 @@ import { ErrorMessageComponent } from './components/data-modal/error-message/err
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
-import { BoltzRootComponent } from './components/boltz/boltz-root.component';
-import { SwapsComponent } from './components/boltz/swaps/swaps.component';
-import { SwapStatusComponent } from './components/boltz/swap-status/swap-status.component';
-import { SwapQuoteComponent } from './components/boltz/swap-quote/swap-quote.component';
-import { SwapModalComponent } from './components/boltz/swap-modal/swap-modal.component';
-import { SwapInInfoGraphicsComponent } from './components/boltz/swap-in-info-graphics/info-graphics.component';
-import { SwapOutInfoGraphicsComponent } from './components/boltz/swap-out-info-graphics/info-graphics.component';
+import { ServicesComponent } from './components/services/services.component';
+import { BoltzRootComponent } from './components/services/boltz/boltz-root.component';
+import { SwapsComponent } from './components/services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './components/services/boltz/swap-status/swap-status.component';
+import { SwapQuoteComponent } from './components/services/boltz/swap-quote/swap-quote.component';
+import { SwapModalComponent } from './components/services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './components/services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './components/services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -219,6 +220,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
+    ServicesComponent,
     BoltzRootComponent,
     SwapsComponent,
     SwapStatusComponent,
@@ -257,6 +259,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TwoFactorAuthComponent,
     LoginTokenComponent,
     TransactionsReportTableComponent,
+    ServicesComponent,
     BoltzRootComponent,
     SwapsComponent,
     SwapStatusComponent,
