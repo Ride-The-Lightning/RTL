@@ -30,7 +30,7 @@ export class BoltzService {
 
   swapInfo(id: string) {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/swapInfo/' + id;
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Swap Details for ID: ' + id, err)));
+    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert(this.swapUrl, err)));
   }
 
   swapOut(amount: number, address: string, acceptZeroConf: boolean) {
@@ -52,17 +52,28 @@ export class BoltzService {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
-      // this.store.dispatch(new RTLActions.OpenAlert({
-      //   data: {
-      //     type: 'ERROR',
-      //     alertTitle: 'Boltz Not Connected',
-      //     message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Boltz Server', URL: actionName },
-      //     component: ErrorMessageComponent
-      //   }
-      // }));
-      return throwError({ code: 'ECONNREFUSED', message: 'Unable to Connect to Boltz Server' });
+      return throwError({code: 'ECONNREFUSED', message: 'ECONNREFUSED. Unable to Connect to Boltz Server.'});
+    } else if (err.error) {
+      let msg = '';
+      if (err.error.error) {
+        if (typeof(err.error.error) === 'string') {
+          msg = err.error.error;
+        } else {
+          if (err.error.error.code) {
+            msg = msg + 'Code: ' + err.error.error.code + ', ';
+          }
+          if (err.error.error.message) {
+            msg = msg + err.error.error.message;
+          }
+        }
+      } else if (err.error.message) {
+        msg = err.error.message;
+      } else {
+        msg = (typeof(err.error) === 'object') ? JSON.stringify(err.error) : err.error;
+      }
+      return throwError({code: err.status, message: msg});
     }
-    return throwError(err);
+    return throwError(JSON.stringify(err));
   }
 
   handleErrorWithAlert(errURL: string, err: any) {
@@ -70,15 +81,12 @@ export class BoltzService {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     }
-    err.message = (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-      (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error';
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner())
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.errno === 'ECONNREFUSED') {
+    } else if (err.errno === 'ECONNREFUSED' || err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -88,10 +96,27 @@ export class BoltzService {
         }
       }));
     } else {
+      let msg = '';
+      if (err.error.error) {
+        if (typeof(err.error.error) === 'string') {
+          msg = err.error.error;
+        } else {
+          if (err.error.error.code) {
+            msg = msg + 'Code: ' + err.error.error.code + ', ';
+          }
+          if (err.error.error.message) {
+            msg = msg + err.error.error.message;
+          }
+        }
+      } else if (err.error.message) {
+        msg = err.error.message;
+      } else {
+        msg = (typeof(err.error) === 'object') ? JSON.stringify(err.error) : err.error;
+      }
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
-          message: { code: err.code ? err.code : err.status, message: err.message ? err.message : 'Unknown Error', URL: errURL },
+          message: { code: (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status, message: msg != '' ? msg : 'Unknown Error', URL: errURL },
           component: ErrorMessageComponent
         }
       }));

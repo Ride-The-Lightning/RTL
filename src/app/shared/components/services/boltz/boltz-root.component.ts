@@ -24,7 +24,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   public selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
   public swaps: BoltzListSwaps = {};
   public swapsData: BoltzSwap[] | BoltzReverseSwap[] = [];
-  public emptyTableMessage = '';
+  public emptyTableMessage = 'No swap data available.';
   public flgLoading: Array<Boolean | 'error'> = [true];
   public links = [{link: 'swapout', name: 'Swap Out'}, {link: 'swapin', name: 'Swap In'}];
   public activeTab = this.links[0];
@@ -35,10 +35,12 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
     this.activeTab = linkFound ? linkFound : this.links[0];
+    this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT
     this.router.events.pipe(takeUntil(this.unSubs[0]), filter(e => e instanceof ResolveEnd))
     .subscribe((value: ResolveEnd) => {
       let linkFound = this.links.find(link => value.urlAfterRedirects.includes(link.link));
       this.activeTab = linkFound ? linkFound : this.links[0];
+      this.selectedSwapType = linkFound && linkFound.link === 'swapin' ? SwapTypeEnum.SWAP_IN : SwapTypeEnum.SWAP_OUT
     });
     this.store.dispatch(new RTLActions.OpenSpinner('Getting List Swaps...'));
     this.boltzService.listSwaps()
@@ -54,7 +56,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
       }
     }, (err) => {
       this.flgLoading[0] = 'error';
-      this.emptyTableMessage = (err.message ? (' ' + err.message + '.') : ('No swap ' + ((this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'in' : 'out') +  ' available.'));
+      this.emptyTableMessage = err.message ? err.message : 'No swap ' + ((this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'in' : 'out') +  ' available.';
     });
   }
 

@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { BoltzSwap, BoltzReverseSwap } from '../../../../models/boltzModels';
+import { BoltzSwap, BoltzReverseSwap, BoltzListSwaps } from '../../../../models/boltzModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
@@ -61,7 +61,6 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
       this.setTableColumns();
     }
     this.swapCaption = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'Swap In' : 'Swap Out';
-    this.emptyTableMessage = 'No ' + this.swapCaption.toLowerCase() +  ' available.';
     this.loadSwapsTable(this.swapsData);
   }
 
@@ -91,19 +90,22 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.listSwaps.filter = selFilter.value;
   }
 
-  onSwapClick(selSwap: BoltzSwap, event: any) {
-    this.boltzService.swapInfo(selSwap.id.replace(/\//g, '_').replace(/\+/g, '-')).pipe(takeUntil(this.unSubs[1]))
-    .subscribe((fetchedSwap: BoltzSwap) => {
+  onSwapClick(selSwap: BoltzSwap | BoltzReverseSwap, event: any) {
+    this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1]))
+    .subscribe((fetchedSwap: any) => {
+      fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
       const reorderedSwap = [
-        // [{key: 'state', value: SwapStateEnum[fetchedSwap.state], title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        //   {key: 'amt', value: fetchedSwap.amt, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
-        // [{key: 'initiation_time_str', value: fetchedSwap.initiation_time_str, title: 'Initiation Time', width: 50, type: DataTypeEnum.DATE_TIME},
-        //   {key: 'last_update_time_str', value: fetchedSwap.last_update_time_str, title: 'Last Update Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-        // [{key: 'cost_server', value: fetchedSwap.cost_server, title: 'Server Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        //   {key: 'cost_offchain', value: fetchedSwap.cost_offchain, title: 'Offchain Cost (Sats)', width: 33, type: DataTypeEnum.NUMBER},
-        //   {key: 'cost_onchain', value: fetchedSwap.cost_onchain, title: 'Onchain Cost (Sats)', width: 34, type: DataTypeEnum.NUMBER}],
-        // [{key: 'id_bytes', value: fetchedSwap.id_bytes, title: 'ID', width: 100, type: DataTypeEnum.STRING}],
-        // [{key: 'htlc_address', value: fetchedSwap.htlc_address, title: 'HTLC Address', width: 100, type: DataTypeEnum.STRING}]
+        [{key: 'status', value: SwapStateEnum[fetchedSwap.status], title: 'Status', width: 50, type: DataTypeEnum.STRING},
+          {key: 'id', value: fetchedSwap.id, title: 'ID', width: 50, type: DataTypeEnum.STRING}],
+        [{key: 'amount', value: fetchedSwap.onchainAmount ? fetchedSwap.onchainAmount : fetchedSwap.expectedAmount ? fetchedSwap.expectedAmount : 0, title: fetchedSwap.onchainAmount ? 'Onchain Amount (Sats)' : fetchedSwap.expectedAmount ? 'Expected Amount (Sats)' : 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
+          {key: 'timeoutBlockHeight', value: fetchedSwap.timeoutBlockHeight, title: 'Timeout Block Height', width: 50, type: DataTypeEnum.NUMBER}],
+        [{key: 'address', value: fetchedSwap.claimAddress ? fetchedSwap.claimAddress : fetchedSwap.lockupAddress ? fetchedSwap.lockupAddress : '', title: fetchedSwap.claimAddress ? 'Claim Address' : fetchedSwap.lockupAddress ? 'Lockup Address' : 'Address', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'invoice', value: fetchedSwap.invoice, title: 'Invoice', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'privateKey', value: fetchedSwap.privateKey, title: 'Private Key', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'preimage', value: fetchedSwap.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'redeemScript', value: fetchedSwap.redeemScript, title: 'Redeem Script', width: 100, type: DataTypeEnum.STRING}],
+        [{key: 'lockupTransactionId', value: fetchedSwap.lockupTransactionId, title: 'Lockup Transaction ID', width: 50, type: DataTypeEnum.STRING},
+          {key: 'transactionId', value: fetchedSwap.claimTransactionId ? fetchedSwap.claimTransactionId : fetchedSwap.refundTransactionId ? fetchedSwap.refundTransactionId : '', title: fetchedSwap.claimTransactionId ? 'Claim Transaction ID' : fetchedSwap.refundTransactionId ? 'Refund Transaction ID' : 'Transaction ID', width: 50, type: DataTypeEnum.STRING}]
       ];
       this.store.dispatch(new RTLActions.OpenAlert({ data: {
         type: AlertTypeEnum.INFORMATION,
