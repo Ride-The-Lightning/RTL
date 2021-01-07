@@ -61,7 +61,7 @@ export class OnChainUTXOsComponent implements OnChanges {
   }
 
   applyFilter(selFilter: any) {
-    this.listUTXOs.filter = selFilter.value;
+    this.listUTXOs.filter = selFilter.value.trim().toLowerCase();
   }
 
   onUTXOClick(selUTXO: UTXO, event: any) {
@@ -87,7 +87,7 @@ export class OnChainUTXOsComponent implements OnChanges {
       const newUTXO = ((utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
       + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes : '') + (utxo.address ? utxo.address : '') + (utxo.address_type ? utxo.address_type : '')
       + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
-      return newUTXO.includes(fltr.toLowerCase());
+      return newUTXO.includes(fltr);
     };
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
@@ -97,6 +97,7 @@ export class OnChainUTXOsComponent implements OnChanges {
       }
     }
     this.listUTXOs.sort = this.sort;
+    this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
     this.logger.info(this.listUTXOs);
   }

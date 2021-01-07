@@ -50,3 +50,27 @@ export interface BoltzListSwaps {
   channelCreations?: BoltzChannelCreation[];
   reverseSwaps?: BoltzReverseSwap[];
 }
+
+export interface CreateSwapRequest {
+  amount?: number;
+}
+
+export interface CreateSwapResponse {
+  id?: string;
+  address?: string;
+  expectedAmount?: string;
+  bip21?: string;
+}
+
+export interface CreateReverseSwapRequest {
+  amount?: number;
+  address?: string;
+  acceptZeroConf?: boolean
+}
+
+export interface CreateReverseSwapResponse {
+  id?: string;
+  lockupAddress?: string;
+  routingFeeMilliSat?: number;
+  claimTransactionId?: string;
+}

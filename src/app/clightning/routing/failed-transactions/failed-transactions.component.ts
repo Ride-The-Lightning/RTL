@@ -102,7 +102,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
-      return newEvent.includes(fltr.toLowerCase());
+      return newEvent.includes(fltr);
     };    
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -114,7 +114,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter(selFilter: any) {
-    this.forwardingHistoryEvents.filter = selFilter.value;
+    this.forwardingHistoryEvents.filter = selFilter.value.trim().toLowerCase();
   }
 
   ngOnDestroy() {

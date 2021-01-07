@@ -23,7 +23,7 @@ import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shar
 export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   public selNode: SelNodeChild = {};
-  public selectedFilter = 0;
+  public selectedFilter = '';
   public information: GetInfo = {};
   public pendingChannels: PendingChannels = {};
   public displayedOpenColumns = ['remote_alias', 'commit_fee', 'commit_weight', 'capacity', 'actions'];
@@ -78,16 +78,16 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
       if (this.pendingChannels.total_limbo_balance) {
         this.flgLoading[1] = false;
       }
-      if (this.pendingChannels.pending_open_channels.length > 0) {
+      if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
         this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
       }
-      if (this.pendingChannels.pending_force_closing_channels.length > 0) {
+      if (this.pendingChannels.pending_force_closing_channels && this.pendingChannels.pending_force_closing_channels.length && this.pendingChannels.pending_force_closing_channels.length > 0) {
         this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
       }
-      if (this.pendingChannels.pending_closing_channels.length > 0) {
+      if (this.pendingChannels.pending_closing_channels && this.pendingChannels.pending_closing_channels.length && this.pendingChannels.pending_closing_channels.length > 0) {
         this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
       }
-      if (this.pendingChannels.waiting_close_channels.length > 0) {
+      if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
         this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
       }
       if (this.flgLoading[0] !== 'error') {
@@ -99,16 +99,16 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.pendingChannels.pending_open_channels.length > 0) {
+    if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
       this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
     }
-    if (this.pendingChannels.pending_force_closing_channels.length > 0) {
+    if (this.pendingChannels.pending_force_closing_channels && this.pendingChannels.pending_force_closing_channels.length && this.pendingChannels.pending_force_closing_channels.length > 0) {
       this.loadForceClosingChannelsTable(this.pendingChannels.pending_force_closing_channels);
     }
-    if (this.pendingChannels.pending_closing_channels.length > 0) {
+    if (this.pendingChannels.pending_closing_channels && this.pendingChannels.pending_closing_channels.length && this.pendingChannels.pending_closing_channels.length > 0) {
       this.loadClosingChannelsTable(this.pendingChannels.pending_closing_channels);
     }
-    if (this.pendingChannels.waiting_close_channels.length > 0) {
+    if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
       this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
     }
   }
@@ -219,6 +219,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingOpenChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingOpenChannels.sort = this.sort;
     this.pendingOpenChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingOpenChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.logger.info(this.pendingOpenChannels);
   }
 
@@ -230,6 +231,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingForceClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingForceClosingChannels.sort = this.sort;
     this.pendingForceClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingForceClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.logger.info(this.pendingForceClosingChannels);
   }
 
@@ -241,6 +243,7 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingClosingChannels.sort = this.sort;
     this.pendingClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.logger.info(this.pendingClosingChannels);
   }
 
@@ -252,11 +255,12 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.pendingWaitClosingChannels = new MatTableDataSource<Channel>([...channels]);
     this.pendingWaitClosingChannels.sort = this.sort;
     this.pendingWaitClosingChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.pendingWaitClosingChannels.filterPredicate = (channel: any, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.logger.info(this.pendingWaitClosingChannels);
   }
 
-  applyFilter(selFilter: number) {
-    this.selectedFilter = selFilter;
+  applyFilter(selFilter: string) {
+    this.selectedFilter = selFilter.trim().toLowerCase();
   }
 
   ngOnDestroy() {

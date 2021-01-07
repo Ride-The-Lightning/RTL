@@ -87,7 +87,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
     
   applyFilter(selFilter: any) {
-    this.listSwaps.filter = selFilter.value;
+    this.listSwaps.filter = selFilter.value.trim().toLowerCase();
   }
 
   onSwapClick(selSwap: BoltzSwap | BoltzReverseSwap, event: any) {
@@ -117,9 +117,10 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   loadSwapsTable(swaps) {
-    this.listSwaps = new MatTableDataSource<BoltzSwap>([...swaps]);
+    this.listSwaps = swaps ? new MatTableDataSource<BoltzSwap>([...swaps]) : new MatTableDataSource<BoltzSwap>([]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listSwaps.filterPredicate = (swap: BoltzSwap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

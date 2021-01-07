@@ -221,7 +221,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   applyFilter() {
-    this.channels.filter = this.selFilter;
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {

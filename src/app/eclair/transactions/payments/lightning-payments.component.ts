@@ -137,8 +137,8 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.loadPaymentsTable(this.paymentJSONArr);
   }
 
-  loadPaymentsTable(payments: PaymentSent[]) {
-    this.payments = new MatTableDataSource<PaymentSent>([...payments]);
+  loadPaymentsTable(payms: PaymentSent[]) {
+    this.payments = payms ? new MatTableDataSource<PaymentSent>([...payms]) : new MatTableDataSource<PaymentSent>([]);
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
@@ -162,6 +162,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
+    this.payments.filterPredicate = (payment: PaymentSent, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.paginator = this.paginator;
   }
 
@@ -346,7 +347,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value;
+    this.payments.filter = selFilter.value.trim().toLowerCase();
   }
 
   onDownloadCSV() {

@@ -79,16 +79,14 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   }
 
   applyFilter() {
-    if (this.transactions) {
-      this.transactions.filter = this.filterValue;
-    }    
+    this.transactions.filter = this.filterValue.trim().toLowerCase();
   }
 
-  loadTransactionsTable(transactions: any[]) {
-    this.transactions = (transactions) ?  new MatTableDataSource([]) : new MatTableDataSource([...transactions]);
-    this.transactions.data = transactions;
+  loadTransactionsTable(trans: any[]) {
+    this.transactions = trans ? new MatTableDataSource([...trans]) : new MatTableDataSource([]);
     this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.transactions.sort = this.sort;
+    this.transactions.filterPredicate = (tran: any, fltr: string) => JSON.stringify(tran).toLowerCase().includes(fltr);
     this.transactions.paginator = this.paginator;
 }
 

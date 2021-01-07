@@ -215,7 +215,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   applyFilter() {
-    this.channels.filter = this.selFilter;
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {
@@ -238,7 +238,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       (channel.funding_txid ? channel.funding_txid : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
       (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
       (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
-      return newChannel.includes(fltr.toLowerCase());
+      return newChannel.includes(fltr);
     };
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;

@@ -84,7 +84,7 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewIn
   }
 
   applyFilter(selFilter: any) {
-    this.listTransactions.filter = selFilter.value;
+    this.listTransactions.filter = selFilter.value.trim().toLowerCase();
   }
 
   onTransactionClick(selTransaction: Transaction, event: any) {
@@ -107,6 +107,7 @@ export class CLOnChainTransactionHistoryComponent implements OnInit, AfterViewIn
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listTransactions.filterPredicate = (transaction: Transaction, fltr: string) => JSON.stringify(transaction).toLowerCase().includes(fltr);
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

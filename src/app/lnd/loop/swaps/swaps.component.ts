@@ -103,7 +103,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
     
   applyFilter(selFilter: any) {
-    this.listSwaps.filter = selFilter.value;
+    this.listSwaps.filter = selFilter.value.trim().toLowerCase();
   }
 
   onSwapClick(selSwap: LoopSwapStatus, event: any) {
@@ -133,6 +133,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.listSwaps = new MatTableDataSource<LoopSwapStatus>([...swaps]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listSwaps.filterPredicate = (swap: LoopSwapStatus, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }
