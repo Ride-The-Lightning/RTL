@@ -91,12 +91,12 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
 
   onBackupChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
-    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'all', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
     this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
-    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
+    this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'all'}));
   }
 
   onDownloadBackup(selChannel: Channel) {
