@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoopStatus } from '../../../shared/models/loopModels';
+import { LoopStatus } from '../../../../models/loopModels';
 
 @Component({
   selector: 'rtl-loop-status',

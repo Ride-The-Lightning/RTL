@@ -1,6 +1,6 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -8,15 +8,14 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { LoopSwapStatus } from '../../../shared/models/loopModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopTypeEnum, LoopStateEnum } from '../../../shared/services/consts-enums-functions';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
-import { LoopService } from '../../../shared/services/loop.service';
+import { LoopSwapStatus } from '../../../../models/loopModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, LoopTypeEnum, LoopStateEnum } from '../../../../services/consts-enums-functions';
+import { LoggerService } from '../../../../services/logger.service';
+import { CommonService } from '../../../../services/common.service';
+import { LoopService } from '../../../../services/loop.service';
 
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
-import * as LNDActions from '../../store/lnd.actions';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-swaps',
@@ -28,6 +27,9 @@ import * as LNDActions from '../../store/lnd.actions';
 })
 export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: LoopTypeEnum = LoopTypeEnum.LOOP_OUT;
+  @Input() swapsData: LoopSwapStatus[] = [];
+  @Input() flgLoading: Array<Boolean | 'error'> = [true];
+  @Input() emptyTableMessage = 'No swaps available.';
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public LoopStateEnum = LoopStateEnum;
@@ -35,10 +37,6 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   public swapCaption = 'Loop Out';
   public displayedColumns: any[] = [];
   public listSwaps: any;
-  public storedSwaps: LoopSwapStatus[] = [];
-  public filteredSwaps: LoopSwapStatus[] = [];
-  public flgLoading: Array<Boolean | 'error'> = [true];
-  public emptyTableMessage = 'No swaps available.';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
@@ -63,43 +61,17 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     }
   }
 
-  ngOnInit() {
-    this.store.dispatch(new LNDActions.FetchLoopSwaps());
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchSwaps') { 
-          this.flgLoading[0] = 'error';
-          this.emptyTableMessage = 'ERROR: ' + effectsErr.message;
-        }
-      });
-      if (rtlStore.loopSwaps) {
-        this.storedSwaps = rtlStore.loopSwaps;
-        this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
-        if (this.filteredSwaps.length > 0) {
-          this.loadSwapsTable(this.filteredSwaps);
-        }
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.loopSwaps) ? false : true;
-      }
-      this.logger.info(rtlStore);
-    });
-
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
-    if (this.filteredSwaps.length > 0) {
-      this.loadSwapsTable(this.filteredSwaps);
+    if (this.swapsData.length > 0) {
+      this.loadSwapsTable(this.swapsData);
     }
   }
 
-  ngOnChanges() {
+  ngOnChanges(change: SimpleChanges) {
     this.swapCaption = (this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'Loop In' : 'Loop Out';
-    this.emptyTableMessage = 'No ' + this.swapCaption.toLowerCase() + ' swaps available.';
-    this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
-    this.loadSwapsTable(this.filteredSwaps);
+    this.loadSwapsTable(this.swapsData);
   }
     
   applyFilter(selFilter: any) {

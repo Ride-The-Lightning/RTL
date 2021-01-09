@@ -4,7 +4,7 @@ import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel } from './lndModels
 import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, Transaction as TransactionCL } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
-import { BoltzServiceInfo } from './boltzModels';
+import { ServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;
@@ -138,9 +138,9 @@ export interface LoopAlert {
   component?: any;
 }
 
-export interface BoltzSwapAlert {
+export interface SwapAlert {
   channel: Channel;
-  serviceInfo: BoltzServiceInfo;
+  serviceInfo: ServiceInfo;
   direction?: SwapTypeEnum;
   component?: any;
 }
@@ -190,5 +190,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | BoltzSwapAlert | AuthConfig | LoginTokenData | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig | LoginTokenData | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

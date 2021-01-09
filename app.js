@@ -13,7 +13,9 @@ const apiECLRoot = baseHref + "api/ecl/";
 
 const authenticateRoutes = require("./routes/shared/authenticate");
 const RTLConfRoutes = require("./routes/shared/RTLConf");
+const loopRoutes = require('./routes/shared/loop');
 const boltzRoutes = require('./routes/shared/boltz');
+
 const infoRoutes = require("./routes/lnd/getInfo");
 const channelsRoutes = require("./routes/lnd/channels");
 const channelsBackupRoutes = require("./routes/lnd/channelsBackup");
@@ -28,7 +30,6 @@ const payReqRoutes = require("./routes/lnd/payReq");
 const paymentsRoutes = require("./routes/lnd/payments");
 const invoiceRoutes = require("./routes/lnd/invoices");
 const switchRoutes = require("./routes/lnd/switch");
-const loopRoutes = require('./routes/lnd/loop');
 const messageRoutes = require("./routes/lnd/message");
 
 const infoCLRoutes = require("./routes/c-lightning/getInfo");

@@ -7,7 +7,7 @@ import { faSync } from '@fortawesome/free-solid-svg-icons';
 
 import { SwapTypeEnum } from '../../../services/consts-enums-functions';
 import { SwapModalComponent } from './swap-modal/swap-modal.component';
-import { BoltzReverseSwap, BoltzSwap, BoltzListSwaps } from '../../../models/boltzModels';
+import { ReverseSwap, Swap, ListSwaps } from '../../../models/boltzModels';
 import { BoltzService } from '../../../services/boltz.service';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -22,8 +22,8 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   public faSync = faSync;
   public swapTypeEnum = SwapTypeEnum;
   public selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
-  public swaps: BoltzListSwaps = {};
-  public swapsData: BoltzSwap[] | BoltzReverseSwap[] = [];
+  public swaps: ListSwaps = {};
+  public swapsData: Swap[] | ReverseSwap[] = [];
   public emptyTableMessage = 'No swap data available.';
   public flgLoading: Array<Boolean | 'error'> = [true];
   public links = [{link: 'swapout', name: 'Swap Out'}, {link: 'swapin', name: 'Swap In'}];
@@ -45,7 +45,7 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting List Swaps...'));
     this.boltzService.listSwaps()
     .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((swaps: BoltzListSwaps) => {
+    .subscribe((swaps: ListSwaps) => {
       this.store.dispatch(new RTLActions.CloseSpinner());      
       this.swaps = swaps;
       this.flgLoading[0] = false;

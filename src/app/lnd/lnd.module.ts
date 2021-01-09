@@ -48,8 +48,6 @@ import { ChannelStatusInfoComponent } from './home/channel-status-info/channel-s
 import { ChannelCapacityInfoComponent } from './home/channel-capacity-info/channel-capacity-info.component';
 import { ChannelLiquidityInfoComponent } from './home/channel-liquidity-info/channel-liquidity-info.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
-import { LoopComponent } from './loop/loop.component';
-import { SwapsComponent } from './loop/swaps/swaps.component';
 import { InvoiceInformationComponent } from './transactions/invoice-information-modal/invoice-information.component';
 import { ChannelRebalanceComponent } from './peers-channels/channels/channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
@@ -60,11 +58,6 @@ import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.com
 import { LightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
 import { CreateInvoiceComponent } from './transactions/create-invoice-modal/create-invoice.component';
 import { ConnectPeerComponent } from './peers-channels/connect-peer/connect-peer.component';
-import { LoopModalComponent } from './loop/loop-modal/loop-modal.component';
-import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
-import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 
 import { LNDUnlockedGuard } from '../shared/services/auth.guard';
 
@@ -119,8 +112,6 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     ChannelCapacityInfoComponent,
     ChannelLiquidityInfoComponent,
     NetworkInfoComponent,
-    LoopComponent,
-    SwapsComponent,
     InvoiceInformationComponent,
     ChannelRebalanceComponent,
     OpenChannelComponent,
@@ -130,12 +121,7 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     CloseChannelComponent,
     CreateInvoiceComponent,
     OnChainSendComponent,
-    OnChainSendModalComponent,
-    LoopModalComponent,
-    LoopQuoteComponent,
-    LoopStatusComponent,
-    LoopInInfoGraphicsComponent,
-    LoopOutInfoGraphicsComponent
+    OnChainSendModalComponent
   ],  
   providers: [
     LNDUnlockedGuard

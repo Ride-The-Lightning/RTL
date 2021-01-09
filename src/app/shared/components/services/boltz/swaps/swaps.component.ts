@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { BoltzSwap, BoltzReverseSwap, BoltzListSwaps } from '../../../../models/boltzModels';
+import { Swap, ReverseSwap, ListSwaps } from '../../../../models/boltzModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
@@ -24,9 +24,9 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
-  @Input() swapsData: BoltzSwap[] | BoltzReverseSwap[] = [];
+  @Input() swapsData: Swap[] | ReverseSwap[] = [];
   @Input() flgLoading: Array<Boolean | 'error'> = [true];
   @Input() emptyTableMessage = 'No swaps available.';
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
@@ -90,7 +90,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     this.listSwaps.filter = selFilter.value.trim().toLowerCase();
   }
 
-  onSwapClick(selSwap: BoltzSwap | BoltzReverseSwap, event: any) {
+  onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
     this.boltzService.swapInfo(selSwap.id).pipe(takeUntil(this.unSubs[1]))
     .subscribe((fetchedSwap: any) => {
       fetchedSwap = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? fetchedSwap.swap : fetchedSwap.reverseSwap;
@@ -117,10 +117,10 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   loadSwapsTable(swaps) {
-    this.listSwaps = swaps ? new MatTableDataSource<BoltzSwap>([...swaps]) : new MatTableDataSource<BoltzSwap>([]);
+    this.listSwaps = swaps ? new MatTableDataSource<Swap>([...swaps]) : new MatTableDataSource<Swap>([]);
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.listSwaps.filterPredicate = (swap: BoltzSwap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
+    this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

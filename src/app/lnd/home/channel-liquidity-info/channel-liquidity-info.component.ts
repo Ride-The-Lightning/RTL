@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { ScreenSizeEnum, LoopTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
-import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
+import { LoopModalComponent } from '../../../shared/components/services/loop/loop-modal/loop-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -61,7 +61,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-  onBoltzSwapOut(channel: Channel) {
+  onCreateReverseSwap(channel: Channel) {
     console.warn('BOLTZ CALL');
   }
 

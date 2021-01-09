@@ -13,18 +13,16 @@
         <div *ngIf="direction === 'Out'" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
           <mat-hint fxFlex="75" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
           <div *ngIf="showLoop && showBoltz" fxFlex="25" fxLayoutAlign="end end">
-            <button mat-icon-button matTooltip="Swap Services" class="more-button more-button-short" [matMenuTriggerFor]="menuSwapServices" aria-label="Toggle menu">
-              <!-- <mat-icon>swap_vertical_circle</mat-icon>
-              <mat-icon>swap_vert</mat-icon> -->
+            <button mat-icon-button matTooltip="Swap Out" class="more-button more-button-short" [matMenuTriggerFor]="menuSwapServices" aria-label="Toggle menu">
               <mat-icon>swap_calls</mat-icon>
             </button>
             <mat-menu #menuSwapServices="matMenu" class="dashboard-vert-menu" xPosition="before">
-              <button mat-menu-item (click)="onLoopOut(channel)">Loop Out</button>
-              <button mat-menu-item (click)="onBoltzSwapOut(channel)">Boltz</button>
+              <button mat-menu-item (click)="onLoopOut(channel)">Loop</button>
+              <button mat-menu-item (click)="onCreateReverseSwap(channel)">Boltz</button>
             </mat-menu>
           </div>
-          <button *ngIf="showLoop && !showBoltz" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onSwapOut(channel)">Loop Out</button>
-          <button *ngIf="showBoltz && !showLoop" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onSwapOut(channel)">Swap Out</button>
+          <button *ngIf="showLoop && !showBoltz" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
+          <button *ngIf="showBoltz && !showLoop" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Swap Out" (click)="onCreateReverseSwap(channel)">Boltz Swap Out</button>
         </div>
       </div>
       <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>

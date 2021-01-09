@@ -9,18 +9,18 @@ import { MatVerticalStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { opacityAnimation } from '../../../shared/animation/opacity-animation';
-import { ScreenSizeEnum, LoopTypeEnum } from '../../../shared/services/consts-enums-functions';
-import { LoopQuote, LoopStatus } from '../../../shared/models/loopModels';
-import { LoopAlert } from '../../../shared/models/alertData';
-import { LoopService } from '../../../shared/services/loop.service';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { CommonService } from '../../../shared/services/common.service';
-import { Channel } from '../../../shared/models/lndModels';
+import { opacityAnimation } from '../../../../animation/opacity-animation';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../../services/consts-enums-functions';
+import { LoopQuote, LoopStatus } from '../../../../models/loopModels';
+import { LoopAlert } from '../../../../models/alertData';
+import { LoopService } from '../../../../services/loop.service';
+import { LoggerService } from '../../../../services/logger.service';
+import { CommonService } from '../../../../services/common.service';
+import { Channel } from '../../../../models/lndModels';
 
-import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
-import * as fromRTLReducer from '../../../store/rtl.reducers';
+import * as LNDActions from '../../../../../lnd/store/lnd.actions';
+import * as RTLActions from '../../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-loop-modal',
@@ -134,7 +134,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee_sat, +this.quote.htlc_publish_fee_sat, '', true).pipe(takeUntil(this.unSubs[0]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = loopStatus;
-        this.store.dispatch(new LNDActions.FetchLoopSwaps());
+        this.loopService.listSwaps();
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
@@ -148,7 +148,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.htlc_sweep_fee_sat, this.prepayRoutingFee, +this.quote.prepay_amt_sat, +this.quote.swap_fee_sat, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
       .subscribe((loopStatus: any) => {
         this.loopStatus = loopStatus;
-        this.store.dispatch(new LNDActions.FetchLoopSwaps());
+        this.loopService.listSwaps();
         this.flgEditable = true;
       }, (err) => {
         this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
@@ -241,7 +241,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   goToLoop() {
     this.dialogRef.close(true);
-    this.router.navigateByUrl('/lnd/loop');
+    this.router.navigateByUrl('/services/loop');
   }
 
   onClose() {

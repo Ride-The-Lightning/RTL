@@ -1,6 +1,6 @@
 var request = require('request-promise');
 var common = require('../../common');
-var logger = require('../shared/logger');
+var logger = require('./logger');
 var options = {};
 
 exports.loopOut = (req, res, next) => {

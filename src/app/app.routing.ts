@@ -6,6 +6,7 @@ import { AppSettingsComponent } from './shared/components/settings/app-settings/
 import { AuthSettingsComponent } from './shared/components/settings/auth-settings/auth-settings.component';
 import { ServerConfigComponent } from './shared/components/settings/server-config/server-config.component';
 import { ServicesComponent } from './shared/components/services/services.component';
+import { LoopComponent } from './shared/components/services/loop/loop.component';
 import { BoltzRootComponent } from './shared/components/services/boltz/boltz-root.component';
 import { HelpComponent } from './shared/components/help/help.component';
 import { LoginComponent } from './shared/components/login/login.component';
@@ -26,7 +27,9 @@ export const routes: Routes = [
     { path: 'bconfig', component: ServerConfigComponent, canActivate: [AuthGuard] }
   ]},
   { path: 'services', component: ServicesComponent, canActivate: [AuthGuard], children: [
-    { path: '', pathMatch: 'full', redirectTo: 'boltz' },
+    { path: '', pathMatch: 'full', redirectTo: 'loop' },
+    { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
+    { path: 'loop/:selTab', component: LoopComponent },
     { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
     { path: 'boltz/:selTab', component: BoltzRootComponent },
   ]},

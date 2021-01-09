@@ -1,0 +1,37 @@
+<ng-container *ngTemplateOutlet="showPanel ? informationBlock : serviceInfoDetailsBlock"></ng-container>
+<ng-template #informationBlock>
+  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span fxLayoutAlign="start center" fxFlex="100">Service Information</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <ng-container *ngTemplateOutlet="serviceInfoDetailsBlock"></ng-container>
+  </mat-expansion-panel>
+</ng-template>
+<ng-template #serviceInfoDetailsBlock>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Minimal Limit (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.limits?.minimal | number}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Maximal Limit (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.limits?.maximal | number}}</span>
+      </div>
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Fee Percentage</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.fees?.percentage | number}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee Swap Out (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.fees?.miner?.reverse | number}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee Swap In (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.fees?.miner?.normal | number}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

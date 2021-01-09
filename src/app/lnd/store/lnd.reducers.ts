@@ -4,7 +4,6 @@ import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
   PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO
 } from '../../shared/models/lndModels';
-import { LoopSwapStatus } from '../../shared/models/loopModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 import * as LNDActions from './lnd.actions';
@@ -35,7 +34,6 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
-  loopSwaps: LoopSwapStatus[];
 }
 
 export const initLNDState: LNDState = {
@@ -63,8 +61,7 @@ export const initLNDState: LNDState = {
   utxos: [],
   payments: [],
   invoices: {invoices: []},
-  forwardingHistory: {},
-  loopSwaps: []
+  forwardingHistory: {}
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
@@ -277,11 +274,6 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         forwardingHistory: action.payload
-      };
-    case LNDActions.SET_LOOP_SWAPS_LND:
-      return {
-        ...state,
-        loopSwaps: action.payload
       };
     default:
       return state;

@@ -1,9 +1,9 @@
-export interface BoltzServiceInfo {
+export interface ServiceInfo {
   fees?: {percentage?: number; miner: {normal?: number; reverse?: number;}};
   limits?: {minimal?: number; maximal?: number;};
 }
 
-export interface BoltzSwap {
+export interface Swap {
   id?: string;
   status?: string;
   privateKey?: string;
@@ -26,12 +26,12 @@ export interface ChannelCreationInfo {
   fundingTransactionVout?: number;
 }
 
-export interface BoltzChannelCreation {
-  swap?: BoltzSwap;
+export interface ChannelCreation {
+  swap?: Swap;
   channelCreation?: ChannelCreationInfo;
 }
 
-export interface BoltzReverseSwap {
+export interface ReverseSwap {
   id?: string;
   status?: string;
   privateKey?: string;
@@ -45,10 +45,10 @@ export interface BoltzReverseSwap {
   claimTransactionId?: string;
 }
 
-export interface BoltzListSwaps {
-  swaps?: BoltzSwap[];
-  channelCreations?: BoltzChannelCreation[];
-  reverseSwaps?: BoltzReverseSwap[];
+export interface ListSwaps {
+  swaps?: Swap[];
+  channelCreations?: ChannelCreation[];
+  reverseSwaps?: ReverseSwap[];
 }
 
 export interface CreateSwapRequest {

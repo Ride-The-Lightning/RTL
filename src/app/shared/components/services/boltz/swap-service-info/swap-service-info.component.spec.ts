@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SwapQuoteComponent } from './swap-quote.component';
+import { SwapServiceInfoComponent } from './swap-service-info.component';
 
-describe('SwapQuoteComponent', () => {
-  let component: SwapQuoteComponent;
-  let fixture: ComponentFixture<SwapQuoteComponent>;
+describe('SwapServiceInfoComponent', () => {
+  let component: SwapServiceInfoComponent;
+  let fixture: ComponentFixture<SwapServiceInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapQuoteComponent ]
+      declarations: [ SwapServiceInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SwapQuoteComponent);
+    fixture = TestBed.createComponent(SwapServiceInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,7 +7,6 @@ import {
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
   SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO }
 from '../../shared/models/lndModels';
-import { LoopSwapStatus } from '../../shared/models/loopModels';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
 export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
@@ -78,8 +77,6 @@ export const GET_FORWARDING_HISTORY_LND = 'GET_FORWARDING_HISTORY_LND';
 export const SET_FORWARDING_HISTORY_LND = 'SET_FORWARDING_HISTORY_LND';
 export const GET_QUERY_ROUTES_LND = 'GET_QUERY_ROUTES_LND';
 export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
-export const FETCH_LOOP_SWAPS_LND = 'FETCH_LOOP_SWAPS_LND';
-export const SET_LOOP_SWAPS_LND = 'SET_LOOP_SWAPS_LND';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_LND;
@@ -416,16 +413,6 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
-export class FetchLoopSwaps implements Action {
-  readonly type = FETCH_LOOP_SWAPS_LND;
-  constructor() {}
-}
-
-export class SetLoopSwaps implements Action {
-  readonly type = SET_LOOP_SWAPS_LND;
-  constructor(public payload: LoopSwapStatus[]) {}
-}
-
 export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
@@ -442,5 +429,4 @@ FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
-PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
-FetchLoopSwaps | SetLoopSwaps;
+PeerLookup | ChannelLookup | InvoiceLookup | SetLookup;

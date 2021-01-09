@@ -74,10 +74,17 @@ import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
 
 import { ServicesComponent } from './components/services/services.component';
+import { LoopComponent } from '../shared/components/services/loop/loop.component';
+import { SwapsComponent } from '../shared/components/services/loop/swaps/swaps.component';
+import { LoopModalComponent } from '../shared/components/services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../shared/components/services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../shared/components/services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../shared/components/services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../shared/components/services/loop/loop-in-info-graphics/info-graphics.component';
 import { BoltzRootComponent } from './components/services/boltz/boltz-root.component';
-import { SwapsComponent } from './components/services/boltz/swaps/swaps.component';
+import { BoltzSwapsComponent } from './components/services/boltz/swaps/swaps.component';
 import { SwapStatusComponent } from './components/services/boltz/swap-status/swap-status.component';
-import { SwapQuoteComponent } from './components/services/boltz/swap-quote/swap-quote.component';
+import { SwapServiceInfoComponent } from './components/services/boltz/swap-service-info/swap-service-info.component';
 import { SwapModalComponent } from './components/services/boltz/swap-modal/swap-modal.component';
 import { SwapInInfoGraphicsComponent } from './components/services/boltz/swap-in-info-graphics/info-graphics.component';
 import { SwapOutInfoGraphicsComponent } from './components/services/boltz/swap-out-info-graphics/info-graphics.component';
@@ -221,10 +228,17 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
     ServicesComponent,
-    BoltzRootComponent,
+    LoopComponent,
     SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
     SwapStatusComponent,
-    SwapQuoteComponent,
+    SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
     SwapOutInfoGraphicsComponent
@@ -260,10 +274,17 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoginTokenComponent,
     TransactionsReportTableComponent,
     ServicesComponent,
-    BoltzRootComponent,
+    LoopComponent,
     SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
     SwapStatusComponent,
-    SwapQuoteComponent,
+    SwapServiceInfoComponent,
     SwapModalComponent,
     SwapInInfoGraphicsComponent,
     SwapOutInfoGraphicsComponent

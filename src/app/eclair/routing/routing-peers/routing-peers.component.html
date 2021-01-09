@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== '', 'padding-gap': true}">
   <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x page-sub-title-container">
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start" class="mb-6">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <mat-form-field fxFlex="30">
@@ -49,7 +49,7 @@
           <input matInput (keyup)="applyOutgoingFilter($event.target)" placeholder="Filter">
         </mat-form-field>
       </div>
-      <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
+      <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start start" fxFlex="100" class="table-container w-100">
         <table mat-table #tableOut [dataSource]="RoutingPeersOutgoing" matSort fxFlex="100" class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channelId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Channel ID</th>
