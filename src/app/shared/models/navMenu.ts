@@ -18,7 +18,7 @@ export const MENU_DATA: MenuRootNode = {
     ]},
     {id: 4, parentId: 0, name: 'Services', iconType: 'FA', icon: faLayerGroup, link: '/services/loop', userPersona: UserPersonaEnum.ALL, children: [
       {id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/services/loop', userPersona: UserPersonaEnum.ALL},
-      {id: 42, parentId: 4, name: 'Boltz', iconType: 'FA', icon: faSync, link: '/services/boltz', userPersona: UserPersonaEnum.ALL}
+      {id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/services/boltz', userPersona: UserPersonaEnum.ALL}
     ]},
     {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
     {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}

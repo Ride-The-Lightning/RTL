@@ -57,6 +57,8 @@ exports.listSwaps = (req, res, next) => {
   options.url = options.url + '/v1/listswaps';
   request(options).then(function (body) {
     logger.info({fileName: 'Boltz', msg: 'Boltz List Swaps Info: ' + JSON.stringify(body)});
+    if (body && body.swaps && body.swaps.length && body.swaps.length > 0) { body.swaps = body.swaps.reverse(); }
+    if (body && body.reverseSwaps && body.reverseSwaps.length && body.reverseSwaps.length > 0) { body.reverseSwaps = body.reverseSwaps.reverse(); }
     res.status(200).json(body);
   })
   .catch(errRes => {

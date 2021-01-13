@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoopStatus } from '../../../../models/loopModels';
+
+import { SwapTypeEnum } from '../../../../services/consts-enums-functions';
+import { CreateSwapResponse, CreateReverseSwapResponse } from '../../../../models/boltzModels';
 
 @Component({
   selector: 'rtl-boltz-swap-status',
@@ -7,7 +9,9 @@ import { LoopStatus } from '../../../../models/loopModels';
   styleUrls: ['./swap-status.component.scss']
 })
 export class SwapStatusComponent implements OnInit {
-  @Input() loopStatus: LoopStatus;
+  @Input() swapStatus: any = null;
+  @Input() direction = SwapTypeEnum.SWAP_OUT;
+  public swapTypeEnum = SwapTypeEnum;
 
   constructor() {}
 

@@ -11,18 +11,8 @@
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
         <mat-hint *ngIf="direction === 'In'" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.remote_balance || 0 | number}} Sats</mat-hint>
         <div *ngIf="direction === 'Out'" fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
-          <mat-hint fxFlex="75" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
-          <div *ngIf="showLoop && showBoltz" fxFlex="25" fxLayoutAlign="end end">
-            <button mat-icon-button matTooltip="Swap Out" class="more-button more-button-short" [matMenuTriggerFor]="menuSwapServices" aria-label="Toggle menu">
-              <mat-icon>swap_calls</mat-icon>
-            </button>
-            <mat-menu #menuSwapServices="matMenu" class="dashboard-vert-menu" xPosition="before">
-              <button mat-menu-item (click)="onLoopOut(channel)">Loop</button>
-              <button mat-menu-item (click)="onCreateReverseSwap(channel)">Boltz</button>
-            </mat-menu>
-          </div>
-          <button *ngIf="showLoop && !showBoltz" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
-          <button *ngIf="showBoltz && !showLoop" fxFlex="25" fxLayoutAlign="end end" class="button-link-dashboard" color="primary" mat-button aria-label="Swap Out" (click)="onCreateReverseSwap(channel)">Boltz Swap Out</button>
+          <mat-hint fxFlex="85" fxLayoutAlign="start start" class="font-size-90 color-primary"><strong class="font-weight-900 mr-5px">Capacity: </strong>{{channel.local_balance || 0 | number}} Sats</mat-hint>
+          <button *ngIf="showLoop" fxFlex="15" fxLayoutAlign="end start" class="button-link-dashboard" color="primary" mat-button aria-label="Loop Out" (click)="onLoopOut(channel)">Loop Out</button>
         </div>
       </div>
       <mat-progress-bar *ngIf="direction === 'In'" class="dashboard-progress-bar" mode="determinate" value="{{(totalLiquidity > 0) ? ((+channel.remote_balance || 0)/(totalLiquidity) * 100) : 0}}"></mat-progress-bar>

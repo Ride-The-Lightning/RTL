@@ -5,7 +5,7 @@ import { sliderAnimation } from '../../../../animation/slider-animation';
 import { CommonService } from '../../../../services/common.service';
 
 @Component({
-  selector: 'rtl-loop-out-info-graphics',
+  selector: 'rtl-boltz-swapout-info-graphics',
   templateUrl: './info-graphics.component.html',
   styleUrls: ['./info-graphics.component.scss'],
   animations: [sliderAnimation]  

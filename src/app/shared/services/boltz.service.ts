@@ -1,31 +1,43 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, Subject, throwError } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { LoggerService } from './logger.service';
 import { AlertTypeEnum } from './consts-enums-functions';
+import { ListSwaps } from '../models/boltzModels';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Injectable()
-export class BoltzService {
+export class BoltzService implements OnDestroy {
   private swapUrl = '';
+  private swaps: ListSwaps = {};
+  public swapsChanged = new BehaviorSubject<ListSwaps>({});
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
 
-  serviceInfo() {
-    this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Service Info', err)));
+  getSwapsList() {
+    return this.swaps;
   }
 
   listSwaps() {
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting List Swaps...'));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithoutAlert('List Swaps', err)));
+    this.httpClient.get(this.swapUrl)
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((swapResponse: ListSwaps) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());      
+      this.swaps = swapResponse;
+      this.swapsChanged.next(this.swaps);
+    }, err => {
+      return this.handleErrorWithoutAlert('List Swaps', err);
+    });
   }
 
   swapInfo(id: string) {
@@ -33,16 +45,21 @@ export class BoltzService {
     return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert(this.swapUrl, err)));
   }
 
-  swapOut(amount: number, address: string, acceptZeroConf: boolean) {
-    let requestBody = { amount: amount, address: address, acceptZeroConf: acceptZeroConf };
+  serviceInfo() {
+    this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
+    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Service Info', err)));
+  }
+
+  swapOut(amount: number, address: string) {
+    let requestBody = { amount: amount, address: address };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createreverseswap';
     return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, err)));
   }
 
-  swapIn(amount: number, address: string, acceptZeroConf: boolean) {
-    let requestBody = { amount: amount, address: address, acceptZeroConf: acceptZeroConf };
+  swapIn(amount: number) {
+    let requestBody = { amount: amount };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createswap';
-    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap In for Address: ' + address, err)));
+    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, err)));
   }
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
@@ -124,4 +141,10 @@ export class BoltzService {
     return throwError(err);
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

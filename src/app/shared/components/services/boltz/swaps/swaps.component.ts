@@ -51,7 +51,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   ngOnInit() {}
 
   ngAfterViewInit() {
-    if (this.swapsData.length > 0) {
+    if (this.swapsData && this.swapsData.length > 0) {
       this.loadSwapsTable(this.swapsData);
     }
   }
@@ -121,6 +121,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     this.listSwaps.sort = this.sort;
     this.listSwaps.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.listSwaps.filterPredicate = (swap: Swap, fltr: string) => JSON.stringify(swap).toLowerCase().includes(fltr);
+    if (this.paginator) { this.paginator.firstPage(); }
     this.listSwaps.paginator = this.paginator;
     this.logger.info(this.listSwaps);
   }

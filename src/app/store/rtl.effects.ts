@@ -78,7 +78,7 @@ export class RTLEffects implements OnDestroy {
   closeSpinner = this.actions$.pipe(
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
-      if (this.dialogRef) { this.dialogRef.close(); }
+      if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage.includes('...'))) { this.dialogRef.close(); }
       try {
         this.dialog.openDialogs.forEach(localDialog => {
           if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage.includes('...')) {

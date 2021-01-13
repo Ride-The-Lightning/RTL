@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { SwapTypeEnum } from '../../../../services/consts-enums-functions';
 import { ServiceInfo } from '../../../../models/boltzModels';
 
 @Component({
@@ -8,15 +9,11 @@ import { ServiceInfo } from '../../../../models/boltzModels';
 })
 export class SwapServiceInfoComponent implements OnInit {
   @Input() serviceInfo: ServiceInfo = {};
-  @Input() termCaption = '';
-  @Input() showPanel = true;
-  @Input() panelExpanded = false;
-  public flgShowPanel = false;
+  @Input() direction = SwapTypeEnum.SWAP_OUT;
+  public swapTypeEnum = SwapTypeEnum;
 
   constructor() {}
 
-  ngOnInit() {
-    setTimeout(() => { this.flgShowPanel = true; }, 1200);
-  }
+  ngOnInit() {}
 
 }

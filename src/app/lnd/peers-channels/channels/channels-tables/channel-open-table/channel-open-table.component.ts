@@ -314,10 +314,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
-  onBoltzSwapOut(channel: Channel) {
-    console.warn('BOLTZ CALL');
-  }
-
   onDownloadCSV() {
     if(this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'Open-channels');

@@ -137,6 +137,16 @@
     border: 1px solid $foreground-divider;
   }
   svg {
+    & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
+    & .boltz-icon-fill { fill: $foreground-secondary-text; }
+    & .stroke-color-thicker { stroke:#404040; stroke-width: 15.3333; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thick { stroke:#404040; stroke-width: 13.4583; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color { stroke:#404040; stroke-width: 12.5; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thin { stroke:#404040; stroke-width: 11.625; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thiner { stroke:#404040; stroke-width: 10.125; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thinest { stroke:#404040; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .fill-color-boltz-bk { fill: #313131; }
+    & .fill-color-0 { fill: #CBCBCB; }
     & .fill-color-1 { fill: #FFFFFF; }
     & .fill-color-2 { fill: #F1F1F1; }
     & .fill-color-3 { fill: #F2F2F2; }

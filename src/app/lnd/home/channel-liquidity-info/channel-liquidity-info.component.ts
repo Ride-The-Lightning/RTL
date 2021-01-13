@@ -23,7 +23,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
   public showLoop: boolean;
-  public showBoltz: boolean;
   private targetConf = 6;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
@@ -37,7 +36,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.showLoop = (rtlStore.nodeSettings.swapServerUrl && rtlStore.nodeSettings.swapServerUrl.trim() !== '') ? true : false;
-      this.showBoltz = (rtlStore.nodeSettings.boltzServerUrl && rtlStore.nodeSettings.boltzServerUrl.trim() !== '') ? true : false;
     });
   }
 
@@ -59,10 +57,6 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         component: LoopModalComponent
       }}));
     });
-  }
-
-  onCreateReverseSwap(channel: Channel) {
-    console.warn('BOLTZ CALL');
   }
 
   ngOnDestroy() {

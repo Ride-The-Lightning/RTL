@@ -64,7 +64,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
   ngOnInit() {}
 
   ngAfterViewInit() {
-    if (this.swapsData.length > 0) {
+    if (this.swapsData && this.swapsData.length > 0) {
       this.loadSwapsTable(this.swapsData);
     }
   }
