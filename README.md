@@ -36,6 +36,7 @@ RTL is available on the below platforms/services:
 * [Lux Node](https://luxnode.io/product/lux-node/)
 * [BCubium](https://bgeometrics.com)
 * [Start9Labs](https://start9labs.com)
+* [Umbrel](https://github.com/getumbrel/umbrel)
 
 Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 
