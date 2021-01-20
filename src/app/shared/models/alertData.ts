@@ -125,11 +125,6 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
-export interface LoginTokenData {
-  authRes: {token: string};
-  component?: any;
-}
-
 export interface LoopAlert {
   channel: Channel;
   minQuote: LoopQuote;
@@ -190,5 +185,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig | LoginTokenData | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

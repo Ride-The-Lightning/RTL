@@ -25,9 +25,30 @@ getFailedInfo = (reqIP, currentTime) => {
   return failed;
 }
 
+handleError = (failed, currentTime, errMsg) => {
+  if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
+    return {
+      message: "Multiple Failed Login Attempts!",
+      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToLocalDate((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+    };
+  } else {
+    return {
+      message: "Authentication Failed!",
+      error: errMsg + " Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more unsuccessful attempts!"
+    };
+  }
+}
+
+exports.verifyToken = (twoFAToken) => {
+  if (common.rtl_secret2fa && common.rtl_secret2fa !== '' && otplib.authenticator.check(twoFAToken, common.rtl_secret2fa)) {
+    return true;
+  }
+  return false;
+};
+
 exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
-    if(req.body.authenticateWith === 'TOKEN' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
+    if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
       connect.refreshCookie(common.rtl_cookie_path);
@@ -49,6 +70,14 @@ exports.authenticateUser = (req, res, next) => {
     let failed = getFailedInfo(reqIP, currentTime);
     const password = req.body.authenticationValue;
     if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
+      if (req.body.twoFAToken && req.body.twoFAToken !== '') {
+        if (!this.verifyToken(req.body.twoFAToken)) {
+          logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'Invalid Token! Failed IP ' + reqIP});
+          failed.count = failed.count + 1;
+          failed.lastTried = currentTime;
+          return res.status(401).json(handleError(failed, currentTime, 'Invalid 2FA Token!'));
+        }
+      }
       delete failedLoginAttempts[reqIP];
       let rpcUser = 'NODE_USER';
       const token = jwt.sign(
@@ -57,20 +86,10 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'Invalid Password! Failed IP ' + reqIP});
+      logger.error({fileName: 'Authenticate', lineNum: 85, msg: 'Invalid Password! Failed IP ' + reqIP});
       failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
       failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
-      if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
-        res.status(401).json({
-          message: "Multiple Failed Login Attempts!",
-          error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToLocalDate((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
-        });
-      } else {
-        res.status(401).json({
-          message: "Authentication Failed!",
-          error: "Invalid password! Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more unsuccessful attempts!"
-        });
-      }
+      return res.status(401).json(handleError(failed, currentTime, 'Invalid Password!'));
     }
   }
 };
@@ -99,18 +118,5 @@ exports.resetPassword = (req, res, next) => {
         error: "Old password is not correct!"
       });
     }
-  }
-};
-
-exports.verifyToken = (req, res, next) => {
-  const token2fa = req.body.authentication2FA;
-  if (!common.rtl_secret2fa || otplib.authenticator.check(token2fa, common.rtl_secret2fa)) {
-    res.status(200).json({ isValidToken: true });
-  } else {
-    logger.error({fileName: 'Authenticate', lineNum: 77, msg: 'Token Verification Failed!'});
-    res.status(401).json({
-      message: "Authentication Failed!",
-      error: "Token Verification Failed!"
-    });
   }
 };

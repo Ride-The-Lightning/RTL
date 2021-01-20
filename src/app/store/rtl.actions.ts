@@ -77,6 +77,7 @@ export class OpenAlert implements Action {
 
 export class CloseAlert implements Action {
   readonly type = CLOSE_ALERT;
+  constructor(public payload: any) {}
 }
 
 export class OpenConfirmation implements Action {
@@ -169,7 +170,7 @@ export class IsAuthorizedRes implements Action {
 
 export class Login implements Action {
   readonly type = LOGIN;
-  constructor(public payload: {password: string, initialPass: boolean}) {}
+  constructor(public payload: {password: string, defaultPassword: boolean, twoFAToken?: string}) {}
 }
 
 export class VerifyTwoFA implements Action {
