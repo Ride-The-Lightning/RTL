@@ -210,11 +210,18 @@
     & text {
       fill: $foreground-text;
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
-      fill: mat-color($primary, 900);
+    &.one-color {
+      & .ngx-charts .chart.bar-chart g g path {
+        fill: $primary-color;
+      }
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
-      fill: mat-color($primary, 200);
+    &.two-color {
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
+        fill: mat-color($primary, 900);
+      }
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
+        fill: mat-color($primary, 200);
+      }
     }
   }
 }

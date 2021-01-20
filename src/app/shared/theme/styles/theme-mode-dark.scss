@@ -226,11 +226,18 @@
     & text {
       fill: $foreground-text;
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
-      fill: mat-color($primary, 800);
+    &.one-color {
+      & .ngx-charts .chart.bar-chart g g path {
+        fill: $primary-darker;
+      }
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
-      fill: $primary-darker;
+    &.two-color {
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
+        fill: mat-color($primary, 800);
+      }
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
+        fill: $primary-darker;
+      }
     }
   }
 

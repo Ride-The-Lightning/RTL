@@ -1048,6 +1048,12 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   max-width: $fa-icon-small-size;
 }
 
+.botlz-icon-sm {
+  min-width: 1.6rem;
+  width: 1.6rem;
+  max-width: 1.6rem;
+}
+
 .copy-icon {
   position: relative;
   top: 0.5rem;

@@ -69,7 +69,14 @@ export class BoltzService implements OnDestroy {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
-      return throwError({code: 'ECONNREFUSED', message: 'ECONNREFUSED. Unable to Connect to Boltz Server.'});
+      this.store.dispatch(new RTLActions.OpenAlert({
+        data: {
+          type: 'ERROR',
+          alertTitle: 'Boltz Not Connected',
+          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Boltz Server.', URL: actionName },
+          component: ErrorMessageComponent
+        }
+      }));
     } else if (err.error) {
       let msg = '';
       if (err.error.error) {

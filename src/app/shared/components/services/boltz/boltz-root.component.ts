@@ -3,7 +3,6 @@ import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
 
 import { SwapTypeEnum } from '../../../services/consts-enums-functions';
 import { SwapModalComponent } from './swap-modal/swap-modal.component';
@@ -19,7 +18,6 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./boltz-root.component.scss']
 })
 export class BoltzRootComponent implements OnInit, OnDestroy {
-  public faSync = faSync;
   public swapTypeEnum = SwapTypeEnum;
   public selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
   public swaps: ListSwaps = {};
