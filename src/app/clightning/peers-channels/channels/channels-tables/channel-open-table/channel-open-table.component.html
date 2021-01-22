@@ -11,7 +11,7 @@
       <ng-container matColumnDef="short_channel_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Short Channel ID </th>
         <td mat-cell *matCellDef="let channel">
-          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '22rem'}">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
             <span *ngIf="channel.private" class="mr-1" matTooltip="Private" matTooltipPosition="right"><fa-icon [icon]="faEyeSlash"></fa-icon></span>
             <span *ngIf="!channel.private" class="mr-1" matTooltip="Public" matTooltipPosition="right"><fa-icon [icon]="faEye"></fa-icon></span>
             <span class="ellipsis-child">{{channel?.short_channel_id}}</span>
@@ -20,7 +20,11 @@
       </ng-container>
       <ng-container matColumnDef="alias">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
-        <td mat-cell *matCellDef="let channel">{{channel?.alias}}</td>
+        <td mat-cell *matCellDef="let channel">
+          <div class="ellipsis-parent" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '22rem'}">
+            <span class="ellipsis-child">{{channel?.alias}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="connected">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Connected </th>
@@ -74,7 +78,7 @@
           </div>
         </th>        
         <td mat-cell *matCellDef="let channel" fxLayoutAlign="end center" class="pl-1">
-          <div fxFlex="100" class="bordered-box table-actions-select" fxLayoutAlign="center center">
+          <div class="bordered-box table-actions-select" fxLayoutAlign="center center">
             <mat-select placeholder="Actions" tabindex="2" class="mr-0">
               <mat-select-trigger></mat-select-trigger>
               <mat-option (click)="onChannelClick(channel, $event)">View Info</mat-option>

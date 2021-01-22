@@ -1,3 +1,5 @@
+@import "../../../../../shared/theme/styles/mixins.scss";
+
 .mat-column-short_channel_id {
   flex: 0 0 15%;
   width: 15%;
@@ -21,11 +23,14 @@
 }
 
 .mat-column-state, .mat-column-msatoshi_to_us, .mat-column-msatoshi_to_them {
-  flex: 0 0 15%;
+  flex: 1 1 15%;
   width: 15%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  @include for_screensize(phone) {
+    white-space: unset;
+  }
 }
 
 .mat-column-actions {
