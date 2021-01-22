@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { Peer, GetInfo, Transaction } from '../../../../shared/models/clModels';
+import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
 import { FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
 
@@ -31,7 +31,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public peers: Peer[];
   public sortedPeers: Peer[];
   public filteredPeers: Observable<Peer[]>;
-  public transactions: Transaction[] = [];
+  public utxos: UTXO[] = [];
   public selUTXOs = [];
   public flgUseAllBalance = false;  
   public totalSelectedUTXOAmount = 0;
@@ -54,7 +54,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.isCompatibleVersion = this.data.message.isCompatibleVersion;
     this.information = this.data.message.information;
     this.totalBalance = this.data.message.balance;
-    this.transactions = this.data.message.transactions;
+    this.utxos = this.data.message.utxos;
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];

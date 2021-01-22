@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { CLOpenChannelComponent } from '../open-channel-modal/open-channel.component';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { GetInfo, Peer, Transaction } from '../../../../shared/models/clModels';
+import { GetInfo, Peer, UTXO } from '../../../../shared/models/clModels';
 import { SelNodeChild } from '../../../../shared/models/RTLconfig';
 
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -24,7 +24,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
   public selNode: SelNodeChild = {};
   public information: GetInfo = {};
   public peers: Peer[] = [];
-  public transactions: Transaction[] = [];
+  public utxos: UTXO[] = [];
   public totalBalance = 0;
   public links = [{link: 'open', name: 'Open'}, {link: 'pending', name: 'Pending/Inactive'}];
   public activeLink = 0;
@@ -58,7 +58,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;    
       this.peers = rtlStore.peers;
-      this.transactions = this.commonService.sortAscByKey(rtlStore.transactions.filter(tran => tran.status === 'confirmed'), 'value');
+      this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
       this.totalBalance = rtlStore.balance.totalBalance;
       this.logger.info(rtlStore);
     });
@@ -69,7 +69,7 @@ export class CLChannelsTablesComponent implements OnInit, OnDestroy {
       peers: this.peers, 
       information: this.information,
       balance: this.totalBalance,
-      transactions: this.transactions,
+      utxos: this.utxos,
       isCompatibleVersion: this.commonService.isVersionCompatible(this.information.version, '0.9.0') &&
       this.commonService.isVersionCompatible(this.information.api_version, '0.4.0')
     };

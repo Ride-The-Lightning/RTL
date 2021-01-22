@@ -287,7 +287,7 @@ export class CLEffects implements OnDestroy {
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
         this.store.dispatch(new CLActions.FetchBalance());
-        this.store.dispatch(new CLActions.FetchTransactions());
+        this.store.dispatch(new CLActions.FetchUTXOs());
         return {
           type: CLActions.FETCH_CHANNELS_CL
         };
@@ -686,7 +686,7 @@ export class CLEffects implements OnDestroy {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.CloseSpinner());
         this.store.dispatch(new CLActions.FetchBalance());
-        this.store.dispatch(new CLActions.FetchTransactions());
+        this.store.dispatch(new CLActions.FetchUTXOs());
         return {
           type: CLActions.SET_CHANNEL_TRANSACTION_RES_CL,
           payload: postRes
@@ -700,21 +700,21 @@ export class CLEffects implements OnDestroy {
   );
 
   @Effect()
-  transactionsFetch = this.actions$.pipe(
-    ofType(CLActions.FETCH_TRANSACTIONS_CL),
-    mergeMap((action: CLActions.FetchTransactions) => {
-      this.store.dispatch(new CLActions.ClearEffectError('FetchTransactions'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '/transactions');
+  utxosFetch = this.actions$.pipe(
+    ofType(CLActions.FETCH_UTXOS_CL),
+    mergeMap((action: CLActions.FetchUTXOs) => {
+      this.store.dispatch(new CLActions.ClearEffectError('FetchUTXOs'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '/utxos');
     }),
-    map((transactions: any) => {
-      this.logger.info(transactions);
+    map((utxos: any) => {
+      this.logger.info(utxos);
       return {
-        type: CLActions.SET_TRANSACTIONS_CL,
-        payload: (transactions && transactions.outputs && transactions.outputs.length > 0) ? transactions.outputs : []
+        type: CLActions.SET_UTXOS_CL,
+        payload: (utxos && utxos.outputs && utxos.outputs.length > 0) ? utxos.outputs : []
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
+      this.handleErrorWithoutAlert('FetchUTXOs', 'Fetching UTXOs Failed.', err);
       return of({type: RTLActions.VOID});
     }
   ));
@@ -742,7 +742,7 @@ export class CLEffects implements OnDestroy {
     this.store.dispatch(new CLActions.FetchFeeRates('perkw'));
     this.store.dispatch(new CLActions.FetchFeeRates('perkb'));
     this.store.dispatch(new CLActions.FetchPeers());
-    this.store.dispatch(new CLActions.FetchTransactions());
+    this.store.dispatch(new CLActions.FetchUTXOs());
     this.store.dispatch(new CLActions.FetchPayments());
     let newRoute = this.location.path();
     if(newRoute.includes('/lnd/')) {

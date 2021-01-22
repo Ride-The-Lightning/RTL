@@ -12,7 +12,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
-import { GetInfo, Balance, OnChain, Transaction } from '../../../shared/models/clModels';
+import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
 import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
@@ -40,7 +40,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
   public addressTypes = [];
-  public transactions: Transaction[] = [];
+  public utxos: UTXO[] = [];
   public selUTXOs = [];
   public flgUseAllBalance = false;
   public totalSelectedUTXOAmount = null;
@@ -115,7 +115,8 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.isCompatibleVersion = 
         this.commonService.isVersionCompatible(this.information.version, '0.9.0')
         && this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
-      this.transactions = this.commonService.sortAscByKey(rtlStore.transactions.filter(tran => tran.status === 'confirmed'), 'value');
+      this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
+      console.warn(this.utxos);
       this.logger.info(rootStore);
       this.logger.info(rtlStore);
     });

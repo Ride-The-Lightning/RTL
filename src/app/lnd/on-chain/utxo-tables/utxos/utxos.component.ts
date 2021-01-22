@@ -25,6 +25,8 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 export class OnChainUTXOsComponent implements OnChanges {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  @Input() numDustUTXOs = 0;
+  @Input() isDustUTXO = false;
   @Input() utxos: UTXO[];
   @Input() errorLoading: any;
   public addressType = WALLET_ADDRESS_TYPE;
