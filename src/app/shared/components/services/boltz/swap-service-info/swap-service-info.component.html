@@ -1,0 +1,30 @@
+<mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <span fxLayoutAlign="start center" fxFlex="100">Service Information</span>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Minimum Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.limits?.minimal | number}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Maximum Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.limits?.maximal | number}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Fee Percentage</h4>
+        <span class="foreground-secondary-text">{{serviceInfo?.fees?.percentage | number}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Miner Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{(direction === swapTypeEnum.SWAP_OUT ? serviceInfo?.fees?.miner?.reverse : serviceInfo?.fees?.miner?.normal) | number}}</span>
+      </div>
+    </div>
+  </div>
+</mat-expansion-panel>

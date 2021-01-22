@@ -344,12 +344,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value;
+    this.payments.filter = selFilter.value.trim().toLowerCase();
   }
 
-  loadPaymentsTable(payments) {
-    this.payments = (payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...payments]);
-    this.payments.data = payments;
+  loadPaymentsTable(payms) {
+    this.payments = payms ? new MatTableDataSource<Payment>([...payms]) : new MatTableDataSource([]);
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
@@ -360,6 +359,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       }
     }
     this.payments.sort = this.sort;
+    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.paginator = this.paginator;
 }
 

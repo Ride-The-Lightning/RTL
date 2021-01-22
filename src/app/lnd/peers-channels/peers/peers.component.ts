@@ -149,13 +149,14 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value;
+    this.peers.filter = selFilter.value.trim().toLowerCase();
   }
 
   loadPeersTable(peers: Peer[]) {
     this.peers = peers ? new MatTableDataSource<Peer>([...peers]) : new MatTableDataSource([]);
     this.peers.sort = this.sort;
     this.peers.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
   }
 

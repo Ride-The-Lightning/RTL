@@ -123,6 +123,7 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
+    this.forwardingHistoryEvents.filterPredicate = (fwhev: PaymentRelayed, fltr: string) => JSON.stringify(fwhev).toLowerCase().includes(fltr);
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -134,7 +135,7 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue;
+    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
   }
 
   ngOnDestroy() {

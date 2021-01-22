@@ -1,7 +1,7 @@
 var request = require('request-promise');
 var request = require('request-promise');
 var common = require('../../common');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var options = {};
 var num_max_events = 100;
 var responseData = { forwarding_events: [], last_offset_index: 0 };

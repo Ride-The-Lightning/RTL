@@ -92,7 +92,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   }
 
   applyFilter() {
-    this.channels.filter = this.selFilter;
+    this.channels.filter = this.selFilter.trim().toLocaleLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {
@@ -110,6 +110,7 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     this.channels = new MatTableDataSource<Channel>([...this.inactiveChannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

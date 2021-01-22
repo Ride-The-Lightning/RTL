@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var common = require('./common');
 var path = require('path');
-var logger = require('./controllers/logger');
+var logger = require('./controllers/shared/logger');
 var connect = {};
 var errMsg = '';
 var request = require('request');
@@ -194,6 +194,16 @@ connect.validateNodeConfig = (config) => {
       } else {
         common.nodes[idx].swap_server_url = '';
         common.nodes[idx].swap_macaroon_path = '';
+      }
+      if(process.env.BOLTZ_SERVER_URL && process.env.BOLTZ_SERVER_URL.trim() !== '') {
+        common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL.endsWith('/v1') ? process.env.BOLTZ_SERVER_URL.slice(0, -3) : process.env.BOLTZ_SERVER_URL;
+        common.nodes[idx].boltz_macaroon_path = process.env.BOLTZ_MACAROON_PATH;
+      } else if(node.Settings.boltzServerUrl && node.Settings.boltzServerUrl.trim() !== '') {
+        common.nodes[idx].boltz_server_url = node.Settings.boltzServerUrl.endsWith('/v1') ? node.Settings.boltzServerUrl.slice(0, -3) : node.Settings.boltzServerUrl;
+        common.nodes[idx].boltz_macaroon_path = node.Authentication.boltzMacaroonPath ? node.Authentication.boltzMacaroonPath : '';
+      } else {
+        common.nodes[idx].boltz_server_url = '';
+        common.nodes[idx].boltz_macaroon_path = '';
       }
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;

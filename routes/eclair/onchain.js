@@ -1,7 +1,7 @@
 const OnChainController = require("../../controllers/eclair/onchain");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/", authCheck, OnChainController.getNewAddress);
 router.get("/balance/", authCheck, OnChainController.getBalance);

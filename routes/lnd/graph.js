@@ -1,7 +1,7 @@
 const graphController = require("../../controllers/lnd/graph");
 const express = require("express");
 const router = express.Router();
-const authCheck = require("../authCheck");
+const authCheck = require("../shared/authCheck");
 
 router.get("/", authCheck, graphController.getDescribeGraph);
 router.get("/info", authCheck, graphController.getGraphInfo);

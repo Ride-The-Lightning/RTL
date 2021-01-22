@@ -46,7 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public inactiveChannels = 0;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
-  public showLoop = false;
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -154,7 +153,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.flgLoading[3] = (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) ? false : this.flgLoading[3];
       this.flgLoading[4] = (this.flgLoading[4] !== 'error' && rtlStore.numberOfPendingChannels) ? false : this.flgLoading[4];
       this.selNode = rtlStore.nodeSettings;
-      this.showLoop = (this.selNode.swapServerUrl && this.selNode.swapServerUrl.trim() !== '') ? true : false;
       this.information = rtlStore.information;
       this.fees = rtlStore.fees;
       this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;

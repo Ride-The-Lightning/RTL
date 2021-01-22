@@ -2,7 +2,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus, UTXO
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -34,7 +34,6 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
-  loopSwaps: SwapStatus[];
 }
 
 export const initLNDState: LNDState = {
@@ -62,8 +61,7 @@ export const initLNDState: LNDState = {
   utxos: [],
   payments: [],
   invoices: {invoices: []},
-  forwardingHistory: {},
-  loopSwaps: []
+  forwardingHistory: {}
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
@@ -276,11 +274,6 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         forwardingHistory: action.payload
-      };
-    case LNDActions.SET_LOOP_SWAPS_LND:
-      return {
-        ...state,
-        loopSwaps: action.payload
       };
     default:
       return state;

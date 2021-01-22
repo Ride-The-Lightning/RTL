@@ -117,7 +117,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
       const newEvent = event.received_time_str.toLowerCase() + event.resolved_time_str.toLowerCase() + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
-      return newEvent.includes(fltr.toLowerCase());
+      return newEvent.includes(fltr);
     };    
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -129,7 +129,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue;
+    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
   }
 
   ngOnDestroy() {

@@ -101,7 +101,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   }
 
   applyFilter(selFilter: any) {
-    this.channels.filter = selFilter.value;
+    this.channels.filter = selFilter.value.trim().toLowerCase();
   }
 
   loadHTLCsTable(channels: Channel[]) {
@@ -132,7 +132,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
       const newChannel = channel.remote_alias + channel.pending_htlcs.map(htlc => JSON.stringify(htlc) + (htlc.incoming ? 'yes' : 'no'));
-      return newChannel.includes(fltr.toLowerCase());
+      return newChannel.includes(fltr);
     };    
   }
 

@@ -1,0 +1,59 @@
+<ng-container *ngTemplateOutlet="swapStatus.error ? swapFailedBlock : ((direction === swapTypeEnum.SWAP_OUT) ? swapOutBlock : swapInBlock)"></ng-container>
+<ng-template #swapFailedBlock>
+  <div fxLayout="column"><span
+      class="foreground-secondary-text">{{'Error: ' + ((swapStatus.error && swapStatus.error.message) ? swapStatus.error.message : 'Unknown')}}</span>
+  </div>
+</ng-template>
+<ng-template #swapOutBlock>
+  <div fxLayout="column">
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Routing Fee (mSats)</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.routingFeeMilliSat | number}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Claim Transaction ID</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.claimTransactionId}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Lockup Address</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.lockupAddress}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #swapInBlock>
+  <div fxLayout="column">
+    <div fxLayout="row">
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">ID</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.id}}</span>
+      </div>
+      <div fxFlex="50">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Expected Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.expectedAmount | number}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Address</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.address}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>
+    <div fxLayout="row">
+      <div fxFlex="100">
+        <h4 fxLayoutAlign="start" class="font-bold-500">BIP 21</h4>
+        <span class="foreground-secondary-text">{{swapStatus?.bip21}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

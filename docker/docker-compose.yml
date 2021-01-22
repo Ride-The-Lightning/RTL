@@ -67,6 +67,38 @@ services:
       - lightning_data:/lnd
       - lightning_shared:/shared
 
+  boltz:
+    container_name: ${COMPOSE_PROJECT_NAME}_boltz
+    image: boltz:1.2.0
+    build: ./boltz
+    restart: unless-stopped
+    command: [
+      "boltz",
+      "--noseedbackup",
+      "--rpclisten=0.0.0.0:${BOLTZ_RPC_PORT}",
+      "--restlisten=0.0.0.0:${BOLTZ_REST_PORT}",
+      "--adminmacaroonpath=/shared/admin.macaroon",
+      "--tlsextradomain=${BOLTZ_HOST}",
+      "--tlsextraip=0.0.0.0",
+      "--tlscertpath=/shared/tls.cert",
+      "--datadir=/boltz",
+      "--bitcoin.active",
+      "--bitcoin.regtest",
+      "--bitcoin.node=bitcoind",
+      "--bitcoind.rpchost=${BITCOIN_HOST}:${BITCOIN_RPC_PORT}",
+      "--bitcoind.rpcuser=${BITCOIN_RPC_USER}",
+      "--bitcoind.rpcpass=${BITCOIN_RPC_PASSWORD}",
+      "--bitcoind.zmqpubrawtx=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_TX_PORT}",
+      "--bitcoind.zmqpubrawblock=tcp://${BITCOIN_HOST}:${BITCOIN_ZMQ_BLOCK_PORT}"
+    ]
+    depends_on:
+      - bitcoind
+    ports:
+      - "${BOLTZ_REST_PORT}:${BOLTZ_REST_PORT}"
+    volumes:
+      - boltz_data:/boltz
+      - boltz_shared:/shared
+      
   rtl:
     container_name: ${COMPOSE_PROJECT_NAME}_rtl
     image: shahanafarooqui/rtl:0.6.4
@@ -84,8 +116,10 @@ services:
       LN_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_REST_PORT}
       CONFIG_PATH: ''
       LN_IMPLEMENTATION: LND
-      SWAP_SERVER_URL: http://${LIGHTNING_HOST}:${LIGHTNING_LOOP_PORT}
+      SWAP_SERVER_URL: https://${LIGHTNING_HOST}:${LIGHTNING_LOOP_PORT}
       SWAP_MACAROON_PATH: /shared
+      BOLTZ_SERVER_URL: https://${BOLTZ_HOST}:${BOLTZ_PORT}
+      BOLTZ_MACAROON_PATH: /shared
       RTL_SSO: 0
       RTL_COOKIE_PATH: ''
       LOGOUT_REDIRECT_LINK: ''

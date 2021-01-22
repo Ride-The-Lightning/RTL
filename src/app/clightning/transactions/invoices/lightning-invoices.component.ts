@@ -93,10 +93,10 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.totalInvoices = rtlStore.totalInvoices;
       this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
-      this.invoices = (rtlStore.invoices.invoices) ?  new MatTableDataSource([]) : new MatTableDataSource<Invoice>([...this.invoiceJSONArr]);
-      this.invoices.data = this.invoiceJSONArr;
+      this.invoices = (this.invoiceJSONArr) ? new MatTableDataSource<Invoice>([...this.invoiceJSONArr]) : new MatTableDataSource([]);
       this.invoices.sort = this.sort;
       this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
       this.invoices.paginator = this.paginator;    
       setTimeout(() => { this.flgAnimate = false; }, 5000);
       this.logger.info(this.invoices);
@@ -170,7 +170,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(selFilter: any) {
-    this.invoices.filter = selFilter.value;
+    this.invoices.filter = selFilter.value.trim().toLowerCase();
   }
 
   onInvoiceValueChange() {

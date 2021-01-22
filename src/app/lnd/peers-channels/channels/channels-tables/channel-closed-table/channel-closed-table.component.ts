@@ -81,7 +81,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   applyFilter(selFilter: any) {
-    this.closedChannels.filter = selFilter.value;
+    this.closedChannels.filter = selFilter.value.trim().toLowerCase();
   }
 
   onClosedChannelClick(selChannel: ClosedChannel, event: any) {
@@ -108,6 +108,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
     this.closedChannels = new MatTableDataSource<ClosedChannel>([...closedChannels]);
     this.closedChannels.sort = this.sort;
     this.closedChannels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.closedChannels.filterPredicate = (channel: ClosedChannel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.closedChannels.paginator = this.paginator;
     this.logger.info(this.closedChannels);
   }

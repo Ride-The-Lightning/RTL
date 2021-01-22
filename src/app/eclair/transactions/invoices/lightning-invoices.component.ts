@@ -130,11 +130,11 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
     }}));
   }
 
-  loadInvoicesTable(invoices: Invoice[]) {
-    invoices[0].amountSettled
-    this.invoices = new MatTableDataSource<Invoice>([...invoices]);
+  loadInvoicesTable(invs: Invoice[]) {
+    this.invoices = invs ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.invoices.sort = this.sort;
+    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
     this.invoices.paginator = this.paginator;
   }
 
@@ -146,7 +146,7 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(selFilter: any) {
-    this.invoices.filter = selFilter.value;
+    this.invoices.filter = selFilter.value.trim().toLowerCase();
   }
 
   onInvoiceValueChange() {

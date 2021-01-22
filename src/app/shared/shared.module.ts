@@ -63,10 +63,6 @@ import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
-import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
-import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 import { TransactionsReportTableComponent } from './components/transactions-report-table/transactions-report-table.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
@@ -76,6 +72,22 @@ import { ConfirmationMessageComponent } from './components/data-modal/confirmati
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
+
+import { ServicesComponent } from './components/services/services.component';
+import { LoopComponent } from '../shared/components/services/loop/loop.component';
+import { SwapsComponent } from '../shared/components/services/loop/swaps/swaps.component';
+import { LoopModalComponent } from '../shared/components/services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../shared/components/services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../shared/components/services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../shared/components/services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../shared/components/services/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzRootComponent } from './components/services/boltz/boltz-root.component';
+import { BoltzSwapsComponent } from './components/services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './components/services/boltz/swap-status/swap-status.component';
+import { SwapServiceInfoComponent } from './components/services/boltz/swap-service-info/swap-service-info.component';
+import { SwapModalComponent } from './components/services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './components/services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './components/services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -194,6 +206,16 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatTabsModule,
     MatSnackBarModule,
     MatAutocompleteModule,
+    NgxChartsModule,
+    QRCodeModule,
+    PerfectScrollbarModule,
+    ClipboardDirective,
+    AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
+    RemoveLeadingZerosPipe,
+    MaxValidator,
+    MinValidator,
     AppSettingsComponent,
     SettingsComponent,
     NotFoundComponent,
@@ -204,21 +226,22 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ServerConfigComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
-    ClipboardDirective,
-    AutoFocusDirective,
-    MonthlyDateDirective,
-    YearlyDateDirective,
-    MaxValidator,
-    MinValidator,
-    NgxChartsModule,
-    QRCodeModule,
-    RemoveLeadingZerosPipe,
-    PerfectScrollbarModule,
+    TransactionsReportTableComponent,
+    ServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
     LoopQuoteComponent,
     LoopStatusComponent,
-    LoopOutInfoGraphicsComponent,
     LoopInInfoGraphicsComponent,
-    TransactionsReportTableComponent
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -240,10 +263,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MinValidator,
     RemoveLeadingZerosPipe,
     AuthSettingsComponent,
-    LoopQuoteComponent,
-    LoopStatusComponent,
-    LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
     ShowPubkeyComponent,
@@ -252,7 +271,23 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ConfirmationMessageComponent,
     ErrorMessageComponent,
     TwoFactorAuthComponent,
-    LoginTokenComponent
+    LoginTokenComponent,
+    TransactionsReportTableComponent,
+    ServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

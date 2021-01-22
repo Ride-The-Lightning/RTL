@@ -1,0 +1,17 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
+  <fa-icon [icon]="faInfinity" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Loop</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeTab.link === link.link" (click)="onSelectedIndexChange(link)" [routerLink]="['../', link.link]">{{link.name}}</div>
+      </nav>
+      <div fxLayout="row" fxLayoutAlign="start start" class="padding-gap-x-large mt-1">
+        <button mat-flat-button color="primary" (click)="onLoop(selectedSwapType)" type="button" tabindex="1">Start {{activeTab.name}}</button>
+      </div>
+      <rtl-swaps fxLayout="row" fxFlex="100" [selectedSwapType]="selectedSwapType" [swapsData]="filteredSwaps" [flgLoading]="flgLoading" [emptyTableMessage]="emptyTableMessage"></rtl-swaps>
+    </mat-card-content>
+  </mat-card>
+</div>

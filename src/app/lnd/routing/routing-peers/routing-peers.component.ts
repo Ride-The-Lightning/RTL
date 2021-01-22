@@ -94,9 +94,11 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.RoutingPeersIncoming.sort = this.sortIn;
+      this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
       this.logger.info(this.RoutingPeersIncoming);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.RoutingPeersOutgoing.sort = this.sortOut;
+      this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
        // To reset table after other Forwarding history calls
@@ -128,11 +130,11 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   applyIncomingFilter(selFilter: any) {
-    this.RoutingPeersIncoming.filter = selFilter.value;
+    this.RoutingPeersIncoming.filter = selFilter.value.trim().toLowerCase();
   }
 
   applyOutgoingFilter(selFilter: any) {
-    this.RoutingPeersOutgoing.filter = selFilter.value;
+    this.RoutingPeersOutgoing.filter = selFilter.value.trim().toLowerCase();
   }
 
   ngOnDestroy() {

@@ -19,6 +19,7 @@ import { SessionService } from './shared/services/session.service';
 import { LoopService } from './shared/services/loop.service';
 import { DataService } from './shared/services/data.service';
 import { CommonService } from './shared/services/common.service';
+import { BoltzService } from './shared/services/boltz.service';
 
 import { RTLReducer } from './store/rtl.reducers';
 import { RTLEffects } from './store/rtl.effects';
@@ -48,7 +49,7 @@ import { LayoutModule } from '@angular/cdk/layout';
   declarations: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    AuthGuard, SessionService, DataService, LoopService, CommonService
+    AuthGuard, SessionService, DataService, LoopService, CommonService, BoltzService
   ],
   bootstrap: [AppComponent]
 })

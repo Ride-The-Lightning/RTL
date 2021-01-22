@@ -162,7 +162,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilter(selFilter: any) {
-    this.peers.filter = selFilter.value;
+    this.peers.filter = selFilter.value.trim().toLowerCase();
   }
 
   loadPeersTable(peersArr: Peer[]) {
@@ -181,6 +181,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     this.peers.sort = this.sort;
+    this.peers.filterPredicate = (peer: Peer, fltr: string) => JSON.stringify(peer).toLowerCase().includes(fltr);
     this.peers.paginator = this.paginator;
   }
 

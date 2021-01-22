@@ -78,7 +78,7 @@ export class RTLEffects implements OnDestroy {
   closeSpinner = this.actions$.pipe(
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
-      if (this.dialogRef) { this.dialogRef.close(); }
+      if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage.includes('...'))) { this.dialogRef.close(); }
       try {
         this.dialog.openDialogs.forEach(localDialog => {
           if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage.includes('...')) {
@@ -109,6 +109,7 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.CLOSE_ALERT),
     map((action: RTLActions.CloseAlert) => {
       if (this.dialogRef) { this.dialogRef.close(); }
+      return action.payload;
     }
   ));
 
@@ -279,7 +280,7 @@ export class RTLEffects implements OnDestroy {
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('IsAuthorized'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
+      authenticateWith: (!action.payload || action.payload.trim() === '') ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
       authenticationValue: (!action.payload || action.payload.trim() === '') ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload 
     })
     .pipe(
@@ -310,11 +311,11 @@ export class RTLEffects implements OnDestroy {
    })
   );
 
-  setLoggedInDetails(initialPass: boolean, postRes: any, rootStore: any) {
+  setLoggedInDetails(defaultPassword: boolean, postRes: any, rootStore: any) {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
-    if (initialPass) {
+    if (defaultPassword) {
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
       this.router.navigate(['/settings/auth'], {state: { initial: true }});
     } else {
@@ -332,13 +333,14 @@ export class RTLEffects implements OnDestroy {
     this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
     this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
     return this.httpClient.post(environment.AUTHENTICATE_API, { 
-      authenticateWith: (!action.payload.password) ? AuthenticateWith.TOKEN : AuthenticateWith.PASSWORD,
-      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password
+      authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
+      authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
+      twoFAToken: (action.payload.twoFAToken) ? action.payload.twoFAToken : '',
     })
     .pipe(
       map((postRes: any) => {
         this.logger.info(postRes);
-        this.setLoggedInDetails(action.payload.initialPass, postRes, rootStore);
+        this.setLoggedInDetails(action.payload.defaultPassword, postRes, rootStore);
       }),
       catchError((err) => {
         this.logger.info('Redirecting to Login Error Page');
@@ -476,9 +478,9 @@ export class RTLEffects implements OnDestroy {
     const landingPage = isInitialSetup ? '' : 'HOME';
     let selNode = {};
     if(node.settings.fiatConversion && node.settings.currencyUnit) {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: [...CURRENCY_UNITS, node.settings.currencyUnit], fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl };
     } else {
-      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl };
+      selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl };
     }
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new LNDActions.ResetLNDStore(selNode));

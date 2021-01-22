@@ -4,9 +4,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ScreenSizeEnum, SwapTypeEnum } from '../../../shared/services/consts-enums-functions';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../shared/services/consts-enums-functions';
 import { Channel } from '../../../shared/models/lndModels';
-import { LoopModalComponent } from '../../loop/loop-modal/loop-modal.component';
+import { LoopModalComponent } from '../../../shared/components/services/loop/loop-modal/loop-modal.component';
 import { LoopService } from '../../../shared/services/loop.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -53,11 +53,11 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
         channel: channel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
-      }}));    
+      }}));
     });
-  }  
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
