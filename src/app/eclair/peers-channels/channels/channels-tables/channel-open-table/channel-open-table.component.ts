@@ -53,7 +53,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['shortChannelId', 'alias', 'actions'];
+      this.displayedColumns = ['alias', 'toLocal', 'toRemote', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
