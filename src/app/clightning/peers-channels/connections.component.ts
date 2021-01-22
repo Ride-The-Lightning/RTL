@@ -5,8 +5,6 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfo, Peer, Transaction } from '../../shared/models/clModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 

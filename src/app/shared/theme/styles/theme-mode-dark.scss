@@ -225,6 +225,12 @@
     color: $primary-darker;
   }
 
+  & tr.alert.alert-warn {
+    & .mat-cell, .mat-header-cell, .mat-footer-cell {
+      color: $yellow-alert-color;
+    }
+  }
+
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;

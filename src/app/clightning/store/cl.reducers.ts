@@ -1,9 +1,8 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, Transaction } from '../../shared/models/clModels';
+import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, UTXO } from '../../shared/models/clModels';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import * as CLActions from '../store/cl.actions';
-import * as RTLActions from '../../store/rtl.actions';
 
 export interface CLState {
   initialAPIResponseStatus: String[];
@@ -21,7 +20,7 @@ export interface CLState {
   forwardingHistory: ForwardingHistoryRes;
   invoices: ListInvoices;
   totalInvoices: number;
-  transactions: Transaction[];
+  utxos: UTXO[];
 }
 
 export const initCLState: CLState = {
@@ -40,7 +39,7 @@ export const initCLState: CLState = {
   forwardingHistory: {},
   invoices: { invoices: [] },
   totalInvoices: -1,
-  transactions: []
+  utxos: []
 }
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
@@ -215,12 +214,12 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         ...state,
         totalInvoices: action.payload
       };
-    case CLActions.SET_TRANSACTIONS_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'TRANSACTIONS'];
+    case CLActions.SET_UTXOS_CL:
+      newAPIStatus = [...state.initialAPIResponseStatus, 'UTXOS'];
       return {
         ...state,
         initialAPIResponseStatus: newAPIStatus,
-        transactions: action.payload
+        utxos: action.payload
       };
     default:
       return state;

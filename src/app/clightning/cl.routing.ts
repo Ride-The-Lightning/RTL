@@ -35,10 +35,10 @@ export const ClRoutes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: CLHomeComponent, canActivate: [CLUnlockedGuard] },
       { path: 'onchain', component: CLOnChainComponent, canActivate: [CLUnlockedGuard], children: [
-        { path: '', pathMatch: 'full', redirectTo: 'receive' },
-        { path: 'receive', component: CLOnChainReceiveComponent, canActivate: [CLUnlockedGuard] },
-        { path: 'send', component: CLOnChainSendComponent, data : {sweepAll : false}, canActivate: [CLUnlockedGuard] },
-        { path: 'sweep', component: CLOnChainSendComponent, data : {sweepAll : true}, canActivate: [CLUnlockedGuard] }
+        { path: '', pathMatch: 'full', redirectTo: 'receive/utxos' },
+        { path: 'receive/:selTab', component: CLOnChainReceiveComponent, canActivate: [CLUnlockedGuard] },
+        { path: 'send/:selTab', component: CLOnChainSendComponent, data : {sweepAll : false}, canActivate: [CLUnlockedGuard] },
+        { path: 'sweep/:selTab', component: CLOnChainSendComponent, data : {sweepAll : true}, canActivate: [CLUnlockedGuard] }
       ] },
       { path: 'connections', component: CLConnectionsComponent, canActivate: [CLUnlockedGuard], children: [
         { path: '', pathMatch: 'full', redirectTo: 'channels' },

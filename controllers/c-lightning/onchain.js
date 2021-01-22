@@ -58,7 +58,7 @@ exports.onChainWithdraw = (req, res, next) => {
   });
 }
 
-exports.getTransactions = (req, res, next) => {
+exports.getUTXOs = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/listFunds';
   request(options).then((body) => {

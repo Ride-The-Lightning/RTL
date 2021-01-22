@@ -279,7 +279,7 @@ export interface FeeRatePerObj {
   max_acceptable?: number;
 }
 
-export interface Transaction {
+export interface UTXO {
   txid?: string;
   output?: number;
   value?: number;

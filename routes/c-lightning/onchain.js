@@ -5,6 +5,6 @@ const authCheck = require("../shared/authCheck");
 
 router.get("/", authCheck, OnChainController.getNewAddress);
 router.post("/", authCheck, OnChainController.onChainWithdraw);
-router.get("/transactions/", authCheck, OnChainController.getTransactions);
+router.get("/utxos/", authCheck, OnChainController.getUTXOs);
 
 module.exports = router;

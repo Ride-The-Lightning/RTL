@@ -11,7 +11,8 @@ import { CLChannelsTablesComponent } from './peers-channels/channels/channels-ta
 import { CLPeersComponent } from './peers-channels/peers/peers.component';
 import { CLLightningInvoicesComponent } from './transactions/invoices/lightning-invoices.component';
 import { CLOnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
-import { CLOnChainTransactionHistoryComponent } from './on-chain/on-chain-transaction-history/on-chain-transaction-history.component';
+import { CLUTXOTablesComponent } from './on-chain/utxo-tables/utxo-tables.component';
+import { CLOnChainUtxosComponent } from './on-chain/utxo-tables/utxos/utxos.component';
 import { CLOnChainComponent } from './on-chain/on-chain.component';
 import { CLLightningPaymentsComponent } from './transactions/payments/lightning-payments.component';
 import { CLTransactionsComponent } from './transactions/transactions.component';
@@ -71,7 +72,8 @@ import { CLUnlockedGuard } from '../shared/services/auth.guard';
     CLNodeLookupComponent,
     CLQueryRoutesComponent,
     CLOnChainReceiveComponent,
-    CLOnChainTransactionHistoryComponent,
+    CLUTXOTablesComponent,
+    CLOnChainUtxosComponent,
     CLOnChainComponent,
     CLChannelsTablesComponent,
     CLChannelOpenTableComponent,

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ResolveEnd } from '@angular/router';
+import { Router, ResolveEnd, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -20,11 +20,11 @@ export class OnChainComponent implements OnInit, OnDestroy {
   public balances = [{title: 'Total Balance', dataValue: 0}, {title: 'Confirmed', dataValue: 0}, {title: 'Unconfirmed', dataValue: 0}];
   public links = [{link: 'receive', name: 'Receive'}, {link: 'send', name: 'Send'}, {link: 'sweep', name: 'Sweep All'}];
   public activeLink = this.links[0].link;
-  public tables = [{id: 0, name: 'utxos'}, {id: 1, name: 'trans'}];
+  public tables = [{id: 0, name: 'utxos'}, {id: 1, name: 'trans'}, {id: 2, name: 'dustUtxos'}];
   public selectedTable = this.tables[0];
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));
@@ -46,6 +46,7 @@ export class OnChainComponent implements OnInit, OnDestroy {
 
   onSelectedTableIndexChanged(event: number) {
     this.selectedTable = this.tables.find(table => table.id === event);
+    this.router.navigate(['./', this.activeLink, this.selectedTable.name], {relativeTo: this.activatedRoute});
   }
 
   ngOnDestroy() {
