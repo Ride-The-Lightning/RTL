@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
@@ -23,7 +24,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+
 
 @Component({
   selector: 'rtl-channel-open-table',

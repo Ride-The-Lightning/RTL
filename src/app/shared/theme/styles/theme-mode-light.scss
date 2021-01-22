@@ -136,6 +136,9 @@
   .mat-expansion-panel.flat-expansion-panel {
     border: 1px solid $foreground-divider;
   }
+  .mat-tooltip {
+    font-size: 120%;
+  }
   svg {
     & .boltz-icon { stroke:$foreground-secondary-text; stroke-width:4; }
     & .boltz-icon-fill { fill: $foreground-secondary-text; }

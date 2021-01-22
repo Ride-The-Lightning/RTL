@@ -19,6 +19,7 @@
   $background-color: mat-color($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
+  $tooltip-background: rgba(255, 255, 255, 0.9);
 
   .mat-primary {
     color: $primary-darker;
@@ -205,7 +206,9 @@
   }  
 
   .mat-tooltip {
-    background-color: $hover-background-dark;
+    background-color: $tooltip-background;
+    color: $background-color;
+    font-size: 120%;
   }
 
   .mat-slide-toggle.mat-disabled {
