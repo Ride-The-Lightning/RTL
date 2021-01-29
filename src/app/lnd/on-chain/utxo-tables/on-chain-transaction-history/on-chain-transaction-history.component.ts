@@ -46,10 +46,10 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
       this.displayedColumns = ['time_stamp', 'amount', 'num_confirmations', 'total_fees', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['time_stamp', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp', 'label', 'amount', 'total_fees', 'num_confirmations', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['time_stamp', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
+      this.displayedColumns = ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     }
   }
 
@@ -63,10 +63,12 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
     this.listTransactions.filter = selFilter.value.trim().toLowerCase();
   }
 
-  onTransactionClick(selTransaction: Transaction, event: any) {
+  onTransactionClick(selTransaction: Transaction) {
+    console.warn(selTransaction);
     const reorderedTransactions = [
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
+      [{key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER},

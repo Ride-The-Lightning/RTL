@@ -19,7 +19,7 @@ import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
 export class DataService implements OnInit, OnDestroy {
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
 
@@ -150,6 +150,44 @@ export class DataService implements OnInit, OnDestroy {
     }));
   }
 
+  labelUTXO(txid: string, label: string, overwrite: boolean = true) {
+    let labelBody: any = {txid: txid, label: label, overwrite: overwrite};
+    this.store.dispatch(new RTLActions.OpenSpinner('Labelling UTXO...'));
+    return this.httpClient.post(this.childAPIUrl + environment.TRANSACTIONS_API + '/label', labelBody)
+    .pipe(takeUntil(this.unSubs[7]),
+    map((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      // this.snackBar.open('Successfully bumped the fee. Use the block explorer to verify transaction.');
+      return res;
+    }),
+    catchError(err => {
+      this.handleErrorWithoutAlert('Label UTXO', err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
+  }
+
+  leaseUTXO(txid: string, output_index: number) {
+    try {
+      let leaseBody: any = {txid: txid, outputIndex: output_index};
+      this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody);
+    } catch (error) {
+      console.warn(error);
+    }
+    // let leaseBody: any = {txid: txid, outputIndex: output_index};
+    // this.store.dispatch(new RTLActions.OpenSpinner('Leasing UTXO...'));
+    // return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
+    // .pipe(takeUntil(this.unSubs[8]),
+    // map((res: any) => {
+    //   this.store.dispatch(new RTLActions.CloseSpinner());
+    //   // this.snackBar.open('Successfully bumped the fee. Use the block explorer to verify transaction.');
+    //   return res;
+    // }),
+    // catchError(err => {
+    //   this.handleErrorWithoutAlert('Lease UTXO', err);
+    //   return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    // }));
+  }
+
   getForwardingHistory(start: string, end: string) {
     const queryHeaders: SwitchReq = {end_time: end, start_time: start};
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders)
@@ -192,7 +230,7 @@ export class DataService implements OnInit, OnDestroy {
 
   getTransactionsForReport() {
     return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[5]),
+    .pipe(takeUntil(this.unSubs[6]),
     withLatestFrom(this.store.select(this.lnImplementation === 'CLT' ? 'cl' : (this.lnImplementation === 'ECL' ? 'ecl' : 'lnd'))),
     mergeMap(([res, storeData]: [any, any]) => {
       return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});

@@ -10,6 +10,7 @@ import { UTXO } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE } from '../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
+import { DataService } from '../../../../shared/services/data.service';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -39,7 +40,7 @@ export class OnChainUTXOsComponent implements OnChanges {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -49,10 +50,10 @@ export class OnChainUTXOsComponent implements OnChanges {
       this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'confirmations', 'actions'];
+      this.displayedColumns = ['tx_id', 'output', 'label', 'amount_sat', 'confirmations', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['tx_id', 'output', 'amount_sat', 'confirmations', 'actions'];
+      this.displayedColumns = ['tx_id', 'output', 'label', 'amount_sat', 'confirmations', 'actions'];
     }
   }
 
@@ -66,9 +67,10 @@ export class OnChainUTXOsComponent implements OnChanges {
     this.listUTXOs.filter = selFilter.value.trim().toLowerCase();
   }
 
-  onUTXOClick(selUTXO: UTXO, event: any) {
+  onUTXOClick(selUTXO: UTXO) {
     const reorderedUTXOs = [
       [{key: 'txid', value: selUTXO.outpoint.txid_str, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'label', value: selUTXO.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'output_index', value: selUTXO.outpoint.output_index, title: 'Output Index', width: 34, type: DataTypeEnum.NUMBER},
         {key: 'amount_sat', value: selUTXO.amount_sat, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
         {key: 'confirmations', value: selUTXO.confirmations, title: 'Confirmations', width: 33, type: DataTypeEnum.NUMBER}],
@@ -86,7 +88,7 @@ export class OnChainUTXOsComponent implements OnChanges {
   loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      const newUTXO = ((utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
+      const newUTXO = ((utxo.label ? utxo.label : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
       + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes : '') + (utxo.address ? utxo.address : '') + (utxo.address_type ? utxo.address_type : '')
       + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
       return newUTXO.includes(fltr);
@@ -102,6 +104,20 @@ export class OnChainUTXOsComponent implements OnChanges {
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
     this.logger.info(this.listUTXOs);
+  }
+
+  onLabelUTXO(utxo: UTXO) {
+    console.warn('Label UTXO: ' + JSON.stringify(utxo));
+    this.dataService.labelUTXO(utxo.outpoint.txid_bytes, 'Test Label', false);
+  }
+
+  onLeaseUTXO(utxo: UTXO) {
+    console.warn('Lease UTXO: ' + JSON.stringify(utxo));
+    this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
+  }
+
+  onReleaseUTXO(utxo: UTXO) {
+    console.warn('Release UTXO: ' + JSON.stringify(utxo));
   }
 
   onDownloadCSV() {
