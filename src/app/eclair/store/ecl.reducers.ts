@@ -190,6 +190,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
           }
         });
       }
+      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
         initialAPIResponseStatus: newAPIStatus,

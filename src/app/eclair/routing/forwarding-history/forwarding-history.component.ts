@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, Input, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, AfterViewInit, ViewChild, OnDestroy, Input, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,12 +22,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public successfulEvents = [];
   public errorMessage = '';
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
@@ -58,7 +57,7 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
   ngOnInit() {
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
+    .subscribe((rtlStore: any) => {
       if (this.eventsData.length <= 0) {
         this.errorMessage = '';
         rtlStore.effectErrors.forEach(effectsErr => {
@@ -66,24 +65,25 @@ export class ECLForwardingHistoryComponent implements OnInit, AfterViewInit, OnD
             this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
           }
         });
-        this.successfulEvents = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-        this.loadForwardingEventsTable(this.successfulEvents);
-        this.logger.info(rtlStore);
+        this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
+        if (this.eventsData.length > 0 && this.sort && this.paginator) {
+          this.loadForwardingEventsTable(this.eventsData);
+        }        
+        this.logger.info(this.eventsData);
       }
     });
   }
 
   ngAfterViewInit() {
-    if (this.successfulEvents.length > 0) {
-      this.loadForwardingEventsTable(this.successfulEvents);
+    if (this.eventsData.length > 0) {
+      this.loadForwardingEventsTable(this.eventsData);
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
-      this.successfulEvents = this.eventsData;
-      this.loadForwardingEventsTable(this.successfulEvents);
+      this.loadForwardingEventsTable(this.eventsData);
     }
     if (changes.filterValue) {
       this.applyFilter();
