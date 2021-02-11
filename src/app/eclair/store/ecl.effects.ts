@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -36,7 +36,7 @@ export class ECLEffects implements OnDestroy {
       this.store.select('ecl')
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
-        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 4) { // Num of Initial APIs + 1
+        if(rtlStore.initialAPIResponseStatus[0] === 'INCOMPLETE' && rtlStore.initialAPIResponseStatus.length > 5) { // Num of Initial APIs + 1
           rtlStore.initialAPIResponseStatus[0] = 'COMPLETE';
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
