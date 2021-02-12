@@ -1,0 +1,23 @@
+<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+  <form fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
+    <div fxLayout="row">
+      <fa-icon [icon]="faTools" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Loop</span>
+    </div>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
+      <mat-slide-toggle autoFocus class="mt-2" tabindex="1" color="primary" [(ngModel)]="enableSSO" (change)="enableSSO = !$event.checked ? null : enableSSO" name="sso">Enable Loop Service</mat-slide-toggle>
+      <mat-form-field>
+        <input matInput placeholder="Loop Service URL" type="text" id="cookiepath" name="cookiepath" [(ngModel)]="cookiePath" tabindex="2" [required]="enableSSO">
+        <mat-error *ngIf="!cookiePath && enableSSO">Cookie path is required.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Loop Macaroon Path" type="text" id="logoutLink" name="logoutlink" [(ngModel)]="logoutLink" tabindex="3" [required]="enableSSO">
+        <mat-error *ngIf="!logoutLink && enableSSO">Logout re-direct url is required.</mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+  <div fxLayout="row" class="mt-1">
+    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="10">Reset</button>
+    <button mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="11">Update</button>
+  </div>
+</div>

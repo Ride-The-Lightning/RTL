@@ -3,6 +3,10 @@
     <fa-icon [icon]="faCodeBranch" class="fa-icon-small mr-1"></fa-icon>
     <span>Version: {{version}}</span>
   </p>
+  <a mat-menu-item routerLink="/settings">
+    <fa-icon [icon]="faUserCog" class="fa-icon-small mr-1"></fa-icon>
+    <span routerLink="/settings">Settings</span>
+  </a>
   <a mat-menu-item routerLink="/help">
     <fa-icon [icon]="faLifeRing" class="fa-icon-small mr-1"></fa-icon>
     <span routerLink="/help">Help</span>

@@ -16,11 +16,11 @@ import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-app-settings',
-  templateUrl: './app-settings.component.html',
-  styleUrls: ['./app-settings.component.scss']
+  selector: 'rtl-node-settings',
+  templateUrl: './node-settings.component.html',
+  styleUrls: ['./node-settings.component.scss']
 })
-export class AppSettingsComponent implements OnInit, OnDestroy {
+export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
   public faTools = faTools;
   public faPaintBrush = faPaintBrush;
@@ -72,10 +72,6 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
     this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: event.value, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-  }
-
-  onAddNewNode() {
-    console.warn('ADD NEW NODE');
   }
 
   toggleSettings(toggleField: string, event?: any) {

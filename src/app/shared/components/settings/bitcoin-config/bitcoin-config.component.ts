@@ -10,11 +10,11 @@ import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-server-config',
-  templateUrl: './server-config.component.html',
-  styleUrls: ['./server-config.component.scss']
+  selector: 'rtl-bitcoin-config',
+  templateUrl: './bitcoin-config.component.html',
+  styleUrls: ['./bitcoin-config.component.scss']
 })
-export class ServerConfigComponent implements OnInit, OnDestroy {
+export class BitcoinConfigComponent implements OnInit, OnDestroy {
   public selectedNodeType = '';
   public configData = '';
   public fileFormat = 'INI';

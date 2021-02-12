@@ -4,7 +4,14 @@ import { ModuleWithProviders } from '@angular/core';
 import { SettingsComponent } from './shared/components/settings/settings.component';
 import { AppSettingsComponent } from './shared/components/settings/app-settings/app-settings.component';
 import { AuthSettingsComponent } from './shared/components/settings/auth-settings/auth-settings.component';
-import { ServerConfigComponent } from './shared/components/settings/server-config/server-config.component';
+import { BitcoinConfigComponent } from './shared/components/settings/bitcoin-config/bitcoin-config.component';
+import { SSOSettingsComponent } from './shared/components/settings/sso-settings/sso-settings.component';
+import { NodeConfigComponent } from './shared/components/node-config/node-config.component';
+import { LNPConfigComponent } from './shared/components/node-config/lnp-config/lnp-config.component';
+import { NodeSettingsComponent } from './shared/components/node-config/node-settings/node-settings.component';
+import { ServicesSettingsComponent } from './shared/components/node-config/services-settings/services-settings.component';
+import { LoopServiceSettingsComponent } from './shared/components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
+import { BoltzServiceSettingsComponent } from './shared/components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
 import { ServicesComponent } from './shared/components/services/services.component';
 import { LoopComponent } from './shared/components/services/loop/loop.component';
 import { BoltzRootComponent } from './shared/components/services/boltz/boltz-root.component';
@@ -20,11 +27,21 @@ export const routes: Routes = [
   { path: 'cl', loadChildren: () => import('./clightning/cl.module').then(childModule => childModule.CLModule), canActivate: [AuthGuard] },
   { path: 'ecl', loadChildren: () => import('./eclair/ecl.module').then(childModule => childModule.ECLModule), canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], children: [
-    { path: '', pathMatch: 'full', redirectTo: 'layout' },
-    { path: 'layout', component: AppSettingsComponent, canActivate: [AuthGuard] },
+    { path: '', pathMatch: 'full', redirectTo: 'app' },
+    { path: 'app', component: AppSettingsComponent, canActivate: [AuthGuard] },
     { path: 'auth', component: AuthSettingsComponent, canActivate: [AuthGuard] },
-    { path: 'lnconfig', component: ServerConfigComponent, canActivate: [AuthGuard] },
-    { path: 'bconfig', component: ServerConfigComponent, canActivate: [AuthGuard] }
+    { path: 'sso', component: SSOSettingsComponent, canActivate: [AuthGuard] },
+    { path: 'bconfig', component: BitcoinConfigComponent, canActivate: [AuthGuard] }
+  ]},
+  { path: 'config', component: NodeConfigComponent, canActivate: [AuthGuard], children: [
+    { path: '', pathMatch: 'full', redirectTo: 'node' },
+    { path: 'node', component: NodeSettingsComponent, canActivate: [AuthGuard] },
+    { path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'loop' },
+      { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
+      { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
+    ]},
+    { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard] }
   ]},
   { path: 'services', component: ServicesComponent, canActivate: [AuthGuard], children: [
     { path: '', pathMatch: 'full', redirectTo: 'loop' },

@@ -51,18 +51,25 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 import { MONTHS } from './services/consts-enums-functions';
 
-import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
 import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
+import { SSOSettingsComponent } from './components/settings/sso-settings/sso-settings.component';
+import { BitcoinConfigComponent } from './components/settings/bitcoin-config/bitcoin-config.component';
+import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
+import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
+import { NodeConfigComponent } from './components/node-config/node-config.component';
+import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
+import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
+import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
+import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
-import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { TransactionsReportTableComponent } from './components/transactions-report-table/transactions-report-table.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
@@ -223,7 +230,17 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TopMenuComponent,
     LoginComponent,
     HelpComponent,
-    ServerConfigComponent,
+    SettingsComponent,
+    SSOSettingsComponent,
+    BitcoinConfigComponent,
+    AuthSettingsComponent,
+    AppSettingsComponent,
+    NodeConfigComponent,
+    LNPConfigComponent,
+    NodeSettingsComponent,
+    ServicesSettingsComponent,
+    LoopServiceSettingsComponent,
+    BoltzServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     TransactionsReportTableComponent,
@@ -251,7 +268,17 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TopMenuComponent,
     LoginComponent,
     HelpComponent,
-    ServerConfigComponent,
+    SettingsComponent,
+    SSOSettingsComponent,
+    BitcoinConfigComponent,
+    AuthSettingsComponent,
+    AppSettingsComponent,
+    NodeConfigComponent,
+    LNPConfigComponent,
+    NodeSettingsComponent,
+    ServicesSettingsComponent,
+    LoopServiceSettingsComponent,
+    BoltzServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     ErrorComponent,

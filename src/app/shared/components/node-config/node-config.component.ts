@@ -3,22 +3,23 @@ import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { faTools } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
-  selector: 'rtl-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  selector: 'rtl-node-config',
+  templateUrl: './node-config.component.html',
+  styleUrls: ['./node-config.component.scss']
 })
-export class SettingsComponent implements OnInit, OnDestroy{
-  public faUserCog = faUserCog;
-  public showBitcoind = false;
+export class NodeConfigComponent implements OnInit, OnDestroy{
+  public faTools = faTools;
+  public showLnConfig = false;
   public selNode: ConfigSettingsNode;
   public appConfig: RTLConfiguration;
-  public links = [{link: 'app', name: 'Application'}, {link: 'auth', name: 'Authentication'}, {link: 'sso', name: 'SSO'}, {link: 'bconfig', name: 'BitcoinD Config'}];
+  public lnImplementationStr = '';
+  public links = [{link: 'node', name: 'Node'}, {link: 'services', name: 'Services'}, {link: 'lnconfig', name: this.lnImplementationStr}];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -34,11 +35,25 @@ export class SettingsComponent implements OnInit, OnDestroy{
     });
     this.store.select('root').pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      this.showBitcoind = false;
+      this.showLnConfig = false;
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
-      if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
-        this.showBitcoind = true;
+      switch (this.selNode.lnImplementation.toUpperCase()) {
+        case 'CLT':
+          this.lnImplementationStr = 'C-Lightning Config';
+          break;
+      
+        case 'ECL':
+          this.lnImplementationStr = 'Eclair Config';
+          break;
+
+        default:
+          this.lnImplementationStr = 'LND Config';
+          break;
+      }
+      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
+        this.links[2].name = this.lnImplementationStr;
+        this.showLnConfig = true;
       }
     });
   }
