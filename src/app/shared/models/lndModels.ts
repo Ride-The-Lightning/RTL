@@ -456,6 +456,7 @@ export interface Transaction {
   block_height?: number;
   tx_hash?: string;
   amount?: string;
+  label?: string;
 }
 
 export interface UTXO {
@@ -465,6 +466,7 @@ export interface UTXO {
   pk_script?: string;
   outpoint?: {txid_bytes?: string; txid_str?: string; output_index?: number;};
   confirmations?: string;
+  label?: string;
 }
 
 export interface SwitchReq {

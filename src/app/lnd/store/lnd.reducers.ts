@@ -8,6 +8,9 @@ import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 import * as LNDActions from './lnd.actions';
 
+let flgTransactionsSet = false;
+let flgUTXOsSet = false;
+
 export interface LNDState {
   initialAPIResponseStatus: String[];
   effectErrors: ErrorPayload[];
@@ -228,11 +231,32 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         totalInvoices: action.payload
       };
     case LNDActions.SET_TRANSACTIONS_LND:
+      flgTransactionsSet = true;
+      if (action.payload.length && flgUTXOsSet) {
+        let modifiedUTXOs = [...state.utxos];
+        modifiedUTXOs.forEach(utxo => {
+          let foundTransaction = action.payload.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+          utxo.label = foundTransaction.label ? foundTransaction.label : '';
+        });
+        return {
+          ...state,
+          utxos: modifiedUTXOs,
+          transactions: action.payload
+        };
+      }
       return {
         ...state,
         transactions: action.payload
       };
     case LNDActions.SET_UTXOS_LND:
+      flgUTXOsSet = true;
+      if (action.payload.length && flgTransactionsSet) {
+        let transactions = [...state.transactions];
+        action.payload.forEach(utxo => {
+          let foundTransaction = transactions.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+          utxo.label = foundTransaction.label ? foundTransaction.label : '';
+        });
+      }
       return {
         ...state,
         utxos: action.payload

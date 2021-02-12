@@ -122,6 +122,7 @@ exports.getUTXOs = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
   request.post(options).then((body) => {
+    logger.info({fileName: 'Wallet', msg: 'UTXO List Response: ' + JSON.stringify(body)});
     res.status(200).json(body.utxos ? body.utxos : []);
   })
   .catch(errRes => {
@@ -155,6 +156,7 @@ exports.bumpFee = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
+    logger.info({fileName: 'Wallet', msg: 'Bump Fee Response: ' + JSON.stringify(body)});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -168,6 +170,96 @@ exports.bumpFee = (req, res, next) => {
     logger.error({fileName: 'Wallet', lineNum: 170, msg: 'Bump Fee Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Bump fee failed!",
+      error: err.error
+    });
+  });
+}
+
+exports.labelTransaction = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/tx/label';
+  options.form = {};
+  options.form.txid = req.body.txid;
+  options.form.label = req.body.label;
+  options.form.overwrite = req.body.overwrite;
+  options.form = JSON.stringify(options.form);
+  logger.info({fileName: 'Wallet', msg: 'Label Transaction Options: ' + JSON.stringify(options.form)});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Wallet', msg: 'Label Transaction Post Response: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Wallet', lineNum: 253, msg: 'Label Transaction Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Transaction label failed!",
+      error: err.error
+    });
+  });
+}
+
+exports.leaseUTXO = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/lease';
+  options.form = {};
+  options.form.id = req.body.txid;
+  options.form.outpoint = {
+    txid_bytes: req.body.txid,
+    output_index: req.body.outputIndex
+  };
+  options.form = JSON.stringify(options.form);
+  logger.info({fileName: 'Wallet', msg: 'UTXO Lease Options: ' + options.form});
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Wallet', msg: 'UTXO Lease Response: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Wallet', lineNum: 197, msg: 'Lease UTXO Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Lease UTXO failed!",
+      error: err.error
+    });
+  });
+}
+
+exports.releaseUTXO = (req, res, next) => {
+  options = common.getOptions();
+  options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/release';
+  options.form = {};
+  options.form.id = req.body.txid;
+  options.form.outpoint = {
+    txid_bytes: req.body.txid,
+    output_index: req.body.outputIndex
+  };
+  options.form = JSON.stringify(options.form);
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Wallet', msg: 'UTXO Release Response: ' + JSON.stringify(body)});
+    res.status(200).json(body);
+  })
+  .catch(errRes => {
+    let err = JSON.parse(JSON.stringify(errRes));
+    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
+      delete err.options.headers['Grpc-Metadata-macaroon'];
+    }
+    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
+      delete err.response.request.headers['Grpc-Metadata-macaroon'];
+    }
+    logger.error({fileName: 'Wallet', lineNum: 226, msg: 'Release UTXO Error: ' + JSON.stringify(err)});
+    return res.status(500).json({
+      message: "Release UTXO failed!",
       error: err.error
     });
   });

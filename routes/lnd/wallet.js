@@ -8,5 +8,8 @@ router.get("/updateSelNodeOptions", authCheck, WalletController.updateSelNodeOpt
 router.get("/getUTXOs", authCheck, WalletController.getUTXOs);
 router.post("/wallet/:operation", authCheck, WalletController.operateWallet);
 router.post("/bumpfee", authCheck, WalletController.bumpFee);
+router.post("/label", authCheck, WalletController.labelTransaction);
+router.post("/lease", authCheck, WalletController.leaseUTXO);
+router.post("/release", authCheck, WalletController.releaseUTXO);
 
 module.exports = router;
