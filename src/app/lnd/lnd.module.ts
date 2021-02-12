@@ -53,6 +53,7 @@ import { ChannelRebalanceComponent } from './peers-channels/channels/channel-reb
 import { CloseChannelComponent } from './peers-channels/channels/close-channel-modal/close-channel.component';
 import { OpenChannelComponent } from './peers-channels/channels/open-channel-modal/open-channel.component';
 import { ChannelInformationComponent } from './peers-channels/channels/channel-information-modal/channel-information.component';
+import { OnChainLabelModalComponent } from './on-chain/on-chain-label-modal/on-chain-label-modal.component';
 import { OnChainSendModalComponent } from './on-chain/on-chain-send-modal/on-chain-send-modal.component';
 import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { LightningSendPaymentsComponent } from './transactions/send-payment-modal/send-payment.component';
@@ -121,7 +122,8 @@ import { LNDUnlockedGuard } from '../shared/services/auth.guard';
     CloseChannelComponent,
     CreateInvoiceComponent,
     OnChainSendComponent,
-    OnChainSendModalComponent
+    OnChainSendModalComponent,
+    OnChainLabelModalComponent
   ],  
   providers: [
     LNDUnlockedGuard

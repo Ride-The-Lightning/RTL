@@ -82,31 +82,3 @@ exports.postTransactions = (req, res, next) => {
     });
   });
 };
-
-exports.labelTransaction = (req, res, next) => {
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v2/wallet/tx/label';
-  options.form = {};
-  options.form.txid = req.body.txid;
-  options.form.label = req.body.label;
-  options.form.overwrite = req.body.overwrite;
-  options.form = JSON.stringify(options.form);
-  request.post(options).then((body) => {
-    logger.info({fileName: 'Transactions', msg: 'Label Transaction Post Response: ' + JSON.stringify(body)});
-    res.status(200).json(body);
-  })
-  .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
-      delete err.options.headers['Grpc-Metadata-macaroon'];
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
-      delete err.response.request.headers['Grpc-Metadata-macaroon'];
-    }
-    logger.error({fileName: 'Wallet', lineNum: 253, msg: 'Label Transaction Error: ' + JSON.stringify(err)});
-    return res.status(500).json({
-      message: "Transaction label failed!",
-      error: err.error
-    });
-  });
-}

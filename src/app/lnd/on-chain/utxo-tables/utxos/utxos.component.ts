@@ -1,6 +1,6 @@
-import { Component, ViewChild, Input, OnChanges } from '@angular/core';
+import { Component, ViewChild, Input, OnChanges, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -11,6 +11,7 @@ import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTyp
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
+import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-label-modal.component';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -23,7 +24,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
   ]  
 })
-export class OnChainUTXOsComponent implements OnChanges {
+export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() numDustUTXOs = 0;
@@ -39,8 +40,9 @@ export class OnChainUTXOsComponent implements OnChanges {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -107,17 +109,14 @@ export class OnChainUTXOsComponent implements OnChanges {
   }
 
   onLabelUTXO(utxo: UTXO) {
-    console.warn('Label UTXO: ' + JSON.stringify(utxo));
-    this.dataService.labelUTXO(utxo.outpoint.txid_bytes, 'Test Label', false);
+    this.store.dispatch(new RTLActions.OpenAlert({ data: {
+      utxo: utxo,
+      component: OnChainLabelModalComponent
+    }}));
   }
 
   onLeaseUTXO(utxo: UTXO) {
-    console.warn('Lease UTXO: ' + JSON.stringify(utxo));
     this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
-  }
-
-  onReleaseUTXO(utxo: UTXO) {
-    console.warn('Release UTXO: ' + JSON.stringify(utxo));
   }
 
   onDownloadCSV() {
@@ -126,4 +125,10 @@ export class OnChainUTXOsComponent implements OnChanges {
     }
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next();
+      completeSub.complete();
+    });
+  }
 }

@@ -14,6 +14,7 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
+import * as LNDActions from '../../lnd/store/lnd.actions';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
@@ -151,41 +152,26 @@ export class DataService implements OnInit, OnDestroy {
   }
 
   labelUTXO(txid: string, label: string, overwrite: boolean = true) {
-    let labelBody: any = {txid: txid, label: label, overwrite: overwrite};
-    this.store.dispatch(new RTLActions.OpenSpinner('Labelling UTXO...'));
-    return this.httpClient.post(this.childAPIUrl + environment.TRANSACTIONS_API + '/label', labelBody)
-    .pipe(takeUntil(this.unSubs[7]),
-    map((res: any) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
-      // this.snackBar.open('Successfully bumped the fee. Use the block explorer to verify transaction.');
-      return res;
-    }),
-    catchError(err => {
-      this.handleErrorWithoutAlert('Label UTXO', err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    }));
+    let labelBody = {txid: txid, label: label, overwrite: overwrite};
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/label', labelBody);
   }
 
   leaseUTXO(txid: string, output_index: number) {
-    try {
-      let leaseBody: any = {txid: txid, outputIndex: output_index};
-      this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody);
-    } catch (error) {
-      console.warn(error);
-    }
-    // let leaseBody: any = {txid: txid, outputIndex: output_index};
-    // this.store.dispatch(new RTLActions.OpenSpinner('Leasing UTXO...'));
-    // return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
-    // .pipe(takeUntil(this.unSubs[8]),
-    // map((res: any) => {
-    //   this.store.dispatch(new RTLActions.CloseSpinner());
-    //   // this.snackBar.open('Successfully bumped the fee. Use the block explorer to verify transaction.');
-    //   return res;
-    // }),
-    // catchError(err => {
-    //   this.handleErrorWithoutAlert('Lease UTXO', err);
-    //   return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    // }));
+    let leaseBody: any = {txid: txid, outputIndex: output_index};
+    this.store.dispatch(new RTLActions.OpenSpinner('Leasing UTXO...'));
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
+    .pipe(takeUntil(this.unSubs[7]))
+    .subscribe((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new LNDActions.FetchTransactions());
+      this.store.dispatch(new LNDActions.FetchUTXOs());
+      const expirationDate = new Date(res.expiration * 1000);
+      const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
+      this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().substring(4, 21).replace(' ', '/').replace(' ', '/').toUpperCase() + '.');
+    }, err => {
+      this.handleErrorWithoutAlert('Lease UTXO', err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    });
   }
 
   getForwardingHistory(start: string, end: string) {
