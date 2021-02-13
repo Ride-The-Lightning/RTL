@@ -65,13 +65,13 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
+      this.displayedColumns = ['creation_date', 'value', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'settle_date', 'value', 'amt_paid_sat', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'actions'];
