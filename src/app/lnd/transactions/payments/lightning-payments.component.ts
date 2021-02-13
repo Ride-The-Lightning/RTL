@@ -63,16 +63,16 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupValue', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'hops', 'actions'];

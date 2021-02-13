@@ -89,16 +89,16 @@
         <button tabindex="19" class="btn-close-x p-0" (click)="flgShowInfo=false;stepNumber=1;" mat-button>X</button>
       </div>
     </mat-card-header>
-    <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center">
+    <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
       <rtl-boltz-swapout-info-graphics fxFlex="100" *ngIf="direction === swapTypeEnum.SWAP_OUT" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-boltz-swapout-info-graphics>
       <rtl-boltz-swapin-info-graphics fxFlex="100" *ngIf="direction === swapTypeEnum.SWAP_IN" [(stepNumber)]="stepNumber" [animationDirection]="animationDirection"></rtl-boltz-swapin-info-graphics>
     </mat-card-content>
-    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end">
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large">
       <span *ngFor="let i of [1, 2, 3, 4, 5];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
-    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end">
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end" class="padding-gap-x-large">
       <button *ngIf="stepNumber === 5" mat-stroked-button class="mr-1" color="primary" tabindex="15" type="button" (click)="onReadMore()">Read More</button>
       <button *ngIf="stepNumber === 5" mat-flat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(4)">Back</button>
       <button *ngIf="stepNumber === 5" mat-flat-button color="primary" tabindex="17" type="button" (click)="flgShowInfo=false;stepNumber=1;">Close</button>

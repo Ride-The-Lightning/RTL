@@ -45,7 +45,7 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;
-        this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 10000);
+        this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000);
         this.numDustUtxos = this.dustUtxos.length;
       }
       if (this.flgLoading[0] !== 'error') {

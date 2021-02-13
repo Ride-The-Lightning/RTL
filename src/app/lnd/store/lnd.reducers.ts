@@ -236,7 +236,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         let modifiedUTXOs = [...state.utxos];
         modifiedUTXOs.forEach(utxo => {
           let foundTransaction = action.payload.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
-          utxo.label = foundTransaction.label ? foundTransaction.label : '';
+          utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
         });
         return {
           ...state,
@@ -254,7 +254,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         let transactions = [...state.transactions];
         action.payload.forEach(utxo => {
           let foundTransaction = transactions.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
-          utxo.label = foundTransaction.label ? foundTransaction.label : '';
+          utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
         });
       }
       return {

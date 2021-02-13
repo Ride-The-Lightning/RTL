@@ -64,10 +64,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'remote_alias', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
