@@ -26,6 +26,8 @@ export class Settings {
 
 export class Authentication {
   constructor(
+    public swapMacaroonPath: string,
+    public boltzMacaroonPath: string,
     public configPath?: string
   ) { }
 }

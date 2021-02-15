@@ -53,7 +53,6 @@ export class LoopComponent implements OnInit {
       this.storedSwaps = swaps;
       this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
     }, (err) => {
-      console.warn('HERE');
       this.flgLoading[0] = 'error';
       this.emptyTableMessage = err.message ? err.message : 'No loop ' + ((this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'in' : 'out') +  ' available.';
     });

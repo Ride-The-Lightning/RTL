@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faTools, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
 })
 export class NodeSettingsComponent implements OnInit, OnDestroy {
   public faExclamationTriangle = faExclamationTriangle;
-  public faTools = faTools;
+  public faMoneyBillAlt = faMoneyBillAlt;
   public faPaintBrush = faPaintBrush;
   public faInfoCircle = faInfoCircle;
   public selNode: ConfigSettingsNode;
@@ -38,7 +38,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   public showSettingOption = true;
   public appConfig: RTLConfiguration;
   public previousSettings: Settings;
-  public previousDefaultNode = 0;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
@@ -62,7 +61,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
         this.selNode.settings.currencyUnit = null;
       }
       this.previousSettings = JSON.parse(JSON.stringify(this.selNode.settings));
-      this.previousDefaultNode = this.appConfig.defaultNodeIndex;
       this.logger.info(rtlStore);
     });
   }
@@ -89,10 +87,9 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
 
   onUpdateSettings():boolean|void {
     if(this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) { return true; }
-    let defaultNodeIndex = (this.previousDefaultNode !== this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : null;
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings, defaultNodeIndex: defaultNodeIndex}));
+    this.store.dispatch(new RTLActions.OpenSpinner('Updating Node Settings...'));
+    this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings}));
     this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));

@@ -10,5 +10,7 @@ router.get("/config/:nodeType", authCheck, RTLConfController.getConfig);
 router.get("/file", authCheck, RTLConfController.getFile);
 router.post("/updateSelNode", RTLConfController.updateSelectedNode);
 router.post("/updateDefaultNode", RTLConfController.updateDefaultNode);
+router.post("/updateServiceSettings", RTLConfController.updateServiceSettings);
+router.post("/updateSSO", RTLConfController.updateSSO);
 router.get("/rates", RTLConfController.getCurrencyRates);
 module.exports = router;

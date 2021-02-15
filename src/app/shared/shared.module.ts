@@ -57,7 +57,6 @@ import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { SSOSettingsComponent } from './components/settings/sso-settings/sso-settings.component';
 import { BitcoinConfigComponent } from './components/settings/bitcoin-config/bitcoin-config.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
@@ -231,7 +230,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoginComponent,
     HelpComponent,
     SettingsComponent,
-    SSOSettingsComponent,
     BitcoinConfigComponent,
     AuthSettingsComponent,
     AppSettingsComponent,
@@ -269,7 +267,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     LoginComponent,
     HelpComponent,
     SettingsComponent,
-    SSOSettingsComponent,
     BitcoinConfigComponent,
     AuthSettingsComponent,
     AppSettingsComponent,

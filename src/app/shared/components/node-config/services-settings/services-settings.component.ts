@@ -3,7 +3,7 @@ import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faTools } from '@fortawesome/free-solid-svg-icons';
+import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 
@@ -15,7 +15,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./services-settings.component.scss']
 })
 export class ServicesSettingsComponent implements OnInit, OnDestroy {
-  public faTools = faTools;
+  public faLayerGroup = faLayerGroup;
   public selNode: ConfigSettingsNode;
   public appConfig: RTLConfiguration;
   public links = [{link: 'loop', name: 'Loop'}, {link: 'boltz', name: 'Boltz'}];

@@ -64,7 +64,6 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   }
 
   onTransactionClick(selTransaction: Transaction) {
-    console.warn(selTransaction);
     const reorderedTransactions = [
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
