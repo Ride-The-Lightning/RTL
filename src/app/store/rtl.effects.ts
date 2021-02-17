@@ -393,7 +393,7 @@ export class RTLEffects implements OnDestroy {
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '406', errorMessage: 'Single Sign On Failed!' }});
         } else {
-          this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
+          this.router.navigate(['./login']);
         }
         return of({type: RTLActions.VOID});
       })

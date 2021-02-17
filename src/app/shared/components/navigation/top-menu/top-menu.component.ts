@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -19,7 +19,8 @@ import * as RTLActions from '../../../../store/rtl.actions';
 @Component({
   selector: 'rtl-top-menu',
   templateUrl: './top-menu.component.html',
-  styleUrls: ['./top-menu.component.scss']
+  styleUrls: ['./top-menu.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
