@@ -119,11 +119,18 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
   }
 
   onLeaseUTXO(utxo: UTXO) {
+    const utxoDetails = [
+      [{key: 'txid_str', value: utxo.outpoint.txid_str, title: 'ID', width: 100}],
+      [{key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100}]
+    ];
+    if (utxo.label) {
+      utxoDetails.splice(1, 0, [{key: 'label', value: utxo.label, title: 'Label', width: 100}]);
+    }
     this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
       type: AlertTypeEnum.CONFIRM,
       alertTitle: 'Lease UTXO',
       informationMessage: 'The UTXO will be leased for 10 minutes.',
-      titleMessage: 'ID: ' + utxo.outpoint.txid_bytes + '\nAmount (Sats): ' + this.decimalPipe.transform(utxo.amount_sat) + (utxo.label ? ' \nLabel: ' + utxo.label : ''),
+      message: utxoDetails,
       noBtnText: 'Cancel',
       yesBtnText: 'Lease UTXO'
     }}));

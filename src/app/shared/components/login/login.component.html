@@ -11,18 +11,21 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="mt-5px mb-0 pr-2">
-          <form (ngSubmit)="onLogin()" #loginForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+          <form #loginForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
             <mat-form-field fxFlex="100" fxLayoutAlign="start">
-              <input autoFocus matInput placeholder="Password" type="password" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
+              <input autoFocus matInput placeholder="Password" [type]="flgShow ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
               <button mat-button matSuffix mat-icon-button aria-label="Show" (click)="flgShow = !flgShow">
                 <mat-icon>{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>              
               <mat-error *ngIf="!password">Password is required.</mat-error>
             </mat-form-field>
-            <p *ngIf="loginErrorMessage !== ''" fxFlex="100" class="color-warn" fxLayoutAlign="start center"><mat-icon class="mr-1 icon-small">close</mat-icon>{{loginErrorMessage}}</p>          
+            <p *ngIf="loginErrorMessage !== ''" fxFlex="100" class="color-warn pre-wrap" fxLayoutAlign="start start">
+              <mat-icon class="mr-1 icon-small">close</mat-icon>
+              {{loginErrorMessage}}
+            </p>
             <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-2">
               <button class="mr-1" mat-stroked-button color="primary" tabindex="2" type="reset" (click)="resetData()">Clear</button>
-              <button mat-flat-button color="primary" tabindex="3" type="submit">Login</button>
+              <button mat-flat-button color="primary" tabindex="3" type="submit" (click)="onLogin()">Login</button>
             </div> 
           </form>
         </mat-card-content>

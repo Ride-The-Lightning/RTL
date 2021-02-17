@@ -70,6 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   resetData() {
     this.password = '';
     this.loginErrorMessage = '';
+    this.flgShow = false;
   }
 
   ngOnDestroy() {

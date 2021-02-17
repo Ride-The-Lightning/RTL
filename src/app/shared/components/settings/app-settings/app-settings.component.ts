@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faWindowRestore, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faWindowRestore, faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
@@ -16,6 +16,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./app-settings.component.scss']
 })
 export class AppSettingsComponent implements OnInit, OnDestroy {
+  public faInfoCircle = faInfoCircle;
   public faWindowRestore = faWindowRestore;
   public faPlus = faPlus;
   public selNode: ConfigSettingsNode;

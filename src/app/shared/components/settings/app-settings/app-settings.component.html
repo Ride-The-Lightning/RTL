@@ -4,26 +4,34 @@
       <fa-icon [icon]="faWindowRestore" class="page-title-img mr-1"></fa-icon>
       <span class="page-title">Default Node</span>
     </div>
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start start">
-      <mat-form-field>
-        <mat-select autoFocus [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
-          <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
-            {{node.lnNode}} ({{node.lnImplementation}})
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div fxLayout="row" class="mt-1">
-        <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="2">Reset</button>
-        <button mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="3">Update</button>
+    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="my-2">
+      <div fxLayout="row" fxFlex="100" class="alert alert-info">
+        <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+        <span>The setting will apply after RTL server restart.</span>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start start">
+        <mat-form-field fxLayout="row" fxLayoutAlign="start start">
+          <mat-select autoFocus [(ngModel)]="appConfig.defaultNodeIndex" tabindex="1" name="defaultNode">
+            <mat-option *ngFor="let node of appConfig.nodes" [value]="node.index">
+              {{node.lnNode}} ({{node.lnImplementation}})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="2">Reset</button>
+          <button mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="3">Update</button>
+        </div>
       </div>
     </div>
-    <mat-divider [inset]="true" class="my-2"></mat-divider>
+    <!-- <mat-divider [inset]="true" class="my-2"></mat-divider> -->
   </form>
-  <div fxLayout="row">
+  <!-- <div fxLayout="row">
     <fa-icon [icon]="faPlus" class="page-title-img mr-1"></fa-icon>
     <span class="page-title">Add New Node</span>
   </div>
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
     <button mat-flat-button color="primary" (click)="onAddNewNode()" tabindex="4" class="my-2">Add Node</button>
-  </div>
+  </div> -->
 </div>

@@ -34,7 +34,7 @@ handleError = (failed, currentTime, errMsg) => {
   } else {
     return {
       message: "Authentication Failed!",
-      error: errMsg + " Application will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more unsuccessful attempts!"
+      error: errMsg + "\nApplication will be locked after " + (ALLOWED_LOGIN_ATTEMPTS - failed.count) + " more unsuccessful attempts!"
     };
   }
 }
