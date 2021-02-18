@@ -1,0 +1,20 @@
+.setup-node-container {
+  max-height: 60rem;
+  min-height: 60rem;
+}
+
+svg.small-svg {
+  height: 50%;
+  min-height: 50%;
+  max-width: 100%;
+}
+
+svg.large-svg {
+  height: 60%;
+  min-height: 60%;
+  max-width: 100%;
+}
+
+.dots-stepper-block {
+  width: 3rem;
+}

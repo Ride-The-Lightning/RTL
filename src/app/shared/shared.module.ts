@@ -60,6 +60,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { BitcoinConfigComponent } from './components/settings/bitcoin-config/bitcoin-config.component';
 import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
 import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
+import { SetupNodeComponent } from './components/settings/app-settings/setup-node/setup-node.component'
 import { NodeConfigComponent } from './components/node-config/node-config.component';
 import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
 import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
@@ -222,7 +223,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     RemoveLeadingZerosPipe,
     MaxValidator,
     MinValidator,
-    AppSettingsComponent,
     SettingsComponent,
     NotFoundComponent,
     SideNavigationComponent,
@@ -233,6 +233,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     BitcoinConfigComponent,
     AuthSettingsComponent,
     AppSettingsComponent,
+    SetupNodeComponent,    
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,
@@ -259,7 +260,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     SwapOutInfoGraphicsComponent
   ],
   declarations: [
-    AppSettingsComponent,
     SettingsComponent,
     NotFoundComponent,
     SideNavigationComponent,
@@ -270,6 +270,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     BitcoinConfigComponent,
     AuthSettingsComponent,
     AppSettingsComponent,
+    SetupNodeComponent,
     NodeConfigComponent,
     LNPConfigComponent,
     NodeSettingsComponent,

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="230px" height="140px" viewBox="528 160 230 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>0.3_Onboarding_LND_Step3.1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
+        <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.508718297   0 0 0 0 0.508320861   0 0 0 0 0.508320861  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-3" x="0" y="0" width="1284" height="53"></rect>
+        <filter x="-0.8%" y="-15.1%" width="101.6%" height="137.7%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-5" x="0" y="0" width="455" height="549" rx="4"></rect>
+        <filter x="-6.2%" y="-4.7%" width="112.3%" height="110.2%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="9" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.191105769 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="0.3_Onboarding_LND_Step3.1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-31" transform="translate(415.000000, 111.000000)">
+            <g id="Group-28" transform="translate(198.000000, 460.000000)">
+                <circle id="Oval" fill="#D9D1FF" cx="4" cy="4" r="4"></circle>
+                <circle id="Oval" fill="#D9D1FF" cx="18" cy="4" r="4"></circle>
+                <circle id="Oval" fill="#5E4EA5" cx="32" cy="4" r="4"></circle>
+                <circle id="Oval" fill="#D9D1FF" cx="46" cy="4" r="4"></circle>
+                <circle id="Oval" fill="#D9D1FF" cx="60" cy="4" r="4"></circle>
+            </g>
+            <g id="Group" transform="translate(113.000000, 51.000000)" fill-rule="nonzero">
+                <ellipse id="Oval" fill="#E6E6E6" cx="43.5" cy="105.5" rx="43.5" ry="4.5"></ellipse>
+                <rect id="Rectangle" fill="#E6E6E6" x="17" y="40" width="53" height="66"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="25" y="63" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="25" y="69" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="25" y="75" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="25" y="81" width="38" height="2"></rect>
+                <path d="M54,12.5101981 C53.9950316,17.7374228 50.1453666,22.1647646 44.9693925,22.8959291 C39.7934184,23.6270937 34.8679782,20.4393343 33.4152139,15.4180308 C31.9624496,10.3967273 34.424941,5.07160268 39.1917666,2.92626607 C43.9585923,0.780929463 49.5775549,2.46895037 52.3728214,6.88605322 C53.4361106,8.56920068 54.0003256,10.5193416 54,12.5101981 Z" id="Path" fill="#E6E6E6"></path>
+                <path d="M52,6.57702067 L42.0920217,17 C41.4693029,15.9856207 38,11.2715006 38,11.2715006 C38.4446138,10.7986931 38.9190709,10.3580224 39.420132,9.95249711 L42.2969904,13.9884443 L50.8397202,5 C51.272955,5.48593176 51.6614514,6.01396548 52,6.57702067 L52,6.57702067 Z" id="Path" fill="#FFFFFF"></path>
+                <ellipse id="Oval" fill="#E6E6E6" cx="185.5" cy="103.5" rx="43.5" ry="4.5"></ellipse>
+                <rect id="Rectangle" fill="#E6E6E6" x="159" y="37" width="53" height="66"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="166" y="74" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="166" y="80" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="166" y="86" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="166" y="92" width="38" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="183" y="48" width="22" height="1"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="183" y="53" width="22" height="1"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="183" y="58" width="22" height="1"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="183" y="64" width="22" height="1"></rect>
+                <path d="M196,10.5101861 C195.995038,15.737413 192.145374,20.1647604 186.969398,20.8959283 C181.793423,21.6270962 176.867979,18.4393365 175.415214,13.4180308 C173.962449,8.39672509 176.424943,3.07159841 181.191772,0.926263601 C185.958601,-1.21907121 191.577565,0.468955417 194.372828,4.88606341 C195.436113,6.56920412 196.000326,8.51933738 196,10.5101861 L196,10.5101861 Z" id="Path" fill="#E6E6E6"></path>
+                <path d="M194,4.57702122 L184.092026,15 C183.469303,13.9856245 180,9.27150275 180,9.27150275 C180.444615,8.79869458 180.919072,8.3580224 181.420132,7.95249466 L184.29699,11.9884433 L192.839736,3 C193.272966,3.48593256 193.661457,4.01396645 194,4.57702122 Z" id="Path" fill="#FFFFFF"></path>
+                <ellipse id="Oval" fill="#3F3D56" cx="115" cy="130.5" rx="51" ry="5.5"></ellipse>
+                <rect id="Rectangle" fill="#5E4EA5" x="84" y="54" width="62" height="77"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="93" y="71" width="44" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="93" y="78" width="44" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="93" y="85" width="44" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="93" y="92" width="44" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="93" y="99" width="44" height="2"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="103" y="107" width="23" height="8"></rect>
+                <path d="M131,21.5150461 C130.99267,29.2314273 125.309832,35.7670312 117.669106,36.8463712 C110.028381,37.9257112 102.757491,33.21997 100.612934,25.8075674 C98.4683779,18.3951648 102.103488,10.5342653 109.140233,7.36734223 C116.176979,4.2004192 124.471639,6.69226552 128.597981,13.2127556 C130.167595,15.6973963 131.000481,18.5761694 131,21.5150461 L131,21.5150461 Z" id="Path" fill="#5E4EA5"></path>
+                <path d="M128,13.3655044 L112.430324,29 C111.451762,27.4784364 106,20.4072399 106,20.4072399 C106.698679,19.6980279 107.444255,19.0370213 108.231637,18.4287328 L112.752412,24.4826573 L126.176708,11 C126.857504,11.7288887 127.467996,12.5209304 128,13.3655044 L128,13.3655044 Z" id="Path" fill="#FFFFFF"></path>
+            </g>
+            <g id="Group-27" transform="translate(25.000000, 336.000000)">
+                <path d="M4,0 L402,0 C404.209139,-4.05812251e-16 406,1.790861 406,4 L406,50 L406,50 L0,50 L0,4 C-2.705415e-16,1.790861 1.790861,4.05812251e-16 4,0 Z" id="Rectangle" fill="#F0F0F0"></path>
+                <text id="Path-to-admin.macaro" font-family="Roboto-Regular, Roboto" font-size="16" font-weight="normal" fill="#494949">
+                    <tspan x="12" y="33">Path to admin.macaroon</tspan>
+                </text>
+                <rect id="Rectangle" stroke="#838383" x="0.5" y="49.5" width="405" height="1"></rect>
+                <text id="info-circle" font-family="FontAwesome5Pro-Solid, Font Awesome 5 Pro" font-size="14" font-weight="700" fill="#84979E">
+                    <tspan x="374" y="32">info-circle</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

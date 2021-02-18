@@ -9,6 +9,7 @@ import { LoggerService } from '../../../services/logger.service';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { SetupNodeComponent } from './setup-node/setup-node.component';
 
 @Component({
   selector: 'rtl-app-settings',
@@ -38,7 +39,9 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
   }
 
   onAddNewNode() {
-    console.warn('ADD NEW NODE');
+    this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35%', minHeight: '56rem', data: {
+      component: SetupNodeComponent
+    }}));
   }
 
   onUpdateSettings():boolean|void {
