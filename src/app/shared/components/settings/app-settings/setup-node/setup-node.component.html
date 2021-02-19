@@ -1,35 +1,34 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="setup-node-container">
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-large">
-    <mat-card-content fxLayout="column" fxFlex="70" fxLayoutAlign="space-between center" class="padding-gap-x-large">
+    <mat-card-content fxLayout="column" fxFlex="75" fxLayoutAlign="space-between stretch">
       <ng-container
-        *ngTemplateOutlet="stepNumber === 1 ? setupStepBlock1: stepNumber === 2 ? setupStepBlock2 : stepNumber === 3 ? setupStepBlock3 : stepNumber === 4 ? setupStepBlock4 : stepNumber === 5 ? setupStepBlock5 : stepNumber === 6 ? setupStepBlock6 : setupStepBlock7">
+        *ngTemplateOutlet="stepNumber === 1 ? setupStepBlock1: stepNumber === 2 ? setupStepBlock2 : stepNumber === 3 ? setupStepBlock3 : stepNumber === 4 ? setupStepBlock4 : stepNumber === 5 ? setupStepBlock5 : stepNumber === 6 ? setupStepBlock6 : stepNumber === 7 ? setupStepBlock7 : setupStepBlock8">
       </ng-container>
     </mat-card-content>
-    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end" class="padding-gap-x-large">
-      <span *ngFor="let i of [1, 2, 3, 4, 5, 6, 7];" (click) = "onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="center end">
+      <span *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8];" (click)="onStepChanged(i)" fxLayoutAlign="center center" class="dots-stepper-block">
         <p class="dot tiny-dot mr-0" [ngClass]="{'dot-primary': stepNumber === i, 'dot-primary-lighter': stepNumber !== i}"></p>
       </span>
     </div>
-    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end" class="padding-gap-x-large">
-      <button *ngIf="stepNumber === 7" mat-flat-button class="mr-1" color="primary" tabindex="16" type="button" (click)="onStepChanged(6)">Back</button>
-      <button *ngIf="stepNumber === 7" mat-flat-button color="primary" tabindex="17" type="button" (click)="onClose()">Close</button>
-      <button *ngIf="stepNumber < 7" mat-stroked-button class="mr-1" color="primary" tabindex="18" type="button" (click)="onClose()">Close</button>
-      <button *ngIf="stepNumber > 1 && stepNumber < 7" mat-flat-button class="mr-1" color="primary" tabindex="19" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
-      <button *ngIf="stepNumber < 7" mat-flat-button color="primary" tabindex="20" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
+    <div fxLayout="row" fxFlex="10" fxLayoutAlign="end end">
+      <button *ngIf="stepNumber === 8" mat-flat-button color="primary" tabindex="19" type="button" (click)="onClose()">Close</button>
+      <button *ngIf="stepNumber < 8" mat-stroked-button class="mr-1" color="primary" tabindex="20" type="button" (click)="onClose()">Close</button>
+      <button *ngIf="stepNumber > 1 && stepNumber < 8" mat-flat-button class="mr-1" color="primary" tabindex="21" type="button" (click)="onStepChanged(stepNumber - 1)">Back</button>
+      <button *ngIf="stepNumber < 8" mat-flat-button color="primary" tabindex="22" type="button" (click)="onStepChanged(stepNumber + 1)">Next</button>
     </div>
   </div>
 </div>
 <ng-template #setupStepBlock1>
   <div class="step-container" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep1"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>Ride The Lightning</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center start">
+      <mat-card-title class="text-center">Ride The Lightning</mat-card-title>
     </div>
-    <div fxFlex="40" fxLayoutAlign="center start">
-      <mat-card-subtitle class="font-size-120">
-        Welcome. This guide will help you configure RTL to work with your Lightning implementation.
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        <span>Welcome. This guide will help you configure RTL to work with your Lightning implementation.</span>
       </mat-card-subtitle>
     </div>
   </div>
@@ -37,101 +36,222 @@
 <ng-template #setupStepBlock2>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep2"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>Lightning Network</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">Lightning Network</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120">
-        What lightning implementation are you running locally?
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        Which lightning implementation do you want to setup?
       </mat-card-subtitle>
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-radio-group fxLayoutAlign="space-between center" color="primary" [(ngModel)]="selectedLNImplementation" tabindex="1" name="implementation" class="px-4">
+          <mat-radio-button *ngFor="let lnImplementation of lnImplementations" [value]="lnImplementation" [checked]="selectedLNImplementation.id === lnImplementation.id" tabindex="2">
+            {{lnImplementation.value}}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
     </div>
   </div>
 </ng-template>
 <ng-template #setupStepBlock3>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>LND Configuration Files</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">Node Name</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120">
-        Locate the folder containing admin.macaroon file.
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        Name of the node for unique identification.
       </mat-card-subtitle>
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-form-field>
+          <input autoFocus matInput placeholder="Node Name" type="text" id="name" name="name" [(ngModel)]="nodeName" tabindex="3" required>
+          <button mat-button matSuffix mat-icon-button matTooltip="Eg.: Local Node LND" tabindex="4">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+          <mat-error *ngIf="!nodeName || nodeName.trim() === ''">Node name is required.</mat-error>
+        </mat-form-field>
+      </div>
     </div>
   </div>
 </ng-template>
 <ng-template #setupStepBlock4>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>LND Configuration Files</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">Macaroon Configuration</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120">
-        Locate the folder containing lnd.config file.
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        Locate the folder containing admin.macaroon file.
       </mat-card-subtitle>
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-form-field>
+          <input autoFocus matInput placeholder="Path to admin.macaroon" type="text" id="macaroon" name="macaroon" [(ngModel)]="macaroonPath" tabindex="5" required>
+          <button mat-button matSuffix mat-icon-button matTooltip="Eg.: ..\\Lnd\\data\\chain\\bitcoin\\testnet" tabindex="6">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+          <mat-error *ngIf="!macaroonPath || macaroonPath.trim() === ''">admin.macaroon is required.</mat-error>
+        </mat-form-field>
+      </div>
     </div>
   </div>
 </ng-template>
 <ng-template #setupStepBlock5>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>LND Configuration Files</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">REST API Urls</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120">
-        Url for LND REST APIs
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        Url for lightning network’s REST APIs.
       </mat-card-subtitle>
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-form-field>
+          <input autoFocus matInput placeholder="LND REST Server Url" type="text" id="restAPI" name="restAPI" [(ngModel)]="restAPIUrl" tabindex="7" required>
+          <button mat-button matSuffix mat-icon-button matTooltip="Eg.: https://localhost:8080" tabindex="8">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
     </div>
   </div>
 </ng-template>
 <ng-template #setupStepBlock6>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>LND Configuration Files</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">User Interface</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120">
-        Do you want to setup a Swap Server? (Optional)
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center">
+        Update default UI settings to customize the layout of the UI.
       </mat-card-subtitle>
+      <div fxLayout="column" fxLayoutAlign="start stretch" class="settings-container">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+          <h4 class="foreground-secondary-text" fxFlex="30" fxLayoutAlign="start center">Enable Logging
+            <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Parameter to turn RTL logging off/on">help</mat-icon>
+          </h4>
+          <mat-radio-group fxFlex="70" fxLayoutAlign="start center" color="primary" [(ngModel)]="enableLogging" name="enableLogging">
+            <mat-radio-button fxFlex="40" tabindex="50" [value]="false" [checked]="!enableLogging" class="mr-4">No</mat-radio-button>
+            <mat-radio-button fxFlex="40" tabindex="50" [value]="true" [checked]="enableLogging" class="mr-4">Yes</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+          <h4 class="foreground-secondary-text" fxFlex="30" fxLayoutAlign="start center">Dashboard Layout
+            <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Select user persona to tailor the data on UI">help</mat-icon>
+          </h4>
+          <mat-radio-group fxFlex="70" fxLayoutAlign="start center" color="primary" [(ngModel)]="selectedUserPersona" tabindex="1" name="userPersona">
+            <mat-radio-button fxFlex="40" *ngFor="let userPersona of userPersonas" [value]="userPersona" [checked]="selectedUserPersona === userPersona" class="mr-4">
+              {{userPersona | titlecase}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+          <h4 class="foreground-secondary-text" fxFlex="30" fxLayoutAlign="start center">Mode
+            <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Select theme modes">help</mat-icon>
+          </h4>
+          <mat-radio-group fxFlex="70" fxLayoutAlign="start center" color="primary" [(ngModel)]="selectedThemeMode" name="themeMode">
+            <mat-radio-button fxFlex="40" tabindex="5" *ngFor="let themeMode of themeModes" [value]="themeMode" [checked]="selectedThemeMode === themeMode" class="mr-4">{{themeMode.name}}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+          <h4 class="foreground-secondary-text" fxFlex="30" fxLayoutAlign="start center">Theme
+            <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Select theme colors">help</mat-icon>
+          </h4>
+          <div fxFlex="70" fxLayoutAlign="start center">
+            <span *ngFor="let themeColor of themeColors" fxLayout="row">
+              <div tabindex="9" [class]="themeColor.id | lowercase" [ngClass]="{'mr-4 skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+            </span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="100">
+          <h4 class="foreground-secondary-text" fxFlex="30" fxLayoutAlign="start center">Fiat Conversion
+            <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Parameter to turn fiat conversion off/on">help</mat-icon>
+          </h4>
+          <mat-form-field fxFlex="70">
+            <mat-select autoFocus [(ngModel)]="selectedCurrencyUnit" [placeholder]="selectedCurrencyUnit === currencyUnits[0] ? 'Disable Fiat Conversion' : 'Fiat Currency'" tabindex="3" required name="currencyUnit" #currencyUnit="ngModel">
+              <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit">
+                {{currencyUnit.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="!selectedCurrencyUnit">Currency unit is required.</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
   </div>
 </ng-template>
 <ng-template #setupStepBlock7>
+  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
+      <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
+    </div>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">Configure File Paths</mat-card-title>
+    </div>
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center pre-wrap">
+        {{'Locate the local folder containing lnd.config/bitcoind.conf files & path to save channel backup file. (Optional)'}}
+      </mat-card-subtitle>
+      <div fxFlex="100" fxLayout="column" fxLayoutAlign="start stretch">
+        <mat-form-field>
+          <input autoFocus matInput placeholder="Path to lnd.conf" type="text" id="config" name="config" [(ngModel)]="configPath" tabindex="13">
+          <button mat-button matSuffix mat-icon-button matTooltip="Eg.: ..\\Local\\Lnd\\lnd.conf" tabindex="14">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field>
+          <input autoFocus matInput placeholder="Path to bitcoind.conf" type="text" id="bconfig" name="bconfig" [(ngModel)]="bConfigPath" tabindex="15">
+          <button mat-button matSuffix mat-icon-button matTooltip="Eg.: ..\\Local\\Bitcoin\\bitcoin.conf" tabindex="16">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field>
+          <input autoFocus matInput placeholder="Path for Channel Backup" type="text" id="backup" name="backup" [(ngModel)]="channelBackupPath" tabindex="17">
+          <button mat-button matSuffix mat-icon-button matTooltip="Default: (RTL root directory)\backup\node-1" tabindex="18">
+            <mat-icon class="mat-icon-suffix">help</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #setupStepBlock8>
   <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
     [@sliderAnimation]="animationDirection">
-    <div [ngClass]="{'color-primary mt-2': true, 'small-svg': screenSize === screenSizeEnum.XS, 'large-svg': screenSize !== screenSizeEnum.XS}">
+    <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep4"></ng-container>
     </div>
-    <div fxFlex="20" fxLayoutAlign="center end">
-      <mat-card-title>Congratulations!</mat-card-title>
+    <div fxFlex="10" fxLayoutAlign="center end">
+      <mat-card-title class="text-center">Congratulations!</mat-card-title>
     </div>
-    <div fxFlex="40">
-      <mat-card-subtitle class="font-size-120 pre-wrap">
-        {{'You’re all set! \nRide the Lightning is now running.'}}
+    <div fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch">
+      <mat-card-subtitle class="font-size-120 text-center pre-wrap">
+        {{'You’re all set! \nThe new node setup is complete. \nIt will be available after RTL server restart.'}}
       </mat-card-subtitle>
     </div>
   </div>
 </ng-template>
 <ng-template #svgStep1>
-  <svg width="245px" height="155px" viewBox="520 190 245 155" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width="230px" height="175px" viewBox="550 200 230 155" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -203,7 +323,7 @@
   </svg>
 </ng-template>
 <ng-template #svgStep2>
-  <svg width="226px" height="105px" viewBox="530 230 226 105" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width="230px" height="175px" viewBox="530 225 230 105" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -271,7 +391,7 @@
   </svg>  
 </ng-template>
 <ng-template #svgStep3>
-  <svg width="230px" height="140px" viewBox="528 160 230 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width="230px" height="175px" viewBox="528 160 230 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -348,7 +468,7 @@
   </svg>  
 </ng-template>
 <ng-template #svgStep4>
-  <svg width="175px" height="175px" viewBox="565 210 175 175" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width="230px" height="175px" viewBox="530 210 230 175" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
         <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">

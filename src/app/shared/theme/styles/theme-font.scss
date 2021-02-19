@@ -109,6 +109,9 @@
     }
     .material-icons {
       font-size: $medium-font-size * 2;
+      &.mat-icon.mat-icon-suffix {
+        font-size: 125%;
+      }
     }
     .mat-step-header .mat-step-icon .mat-icon {
       font-size: initial;
@@ -183,6 +186,9 @@
     }
     .material-icons {
       font-size: $large-font-size * 2.5;
+      &.mat-icon.mat-icon-suffix {
+        font-size: 110%;
+      }
     }
     .mat-expansion-panel-header, .mat-menu-item, .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-option, .mat-select, .mat-selection-list .mat-list-item {
       font-size: $large-font-size !important;
