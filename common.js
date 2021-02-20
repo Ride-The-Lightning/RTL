@@ -12,7 +12,7 @@ common.rtl_sso = 0;
 common.port = 3000;
 common.host = null;
 common.rtl_cookie_path = '';
-common.logout_redirect_link = '/login';
+common.logout_redirect_link = '';
 common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
@@ -152,7 +152,8 @@ common.findNode = (selNodeIndex) => {
 }
 
 common.replaceNode = (selNodeIndex, newNode) => {
-  common.nodes.splice(common.nodes.findIndex((node) => {node.index == selNodeIndex}), 1, newNode);
+  let foundIndex = common.nodes.findIndex((node) => node.index == selNodeIndex);
+  common.nodes.splice(foundIndex, 1, newNode);
   common.selectedNode = common.findNode(selNodeIndex);
 }
 

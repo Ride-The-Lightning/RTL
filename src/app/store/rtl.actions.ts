@@ -2,7 +2,8 @@ import { Action } from '@ngrx/store';
 
 import { ErrorPayload } from '../shared/models/errorPayload';
 import { DialogConfig } from '../shared/models/alertData';
-import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
+import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SSO } from '../shared/models/RTLconfig';
+import { ServicesEnum } from '../shared/services/consts-enums-functions';
 
 export const VOID = 'VOID';
 export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
@@ -24,9 +25,11 @@ export const FETCH_STORE = 'FETCH_STORE';
 export const SET_STORE = 'SET_STORE';
 export const FETCH_RTL_CONFIG = 'FETCH_RTL_CONFIG';
 export const SET_RTL_CONFIG = 'SET_RTL_CONFIG';
+export const SAVE_SSO = 'SAVE_SSO';
 export const SAVE_SETTINGS = 'SAVE_SETTINGS';
 export const TWO_FA_SAVE_SETTINGS = 'TWO_FA_SAVE_SETTINGS';
 export const SET_SELECTED_NODE = 'SET_SELECTED_NODE';
+export const UPDATE_SERVICE_SETTINGS = 'UPDATE_SERVICE_SETTINGS';
 export const SET_NODE_DATA = 'SET_NODE_DATA';
 export const IS_AUTHORIZED = 'IS_AUTHORIZED';
 export const IS_AUTHORIZED_RES = 'IS_AUTHORIZED_RES';
@@ -125,7 +128,7 @@ export class SetRTLConfig implements Action {
 
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
-  constructor(public payload: {settings: Settings, defaultNodeIndex?: number}) {}
+  constructor(public payload: {settings?: Settings, defaultNodeIndex?: number}) {}
 }
 
 export class TwoFASaveSettings implements Action {
@@ -138,9 +141,19 @@ export class SetSelelectedNode implements Action {
   constructor(public payload: { lnNode: ConfigSettingsNode, isInitialSetup: boolean }) {}
 }
 
+export class UpdateServiceSettings implements Action {
+  readonly type = UPDATE_SERVICE_SETTINGS;
+  constructor(public payload: { service: ServicesEnum, settings: any }) {}
+}
+
 export class SetNodeData implements Action {
   readonly type = SET_NODE_DATA;
   constructor(public payload: GetInfoRoot) {}
+}
+
+export class SaveSSO implements Action {
+  readonly type = SAVE_SSO;
+  constructor(public payload: SSO) {}
 }
 
 export class Logout implements Action {
@@ -193,5 +206,5 @@ export type RTLActions = ClearEffectErrorRoot | EffectErrorRoot |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
   UpdateSelectedNodeOptions | ResetRootStore |
-  SetSelelectedNode | SetNodeData |
+  SetSelelectedNode | SetNodeData | SaveSSO | UpdateServiceSettings |
   Logout | ResetPassword | ResetPasswordRes | FetchFile | ShowFile;

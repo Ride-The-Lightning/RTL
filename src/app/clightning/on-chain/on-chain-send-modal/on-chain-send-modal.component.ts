@@ -116,7 +116,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.commonService.isVersionCompatible(this.information.version, '0.9.0')
         && this.commonService.isVersionCompatible(this.information.api_version, '0.4.0');
       this.utxos = this.commonService.sortAscByKey(rtlStore.utxos.filter(utxo => utxo.status === 'confirmed'), 'value');
-      console.warn(this.utxos);
       this.logger.info(rootStore);
       this.logger.info(rtlStore);
     });

@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
   selector: 'rtl-ecl-root',
   templateUrl: './ecl-root.component.html',
-  styleUrls: ['./ecl-root.component.scss']
+  styleUrls: ['./ecl-root.component.scss'],
+  animations: [routeAnimation]
 })
 export class ECLRootComponent {
   loading = false;

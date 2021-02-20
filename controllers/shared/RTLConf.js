@@ -37,11 +37,9 @@ exports.getRTLConfig = (req, res, next) => {
       if (common.nodes && common.nodes.length > 0) {
         common.nodes.forEach((node, i) => {
           const authentication = {};
-          if(node.config_path) {
-            authentication.configPath = node.config_path;
-          } else {
-            authentication.configPath = '';
-          }
+          authentication.configPath = (node.config_path) ? node.config_path : '';
+          authentication.swapMacaroonPath = (node.swap_macaroon_path) ? node.swap_macaroon_path : '';
+          authentication.boltzMacaroonPath = (node.boltz_macaroon_path) ? node.boltz_macaroon_path : '';
           const settings = {};
           settings.userPersona = node.user_persona ? node.user_persona : 'MERCHANT';
           settings.themeMode = (node.theme_mode) ? node.theme_mode : 'DAY';
@@ -96,14 +94,14 @@ exports.updateUISettings = (req, res, next) => {
   });
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    logger.info({fileName: 'RTLConf', msg: 'Updating Application Node Settings Succesful!'});
-    res.status(201).json({message: 'Application Node Settings Updated Successfully'});
+    logger.info({fileName: 'RTLConf', msg: 'Updating Node Settings Succesful!'});
+    res.status(201).json({message: 'Node Settings Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 101, msg: 'Updating Application Node Settings Failed!'});
+    logger.error({fileName: 'Conf', lineNum: 101, msg: 'Updating Node Settings Failed!'});
     res.status(500).json({
-      message: "Updating Application Node Settings Failed!",
-      error: 'Updating Application Node Settings Failed!'
+      message: "Updating Node Settings Failed!",
+      error: 'Updating Node Settings Failed!'
     });
   }
 };
@@ -178,8 +176,6 @@ exports.getConfig = (req, res, next) => {
         jsonConfig = JSON.parse(data);
       } else {
         jsonConfig = ini.parse(data);
-        console.warn();
-        console.warn(jsonConfig);
         switch (common.selectedNode.ln_implementation) {
           case 'ECL':
             if (jsonConfig['eclair.api.password']) {
@@ -264,4 +260,78 @@ exports.getCurrencyRates = (req, res, next) => {
       error: err.error
     });
   });
+};
+
+exports.updateSSO = (req, res, next) => {
+  RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  delete config.SSO;
+  config.SSO = req.body.SSO;
+  try {
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    logger.info({fileName: 'RTLConf', msg: 'Updating SSO Succesful!'});
+    res.status(201).json({message: 'SSO Updated Successfully'});
+  }
+  catch (err) {
+    logger.error({fileName: 'RTLConf', lineNum: 279, msg: 'Updating SSO Failed!'});
+    res.status(500).json({
+      message: "Updating SSO Failed!",
+      error: 'Updating SSO Failed!'
+    });
+  }
+};
+
+exports.updateServiceSettings = (req, res, next) => {
+  var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
+  var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+  const selectedNode = common.findNode(common.selectedNode.index);
+  config.nodes.find(node => {
+    if(node.index == common.selectedNode.index) {
+      switch (req.body.service) {
+        case 'LOOP':
+          if (req.body.settings.enable) {
+            node.Settings.swapServerUrl = req.body.settings.serverUrl;
+            node.Authentication.swapMacaroonPath = req.body.settings.macaroonPath;
+            selectedNode.swap_server_url = req.body.settings.serverUrl;
+            selectedNode.swap_macaroon_path = req.body.settings.macaroonPath;
+          } else {
+            delete node.Settings.swapServerUrl;
+            delete node.Authentication.swapMacaroonPath;
+            delete selectedNode.swap_server_url;
+            delete selectedNode.swap_macaroon_path;
+          }
+          break;
+      
+        case 'BOLTZ':
+          if (req.body.settings.enable) {
+            node.Settings.boltzServerUrl = req.body.settings.serverUrl;
+            node.Authentication.boltzMacaroonPath = req.body.settings.macaroonPath;
+            selectedNode.boltz_server_url = req.body.settings.serverUrl;
+            selectedNode.boltz_macaroon_path = req.body.settings.macaroonPath;
+          } else {
+            delete node.Settings.boltzServerUrl;
+            delete node.Authentication.boltzMacaroonPath;
+            delete selectedNode.boltz_server_url;
+            delete selectedNode.boltz_macaroon_path;
+          }
+          break;
+
+        default:
+          break;
+      }
+      common.replaceNode(common.selectedNode.index, selectedNode);
+    }
+  });
+  try {
+    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    logger.info({fileName: 'RTLConf', msg: 'Updating Service Settings Succesful!'});
+    res.status(201).json({message: 'Service Settings Updated Successfully'});
+  }
+  catch (err) {
+    logger.error({fileName: 'RTLConf', lineNum: 333, msg: 'Updating Service Settings Failed!'});
+    res.status(500).json({
+      message: "Updating Service Settings Failed!",
+      error: 'Updating Service Settings Failed!'
+    });
+  }
 };

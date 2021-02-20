@@ -1,28 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
+import { faCodeBranch, faCog, faLifeRing, faEject, faUserCog } from '@fortawesome/free-solid-svg-icons';
 
 import { GetInfoRoot, ConfigSettingsNode } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { SessionService } from '../../../services/session.service';
 import { GetInfoChain } from '../../../models/lndModels';
 import { environment } from '../../../../../environments/environment';
-
+import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 import { RTLEffects } from '../../../../store/rtl.effects';
+
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
-import { faCodeBranch, faCog, faLifeRing, faEject } from '@fortawesome/free-solid-svg-icons';
-import { AlertTypeEnum } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-top-menu',
   templateUrl: './top-menu.component.html',
-  styleUrls: ['./top-menu.component.scss']
+  styleUrls: ['./top-menu.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TopMenuComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
+  public faUserCog = faUserCog;
   public faCodeBranch = faCodeBranch;
   public faCog = faCog;
   public faLifeRing = faLifeRing;

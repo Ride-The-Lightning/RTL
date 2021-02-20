@@ -163,6 +163,8 @@ export interface AlertData {
 export interface ConfirmationData {
   type: string; // INFORMATION/WARNING/SUCCESS/ERROR
   alertTitle?: string;
+  warningMessage?: string;
+  informationMessage?: string;
   titleMessage?: string;
   message?: any;
   scrollable?: boolean;

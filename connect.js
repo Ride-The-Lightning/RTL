@@ -253,22 +253,22 @@ connect.setSSOParams = (config) => {
 	} else if (config.SSO && config.SSO.rtlSSO) {
 		common.rtl_sso = config.SSO.rtlSSO;
 	}
+ 
+  if (process.env.RTL_COOKIE_PATH) {
+    common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
+  } else if (config.SSO && config.SSO.rtlCookiePath) {
+    common.rtl_cookie_path = config.SSO.rtlCookiePath;
+  } else {
+    common.rtl_cookie_path = '';
+  }
 
-	if (+common.rtl_sso) {
-    if (process.env.LOGOUT_REDIRECT_LINK) {
-      common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
-    } else if (config.SSO && config.SSO.logoutRedirectLink) {
-      common.logout_redirect_link = config.SSO.logoutRedirectLink;
-    }
-    
-    if (process.env.RTL_COOKIE_PATH) {
-      common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
-    } else if (config.SSO && config.SSO.rtlCookiePath) {
-      common.rtl_cookie_path = config.SSO.rtlCookiePath;
-    } else {
-      common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
-    }
+  if (process.env.LOGOUT_REDIRECT_LINK) {
+    common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+  } else if (config.SSO && config.SSO.logoutRedirectLink) {
+    common.logout_redirect_link = config.SSO.logoutRedirectLink;
+  }
 
+  if (+common.rtl_sso) {
     if (!common.rtl_cookie_path || common.rtl_cookie_path.trim() === '') {
       errMsg = 'Please set rtlCookiePath value for single sign on option!';
     } else {

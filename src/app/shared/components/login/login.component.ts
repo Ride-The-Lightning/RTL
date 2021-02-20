@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public rtlCookiePath = '';
   public accessKey = '';
   public loginErrorMessage = '';
+  public flgShow = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) { }
@@ -69,6 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   resetData() {
     this.password = '';
     this.loginErrorMessage = '';
+    this.flgShow = false;
   }
 
   ngOnDestroy() {

@@ -1,5 +1,7 @@
 import { Component, ViewChild, Input, OnChanges, OnDestroy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,6 +17,7 @@ import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { RTLEffects } from '../../../../store/rtl.effects';
 
 @Component({
   selector: 'rtl-on-chain-utxos',
@@ -42,7 +45,7 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -116,7 +119,28 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
   }
 
   onLeaseUTXO(utxo: UTXO) {
-    this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
+    const utxoDetails = [
+      [{key: 'txid_str', value: utxo.outpoint.txid_str, title: 'Transaction ID', width: 100}],
+      [{key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100}]
+    ];
+    if (utxo.label) {
+      utxoDetails.splice(1, 0, [{key: 'label', value: utxo.label, title: 'Label', width: 100}]);
+    }
+    this.store.dispatch(new RTLActions.OpenConfirmation({ data: { 
+      type: AlertTypeEnum.CONFIRM,
+      alertTitle: 'Lease UTXO',
+      informationMessage: 'The UTXO will be leased for 10 minutes.',
+      message: utxoDetails,
+      noBtnText: 'Cancel',
+      yesBtnText: 'Lease UTXO'
+    }}));
+    this.rtlEffects.closeConfirm
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe(confirmRes => {
+      if (confirmRes) {
+        this.dataService.leaseUTXO(utxo.outpoint.txid_bytes, utxo.outpoint.output_index);
+      }
+    });
   }
 
   onDownloadCSV() {

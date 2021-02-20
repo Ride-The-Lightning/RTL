@@ -20,7 +20,7 @@ export const MENU_DATA: MenuRootNode = {
       {id: 41, parentId: 4, name: 'Loop', iconType: 'FA', icon: faInfinity, link: '/services/loop', userPersona: UserPersonaEnum.ALL},
       {id: 42, parentId: 4, name: 'Boltz', iconType: 'SVG', icon: 'boltzIconBlock', link: '/services/boltz', userPersona: UserPersonaEnum.ALL}
     ]},
-    {id: 5, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
+    {id: 5, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL},
     {id: 6, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}
   ],
   CLChildren: [
@@ -36,8 +36,8 @@ export const MENU_DATA: MenuRootNode = {
       {id: 37, parentId: 3, name: 'Fee Rates', iconType: 'FA', icon: faPercentage, link: '/cl/rates', userPersona: UserPersonaEnum.OPERATOR},
       {id: 38, parentId: 3, name: 'Node/Fee Rates', iconType: 'FA', icon: faServer, link: '/cl/rates', userPersona: UserPersonaEnum.MERCHANT}
       ]},
-    {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
-    {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+    {id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL},
+    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
   ],
   ECLChildren: [
     {id: 1, parentId: 0, name: 'Dashboard', iconType: 'FA', icon: faTachometerAlt, link: '/ecl/home', userPersona: UserPersonaEnum.ALL},
@@ -49,8 +49,8 @@ export const MENU_DATA: MenuRootNode = {
       {id: 34, parentId: 3, name: 'Reports', iconType: 'FA', icon: faChartBar, link: '/ecl/reports', userPersona: UserPersonaEnum.ALL},
       {id: 35, parentId: 3, name: 'Graph Lookup', iconType: 'FA', icon: faSearch, link: '/ecl/lookups', userPersona: UserPersonaEnum.ALL}
       ]},
-    {id: 7, parentId: 0, name: 'Settings', iconType: 'FA', icon: faTools, link: '/settings', userPersona: UserPersonaEnum.ALL},
-    {id: 8, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
+    {id: 4, parentId: 0, name: 'Node Config', iconType: 'FA', icon: faTools, link: '/config', userPersona: UserPersonaEnum.ALL},
+    {id: 5, parentId: 0, name: 'Help', iconType: 'FA', icon: faQuestion, link: '/help', userPersona: UserPersonaEnum.ALL}    
   ]
 };
 

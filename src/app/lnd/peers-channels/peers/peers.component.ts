@@ -20,7 +20,6 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { isNumber } from 'util';
 
 @Component({
   selector: 'rtl-peers',

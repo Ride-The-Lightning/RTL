@@ -180,3 +180,8 @@ export const MONTHS = [
 ];
 
 export const SCROLL_RANGES = ['MONTHLY','YEARLY'];
+
+export enum ServicesEnum {
+  LOOP = 'LOOP',
+  BOLTZ = 'BOLTZ'
+}

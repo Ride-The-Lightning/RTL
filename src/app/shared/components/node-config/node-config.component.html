@@ -1,0 +1,19 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="page-title-container">
+  <fa-icon [icon]="faTools" class="page-title-img mr-1"></fa-icon>
+  <span class="page-title">Node Config</span>
+</div>
+<div fxLayout="column" class="padding-gap-x">
+  <mat-card>
+    <mat-card-content fxLayout="column">
+      <nav mat-tab-nav-bar>
+        <div role="tab" mat-tab-link class="mat-tab-label" [active]="activeLink === links[0].link" (click)="activeLink = links[0].link" routerLink="{{links[0].link}}">{{links[0].name}}</div>
+        <div role="tab" mat-tab-link *ngIf="selNode.lnImplementation.toUpperCase() === 'LND'" class="mat-tab-label" [active]="activeLink === links[1].link" (click)="activeLink = links[1].link" routerLink="{{links[1].link}}" [state]="{ initial: false }">{{links[1].name}}</div>
+        <div role="tab" mat-tab-link *ngIf="showLnConfig" class="mat-tab-label" [active]="activeLink === links[2].link" (click)="activeLink = links[2].link" routerLink="{{links[2].link}}">{{links[2].name}}</div>
+      </nav>
+      <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+  

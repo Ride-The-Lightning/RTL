@@ -1,0 +1,21 @@
+<div fxLayout="column" fxFlex="100">
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="start start">
+    <div *ngIf="configData !== '' && fileFormat === 'JSON'" fxFlex="100" class="mb-6">
+      <pre class="pre-wrap">{{configData | json}}</pre>
+      <mat-divider *ngIf="configData !== ''" class="my-1"></mat-divider>
+    </div>
+    <div *ngIf="configData !== '' && (fileFormat === 'INI' || fileFormat === 'HOCON')" fxFlex="100">
+      <mat-list>
+        <mat-list-item *ngFor="let conf of configData; index as i;">
+          <mat-card-subtitle class="my-1">
+            <h2 *ngIf="conf.indexOf('[') >= 0">{{conf}}</h2>
+          </mat-card-subtitle>
+          <mat-card-subtitle class="m-0">
+            <h4 *ngIf="conf.indexOf('[') < 0" class="ml-4">{{conf}}</h4>
+          </mat-card-subtitle>
+          <mat-divider [inset]="true" *ngIf="conf.indexOf('[') < 0"></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>

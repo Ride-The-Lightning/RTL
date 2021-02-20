@@ -224,6 +224,50 @@ export class RTLEffects implements OnDestroy {
   ));
 
   @Effect()
+  updateServicesettings = this.actions$.pipe(
+    ofType(RTLActions.UPDATE_SERVICE_SETTINGS),
+    mergeMap((action: RTLActions.UpdateServiceSettings) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateServiceSettings'));
+      return this.httpClient.post(environment.CONF_API + '/updateServiceSettings', action.payload);
+    }),
+    map((updateStatus: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.info(updateStatus);
+      return {
+        type: RTLActions.OPEN_SNACK_BAR,
+        payload: updateStatus.message + '.'
+      };
+    },
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateServiceSettings', code: err.status, message: err.error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update Service Settings Failed!', environment.CONF_API, err);
+      return of({type: RTLActions.VOID});
+    })
+  ));
+
+  @Effect()
+  ssoSave = this.actions$.pipe(
+    ofType(RTLActions.SAVE_SSO),
+    mergeMap((action: RTLActions.SaveSSO) => {
+      this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSSO'));
+      return this.httpClient.post(environment.CONF_API + '/updateSSO', { SSO: action.payload });
+    }),
+    map((updateStatus: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.logger.info(updateStatus);
+      return {
+        type: RTLActions.OPEN_SNACK_BAR,
+        payload:updateStatus.message + '.'
+      };
+    },
+    catchError((err) => {
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSSO', code: err.status, message: err.error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update SSO Failed!', environment.CONF_API, err);
+      return of({type: RTLActions.VOID});
+    })
+  ));
+
+  @Effect()
   twoFASettingSave = this.actions$.pipe(
     ofType(RTLActions.TWO_FA_SAVE_SETTINGS),
     mergeMap((action: RTLActions.TwoFASaveSettings) => {
@@ -236,8 +280,8 @@ export class RTLEffects implements OnDestroy {
       return { type: RTLActions.VOID };
     },
     catchError((err) => {
-      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Update2FASettings', code: (!err.length) ? err.status : err[0].status, message: (!err.length) ? err.error.error : err[0].error.error }));
-      this.handleErrorWithAlert('ERROR', 'Update 2FA Settings Failed!', environment.CONF_API, (!err.length) ? err : err[0]);
+      this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'Update2FASettings', code: err.status, message: err.error.error }));
+      this.handleErrorWithAlert('ERROR', 'Update 2FA Settings Failed!', environment.CONF_API, err);
       return of({type: RTLActions.VOID});
     })
   ));
@@ -349,7 +393,7 @@ export class RTLEffects implements OnDestroy {
         if (+rootStore.appConfig.sso.rtlSSO) {
           this.router.navigate(['/error'], { state: { errorCode: '406', errorMessage: 'Single Sign On Failed!' }});
         } else {
-          this.router.navigate([rootStore.appConfig.sso.logoutRedirectLink]);
+          this.router.navigate(['./login']);
         }
         return of({type: RTLActions.VOID});
       })
@@ -385,12 +429,13 @@ export class RTLEffects implements OnDestroy {
     if (+store.appConfig.sso.rtlSSO) {
       window.location.href = store.appConfig.sso.logoutRedirectLink;
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['./login']);
     }
     this.sessionService.removeItem('eclUnlocked');
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');
+    this.store.dispatch(new RTLActions.SetNodeData({}));
     this.logger.warn('LOGGED OUT');
     return of();
   }));
