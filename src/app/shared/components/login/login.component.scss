@@ -1,11 +1,17 @@
 .login-container {
-  min-width: 75rem;
-  width: 75rem;
+  height: 90vh;
+
+  & .mat-card {
+    height: 30rem;
+  }
+
   & .rtl-logo-svg {
     width: 100%;
   }
 
-  & .mat-icon-button .mat-icon {
+  & .material-icons.mat-icon {
     font-size: 120%;
+    cursor: pointer;
   }
+  
 }

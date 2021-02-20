@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
   selector: 'rtl-cl-root',
   templateUrl: './cl-root.component.html',
-  styleUrls: ['./cl-root.component.scss']
+  styleUrls: ['./cl-root.component.scss'],
+  animations: [routeAnimation]
 })
 export class CLRootComponent {
   loading = false;

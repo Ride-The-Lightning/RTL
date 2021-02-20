@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { routeAnimation } from '../shared/animation/route-animation';
 
 @Component({
   selector: 'rtl-lnd-root',
   templateUrl: './lnd-root.component.html',
-  styleUrls: ['./lnd-root.component.scss']
+  styleUrls: ['./lnd-root.component.scss'],
+  animations: [routeAnimation]
 })
 export class LNDRootComponent {
   loading = false;

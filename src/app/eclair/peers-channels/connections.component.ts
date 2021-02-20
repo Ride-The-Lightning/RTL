@@ -5,9 +5,6 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
-import { GetInfo, Peer } from '../../shared/models/eclModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
-
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({

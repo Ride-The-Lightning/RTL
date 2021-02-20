@@ -14,6 +14,7 @@ import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
+import { routeAnimation } from './shared/animation/route-animation';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
@@ -21,7 +22,8 @@ import * as fromRTLReducer from './store/rtl.reducers';
 @Component({
   selector: 'rtl-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [routeAnimation]
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
