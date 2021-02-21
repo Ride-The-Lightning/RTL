@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
   <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number}} Sats</mat-hint>
@@ -21,7 +21,7 @@
   </div>
 </div>
 <ng-template #noChannelBlock>
-  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center" class="mt-1">
+  <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1">
     No channels available.
     <button *ngIf="direction === 'Out'" mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
   </div>

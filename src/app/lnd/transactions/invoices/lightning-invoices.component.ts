@@ -65,13 +65,13 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
+      this.displayedColumns = ['creation_date', 'value', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'settle_date', 'value', 'amt_paid_sat', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'memo', 'value', 'actions'];
+      this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'actions'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'settle_date', 'memo', 'value', 'amt_paid_sat', 'actions'];
@@ -131,9 +131,10 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   loadInvoicesTable(invoices) {
-    this.invoices = new MatTableDataSource<Invoice>([...invoices]);
+    this.invoices = invoices ? new MatTableDataSource<Invoice>([...invoices]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sort = this.sort;
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }
@@ -147,7 +148,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter(selFilter: any) {
-    this.invoices.filter = selFilter.value;
+    this.invoices.filter = selFilter.value.trim().toLowerCase();
   }
 
   onPageChange(event: any) {

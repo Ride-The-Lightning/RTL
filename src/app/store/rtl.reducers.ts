@@ -14,8 +14,8 @@ export interface RootState {
   nodeData: GetInfoRoot;
 }
 
-const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'] };
-const initNodeAuthentication = { configPath: '', bitcoindConfigPath: '' };
+const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
+const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
 
 const initRootState: RootState = {
   effectErrorsRoot: [],
@@ -23,7 +23,7 @@ const initRootState: RootState = {
   appConfig: {
     defaultNodeIndex: -1,
     selectedNodeIndex: -1,
-    sso: { rtlSSO: 0, logoutRedirectLink: '/login' },
+    sso: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
     nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
   },
@@ -53,7 +53,7 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
       return {
         ...initRootState,
         appConfig: state.appConfig,
-        selNode: action.payload,
+        selNode: action.payload
       };
     case RTLActions.SET_SELECTED_NODE:
       return {

@@ -1,0 +1,17 @@
+.login-container {
+  height: 90vh;
+
+  & .mat-card {
+    height: 30rem;
+  }
+
+  & .rtl-logo-svg {
+    width: 100%;
+  }
+
+  & .material-icons.mat-icon {
+    font-size: 120%;
+    cursor: pointer;
+  }
+  
+}

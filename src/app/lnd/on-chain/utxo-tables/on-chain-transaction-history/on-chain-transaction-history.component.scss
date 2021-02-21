@@ -1,3 +1,10 @@
+.mat-column-label {
+  flex: 1 1 20%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}
+
 .mat-column-actions {
   min-height: 4.8rem;
 }

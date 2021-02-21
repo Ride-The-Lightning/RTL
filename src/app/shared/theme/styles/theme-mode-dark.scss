@@ -19,6 +19,7 @@
   $background-color: mat-color($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
+  $tooltip-background: rgba(255, 255, 255, 0.9);
 
   .mat-primary {
     color: $primary-darker;
@@ -67,6 +68,11 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
+  // .page-title-container, .page-sub-title-container {
+  //   .mat-input-element, .mat-radio-label-content, .theme-name {
+  //     color: $foreground-text;
+  //   }  
+  // }
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
     color: $primary-darker; 
     cursor: pointer;
@@ -91,9 +97,17 @@
   .chart-legend .legend-label:hover, .chart-legend .legend-label .active .legend-label-text {
     color: $foreground-text !important;
   } 
-  .cdk-overlay-dark-backdrop {
-    background: rgba(255, 255, 255, 0.32);
-  }   
+  .cdk-overlay-container {
+    & .cdk-overlay-dark-backdrop {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    & .cdk-global-overlay-wrapper .mat-dialog-container .spinner-container {
+      color: $foreground-secondary-text;
+      & .mat-progress-spinner circle, .mat-spinner circle {
+        stroke: $foreground-secondary-text;
+      }
+    }
+  }
   .mat-tree {
     background: mat-color($background, dialog);
   }
@@ -134,6 +148,16 @@
     background-color: mat-color($background, dialog);
   }
   svg {
+    & .boltz-icon { stroke:#FFFFFF; stroke-width:4; }
+    & .boltz-icon-fill { fill: #FFFFFF; }
+    & .stroke-color-thicker { stroke:#B6B6B6; stroke-width: 15.3333; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thick { stroke:#B6B6B6; stroke-width: 13.4583; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color { stroke:#B6B6B6; stroke-width: 12.5; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thin { stroke:#B6B6B6; stroke-width: 11.625; stroke-miterlimit: 10; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thiner { stroke:#B6B6B6; stroke-width: 10.125; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .stroke-color-thinest { stroke:#B6B6B6; stroke-width: 9.40381; stroke-linecap:"round"; stroke-linejoin:"round"; }
+    & .fill-color-boltz-bk { fill: #171717; }
+    & .fill-color-0 { fill: #171717; }
     & .fill-color-1 { fill: #232323; }
     & .fill-color-2 { fill: #222222; }
     & .fill-color-3 { fill: #3A3A3A; }
@@ -187,7 +211,9 @@
   }  
 
   .mat-tooltip {
-    background-color: $hover-background-dark;
+    background-color: $tooltip-background;
+    color: $background-color;
+    font-size: 120%;
   }
 
   .mat-slide-toggle.mat-disabled {
@@ -204,16 +230,28 @@
     color: $primary-darker;
   }
 
+  & tr.alert.alert-warn {
+    & .mat-cell, .mat-header-cell, .mat-footer-cell {
+      color: $yellow-alert-color;
+    }
+  }
+
   ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {
     & text {
       fill: $foreground-text;
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
-      fill: mat-color($primary, 800);
+    &.one-color {
+      & .ngx-charts .chart.bar-chart g g path {
+        fill: $primary-darker;
+      }
     }
-    & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
-      fill: $primary-darker;
+    &.two-color {
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+1) path {
+        fill: mat-color($primary, 800);
+      }
+      & .ngx-charts .chart.bar-chart g g:nth-child(2n+2) path {
+        fill: $primary-darker;
+      }
     }
   }
-
 }

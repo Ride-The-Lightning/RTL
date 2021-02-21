@@ -1,3 +1,5 @@
+@import "../../../../../shared/theme/styles/mixins.scss";
+
 .mat-column-shortChannelId {
   flex: 0 0 15%;
   width: 15%;
@@ -21,13 +23,22 @@
 }
 
 .mat-column-state, .mat-column-toLocal, .mat-column-toRemote {
-  flex: 0 0 15%;
+  flex: 1 1 15%;
   width: 15%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  @include for_screensize(phone) {
+    white-space: unset;
+  }
 }
 
 .mat-column-actions {
   min-height: 4.8rem;
+  & .bordered-box.table-actions-select {
+    flex: 0 0 100%;
+    @include for_screensize(phone) {
+      flex: 0 0 80%;
+    }
+  }
 }

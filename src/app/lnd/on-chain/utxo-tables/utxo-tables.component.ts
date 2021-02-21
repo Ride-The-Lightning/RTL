@@ -18,9 +18,11 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
   @Input() selectedTableIndex = 0;
   @Output() selectedTableIndexChange = new EventEmitter<number>();
   public transactions: Transaction[] = [];
+  public numTransactions = 0;
   public utxos: UTXO[] = [];
   public numUtxos = 0;
-  public numTransactions = 0;
+  public dustUtxos: UTXO[] = [];
+  public numDustUtxos = 0;
   public flgLoading: Array<Boolean | 'error'> = [true, true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
@@ -43,6 +45,8 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;
+        this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000);
+        this.numDustUtxos = this.dustUtxos.length;
       }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.utxos) ? false : true;

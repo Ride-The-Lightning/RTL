@@ -51,22 +51,24 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 import { MONTHS } from './services/consts-enums-functions';
 
-import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
 import { HelpComponent } from './components/help/help.component';
 import { SideNavigationComponent } from './components/navigation/side-navigation/side-navigation.component';
 import { TopMenuComponent } from './components/navigation/top-menu/top-menu.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { ServerConfigComponent } from './components/settings/server-config/server-config.component';
+import { BitcoinConfigComponent } from './components/settings/bitcoin-config/bitcoin-config.component';
+import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
+import { AppSettingsComponent } from './components/settings/app-settings/app-settings.component';
+import { NodeConfigComponent } from './components/node-config/node-config.component';
+import { LNPConfigComponent } from './components/node-config/lnp-config/lnp-config.component';
+import { NodeSettingsComponent } from './components/node-config/node-settings/node-settings.component';
+import { ServicesSettingsComponent } from './components/node-config/services-settings/services-settings.component';
+import { LoopServiceSettingsComponent } from './components/node-config/services-settings/loop-service-settings/loop-service-settings.component';
+import { BoltzServiceSettingsComponent } from './components/node-config/services-settings/boltz-service-settings/boltz-service-settings.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CurrencyUnitConverterComponent } from './components/currency-unit-converter/currency-unit-converter.component';
 import { HorizontalScrollerComponent } from './components/horizontal-scroller/horizontal-scroller.component';
-import { AuthSettingsComponent } from './components/settings/auth-settings/auth-settings.component';
-import { LoopQuoteComponent } from '../lnd/loop/loop-quote/loop-quote.component';
-import { LoopStatusComponent } from '../lnd/loop/loop-status/loop-status.component';
-import { LoopOutInfoGraphicsComponent } from '../lnd/loop/loop-out-info-graphics/info-graphics.component';
-import { LoopInInfoGraphicsComponent } from '../lnd/loop/loop-in-info-graphics/info-graphics.component';
 import { TransactionsReportTableComponent } from './components/transactions-report-table/transactions-report-table.component';
 import { ShowPubkeyComponent } from './components/data-modal/show-pubkey/show-pubkey.component';
 import { OnChainGeneratedAddressComponent } from './components/data-modal/on-chain-generated-address/on-chain-generated-address.component';
@@ -76,6 +78,22 @@ import { ConfirmationMessageComponent } from './components/data-modal/confirmati
 import { ErrorMessageComponent } from './components/data-modal/error-message/error-message.component';
 import { TwoFactorAuthComponent } from './components/data-modal/two-factor-auth/two-factor-auth.component';
 import { LoginTokenComponent } from './components/data-modal/login-2fa-token/login-2fa-token.component';
+
+import { ServicesComponent } from './components/services/services.component';
+import { LoopComponent } from '../shared/components/services/loop/loop.component';
+import { SwapsComponent } from '../shared/components/services/loop/swaps/swaps.component';
+import { LoopModalComponent } from '../shared/components/services/loop/loop-modal/loop-modal.component';
+import { LoopQuoteComponent } from '../shared/components/services/loop/loop-quote/loop-quote.component';
+import { LoopStatusComponent } from '../shared/components/services/loop/loop-status/loop-status.component';
+import { LoopOutInfoGraphicsComponent } from '../shared/components/services/loop/loop-out-info-graphics/info-graphics.component';
+import { LoopInInfoGraphicsComponent } from '../shared/components/services/loop/loop-in-info-graphics/info-graphics.component';
+import { BoltzRootComponent } from './components/services/boltz/boltz-root.component';
+import { BoltzSwapsComponent } from './components/services/boltz/swaps/swaps.component';
+import { SwapStatusComponent } from './components/services/boltz/swap-status/swap-status.component';
+import { SwapServiceInfoComponent } from './components/services/boltz/swap-service-info/swap-service-info.component';
+import { SwapModalComponent } from './components/services/boltz/swap-modal/swap-modal.component';
+import { SwapInInfoGraphicsComponent } from './components/services/boltz/swap-in-info-graphics/info-graphics.component';
+import { SwapOutInfoGraphicsComponent } from './components/services/boltz/swap-out-info-graphics/info-graphics.component';
 
 import { ClipboardDirective } from './directive/clipboard.directive';
 import { AutoFocusDirective } from './directive/auto-focus.directive';
@@ -194,6 +212,16 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MatTabsModule,
     MatSnackBarModule,
     MatAutocompleteModule,
+    NgxChartsModule,
+    QRCodeModule,
+    PerfectScrollbarModule,
+    ClipboardDirective,
+    AutoFocusDirective,
+    MonthlyDateDirective,
+    YearlyDateDirective,
+    RemoveLeadingZerosPipe,
+    MaxValidator,
+    MinValidator,
     AppSettingsComponent,
     SettingsComponent,
     NotFoundComponent,
@@ -201,24 +229,34 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TopMenuComponent,
     LoginComponent,
     HelpComponent,
-    ServerConfigComponent,
+    SettingsComponent,
+    BitcoinConfigComponent,
+    AuthSettingsComponent,
+    AppSettingsComponent,
+    NodeConfigComponent,
+    LNPConfigComponent,
+    NodeSettingsComponent,
+    ServicesSettingsComponent,
+    LoopServiceSettingsComponent,
+    BoltzServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
-    ClipboardDirective,
-    AutoFocusDirective,
-    MonthlyDateDirective,
-    YearlyDateDirective,
-    MaxValidator,
-    MinValidator,
-    NgxChartsModule,
-    QRCodeModule,
-    RemoveLeadingZerosPipe,
-    PerfectScrollbarModule,
+    TransactionsReportTableComponent,
+    ServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
     LoopQuoteComponent,
     LoopStatusComponent,
-    LoopOutInfoGraphicsComponent,
     LoopInInfoGraphicsComponent,
-    TransactionsReportTableComponent
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   declarations: [
     AppSettingsComponent,
@@ -228,7 +266,16 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     TopMenuComponent,
     LoginComponent,
     HelpComponent,
-    ServerConfigComponent,
+    SettingsComponent,
+    BitcoinConfigComponent,
+    AuthSettingsComponent,
+    AppSettingsComponent,
+    NodeConfigComponent,
+    LNPConfigComponent,
+    NodeSettingsComponent,
+    ServicesSettingsComponent,
+    LoopServiceSettingsComponent,
+    BoltzServiceSettingsComponent,
     CurrencyUnitConverterComponent,
     HorizontalScrollerComponent,
     ErrorComponent,
@@ -240,10 +287,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     MinValidator,
     RemoveLeadingZerosPipe,
     AuthSettingsComponent,
-    LoopQuoteComponent,
-    LoopStatusComponent,
-    LoopOutInfoGraphicsComponent,
-    LoopInInfoGraphicsComponent,
     TransactionsReportTableComponent,
     OnChainGeneratedAddressComponent,
     ShowPubkeyComponent,
@@ -252,7 +295,23 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     ConfirmationMessageComponent,
     ErrorMessageComponent,
     TwoFactorAuthComponent,
-    LoginTokenComponent
+    LoginTokenComponent,
+    TransactionsReportTableComponent,
+    ServicesComponent,
+    LoopComponent,
+    SwapsComponent,
+    LoopModalComponent,
+    LoopQuoteComponent,
+    LoopStatusComponent,
+    LoopInInfoGraphicsComponent,
+    LoopOutInfoGraphicsComponent,
+    BoltzRootComponent,
+    BoltzSwapsComponent,
+    SwapStatusComponent,
+    SwapServiceInfoComponent,
+    SwapModalComponent,
+    SwapInInfoGraphicsComponent,
+    SwapOutInfoGraphicsComponent
   ],
   providers: [
     { provide: LoggerService, useClass: ConsoleLoggerService },

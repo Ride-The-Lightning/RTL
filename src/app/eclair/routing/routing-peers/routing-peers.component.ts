@@ -1,32 +1,40 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { PaymentRelayed, RoutingPeers } from '../../../shared/models/eclModels';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-routing-peers',
   templateUrl: './routing-peers.component.html',
-  styleUrls: ['./routing-peers.component.scss']
+  styleUrls: ['./routing-peers.component.scss'],
+  providers: [
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
+  ]  
 })
-export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
+export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sortIn: MatSort;
   @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
+  @ViewChild('paginatorIn', {static: false}) paginatorIn: MatPaginator|undefined;
+  @ViewChild('paginatorOut', {static: false}) paginatorOut: MatPaginator|undefined;
   public routingPeersData = [];
   public errorMessage = '';
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
+  public pageSize = PAGE_SIZE;
+  public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -59,9 +67,17 @@ export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
         }
       });
       this.routingPeersData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
-      this.loadRoutingPeersTable(this.routingPeersData);
+      if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+        this.loadRoutingPeersTable(this.routingPeersData);
+      }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.routingPeersData.length > 0 && this.sortIn && this.paginatorIn && this.sortOut && this.paginatorOut) {
+      this.loadRoutingPeersTable(this.routingPeersData);
+    }
   }
 
   loadRoutingPeersTable(forwardingEvents: PaymentRelayed[]) {
@@ -69,9 +85,13 @@ export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
       const results = this.groupRoutingPeers(forwardingEvents);
       this.RoutingPeersIncoming = new MatTableDataSource<RoutingPeers>(results[0]);
       this.RoutingPeersIncoming.sort = this.sortIn;
+      this.RoutingPeersIncoming.filterPredicate = (rpIn: RoutingPeers, fltr: string) => JSON.stringify(rpIn).toLowerCase().includes(fltr);
+      this.RoutingPeersIncoming.paginator = this.paginatorIn;
       this.logger.info(this.RoutingPeersIncoming);
       this.RoutingPeersOutgoing = new MatTableDataSource<RoutingPeers>(results[1]);
       this.RoutingPeersOutgoing.sort = this.sortOut;
+      this.RoutingPeersOutgoing.filterPredicate = (rpOut: RoutingPeers, fltr: string) => JSON.stringify(rpOut).toLowerCase().includes(fltr);
+      this.RoutingPeersOutgoing.paginator = this.paginatorOut;
       this.logger.info(this.RoutingPeersOutgoing);
     } else {
        // To reset table after other Forwarding history calls
@@ -105,11 +125,11 @@ export class ECLRoutingPeersComponent implements OnInit, OnDestroy {
   }
 
   applyIncomingFilter(selFilter: any) {
-    this.RoutingPeersIncoming.filter = selFilter.value;
+    this.RoutingPeersIncoming.filter = selFilter.value.trim().toLowerCase();
   }
 
   applyOutgoingFilter(selFilter: any) {
-    this.RoutingPeersOutgoing.filter = selFilter.value;
+    this.RoutingPeersOutgoing.filter = selFilter.value.trim().toLowerCase();
   }
 
   ngOnDestroy() {

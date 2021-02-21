@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
-  ForwardingHistoryRes, Invoice, ListInvoices, OnChain, Transaction
+  ForwardingHistoryRes, Invoice, ListInvoices, OnChain, UTXO
 } from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
@@ -22,8 +22,8 @@ export const FETCH_LOCAL_REMOTE_BALANCE_CL = 'FETCH_LOCAL_REMOTE_BALANCE_CL';
 export const SET_LOCAL_REMOTE_BALANCE_CL = 'SET_LOCAL_REMOTE_BALANCE_CL';
 export const GET_NEW_ADDRESS_CL = 'GET_NEW_ADDRESS_CL';
 export const SET_NEW_ADDRESS_CL = 'SET_NEW_ADDRESS_CL';
-export const FETCH_TRANSACTIONS_CL = 'FETCH_TRANSACTIONS_CL';
-export const SET_TRANSACTIONS_CL = 'SET_TRANSACTIONS_CL';
+export const FETCH_UTXOS_CL = 'FETCH_UTXOS_CL';
+export const SET_UTXOS_CL = 'SET_UTXOS_CL';
 export const FETCH_PEERS_CL = 'FETCH_PEERS_CL';
 export const SET_PEERS_CL = 'SET_PEERS_CL';
 export const SAVE_NEW_PEER_CL = 'SAVE_NEW_PEER_CL';
@@ -309,19 +309,19 @@ export class SetChannelTransactionRes implements Action {
   constructor(public payload: any) {}
 }
 
-export class FetchTransactions implements Action {
-  readonly type = FETCH_TRANSACTIONS_CL;
+export class FetchUTXOs implements Action {
+  readonly type = FETCH_UTXOS_CL;
 }
 
-export class SetTransactions implements Action {
-  readonly type = SET_TRANSACTIONS_CL;
-  constructor(public payload: Transaction[]) {}
+export class SetUTXOs implements Action {
+  readonly type = SET_UTXOS_CL;
+  constructor(public payload: UTXO[]) {}
 }
 
 export type CLActions =   ClearEffectError | EffectError | ResetCLStore |
 SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
 FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
-GetNewAddress | SetNewAddress | FetchTransactions | SetTransactions |
+GetNewAddress | SetNewAddress | FetchUTXOs | SetUTXOs |
 FetchPeers | SetPeers | AddPeer | DetachPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |
 FetchChannels | SetChannels | UpdateChannels | SaveNewChannel | CloseChannel | RemoveChannel |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus | DecodePayment | SetDecodedPayment |

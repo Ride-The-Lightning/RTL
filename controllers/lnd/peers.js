@@ -1,13 +1,12 @@
 var request = require('request-promise');
 var common = require('../../common');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var options = {};
 
 getAliasForPeers = (peer) => {
   return new Promise(function(resolve, reject) {
     options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + peer.pub_key;
-    request(options)
-    .then(function(aliasBody) {
+    request(options).then(function(aliasBody) {
       logger.info({fileName: 'Peers', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
       peer.alias = aliasBody.node.alias;
       resolve(aliasBody.node.alias);

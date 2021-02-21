@@ -14,12 +14,13 @@ import { ErrorMessageComponent } from '../components/data-modal/error-message/er
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
+import * as LNDActions from '../../lnd/store/lnd.actions';
 
 @Injectable()
 export class DataService implements OnInit, OnDestroy {
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
 
@@ -150,6 +151,29 @@ export class DataService implements OnInit, OnDestroy {
     }));
   }
 
+  labelUTXO(txid: string, label: string, overwrite: boolean = true) {
+    let labelBody = {txid: txid, label: label, overwrite: overwrite};
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/label', labelBody);
+  }
+
+  leaseUTXO(txid: string, output_index: number) {
+    let leaseBody: any = {txid: txid, outputIndex: output_index};
+    this.store.dispatch(new RTLActions.OpenSpinner('Leasing UTXO...'));
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
+    .pipe(takeUntil(this.unSubs[7]))
+    .subscribe((res: any) => {
+      this.store.dispatch(new RTLActions.CloseSpinner());
+      this.store.dispatch(new LNDActions.FetchTransactions());
+      this.store.dispatch(new LNDActions.FetchUTXOs());
+      const expirationDate = new Date(res.expiration * 1000);
+      const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
+      this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().substring(4, 21).replace(' ', '/').replace(' ', '/').toUpperCase() + '.');
+    }, err => {
+      this.handleErrorWithoutAlert('Lease UTXO', err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    });
+  }
+
   getForwardingHistory(start: string, end: string) {
     const queryHeaders: SwitchReq = {end_time: end, start_time: start};
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders)
@@ -192,7 +216,7 @@ export class DataService implements OnInit, OnDestroy {
 
   getTransactionsForReport() {
     return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[5]),
+    .pipe(takeUntil(this.unSubs[6]),
     withLatestFrom(this.store.select(this.lnImplementation === 'CLT' ? 'cl' : (this.lnImplementation === 'ECL' ? 'ecl' : 'lnd'))),
     mergeMap(([res, storeData]: [any, any]) => {
       return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});

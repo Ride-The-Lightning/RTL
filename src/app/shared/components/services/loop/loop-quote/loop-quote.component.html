@@ -1,0 +1,47 @@
+<ng-container *ngTemplateOutlet="showPanel ? informationBlock : quoteDetailsBlock"></ng-container>
+<ng-template #informationBlock>
+  <mat-expansion-panel class="flat-expansion-panel mb-1" fxFlex="100" [expanded]="panelExpanded" [ngClass]="{'h-5':!flgShowPanel}">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span fxLayoutAlign="start center" fxFlex="100">Quote for {{termCaption}} amount ({{quote.amount | number}} Sats)</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <ng-container *ngTemplateOutlet="quoteDetailsBlock"></ng-container>
+  </mat-expansion-panel>
+</ng-template>
+<ng-template #quoteDetailsBlock>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+    <div fxLayout="row">
+      <div [fxFlex]="quote?.prepay_amt_sat ? '30' : '50'" matTooltip="Estimated fee charged by the loop server for the swap">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{quote?.swap_fee_sat | number}}</span>
+      </div>
+      <div [fxFlex]="quote?.prepay_amt_sat ? '30' : '50'" matTooltip="An estimate of the on-chain fee that needs to be paid to sweep the HTLC">
+        <h4 fxLayoutAlign="start" class="font-bold-500">{{quote?.htlc_sweep_fee_sat ? 'HTLC Sweep Fee (Sats)' : quote?.htlc_publish_fee_sat ? 'HTLC Publish Fee (Sats)' : ''}}</h4>
+        <span class="foreground-secondary-text">{{(quote?.htlc_sweep_fee_sat ? quote.htlc_sweep_fee_sat : quote?.htlc_publish_fee_sat ? quote.htlc_publish_fee_sat : 0) | number}}</span>
+      </div>
+      <div fxFlex="40" matTooltip="The part of the swap fee that is requested as a prepayment" *ngIf="quote?.prepay_amt_sat">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Prepay Amount (Sats)</h4>
+        <span class="foreground-secondary-text">{{quote?.prepay_amt_sat | number}}</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1"></mat-divider>        
+    <div fxLayout="row">
+      <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the payment amount to the server">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Swap Routing Fee (Sats)</h4>
+        <span class="foreground-secondary-text">{{(quote?.amount * ((quote?.off_chain_swap_routing_fee_percentage ? quote?.off_chain_swap_routing_fee_percentage : 2) / 100)) | number}}</span>
+      </div>
+      <div fxFlex="50" matTooltip="Maximum off-chain fee that may be paid for routing the pre-payment amount to the server">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Max Off-chain Prepay Routing Fee (Sats)</h4>
+        <span class="foreground-secondary-text">36</span>
+      </div>
+    </div>
+    <mat-divider class="w-100 my-1" *ngIf="quote?.swap_payment_dest !== ''"></mat-divider>
+    <div fxLayout="row" *ngIf="quote?.swap_payment_dest !== ''">
+      <div fxFlex="100" matTooltip="The node pubkey, where the swap payments will be sent">
+        <h4 fxLayoutAlign="start" class="font-bold-500">Swap Server Node Pubkey</h4>
+        <span class="foreground-secondary-text">{{quote?.swap_payment_dest}}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

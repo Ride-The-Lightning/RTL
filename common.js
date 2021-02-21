@@ -3,6 +3,7 @@ var crypto = require('crypto');
 var path = require('path');
 var common = {};
 const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+var dummy_data_array_from_file = [];
 
 common.rtl_conf_file_path = '';
 common.rtl_pass = '';
@@ -11,11 +12,12 @@ common.rtl_sso = 0;
 common.port = 3000;
 common.host = null;
 common.rtl_cookie_path = '';
-common.logout_redirect_link = '/login';
+common.logout_redirect_link = '';
 common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
+common.read_dummy_data = false;
 
 common.getSwapServerOptions = () => {
   let swapOptions = {
@@ -34,6 +36,25 @@ common.getSwapServerOptions = () => {
     }
   }
   return swapOptions;
+};
+
+common.getBoltzServerOptions = () => {
+  let boltzOptions = {
+    url: common.selectedNode.boltz_server_url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: {
+      'Grpc-Metadata-macaroon': ''
+    }
+  };
+  if (common.selectedNode.boltz_macaroon_path) {
+    try {
+      boltzOptions.headers = {'Grpc-Metadata-macaroon': fs.readFileSync(path.join(common.selectedNode.boltz_macaroon_path, 'admin.macaroon')).toString('hex')};
+    } catch(err) {
+      console.error('Boltz macaroon Error: ' + JSON.stringify(err));
+    }
+  }
+  return boltzOptions;
 };
 
 common.getSelLNServerUrl = () => {
@@ -131,7 +152,8 @@ common.findNode = (selNodeIndex) => {
 }
 
 common.replaceNode = (selNodeIndex, newNode) => {
-  common.nodes.splice(common.nodes.findIndex((node) => {node.index == selNodeIndex}), 1, newNode);
+  let foundIndex = common.nodes.findIndex((node) => node.index == selNodeIndex);
+  common.nodes.splice(foundIndex, 1, newNode);
   common.selectedNode = common.findNode(selNodeIndex);
 }
 
@@ -210,5 +232,62 @@ common.getRequestIP = (req) => {
     || (req.connection.socket ? req.connection.socket.remoteAddress : null);
 }
 
+common.getDummyData = (data_key) => {
+  let dummyDataFile = common.rtl_conf_file_path +  common.path_separator + 'ECLDummyData.log';
+  return new Promise(function(resolve, reject) {
+    if (dummy_data_array_from_file.length === 0) {
+      fs.readFile(dummyDataFile, 'utf8', function(err, data) {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            console.error('Dummy data file does not exist!');
+          } else {
+            console.error('Getting dummy data failed!');
+          }
+        } else {
+          dummy_data_array_from_file = data.split('\n');
+          resolve(filterData(data_key));
+        }
+      });
+    } else {
+      resolve(filterData(data_key));
+    }
+  });
+}
+
+filterData = (data_key) => {
+  let search_string = '';
+  switch (data_key) {
+    case 'GetInfo':
+      search_string = 'INFO: GetInfo => Get Info Response: ';
+      break;
+  
+    case 'Fees':
+      search_string = 'INFO: Fees => Fee Response: ';
+      break;
+
+    case 'Payments':
+      search_string = 'INFO: Fees => Payments Response: ';
+      break;
+  
+    case 'OnChainBalance':
+      search_string = 'INFO: Onchain => Balance Received: ';
+      break;
+
+    case 'Peers':
+      search_string = 'INFO: Peers => Peers with Alias: ';
+      break;
+        
+    case 'Channels':
+      search_string = 'INFO: Channels => Simplified Channels with Alias: ';
+      break;
+
+    default:
+      search_string = 'INFO: GetInfo => Get Info Response: ';
+      break;
+  }
+  let foundDataLine = dummy_data_array_from_file.find(dataItem => dataItem.includes(search_string));
+  let dataStr = foundDataLine ? foundDataLine.replace(search_string, '') : {};
+  return JSON.parse(dataStr);
+}
 
 module.exports = common;

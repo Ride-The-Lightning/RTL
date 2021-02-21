@@ -51,7 +51,7 @@
                 <mat-form-field fxFlex="35" fxLayoutAlign="start end">
                   <mat-select tabindex="8" placeholder="Coin Selection" (selectionChange)="onUTXOSelectionChange($event)" [(value)]="selUTXOs" multiple>
                     <mat-select-trigger>{{totalSelectedUTXOAmount | number}} Sats ({{selUTXOs.length > 1 ? selUTXOs.length + ' UTXOs' : '1 UTXO'}})</mat-select-trigger>
-                    <mat-option *ngFor="let transaction of transactions" [value]="transaction">{{transaction.value | number}} Sats</mat-option>
+                    <mat-option *ngFor="let utxo of utxos" [value]="utxo">{{utxo.value | number}} Sats</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-slide-toggle fxFlex="60" tabindex="9" color="primary" [(ngModel)]="flgUseAllBalance" (change)="onUTXOAllBalanceChange()" name="flgUseAllBalance" matTooltip="Use selected UTXOs balance as the amount to be sent. Final amount sent will be less the mining fee." matTooltipPosition="above" [disabled]="selUTXOs.length < 1">

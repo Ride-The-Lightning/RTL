@@ -3,7 +3,7 @@ import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faTools } from '@fortawesome/free-solid-svg-icons';
+import { faUserCog } from '@fortawesome/free-solid-svg-icons';
 
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -14,13 +14,11 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit, OnDestroy{
-  public faTools = faTools;
-  public showLnConfig = false;
+  public faUserCog = faUserCog;
   public showBitcoind = false;
   public selNode: ConfigSettingsNode;
   public appConfig: RTLConfiguration;
-  public lnImplementationStr = '';
-  public links = [{link: 'layout', name: 'Layout'}, {link: 'auth', name: 'Authentication'}, {link: 'lnconfig', name: this.lnImplementationStr}, {link: 'bconfig', name: 'BitcoinD Config'}];
+  public links = [{link: 'app', name: 'Application'}, {link: 'auth', name: 'Authentication'}, {link: 'bconfig', name: 'BitcoinD Config'}];
   public activeLink = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -36,27 +34,9 @@ export class SettingsComponent implements OnInit, OnDestroy{
     });
     this.store.select('root').pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      this.showLnConfig = false;
       this.showBitcoind = false;
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
-      switch (this.selNode.lnImplementation.toUpperCase()) {
-        case 'CLT':
-          this.lnImplementationStr = 'C-Lightning Config';
-          break;
-      
-        case 'ECL':
-          this.lnImplementationStr = 'Eclair Config';
-          break;
-
-        default:
-          this.lnImplementationStr = 'LND Config';
-          break;
-      }
-      if (this.selNode.authentication && this.selNode.authentication.configPath && this.selNode.authentication.configPath.trim() !== '') {
-        this.links[2].name = this.lnImplementationStr;
-        this.showLnConfig = true;
-      }
       if (this.selNode.settings && this.selNode.settings.bitcoindConfigPath && this.selNode.settings.bitcoindConfigPath.trim() !== '') {
         this.showBitcoind = true;
       }

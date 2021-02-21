@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var common = require('./common');
 var path = require('path');
-var logger = require('./controllers/logger');
+var logger = require('./controllers/shared/logger');
 var connect = {};
 var errMsg = '';
 var request = require('request');
@@ -195,6 +195,16 @@ connect.validateNodeConfig = (config) => {
         common.nodes[idx].swap_server_url = '';
         common.nodes[idx].swap_macaroon_path = '';
       }
+      if(process.env.BOLTZ_SERVER_URL && process.env.BOLTZ_SERVER_URL.trim() !== '') {
+        common.nodes[idx].boltz_server_url = process.env.BOLTZ_SERVER_URL.endsWith('/v1') ? process.env.BOLTZ_SERVER_URL.slice(0, -3) : process.env.BOLTZ_SERVER_URL;
+        common.nodes[idx].boltz_macaroon_path = process.env.BOLTZ_MACAROON_PATH;
+      } else if(node.Settings.boltzServerUrl && node.Settings.boltzServerUrl.trim() !== '') {
+        common.nodes[idx].boltz_server_url = node.Settings.boltzServerUrl.endsWith('/v1') ? node.Settings.boltzServerUrl.slice(0, -3) : node.Settings.boltzServerUrl;
+        common.nodes[idx].boltz_macaroon_path = node.Authentication.boltzMacaroonPath ? node.Authentication.boltzMacaroonPath : '';
+      } else {
+        common.nodes[idx].boltz_server_url = '';
+        common.nodes[idx].boltz_macaroon_path = '';
+      }
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
       common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
@@ -243,22 +253,22 @@ connect.setSSOParams = (config) => {
 	} else if (config.SSO && config.SSO.rtlSSO) {
 		common.rtl_sso = config.SSO.rtlSSO;
 	}
+ 
+  if (process.env.RTL_COOKIE_PATH) {
+    common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
+  } else if (config.SSO && config.SSO.rtlCookiePath) {
+    common.rtl_cookie_path = config.SSO.rtlCookiePath;
+  } else {
+    common.rtl_cookie_path = '';
+  }
 
-	if (+common.rtl_sso) {
-    if (process.env.LOGOUT_REDIRECT_LINK) {
-      common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
-    } else if (config.SSO && config.SSO.logoutRedirectLink) {
-      common.logout_redirect_link = config.SSO.logoutRedirectLink;
-    }
-    
-    if (process.env.RTL_COOKIE_PATH) {
-      common.rtl_cookie_path = process.env.RTL_COOKIE_PATH;
-    } else if (config.SSO && config.SSO.rtlCookiePath) {
-      common.rtl_cookie_path = config.SSO.rtlCookiePath;
-    } else {
-      common.rtl_cookie_path = common.rtl_conf_file_path + '/cookies/auth.cookie';
-    }
+  if (process.env.LOGOUT_REDIRECT_LINK) {
+    common.logout_redirect_link = process.env.LOGOUT_REDIRECT_LINK;
+  } else if (config.SSO && config.SSO.logoutRedirectLink) {
+    common.logout_redirect_link = config.SSO.logoutRedirectLink;
+  }
 
+  if (+common.rtl_sso) {
     if (!common.rtl_cookie_path || common.rtl_cookie_path.trim() === '') {
       errMsg = 'Please set rtlCookiePath value for single sign on option!';
     } else {

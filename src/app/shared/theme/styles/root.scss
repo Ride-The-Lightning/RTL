@@ -14,6 +14,7 @@ body {
   box-sizing: border-box;
   height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 
 .rtl-container{
@@ -1048,6 +1049,12 @@ mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-typ
   max-width: $fa-icon-small-size;
 }
 
+.botlz-icon-sm {
+  min-width: 1.6rem;
+  width: 1.6rem;
+  max-width: 1.6rem;
+}
+
 .copy-icon {
   position: relative;
   top: 0.5rem;
@@ -1286,6 +1293,10 @@ table {
 
 .font-size-120 {
   font-size: 120% !important;
+}
+
+.font-size-300 {
+  font-size: 300% !important;
 }
 
 .font-weight-900 {

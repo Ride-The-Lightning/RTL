@@ -97,10 +97,6 @@
     color: $primary-color;
   }
 
-  .page-title-container, .page-sub-title-container {
-    color: $foreground-text;
-  }
-
   .material-icons.primary { color: $primary-color; }
 
   .material-icons.accent { color: $accent-color; }
@@ -196,6 +192,17 @@
 
   .more-button {
     color: $foreground-disabled;
+  }
+
+  .mat-icon-button.more-button-short {
+    height: 1.6rem;
+    line-height: 1.6rem;
+    & .material-icons {
+      font-size: 1.6rem;
+    }
+    & .mat-icon {
+      line-height: 1.6rem;
+    }
   }
 
   .dashboard-tabs-group {
@@ -341,6 +348,9 @@
         & .alert-icon.ng-fa-icon {
           color: $blue-color;
         }
+        & a {
+          color: $blue-color;
+        }        
       }
   
     &.alert-warn {

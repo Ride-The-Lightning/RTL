@@ -6,24 +6,25 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, SwapTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { ChannelRebalanceComponent } from '../../channel-rebalance-modal/channel-rebalance.component';
 import { CloseChannelComponent } from '../../close-channel-modal/close-channel.component';
-import { LoopModalComponent } from '../../../../loop/loop-modal/loop-modal.component';
+import { LoopModalComponent } from '../../../../../shared/components/services/loop/loop-modal/loop-modal.component';
 
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -63,10 +64,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'remote_alias', 'actions'];
+      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['remote_alias', 'local_balance', 'remote_balance', 'actions'];
+      this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['remote_alias', 'uptime', 'local_balance', 'remote_balance', 'actions'];
@@ -221,7 +222,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   applyFilter() {
-    this.channels.filter = this.selFilter;
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {
@@ -308,7 +309,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         channel: selChannel,
         minQuote: response[0],
         maxQuote: response[1],
-        direction: SwapTypeEnum.LOOP_OUT,
+        direction: LoopTypeEnum.LOOP_OUT,
         component: LoopModalComponent
       }}));    
     });

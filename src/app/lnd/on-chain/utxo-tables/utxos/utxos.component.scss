@@ -1,3 +1,20 @@
+.mat-column-label {
+  padding-left: 1rem;
+  flex: 1 1 15%;
+  white-space: nowrap;
+  overflow: hidden;  
+  text-overflow: ellipsis;
+}
+
+.mat-column-tx_id {
+  flex: 1 1 15%;
+  & .ellipsis-child {
+    white-space: nowrap;
+    overflow: hidden;  
+    text-overflow: ellipsis;
+  }
+}
+
 .mat-column-actions {
   min-height: 4.8rem;
 }

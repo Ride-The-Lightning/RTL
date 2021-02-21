@@ -265,7 +265,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   }
 
   applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value;
+    this.payments.filter = selFilter.value.trim().toLowerCase();
   }
 
   loadPaymentsTable(payments: Payment[]) {
@@ -273,6 +273,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.payments.data = this.paymentJSONArr;
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.paginator = this.paginator;
   }
 

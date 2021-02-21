@@ -15,7 +15,8 @@
       "Authentication": {
         "macaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\data\\chain\\bitcoin\\mainnet",
         "configPath": "C:\\Users\\xyz\\AppData\\Local\\Lnd\\lnd.conf",
-        "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet"
+        "swapMacaroonPath": "C:\\Users\\xyz\\AppData\\Local\\Loop\\mainnet",
+        "boltzMacaroonPath": "C:\\Users\\xyz\\AppData\\Boltz\\mainnet"
       },
       "Settings": {
         "userPersona": "MERCHANT",
@@ -25,6 +26,7 @@
         "enableLogging": false,
         "lnServerUrl": "https://localhost:8080",
         "swapServerUrl": "https://localhost:8081",
+        "boltzServerUrl": "https://localhost:9003",
         "fiatConversion": false
       }
     }

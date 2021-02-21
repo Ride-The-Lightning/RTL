@@ -46,7 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public inactiveChannels = 0;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
-  public showLoop = false;
   public fees: Fees;
   public information: GetInfo = {};
   public balances = { onchain: -1, lightning: -1, total: 0 };
@@ -104,19 +103,19 @@ export class HomeComponent implements OnInit, OnDestroy {
         
       case ScreenSizeEnum.MD:
         this.operatorCards = [
-          { id: 'node', icon: this.faServer, title: 'Node Information', cols: 3, rows: 1 },
-          { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 1 },
-          { id: 'capacity', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 4, rows: 2 },
-          { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 3, rows: 1 },
-          { id: 'status', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels', cols: 3, rows: 1 }
+          { id: 'node', icon: this.faServer, title: 'Node Information', cols: 5, rows: 1 },
+          { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 5, rows: 1 },
+          { id: 'fee', goTo: 'Routing', link: '/lnd/routing', icon: this.faBolt, title: 'Routing Fee', cols: 5, rows: 1 },
+          { id: 'status', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels', cols: 5, rows: 1 },
+          { id: 'capacity', goTo: 'Channels', link: '/lnd/connections', icon: this.faNetworkWired, title: 'Channels Capacity', cols: 10, rows: 2 }
         ];
         this.merchantCards = [
-          { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 2, rows: 5 },
-          { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 2, rows: 10 },
-          { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 2, rows: 10 },
-          { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 2, rows: 5 }
+          { id: 'balance', goTo: 'On-Chain', link: '/lnd/onchain', icon: this.faChartPie, title: 'Balances', cols: 3, rows: 4 },
+          { id: 'transactions', goTo: 'Transactions', link: '/lnd/transactions', title: '', cols: 3, rows: 4 },
+          { id: 'inboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleDown, title: 'In-Bound Liquidity', cols: 3, rows: 8 },
+          { id: 'outboundLiq', goTo: 'Channels', link: '/lnd/connections', icon: this.faAngleDoubleUp, title: 'Out-Bound Liquidity', cols: 3, rows: 8 }
         ];
-      break;
+        break;
 
       default:
         this.operatorCards = [
@@ -154,7 +153,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.flgLoading[3] = (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) ? false : this.flgLoading[3];
       this.flgLoading[4] = (this.flgLoading[4] !== 'error' && rtlStore.numberOfPendingChannels) ? false : this.flgLoading[4];
       this.selNode = rtlStore.nodeSettings;
-      this.showLoop = (this.selNode.swapServerUrl && this.selNode.swapServerUrl.trim() !== '') ? true : false;
       this.information = rtlStore.information;
       this.fees = rtlStore.fees;
       this.balances.onchain = (+rtlStore.blockchainBalance.total_balance >= 0) ? +rtlStore.blockchainBalance.total_balance : 0;

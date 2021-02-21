@@ -18,6 +18,7 @@ export class Settings {
     public enableLogging?: boolean,
     public lnServerUrl?: string,
     public swapServerUrl?: string,
+    public boltzServerUrl?: string,
     public channelBackupPath?: string,
     public currencyUnit?: string
   ) { }
@@ -25,6 +26,8 @@ export class Settings {
 
 export class Authentication {
   constructor(
+    public swapMacaroonPath: string,
+    public boltzMacaroonPath: string,
     public configPath?: string
   ) { }
 }
@@ -69,6 +72,7 @@ export interface SelNodeChild {
   fiatConversion?: boolean;
   lnImplementation?: string;
   swapServerUrl?: string;
+  boltzServerUrl?: string;
 }
 
 export class HelpTopic {

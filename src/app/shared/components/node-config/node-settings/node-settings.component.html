@@ -1,0 +1,75 @@
+<div [perfectScrollbar] fxLayout="column" fxFlex="100">
+  <form fxLayout="column" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
+    <div fxLayout="row">
+      <fa-icon [icon]="faMoneyBillAlt" class="page-title-img mr-1"></fa-icon>
+      <span class="page-title">Balance Display</span>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
+      <div fxFlex="100" class="alert alert-warn">
+        <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
+        <span>Fiat conversion calls <strong><a href="https://www.blockchain.com/api/exchange_rates_api" target="blank">Blockchain.com</a></strong> API to get conversion rates.</span>
+      </div>
+      <div fxLayout="row wrap" fxLayoutAlign="start center">
+        <mat-slide-toggle tabindex="2" color="primary" [(ngModel)]="selNode.settings.fiatConversion" (change)="selNode.settings.currencyUnit = !$event.checked ? null : selNode.settings.currencyUnit" name="fiatConversion">Enable Fiat Conversion</mat-slide-toggle>
+        <mat-form-field>
+          <mat-select autoFocus [(ngModel)]="selNode.settings.currencyUnit" (selectionChange)="onCurrencyChange($event)" placeholder="Fiat Currency" [disabled]="!selNode.settings.fiatConversion" tabindex="3" [required]="selNode.settings.fiatConversion" name="currencyUnit" #currencyUnit="ngModel">
+            <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit.id">
+              {{currencyUnit.id}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="selNode.settings.fiatConversion && !selNode.settings.currencyUnit">Currency unit is required.</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+      <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="space-between stretch" class="settings-container page-sub-title-container mt-1">
+        <div class="mt-1">
+          <fa-icon [icon]="faPaintBrush" class="page-title-img mr-1"></fa-icon>
+          <span class="page-title">Customization</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="start stretch" class="mt-1 bordered-box padding-gap-large">
+          <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100">
+            <div fxLayout="row" fxFlex="100" class="alert alert-info mb-0">
+              <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
+              <span>Dashboard layout will be tailored based on the role selected to better serve its needs.</span>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="start start" fxFlex="100">
+              <h4>Dashboard Layout</h4>
+              <mat-radio-group color="primary" [(ngModel)]="selNode.settings.userPersona" tabindex="1" name="userPersona">
+                <mat-radio-button *ngFor="let userPersona of userPersonas" [value]="userPersona" [checked]="selNode.settings.userPersona === userPersona" class="mr-4">
+                  {{userPersona | titlecase}}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="mt-1"></mat-divider>
+          <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
+            <div fxFlex.gt-xs="20" fxFlex.gt-md="15" fxLayout="column" fxLayoutAlign="space-between stretch">
+              <h4>Mode</h4>
+              <mat-radio-group color="primary" [(ngModel)]="selectedThemeMode" (change)="chooseThemeMode()" name="themeMode">
+                <mat-radio-button tabindex="5" *ngFor="let themeMode of themeModes" [value]="themeMode" [ngClass]="{'mr-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">{{themeMode.name}}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="mt-1"></mat-divider>
+          <div fxLayout="column" fxLayout.gt-xs="row" fxFlex="100" fxLayoutAlign="space-between stretch" fxLayoutAlign.gt-xs="start stretch">
+            <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="40" fxLayoutAlign="space-between stretch">
+              <h4>Themes</h4>
+              <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+                <span *ngFor="let themeColor of themeColors" fxLayout="row" class="theme-name">
+                  <div tabindex="9" [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
+                  {{themeColor.name}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div fxLayout="row" class="mt-1">
+    <button class="mr-1" mat-stroked-button color="primary" (click)="onResetSettings()" tabindex="10">Reset</button>
+    <button mat-flat-button color="primary" (click)="onUpdateSettings()" tabindex="11">Update</button>
+  </div>
+</div>

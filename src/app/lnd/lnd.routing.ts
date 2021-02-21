@@ -26,7 +26,6 @@ import { OnChainComponent } from './on-chain/on-chain.component';
 import { OnChainReceiveComponent } from './on-chain/on-chain-receive/on-chain-receive.component';
 import { OnChainSendComponent } from './on-chain/on-chain-send/on-chain-send.component';
 import { NetworkInfoComponent } from './network-info/network-info.component';
-import { LoopComponent } from './loop/loop.component';
 import { BackupComponent } from './backup/backup.component';
 import { ChannelRestoreTableComponent } from './backup/channel-restore-table/channel-restore-table.component';
 import { ChannelBackupTableComponent } from './backup/channel-backup-table/channel-backup-table.component';
@@ -88,7 +87,6 @@ export const LndRoutes: Routes = [
     ] },
     { path: 'lookups', component: LookupsComponent, canActivate: [LNDUnlockedGuard] },
     { path: 'network', component: NetworkInfoComponent, canActivate: [LNDUnlockedGuard] },
-    { path: 'loop', component: LoopComponent, canActivate: [LNDUnlockedGuard] },    
     { path: '**', component: NotFoundComponent },
     { path: 'rates', redirectTo: 'network' }
   ]}

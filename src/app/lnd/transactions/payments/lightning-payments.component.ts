@@ -63,16 +63,16 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'value', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupValue', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['creation_date', 'fee', 'value', 'actions'];
-      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupAction'];
+      this.displayedColumns = ['creation_date', 'fee', 'value', 'hops', 'actions'];
+      this.htlcColumns = ['groupTotal', 'groupFee', 'groupValue', 'groupHops', 'groupAction'];
     } else {
       this.flgSticky = true;
       this.displayedColumns = ['creation_date', 'payment_hash', 'fee', 'value', 'hops', 'actions'];
@@ -344,12 +344,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   applyFilter(selFilter: any) {
-    this.payments.filter = selFilter.value;
+    this.payments.filter = selFilter.value.trim().toLowerCase();
   }
 
-  loadPaymentsTable(payments) {
-    this.payments = (payments) ?  new MatTableDataSource([]) : new MatTableDataSource<Payment>([...payments]);
-    this.payments.data = payments;
+  loadPaymentsTable(payms) {
+    this.payments = payms ? new MatTableDataSource<Payment>([...payms]) : new MatTableDataSource([]);
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => {
       switch (sortHeaderId) {
         case 'hops':
@@ -360,6 +359,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       }
     }
     this.payments.sort = this.sort;
+    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
     this.payments.paginator = this.paginator;
 }
 

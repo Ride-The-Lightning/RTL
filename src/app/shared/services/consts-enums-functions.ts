@@ -74,7 +74,7 @@ export enum AlertTypeEnum {
 }
 
 export enum AuthenticateWith {
-  TOKEN = 'TOKEN',
+  JWT = 'JWT',
   PASSWORD = 'PASSWORD'
 }
 
@@ -127,7 +127,7 @@ export const WALLET_ADDRESS_TYPE = {
   UNUSED_NESTED_PUBKEY_HASH: { name: 'Unused Nested Pubkey Hash', tooltip: '' }
 }
 
-export enum SwapStateEnum {
+export enum LoopStateEnum {
   INITIATED	= 'Initiated',
   PREIMAGE_REVEALED	= 'Preimage Revealed',
   HTLC_PUBLISHED	= 'HTLC Published',
@@ -136,9 +136,32 @@ export enum SwapStateEnum {
   INVOICE_SETTLED	= 'Invoice Settled'
 }
 
-export enum SwapTypeEnum {
+export enum LoopTypeEnum {
   LOOP_OUT = 'LOOP_OUT',
   LOOP_IN = 'LOOP_IN'
+}
+
+export enum SwapTypeEnum {
+  SWAP_OUT = 'SWAP_OUT',
+  SWAP_IN = 'SWAP_IN'
+}
+
+export enum SwapStateEnum {
+	'swap.created' = 'Swap Created',
+	'swap.expired' = 'Swap Expired',
+	'invoice.set' = 'Invoice Set',
+	'invoice.paid' = 'Invoice Paid',
+	'invoice.pending' = 'Invoice Pending',
+	'invoice.settled' = 'Invoice Settled',
+	'invoice.failedToPay' = 'Invoice Failed To Pay',
+	'channel.created' = 'Channel Created',
+	'transaction.failed' = 'Transaction Failed',
+	'transaction.mempool' = 'Transaction Mempool',
+	'transaction.claimed' = 'Transaction Claimed',
+	'transaction.refunded' = 'Transaction Refunded',
+	'transaction.confirmed' = 'Transaction Confirmed',
+	'swap.refunded' = 'Swap Refunded',
+	'swap.abandoned' = 'Swap Abandoned'
 }
 
 export const MONTHS = [
@@ -157,3 +180,8 @@ export const MONTHS = [
 ];
 
 export const SCROLL_RANGES = ['MONTHLY','YEARLY'];
+
+export enum ServicesEnum {
+  LOOP = 'LOOP',
+  BOLTZ = 'BOLTZ'
+}

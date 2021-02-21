@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
-import { faUserLock, faUserClock, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faUserLock, faUserClock, faInfoCircle, faLock } from '@fortawesome/free-solid-svg-icons';
 import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
@@ -24,6 +24,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public faUserLock = faUserLock;
   public faUserClock = faUserClock;
+  public faLock = faLock;
   public currPassword = '';
   public newPassword = '';
   public confirmPassword = '';
@@ -118,6 +119,10 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       component: TwoFactorAuthComponent
     }}));
   }
+
+  onResetPassword() {
+    this.form.resetForm();
+  } 
 
   ngOnDestroy() {
     if(this.initializeNodeData) {

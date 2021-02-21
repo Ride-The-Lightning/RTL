@@ -106,9 +106,10 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   loadForwardingEventsTable(forwardingEvents: ForwardingEvent[]) {
-    this.forwardingHistoryEvents = new MatTableDataSource<ForwardingEvent>([...forwardingEvents]);
+    this.forwardingHistoryEvents = forwardingEvents ? new MatTableDataSource<ForwardingEvent>([...forwardingEvents]) : new MatTableDataSource([]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.forwardingHistoryEvents.filterPredicate = (fhEvents: ForwardingEvent, fltr: string) => JSON.stringify(fhEvents).toLowerCase().includes(fltr);
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
@@ -120,9 +121,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   applyFilter() {
-    if (this.forwardingHistoryEvents) {
-      this.forwardingHistoryEvents.filter = this.filterValue;
-    }
+    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
   }
 
   ngOnDestroy() {

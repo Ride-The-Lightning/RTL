@@ -94,8 +94,9 @@ Example RTL-Config.json:
       "lnNode": "LND Testnet",
       "lnImplementation": "LND",
       "Authentication": {
-        "macaroonPath": "<Complete path of the folder containing admin.macaroon for the node # 1>",
-        "swapMacaroonPath": "<Complete path of the folder containing loop.macaroon for the node # 1>",
+        "macaroonPath": "<Complete path of the folder containing LND's admin.macaroon for the node # 1>",
+        "swapMacaroonPath": "<Complete path of the folder containing Loop's loop.macaroon for the node>",
+        "boltzMacaroonPath": "<Complete path of the folder containing Boltz admin.macaroon for the node>",
         "configPath": "<Optional:Path of the .conf if present locally or empty>",
         "lnApiPassword": "<Optional:Can be used to provide password in ECL implementation>"
       },
@@ -108,7 +109,8 @@ Example RTL-Config.json:
         "enableLogging": true,
         "fiatConversion": false,
         "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080>",
-        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://localhost:8081>"
+        "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://localhost:8081>",
+        "boltzServerUrl": "<url for boltz server REST APIs for the node. e.g. https://localhost:9003>"
       }
     }
   ]

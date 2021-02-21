@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import * as sha256 from 'sha256';
 import { Store } from '@ngrx/store';
 import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public rtlCookiePath = '';
   public accessKey = '';
   public loginErrorMessage = '';
+  public flgShow = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) { }
@@ -45,31 +46,31 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.appConfig = rtlStore.appConfig;
       this.logger.info(rtlStore);
     });
-    this.rtlEffects.isAuthorizedRes
-    .pipe(takeUntil(this.unSubs[1]))
-    .subscribe(authRes => {
-      if (authRes !== 'ERROR') {
-        this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35rem', data: {
-          authRes: authRes,
-          component: LoginTokenComponent
-        }}));
-      }
-    });    
   }
 
   onLogin():boolean|void {
     if(!this.password) { return true; }
     this.loginErrorMessage = '';
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.IsAuthorized(sha256(this.password)));
+      this.store.dispatch(new RTLActions.OpenAlert({ maxWidth: '35rem', data: {
+        component: LoginTokenComponent
+      }}));
+      this.rtlEffects.closeAlert
+      .pipe(take(1))
+      .subscribe(alertRes => {
+        if (alertRes) {
+          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password', twoFAToken: alertRes.twoFAToken}));
+        }
+      });
     } else {
-      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), initialPass: this.password === 'password'}));
+      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password'}));
     }
   }
 
   resetData() {
     this.password = '';
     this.loginErrorMessage = '';
+    this.flgShow = false;
   }
 
   ngOnDestroy() {

@@ -14,6 +14,7 @@ import { CommonService } from './shared/services/common.service';
 import { SessionService } from './shared/services/session.service';
 import { AlertTypeEnum, ScreenSizeEnum } from './shared/services/consts-enums-functions';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot } from './shared/models/RTLconfig';
+import { routeAnimation } from './shared/animation/route-animation';
 
 import * as RTLActions from './store/rtl.actions';
 import * as fromRTLReducer from './store/rtl.reducers';
@@ -21,7 +22,8 @@ import * as fromRTLReducer from './store/rtl.reducers';
 @Component({
   selector: 'rtl-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [routeAnimation]
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sideNavigation', { static: false }) sideNavigation: any;
@@ -37,6 +39,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public xSmallScreen = false;
   public smallScreen = false;
   public flgSidenavPinned = true;
+  public flgLoggedIn = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
@@ -79,26 +82,33 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       this.logger.info(this.settings);
       if (!this.sessionService.getItem('token')) {
+        this.flgLoggedIn = false;
         this.flgLoading[0] = false;
+      } else {
+        this.flgLoggedIn = true;
       }
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === RTLActions.SET_RTL_CONFIG))
-    .subscribe((action: (RTLActions.SetRTLConfig)) => {
+    filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
+    .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), initialPass: false}));
+            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), defaultPassword: false}));
           } else {
-            this.router.navigate([this.appConfig.sso.logoutRedirectLink]);
+            this.router.navigate(['./login']);
           }
         }
       }     
+      if (action.type === RTLActions.LOGOUT) {
+        this.flgLoggedIn = false;
+      }
     });
     this.userIdle.startWatching();
     this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[2])).subscribe(count => {});
     this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
       if (this.sessionService.getItem('token')) {
+        this.flgLoggedIn = false;
         this.logger.warn('Time limit exceeded for session inactivity.');
         this.store.dispatch(new RTLActions.CloseAllDialogs());
         this.store.dispatch(new RTLActions.OpenAlert({ data: {
@@ -123,7 +133,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
     } else {
       setTimeout(() => {
-        this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width
+        if (this.flgLoggedIn) {
+          this.renderer.setStyle(this.sideNavContent.elementRef.nativeElement, 'marginLeft', '22rem'); //$regular-sidenav-width          
+        }
         this.commonService.setContainerSize(this.sideNavContent.elementRef.nativeElement.clientWidth, this.sideNavContent.elementRef.nativeElement.clientHeight);
       }, 100);
     }

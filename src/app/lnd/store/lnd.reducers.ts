@@ -2,11 +2,14 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, SwapStatus, UTXO
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 import * as LNDActions from './lnd.actions';
+
+let flgTransactionsSet = false;
+let flgUTXOsSet = false;
 
 export interface LNDState {
   initialAPIResponseStatus: String[];
@@ -34,7 +37,6 @@ export interface LNDState {
   payments: Payment[];
   invoices: ListInvoices;
   forwardingHistory: SwitchRes;
-  loopSwaps: SwapStatus[];
 }
 
 export const initLNDState: LNDState = {
@@ -62,8 +64,7 @@ export const initLNDState: LNDState = {
   utxos: [],
   payments: [],
   invoices: {invoices: []},
-  forwardingHistory: {},
-  loopSwaps: []
+  forwardingHistory: {}
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
@@ -230,11 +231,32 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         totalInvoices: action.payload
       };
     case LNDActions.SET_TRANSACTIONS_LND:
+      flgTransactionsSet = true;
+      if (action.payload.length && flgUTXOsSet) {
+        let modifiedUTXOs = [...state.utxos];
+        modifiedUTXOs.forEach(utxo => {
+          let foundTransaction = action.payload.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+          utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
+        });
+        return {
+          ...state,
+          utxos: modifiedUTXOs,
+          transactions: action.payload
+        };
+      }
       return {
         ...state,
         transactions: action.payload
       };
     case LNDActions.SET_UTXOS_LND:
+      flgUTXOsSet = true;
+      if (action.payload.length && flgTransactionsSet) {
+        let transactions = [...state.transactions];
+        action.payload.forEach(utxo => {
+          let foundTransaction = transactions.find(transaction => transaction.tx_hash === utxo.outpoint.txid_str);
+          utxo.label = foundTransaction && foundTransaction.label ? foundTransaction.label : '';
+        });
+      }
       return {
         ...state,
         utxos: action.payload
@@ -276,11 +298,6 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       return {
         ...state,
         forwardingHistory: action.payload
-      };
-    case LNDActions.SET_LOOP_SWAPS_LND:
-      return {
-        ...state,
-        loopSwaps: action.payload
       };
     default:
       return state;

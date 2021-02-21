@@ -1,6 +1,6 @@
 var request = require('request-promise');
 var common = require('../../common');
-var logger = require('../logger');
+var logger = require('../shared/logger');
 var options = {};
 
 exports.getNewAddress = (req, res, next) => {
@@ -58,7 +58,7 @@ exports.onChainWithdraw = (req, res, next) => {
   });
 }
 
-exports.getTransactions = (req, res, next) => {
+exports.getUTXOs = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/listFunds';
   request(options).then((body) => {

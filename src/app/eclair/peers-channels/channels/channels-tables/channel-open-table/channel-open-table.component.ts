@@ -53,7 +53,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['shortChannelId', 'alias', 'actions'];
+      this.displayedColumns = ['alias', 'toLocal', 'toRemote', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
       this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
@@ -79,7 +79,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.onchainBalance.total;
       this.activeChannels = rtlStore.activeChannels;
-      this.loadChannelsTable();
+      if (this.activeChannels.length > 0 && this.sort && this.paginator) {
+        this.loadChannelsTable();
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.activeChannels) ? false : true;
       }
@@ -88,7 +90,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.activeChannels.length > 0) {
+    if (this.activeChannels.length > 0 && this.sort && this.paginator) {
       this.loadChannelsTable();
     }
   }
@@ -156,7 +158,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   applyFilter() {
-    this.channels.filter = this.selFilter;
+    this.channels.filter = this.selFilter.trim().toLowerCase();
   }
 
   onChannelClick(selChannel: Channel, event: any) {
@@ -174,6 +176,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     this.channels = new MatTableDataSource<Channel>([...this.activeChannels]);
     this.channels.sort = this.sort;
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.channels.filterPredicate = (channel: Channel, fltr: string) => JSON.stringify(channel).toLowerCase().includes(fltr);
     this.channels.paginator = this.paginator;
     this.logger.info(this.channels);
   }

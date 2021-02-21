@@ -1,9 +1,10 @@
-import { DataTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
+import { DataTypeEnum, LoopTypeEnum, SwapTypeEnum } from '../services/consts-enums-functions';
 import { GetInfoRoot, RTLConfiguration } from './RTLconfig';
-import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel } from './lndModels';
-import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, Transaction as TransactionCL } from './clModels';
+import { GetInfo, Invoice, Channel, Peer, PendingOpenChannel, UTXO } from './lndModels';
+import { Invoice as InvoiceCL, GetInfo as GetInfoCL, Peer as PeerCL, Channel as ChannelCL, UTXO as UTXOCL } from './clModels';
 import { GetInfo as GetInfoECL, Peer as PeerECL, Channel as ChannelECL, Invoice as InvoiceECL, PaymentSent as PaymentSentECL } from './eclModels';
 import { LoopQuote } from './loopModels';
+import { ServiceInfo } from './boltzModels';
 
 export interface MessageErrorField {
   code: number;
@@ -29,6 +30,11 @@ export interface InputData {
   width?: number;
 }
 
+export interface OnChainLabelUTXO {
+  utxo: UTXO;
+  component?: any;
+}
+
 export interface OnChainSendFunds {
   sweepAll: boolean;
   component?: any;
@@ -49,7 +55,7 @@ export interface OpenChannelAlert {
 export interface CLOpenChannelAlert {
   alertTitle?: string;
   titleMessage?: string;
-  message?: { information: GetInfoCL, balance: number, transactions: TransactionCL[], peer?: PeerCL, peers?: PeerCL[], isCompatibleVersion: boolean };
+  message?: { information: GetInfoCL, balance: number, utxos: UTXOCL[], peer?: PeerCL, peers?: PeerCL[], isCompatibleVersion: boolean };
   newlyAdded?: boolean;
   component?: any;
 }
@@ -124,15 +130,17 @@ export interface ShowPubkeyData {
   component?: any;
 }
 
-export interface LoginTokenData {
-  authRes: {token: string};
-  component?: any;
-}
-
 export interface LoopAlert {
   channel: Channel;
   minQuote: LoopQuote;
   maxQuote: LoopQuote;
+  direction?: LoopTypeEnum;
+  component?: any;
+}
+
+export interface SwapAlert {
+  channel: Channel;
+  serviceInfo: ServiceInfo;
   direction?: SwapTypeEnum;
   component?: any;
 }
@@ -155,6 +163,8 @@ export interface AlertData {
 export interface ConfirmationData {
   type: string; // INFORMATION/WARNING/SUCCESS/ERROR
   alertTitle?: string;
+  warningMessage?: string;
+  informationMessage?: string;
   titleMessage?: string;
   message?: any;
   scrollable?: boolean;
@@ -182,5 +192,5 @@ export interface DialogConfig {
   width?: string;
   maxWidth?: string;
   minHeight?: string;
-  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | AuthConfig | LoginTokenData | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
+  data: AlertData | ConfirmationData | ErrorData | OpenChannelAlert | CLOpenChannelAlert | InvoiceInformation | CLInvoiceInformation | ECLInvoiceInformation | ECLPaymentInformation | ChannelInformation | CLChannelInformation | PendingOpenChannelInformation | OnChainAddressInformation | ShowPubkeyData | LoopAlert | SwapAlert | AuthConfig | OnChainLabelUTXO | OnChainSendFunds | CLOnChainSendFunds | ECLChannelInformation | ECLOpenChannelAlert;
 }

@@ -1,0 +1,16 @@
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="bordered-box">
+  <mat-tab-group [selectedIndex]="selectedTableIndex" (selectedIndexChange)="onSelectedIndexChanged($event)">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numUtxos}}" matBadgeOverlap="false" class="tab-badge">UTXOs</span>
+      </ng-template>
+      <rtl-cl-on-chain-utxos [utxos]="utxos" [errorLoading]="flgLoading[0]" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="false" xLayout="row" fxFlex="100"></rtl-cl-on-chain-utxos>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span matBadge="{{numDustUtxos}}" matBadgeOverlap="false" class="tab-badge">Dust UTXOs</span>
+      </ng-template>
+      <rtl-cl-on-chain-utxos [utxos]="dustUtxos" [errorLoading]="flgLoading[0]" [numDustUTXOs]="numDustUtxos" [isDustUTXO]="true" fxLayout="row" fxFlex="100"></rtl-cl-on-chain-utxos>
+    </mat-tab>
+  </mat-tab-group>
+</div>
