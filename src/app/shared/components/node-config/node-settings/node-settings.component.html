@@ -57,7 +57,7 @@
             <div fxLayout="column" fxFlex.gt-xs="50" fxFlex.gt-md="40" fxLayoutAlign="space-between stretch">
               <h4>Themes</h4>
               <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
-                <span *ngFor="let themeColor of themeColors" fxLayout="row">
+                <span *ngFor="let themeColor of themeColors" fxLayout="row" class="theme-name">
                   <div tabindex="9" [class]="themeColor.id | lowercase" [ngClass]="{'skin': true, 'selected-color': selectedThemeColor === themeColor.id}" (click)="changeThemeColor(themeColor.id)"></div>
                   {{themeColor.name}}
                 </span>

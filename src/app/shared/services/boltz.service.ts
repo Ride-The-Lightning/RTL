@@ -27,7 +27,7 @@ export class BoltzService implements OnDestroy {
   }
 
   listSwaps() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting List Swaps...'));
+    this.store.dispatch(new RTLActions.OpenSpinner('Getting Boltz Swaps...'));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl)
     .pipe(takeUntil(this.unSubs[0]))
@@ -36,7 +36,7 @@ export class BoltzService implements OnDestroy {
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
     }, err => {
-      return this.handleErrorWithoutAlert('List Swaps', err);
+      return this.handleErrorWithAlert('List Swaps', err);
     });
   }
 
@@ -47,7 +47,7 @@ export class BoltzService implements OnDestroy {
 
   serviceInfo() {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithoutAlert('Service Info', err)));
+    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert('Service Info', err)));
   }
 
   swapOut(amount: number, address: string) {

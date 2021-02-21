@@ -37,7 +37,7 @@ export class LoopService implements OnDestroy {
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
     }, err => {
-      return this.handleErrorWithoutAlert('Loop Swaps', err);
+      return this.handleErrorWithAlert('Loop Swaps', err);
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -19,10 +19,13 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./boltz-service-settings.component.scss']
 })
 export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: true }) form: any;
   public appConfig: RTLConfiguration;
   public selNode: ConfigSettingsNode;
   public previousSelNode: ConfigSettingsNode;
   public enableBoltz = false;
+  public serverUrl = '';
+  public macaroonPath = '';
   unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -34,6 +37,8 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
       this.appConfig = rtlStore.appConfig;
       this.selNode = rtlStore.selNode;
       this.enableBoltz = rtlStore.selNode.settings.boltzServerUrl && rtlStore.selNode.settings.boltzServerUrl.trim() !== '';
+      this.serverUrl = this.selNode.settings.boltzServerUrl;
+      this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
       this.previousSelNode = JSON.parse(JSON.stringify(this.selNode));
       this.logger.info(rtlStore);
     });
@@ -42,25 +47,38 @@ export class BoltzServiceSettingsComponent implements OnInit, OnDestroy {
   onEnableServiceChanged(event) {
     this.enableBoltz = event.checked;
     if (!this.enableBoltz) {
-      this.selNode.authentication.boltzMacaroonPath = '';
-      this.selNode.settings.boltzServerUrl = '';
+      this.macaroonPath = '';
+      this.serverUrl = '';
     }
   }
 
   onUpdateService():boolean|void {
-    if(this.enableBoltz && (!this.selNode.settings.boltzServerUrl || this.selNode.settings.boltzServerUrl.trim() === '' || !this.selNode.authentication.boltzMacaroonPath || this.selNode.authentication.boltzMacaroonPath.trim() === '')) { return true; }
+    if(this.serverUrl && this.serverUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
+      this.form.controls.srvrUrl.setErrors({invalid: true});
+    }
+    if(this.enableBoltz && 
+      (!this.serverUrl || 
+        this.serverUrl.trim() === '' || 
+        !this.serverUrl.includes('https://') || 
+        !this.macaroonPath || 
+        this.macaroonPath.trim() === '')
+    ) { return true; }
     this.logger.info(this.selNode);
+    this.selNode.settings.boltzServerUrl = this.serverUrl;
+    this.selNode.authentication.boltzMacaroonPath = this.macaroonPath;
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Boltz Service Settings...'));
-    this.store.dispatch(new RTLActions.UpdateServiceSettings({service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.selNode.settings.boltzServerUrl, macaroonPath: this.selNode.authentication.boltzMacaroonPath }}));
-    this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
-    this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
+    this.store.dispatch(new RTLActions.UpdateServiceSettings({service: ServicesEnum.BOLTZ, settings: { enable: this.enableBoltz, serverUrl: this.serverUrl, macaroonPath: this.macaroonPath }}));
+    this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
+    this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
+    this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.serverUrl}));
   }
 
   onReset() {
     this.selNode = JSON.parse(JSON.stringify(this.previousSelNode));
-    this.enableBoltz = this.selNode.settings.boltzServerUrl && this.selNode.settings.boltzServerUrl.trim() !== '';
-  }  
+    this.serverUrl = this.selNode.settings.boltzServerUrl;
+    this.macaroonPath = this.selNode.authentication.boltzMacaroonPath;
+    this.enableBoltz = this.serverUrl && this.serverUrl.trim() !== '';
+  }
 
   ngOnDestroy() {
     this.unSubs.forEach(unsub => {

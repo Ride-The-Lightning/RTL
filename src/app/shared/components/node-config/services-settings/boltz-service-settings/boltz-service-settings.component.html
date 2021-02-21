@@ -2,15 +2,16 @@
   <form fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="settings-container page-sub-title-container mt-1" #form="ngForm">
     <div fxLayout="column" fxFlex="50" fxLayoutAlign="start stretch">
       <mat-slide-toggle autoFocus class="mb-1" tabindex="1" color="primary" [(ngModel)]="enableBoltz" (change)="onEnableServiceChanged($event)" name="boltz">Enable Boltz Service</mat-slide-toggle>
-      <mat-form-field class="mb-1">
-        <input matInput placeholder="Boltz Server URL" type="text" id="boltzServerUrl" name="boltzServerUrl" [(ngModel)]="selNode.settings.boltzServerUrl" tabindex="2" [required]="enableBoltz" [disabled]="!enableBoltz">
+      <mat-form-field class="mb-2">
+        <input matInput placeholder="Boltz Server URL" type="text" id="boltzServerUrl" [(ngModel)]="serverUrl" name="srvrUrl" #srvrUrl="ngModel" tabindex="2" [required]="enableBoltz" [disabled]="!enableBoltz">
         <mat-hint>Service url for boltz server REST APIs, eg. https://localhost:9003</mat-hint>
-        <mat-error *ngIf="!selNode.settings.boltzServerUrl && enableBoltz">Boltz server URL is required.</mat-error>
+        <mat-error *ngIf="(!serverUrl || serverUrl.trim() === '') && enableBoltz">Boltz server URL is required.</mat-error>
+        <mat-error *ngIf="srvrUrl?.errors?.invalid && enableBoltz">Specify the boltz server url with 'https://'.</mat-error>
       </mat-form-field>
       <mat-form-field>
-        <input matInput placeholder="Boltz Macaroon Path" type="text" id="boltzMacaroonPath" name="boltzMacaroonPath" [(ngModel)]="selNode.authentication.boltzMacaroonPath" tabindex="3" [required]="enableBoltz" [disabled]="!enableBoltz">
+        <input matInput placeholder="Boltz Macaroon Path" type="text" id="boltzMacaroonPath" name="boltzMacaroonPath" [(ngModel)]="macaroonPath" tabindex="3" [required]="enableBoltz" [disabled]="!enableBoltz">
         <mat-hint>Path for the folder containing boltz 'admin.macaroon', eg. D:\\xyz\\AppData\\Boltz\\testnet</mat-hint>
-        <mat-error *ngIf="!selNode.authentication.boltzMacaroonPath && enableBoltz">Boltz macaroon path is required.</mat-error>
+        <mat-error *ngIf="!macaroonPath && enableBoltz">Boltz macaroon path is required.</mat-error>
       </mat-form-field>
     </div>
   </form>
