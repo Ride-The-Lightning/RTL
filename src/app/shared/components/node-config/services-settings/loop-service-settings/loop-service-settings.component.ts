@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { ServicesEnum } from '../../../../services/consts-enums-functions';
 import { ConfigSettingsNode, RTLConfiguration } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import * as ECLActions from '../../../../../eclair/store/ecl.actions';
 import * as CLActions from '../../../../../clightning/store/cl.actions';
@@ -20,6 +21,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 })
 export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;
+  public faInfoCircle = faInfoCircle;
   public appConfig: RTLConfiguration;
   public selNode: ConfigSettingsNode;
   public previousSelNode: ConfigSettingsNode;
