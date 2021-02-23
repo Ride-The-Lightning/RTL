@@ -46,8 +46,6 @@ Docker Image: https://hub.docker.com/r/shahanafarooqui/rtl
 ### <a name="prereq"></a>Prerequisites
 * Functioning and synced LND lightning node.
 * Node.js, which can be downloaded [here](https://nodejs.org/en/download/)
-  * On Ubuntu, `g++` is required to install the node-sass dependency. This is available in the `build-essential` package.
-	* The Most recent versions of node.js might give errors while installing node-sass. Use node.js LTS version 8 or 10 as a solution.
 * Recommended Browsers: Chrome, Firefox, MS Edge
 
 ### <a name="install"></a>Installation
