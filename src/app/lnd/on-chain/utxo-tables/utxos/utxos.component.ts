@@ -120,7 +120,7 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
 
   onLeaseUTXO(utxo: UTXO) {
     const utxoDetails = [
-      [{key: 'txid_str', value: utxo.outpoint.txid_str, title: 'ID', width: 100}],
+      [{key: 'txid_str', value: utxo.outpoint.txid_str, title: 'Transaction ID', width: 100}],
       [{key: 'amount_sat', value: this.decimalPipe.transform(utxo.amount_sat), title: 'Amount (Sats)', width: 100}]
     ];
     if (utxo.label) {

@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="setup-node-container">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" [@opacityAnimation] class="setup-node-container">
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-large">
     <mat-card-content fxLayout="column" fxFlex="75" fxLayoutAlign="space-between stretch">
       <ng-container
@@ -19,7 +19,7 @@
   </div>
 </div>
 <ng-template #setupStepBlock1>
-  <div class="step-container" fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep1"></ng-container>
     </div>
@@ -34,8 +34,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock2>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep2"></ng-container>
     </div>
@@ -57,8 +56,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock3>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
@@ -82,8 +80,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock4>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
@@ -107,8 +104,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock5>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
@@ -131,8 +127,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock6>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
@@ -149,7 +144,7 @@
             <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Parameter to turn RTL logging off/on">help</mat-icon>
           </h4>
           <mat-radio-group fxFlex="70" fxLayoutAlign="start center" color="primary" [(ngModel)]="enableLogging" name="enableLogging">
-            <mat-radio-button fxFlex="40" tabindex="50" [value]="false" [checked]="!enableLogging" class="mr-4">No</mat-radio-button>
+            <mat-radio-button autoFocus fxFlex="40" tabindex="50" [value]="false" [checked]="!enableLogging" class="mr-4">No</mat-radio-button>
             <mat-radio-button fxFlex="40" tabindex="50" [value]="true" [checked]="enableLogging" class="mr-4">Yes</mat-radio-button>
           </mat-radio-group>
         </div>
@@ -187,7 +182,7 @@
             <mat-icon class="mat-icon-suffix mat-icon-help" matTooltip="Parameter to turn fiat conversion off/on">help</mat-icon>
           </h4>
           <mat-form-field fxFlex="70">
-            <mat-select autoFocus [(ngModel)]="selectedCurrencyUnit" [placeholder]="selectedCurrencyUnit === currencyUnits[0] ? 'Disable Fiat Conversion' : 'Fiat Currency'" tabindex="3" required name="currencyUnit" #currencyUnit="ngModel">
+            <mat-select [(ngModel)]="selectedCurrencyUnit" [placeholder]="selectedCurrencyUnit === currencyUnits[0] ? 'Disable Fiat Conversion' : 'Fiat Currency'" tabindex="3" required name="currencyUnit" #currencyUnit="ngModel">
               <mat-option *ngFor="let currencyUnit of currencyUnits" [value]="currencyUnit">
                 {{currencyUnit.name}}
               </mat-option>
@@ -200,7 +195,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock7>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)" [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep3"></ng-container>
     </div>
@@ -219,13 +214,13 @@
           </button>
         </mat-form-field>
         <mat-form-field>
-          <input autoFocus matInput placeholder="Path to bitcoind.conf" type="text" id="bconfig" name="bconfig" [(ngModel)]="bConfigPath" tabindex="15">
+          <input matInput placeholder="Path to bitcoind.conf" type="text" id="bconfig" name="bconfig" [(ngModel)]="bConfigPath" tabindex="15">
           <button mat-button matSuffix mat-icon-button matTooltip="Eg.: ..\\Local\\Bitcoin\\bitcoin.conf" tabindex="16">
             <mat-icon class="mat-icon-suffix">help</mat-icon>
           </button>
         </mat-form-field>
         <mat-form-field>
-          <input autoFocus matInput placeholder="Path for Channel Backup" type="text" id="backup" name="backup" [(ngModel)]="channelBackupPath" tabindex="17">
+          <input matInput placeholder="Path to Channel Backup" type="text" id="backup" name="backup" [(ngModel)]="channelBackupPath" tabindex="17">
           <button mat-button matSuffix mat-icon-button matTooltip="Default: (RTL root directory)\backup\node-1" tabindex="18">
             <mat-icon class="mat-icon-suffix">help</mat-icon>
           </button>
@@ -235,8 +230,7 @@
   </div>
 </ng-template>
 <ng-template #setupStepBlock8>
-  <div fxLayout="column" fxFlex="100"  fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)"
-    [@sliderAnimation]="animationDirection">
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" (swipe)="onSwipe($event)">
     <div fxFlex="40" fxLayoutAlign="center start" class="color-primary mt-2 svg">
       <ng-container *ngTemplateOutlet="svgStep4"></ng-container>
     </div>
@@ -251,7 +245,7 @@
   </div>
 </ng-template>
 <ng-template #svgStep1>
-  <svg width="230px" height="175px" viewBox="550 200 230 155" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg fxFlex="30" width="230px" height="175px" viewBox="550 200 230 155" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -323,7 +317,7 @@
   </svg>
 </ng-template>
 <ng-template #svgStep2>
-  <svg width="230px" height="175px" viewBox="530 225 230 105" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg fxFlex="30" width="230px" height="175px" viewBox="530 225 230 105" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -391,7 +385,7 @@
   </svg>  
 </ng-template>
 <ng-template #svgStep3>
-  <svg width="230px" height="175px" viewBox="528 160 230 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg fxFlex="30" width="230px" height="175px" viewBox="528 160 230 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
           <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
           <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">
@@ -468,7 +462,7 @@
   </svg>  
 </ng-template>
 <ng-template #svgStep4>
-  <svg width="230px" height="175px" viewBox="530 210 230 175" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg fxFlex="30" width="230px" height="175px" viewBox="530 210 230 175" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <rect id="path-1" x="0" y="0" width="218" height="680"></rect>
         <filter x="-6.7%" y="-1.8%" width="113.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-2">

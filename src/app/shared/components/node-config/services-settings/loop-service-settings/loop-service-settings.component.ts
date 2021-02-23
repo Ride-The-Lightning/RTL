@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { ServicesEnum } from '../../../../services/consts-enums-functions';
 import { ConfigSettingsNode, RTLConfiguration } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import * as ECLActions from '../../../../../eclair/store/ecl.actions';
 import * as CLActions from '../../../../../clightning/store/cl.actions';
@@ -19,6 +20,8 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   styleUrls: ['./loop-service-settings.component.scss']
 })
 export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: true }) form: any;
+  public faInfoCircle = faInfoCircle;
   public appConfig: RTLConfiguration;
   public selNode: ConfigSettingsNode;
   public previousSelNode: ConfigSettingsNode;
@@ -48,6 +51,9 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
   }
 
   onUpdateService():boolean|void {
+    if(this.selNode.settings.swapServerUrl && this.selNode.settings.swapServerUrl.trim() !== '' && !this.form.controls.srvrUrl.value.includes('https://')) {
+      this.form.controls.srvrUrl.setErrors({invalid: true});
+    }
     if(this.enableLoop && (!this.selNode.settings.swapServerUrl || this.selNode.settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) { return true; }
     this.logger.info(this.selNode);
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Loop Service Settings...'));

@@ -348,6 +348,9 @@
         & .alert-icon.ng-fa-icon {
           color: $blue-color;
         }
+        & a {
+          color: $blue-color;
+        }        
       }
   
     &.alert-warn {

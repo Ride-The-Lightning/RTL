@@ -79,7 +79,9 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.onchainBalance.total;
       this.activeChannels = rtlStore.activeChannels;
-      this.loadChannelsTable();
+      if (this.activeChannels.length > 0 && this.sort && this.paginator) {
+        this.loadChannelsTable();
+      }
       if (this.flgLoading[0] !== 'error') {
         this.flgLoading[0] = (rtlStore.activeChannels) ? false : true;
       }
@@ -88,7 +90,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.activeChannels.length > 0) {
+    if (this.activeChannels.length > 0 && this.sort && this.paginator) {
       this.loadChannelsTable();
     }
   }

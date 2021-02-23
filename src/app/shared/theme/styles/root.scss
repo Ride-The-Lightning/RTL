@@ -14,6 +14,7 @@ body {
   box-sizing: border-box;
   height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 
 .rtl-container{
@@ -1292,6 +1293,10 @@ table {
 
 .font-size-120 {
   font-size: 120% !important;
+}
+
+.font-size-300 {
+  font-size: 300% !important;
 }
 
 .font-weight-900 {

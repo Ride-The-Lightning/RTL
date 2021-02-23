@@ -18,6 +18,7 @@ import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 import { Channel } from '../../../../models/lndModels';
 
+import * as LNDActions from '../../../../../lnd/store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 

@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
-import { UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, CURRENCY_UNITS } from '../../../../services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../../services/consts-enums-functions';
 
 import { sliderAnimation } from '../../../../animation/slider-animation';
+import { opacityAnimation } from '../../../../animation/opacity-animation';
 import { CommonService } from '../../../../services/common.service';
 
 @Component({
   selector: 'rtl-setup-node',
   templateUrl: './setup-node.component.html',
   styleUrls: ['./setup-node.component.scss'],
-  animations: [sliderAnimation]  
+  animations: [sliderAnimation, opacityAnimation]
 })
 export class SetupNodeComponent implements OnInit {
   public animationDirection = '';
@@ -39,6 +40,7 @@ export class SetupNodeComponent implements OnInit {
   constructor(private commonService: CommonService, public dialogRef: MatDialogRef<SetupNodeComponent>) {}
 
   ngOnInit() {
+    console.warn('INIT');
     this.screenSize = this.commonService.getScreenSize();
     this.currencyUnits.unshift({id: 'NONE', name: 'Disabled'});
     this.selectedCurrencyUnit = this.currencyUnits[0];

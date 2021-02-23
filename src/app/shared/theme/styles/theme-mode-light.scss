@@ -74,6 +74,9 @@
       color: $foreground-disabled;  
     }
     color: $foreground-secondary-text;
+    .mat-input-element, .mat-radio-label-content, .theme-name {
+      color: $foreground-text;
+    }  
   }
   .cc-data-block .cc-data-title {
     color: $primary-color;

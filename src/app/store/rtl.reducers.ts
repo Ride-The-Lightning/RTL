@@ -53,7 +53,7 @@ export function RootReducer(state = initRootState, action: RTLActions.RTLActions
       return {
         ...initRootState,
         appConfig: state.appConfig,
-        selNode: action.payload,
+        selNode: action.payload
       };
     case RTLActions.SET_SELECTED_NODE:
       return {

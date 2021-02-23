@@ -435,6 +435,7 @@ export class RTLEffects implements OnDestroy {
     this.sessionService.removeItem('clUnlocked');
     this.sessionService.removeItem('lndUnlocked');
     this.sessionService.removeItem('token');
+    this.store.dispatch(new RTLActions.SetNodeData({}));
     this.logger.warn('LOGGED OUT');
     return of();
   }));

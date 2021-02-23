@@ -44,7 +44,6 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     this.boltzService.swapsChanged
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((swaps: ListSwaps) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());      
       this.swaps = swaps;
       this.swapsData = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? swaps.swaps : swaps.reverseSwaps;
       this.flgLoading[0] = false;
