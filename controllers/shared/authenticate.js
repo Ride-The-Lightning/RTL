@@ -50,7 +50,13 @@ exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
     if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
       res.status(200).json({ token: token });
-    } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
+    } else if (!common.cookie) {
+      connect.refreshCookie(common.rtl_cookie_path);
+      res.status(500).json({
+        message: "Login Failure",
+        error: "Internal server error"
+      });
+    } else if (req.body.authenticateWith === 'PASSWORD' && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf8'), Buffer.from(req.body.authenticationValue, 'utf8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },

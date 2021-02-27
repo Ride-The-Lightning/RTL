@@ -272,7 +272,7 @@ connect.setSSOParams = (config) => {
     if (!common.rtl_cookie_path || common.rtl_cookie_path.trim() === '') {
       errMsg = 'Please set rtlCookiePath value for single sign on option!';
     } else {
-      connect.readCookie(common.rtl_cookie_path);
+      connect.refreshCookie(common.rtl_cookie_path);
     }
   }
 };
@@ -298,33 +298,14 @@ connect.createDirectory = (dirname) => {
   }, initDir);
 }
 
-connect.readCookie = (cookieFile) => {
-  let exists = fs.existsSync(cookieFile);
-  if (exists) {
-    try {
-      common.cookie = fs.readFileSync(cookieFile, 'utf-8');
-    } catch (err) {
-      console.error('Something went wrong while reading cookie: \n' + err);
-      throw new Error(err);
-    }
-  } else {
-    try {
-      var dirname = path.dirname(cookieFile);
-      connect.createDirectory(dirname);
-      fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
-      common.cookie = fs.readFileSync(cookieFile, 'utf-8');
-    }
-    catch(err) {
-      console.error('Something went wrong while reading the cookie: \n' + err);
-      throw new Error(err);
-    }
-  }
-}
-
 connect.refreshCookie = (cookieFile) => {
   try {
-    fs.writeFileSync(cookieFile, crypto.randomBytes(64).toString('hex'));
-    common.cookie = fs.readFileSync(cookieFile, 'utf-8');
+    common.cookie = null;
+    let new_cookie = crypto.randomBytes(64).toString('hex');
+    let tmp_cookie_file = cookieFile +  ".tmp";
+    fs.writeFileSync(tmp_cookie_file, new_cookie);
+    fs.renameSync(tmp_cookie_file, cookieFile);
+    common.cookie = new_cookie;
   }
   catch(err) {
     console.error('Something went wrong while refreshing cookie: \n' + err);
