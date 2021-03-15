@@ -39,3 +39,5 @@ Sample configuration to be inserted in the nginx.conf (adjust the path and filen
     }
 
 Restart Nginx with the new configuration and connect to RTL over https on the port 3002.
+On Debian based distros:
+    $> sudo systemctl restart nginx
