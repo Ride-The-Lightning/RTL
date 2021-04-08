@@ -19,6 +19,7 @@ import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
 import * as CLActions from './cl.actions';
 import * as fromCLReducers from '../store/cl.reducers';
+import { AlertTypeEnum, CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -55,11 +56,25 @@ export class CLEffects implements OnDestroy {
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
-            this.initializeRemainingData(info, action.payload.loadPage);
-            return {
-              type: CLActions.SET_INFO_CL,
-              payload: info ? info : {}
-            };
+            if (info.chains && info.chains.length && info.chains[0]
+              && (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
+            ) {
+              this.store.dispatch(new RTLActions.CloseAllDialogs());
+              this.store.dispatch(new RTLActions.OpenAlert({ data: {
+                type: AlertTypeEnum.ERROR,
+                alertTitle: 'Shitcoin Found',
+                titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+              }}));
+              return {
+                type: RTLActions.LOGOUT
+              };
+            } else {
+              this.initializeRemainingData(info, action.payload.loadPage);
+              return {
+                type: CLActions.SET_INFO_CL,
+                payload: info ? info : {}
+              };
+            }
           }),
           catchError((err) => {
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
@@ -724,13 +739,13 @@ export class CLEffects implements OnDestroy {
     const node_data = {
       identity_pubkey: info.id,
       alias: info.alias,
-      testnet: (info.network === 'testnet' || info.network === 'litecoin-testnet') ? true : false,
+      testnet: (info.network.toLowerCase() === 'testnet') ? true : false,
       chains: info.chains,
       uris: info.uris,      
       version: info.version,
       api_version: info.api_version,
-      currency_unit: 'BTC',
-      smaller_currency_unit: 'Sats',
+      currency_unit: CurrencyUnitEnum.BTC,
+      smaller_currency_unit: CurrencyUnitEnum.SATS,
       numberOfPendingChannels: info.num_pending_channels
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));

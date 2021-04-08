@@ -24,7 +24,7 @@
       <rtl-side-navigation (ChildNavClicked)="onNavigationClicked($event)" fxFlex="100"></rtl-side-navigation>
     </mat-sidenav>
     <mat-sidenav-content [perfectScrollbar] #sideNavContent>
-      <div [@routeAnimation]="outlet && outlet.activatedRouteData" class="inner-sidenav-content" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
+      <div class="inner-sidenav-content" fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
         <router-outlet #outlet="outlet"></router-outlet>
       </div>
     </mat-sidenav-content>>

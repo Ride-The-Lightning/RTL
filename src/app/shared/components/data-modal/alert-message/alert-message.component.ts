@@ -63,7 +63,7 @@ export class AlertMessageComponent implements OnInit, AfterViewChecked, OnDestro
   ngAfterViewChecked() {
     setTimeout(() => {
       this.shouldScroll = this.scrollContainer && this.scrollContainer.nativeElement && this.scrollContainer.nativeElement.classList.value.includes('ps--active-y');
-    });
+    }, 500);
   }
 
   onScroll() {

@@ -36,7 +36,7 @@ import { LayoutModule } from '@angular/cdk/layout';
     routing,
     LayoutModule,
     HammerModule,
-    UserIdleModule.forRoot({idle: 60 * 60, timeout: 1}),
+    UserIdleModule.forRoot({idle: 3590, timeout: 10, ping: 12000}), // One hour
     StoreModule.forRoot(RTLReducer, {
       runtimeChecks: {
         strictStateImmutability: false,

@@ -51,7 +51,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0);
     });
     this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.TabletPortrait, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
-    .pipe(takeUntil(this.unSubs[5]))
+    .pipe(takeUntil(this.unSubs[0]))
     .subscribe((matches) => {
       if(matches.breakpoints[Breakpoints.XSmall]) {
         this.commonService.setScreenSize(ScreenSizeEnum.XS);
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(new RTLActions.FetchRTLConfig());
     this.accessKey = this.readAccessKey();
     this.store.select('root')
-    .pipe(takeUntil(this.unSubs[0]))
+    .pipe(takeUntil(this.unSubs[1]))
     .subscribe(rtlStore => {
       this.selNode = rtlStore.selNode;
       this.settings = this.selNode.settings;
@@ -86,9 +86,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.flgLoading[0] = false;
       } else {
         this.flgLoggedIn = true;
+        this.userIdle.startWatching();
       }
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
     .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
@@ -102,11 +103,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }     
       if (action.type === RTLActions.LOGOUT) {
         this.flgLoggedIn = false;
+        this.userIdle.stopWatching();
+        this.userIdle.stopTimer();
       }
     });
-    this.userIdle.startWatching();
-    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[2])).subscribe(count => {});
-    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[3])).subscribe(() => {
+    this.userIdle.onTimerStart().pipe(takeUntil(this.unSubs[3])).subscribe(count => {this.logger.info('Counting Down: ' + (11 - count))});
+    this.userIdle.onTimeout().pipe(takeUntil(this.unSubs[4])).subscribe(() => {
+      this.logger.info('Time Out!');
       if (this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.logger.warn('Time limit exceeded for session inactivity.');
@@ -117,7 +120,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           titleMessage: 'Time limit exceeded for session inactivity.'
         }}));
         this.store.dispatch(new RTLActions.Logout());
-        this.userIdle.resetTimer();
       }
     });
   }

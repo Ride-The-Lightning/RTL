@@ -88,9 +88,7 @@ export enum TimeUnitEnum {
 export enum CurrencyUnitEnum {
   SATS = 'Sats',
   BTC = 'BTC',
-  LITOSHIS = 'LITOSHIS',
-  LTC = 'LTC',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER' // Fiat currency for conversion
 }
 
 export enum DataTypeEnum {
