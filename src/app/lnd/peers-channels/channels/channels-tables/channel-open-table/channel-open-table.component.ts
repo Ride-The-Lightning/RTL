@@ -239,8 +239,8 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     });
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id : '') +
-      (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
+      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
+      (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
       (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
       (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
       (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +

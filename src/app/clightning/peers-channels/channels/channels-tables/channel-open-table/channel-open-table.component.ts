@@ -232,10 +232,10 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     });
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id : '') +
-      (channel.short_channel_id ? channel.short_channel_id : '') + (channel.id ? channel.id : '') + (channel.alias ? channel.alias : '') +
+      const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
+      (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
       (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
-      (channel.funding_txid ? channel.funding_txid : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
+      (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
       (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
       (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);
