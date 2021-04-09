@@ -2,15 +2,15 @@
   <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode qrdata="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
-  <div fxFlex="100" fxFlex.gt-sm="70" class="padding-gap-large pl-3">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
+  <div fxFlex="100" fxFlex.gt-sm="70">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">{{selInfoType.infoName}}</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="pr-1">
+    <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
         <div fxFlex="50" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qrcode qrdata="{{selInfoType.infoID === 0 ? information.identity_pubkey : information.uris[(selInfoType.infoID - 1)]}}" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>

@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== '', 'padding-gap-x': true}">
   <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
-  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container">
+  <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
       <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
@@ -69,5 +69,5 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
 </div>

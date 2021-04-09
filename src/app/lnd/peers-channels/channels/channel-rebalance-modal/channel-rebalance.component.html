@@ -1,12 +1,12 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
+  <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
-      <div fxFlex="95" fxLayoutAlign="start start" class="padding-gap-x-large"><span class="page-title">Channel Rebalance</span></div>
+      <div fxFlex="95" fxLayoutAlign="start start"><span class="page-title">Channel Rebalance</span></div>
       <button tabindex="15" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="padding-gap-x-large">
       <div fxLayout="column">
-        <div class="padding-gap-x-large" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
+        <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="space-between stretch">
           <div fxFlex="100" class="alert alert-info">
             <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
             <span>Circular Rebalance is a payment you make to *yourselves* to affect a relative change in the balances of two channels.

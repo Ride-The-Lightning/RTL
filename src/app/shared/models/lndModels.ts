@@ -110,7 +110,7 @@ export interface PendingOpenChannel {
 export interface WaitingCloseChannel {
   channel?: PendingChannel;
   limbo_balance?: string;
-  commitments?: string;
+  commitments?: any;
 }
 
 export interface PendingChannel {

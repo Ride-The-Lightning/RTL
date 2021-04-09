@@ -2,15 +2,15 @@
   <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
     <qrcode [qrdata]="invoice.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
   </div>
-  <div fxFlex="65" class="padding-gap-large">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-1">
+  <div fxFlex="65">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">{{screenSize === screenSizeEnum.XS ?  (newlyAdded ? 'Created' : 'Invoice') : (newlyAdded ? 'Invoice Created' : 'Invoice Information')}}</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
+    <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
           <qrcode [qrdata]="invoice.bolt11" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>

@@ -1,8 +1,8 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <div fxLayout="row">
     <button mat-flat-button color="primary" (click)="onOpenChannel()" type="submit" tabindex="1">Open Channel</button>
   </div>
-  <div fxLayout="column" fxFlex="100" class="mt-2 bordered-box">
+  <div fxLayout="column" fxFlex="100" class="my-2 bordered-box">
     <mat-tab-group [(selectedIndex)]="activeLink" (selectedTabChange)="onSelectedTabChange($event)">
       <mat-tab>
         <ng-template mat-tab-label>

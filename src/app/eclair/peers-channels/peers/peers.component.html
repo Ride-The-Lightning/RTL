@@ -1,9 +1,9 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <form fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #peersForm="ngForm">
     <button mat-flat-button color="primary" type="submit" tabindex="1" (click)="onConnectPeer({})">Add Peer</button>
   </form>
   <div fxLayout="column">
-    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="padding-gap-x page-sub-title-container">
+    <div fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
       <div fxFlex="70">
         <fa-icon [icon]="faUsers" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Peers</span>
@@ -74,6 +74,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.pub_key === newlyAddedPeer && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
   </div>
 </div>

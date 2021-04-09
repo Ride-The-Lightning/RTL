@@ -1,14 +1,14 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
+  <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">{{channelToClose.active ? 'Close Channel' : 'Force Close Channel'}}</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>    
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
-        <div fxLayout="column" class="bordered-box my-2 p-2">
+        <div fxLayout="column" class="bordered-box mb-1 p-2">
           <p fxLayoutAlign="start center" class="pb-1 word-break">{{channelToClose.active ? ('Closing channel: ' + channelToClose.channel_point) : ('Force closing channel: ' + channelToClose.channel_point)}}</p>
           <div *ngIf="flgPendingHtlcs" fxLayoutAlign="start center">
             <p fxFlex="100" fxLayoutAlign="start center" class="color-warn"><mat-icon class="mr-1 icon-small">close</mat-icon>{{errorMsg}}</p>

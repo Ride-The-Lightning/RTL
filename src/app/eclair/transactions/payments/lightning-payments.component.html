@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
   <form *ngIf="calledFrom === 'home'" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayout.gt-sm="row wrap" #sendPaymentForm="ngForm">
     <mat-form-field fxFlex="100">
       <textarea [perfectScrollbar] matInput placeholder="Payment Request" name="paymentRequest" tabindex="1" [ngModel]="paymentRequest" (ngModelChange)="onPaymentRequestEntry($event)" required (matTextareaAutosize)="true" #paymentReq="ngModel"></textarea>
@@ -140,6 +140,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
   </div>
 </div>
