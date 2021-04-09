@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch" class="padding-gap">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="start stretch">
   <form *ngIf="calledFrom === 'home'" fxLayout="row wrap" fxLayoutAlign="stretch start" fxFlex="100" #addInvoiceForm="ngForm">
     <mat-form-field fxFlex="100" fxLayoutAlign="space-between stretch">
       <input matInput [(ngModel)]="description" placeholder="Description" tabindex="2" name="description" required="true">
@@ -86,6 +86,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.label == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
   </div>
 </div>

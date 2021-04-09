@@ -36,8 +36,8 @@ body {
 }
 
 .mat-sidenav-container .mat-sidenav-content {
-  height: 100vh;
-  min-height: 100vh;
+  height: 94vh;
+  min-height: 94vh;
 }
 
 .sidenav {
@@ -161,8 +161,19 @@ body {
   }
 }
 
+.padding-gap-bottom-large {
+  padding-bottom: $gap*2 !important;
+  @include for_screensize(tab-port) {
+    padding-bottom: $gap !important;
+  }
+  @include for_screensize(phone) {
+    padding-bottom: $gap/4 !important;
+  }
+}
+
 .overflow-wrap {
   overflow-wrap: break-word !important;
+  overflow: hidden;
 }
 
 .mat-card {

@@ -1,13 +1,13 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="100" class="padding-gap-large pl-3">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-1">
+  <div fxFlex="100">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <fa-icon [icon]="faReceipt" class="page-title-img mr-1"></fa-icon>
         <span class="page-title">Channel Information</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
+    <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
         <div fxLayout="row">
           <div fxFlex="50">
@@ -71,8 +71,8 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.private ? 'Yes' : 'No'}}</span>
           </div>
         </div>
+        <mat-divider [inset]="true" class="my-1"></mat-divider>
         <div *ngIf="showAdvanced">
-          <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Funding Transaction Id</h4>

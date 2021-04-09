@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch" class="padding-gap-x-large">
+<div fxLayout="row wrap" fxLayoutAlign="start start" fxLayout.gt-sm="column" fxFlex="100" fxLayoutAlign.gt-sm="start stretch">
   <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70">
       <fa-icon [icon]="faHistory" class="page-title-img mr-1"></fa-icon>
@@ -59,7 +59,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
     </div>
   </div>
 </div>

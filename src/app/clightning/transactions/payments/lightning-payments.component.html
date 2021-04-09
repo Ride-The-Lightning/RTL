@@ -135,6 +135,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns; when: !is_group;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
   </div>
 </div>

@@ -145,7 +145,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.payment_hash === newlyAddedPayment && flgAnimate) ? 'added' : 'notAdded'"></tr>
         </table>
-        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
       </div>
     </div>
   </div>

@@ -193,9 +193,11 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   onWaitClosingClick(selChannel: any) {
     const fcChannelObj1 = JSON.parse(JSON.stringify(selChannel, ['limbo_balance'], 2));
     const fcChannelObj2 = JSON.parse(JSON.stringify(selChannel.channel, ['remote_alias', 'channel_point', 'remote_balance', 'local_balance', 'remote_node_pub', 'capacity'], 2));
+    const fcChannelObj3 = JSON.parse(JSON.stringify(selChannel.commitments, ['local_txid'], 2));
     const preOrderedChannel: any = {};
-    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2);
+    Object.assign(preOrderedChannel, fcChannelObj1, fcChannelObj2, fcChannelObj3);
     const reorderedChannel = [
+      [{key: 'local_txid', value: preOrderedChannel.local_txid, title: 'Transaction ID', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'channel_point', value: preOrderedChannel.channel_point, title: 'Channel Point', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'remote_alias', value: preOrderedChannel.remote_alias, title: 'Peer Alias', width: 25, type: DataTypeEnum.STRING},
         {key: 'remote_node_pub', value: preOrderedChannel.remote_node_pub, title: 'Peer Node Pubkey', width: 75, type: DataTypeEnum.STRING}],
