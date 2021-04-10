@@ -95,7 +95,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), defaultPassword: false}));
+            if(!this.accessKey || this.accessKey.trim() === '') {
+              this.router.navigate(['./error'], { state: {errorCode: '406', errorMessage: 'Invalid access key.'} });
+            } else {
+              this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), defaultPassword: false}));
+            }
           } else {
             this.router.navigate(['./login']);
           }
@@ -126,7 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readAccessKey() {
     const url = window.location.href;
-    return url.includes('access-key=') ? url.substring(url.lastIndexOf('access-key=') + 11).trim() : '';
+    return url.includes('access-key=') ? url.substring(url.lastIndexOf('access-key=') + 11).trim() : null;
   }
 
   ngAfterViewInit() {
