@@ -50,7 +50,7 @@ exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
     if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
       res.status(200).json({ token: token });
-    } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim() !== '' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
+    } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
@@ -58,10 +58,10 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'SSO Authentication Failed!'});
+      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'SSO Authentication Failed! Access key too short or does not match.'});
       res.status(406).json({
-        message: "Login Failure!",
-        error: "SSO Authentication Failed!"
+        message: "SSO Authentication Failed!",
+        error: "SSO failed. Access key too short or does not match."
       });
     }
   } else {

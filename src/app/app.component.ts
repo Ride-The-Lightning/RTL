@@ -95,8 +95,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (action.type === RTLActions.SET_RTL_CONFIG) {
         if (!this.sessionService.getItem('token')) {
           if (+action.payload.sso.rtlSSO) {
-            if(!this.accessKey || this.accessKey.trim() === '') {
-              this.router.navigate(['./error'], { state: {errorCode: '406', errorMessage: 'Invalid access key.'} });
+            if(!this.accessKey || this.accessKey.trim().length < 32) {
+              this.router.navigate(['./error'], { state: {errorCode: '406', errorMessage: 'Access key too short. It should be at least 32 characters long.'} });
             } else {
               this.store.dispatch(new RTLActions.Login({password: sha256(this.accessKey), defaultPassword: false}));
             }
