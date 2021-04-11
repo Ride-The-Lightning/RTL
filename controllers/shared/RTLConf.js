@@ -165,7 +165,7 @@ exports.getConfig = (req, res, next) => {
   logger.info({fileName: 'RTLConf', msg: 'Node Type: ' + req.params.nodeType + ', File Path: ' + confFile});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
-      logger.error({fileName: 'Conf', lineNum: 171, msg: 'Reading Conf Failed!'});
+      logger.error({fileName: 'Conf', lineNum: 168, msg: 'Reading Conf Failed!'});
       res.status(500).json({
         message: "Reading Config File Failed!",
         error: err
@@ -175,45 +175,14 @@ exports.getConfig = (req, res, next) => {
       if (fileFormat === 'JSON') {
         jsonConfig = JSON.parse(data);
       } else {
+        fileFormat = 'INI';
         jsonConfig = ini.parse(data);
-        switch (common.selectedNode.ln_implementation) {
-          case 'ECL':
-            if (jsonConfig['eclair.api.password']) {
-              if (jsonConfig['eclair.api.password']) {
-                jsonConfig['eclair.api.password'] = jsonConfig['eclair.api.password'].replace(/./g, '*');
-              }      
-              if (jsonConfig['eclair.bitcoind.rpcpassword']) {
-                jsonConfig['eclair.bitcoind.rpcpassword'] = jsonConfig['eclair.bitcoind.rpcpassword'].replace(/./g, '*');
-              }      
-            } else {
-              fileFormat = 'HOCON';
-              jsonConfig = parseHocon(data);
-              if (jsonConfig.eclair && jsonConfig.eclair.api && jsonConfig.eclair.api.password) {
-                jsonConfig.eclair.api.password = jsonConfig.eclair.api.password.replace(/./g, '*');
-              }      
-              if (jsonConfig.eclair && jsonConfig.eclair.bitcoind && jsonConfig.eclair.bitcoind.rpcpassword) {
-                jsonConfig.eclair.bitcoind.rpcpassword = jsonConfig.eclair.bitcoind.rpcpassword.replace(/./g, '*');
-              }      
-            }
-            break;
-        
-         default:
-            fileFormat = 'INI';
-            break;
+        if (common.selectedNode.ln_implementation === 'ECL' && !jsonConfig['eclair.api.password']) {
+          fileFormat = 'HOCON';
+          jsonConfig = parseHocon(data);
         }
       }
-      if (jsonConfig.Bitcoind && jsonConfig.Bitcoind['bitcoind.rpcpass']) {
-        jsonConfig.Bitcoind['bitcoind.rpcpass'] = jsonConfig.Bitcoind['bitcoind.rpcpass'].replace(/./g, '*');
-      }
-      if (jsonConfig['bitcoind.rpcpass']) {
-        jsonConfig['bitcoind.rpcpass'] = jsonConfig['bitcoind.rpcpass'].replace(/./g, '*');
-      }
-      if (jsonConfig['rpcpassword']) {
-        jsonConfig['rpcpassword'] = jsonConfig['rpcpassword'].replace(/./g, '*');
-      }
-      if (jsonConfig.multiPass) {
-        jsonConfig.multiPass = jsonConfig.multiPass.replace(/./g, '*');
-      }
+      jsonConfig = maskPasswords(jsonConfig);
       const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig);
       res.status(200).json({format: fileFormat, data: responseJSON});
     }
@@ -334,4 +303,23 @@ exports.updateServiceSettings = (req, res, next) => {
       error: 'Updating Service Settings Failed!'
     });
   }
+};
+
+var maskPasswords = function(obj) {
+  var keys = Object.keys(obj);
+  var length = keys.length;
+  if (length !== 0) {
+    for (var i = 0; i < length; i++) {
+      if (typeof obj[keys[i]] === 'object') {
+        keys[keys[i]] = maskPasswords(obj[keys[i]]);
+      }
+      if (typeof keys[i] === 'string'
+        && (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass')
+          || keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword'))
+      ) {
+        obj[keys[i]] = obj[keys[i]].replace(/./g, '*');
+      }
+    }
+  }
+  return obj;
 };
