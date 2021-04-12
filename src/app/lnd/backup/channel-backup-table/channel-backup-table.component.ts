@@ -76,7 +76,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         this.selectedChannel = undefined;
       }
       if(action.type === RTLActions.SHOW_FILE) {
-        this.commonService.downloadFile(action.payload, 'Backup-Channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'All'), '.bak', '.bak');
+        this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
         this.selectedChannel = undefined;
         this.store.dispatch(new RTLActions.CloseSpinner());
       }
