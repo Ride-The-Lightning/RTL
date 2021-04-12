@@ -13,7 +13,7 @@ function getFilesList(callback) {
     if( files && files.length > 0) {
       files.forEach(file => {
         if (!file.includes('.restored')) {
-          if (file === 'channel-all.bak') {
+          if (file.toLowerCase() === 'channel-all.bak' || file.toLowerCase() === 'backup-channel-all.bak') {
             all_restore_exists = true;
           } else {
             files_list.push({channel_point: file.substring(8, file.length - 4).replace('-', ':')});
@@ -159,10 +159,19 @@ exports.postRestore = (req, res, next) => {
   let restore_backup = '';
   if (req.params.channelPoint === 'ALL') {
     message = 'All Channels Restore Successful.';
-    channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'restore' + common.path_separator + 'channel-all.bak';
-    let exists = fs.existsSync(channel_restore_file);
+    channel_restore_file = common.selectedNode.channel_backup_path + common.path_separator + 'restore' + common.path_separator;
+    let exists = fs.existsSync(channel_restore_file + 'channel-all.bak');
+    let downloaded_exists = fs.existsSync(channel_restore_file + 'backup-channel-all.bak');
     if (exists) {
-      restore_backup = fs.readFileSync(channel_restore_file, 'utf-8');
+      restore_backup = fs.readFileSync(channel_restore_file + 'channel-all.bak', 'utf-8');
+      if (restore_backup !== '') {
+        restore_backup = JSON.parse(restore_backup);
+        options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
+      } else {
+        res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
+      }
+    } else if (downloaded_exists) {
+      restore_backup = fs.readFileSync(channel_restore_file + 'backup-channel-all.bak', 'utf-8');
       if (restore_backup !== '') {
         restore_backup = JSON.parse(restore_backup);
         options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
