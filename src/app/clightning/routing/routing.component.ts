@@ -5,9 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
-import * as CLActions from '../store/cl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-
 
 @Component({
   selector: 'rtl-cl-routing',
@@ -33,7 +31,6 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.store.dispatch(new CLActions.SetForwardingHistory({}));
     this.unSubs.forEach(completeSub => {
       completeSub.next();
       completeSub.complete();
