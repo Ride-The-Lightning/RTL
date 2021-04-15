@@ -19,7 +19,7 @@
         <ng-container *ngTemplateOutlet="contentBlock"></ng-container>        
       </mat-card-content>
     </ng-container>
-    <div *ngIf="data.scrollable && shouldScroll" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container">
+    <div *ngIf="data.scrollable && shouldScroll" fxLayout="row" fxLayoutAlign="start end" class="btn-sticky-container padding-gap-x-large">
       <button mat-mini-fab aria-label="Scroll" fxLayoutAlign="center center" (click)="onScroll()">
         <mat-icon *ngIf="scrollDirection == 'DOWN'" fxLayoutAlign="center center">arrow_downward</mat-icon>
         <mat-icon *ngIf="scrollDirection == 'UP'" fxLayoutAlign="center center">arrow_upward</mat-icon>
