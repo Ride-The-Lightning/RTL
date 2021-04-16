@@ -179,7 +179,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   sendPayment(payReq: string) {
     this.flgInvoiceGenerated = true;
     this.paymentRequest = payReq;
-    this.store.dispatch(new LNDActions.SendPayment({paymentReq: payReq, paymentDecoded: {}, zeroAmtInvoice: false, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true}));
+    this.store.dispatch(new LNDActions.SendPayment({paymentReq: payReq, outgoingChannel: this.selChannel, feeLimitType: this.feeFormGroup.controls.selFeeLimitType.value, feeLimit: this.feeFormGroup.controls.feeLimit.value, allowSelfPayment: true, lastHopPubkey: this.inputFormGroup.controls.selRebalancePeer.value.remote_pubkey, fromDialog: true}));
   }
 
   filterActiveChannels() {
