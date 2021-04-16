@@ -644,21 +644,17 @@ export class LNDEffects implements OnDestroy {
   @Effect()
   sendPayment = this.actions$.pipe(
     ofType(LNDActions.SEND_PAYMENT_LND),
-    withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [LNDActions.SendPayment, any]) => {
+    mergeMap((action: LNDActions.SendPayment) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SendPayment'));
       let queryHeaders = {};
+      queryHeaders['paymentReq'] = action.payload.paymentReq;
+      if (action.payload.paymentAmount) { queryHeaders['paymentAmount'] = action.payload.paymentAmount; }
       if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
       if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; } // Channel Rebalancing
       if (action.payload.lastHopPubkey) { queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey; }
       if(action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
         queryHeaders['feeLimit'] = {};
         queryHeaders['feeLimit'][action.payload.feeLimitType.id] = action.payload.feeLimit;
-      }
-      if (action.payload.zeroAmtInvoice) {
-        queryHeaders['paymentDecoded'] = action.payload.paymentDecoded;
-      } else {
-        queryHeaders['paymentReq'] = action.payload.paymentReq;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders)
         .pipe(

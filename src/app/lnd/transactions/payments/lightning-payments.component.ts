@@ -167,7 +167,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
             this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, fromDialog: false}));
+            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false}));
             this.resetData();
           }
         });
@@ -193,7 +193,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       .subscribe(confirmRes => {
         if (confirmRes) {
           this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, fromDialog: false}));
+          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
       });

@@ -310,7 +310,7 @@ export class SetPayments implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_LND;
-  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentDecoded: PayRequest, zeroAmtInvoice: boolean, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
 export class SendPaymentStatus implements Action {

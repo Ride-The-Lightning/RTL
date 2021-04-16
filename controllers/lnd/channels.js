@@ -235,17 +235,9 @@ exports.postChannel = (req, res, next) => {
 exports.postTransactions = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
-  if(req.body.paymentReq) {
-    options.form = { 
-      payment_request: req.body.paymentReq
-    };
-  } else if(req.body.paymentDecoded) {
-    options.form = { 
-      payment_hash_string: req.body.paymentDecoded.payment_hash,
-      final_cltv_delta: parseInt(req.body.paymentDecoded.cltv_expiry),
-      amt: req.body.paymentDecoded.num_satoshis,
-      dest_string: req.body.paymentDecoded.destination
-    };
+  options.form = { payment_request: req.body.paymentReq };
+  if(req.body.paymentAmount) {
+    options.form.amt = req.body.paymentAmount;
   }
   if (req.body.feeLimit) { options.form.fee_limit = req.body.feeLimit; }
   if (req.body.outgoingChannel) { options.form.outgoing_chan_id = req.body.outgoingChannel; }
