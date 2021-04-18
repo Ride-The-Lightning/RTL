@@ -194,7 +194,7 @@ common.sortAscByKey = (array, key) => {
 
 common.sortDescByKey = (array, key) => {
   const temp = array.sort(function (a, b) {
-    var x = +a[key]; var y = +b[key];
+    var x = +a[key] ? +a[key] : 0; var y = +b[key] ? +b[key] : 0;
     return (x > y) ? -1 : ((x < y) ? 1 : 0);
   });
   return temp;
