@@ -325,9 +325,9 @@ export class CLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             if(action.payload.channelId === 'all') {
-              this.store.dispatch(new RTLActions.OpenSnackBar('All Channels Updated Successfully.'));
+              this.store.dispatch(new RTLActions.OpenSnackBar({message:'All Channels Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000}));
             } else {
-              this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
+              this.store.dispatch(new RTLActions.OpenSnackBar({message:'Channel Updated Successfully. Fee policy updates may take some time to reflect on the channel.', duration: 5000}));
             }
             return {
               type: CLActions.FETCH_CHANNELS_CL

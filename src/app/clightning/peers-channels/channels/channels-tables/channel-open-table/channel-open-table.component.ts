@@ -157,9 +157,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       this.clEffects.setLookupCL
       .pipe(take(1))
       .subscribe((resLookup: ChannelEdge[]) => {
-        if (resLookup.length > 0 && resLookup[0].destination === this.information.id) {
+        if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth};
-        } else if (resLookup.length > 1 && resLookup[1].destination === this.information.id) {
+        } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth};
         } else {
           this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};

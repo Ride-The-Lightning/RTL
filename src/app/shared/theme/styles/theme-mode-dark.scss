@@ -42,6 +42,9 @@
       background: $foreground-secondary-text;
     }  
   }
+  .rtl-snack-bar {
+    max-width: 90vw !important;
+  }
   .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
   }

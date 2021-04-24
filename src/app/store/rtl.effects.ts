@@ -7,7 +7,7 @@ import { of, Subject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 import { environment, API_URL } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
@@ -62,7 +62,11 @@ export class RTLEffects implements OnDestroy {
   openSnackBar = this.actions$.pipe(
     ofType(RTLActions.OPEN_SNACK_BAR),
     map((action: RTLActions.OpenSnackBar) => {
-      this.snackBar.open(action.payload);
+      if (typeof action.payload === 'string') {
+        this.snackBar.open(action.payload);
+      } else {
+        this.snackBar.open(action.payload.message, '', {duration: action.payload.duration});
+      }
     }
   ));
 
