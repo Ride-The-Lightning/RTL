@@ -50,7 +50,7 @@ exports.authenticateUser = (req, res, next) => {
   if(+common.rtl_sso) {
     if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
       res.status(200).json({ token: token });
-    } else if (req.body.authenticateWith === 'PASSWORD' && crypto.createHash('sha256').update(common.cookie).digest('hex') === req.body.authenticationValue) {
+    } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
       const token = jwt.sign(
         { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
@@ -58,10 +58,10 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 20, msg: 'SSO Authentication Failed!'});
+      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'SSO Authentication Failed! Access key too short or does not match.'});
       res.status(406).json({
-        message: "Login Failure!",
-        error: "SSO Authentication Failed!"
+        message: "SSO Authentication Failed!",
+        error: "SSO failed. Access key too short or does not match."
       });
     }
   } else {
@@ -72,7 +72,7 @@ exports.authenticateUser = (req, res, next) => {
     if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
       if (req.body.twoFAToken && req.body.twoFAToken !== '') {
         if (!this.verifyToken(req.body.twoFAToken)) {
-          logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'Invalid Token! Failed IP ' + reqIP});
+          logger.error({fileName: 'Authenticate', lineNum: 75, msg: 'Invalid Token! Failed IP ' + reqIP});
           failed.count = failed.count + 1;
           failed.lastTried = currentTime;
           return res.status(401).json(handleError(failed, currentTime, 'Invalid 2FA Token!'));
@@ -86,7 +86,7 @@ exports.authenticateUser = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 85, msg: 'Invalid Password! Failed IP ' + reqIP});
+      logger.error({fileName: 'Authenticate', lineNum: 89, msg: 'Invalid Password! Failed IP ' + reqIP});
       failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
       failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
       return res.status(401).json(handleError(failed, currentTime, 'Invalid Password!'));
@@ -96,7 +96,7 @@ exports.authenticateUser = (req, res, next) => {
 
 exports.resetPassword = (req, res, next) => {
   if(+common.rtl_sso) {
-    logger.error({fileName: 'Authenticate', lineNum: 47, msg: 'Password Reset Failed!'});
+    logger.error({fileName: 'Authenticate', lineNum: 99, msg: 'Password Reset Failed!'});
     res.status(401).json({
       message: "Password Reset Failed!",
       error: "Password cannot be reset for SSO authentication!"
@@ -112,7 +112,7 @@ exports.resetPassword = (req, res, next) => {
       );
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 63, msg: 'Password Reset Failed!'});
+      logger.error({fileName: 'Authenticate', lineNum: 115, msg: 'Password Reset Failed!'});
       res.status(401).json({
         message: "Password Reset Failed!",
         error: "Old password is not correct!"

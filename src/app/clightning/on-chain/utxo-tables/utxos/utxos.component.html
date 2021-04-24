@@ -62,10 +62,9 @@
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_utxo']" [ngClass]="{'display-none': listUTXOs?.data && listUTXOs?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'alert alert-warn': !isDustUTXO && row.value < 10000}"></tr> -->
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-4"></mat-paginator>
+      <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
     </div>
   </div>
 </div>

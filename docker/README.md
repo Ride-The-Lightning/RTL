@@ -39,8 +39,8 @@ $ docker-compose logs bitcoind lnd rtl
 
 Once the containers are running you can access the RTL UI at http://localhost:3000
 
- - Default password is `changeme`.
-  - Default host, port and password can be changed in `.env`.
+ - Default password is `password`.
+ - Default host, port and password can be changed in `.env`.
 
 When you are done you can destroy containers with:
 ```

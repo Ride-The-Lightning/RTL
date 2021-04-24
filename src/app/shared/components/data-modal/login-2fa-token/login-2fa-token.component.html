@@ -1,18 +1,18 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="100" class="padding-gap-large pl-3">
-    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header mb-2">
+  <div fxFlex="100">
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Two Factor Token</span>
       </div>
       <button tabindex="3" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>
-    <mat-card-content fxLayout="row" class="pr-1">
+    <mat-card-content fxLayout="row" class="padding-gap-x-large">
       <form (ngSubmit)="onVerifyToken()" #tokenForm="ngForm" fxLayout="column" fxFlex="100">
         <mat-form-field>
           <input autoFocus matInput placeholder="Token" type="text" id="token" name="token" [(ngModel)]="token" tabindex="2" required>
           <mat-error *ngIf="!token">Token is required.</mat-error>
         </mat-form-field>
-        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-2">
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end center" class="mt-1">
           <button mat-flat-button color="primary" tabindex="4" type="submit">Verify Token</button>
         </div> 
       </form>

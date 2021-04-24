@@ -101,7 +101,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = event.status + event.received_time_str + event.resolved_time_str + event.in_channel + event.out_channel + (event.in_msatoshi/1000) + (event.out_msatoshi/1000) + event.fee;
+      const newEvent = (event.status ? event.status.toLowerCase() : '') + (event.received_time_str ? event.received_time_str.toLowerCase() : '') + (event.resolved_time_str ? event.resolved_time_str.toLowerCase() : '') + (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') + (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
     };    
     this.logger.info(this.forwardingHistoryEvents);

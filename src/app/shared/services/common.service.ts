@@ -217,9 +217,8 @@ export class CommonService implements OnInit {
     if (fromFormat === '.json') {
       blob = new Blob(['\ufeff' + this.convertToCSV(data)], { type: 'text/csv;charset=utf-8;' });
     } else {
-      blob = new Blob(['\ufeff' + data], { type: 'text;charset=utf-8;' });
+      blob = new Blob([data.toString()], { type: 'text/plain;charset=utf-8' });
     }
-
     let downloadUrl = document.createElement('a');
     let url = URL.createObjectURL(blob);
     let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;

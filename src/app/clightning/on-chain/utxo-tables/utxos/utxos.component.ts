@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input, OnChanges } from '@angular/core';
+import { Component, ViewChild, Input, OnChanges, AfterViewInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 
@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('UTXOs') }
   ]  
 })
-export class CLOnChainUtxosComponent implements OnChanges {
+export class CLOnChainUtxosComponent implements OnChanges, AfterViewInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() numDustUTXOs = 0;
@@ -53,6 +53,12 @@ export class CLOnChainUtxosComponent implements OnChanges {
     }
   }
 
+  ngAfterViewInit() {
+    if (this.utxos && this.utxos.length > 0 && this.sort && this.paginator) {
+      this.loadUTXOsTable(this.utxos);
+    }
+  }
+
   ngOnChanges() {
     if (this.utxos && this.utxos.length > 0) {
       this.loadUTXOsTable(this.utxos);
@@ -81,8 +87,8 @@ export class CLOnChainUtxosComponent implements OnChanges {
 
   loadUTXOsTable(utxos: any[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...utxos]);
-    this.listUTXOs.sort = this.sort;
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.listUTXOs.sort = this.sort;
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => JSON.stringify(utxo).toLowerCase().includes(fltr);
     this.listUTXOs.paginator = this.paginator;
     this.logger.info(this.listUTXOs);

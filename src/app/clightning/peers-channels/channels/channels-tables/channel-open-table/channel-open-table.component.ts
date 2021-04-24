@@ -157,9 +157,9 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       this.clEffects.setLookupCL
       .pipe(take(1))
       .subscribe((resLookup: ChannelEdge[]) => {
-        if (resLookup.length > 0 && resLookup[0].destination === this.information.id) {
+        if (resLookup.length > 0 && resLookup[0].source === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[0].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[0].fee_per_millionth};
-        } else if (resLookup.length > 1 && resLookup[1].destination === this.information.id) {
+        } else if (resLookup.length > 1 && resLookup[1].source === this.information.id) {
           this.myChanPolicy = {fee_base_msat: resLookup[1].base_fee_millisatoshi, fee_rate_milli_msat: resLookup[1].fee_per_millionth};
         } else {
           this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
@@ -232,10 +232,10 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     });
     this.channels = new MatTableDataSource<Channel>([...mychannels]);
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id : '') +
-      (channel.short_channel_id ? channel.short_channel_id : '') + (channel.id ? channel.id : '') + (channel.alias ? channel.alias : '') +
+      const newChannel = ((channel.connected) ? 'connected' : 'disconnected') + (channel.channel_id ? channel.channel_id.toLowerCase() : '') +
+      (channel.short_channel_id ? channel.short_channel_id.toLowerCase() : '') + (channel.id ? channel.id.toLowerCase() : '') + (channel.alias ? channel.alias.toLowerCase() : '') +
       (channel.private ? 'private' : 'public') + (channel.state ? channel.state.toLowerCase() : '') +
-      (channel.funding_txid ? channel.funding_txid : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
+      (channel.funding_txid ? channel.funding_txid.toLowerCase() : '') + (channel.msatoshi_to_us ? channel.msatoshi_to_us : '') +
       (channel.msatoshi_total ? channel.msatoshi_total : '') + (channel.their_channel_reserve_satoshis ? channel.their_channel_reserve_satoshis : '') +
       (channel.our_channel_reserve_satoshis ? channel.our_channel_reserve_satoshis : '') + (channel.spendable_msatoshi ? channel.spendable_msatoshi : '');
       return newChannel.includes(fltr);

@@ -1,15 +1,17 @@
 <div fxLayout="row">
-  <div fxFlex="100" class="padding-gap-large">
+  <div fxFlex="100">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
       <div fxFlex="95" fxLayoutAlign="start start">
         <span class="page-title">Bump Fee</span>
       </div>
       <button tabindex="8" fxFlex="5" fxLayoutAlign="center" class="btn-close-x p-0" (click)="onClose()" mat-button>X</button>
     </mat-card-header>    
-    <mat-card-content class="mt-5px">
+    <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
-        <div fxLayout="column" class="bordered-box my-2 p-2">
-          <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel point: {{bumpFeeChannel?.channel?.channel_point}}</p>
+        <div fxLayout="column" class="bordered-box mb-1 p-2">
+          <p fxLayoutAlign="start center" class="pb-1 word-break">Bump fee for channel point: {{bumpFeeChannel?.channel?.channel_point}}
+            <fa-icon class="ml-1" [icon]="faCopy" matSuffix rtlClipboard [payload]="bumpFeeChannel?.channel?.txid_str" (copied)="onCopyID($event)" matTooltip="Copy transaction ID"></fa-icon>
+          </p>
           <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
             <div fxFlex="100" class="alert alert-info">
               <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>

@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.10.1-beta",
+  "version": "0.10.2-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.4",
-    "@angular/cli": "~11.0.4",
+    "@angular/cli": "^11.2.9",
     "@ngrx/store-devtools": "^10.1.0",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.19.9",

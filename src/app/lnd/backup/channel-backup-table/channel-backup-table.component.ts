@@ -76,7 +76,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
         this.selectedChannel = undefined;
       }
       if(action.type === RTLActions.SHOW_FILE) {
-        this.commonService.downloadFile(action.payload, 'Backup-Channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'All'), '.bak', '.bak');
+        this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
         this.selectedChannel = undefined;
         this.store.dispatch(new RTLActions.CloseSpinner());
       }
@@ -123,8 +123,8 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     this.channels.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.channels.paginator = this.paginator;
     this.channels.filterPredicate = (channel: Channel, fltr: string) => {
-      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point : '') + (channel.chan_id ? channel.chan_id : '') +
-      (channel.remote_pubkey ? channel.remote_pubkey : '') + (channel.remote_alias ? channel.remote_alias : '') +
+      const newChannel = ((channel.active) ? 'active' : 'inactive') + (channel.channel_point ? channel.channel_point.toLowerCase() : '') + (channel.chan_id ? channel.chan_id.toLowerCase() : '') +
+      (channel.remote_pubkey ? channel.remote_pubkey.toLowerCase() : '') + (channel.remote_alias ? channel.remote_alias.toLowerCase() : '') +
       (channel.capacity ? channel.capacity : '') + (channel.local_balance ? channel.local_balance : '') +
       (channel.remote_balance ? channel.remote_balance : '') + (channel.total_satoshis_sent ? channel.total_satoshis_sent : '') +
       (channel.total_satoshis_received ? channel.total_satoshis_received : '') + (channel.commit_fee ? channel.commit_fee : '') +

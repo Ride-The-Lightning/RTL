@@ -42,6 +42,9 @@
       background: $foreground-secondary-text;
     }  
   }
+  .rtl-snack-bar {
+    max-width: 90vw !important;
+  }
   .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
     background-color: $primary-darker;
   }
@@ -68,11 +71,6 @@
     cursor: pointer;
     fill: $primary-darker; 
   }
-  // .page-title-container, .page-sub-title-container {
-  //   .mat-input-element, .mat-radio-label-content, .theme-name {
-  //     color: $foreground-text;
-  //   }  
-  // }
   .mat-tree-node:hover, .mat-nested-tree-node-parent:hover, .mat-select-panel .mat-option:hover, .mat-menu-panel .mat-menu-content .mat-menu-item:hover {
     color: $primary-darker; 
     cursor: pointer;

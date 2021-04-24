@@ -119,10 +119,10 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: true, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount:this.paymentAmount, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentDecoded: this.paymentDecoded, zeroAmtInvoice: false, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: this.selFeeLimitType, feeLimit: this.feeLimit, fromDialog: true}));
     }
   }
 

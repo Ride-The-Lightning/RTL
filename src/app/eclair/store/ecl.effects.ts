@@ -125,7 +125,7 @@ export class ECLEffects implements OnDestroy {
           this.store.dispatch(new ECLActions.SetPendingChannels((channelsRes && channelsRes.pendingChannels.length > 0) ? channelsRes.pendingChannels : []));
           this.store.dispatch(new ECLActions.SetInactiveChannels((channelsRes && channelsRes.inactiveChannels.length > 0) ? channelsRes.inactiveChannels : []));
           this.store.dispatch(new ECLActions.SetLightningBalance(channelsRes.lightningBalances));
-          if (action.payload.fetchPayments) {
+          if (action.payload && action.payload.fetchPayments) {
             this.store.dispatch(new ECLActions.FetchPayments());
           }
           return {
@@ -243,11 +243,12 @@ export class ECLEffects implements OnDestroy {
         .pipe(
           map((postRes: Peer[]) => {
             this.logger.info(postRes);
+            postRes = (postRes && postRes.length) ? postRes : [];
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new ECLActions.SetPeers((postRes && postRes.length) ? postRes : []));
+            this.store.dispatch(new ECLActions.SetPeers(postRes));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
-              payload: { peer: postRes[0] }
+              payload: { peer: postRes.find(peer => peer.nodeId === (action.payload.id.includes('@') ? action.payload.id.substring(0, action.payload.id.indexOf('@')) : action.payload.id)) }
             };
           }),
           catchError((err: any) => {
@@ -298,7 +299,8 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {
-              type: ECLActions.FETCH_CHANNELS_ECL
+              type: ECLActions.FETCH_CHANNELS_ECL,
+              payload: { fetchPayments: false }
             };
           }),
           catchError((err: any) => {
@@ -330,7 +332,8 @@ export class ECLEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.OpenSnackBar('Channel Updated Successfully!'));
             }
             return {
-              type: ECLActions.FETCH_CHANNELS_ECL
+              type: ECLActions.FETCH_CHANNELS_ECL,
+              payload: { fetchPayments: false }
             };
           }),
           catchError((err: any) => {

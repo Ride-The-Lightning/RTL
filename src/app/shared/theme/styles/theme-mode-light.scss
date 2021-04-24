@@ -40,6 +40,9 @@
   .rtl-top-toolbar {
     border-bottom: 1px solid white;
   }
+  .rtl-snack-bar {
+    max-width: 90vw !important;
+  }
   .mat-tab-label {
     &.mat-tab-label-active {
       color: $primary-color;

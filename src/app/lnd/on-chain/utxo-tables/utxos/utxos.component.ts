@@ -93,9 +93,9 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
   loadUTXOsTable(UTXOs: UTXO[]) {
     this.listUTXOs = new MatTableDataSource<UTXO>([...UTXOs]);
     this.listUTXOs.filterPredicate = (utxo: UTXO, fltr: string) => {
-      const newUTXO = ((utxo.label ? utxo.label : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
-      + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes : '') + (utxo.address ? utxo.address : '') + (utxo.address_type ? utxo.address_type : '')
-      + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script : ''));
+      const newUTXO = ((utxo.label ? utxo.label.toLowerCase() : '') + (utxo.outpoint.txid_str ? utxo.outpoint.txid_str.toLowerCase() : '') + (utxo.outpoint.output_index ? utxo.outpoint.output_index : '')
+      + (utxo.outpoint.txid_bytes ? utxo.outpoint.txid_bytes.toLowerCase() : '') + (utxo.address ? utxo.address.toLowerCase() : '') + (utxo.address_type ? utxo.address_type.toLowerCase() : '')
+      + (utxo.amount_sat ? utxo.amount_sat : '') + (utxo.confirmations ? utxo.confirmations : '') + (utxo.pk_script ? utxo.pk_script.toLowerCase() : ''));
       return newUTXO.includes(fltr);
     };
     this.listUTXOs.sortingDataAccessor = (data: any, sortHeaderId: string) => {

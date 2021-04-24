@@ -12,10 +12,10 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, GetInfoChain, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO } from '../../shared/models/lndModels';
+import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -56,11 +56,23 @@ export class LNDEffects implements OnDestroy {
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
-        .pipe(
-          takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
+        .pipe(takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
-            if (!info.identity_pubkey) {
+            if (info.chains && info.chains.length && info.chains[0]
+              && (
+                (typeof info.chains[0] === 'string' && info.chains[0].toLowerCase().indexOf('bitcoin') < 0)
+                || (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
+              )
+            ) {
+              this.store.dispatch(new RTLActions.CloseAllDialogs());
+              this.store.dispatch(new RTLActions.OpenAlert({ data: {
+                type: AlertTypeEnum.ERROR,
+                alertTitle: 'Shitcoin Found',
+                titleMessage: 'Sorry Not Sorry, RTL is Bitcoin Only!'
+              }}));
+              return { type: RTLActions.LOGOUT };
+            } else if (!info.identity_pubkey) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
@@ -632,21 +644,17 @@ export class LNDEffects implements OnDestroy {
   @Effect()
   sendPayment = this.actions$.pipe(
     ofType(LNDActions.SEND_PAYMENT_LND),
-    withLatestFrom(this.store.select('root')),
-    mergeMap(([action, store]: [LNDActions.SendPayment, any]) => {
+    mergeMap((action: LNDActions.SendPayment) => {
       this.store.dispatch(new LNDActions.ClearEffectError('SendPayment'));
       let queryHeaders = {};
+      queryHeaders['paymentReq'] = action.payload.paymentReq;
+      if (action.payload.paymentAmount) { queryHeaders['paymentAmount'] = action.payload.paymentAmount; }
       if (action.payload.outgoingChannel) { queryHeaders['outgoingChannel'] = action.payload.outgoingChannel.chan_id; }
       if (action.payload.allowSelfPayment) { queryHeaders['allowSelfPayment'] = action.payload.allowSelfPayment; } // Channel Rebalancing
       if (action.payload.lastHopPubkey) { queryHeaders['lastHopPubkey'] = action.payload.lastHopPubkey; }
       if(action.payload.feeLimitType && action.payload.feeLimitType !== FEE_LIMIT_TYPES[0]) {
         queryHeaders['feeLimit'] = {};
         queryHeaders['feeLimit'][action.payload.feeLimitType.id] = action.payload.feeLimit;
-      }
-      if (action.payload.zeroAmtInvoice) {
-        queryHeaders['paymentDecoded'] = action.payload.paymentDecoded;
-      } else {
-        queryHeaders['paymentReq'] = action.payload.paymentReq;
       }
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', queryHeaders)
         .pipe(
@@ -1087,30 +1095,15 @@ export class LNDEffects implements OnDestroy {
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
-    if (info.chains) {
-      if (typeof info.chains[0] === 'string') {
-        info.smaller_currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
-        info.currency_unit = (info.chains[0].toString().toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
-      } else if (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain')) {
-        const getInfoChain = <GetInfoChain>info.chains[0];
-        info.smaller_currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LITOSHIS : CurrencyUnitEnum.SATS;
-        info.currency_unit = (getInfoChain.chain.toLowerCase().indexOf('bitcoin') < 0) ? CurrencyUnitEnum.LTC : CurrencyUnitEnum.BTC;
-      }
-      info.version = (!info.version) ? '' : info.version.split(' ')[0];
-    } else {
-      info.smaller_currency_unit = CurrencyUnitEnum.SATS;
-      info.currency_unit = CurrencyUnitEnum.BTC;
-      info.version = (!info.version) ? '' : info.version.split(' ')[0];
-    }
     const node_data = {
       identity_pubkey: info.identity_pubkey,
-      alias: info.alias, 
-      testnet: info.testnet, 
+      alias: info.alias,
+      testnet: info.testnet,
       chains: info.chains,
       uris: info.uris,
-      version: info.version, 
-      currency_unit: info.currency_unit, 
-      smaller_currency_unit: info.smaller_currency_unit
+      version: (!info.version) ? '' : info.version.split(' ')[0],
+      currency_unit: CurrencyUnitEnum.BTC,
+      smaller_currency_unit: CurrencyUnitEnum.SATS
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
