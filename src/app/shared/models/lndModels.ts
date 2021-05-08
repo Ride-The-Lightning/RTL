@@ -67,9 +67,9 @@ export interface Channel {
   close_address?: string;
   remote_chan_reserve_sat?: string;
   local_chan_reserve_sat?: string;
-  uptime?: string;
+  uptime?: number;
   uptime_str?: string;
-  lifetime?: string;
+  lifetime?: number;
   static_remote_key?: boolean; 
   balancedness?: number; // Between -1 to +1
 }

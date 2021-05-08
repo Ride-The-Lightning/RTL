@@ -48,8 +48,8 @@
             <span class="overflow-wrap foreground-secondary-text">{{channel.capacity | number}}</span>
           </div>
           <div fxFlex="25">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Uptime (Seconds)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.uptime | number}}</span>
+            <h4 fxLayoutAlign="start" class="font-bold-500">Uptime (Days)</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.uptime/86400 | number:'1.1-1'}}</span>
           </div>
         </div>
         <mat-divider [inset]="true" class="my-1"></mat-divider>
@@ -121,8 +121,8 @@
               <span class="overflow-wrap foreground-secondary-text">{{channel.remote_chan_reserve_sat | number}}</span>
             </div>
             <div fxFlex="25">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Lifetime (Seconds)</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{channel.lifetime | number}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Lifetime (Days)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.lifetime/86400 | number:'1.1-1'}}</span>
             </div>
             <div fxFlex="25">
               <h4 fxLayoutAlign="start" class="font-bold-500">Pending HTLCs</h4>
