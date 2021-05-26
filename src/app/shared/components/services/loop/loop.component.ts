@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ResolveEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -18,7 +18,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   templateUrl: './loop.component.html',
   styleUrls: ['./loop.component.scss']
 })
-export class LoopComponent implements OnInit {
+export class LoopComponent implements OnInit, OnDestroy {
   public faInfinity = faInfinity;
   private targetConf = 2;
   public inAmount = 250000;
@@ -95,7 +95,7 @@ export class LoopComponent implements OnInit {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

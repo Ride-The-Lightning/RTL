@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "constants";
 
 @mixin theme-font($typography) {
@@ -234,7 +235,7 @@
   }
 
   .mat-flat-button.mat-primary:focus, .mat-flat-button.mat-primary:hover {
-    @include mat-elevation(2);
+    @include mat.elevation(2);
   }
 
   .mat-flat-button.mat-primary:disabled {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnChanges, Input } from '@angular/core';
 import { Fees } from '../../../shared/models/eclModels';
 
 @Component({
@@ -6,7 +6,7 @@ import { Fees } from '../../../shared/models/eclModels';
   templateUrl: './fee-info.component.html',
   styleUrls: ['./fee-info.component.scss']
 })
-export class ECLFeeInfoComponent {
+export class ECLFeeInfoComponent implements OnChanges {
   @Input() fees: Fees;
   totalFees = [{'name': 'Monthly', 'value': 0}, {'name': 'Weekly', 'value': 0}, {'name': 'Daily', 'value': 0}];
   maxFeeValue = 100;

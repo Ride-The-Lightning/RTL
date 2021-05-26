@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
 
 import { sliderAnimation } from '../../../shared/animation/slider-animation';
 import { SCROLL_RANGES } from '../../services/consts-enums-functions';
@@ -10,7 +10,7 @@ import { LoggerService } from '../../services/logger.service';
   styleUrls: ['./horizontal-scroller.component.scss'],
   animations: [sliderAnimation]
 })
-export class HorizontalScrollerComponent implements OnInit {
+export class HorizontalScrollerComponent {
   @ViewChild('monthlyDatepicker') monthlyDatepicker;
   @ViewChild('yearlyDatepicker') yearlyDatepicker;
   public scrollRanges = SCROLL_RANGES;
@@ -25,8 +25,6 @@ export class HorizontalScrollerComponent implements OnInit {
   @Output() stepChanged = new EventEmitter<{selDate:Date, selScrollRange:string}>();
   
   constructor(private logger: LoggerService) {}
-
-  ngOnInit() {}
 
   onRangeChanged(event: any) {
     this.selScrollRange = event.value;

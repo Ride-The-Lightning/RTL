@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
@@ -134,7 +134,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

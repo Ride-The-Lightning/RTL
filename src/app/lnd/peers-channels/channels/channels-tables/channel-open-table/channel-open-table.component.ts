@@ -323,7 +323,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

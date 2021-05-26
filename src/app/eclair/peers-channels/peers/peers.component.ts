@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
   ]
 })
-export class ECLPeersComponent implements OnInit, OnDestroy {
+export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faUsers = faUsers;
@@ -192,7 +192,7 @@ export class ECLPeersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

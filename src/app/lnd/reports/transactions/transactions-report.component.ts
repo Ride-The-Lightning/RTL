@@ -169,7 +169,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

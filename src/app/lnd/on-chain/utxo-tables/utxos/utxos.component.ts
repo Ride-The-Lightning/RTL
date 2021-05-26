@@ -151,7 +151,7 @@ export class OnChainUTXOsComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

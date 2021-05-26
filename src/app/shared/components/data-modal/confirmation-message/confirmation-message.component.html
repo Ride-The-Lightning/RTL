@@ -8,11 +8,11 @@
     </mat-card-header>    
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
-        <div *ngIf="warningMessage && warningMessage != ''" fxFlex="100" class="alert alert-warn">
+        <div *ngIf="warningMessage && warningMessage !== ''" fxFlex="100" class="alert alert-warn">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span>{{warningMessage}}</span>
         </div>
-        <div *ngIf="informationMessage && informationMessage != ''" fxFlex="100" class="alert alert-info">
+        <div *ngIf="informationMessage && informationMessage !== ''" fxFlex="100" class="alert alert-info">
           <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
           <span>{{informationMessage}}</span>
         </div>

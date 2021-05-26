@@ -115,7 +115,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
 
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

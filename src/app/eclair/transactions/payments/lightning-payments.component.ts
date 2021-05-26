@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { forkJoin, Subject } from 'rxjs';
+import { DecimalPipe } from '@angular/common';
+import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -359,7 +359,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
         return paymentReqs;
       }, '');
-      forkJoin(this.dataService.decodePayments(paymentRequests)
+      this.dataService.decodePayments(paymentRequests)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe((decodedPayments: any[][]) => {
         decodedPayments.forEach((decodedPayment, idx) => {
@@ -369,14 +369,14 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         });
         let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
         this.commonService.downloadFile(flattenedPayments, 'Payments');
-      }));
+      });
     }
 
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

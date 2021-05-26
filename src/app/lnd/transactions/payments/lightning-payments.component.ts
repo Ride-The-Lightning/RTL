@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Subject, forkJoin } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
@@ -300,11 +300,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key }, '');
-      forkJoin(this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
+      this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe((nodes: any) => {
         this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node }, ''));
-      }));
+      });
     } else {
       this.showPaymentView(selPayment, '');
     }
@@ -372,7 +372,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         }
         return paymentReqs;
       }, '');
-      forkJoin(this.dataService.decodePayments(paymentRequests)
+      this.dataService.decodePayments(paymentRequests)
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe((decodedPayments: PayRequest[]) => {
         let increament = 0;
@@ -384,13 +384,13 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         });
         let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
         this.commonService.downloadFile(flattenedPayments, 'Payments');
-      }));
+      });
     }
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

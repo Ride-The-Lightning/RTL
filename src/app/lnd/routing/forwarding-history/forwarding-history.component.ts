@@ -126,7 +126,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

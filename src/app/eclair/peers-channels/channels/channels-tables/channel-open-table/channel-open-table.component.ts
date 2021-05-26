@@ -189,7 +189,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

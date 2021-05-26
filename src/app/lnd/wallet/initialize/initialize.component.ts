@@ -147,7 +147,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unsubs.forEach(unsub => {
-      unsub.next();
+      unsub.next(null);
       unsub.complete();
     });
   }

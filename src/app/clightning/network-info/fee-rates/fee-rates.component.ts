@@ -15,8 +15,6 @@ export class CLFeeRatesComponent implements AfterContentChecked {
 
   constructor() { }
 
-  ngOnInit() {}
-
   ngAfterContentChecked() {
     if (this.feeRateStyle === feeRateStyle.KB) {
       this.perkbw = this.feeRates.perkb;

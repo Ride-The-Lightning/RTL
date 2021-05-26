@@ -191,7 +191,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

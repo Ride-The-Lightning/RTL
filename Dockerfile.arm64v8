@@ -1,4 +1,4 @@
-FROM node:10-stretch-slim AS builder
+FROM node:14-stretch-slim AS builder
 
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-arm64 /tini
 RUN chmod +x /tini

@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ChannelsStatus } from '../../../shared/models/clModels';
 
 @Component({
@@ -6,11 +6,9 @@ import { ChannelsStatus } from '../../../shared/models/clModels';
   templateUrl: './channel-status-info.component.html',
   styleUrls: ['./channel-status-info.component.scss']
 })
-export class CLChannelStatusInfoComponent implements OnChanges {
+export class CLChannelStatusInfoComponent {
   @Input() channelsStatus: ChannelsStatus = {};
 
   constructor() {}
-
-  ngOnChanges() {}
 
 }

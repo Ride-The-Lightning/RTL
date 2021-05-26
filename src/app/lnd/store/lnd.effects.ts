@@ -1163,7 +1163,7 @@ export class LNDEffects implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

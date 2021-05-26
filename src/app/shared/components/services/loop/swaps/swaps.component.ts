@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -25,7 +25,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class SwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: LoopTypeEnum = LoopTypeEnum.LOOP_OUT;
   @Input() swapsData: LoopSwapStatus[] = [];
   @Input() flgLoading: Array<Boolean | 'error'> = [true];
@@ -60,8 +60,6 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
       this.displayedColumns = ['state', 'initiation_time', 'amt', 'cost_server', 'cost_offchain', 'cost_onchain', 'actions'];
     }
   }
-
-  ngOnInit() {}
 
   ngAfterViewInit() {
     if (this.swapsData && this.swapsData.length > 0) {
@@ -118,7 +116,7 @@ export class SwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

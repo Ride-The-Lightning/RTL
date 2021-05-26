@@ -806,7 +806,7 @@ export class CLEffects implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

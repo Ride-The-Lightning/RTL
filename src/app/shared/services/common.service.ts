@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
@@ -6,7 +6,7 @@ import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
 
 @Injectable()
-export class CommonService implements OnInit {
+export class CommonService {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
@@ -14,8 +14,6 @@ export class CommonService implements OnInit {
   private containerSize = {width: 1200, height: 800};
 
   constructor(private dataService: DataService) {}
-
-  ngOnInit() {}
 
   getScreenSize() {
     return this.screenSize;

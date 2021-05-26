@@ -119,7 +119,7 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

@@ -51,7 +51,7 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

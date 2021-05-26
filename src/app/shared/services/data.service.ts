@@ -1,4 +1,4 @@
-import { Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subject, throwError, of } from 'rxjs';
 import { map, takeUntil, catchError, mergeMap, withLatestFrom } from 'rxjs/operators';
@@ -17,14 +17,12 @@ import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
 import * as LNDActions from '../../lnd/store/lnd.actions';
 
 @Injectable()
-export class DataService implements OnInit, OnDestroy {
+export class DataService implements OnDestroy {
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
-
-  ngOnInit() {}
 
   getChildAPIUrl() {
     return this.childAPIUrl;
@@ -256,7 +254,7 @@ export class DataService implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }
