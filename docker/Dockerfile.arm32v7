@@ -15,11 +15,11 @@ COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
 # Install dependencies
-RUN npm install --only=prod
+RUN npm install --production
 
 COPY . /RTL
 
-FROM arm32v7/node:10-jessie-slim
+FROM arm32v7/node:14-stretch-slim
 
 WORKDIR /RTL
 
