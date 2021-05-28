@@ -1,4 +1,4 @@
-FROM node:14-stretch-slim AS builder
+FROM node:14-alpine AS builder
 
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel /tini
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-armel.asc /tini.asc
@@ -15,11 +15,11 @@ COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
 # Install dependencies
-RUN npm install --production
+RUN NODE_ENV=production npm install
 
 COPY . /RTL
 
-FROM arm32v7/node:14-stretch-slim
+FROM arm32v7/node:14-alpine
 
 WORKDIR /RTL
 
