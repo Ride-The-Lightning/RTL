@@ -317,7 +317,7 @@ var maskPasswords = function(obj) {
         && (keys[i].toLowerCase().includes('password') || keys[i].toLowerCase().includes('multipass')
           || keys[i].toLowerCase().includes('rpcpass') || keys[i].toLowerCase().includes('rpcpassword'))
       ) {
-        obj[keys[i]] = obj[keys[i]].replace(/./g, '*');
+        obj[keys[i]] = '********************';
       }
     }
   }
