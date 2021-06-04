@@ -2,8 +2,8 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const csrf = require("csurf");
 const common = require("./common");
-const app = express();
 
 const baseHref = "/rtl/";
 const apiRoot = baseHref + "api/";
@@ -51,6 +51,9 @@ const peersECLRoutes = require("./routes/eclair/peers");
 const invoicesECLRoutes = require("./routes/eclair/invoices");
 const paymentsECLRoutes = require("./routes/eclair/payments");
 const networkECLRoutes = require("./routes/eclair/network");
+const csurf = require("csurf");
+
+const app = express();
 
 app.set('trust proxy', true);
 app.use(cookieParser(common.secret_key));
@@ -58,9 +61,15 @@ app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({extended: false, limit: '25mb'}));
 app.use(baseHref, express.static(path.join(__dirname, "angular")));
 
-// CORS fix, Only required for developement due to separate backend and frontend servers
+const csrfProtection = csrf({cookie: true});
+function optionalCSRF(req, res, next) {
+  if (req.headers.origin === 'http://localhost:4200') { return next(); }
+  csrfProtection(req, res, next);
+}
+app.use(optionalCSRF);
+
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization, filePath"
@@ -71,7 +80,6 @@ app.use((req, res, next) => {
   );
   next();
 });
-// CORS fix, Only required for developement due to separate backend and frontend servers
 
 app.use(apiRoot + "authenticate", authenticateRoutes);
 app.use(apiRoot + "conf", RTLConfRoutes);
@@ -115,6 +123,7 @@ app.use(apiECLRoot + "payments", paymentsECLRoutes);
 app.use(apiECLRoot + "network", networkECLRoutes);
 
 app.use((req, res, next) => {
+  res.cookie('XSRF-TOKEN', req.csrfToken());
   res.sendFile(path.join(__dirname, "angular", "index.html"));
 });
 

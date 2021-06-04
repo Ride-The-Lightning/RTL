@@ -13,13 +13,15 @@ const onError = error => {
     case "EACCES":
       console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " requires elevated privileges");
       process.exit(1);
-      break;
     case "EADDRINUSE":
       console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " is already in use");
       process.exit(1);
-      break;
     case "ECONNREFUSED":
       console.error("Server is down/locked");
+      process.exit(1);
+    case "EBADCSRFTOKEN":
+      console.error("Form tempered");
+      process.exit(1);
     default:
       console.error("DEFUALT ERROR");
       console.error(error.code);
