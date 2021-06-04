@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.11.0-beta-rc1",
+  "version": "0.11.0-beta-rc2",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -39,6 +39,7 @@
     "angularx-qrcode": "^11.0.0",
     "atob": "^2.1.2",
     "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
     "express": "^4.17.1",
     "hocon-parser": "^1.0.1",
     "ini": "^2.0.0",
