@@ -51,6 +51,9 @@ const peersECLRoutes = require("./routes/eclair/peers");
 const invoicesECLRoutes = require("./routes/eclair/invoices");
 const paymentsECLRoutes = require("./routes/eclair/payments");
 const networkECLRoutes = require("./routes/eclair/network");
+const csurf = require("csurf");
+
+const app = express();
 
 const app = express();
 const csrfProtection = csurf({cookie: true});
