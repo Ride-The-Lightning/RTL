@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const csrf = require("csurf");
+const csurf = require("csurf");
 const common = require("./common");
 
 const baseHref = "/rtl/";
@@ -55,21 +55,16 @@ const csurf = require("csurf");
 
 const app = express();
 
+const app = express();
+const csrfProtection = csurf({cookie: true});
+
 app.set('trust proxy', true);
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({extended: false, limit: '25mb'}));
 app.use(baseHref, express.static(path.join(__dirname, "angular")));
 
-const csrfProtection = csrf({cookie: true});
-function optionalCSRF(req, res, next) {
-  if (req.headers.origin === 'http://localhost:4200') { return next(); }
-  csrfProtection(req, res, next);
-}
-app.use(optionalCSRF);
-
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization, filePath"
@@ -78,7 +73,11 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  next();
+  if (req.headers.origin === 'http://localhost:4200') { 
+  	res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+    return next(); 
+  }
+  csrfProtection(req, res, next);
 });
 
 app.use(apiRoot + "authenticate", authenticateRoutes);
