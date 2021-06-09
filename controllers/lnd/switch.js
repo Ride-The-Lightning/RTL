@@ -1,6 +1,6 @@
 var request = require('request-promise');
 var request = require('request-promise');
-var common = require('../../common');
+var common = require('../../routes/common');
 var logger = require('../shared/logger');
 var options = {};
 var num_max_events = 100;

@@ -2,7 +2,7 @@ var ini = require('ini');
 var parseHocon = require('hocon-parser');
 var fs = require('fs');
 var logger = require('./logger');
-var common = require('../../common');
+var common = require('../../routes/common');
 var request = require('request-promise');
 var options = {};
 

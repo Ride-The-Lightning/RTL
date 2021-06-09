@@ -1,7 +1,7 @@
 var request = require('request-promise');
-var common = require('../../common');
+var common = require('../../routes/common');
 var logger = require('../shared/logger');
-var connect = require('../../connect');
+var connect = require('../../routes/connect');
 var options = {};
 
 exports.getInfo = (req, res, next) => {

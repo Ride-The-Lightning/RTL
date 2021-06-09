@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const app = require("./app");
-const common = require("./common");
+const app = require("./routes/app");
+const common = require("./routes/common");
 const http = require("http");
-var connect = require('./connect').setServerConfiguration(); //Do NOT Remove
+var connect = require("./routes/connect").setServerConfiguration(); //Do NOT Remove
 
 const onError = error => {
   if (error.syscall !== "listen") {

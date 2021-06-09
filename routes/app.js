@@ -11,49 +11,46 @@ const apiLNDRoot = baseHref + "api/lnd/";
 const apiCLRoot = baseHref + "api/cl/";
 const apiECLRoot = baseHref + "api/ecl/";
 
-const authenticateRoutes = require("./routes/shared/authenticate");
-const RTLConfRoutes = require("./routes/shared/RTLConf");
-const loopRoutes = require('./routes/shared/loop');
-const boltzRoutes = require('./routes/shared/boltz');
+const authenticateRoutes = require("./shared/authenticate");
+const RTLConfRoutes = require("./shared/RTLConf");
+const loopRoutes = require('./shared/loop');
+const boltzRoutes = require('./shared/boltz');
 
-const infoRoutes = require("./routes/lnd/getInfo");
-const channelsRoutes = require("./routes/lnd/channels");
-const channelsBackupRoutes = require("./routes/lnd/channelsBackup");
-const peersRoutes = require("./routes/lnd/peers");
-const feesRoutes = require("./routes/lnd/fees");
-const balanceRoutes = require("./routes/lnd/balance");
-const walletRoutes = require("./routes/lnd/wallet");
-const graphRoutes = require("./routes/lnd/graph");
-const newAddressRoutes = require("./routes/lnd/newAddress");
-const transactionsRoutes = require("./routes/lnd/transactions");
-const payReqRoutes = require("./routes/lnd/payReq");
-const paymentsRoutes = require("./routes/lnd/payments");
-const invoiceRoutes = require("./routes/lnd/invoices");
-const switchRoutes = require("./routes/lnd/switch");
-const messageRoutes = require("./routes/lnd/message");
+const infoRoutes = require("./lnd/getInfo");
+const channelsRoutes = require("./lnd/channels");
+const channelsBackupRoutes = require("./lnd/channelsBackup");
+const peersRoutes = require("./lnd/peers");
+const feesRoutes = require("./lnd/fees");
+const balanceRoutes = require("./lnd/balance");
+const walletRoutes = require("./lnd/wallet");
+const graphRoutes = require("./lnd/graph");
+const newAddressRoutes = require("./lnd/newAddress");
+const transactionsRoutes = require("./lnd/transactions");
+const payReqRoutes = require("./lnd/payReq");
+const paymentsRoutes = require("./lnd/payments");
+const invoiceRoutes = require("./lnd/invoices");
+const switchRoutes = require("./lnd/switch");
+const messageRoutes = require("./lnd/message");
 
-const infoCLRoutes = require("./routes/c-lightning/getInfo");
-const feesCLRoutes = require("./routes/c-lightning/fees");
-const balanceCLRoutes = require("./routes/c-lightning/balance");
-const channelsCLRoutes = require("./routes/c-lightning/channels");
-const invoicesCLRoutes = require("./routes/c-lightning/invoices");
-const onChainCLRoutes = require("./routes/c-lightning/onchain");
-const paymentsCLRoutes = require("./routes/c-lightning/payments");
-const peersCLRoutes = require("./routes/c-lightning/peers");
-const networkCLRoutes = require("./routes/c-lightning/network");
-const messageCLRoutes = require("./routes/c-lightning/message");
+const infoCLRoutes = require("./c-lightning/getInfo");
+const feesCLRoutes = require("./c-lightning/fees");
+const balanceCLRoutes = require("./c-lightning/balance");
+const channelsCLRoutes = require("./c-lightning/channels");
+const invoicesCLRoutes = require("./c-lightning/invoices");
+const onChainCLRoutes = require("./c-lightning/onchain");
+const paymentsCLRoutes = require("./c-lightning/payments");
+const peersCLRoutes = require("./c-lightning/peers");
+const networkCLRoutes = require("./c-lightning/network");
+const messageCLRoutes = require("./c-lightning/message");
 
-const infoECLRoutes = require("./routes/eclair/getInfo");
-const feesECLRoutes = require("./routes/eclair/fees");
-const channelsECLRoutes = require("./routes/eclair/channels");
-const onChainECLRoutes = require("./routes/eclair/onchain");
-const peersECLRoutes = require("./routes/eclair/peers");
-const invoicesECLRoutes = require("./routes/eclair/invoices");
-const paymentsECLRoutes = require("./routes/eclair/payments");
-const networkECLRoutes = require("./routes/eclair/network");
-const csurf = require("csurf");
-
-const app = express();
+const infoECLRoutes = require("./eclair/getInfo");
+const feesECLRoutes = require("./eclair/fees");
+const channelsECLRoutes = require("./eclair/channels");
+const onChainECLRoutes = require("./eclair/onchain");
+const peersECLRoutes = require("./eclair/peers");
+const invoicesECLRoutes = require("./eclair/invoices");
+const paymentsECLRoutes = require("./eclair/payments");
+const networkECLRoutes = require("./eclair/network");
 
 const app = express();
 const csrfProtection = csurf({cookie: true});
@@ -62,7 +59,7 @@ app.set('trust proxy', true);
 app.use(cookieParser(common.secret_key));
 app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({extended: false, limit: '25mb'}));
-app.use(baseHref, express.static(path.join(__dirname, "angular")));
+app.use(baseHref, express.static(path.join(__dirname, "..", "angular")));
 
 app.use((req, res, next) => {
   res.setHeader(
@@ -123,7 +120,7 @@ app.use(apiECLRoot + "network", networkECLRoutes);
 
 app.use((req, res, next) => {
   res.cookie('XSRF-TOKEN', req.csrfToken());
-  res.sendFile(path.join(__dirname, "angular", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "angular", "index.html"));
 });
 
 module.exports = app;

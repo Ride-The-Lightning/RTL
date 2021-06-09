@@ -1,5 +1,5 @@
-var common = require('../../common');
-var connect = require('../../connect');
+var common = require('../../routes/common');
+var connect = require('../../routes/connect');
 var logger = require('./logger');
 const jwt = require("jsonwebtoken");
 const otplib = require("otplib");

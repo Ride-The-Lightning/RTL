@@ -16,7 +16,7 @@ This step is only required to configure the nodes, which will be remotely connec
 4. Restart LND
 
 #### 2. Configure 'RTL-Config.json'
-1. Rename the `sample-RTL-Config.json` on the root RTL location to `RTL-Config.json`
+1. Copy the file `Sample-RTL-Config.json` from `./RTL/docs` to `./RTL` and rename it to `RTL-Config.json`
 2. Set `multiPass` to the preferred password. This password will be used to authenticate the user for RTL. Once authenticated, the user will be able to access all the nodes configured in the json file
 3. Set the `port` to the preferred port number over which to run RTL
 4. Set the `defaultNodeIndex` to configure the default start up node at server restart

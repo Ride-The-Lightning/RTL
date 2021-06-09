@@ -7,6 +7,7 @@
     "start": "ng serve --open",
     "prebuild": "node ./src/prebuild",
     "build": "ng analytics off && ng lint && ng build --configuration production",
+    "devbuild": "ng build --configuration production",
     "serve": "ng serve",
     "server": "nodemon ./rtl.js",
     "test": "ng test",

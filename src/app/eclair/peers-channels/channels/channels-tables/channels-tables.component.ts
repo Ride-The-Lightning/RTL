@@ -47,8 +47,6 @@ export class ECLChannelsTablesComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;    
       this.peers = rtlStore.peers;
       this.totalBalance = rtlStore.onchainBalance.total;
-      console.warn(this.numOfPendingChannels);
-      console.warn(rtlStore.channelsStatus.pending);
       this.logger.info(rtlStore);
     });
   }
