@@ -74,8 +74,9 @@ exports.getFees = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   let today = new Date(Date.now());
-  let tillToday = Math.floor(today / 1000);
-  let fromLastMonth = Math.round((new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime()) / 1000);
+  let timezoneOffset = today.getTimezoneOffset() * 60;
+  let tillToday = (Math.round(new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0).getTime()/1000) - timezoneOffset).toString();
+  let fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime()/1000) - timezoneOffset).toString();
   options.form = {
     from: fromLastMonth,
     to: tillToday
