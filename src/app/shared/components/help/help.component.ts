@@ -209,7 +209,7 @@ export class HelpComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(session => {
       this.flgLoggedIn = (session.token) ? true : false;
-    });    
+    });
     if (this.sessionService.getItem('token')) { this.flgLoggedIn = true; }
   }
 
