@@ -40,7 +40,6 @@
                   <input matInput placeholder="Max Off-chain Routing Fee (%)" type="number" [step]="1" tabindex="3" formControlName="routingFeePercent" required>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.required">Percentage is required.</mat-error>
                   <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.min">Percentage must be a positive number.</mat-error>
-                  <mat-error *ngIf="inputFormGroup.controls.routingFeePercent.errors?.max">Percentage must be less than or equal to {{maxRoutingFeePercentage}}.</mat-error>
                 </mat-form-field>
                 <mat-slide-toggle matTooltip="Swap immediately (Might end up paying a higher on-chain fee)" *ngIf="direction === LoopTypeEnum.LOOP_OUT" fxFlex="15" tabindex="4" color="primary" formControlName="fast">Fast</mat-slide-toggle>
               </div>
