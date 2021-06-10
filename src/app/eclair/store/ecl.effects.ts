@@ -48,12 +48,14 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
       this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: ECLActions.SET_INFO_ECL,
@@ -61,6 +63,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
+            this.store.dispatch(new RTLActions.CloseSpinner());
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
             const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});

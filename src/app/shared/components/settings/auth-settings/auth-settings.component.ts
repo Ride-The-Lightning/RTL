@@ -9,6 +9,7 @@ import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
 import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { SessionService } from '../../../services/session.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -35,10 +36,10 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
-    this.initializeNodeData = !!history.state.initial;
+    this.initializeNodeData = !!this.sessionService.getItem('defaultPassword');
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
@@ -49,7 +50,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
-      if (this.currPassword.toLowerCase() === 'password') {
+      if (this.currPassword.toLowerCase() === 'password') { // To redirect after password reset is done
         switch (this.selNode.lnImplementation.toUpperCase()) {
           case 'CLT':
             this.router.navigate(['/cl/home']);
@@ -65,7 +66,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
         }
       }
       this.form.resetForm();
-    });    
+    });
   }
 
   onChangePassword():boolean|void {
@@ -83,6 +84,10 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       } else if (this.currPassword !== '' && this.newPassword !== '' && this.currPassword === this.newPassword) {
         this.form.controls.newpassword.setErrors({invalid: true});
         this.errorMsg = 'Old and New password cannot be same.';
+        invalid = true;
+      } else if (this.newPassword.toLowerCase() === 'password') {
+        this.form.controls.newpassword.setErrors({invalid: true});
+        this.errorMsg = 'Password cannot be "password".';
         invalid = true;
       } else {
         this.form.controls.newpassword.setErrors(null);

@@ -22,4 +22,10 @@ export class SessionService {
     sessionStorage.removeItem(key);
     this.sessionSub.next(sessionStorage);
   }
+
+  clearAll() {
+    sessionStorage.clear();
+    this.sessionSub.next(sessionStorage);
+  }
+
 }

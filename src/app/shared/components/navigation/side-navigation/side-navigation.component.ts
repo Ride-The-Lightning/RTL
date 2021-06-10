@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -197,9 +197,6 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
     this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
     this.ChildNavClicked.emit('selectNode');
-    if(this.tree) {
-      // this.tree.renderNodeChanges(this.navMenus.data);
-    }
   }
 
   ngOnDestroy() {
