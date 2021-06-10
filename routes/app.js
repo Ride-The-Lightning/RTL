@@ -70,8 +70,8 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  if (req.headers.origin === 'http://localhost:4200') { 
-  	res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+  if (process.env.NODE_ENV == 'development') { 
+  	res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
     return next(); 
   }
   csrfProtection(req, res, next);

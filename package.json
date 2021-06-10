@@ -1,6 +1,6 @@
 {
   "name": "rtl",
-  "version": "0.11.0-beta-rc2",
+  "version": "0.11.0-beta-rc3",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -9,7 +9,7 @@
     "build": "ng analytics off && ng lint && ng build --configuration production",
     "devbuild": "ng build --configuration production",
     "serve": "ng serve",
-    "server": "nodemon ./rtl.js",
+    "server": "set NODE_ENV=development&&nodemon ./rtl.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

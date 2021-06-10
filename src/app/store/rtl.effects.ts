@@ -364,8 +364,9 @@ export class RTLEffects implements OnDestroy {
     this.SetToken(postRes.token);
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
     if (defaultPassword) {
+      this.sessionService.setItem('defaultPassword', 'true');
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
-      this.router.navigate(['/settings/auth'], {state: { initial: true }});
+      this.router.navigate(['/settings/auth']);
     } else {
       this.store.dispatch(new RTLActions.SetSelelectedNode({lnNode: rootStore.selNode, isInitialSetup: true}));
     }
@@ -435,10 +436,7 @@ export class RTLEffects implements OnDestroy {
     } else {
       this.router.navigate(['./login']);
     }
-    this.sessionService.removeItem('eclUnlocked');
-    this.sessionService.removeItem('clUnlocked');
-    this.sessionService.removeItem('lndUnlocked');
-    this.sessionService.removeItem('token');
+    this.sessionService.clearAll();
     this.store.dispatch(new RTLActions.SetNodeData({}));
     this.logger.warn('LOGGED OUT');
     return of();
@@ -454,6 +452,7 @@ export class RTLEffects implements OnDestroy {
     return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', {currPassword: action.payload.currPassword, newPassword: action.payload.newPassword})
     .pipe(map((postRes: any) => {
       this.logger.info(postRes);
+      this.sessionService.removeItem('defaultPassword');
       this.logger.info('Password Reset Successful!');
       this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
       this.SetToken(postRes.token);
@@ -531,6 +530,9 @@ export class RTLEffects implements OnDestroy {
     } else {
       selNode = { userPersona: node.settings.userPersona, channelBackupPath: node.settings.channelBackupPath, selCurrencyUnit: node.settings.currencyUnit, currencyUnits: CURRENCY_UNITS, fiatConversion: node.settings.fiatConversion, lnImplementation: node.lnImplementation, swapServerUrl: node.settings.swapServerUrl, boltzServerUrl: node.settings.boltzServerUrl };
     }
+    this.sessionService.removeItem('lndUnlocked');
+    this.sessionService.removeItem('clUnlocked');
+    this.sessionService.removeItem('eclUnlocked');
     this.store.dispatch(new RTLActions.ResetRootStore(node));
     this.store.dispatch(new LNDActions.ResetLNDStore(selNode));
     this.store.dispatch(new CLActions.ResetCLStore(selNode));

@@ -54,11 +54,13 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
       this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             if (info.chains && info.chains.length && info.chains[0]
               && (
                 (typeof info.chains[0] === 'string' && info.chains[0].toLowerCase().indexOf('bitcoin') < 0)
@@ -90,6 +92,7 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
+            this.store.dispatch(new RTLActions.CloseSpinner());
             if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');

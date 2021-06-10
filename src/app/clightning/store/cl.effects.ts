@@ -50,12 +50,14 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
       this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             if (info.chains && info.chains.length && info.chains[0]
               && (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
             ) {
@@ -77,6 +79,7 @@ export class CLEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
+            this.store.dispatch(new RTLActions.CloseSpinner());
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
             const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});

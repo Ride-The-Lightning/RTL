@@ -84,7 +84,7 @@ connect.normalizePort = val => {
 };
 
 connect.replacePasswordWithHash = (multiPassHashed) => {
-  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname + '..');
+  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
   try {
     RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -551,7 +551,7 @@ connect.upgradeConfig = (confFileFullPath) => {
 
 connect.setServerConfiguration = () => {
   try {
-    common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname + '/..');
+    common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '/..');
     confFileFullPath = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
     if(!fs.existsSync(confFileFullPath)) {
       connect.upgradeConfig(confFileFullPath);
