@@ -498,7 +498,6 @@ export class ECLEffects implements OnDestroy {
       .pipe(map((postRes: Invoice) => {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.CloseSpinner());
-          postRes.amount = action.payload.amountMsat;
           postRes.timestamp = new Date().getTime() / 1000;
           postRes.timestampStr = this.commonService.convertTimestampToDate(+postRes.timestamp);
           postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
