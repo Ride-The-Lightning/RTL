@@ -29,7 +29,7 @@ handleError = (failed, currentTime, errMsg) => {
   if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
     return {
       message: "Multiple Failed Login Attempts!",
-      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToLocalDate((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
     };
   } else {
     return {

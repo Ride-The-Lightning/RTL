@@ -126,6 +126,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.dispatch(new RTLActions.Logout());
       }
     });
+    if (this.sessionService.getItem('defaultPassword') === 'true') {
+      this.flgSideNavOpened = false;
+    }
   }
 
   private readAccessKey() {

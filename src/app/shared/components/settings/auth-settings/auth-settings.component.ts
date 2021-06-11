@@ -40,7 +40,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
-    this.initializeNodeData = !!this.sessionService.getItem('defaultPassword');
+    this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {

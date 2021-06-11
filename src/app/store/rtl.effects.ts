@@ -363,6 +363,7 @@ export class RTLEffects implements OnDestroy {
     this.logger.info('Successfully Authorized!');
     this.SetToken(postRes.token);
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
+    this.sessionService.setItem('defaultPassword', defaultPassword);
     if (defaultPassword) {
       this.sessionService.setItem('defaultPassword', 'true');
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
@@ -452,7 +453,7 @@ export class RTLEffects implements OnDestroy {
     return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', {currPassword: action.payload.currPassword, newPassword: action.payload.newPassword})
     .pipe(map((postRes: any) => {
       this.logger.info(postRes);
-      this.sessionService.removeItem('defaultPassword');
+      this.sessionService.setItem('defaultPassword', false);
       this.logger.info('Password Reset Successful!');
       this.store.dispatch(new RTLActions.OpenSnackBar('Password Reset Successful!'));
       this.SetToken(postRes.token);

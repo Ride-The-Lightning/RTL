@@ -13,6 +13,10 @@ export class SessionService {
     return sessionStorage.getItem(key);
   }
 
+  getAllItems() {
+    return sessionStorage;
+  }
+
   setItem(key: string, data: any) {
     sessionStorage.setItem(key, data);
     this.sessionSub.next(sessionStorage);

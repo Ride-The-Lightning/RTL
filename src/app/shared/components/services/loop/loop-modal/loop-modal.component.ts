@@ -42,7 +42,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   public inputFormLabel = 'Amount to loop out';
   public quoteFormLabel = 'Confirm Quote';
   public addressFormLabel = 'Withdrawal Address';
-  public maxRoutingFeePercentage = 2;
   public prepayRoutingFee = 36;
   public flgShowInfo = false;
   public stepNumber = 1;
@@ -70,7 +69,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.inputFormGroup = this.formBuilder.group({
       amount: [this.minQuote.amount, [Validators.required, Validators.min(this.minQuote.amount), Validators.max(this.maxQuote.amount)]],
       sweepConfTarget: [6, [Validators.required, Validators.min(1)]],
-      routingFeePercent: [this.maxRoutingFeePercentage, [Validators.required, Validators.min(0), Validators.max(this.maxRoutingFeePercentage)]],
+      routingFeePercent: [2, [Validators.required, Validators.min(0)]],
       fast: [false, [Validators.required]]
     });
     this.quoteFormGroup = this.formBuilder.group({});
@@ -126,7 +125,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onLoop():boolean|void {
-    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0 || this.inputFormGroup.controls.routingFeePercent.value > this.maxRoutingFeePercentage)) || (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
+    if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2 || (this.direction === LoopTypeEnum.LOOP_OUT && (!this.inputFormGroup.controls.routingFeePercent.value || this.inputFormGroup.controls.routingFeePercent.value < 0)) || (this.direction === LoopTypeEnum.LOOP_OUT && this.addressFormGroup.controls.addressType.value === 'external' && (!this.addressFormGroup.controls.address.value || this.addressFormGroup.controls.address.value.trim() === ''))) { return true; }
     this.flgEditable = false;
     this.stepper.selected.stepControl.setErrors(null);
     this.stepper.next();
@@ -269,7 +268,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
   onRestart() {
     this.stepper.reset();
     this.flgEditable = true;
-    this.inputFormGroup.reset({ amount: this.minQuote.amount, sweepConfTarget: 6, routingFeePercent: this.maxRoutingFeePercentage, fast: false });
+    this.inputFormGroup.reset({ amount: this.minQuote.amount, sweepConfTarget: 6, routingFeePercent: 2, fast: false });
     this.quoteFormGroup.reset();
     this.statusFormGroup.reset();
     this.addressFormGroup.reset({addressType: 'local', address: ''});
