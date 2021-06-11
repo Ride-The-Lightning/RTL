@@ -365,6 +365,7 @@ export class RTLEffects implements OnDestroy {
     rootStore.selNode.settings.currencyUnits = [...CURRENCY_UNITS, rootStore.selNode.settings.currencyUnit];
     this.sessionService.setItem('defaultPassword', defaultPassword);
     if (defaultPassword) {
+      this.sessionService.setItem('defaultPassword', 'true');
       this.store.dispatch(new RTLActions.OpenSnackBar('Reset your password.'));
       this.router.navigate(['/settings/auth']);
     } else {

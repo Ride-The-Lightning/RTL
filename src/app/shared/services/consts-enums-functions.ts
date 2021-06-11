@@ -183,3 +183,5 @@ export enum ServicesEnum {
   LOOP = 'LOOP',
   BOLTZ = 'BOLTZ'
 }
+
+export const PASSWORD_BLACKLIST = ['password', 'changeme', 'moneyprintergobrrr'];
