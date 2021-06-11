@@ -70,8 +70,8 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  if (process.env.NODE_ENV == 'development') { 
-  	res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  if (process.env.NODE_ENV == 'development') {
+  	res.setHeader("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : '');
     return next(); 
   }
   csrfProtection(req, res, next);
@@ -119,7 +119,7 @@ app.use(apiECLRoot + "payments", paymentsECLRoutes);
 app.use(apiECLRoot + "network", networkECLRoutes);
 
 app.use((req, res, next) => {
-  res.cookie('XSRF-TOKEN', req.csrfToken());
+  res.cookie('XSRF-TOKEN', req.csrfToken ? req.csrfToken() : '');
   res.sendFile(path.join(__dirname, "..", "angular", "index.html"));
 });
 

@@ -7,6 +7,7 @@ import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { LoginTokenComponent } from '../data-modal/login-2fa-token/login-2fa-token.component';
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
+import { PASSWORD_BLACKLIST } from '../../services/consts-enums-functions';
 import { LoggerService } from '../../services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -59,11 +60,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(alertRes => {
         if (alertRes) {
-          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password', twoFAToken: alertRes.twoFAToken}));
+          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken}));
         }
       });
     } else {
-      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password'}));
+      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase())}));
     }
   }
 

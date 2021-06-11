@@ -9,6 +9,7 @@ import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
 import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { PASSWORD_BLACKLIST } from '../../../services/consts-enums-functions';
 import { SessionService } from '../../../services/session.service';
 import { LoggerService } from '../../../services/logger.service';
 
@@ -50,7 +51,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
-      if (this.currPassword.toLowerCase() === 'password') { // To redirect after password reset is done
+      if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
         switch (this.selNode.lnImplementation.toUpperCase()) {
           case 'CLT':
             this.router.navigate(['/cl/home']);
@@ -70,7 +71,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   }
 
   onChangePassword():boolean|void {
-    if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
+    if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }
 
@@ -85,9 +86,9 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
         this.form.controls.newpassword.setErrors({invalid: true});
         this.errorMsg = 'Old and New password cannot be same.';
         invalid = true;
-      } else if (this.newPassword.toLowerCase() === 'password') {
+      } else if (PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
         this.form.controls.newpassword.setErrors({invalid: true});
-        this.errorMsg = 'Password cannot be "password".';
+        this.errorMsg = PASSWORD_BLACKLIST.reduce((totalList, currentPass, i) => (i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".'), 'Password cannot be "');
         invalid = true;
       } else {
         this.form.controls.newpassword.setErrors(null);
