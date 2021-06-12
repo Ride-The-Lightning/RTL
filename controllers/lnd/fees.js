@@ -17,11 +17,9 @@ exports.getFees = (req, res, next) => {
       });
     } else {
       let today = new Date(Date.now());
-      let timezone_offset = today.getTimezoneOffset() * 60;
       let start_date = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0);
-      let end_date = new Date(today.getFullYear(), today.getMonth(), common.getMonthDays(today.getMonth(), today.getFullYear()), 23, 59, 59);
-      let current_time = (Math.round(end_date.getTime()/1000) - timezone_offset).toString();
-      let month_start_time = (Math.round(start_date.getTime()/1000) - timezone_offset).toString();
+      let current_time = (Math.round(today.getTime()/1000)).toString();
+      let month_start_time = (Math.round(start_date.getTime()/1000)).toString();
       let week_start_time = current_time - 604800;
       let day_start_time = current_time - 86400;
       swtch.getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
