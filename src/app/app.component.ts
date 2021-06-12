@@ -81,7 +81,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.information = rtlStore.nodeData;
       this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
       this.logger.info(this.settings);
-      if (!this.sessionService.getItem('token') || !!this.sessionService.getItem('defaultPassword')) {
+      if (!this.sessionService.getItem('token')) {
         this.flgLoggedIn = false;
         this.flgLoading[0] = false;
       } else {
@@ -89,6 +89,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userIdle.startWatching();
       }
     });
+    if (this.sessionService.getItem('defaultPassword') === 'true') {
+      this.flgSideNavOpened = false;
+    }    
     this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
     .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
