@@ -111,7 +111,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       flgShowInput: true,
       getInputs: [
         {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeBaseMsat ? channelToUpdate.feeBaseMsat : 1000, width: 48},
-        {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48}
+        {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: channelToUpdate && channelToUpdate.feeProportionalMillionths ? channelToUpdate.feeProportionalMillionths : 100, min: 1, width: 48, hintFunction: this.percentHintFunction}
       ]
     }}));
     this.rtlEffects.closeConfirm
@@ -134,6 +134,10 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       }
     });
     this.applyFilter();
+  }
+
+  percentHintFunction(feeProportionalMillionths) {
+    return (feeProportionalMillionths / 10000).toString() + '%';
   }
 
   onChannelClose(channelToClose: Channel, forceClose: boolean) {

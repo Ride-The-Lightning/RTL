@@ -137,7 +137,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         flgShowInput: true,
         getInputs: [
           {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: 1000, width: 48},
-          {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48}
+          {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: 1, min: 1, width: 48, hintFunction: this.percentHintFunction}
         ]
       }}));
       this.rtlEffects.closeConfirm
@@ -178,7 +178,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           flgShowInput: true,
           getInputs: [
             {placeholder: 'Base Fee (mSats)', inputType: 'number', inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 48},
-            {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48}
+            {placeholder: 'Fee Rate (mili mSats)', inputType: 'number', inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 48, hintFunction: this.percentHintFunction}
           ]
         }}));
       });
@@ -194,6 +194,10 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
       });
     }
     this.applyFilter();
+  }
+
+  percentHintFunction(fee_rate_milli_msat) {
+    return (fee_rate_milli_msat / 10000).toString() + '%';
   }
 
   onChannelClose(channelToClose: Channel) {
