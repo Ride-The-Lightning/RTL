@@ -28,6 +28,8 @@ export interface InputData {
   max?: number;
   step?: number;
   width?: number;
+  hintText?: string;
+  hintFunction?: Function;
 }
 
 export interface OnChainLabelUTXO {
