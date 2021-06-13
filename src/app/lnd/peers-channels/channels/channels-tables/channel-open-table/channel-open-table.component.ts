@@ -115,9 +115,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     .subscribe((resLookup):boolean|void => {
       if(!resLookup.fee_base_msat && !resLookup.fee_rate_milli_msat && !resLookup.time_lock_delta) { return false; }        
       const reorderedChannelPolicy = [
-        [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 34, type: DataTypeEnum.NUMBER},
-          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 33, type: DataTypeEnum.NUMBER},
-          {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 33, type: DataTypeEnum.NUMBER}]
+        [{key: 'fee_base_msat', value: resLookup.fee_base_msat, title: 'Base Fees (mSats)', width: 25, type: DataTypeEnum.NUMBER},
+          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat, title: 'Fee Rate (milli mSats)', width: 25, type: DataTypeEnum.NUMBER},
+          {key: 'fee_rate_milli_msat', value: resLookup.fee_rate_milli_msat/10000, title: 'Fee Rate (%)', width: 25, type: DataTypeEnum.NUMBER, digitsInfo: '1.0-8'},
+          {key: 'time_lock_delta', value: resLookup.time_lock_delta, title: 'Time Lock Delta', width: 25, type: DataTypeEnum.NUMBER}]
       ];      
       this.store.dispatch(new RTLActions.OpenAlert({ data: { 
         type: AlertTypeEnum.INFORMATION,
@@ -148,7 +149,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
         flgShowInput: true,
         getInputs: [
           {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1000, width: 32},
-          {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32},
+          {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 1, min: 1, width: 32, hintFunction: this.percentHintFunction},
           {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: 40, width: 32}
         ]
       }}));
@@ -191,7 +192,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           flgShowInput: true,
           getInputs: [
             {placeholder: 'Base Fee (mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: (this.myChanPolicy.fee_base_msat === '') ? 0 : this.myChanPolicy.fee_base_msat, width: 32},
-            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32},
+            {placeholder: 'Fee Rate (mili mSat)', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.fee_rate_milli_msat, min: 1, width: 32, hintFunction: this.percentHintFunction},
             {placeholder: 'Time Lock Delta', inputType: DataTypeEnum.NUMBER.toLowerCase(), inputValue: this.myChanPolicy.time_lock_delta, width: 32}
           ]
         }}));
@@ -319,6 +320,10 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     if(this.channels.data && this.channels.data.length > 0) {
       this.commonService.downloadFile(this.channels.data, 'Open-channels');
     }
+  }
+
+  percentHintFunction(fee_rate_milli_msat) {
+    return (fee_rate_milli_msat / 10000).toString() + '%';
   }
 
   ngOnDestroy() {

@@ -45,6 +45,7 @@
               <input *ngIf="i === 0" autoFocus matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
               <input *ngIf="i !== 0" matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
               <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
+              <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>
             </mat-form-field>
           </div>        
         </div>
