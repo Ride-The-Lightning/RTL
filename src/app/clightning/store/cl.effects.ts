@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
@@ -14,12 +14,12 @@ import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
+import { AlertTypeEnum, CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
 import * as CLActions from './cl.actions';
 import * as fromCLReducers from '../store/cl.reducers';
-import { AlertTypeEnum, CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
 
 @Injectable()
 export class CLEffects implements OnDestroy {
@@ -45,8 +45,8 @@ export class CLEffects implements OnDestroy {
       });
     }
 
-  @Effect()
-  infoFetchCL = this.actions$.pipe(
+  infoFetchCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
@@ -85,13 +85,12 @@ export class CLEffects implements OnDestroy {
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
             this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);            
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  fetchFeesCL = this.actions$.pipe(
+  fetchFeesCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_FEES_CL),
     mergeMap((action: CLActions.FetchFees) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchFees'));
@@ -107,11 +106,11 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-    ));
+    }))
+  );
 
-  @Effect()
-  fetchFeeRatesCL = this.actions$.pipe(
+  fetchFeeRatesCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_FEE_RATES_CL),
     mergeMap((action: CLActions.FetchFeeRates) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchFeeRates'));
@@ -127,11 +126,11 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchFeeRates', 'Fetching Fee Rates Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-    ));
+    }))
+  );
 
-  @Effect()
-  fetchBalanceCL = this.actions$.pipe(
+  fetchBalanceCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_BALANCE_CL),
     mergeMap((action: CLActions.FetchBalance) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchBalance'));
@@ -147,11 +146,11 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchBalance', 'Fetching Balances Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-    ));
+    }))
+  );
 
-  @Effect()
-  fetchLocalRemoteBalanceCL = this.actions$.pipe(
+  fetchLocalRemoteBalanceCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_LOCAL_REMOTE_BALANCE_CL),
     mergeMap((action: CLActions.FetchLocalRemoteBalance) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchLocalRemoteBalance'));
@@ -167,11 +166,11 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchLocalRemoteBalance', 'Fetching Balances Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-    ));
+    }))
+  );
 
-  @Effect()
-  getNewAddressCL = this.actions$.pipe(
+  getNewAddressCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.GET_NEW_ADDRESS_CL),
     mergeMap((action: CLActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressCode)
@@ -186,21 +185,22 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressId, err);
             return of({type: RTLActions.VOID});
-          }));
-    })
+        }));
+    }))
   );
 
-  @Effect({ dispatch: false })
-  setNewAddressCL = this.actions$.pipe(
+  setNewAddressCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SET_NEW_ADDRESS_CL),
     map((action: CLActions.SetNewAddress) => {
       this.logger.info(action.payload);
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  peersFetchCL = this.actions$.pipe(
+  peersFetchCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_PEERS_CL),
     mergeMap((action: CLActions.FetchPeers) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchPeers'));
@@ -216,13 +216,12 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithoutAlert('FetchPeers', 'Fetching Peers Failed.', err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  saveNewPeerCL = this.actions$.pipe(
+  saveNewPeerCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SAVE_NEW_PEER_CL),
     withLatestFrom(this.store.select('cl')),
     mergeMap(([action, clData]: [CLActions.SaveNewPeer, fromCLReducers.CLState]) => {
@@ -241,13 +240,12 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithoutAlert('SaveNewPeer', 'Peer Connection Failed.', err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  detachPeerCL = this.actions$.pipe(
+  detachPeerCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.DETACH_PEER_CL),
     mergeMap((action: CLActions.DetachPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.id + '?force=' + action.payload.force)
@@ -264,13 +262,12 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.id, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  channelsFetchCL = this.actions$.pipe(
+  channelsFetchCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_CHANNELS_CL),
     mergeMap((action: CLActions.FetchChannels) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchChannels'));
@@ -284,16 +281,16 @@ export class CLEffects implements OnDestroy {
               payload: (channels && channels.length > 0) ? channels : []
             };
           },
-            catchError((err: any) => {
+          catchError((err: any) => {
               this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
               return of({type: RTLActions.VOID});
-            })
-          ));
-    }
-    ));
+          })
+        ));
+    }))
+  );
 
-  @Effect()
-  openNewChannelCL = this.actions$.pipe(
+  openNewChannelCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: CLActions.SaveNewChannel) => {
       this.store.dispatch(new CLActions.ClearEffectError('SaveNewChannel'));
@@ -314,11 +311,11 @@ export class CLEffects implements OnDestroy {
         this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
         return of({type: RTLActions.VOID});
       }));
-    }
-    ));
+    }))
+  );
 
-  @Effect()
-  updateChannelCL = this.actions$.pipe(
+  updateChannelCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.UPDATE_CHANNELS_CL),
     mergeMap((action: CLActions.UpdateChannels) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/setChannelFee',
@@ -339,13 +336,12 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  closeChannelCL = this.actions$.pipe(
+  closeChannelCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.CLOSE_CHANNEL_CL),
     mergeMap((action: CLActions.CloseChannel) => {
       const queryParam = action.payload.force ? '?force=' + action.payload.force : '';
@@ -364,13 +360,12 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  paymentsFetchCL = this.actions$.pipe(
+  paymentsFetchCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_PAYMENTS_CL),
     mergeMap((action: CLActions.FetchPayments) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchPayments'));
@@ -386,11 +381,11 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  decodePaymentCL = this.actions$.pipe(
+  decodePaymentCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.DECODE_PAYMENT_CL),
     mergeMap((action: CLActions.DecodePayment) => {
       this.store.dispatch(new CLActions.ClearEffectError('DecodePayment'));
@@ -411,22 +406,22 @@ export class CLEffects implements OnDestroy {
               this.handleErrorWithAlert('ERROR', 'Decode Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload, err);
             }
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect({ dispatch: false })
-  setDecodedPaymentCL = this.actions$.pipe(
+  setDecodedPaymentCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SET_DECODED_PAYMENT_CL),
     map((action: CLActions.SetDecodedPayment) => {
       this.logger.info(action.payload);
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  sendPaymentCL = this.actions$.pipe(
+  sendPaymentCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.SendPayment, any]) => {
@@ -444,7 +439,7 @@ export class CLEffects implements OnDestroy {
             } else {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
             }
-            return of({type: RTLActions.VOID});
+            return {type: RTLActions.VOID};
           } else {
             this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
             this.store.dispatch(new CLActions.FetchChannels());
@@ -467,11 +462,11 @@ export class CLEffects implements OnDestroy {
           }
           return of({type: RTLActions.VOID});
         }));
-    })
+    }))
   );
 
-  @Effect()
-  queryRoutesFetchCL = this.actions$.pipe(
+  queryRoutesFetchCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.GET_QUERY_ROUTES_CL),
     mergeMap((action: CLActions.GetQueryRoutes) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount)
@@ -487,21 +482,21 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new CLActions.SetQueryRoutes({ routes: [] }));
             this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect({ dispatch: false })
-  setQueryRoutesCL = this.actions$.pipe(
+  setQueryRoutesCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SET_QUERY_ROUTES_CL),
     map((action: CLActions.SetQueryRoutes) => {
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  peerLookupCL = this.actions$.pipe(
+  peerLookupCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.PEER_LOOKUP_CL),
     mergeMap((action: CLActions.PeerLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -519,13 +514,12 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new CLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
             this.handleErrorWithAlert('ERROR', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect()
-  channelLookupCL = this.actions$.pipe(
+  channelLookupCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.CHANNEL_LOOKUP_CL),
     mergeMap((action: CLActions.ChannelLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -548,13 +542,12 @@ export class CLEffects implements OnDestroy {
             }
             this.store.dispatch(new CLActions.SetLookup([]));
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect()
-  invoiceLookupCL = this.actions$.pipe(
+  invoiceLookupCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.INVOICE_LOOKUP_CL),
     mergeMap((action: CLActions.InvoiceLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -572,22 +565,22 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new CLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
             this.handleErrorWithAlert('ERROR', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listInvoice?label=' + action.payload, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect({ dispatch: false })
-  setLookupCL = this.actions$.pipe(
+  setLookupCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SET_LOOKUP_CL),
     map((action: CLActions.SetLookup) => {
       this.logger.info(action.payload);
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  fetchForwardingHistoryCL = this.actions$.pipe(
+  fetchForwardingHistoryCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
     mergeMap((action: CLActions.GetForwardingHistory) => {
       this.store.dispatch(new CLActions.ClearEffectError('GetForwardingHistory'));
@@ -604,13 +597,12 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new CLActions.EffectError({ action: 'GetForwardingHistory', code: err.status, message: err.error.error }));
             this.handleErrorWithAlert('ERROR', 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards', err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect()
-  deleteExpiredInvoiceCL = this.actions$.pipe(
+  deleteExpiredInvoiceCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.DELETE_EXPIRED_INVOICE_CL),
     mergeMap((action: CLActions.DeleteExpiredInvoice) => {
       const queryStr = (action.payload) ?  '?maxexpiry=' + action.payload : '';
@@ -628,20 +620,19 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithAlert('ERROR', 'Delete Invoice Failed', this.CHILD_API_URL + environment.INVOICES_API, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  saveNewInvoiceCL = this.actions$.pipe(
+  saveNewInvoiceCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: CLActions.SaveNewInvoice) => {
       this.store.dispatch(new CLActions.ClearEffectError('SaveNewInvoice'));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
       })
-        .pipe(
+      .pipe(
           map((postRes: Invoice) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
@@ -664,37 +655,36 @@ export class CLEffects implements OnDestroy {
           catchError((err: any) => {
             this.handleErrorWithoutAlert('SaveNewInvoice', 'Add Invoice Failed.', err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect()
-  invoicesFetchCL = this.actions$.pipe(
-  ofType(CLActions.FETCH_INVOICES_CL),
-  mergeMap((action: CLActions.FetchInvoices) => {
-    this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
-    const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
-    const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
-    const reversed = (action.payload.reversed) ? action.payload.reversed : false;
-    return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
-      .pipe(map((res: ListInvoices) => {
-        this.logger.info(res);
-        this.store.dispatch(new CLActions.SetTotalInvoices(res.invoices ? res.invoices.length : 0));
-        return {
-          type: CLActions.SET_INVOICES_CL,
-          payload: res
-        };
-      }),
+  invoicesFetchCL = createEffect(() => 
+    this.actions$.pipe(
+    ofType(CLActions.FETCH_INVOICES_CL),
+    mergeMap((action: CLActions.FetchInvoices) => {
+      this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
+      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
+      const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
+      const reversed = (action.payload.reversed) ? action.payload.reversed : false;
+      return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
+        .pipe(map((res: ListInvoices) => {
+          this.logger.info(res);
+          this.store.dispatch(new CLActions.SetTotalInvoices(res.invoices ? res.invoices.length : 0));
+          return {
+            type: CLActions.SET_INVOICES_CL,
+            payload: res
+          };
+        }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
           return of({type: RTLActions.VOID});
-        }
-      ));
-  }));
+        }));
+    }))
+  );
 
-  @Effect()
-  SetChannelTransactionCL = this.actions$.pipe(
+  SetChannelTransactionCL = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
     mergeMap((action: CLActions.SetChannelTransaction) => {
       this.store.dispatch(new CLActions.ClearEffectError('SetChannelTransaction'));
@@ -714,11 +704,11 @@ export class CLEffects implements OnDestroy {
         this.handleErrorWithoutAlert('SetChannelTransaction', 'Sending Fund Failed.', err);
         return of({type: RTLActions.VOID});
       }));
-    })
+    }))
   );
 
-  @Effect()
-  utxosFetch = this.actions$.pipe(
+  utxosFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(CLActions.FETCH_UTXOS_CL),
     mergeMap((action: CLActions.FetchUTXOs) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchUTXOs'));
@@ -734,8 +724,8 @@ export class CLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchUTXOs', 'Fetching UTXOs Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-  ));
+    }))
+  );
 
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('clUnlocked', 'true');
