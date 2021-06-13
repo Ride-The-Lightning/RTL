@@ -59,10 +59,10 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
       this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'actions'];
+      this.displayedColumns = ['shortChannelId', 'alias', 'feeBaseMsat', 'feeRatePerKw', 'toLocal', 'toRemote', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['shortChannelId', 'alias', 'toLocal', 'toRemote', 'balancedness', 'actions'];
+      this.displayedColumns = ['shortChannelId', 'alias', 'feeBaseMsat', 'feeRatePerKw', 'toLocal', 'toRemote', 'balancedness', 'actions'];
     }
   }
 

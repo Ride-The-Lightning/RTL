@@ -112,6 +112,7 @@ export interface Channel {
   isFunder?: boolean;
   buried?: boolean;
   feeBaseMsat?: number;
+  feeRatePerKw?: number;
   feeProportionalMillionths?: number;
   balancedness?: number;
 }

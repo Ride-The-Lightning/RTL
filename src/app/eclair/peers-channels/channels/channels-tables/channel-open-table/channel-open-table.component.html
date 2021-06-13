@@ -26,6 +26,16 @@
           </div>
         </td>
       </ng-container>
+      <ng-container matColumnDef="feeBaseMsat">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Base Fee (mSats) </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.feeBaseMsat | number:'1.0-0'}} </span></td>
+      </ng-container>
+      <ng-container matColumnDef="feeRatePerKw">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Fee Rate / Kw </th>
+        <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">
+            {{channel?.feeRatePerKw | number:'1.0-0'}} </span></td>
+      </ng-container>
       <ng-container matColumnDef="toLocal">
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"> Local Balance (Sats) </th>
         <td mat-cell *matCellDef="let channel"><span fxLayoutAlign="end center">

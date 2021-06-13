@@ -58,6 +58,7 @@ simplifyAllChannels = (channels) => {
       isFunder: channel.data && channel.data.commitments && channel.data.commitments.localParams && channel.data.commitments.localParams.isFunder ? channel.data.commitments.localParams.isFunder : false,
       buried: channel.data && channel.data.buried ? channel.data.buried : false,
       feeBaseMsat: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeBaseMsat ? channel.data.channelUpdate.feeBaseMsat : 0,
+      feeRatePerKw: (channel.data.commitments.localCommit.spec.feeratePerKw) ? channel.data.commitments.localCommit.spec.feeratePerKw : 0,
       feeProportionalMillionths: channel.data && channel.data.channelUpdate && channel.data.channelUpdate.feeProportionalMillionths ? channel.data.channelUpdate.feeProportionalMillionths : 0,
       alias: ''
     });
