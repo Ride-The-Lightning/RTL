@@ -12,7 +12,7 @@ import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
-import { GetInfo, Fees, Balance, NetworkInfo, Payment, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO } from '../../shared/models/lndModels';
+import { GetInfo, Fees, Balance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO, ListPayments } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { AlertTypeEnum, CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
@@ -630,18 +630,44 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.FETCH_PAYMENTS_LND),
     mergeMap((action: LNDActions.FetchPayments) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchPayments'));
-      return this.httpClient.get<Payment[]>(this.CHILD_API_URL + environment.PAYMENTS_API);
-    }),
-    map((payments) => {
-      this.logger.info(payments);
-      return {
-        type: LNDActions.SET_PAYMENTS_LND,
-        payload: payments ? payments : []
-      };
-    }),
-    catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
-      return of({type: RTLActions.VOID});
+      const max_payments = (action.payload.max_payments) ? action.payload.max_payments : 100;
+      const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
+      const reversed = (action.payload.reversed) ? action.payload.reversed : false;
+      return this.httpClient.get<ListPayments>(this.CHILD_API_URL + environment.PAYMENTS_API + '?max_payments=' + max_payments + '&index_offset=' + index_offset + '&reversed=' + reversed)
+      .pipe(map((res: ListPayments) => {
+        this.logger.info(res);
+        // if (action.payload.reversed && !action.payload.total_payments) {
+        //   this.store.dispatch(new LNDActions.SetTotalPayments(+res.total_payments));
+        // }
+        return {
+          type: LNDActions.SET_PAYMENTS_LND,
+          payload: res
+        };
+      }),
+      catchError((err: any) => {
+        this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
+        return of({type: RTLActions.VOID});
+      }));
+    }))
+  );
+
+  totalPaymentsFetch = createEffect(() =>  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
+    this.actions$.pipe(
+    ofType(LNDActions.FETCH_TOTAL_PAYMENTS_LND),
+    mergeMap((action: LNDActions.FetchTotalPayments) => {
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchTotalPayments'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/total')
+      .pipe(map((totalNumPayments: number) => {
+        this.logger.info(totalNumPayments);
+        return {
+          type: LNDActions.SET_TOTAL_PAYMENTS_LND,
+          payload: totalNumPayments
+        };
+      }),
+      catchError((err: any) => {
+        this.handleErrorWithoutAlert('FetchTotalPayments', 'Fetching Total Number of Payments Failed.', err);
+        return of({type: RTLActions.VOID});
+      }));
     }))
   );
 
@@ -684,7 +710,8 @@ export class LNDEffects implements OnDestroy {
             } else {
               this.store.dispatch(new LNDActions.FetchAllChannels());
               this.store.dispatch(new LNDActions.FetchBalance('channels'));
-              this.store.dispatch(new LNDActions.FetchPayments());
+              this.store.dispatch(new LNDActions.FetchTotalPayments()); // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
+              this.store.dispatch(new LNDActions.FetchPayments({ max_payments: PAGE_SIZE, reversed: true }));
               if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
               } else {
@@ -1118,8 +1145,9 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new LNDActions.FetchAllChannels());
     this.store.dispatch(new LNDActions.FetchPendingChannels());
     this.store.dispatch(new LNDActions.FetchClosedChannels());
+    this.store.dispatch(new LNDActions.FetchTotalPayments());  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
     this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
-    this.store.dispatch(new LNDActions.FetchPayments());
+    this.store.dispatch(new LNDActions.FetchPayments({max_payments: 10, reversed: true }));
     this.store.dispatch(new LNDActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     let newRoute = this.location.path();
     if(newRoute.includes('/cl/')) {

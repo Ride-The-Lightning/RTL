@@ -5,7 +5,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
   PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
-  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO }
+  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments }
 from '../../shared/models/lndModels';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
@@ -55,6 +55,8 @@ export const SET_TRANSACTIONS_LND = 'SET_TRANSACTIONS_LND';
 export const FETCH_UTXOS_LND = 'FETCH_UTXOS_LND';
 export const SET_UTXOS_LND = 'SET_UTXOS_LND';
 export const FETCH_PAYMENTS_LND = 'FETCH_PAYMENTS_LND';
+export const FETCH_TOTAL_PAYMENTS_LND = 'FETCH_TOTAL_PAYMENTS_LND';  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
+export const SET_TOTAL_PAYMENTS_LND = 'SET_TOTAL_PAYMENTS_LND';
 export const SET_PAYMENTS_LND = 'SET_PAYMENTS_LND';
 export const SEND_PAYMENT_LND = 'SEND_PAYMENT_LND';
 export const SEND_PAYMENT_STATUS_LND = 'SEND_PAYMENT_STATUS_LND';
@@ -301,11 +303,21 @@ export class SetUTXOs implements Action {
 
 export class FetchPayments implements Action {
   readonly type = FETCH_PAYMENTS_LND;
+  constructor(public payload: {max_payments?: number, index_offset?: number, reversed?: boolean}) {}
 }
 
 export class SetPayments implements Action {
   readonly type = SET_PAYMENTS_LND;
-  constructor(public payload: Payment[]) {}
+  constructor(public payload: ListPayments) {}
+}
+
+export class FetchTotalPayments implements Action {  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
+  readonly type = FETCH_TOTAL_PAYMENTS_LND;
+}
+
+export class SetTotalPayments implements Action {
+  readonly type = SET_TOTAL_PAYMENTS_LND;
+  constructor(public payload: number) {}
 }
 
 export class SendPayment implements Action {
@@ -425,7 +437,7 @@ BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
 RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
 FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
 FetchInvoices | SetInvoices | SetTotalInvoices |
-FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
+FetchPayments | SetPayments | SendPayment | SendPaymentStatus | FetchTotalPayments | SetTotalPayments |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |

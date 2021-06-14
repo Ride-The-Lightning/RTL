@@ -345,6 +345,12 @@ export interface NodeAddress {
   address?: string;
 }
 
+export interface ListPayments {
+  payments?: Payment[];
+  first_index_offset?: string;
+  last_index_offset?: string;
+}
+
 export interface Payment {
   creation_date?: number;
   creation_date_str?: string;

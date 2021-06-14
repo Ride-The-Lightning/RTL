@@ -50,7 +50,7 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.dataService.getTransactionsForReport()
+        this.dataService.getTransactionsForReport(this.startDate, this.endDate)
         .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
             this.payments = res.payments;
             this.invoices = res.invoices;
