@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -151,18 +151,23 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices.filter = selFilter.value.trim().toLowerCase();
   }
 
-  onPageChange(event: any) {
-    let reversed = true;
-    let index_offset = this.firstOffset;
-    if (event.pageIndex < event.previousPageIndex) {
-      reversed = false;
-      index_offset = this.lastOffset;
-    }
-    if (event.pageIndex === event.previousPageIndex) {
-      reversed = true;
+  onPageChange(event: PageEvent) {
+    let reverse = true;
+    let index_offset = this.lastOffset;
+    if (event.pageIndex === 0) {
+      reverse = true;
       index_offset = 0;
+    } else if (event.pageIndex < event.previousPageIndex) {
+      reverse = false;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+      reverse = true;
+      index_offset = this.firstOffset;
+    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
+      reverse = false;
+      index_offset = event.length - (event.pageIndex * event.pageSize) + 1;
     }
-    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
+    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse}));
   }
 
   onInvoiceValueChange() {

@@ -213,7 +213,7 @@ export class RTLEffects implements OnDestroy {
       if(action.payload.settings && action.payload.defaultNodeIndex) {
         let settingsRes = this.httpClient.post<Settings>(environment.CONF_API, { updatedSettings: action.payload.settings });
         let defaultNodeRes = this.httpClient.post(environment.CONF_API + '/updateDefaultNode', { defaultNodeIndex: action.payload.defaultNodeIndex });
-        return forkJoin([settingsRes, defaultNodeRes]);      
+        return forkJoin([settingsRes, defaultNodeRes]);
       } else if(action.payload.settings && !action.payload.defaultNodeIndex) {
         return this.httpClient.post(environment.CONF_API, { updatedSettings: action.payload.settings });
       } else if(!action.payload.settings && action.payload.defaultNodeIndex) {

@@ -78,7 +78,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.memo === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'" class="row-invoices"></tr>
       </table>
-      <mat-paginator [length]="totalInvoices" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+      <mat-paginator [length]="totalInvoices" (page)="onPageChange($event)" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
     </div>
   </div>
 </div>

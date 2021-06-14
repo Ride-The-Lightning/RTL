@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
@@ -37,7 +37,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -46,6 +45,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any;
+  public totalPayments = 100;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];
   public htlcColumns = [];
@@ -53,6 +53,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public flgSticky = false;
+  private firstOffset = -1;
+  private lastOffset = -1;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -92,7 +94,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
-      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.payments && rtlStore.payments.payments.length > 0) ? rtlStore.payments.payments : [];
+      this.totalPayments = rtlStore.totalPayments;
+      this.firstOffset = +rtlStore.payments.first_index_offset;
+      this.lastOffset = +rtlStore.payments.last_index_offset;
       if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
         this.loadPaymentsTable(this.paymentJSONArr);
       }
@@ -233,6 +238,27 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
+  onPageChange(event: any) {
+    let reverse = true;
+    let index_offset = this.lastOffset;
+    let page_size = event.pageSize;
+    if (event.pageIndex === 0) {
+      reverse = true;
+      index_offset = 0;
+    } else if (event.pageIndex < event.previousPageIndex) {
+      reverse = false;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+      reverse = true;
+      index_offset = this.firstOffset;
+    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
+      reverse = false;
+      index_offset = 0;
+      page_size = event.length - (event.pageIndex * event.pageSize);
+    }
+    this.store.dispatch(new LNDActions.FetchPayments({max_payments: page_size, index_offset: index_offset, reversed: reverse}));
+  }
+
   is_group(index: number, payment: Payment) {
     return payment.htlcs && payment.htlcs.length > 1;
   }  
@@ -360,7 +386,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }
     this.payments.sort = this.sort;
     this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
-    this.payments.paginator = this.paginator;
 }
 
   onDownloadCSV() {
