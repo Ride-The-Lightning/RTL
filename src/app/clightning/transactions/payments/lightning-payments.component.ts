@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -57,7 +57,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -274,6 +274,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.payments.sort = this.sort;
     this.payments.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
+    this.payments.filterPredicate = (rowData: Payment, fltr: string) => {
+      const newRowData = ((rowData.created_at) ? this.datePipe.transform(new Date(rowData.created_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.payments.paginator = this.paginator;
   }
 

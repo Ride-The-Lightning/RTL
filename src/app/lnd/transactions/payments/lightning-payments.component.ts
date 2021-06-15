@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -61,7 +60,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -95,7 +94,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.payments && rtlStore.payments.payments.length > 0) ? rtlStore.payments.payments : [];
-      this.totalPayments = rtlStore.totalPayments;
+      this.totalPayments = rtlStore.allLightningTransactions.paymentsAll && rtlStore.allLightningTransactions.paymentsAll.payments && rtlStore.allLightningTransactions.paymentsAll.payments.length ? rtlStore.allLightningTransactions.paymentsAll.payments.length : 0;
       this.firstOffset = +rtlStore.payments.first_index_offset;
       this.lastOffset = +rtlStore.payments.last_index_offset;
       if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
@@ -385,8 +384,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       }
     }
     this.payments.sort = this.sort;
-    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
-}
+    this.payments.filterPredicate = (payment: Payment, fltr: string) => {
+      const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
+      return newPayment.includes(fltr);   
+    };
+  }
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {

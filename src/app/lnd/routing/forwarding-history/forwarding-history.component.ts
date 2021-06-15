@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -38,7 +39,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -109,7 +110,10 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     this.forwardingHistoryEvents = forwardingEvents ? new MatTableDataSource<ForwardingEvent>([...forwardingEvents]) : new MatTableDataSource([]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.forwardingHistoryEvents.filterPredicate = (fhEvents: ForwardingEvent, fltr: string) => JSON.stringify(fhEvents).toLowerCase().includes(fltr);
+    this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }

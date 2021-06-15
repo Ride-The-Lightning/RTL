@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -61,7 +61,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -96,7 +96,10 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.invoices = (this.invoiceJSONArr) ? new MatTableDataSource<Invoice>([...this.invoiceJSONArr]) : new MatTableDataSource([]);
       this.invoices.sort = this.sort;
       this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-      this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
+      this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+        const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+        return newRowData.includes(fltr);   
+      };
       this.invoices.paginator = this.paginator;    
       setTimeout(() => { this.flgAnimate = false; }, 5000);
       this.logger.info(this.invoices);

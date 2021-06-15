@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -18,7 +18,7 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { ECLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { ECLPaymentInformationComponent } from '../payment-information-modal/payment-information.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { ECLEffects } from '../../store/ecl.effects';
+
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -58,7 +58,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private decimalPipe: DecimalPipe, private dataService: DataService) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -162,7 +162,10 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
-    this.payments.filterPredicate = (payment: PaymentSent, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
+    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
+      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.payments.paginator = this.paginator;
   }
 

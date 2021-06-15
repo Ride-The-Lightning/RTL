@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject, throwError, of } from 'rxjs';
+import { Subject, throwError, of, forkJoin } from 'rxjs';
 import { map, takeUntil, catchError, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 
-import { ListInvoices, SwitchReq } from '../models/lndModels';
+import { ListInvoices, ListPayments, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -20,7 +20,7 @@ import * as LNDActions from '../../lnd/store/lnd.actions';
 export class DataService implements OnDestroy {
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
 
@@ -212,19 +212,25 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getTransactionsForReport(startDate: Date, endDate: Date) {
-    // getData(): Observable<any> {
-    //   const response1 = this.http.get(apiUrl + '44418/');
-    //   const response2 = this.http.get(apiUrl + '2459115/');
-    //   const response3 = this.http.get(apiUrl + '28743736/');
-    //   const response4 = this.http.get(apiUrl + '1940345/');
-    //   return forkJoin([response1, response2, response3, response4]);
-    // }
+  getTransactionsForReportCLT(startDate: Date, endDate: Date) {
     return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[6]),
-    withLatestFrom(this.store.select(this.lnImplementation === 'CLT' ? 'cl' : (this.lnImplementation === 'ECL' ? 'ecl' : 'lnd'))),
+    .pipe(takeUntil(this.unSubs[7]),
+    withLatestFrom('cl'),
     mergeMap(([res, storeData]: [any, any]) => {
-      return of({payments: storeData.payments.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
+      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
+    }),
+    catchError(err => {
+      this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
+  }
+
+  getTransactionsForReportECL(startDate: Date, endDate: Date) {
+    return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
+    .pipe(takeUntil(this.unSubs[8]),
+    withLatestFrom('ecl'),
+    mergeMap(([res, storeData]: [any, any]) => {
+      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);

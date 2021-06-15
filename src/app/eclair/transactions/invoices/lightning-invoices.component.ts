@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -17,7 +17,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { ECLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { ECLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
-import { RTLEffects } from '../../../store/rtl.effects';
+
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -57,7 +57,7 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -134,7 +134,10 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
     this.invoices = invs ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId]  && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.invoices.sort = this.sort;
-    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
+    this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.invoices.paginator = this.paginator;
   }
 

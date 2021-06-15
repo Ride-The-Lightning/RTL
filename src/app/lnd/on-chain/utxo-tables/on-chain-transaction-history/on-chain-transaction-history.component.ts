@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input, OnChanges } from '@angular/core';
+import { DatePipe } from '@angular/common'
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -36,7 +36,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -87,7 +87,10 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.listTransactions.filterPredicate = (transaction: Transaction, fltr: string) => JSON.stringify(transaction).toLowerCase().includes(fltr);
+    this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
+      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

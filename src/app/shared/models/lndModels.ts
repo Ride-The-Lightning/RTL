@@ -444,7 +444,7 @@ export interface ChannelsTransaction {
 
 export interface Transaction {
   dest_addresses?: string[];
-  time_stamp?: string;
+  time_stamp?: number;
   num_confirmations?: number;
   total_fees?: string;
   block_hash?: string;
@@ -472,7 +472,7 @@ export interface SwitchReq {
 }
 
 export interface ForwardingEvent {
-  timestamp?: string;
+  timestamp?: number;
   chan_id_out?: string;
   alias_out?: string;
   amt_out?: string;
