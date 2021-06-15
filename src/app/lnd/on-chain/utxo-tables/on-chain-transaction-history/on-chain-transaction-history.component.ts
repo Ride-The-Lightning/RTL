@@ -68,7 +68,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
       [{key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER},
         {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER},

@@ -31,7 +31,7 @@
           <td mat-cell *matCellDef="let payment">
             <span *ngIf="payment.status === 'complete'" class="dot green" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="payment.status !== 'complete'" class="dot yellow" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{payment?.created_at_str}}
+            {{(payment?.created_at * 1000) | date:'dd/MMM/YYYY HH:mm'}}
           </td>
         </ng-container>
         <ng-container matColumnDef="payment_hash">
@@ -81,7 +81,7 @@
               <span *ngFor="let mpp of payment?.mpps" fxLayoutAlign="start center" class="mpp-row-span pl-3">
                 <span *ngIf="mpp.status === 'complete'" class="dot green mt-0" matTooltip="Completed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                 <span *ngIf="mpp.status !== 'complete'" class="dot yellow mt-0" matTooltip="Incomplete/Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                {{mpp.created_at_str}}
+                {{(mpp.created_at * 1000) | date:'dd/MMM/YYYY HH:mm'}}
               </span>
             </ng-container>
           </td>

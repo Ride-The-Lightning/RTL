@@ -18,9 +18,6 @@ exports.getTransactions = (req, res, next) => {
       });
     } else {
       if (body.transactions && body.transactions.length > 0) {
-        body.transactions.forEach(transaction => {
-          transaction.time_stamp_str =  (!transaction.time_stamp) ? '' : common.convertTimestampToDate(transaction.time_stamp);
-        });
         body.transactions = common.sortDescByKey(body.transactions, 'time_stamp');
       }
       res.status(200).json(body.transactions);

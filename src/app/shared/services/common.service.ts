@@ -206,9 +206,9 @@ export class CommonService {
     return value;
   }
 
-  convertTimestampToDate(num: number) {
-    return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
-  };
+  // convertTimestampToDate(num: number) {
+  //   return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
+  // };
 
   downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
     let blob = new Blob();

@@ -146,8 +146,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     let reCreatedInvoice: Invoice = {
       msatoshi: selInvoice.msatoshi,
       label: selInvoice.label,
-      expires_at_str: selInvoice.expires_at_str,
-      paid_at_str: selInvoice.paid_at_str,
+      expires_at: selInvoice.expires_at,
+      paid_at: selInvoice.paid_at,
       bolt11: selInvoice.bolt11,
       payment_hash: selInvoice.payment_hash,
       description: selInvoice.description,

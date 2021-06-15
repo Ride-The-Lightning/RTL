@@ -201,7 +201,6 @@ export class LNDEffects implements OnDestroy {
             postRes.cltv_expiry = '144';
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-            postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: RTLActions.OPEN_ALERT,

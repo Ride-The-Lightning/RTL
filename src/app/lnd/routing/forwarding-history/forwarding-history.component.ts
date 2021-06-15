@@ -89,7 +89,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
-      [{key: 'timestamp_str', value: selFEvent.timestamp_str, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
+      [{key: 'timestamp', value: selFEvent.timestamp, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
         {key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
         {key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
         {key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER}],

@@ -85,7 +85,7 @@ export class ECLOnChainTransactionHistoryComponent implements OnInit, OnDestroy 
     const reorderedTransactions = [
       [{key: 'blockHash', value: selTransaction.blockHash, title: 'Block Hash', width: 100}],
       [{key: 'txid', value: selTransaction.txid, title: 'Transaction ID', width: 100}],
-      [{key: 'timestampStr', value: selTransaction.timestampStr, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'timestamp', value: selTransaction.timestamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'confirmations', value: selTransaction.confirmations, title: 'Number of Confirmations', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'fees', value: selTransaction.fees, title: 'Fees (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'amount', value: selTransaction.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],

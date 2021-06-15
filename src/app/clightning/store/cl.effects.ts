@@ -639,7 +639,6 @@ export class CLEffects implements OnDestroy {
             postRes.msatoshi = action.payload.amount;
             postRes.label = action.payload.label;
             postRes.expires_at = Math.round((new Date().getTime() / 1000) + action.payload.expiry);
-            postRes.expires_at_str = this.commonService.convertTimestampToDate(+postRes.expires_at);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
             this.store.dispatch(new RTLActions.OpenAlert({ data: { 

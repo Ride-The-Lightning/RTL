@@ -161,17 +161,6 @@ common.convertToBTC = (num) => {
   return (num / 100000000).toFixed(6);
 };
 
-common.convertTimestampToDate = (num) => {
-  let myDate = new Date(+num * 1000);
-  let days = myDate.getDate().toString();
-  days = +days < 10 ? '0' + days : days;
-  let hours = myDate.getHours().toString();
-  hours = +hours < 10 ? '0' + hours : hours;
-  let minutes = myDate.getMinutes().toString();
-  minutes = +minutes < 10 ? '0' + minutes : minutes;
-  return days + "/" + MONTHS[myDate.getMonth()].name + "/" + myDate.getFullYear() + " " + hours + ":" + minutes;
-};
-
 common.convertTimestampToTime = (num) => {
   let myDate = new Date(+num * 1000);
   let days = myDate.getDate().toString();

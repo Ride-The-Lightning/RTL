@@ -32,7 +32,7 @@
             <td mat-cell *matCellDef="let payment">
               <span *ngIf="payment.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
               <span *ngIf="payment.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-              {{payment?.creation_date_str}}
+              {{(payment?.creation_date * 1000) | date:'dd/MMM/YYYY HH:mm'}}
             </td>
           </ng-container>
           <ng-container matColumnDef="payment_hash">
@@ -82,7 +82,7 @@
                 <span *ngFor="let htlc of payment?.htlcs" fxLayoutAlign="start center" class="htlc-row-span pl-3">
                   <span *ngIf="htlc.status === 'SUCCEEDED'" class="dot green" matTooltip="Succeeded" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
                   <span *ngIf="htlc.status !== 'SUCCEEDED'" class="dot red" matTooltip="Failed" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-                  {{htlc.attempt_time_str}}
+                  {{(htlc.attempt_time * 1000) | date:'dd/MMM/YYYY HH:mm'}}
                 </span>
               </ng-container>
             </td>

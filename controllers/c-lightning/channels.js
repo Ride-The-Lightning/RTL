@@ -181,10 +181,6 @@ exports.listForwards = (req, res, next) => {
       });
     } else {
       if (body && body.length > 0) {
-        body.forEach(event => {
-          event.received_time_str =  (!event.received_time) ? '' : common.convertTimestampToDate(event.received_time);
-          event.resolved_time_str =  (!event.resolved_time) ? '' : common.convertTimestampToDate(event.resolved_time);
-        });
         body = common.sortDescByKey(body, 'received_time');
       }
       logger.info({fileName: 'Channels', msg: 'Forwarding History Received: ' + JSON.stringify(body)});

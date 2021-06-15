@@ -113,7 +113,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
 
   onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
-    if (this.paymentDecoded.created_at_str) {
+    if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
       this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
@@ -122,7 +122,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       .pipe(take(1))
       .subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.created_at_str) {
+        if (this.paymentDecoded.created_at) {
           if (!this.paymentDecoded.msatoshi) {
             this.paymentDecoded.msatoshi = 0;
           }
@@ -143,7 +143,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
           [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-          [{key: 'created_at_str', value: this.paymentDecoded.created_at_str, title: 'Creation Date', width: 40},
+          [{key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME},
             {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
             {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 30}]
         ];
@@ -175,7 +175,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
         [{key: 'payee', value: this.paymentDecoded.payee, title: 'Payee', width: 100}],
         [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-        [{key: 'created_at_str', value: this.paymentDecoded.created_at_str, title: 'Creation Date', width: 50},
+        [{key: 'created_at', value: this.paymentDecoded.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
           {key: 'num_satoshis', value: this.paymentDecoded.msatoshi/1000, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'min_finaltv_expiry', value: this.paymentDecoded.min_final_cltv_expiry, title: 'CLTV Expiry', width: 50}]
@@ -242,7 +242,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'id', value: selPayment.id, title: 'ID', width: 20, type: DataTypeEnum.STRING},
       {key: 'destination', value: selPayment.destination, title: 'Destination', width: 80, type: DataTypeEnum.STRING}],
-      [{key: 'created_at_str', value: selPayment.created_at_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'created_at', value: selPayment.created_at, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'status', value: this.titleCasePipe.transform(selPayment.status), title: 'Status', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'msatoshi', value: selPayment.msatoshi, title: 'Amount (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'msatoshi_sent', value: selPayment.msatoshi_sent, title: 'Amount Sent (mSats)', width: 50, type: DataTypeEnum.NUMBER}]

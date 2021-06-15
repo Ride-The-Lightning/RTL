@@ -28,7 +28,7 @@
           </div>
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date Expiry</h4>
-            <span class="foreground-secondary-text">{{invoice.expires_at_str}}</span>
+            <span class="foreground-secondary-text">{{(invoice.expires_at * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
@@ -72,7 +72,7 @@
             </div>
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-              <span class="foreground-secondary-text">{{invoice.paid_at_str || '-'}}</span>
+              <span class="foreground-secondary-text">{{((invoice.paid_at * 1000) | date:'dd/MMM/YYYY HH:mm') || '-'}}</span>
             </div>
           </div>
           <mat-divider class="w-100 my-1"></mat-divider>        

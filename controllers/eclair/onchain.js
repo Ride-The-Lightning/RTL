@@ -83,9 +83,6 @@ exports.getTransactions = (req, res, next) => {
   request.post(options).then((body) => {
     logger.info({fileName: 'Transactions', msg: 'Transaction Received: ' + JSON.stringify(body)});
     if (body && body.length > 0) {
-      body.forEach(transaction => {
-        transaction.timestampStr =  (!transaction.timestamp) ? '' : common.convertTimestampToDate(transaction.timestamp);
-      });
       body = common.sortDescByKey(body, 'timestamp');
     }
     res.status(200).json(body);

@@ -141,7 +141,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   prepareTableData() {
     return this.transactionsReportData.reduce((acc, curr) => {
       if (curr.series[0].value > 0 || curr.series[1].value >0) {
-        return acc.concat({date: curr.date, date_str: this.commonService.convertTimestampToDate(curr.date.getTime()/1000), amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
+        return acc.concat({date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
       }
       return acc;
     }, []);

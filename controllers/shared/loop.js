@@ -299,10 +299,6 @@ exports.swaps = (req, res, next) => {
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swaps: ' + JSON.stringify(body)});
     if (body.swaps && body.swaps.length > 0) {
-      body.swaps.forEach(swap => {
-        swap.initiation_time_str =  (!swap.initiation_time) ? '' : common.convertTimestampToDate(Math.round(swap.initiation_time/1000000000));
-        swap.last_update_time_str =  (!swap.last_update_time) ? '' : common.convertTimestampToDate(Math.round(swap.last_update_time/1000000000));
-      });
       body.swaps = common.sortDescByKey(body.swaps, 'initiation_time');
       logger.info({fileName: 'Loop', msg: 'Loop Swaps after Sort: ' + JSON.stringify(body)});
     }
@@ -330,8 +326,6 @@ exports.swap = (req, res, next) => {
   options.url = options.url + '/v1/loop/swap/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Loop', msg: 'Loop Swap: ' + body});
-    body.initiation_time_str =  (!body.initiation_time) ? '' : common.convertTimestampToDate(Math.round(body.initiation_time/1000000000));
-    body.last_update_time_str =  (!body.last_update_time) ? '' : common.convertTimestampToDate(Math.round(body.last_update_time/1000000000));
     res.status(200).json(body);
   })
   .catch(errRes => {

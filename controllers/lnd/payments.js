@@ -17,14 +17,7 @@ exports.getPayments = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      if ( body.payments && body.payments.length > 0) {
-        body.payments.forEach(payment => {
-          payment.creation_date_str =  (!payment.creation_date) ? '' : common.convertTimestampToDate(payment.creation_date);
-          payment.htlcs.forEach(htlc => {
-            htlc.attempt_time_str =  (!htlc.attempt_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.attempt_time_ns/1000000000));
-            htlc.resolve_time_str =  (!htlc.resolve_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.resolve_time_ns/1000000000));
-          });
-        });
+      if (body.payments && body.payments.length > 0) {
         body.payments = common.sortDescByKey(body.payments, 'creation_date');
       }
       logger.info({fileName: 'Payments', msg: 'Payments After Dates: ' + JSON.stringify(body)});

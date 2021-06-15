@@ -500,9 +500,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             postRes.timestamp = new Date().getTime() / 1000;
-            postRes.timestampStr = this.commonService.convertTimestampToDate(+postRes.timestamp);
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
-            postRes.expiresAtStr = this.commonService.convertTimestampToDate(+postRes.expiresAt);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
             this.store.dispatch(new RTLActions.OpenAlert({ data: { 

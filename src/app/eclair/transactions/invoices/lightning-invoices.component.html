@@ -36,7 +36,7 @@
             <span *ngIf="invoice.status === 'received'" class="dot green" matTooltip="Received" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice.status === 'unpaid'" class="dot yellow" matTooltip="Unpaid" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice.status === 'expired' || invoice.status === 'unknown'" class="dot red" matTooltip="Expired" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{invoice.timestampStr}}
+            {{(invoice.timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}
           </td>
         </ng-container>
         <ng-container matColumnDef="receivedAt">

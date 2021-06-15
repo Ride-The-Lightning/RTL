@@ -13,7 +13,7 @@
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end start" class="my-1">
       <h4 class="font-bold-500">Last Update</h4>
-      <span class="foreground-secondary-text">{{lookupResult.last_update_str}}</span>
+      <span class="foreground-secondary-text">{{(lookupResult.last_update * 1000) | date:'dd/MMM/YYYY HH:mm'}}</span>
     </div>
     <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="50" fxLayoutAlign="end start" class="my-1">
       <h4 class="font-bold-500">Capacity (Sats)</h4>

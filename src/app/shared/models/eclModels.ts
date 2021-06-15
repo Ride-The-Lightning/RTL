@@ -43,7 +43,6 @@ export interface PaymentSent {
   recipientNodeId?: string;
   recipientNodeAlias?: string;
   firstPartTimestamp?: number;
-  firstPartTimestampStr?: string;  
   parts: PaymentSentPart[];
 }
 
@@ -54,14 +53,12 @@ export interface PaymentSentPart {
   toChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
-  timestampStr?: string;
 }
 
 export interface PaymentReceived {
   type?: string;
   paymentHash?: string;
   firstPartTimestamp?: number;
-  firstPartTimestampStr?: string;  
   parts: PaymentReceivedPart[];
 }
 
@@ -69,7 +66,6 @@ export interface PaymentReceivedPart {
   amount?: number;
   fromChannelId?: string;
   timestamp?: number;
-  timestampStr?: string;
 }
 
 export interface PaymentRelayed {
@@ -84,13 +80,11 @@ export interface PaymentRelayed {
   toShortChannelId?: string;
   toChannelAlias?: string;
   timestamp?: number;
-  timestampStr?: string;
 }
 
 export interface PayRequest {
   prefix?: string;
   timestamp?: number;
-  timestampStr?: string;
   nodeId?: string;
   serialized?: string;
   description?: string;
@@ -182,17 +176,13 @@ export interface Transaction {
   confirmations?: number;
   txid?: string;
   timestamp?: number;
-  timestampStr?: string;
 }
 
 export interface Invoice {
   prefix?: string;
   timestamp?: number;
-  timestampStr?: string;
   expiresAt?: number;
-  expiresAtStr?: string;
   receivedAt?: number;
-  receivedAtStr?: string;
   status?: string;
   nodeId?: string;
   serialized?: string;
@@ -213,7 +203,6 @@ export interface LookupNode {
   signature?: string;
   features?: { activated?: Feature[], unknown?: any[] };
   timestamp?: number;
-  timestampStr?: string;
   nodeId?: string;
   rgbColor?: string;
   alias?: string;

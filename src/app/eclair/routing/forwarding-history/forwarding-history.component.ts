@@ -93,7 +93,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
     const reorderedFHEvent = [
       [{key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'timestampStr', value: selFEvent.timestampStr, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'timestamp', value: selFEvent.timestamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER}],

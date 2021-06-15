@@ -31,10 +31,8 @@ export interface LoopSwapStatus {
   state?: LoopStateEnum;
   amt?: string;
   cost_onchain?: string;
-  initiation_time?: string;
-  initiation_time_str?: string;
+  initiation_time?: number;
   id_bytes?: string;
-  last_update_time?: string;
-  last_update_time_str?: string;
+  last_update_time?: number;
   id?: string;
 }
