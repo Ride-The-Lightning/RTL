@@ -509,7 +509,8 @@ export class ECLEffects implements OnDestroy {
                 component: ECLInvoiceInformationComponent
             }}));
             return {
-              type: ECLActions.FETCH_INVOICES_ECL
+              type: ECLActions.ADD_INVOICE_ECL,
+              payload: postRes
             };
           }),
           catchError((err: any) => {

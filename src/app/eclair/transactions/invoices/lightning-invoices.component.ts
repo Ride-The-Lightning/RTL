@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -31,7 +31,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
-export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
+export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
@@ -86,7 +86,7 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.invoiceJSONArr = (rtlStore.invoices && rtlStore.invoices.length > 0) ? rtlStore.invoices : [];
-      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0) {
+      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
         this.loadInvoicesTable(this.invoiceJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 5000);
@@ -95,6 +95,12 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+      this.loadInvoicesTable(this.invoiceJSONArr);
+    }
   }
 
   openCreateInvoiceModal() {

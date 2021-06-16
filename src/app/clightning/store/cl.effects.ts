@@ -742,6 +742,7 @@ export class CLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 1000000, index_offset: 0, reversed: false}));
     this.store.dispatch(new CLActions.FetchFees());
     this.store.dispatch(new CLActions.FetchChannels());
     this.store.dispatch(new CLActions.FetchBalance());

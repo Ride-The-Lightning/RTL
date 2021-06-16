@@ -79,7 +79,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 100, index_offset: 0, reversed: false}));
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
