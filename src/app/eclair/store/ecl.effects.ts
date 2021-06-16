@@ -587,6 +587,7 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new ECLActions.FetchInvoices());
     this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
     this.store.dispatch(new ECLActions.FetchFees());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());

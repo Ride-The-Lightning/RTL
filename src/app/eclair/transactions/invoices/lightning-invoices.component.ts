@@ -75,7 +75,6 @@ export class ECLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new ECLActions.FetchInvoices());
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {

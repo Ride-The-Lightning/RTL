@@ -50,7 +50,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.dataService.getTransactionsForReportCLT(this.startDate, this.endDate)
+        this.dataService.getTransactionsForReportCLT(Math.round(this.startDate.getTime()/1000), Math.round(this.endDate.getTime()/1000))
         .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
           this.payments = res.payments;
           this.invoices = res.invoices;
@@ -87,9 +87,9 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.transactionFilterValue = event.series.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
-      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -140,7 +140,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   prepareTableData() {
     return this.transactionsReportData.reduce((acc, curr) => {
-      if (curr.series[0].value > 0 || curr.series[1].value >0) {
+      if (curr.series[0].extra.total > 0 || curr.series[1].extra.total > 0) {
         return acc.concat({date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
       }
       return acc;

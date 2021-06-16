@@ -106,19 +106,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       // FOR MPP TESTING START
       // if(this.paymentJSONArr.length > 0) { 
       //   this.paymentJSONArr[3].parts.push({
-      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075, timestampStr: "02/AUG/2020 17:37"
+      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
       //   });
       //   this.paymentJSONArr[3].parts.push({
-      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075, timestampStr: "02/AUG/2020 17:36"
+      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075, timestampStr: "02/AUG/2020 17:38"
+      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075, timestampStr: "02/AUG/2020 17:34"
+      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075, timestampStr: "02/AUG/2020 17:35"
+      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
       //   });
       // }
       // this.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
@@ -163,7 +163,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       }
     }
     this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
-      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
       return newRowData.includes(fltr);   
     };
     this.payments.paginator = this.paginator;

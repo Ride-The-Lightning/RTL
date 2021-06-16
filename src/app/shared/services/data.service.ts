@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject, throwError, of, forkJoin } from 'rxjs';
+import { Subject, throwError, of } from 'rxjs';
 import { map, takeUntil, catchError, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
 
-import { ListInvoices, ListPayments, SwitchReq } from '../models/lndModels';
+import { ListInvoices, SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -212,23 +212,10 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getTransactionsForReportCLT(startDate: Date, endDate: Date) {
+  getTransactionsForReportCLT(startDate: number, endDate: number) {
     return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
     .pipe(takeUntil(this.unSubs[7]),
     withLatestFrom('cl'),
-    mergeMap(([res, storeData]: [any, any]) => {
-      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
-    }),
-    catchError(err => {
-      this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    }));
-  }
-
-  getTransactionsForReportECL(startDate: Date, endDate: Date) {
-    return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[8]),
-    withLatestFrom('ecl'),
     mergeMap(([res, storeData]: [any, any]) => {
       return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
     }),

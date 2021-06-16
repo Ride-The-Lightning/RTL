@@ -103,9 +103,9 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.eventFilterValue = event.name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
-      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -127,7 +127,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
+        let dateNumber = Math.floor((+event.received_time - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
