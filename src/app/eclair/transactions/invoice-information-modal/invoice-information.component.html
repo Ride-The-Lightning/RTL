@@ -1,6 +1,7 @@
 <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+  <div fxFlex="35" [fxLayoutAlign]="invoice.serialized && invoice.serialized !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+    <qrcode *ngIf="invoice.serialized && invoice.serialized !== ''" [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <span *ngIf="!invoice.serialized || invoice.serialized === ''" class="font-size-300">N/A</span>
   </div>
   <div fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -12,9 +13,11 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
-        <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+        <div fxFlex="30" [fxLayoutAlign]="invoice.serialized && invoice.serialized !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qrcode *ngIf="invoice.serialized && invoice.serialized !== ''" [qrdata]="invoice.serialized" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+          <span *ngIf="!invoice.serialized || invoice.serialized === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
         <div fxLayout="row">
           <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Amount Requested</h4>
@@ -50,7 +53,7 @@
         <div fxLayout="row">
           <div fxFlex="100">
             <h4 fxLayoutAlign="start" class="font-bold-500">Invoice</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{invoice.serialized}}</span>
+            <span class="overflow-wrap foreground-secondary-text">{{invoice.serialized || 'N/A'}}</span>
           </div>
         </div>
         <div *ngIf="showAdvanced">
@@ -86,7 +89,8 @@
             <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
             <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
           </button>
-          <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.serialized" (copied)="onCopyPayment($event)">Copy Invoice</button>
+          <button *ngIf="invoice.serialized && invoice.serialized !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.serialized" (copied)="onCopyPayment($event)">Copy Invoice</button>
+          <button *ngIf="!invoice.serialized || invoice.serialized === ''" autoFocus mat-flat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
         </div>
       </div>
       </mat-card-content>
