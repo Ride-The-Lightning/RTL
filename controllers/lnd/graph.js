@@ -98,9 +98,6 @@ exports.getGraphNode = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     }
-    if (body) {
-      body.node.last_update_str =  (!body.node.last_update) ? '' : common.convertTimestampToDate(body.node.last_update);
-    }
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -130,9 +127,6 @@ exports.getGraphEdge = (req, res, next) => {
         message: "Fetching Edge Info Failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
-    }
-    if (body) {
-      body.last_update_str =  (!body.last_update) ? '' : common.convertTimestampToDate(body.last_update);
     }
     res.status(200).json(body);
   })
@@ -224,9 +218,6 @@ exports.getRemoteFeePolicy = (req, res, next) => {
         message: "Fetching Edge Info Failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
-    }
-    if (body) {
-      body.last_update_str =  (!body.last_update) ? '' : common.convertTimestampToDate(body.last_update);
     }
     remoteNodeFee = {};
     if(body.node1_pub === req.params.localPubkey){

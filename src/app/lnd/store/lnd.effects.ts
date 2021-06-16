@@ -201,7 +201,6 @@ export class LNDEffects implements OnDestroy {
             postRes.cltv_expiry = '144';
             postRes.private = action.payload.private;
             postRes.creation_date = Math.round(new Date().getTime() / 1000).toString();
-            postRes.creation_date_str = this.commonService.convertTimestampToDate(+postRes.creation_date);
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: RTLActions.OPEN_ALERT,
@@ -636,9 +635,6 @@ export class LNDEffects implements OnDestroy {
       return this.httpClient.get<ListPayments>(this.CHILD_API_URL + environment.PAYMENTS_API + '?max_payments=' + max_payments + '&index_offset=' + index_offset + '&reversed=' + reversed)
       .pipe(map((res: ListPayments) => {
         this.logger.info(res);
-        // if (action.payload.reversed && !action.payload.total_payments) {
-        //   this.store.dispatch(new LNDActions.SetTotalPayments(+res.total_payments));
-        // }
         return {
           type: LNDActions.SET_PAYMENTS_LND,
           payload: res
@@ -646,26 +642,6 @@ export class LNDEffects implements OnDestroy {
       }),
       catchError((err: any) => {
         this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
-        return of({type: RTLActions.VOID});
-      }));
-    }))
-  );
-
-  totalPaymentsFetch = createEffect(() =>  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
-    this.actions$.pipe(
-    ofType(LNDActions.FETCH_TOTAL_PAYMENTS_LND),
-    mergeMap((action: LNDActions.FetchTotalPayments) => {
-      this.store.dispatch(new LNDActions.ClearEffectError('FetchTotalPayments'));
-      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/total')
-      .pipe(map((totalNumPayments: number) => {
-        this.logger.info(totalNumPayments);
-        return {
-          type: LNDActions.SET_TOTAL_PAYMENTS_LND,
-          payload: totalNumPayments
-        };
-      }),
-      catchError((err: any) => {
-        this.handleErrorWithoutAlert('FetchTotalPayments', 'Fetching Total Number of Payments Failed.', err);
         return of({type: RTLActions.VOID});
       }));
     }))
@@ -710,7 +686,6 @@ export class LNDEffects implements OnDestroy {
             } else {
               this.store.dispatch(new LNDActions.FetchAllChannels());
               this.store.dispatch(new LNDActions.FetchBalance('channels'));
-              this.store.dispatch(new LNDActions.FetchTotalPayments()); // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
               this.store.dispatch(new LNDActions.FetchPayments({ max_payments: PAGE_SIZE, reversed: true }));
               if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
@@ -1125,6 +1100,29 @@ export class LNDEffects implements OnDestroy {
     { dispatch: false }
   );
 
+  allLightningTransactionsFetch = createEffect(() => 
+    this.actions$.pipe(
+    ofType(LNDActions.GET_ALL_LIGHTNING_TRANSATIONS_LND),
+    mergeMap((action: LNDActions.GetAllLightningTransactions) => {
+      this.store.dispatch(new LNDActions.ClearEffectError('FetchLightningTransactions'));
+      return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/alltransactions')
+        .pipe(
+          map((respose: any) => {
+            this.logger.info(respose);
+            return {
+              type: LNDActions.SET_ALL_LIGHTNING_TRANSATIONS_LND,
+              payload: respose
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchLightningTransactions', 'Fetching All Lightning Transaction Failed.', err);
+            return of({type: RTLActions.VOID});
+          })
+        );
+      }
+    ))
+  );
+
   initializeRemainingData(info: any, landingPage: string) {
     this.sessionService.setItem('lndUnlocked', 'true');
     const node_data = {
@@ -1142,10 +1140,10 @@ export class LNDEffects implements OnDestroy {
     this.store.dispatch(new LNDActions.FetchPeers());
     this.store.dispatch(new LNDActions.FetchBalance('channels'));
     this.store.dispatch(new LNDActions.FetchNetwork());
+    this.store.dispatch(new LNDActions.GetAllLightningTransactions());
     this.store.dispatch(new LNDActions.FetchAllChannels());
     this.store.dispatch(new LNDActions.FetchPendingChannels());
     this.store.dispatch(new LNDActions.FetchClosedChannels());
-    this.store.dispatch(new LNDActions.FetchTotalPayments());  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
     this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new LNDActions.FetchPayments({max_payments: 10, reversed: true }));
     this.store.dispatch(new LNDActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events

@@ -20,7 +20,7 @@ import * as LNDActions from '../../lnd/store/lnd.actions';
 export class DataService implements OnDestroy {
   private lnImplementation = 'LND';
   private childAPIUrl = API_URL;
-  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
 
@@ -208,26 +208,6 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('ERROR', 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    }));
-  }
-
-  getTransactionsForReport(startDate: Date, endDate: Date) {
-    // getData(): Observable<any> {
-    //   const response1 = this.http.get(apiUrl + '44418/');
-    //   const response2 = this.http.get(apiUrl + '2459115/');
-    //   const response3 = this.http.get(apiUrl + '28743736/');
-    //   const response4 = this.http.get(apiUrl + '1940345/');
-    //   return forkJoin([response1, response2, response3, response4]);
-    // }
-    return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[6]),
-    withLatestFrom(this.store.select(this.lnImplementation === 'CLT' ? 'cl' : (this.lnImplementation === 'ECL' ? 'ecl' : 'lnd'))),
-    mergeMap(([res, storeData]: [any, any]) => {
-      return of({payments: storeData.payments.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
-    }),
-    catchError(err => {
-      this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
       return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
     }));
   }

@@ -8,9 +8,7 @@ getReceivedPaymentInfo = (invoice) => {
   logger.info({fileName: 'Invoice', msg: 'Invoice Received: ' + JSON.stringify(invoice)});
   let idx = -1;
   return new Promise(function(resolve, reject) {
-    invoice.timestampStr =  (!invoice.timestamp) ? '' : common.convertTimestampToDate(invoice.timestamp);
     invoice.expiresAt =  (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
-    invoice.expiresAtStr =  (!invoice.expiresAt) ? '' : common.convertTimestampToDate(invoice.expiresAt);
     if (invoice.amount) { invoice.amount = Math.round(invoice.amount/1000); }
     idx = pendingInvoices.findIndex(pendingInvoice => invoice.serialized === pendingInvoice.serialized);
     if (idx < 0) {
@@ -21,7 +19,6 @@ getReceivedPaymentInfo = (invoice) => {
         if (response.status && response.status.type === 'received') {
           invoice.amountSettled = response.status.amount ? Math.round(response.status.amount/1000) : 0;
           invoice.receivedAt = response.status.receivedAt ? Math.round(response.status.receivedAt / 1000) : 0;
-          invoice.receivedAtStr = response.status.receivedAt ? common.convertTimestampToDate(invoice.receivedAt) : '';
         }
         resolve(invoice);
       }).catch(err => {

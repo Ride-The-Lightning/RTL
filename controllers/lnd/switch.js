@@ -35,9 +35,6 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
     if (!body.last_offset_index || body.last_offset_index < offset + num_max_events) {
       responseData.last_offset_index = body.last_offset_index ? body.last_offset_index : 0
       if (responseData.forwarding_events) { 
-        responseData.forwarding_events.forEach(event => {
-          event.timestamp_str =  !event.timestamp ? '' : common.convertTimestampToDate(event.timestamp);
-        });
         responseData.forwarding_events = common.sortDescByKey(responseData.forwarding_events, 'timestamp');
       }
       callback(responseData);

@@ -94,8 +94,6 @@ export interface Invoice {
   paid_at?: number;
   description?: string;
   expires_at?: number;
-  paid_at_str?: string;
-  expires_at_str?: string;
   warning_capacity?: string;
 }
 
@@ -131,7 +129,6 @@ export interface Payment {
   amount_sent_msat?: string;
   bolt11?: string;
   created_at?: number;
-  created_at_str?: string;
   destination?: string;
   id?: number;
   msatoshi?: number;
@@ -150,7 +147,6 @@ export interface MPP {
   amount_sent_msat?: string;
   bolt11?: string;
   created_at?: number;
-  created_at_str?: string;
   destination?: string;
   id?: number;
   msatoshi?: number;
@@ -172,8 +168,6 @@ export interface PayRequest {
   min_final_cltv_expiry?: number;
   payment_hash?: string;
   signature?: string;
-  created_at_str?: string;
-  expire_at_str?: string;
 }
 
 export interface ForwardingEvent {
@@ -190,9 +184,7 @@ export interface ForwardingEvent {
   fee_msat?: string;
   status?: string;
   received_time?: number;
-  received_time_str?: string;
   resolved_time?: number;
-  resolved_time_str?: string;
 }
 
 export interface ForwardingHistoryRes {
@@ -243,7 +235,6 @@ export interface ChannelEdge {
   htlc_maximum_msat?: string;
   htlc_minimum_msat?: string;
   last_update?: number;
-  last_update_str?: string;
   message_flags?: number;
   public?: boolean;
   satoshis?: number;
@@ -256,7 +247,6 @@ export interface LookupNode {
   alias?: string;
   color?: string;
   last_timestamp?: number;
-  last_timestamp_str?: string;
   features?: string;
   addresses?: Address[];
 }

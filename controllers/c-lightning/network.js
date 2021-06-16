@@ -38,9 +38,6 @@ exports.listNode = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/network/listNode/' + req.params.id;
   request(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
-    body.forEach(node => {
-      node.last_timestamp_str =  (node.last_timestamp) ? common.convertTimestampToDate(node.last_timestamp) : '';
-    });
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -64,8 +61,6 @@ exports.listChannel = (req, res, next) => {
   options.url = common.getSelLNServerUrl() + '/v1/network/listChannel/' + req.params.channelShortId;
   request(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Channel Lookup: ' + JSON.stringify(body)});
-    body[0].last_update_str =  (body.length > 0 && body[0].last_update) ? common.convertTimestampToDate(body[0].last_update) : '';
-    body[1].last_update_str =  (body.length > 1 && body[1].last_update) ? common.convertTimestampToDate(body[1].last_update) : '';
     res.status(200).json(body);
   })
   .catch(errRes => {

@@ -500,9 +500,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
             postRes.timestamp = new Date().getTime() / 1000;
-            postRes.timestampStr = this.commonService.convertTimestampToDate(+postRes.timestamp);
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
-            postRes.expiresAtStr = this.commonService.convertTimestampToDate(+postRes.expiresAt);
             postRes.description = action.payload.description;
             postRes.status = 'unpaid';
             this.store.dispatch(new RTLActions.OpenAlert({ data: { 
@@ -511,7 +509,8 @@ export class ECLEffects implements OnDestroy {
                 component: ECLInvoiceInformationComponent
             }}));
             return {
-              type: ECLActions.FETCH_INVOICES_ECL
+              type: ECLActions.ADD_INVOICE_ECL,
+              payload: postRes
             };
           }),
           catchError((err: any) => {
@@ -589,6 +588,7 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new ECLActions.FetchInvoices());
     this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
     this.store.dispatch(new ECLActions.FetchFees());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());

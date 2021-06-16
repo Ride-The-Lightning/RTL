@@ -93,9 +93,9 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.eventFilterValue = event.name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
-      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -117,7 +117,7 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
-        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
+        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;

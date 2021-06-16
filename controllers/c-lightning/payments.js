@@ -39,7 +39,7 @@ function groupBy(payments) {
       let paySummary = curr.reduce(summaryReducer, {msatoshi: 0, msatoshi_sent: 0, status: (curr[0] && curr[0].status) ? curr[0].status : 'failed'});
       temp = {is_group: true, is_expanded: false, total_parts: (curr.length ? curr.length : 0), status: paySummary.status, payment_hash: curr[0].payment_hash, 
       destination: curr[0].destination, msatoshi: paySummary.msatoshi, msatoshi_sent: paySummary.msatoshi_sent, created_at: curr[0].created_at, 
-      created_at_str: curr[0].created_at_str, mpps: curr};
+      mpps: curr};
     }
     return acc.concat(temp);
   }, []);
@@ -58,9 +58,6 @@ exports.listPayments = (req, res, next) => {
       });
     } else {
       if ( body &&  body.payments && body.payments.length > 0) {
-        body.payments.forEach(payment => {
-          payment.created_at_str =  (!payment.created_at) ? '' : common.convertTimestampToDate(payment.created_at);
-        });        
         body.payments = common.sortDescByKey(body.payments, 'created_at');
       }
       res.status(200).json(groupBy(body.payments));
@@ -94,8 +91,6 @@ exports.decodePayment = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      body.created_at_str =  (!body.created_at) ? '' : common.convertTimestampToDate(body.created_at);
-      body.expire_at_str =  (!body.created_at || !body.expiry) ? '' : common.convertTimestampToDate(body.created_at + body.expiry);
       res.status(200).json(body);
     }
   })

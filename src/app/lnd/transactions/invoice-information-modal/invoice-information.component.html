@@ -1,6 +1,7 @@
-<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="space-between stretch">
-  <div fxFlex="35" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
-    <qrcode [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between stretch">
+  <div fxFlex="35" [fxLayoutAlign]="invoice.payment_request && invoice.payment_request !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap-large" [ngClass]="{'display-none': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM}">
+    <qrcode *ngIf="invoice.payment_request && invoice.payment_request !== ''" [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+    <span *ngIf="!invoice.payment_request || invoice.payment_request === ''" class="font-size-300">N/A</span>
   </div>
   <div fxLayout="column" fxFlex="65">
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center" class="modal-info-header">
@@ -12,9 +13,11 @@
     </mat-card-header>
     <mat-card-content class="padding-gap-x-large" [ngClass]="{'xs-scroll-y': screenSize === screenSizeEnum.XS}">
       <div fxLayout="column">
-        <div fxFlex="30" fxLayoutAlign="center start" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
-          <qrcode [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+        <div fxFlex="30" [fxLayoutAlign]="invoice.payment_request && invoice.payment_request !== '' ? 'center start' : 'center center'" class="modal-qr-code-container padding-gap" [ngClass]="{'display-none': screenSize !== screenSizeEnum.XS && screenSize !== screenSizeEnum.SM}">
+          <qrcode *ngIf="invoice.payment_request && invoice.payment_request !== ''" [qrdata]="invoice.payment_request" [margin]="2" [width]="qrWidth" [errorCorrectionLevel]="'L'" [allowEmptyString]="true"></qrcode>
+          <span *ngIf="!invoice.payment_request || invoice.payment_request === ''" class="font-size-120">QR Code Not Applicable</span>
         </div>
+        <mat-divider *ngIf="screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM" [inset]="true" class="my-1"></mat-divider>
         <div [perfectScrollbar] [ngClass]="{'h-46': invoice.htlcs && invoice.htlcs.length > 0 && showAdvanced}" #scrollContainer>
           <div fxLayout="row">
             <div fxFlex="50">
@@ -30,18 +33,18 @@
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Created</h4>
-              <span class="foreground-secondary-text">{{invoice.creation_date_str}}</span>
+              <span class="foreground-secondary-text">{{invoice.creation_date * 1000 | date:'dd/MMM/YYYY HH:mm'}}</span>
             </div>
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Date Settled</h4>
-              <span class="foreground-secondary-text">{{invoice.settle_date_str || '-'}}</span>
+              <span class="foreground-secondary-text">{{((invoice.settle_date * 1000) | date:'dd/MMM/YYYY HH:mm') || '-'}}</span>
             </div>
           </div>
           <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="100">
               <h4 fxLayoutAlign="start" class="font-bold-500">Payment Request</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_request}}</span>
+              <span class="overflow-wrap foreground-secondary-text">{{invoice.payment_request || 'N/A'}}</span>
             </div>
           </div>
           <div *ngIf="showAdvanced">
@@ -111,7 +114,8 @@
         <p *ngIf="!showAdvanced; else hideAdvancedText">Show Advanced</p>
         <ng-template #hideAdvancedText><p>Hide Advanced</p></ng-template>
       </button>
-      <button autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
+      <button *ngIf="invoice.payment_request && invoice.payment_request !== ''" autoFocus mat-flat-button color="primary" tabindex="2" type="submit" rtlClipboard [payload]="invoice.payment_request" (copied)="onCopyPayment($event)">{{screenSize === screenSizeEnum.XS ? 'Copy Payment' : 'Copy Payment Request'}}</button>
+      <button *ngIf="!invoice.payment_request || invoice.payment_request === ''" autoFocus mat-flat-button color="primary" tabindex="2" type="button" (click)="onClose()">OK</button>
     </div>
   </div>
 </div>

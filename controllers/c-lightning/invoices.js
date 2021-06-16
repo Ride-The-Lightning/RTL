@@ -48,10 +48,6 @@ exports.listInvoices = (req, res, next) => {
       });
     } else {
       if ( body.invoices && body.invoices.length > 0) {
-        body.invoices.forEach(invoice => {
-          invoice.paid_at_str =  (!invoice.paid_at) ? '' : common.convertTimestampToDate(invoice.paid_at);
-          invoice.expires_at_str =  (!invoice.expires_at) ? '' : common.convertTimestampToDate(invoice.expires_at);
-        });
         body.invoices = common.sortDescByKey(body.invoices, 'expires_at');
       }
       logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});

@@ -161,17 +161,6 @@ common.convertToBTC = (num) => {
   return (num / 100000000).toFixed(6);
 };
 
-common.convertTimestampToDate = (num) => {
-  let myDate = new Date(+num * 1000);
-  let days = myDate.getDate().toString();
-  days = +days < 10 ? '0' + days : days;
-  let hours = myDate.getHours().toString();
-  hours = +hours < 10 ? '0' + hours : hours;
-  let minutes = myDate.getMinutes().toString();
-  minutes = +minutes < 10 ? '0' + minutes : minutes;
-  return days + "/" + MONTHS[myDate.getMonth()].name + "/" + myDate.getFullYear() + " " + hours + ":" + minutes;
-};
-
 common.convertTimestampToTime = (num) => {
   let myDate = new Date(+num * 1000);
   let days = myDate.getDate().toString();
@@ -186,6 +175,9 @@ common.convertTimestampToTime = (num) => {
 };
 
 common.sortAscByKey = (array, key) => {
+  console.warn('SORT ASC');
+  console.warn(key);
+  console.warn(array[0]);
   return array.sort(function (a, b) {
     var x = +a[key]; var y = +b[key];
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -193,6 +185,9 @@ common.sortAscByKey = (array, key) => {
 }
 
 common.sortDescByKey = (array, key) => {
+  console.warn('SORT DESC');
+  console.warn(key);
+  console.warn(array[0]);
   const temp = array.sort(function (a, b) {
     var x = +a[key] ? +a[key] : 0; var y = +b[key] ? +b[key] : 0;
     return (x > y) ? -1 : ((x < y) ? 1 : 0);
@@ -201,6 +196,9 @@ common.sortDescByKey = (array, key) => {
 }
 
 common.sortAscByStrKey = (array, key) => {
+  console.warn('SORT ASC STR');
+  console.warn(key);
+  console.warn(array[0]);
   return array.sort(function (a, b) {
     var x = a[key] ? a[key].toUpperCase() : ''; var y = b[key] ? b[key].toUpperCase() : '';
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -208,6 +206,9 @@ common.sortAscByStrKey = (array, key) => {
 }
 
 common.sortDescByStrKey = (array, key) => {
+  console.warn('SORT DESC STR');
+  console.warn(key);
+  console.warn(array[0]);
   const temp = array.sort(function (a, b) {
     var x = a[key] ? a[key].toUpperCase() : ''; var y = b[key] ? b[key].toUpperCase() : '';
     return (x > y) ? -1 : ((x < y) ? 1 : 0);

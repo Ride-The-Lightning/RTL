@@ -164,7 +164,6 @@ export interface ChannelEdge {
   channel_id?: string;
   chan_point?: string;
   last_update?: number;
-  last_update_str?: string;
   node1_pub?: string;
   node2_pub?: string;
   capacity?: string;
@@ -259,8 +258,6 @@ export interface PaymentHTLC {
   resolve_time_ns?: string;
   failure?: any;
   preimage?: string;
-  attempt_time_str?: string;
-  resolve_time_str?: string;
 }
 
 export interface InvoiceHTLC {
@@ -269,9 +266,7 @@ export interface InvoiceHTLC {
   amt_msat?: string;
   accept_height?: number;
   accept_time?: string;
-  accept_time_str?: string;
   resolve_time?: string;
-  resolve_time_str?: string;
   expiry_height?: number;
   state?: string;
   custom_records?: any;
@@ -286,10 +281,8 @@ export interface Invoice {
   btc_value?: string;
   value_msat?: string;
   settled?: boolean;
-  creation_date?: string;
-  creation_date_str?: string;
-  settle_date?: string;
-  settle_date_str?: string;
+  creation_date?: number;
+  settle_date?: number;
   payment_request?: string;
   description_hash?: string;
   expiry?: string;
@@ -317,7 +310,6 @@ export interface ListInvoices {
 
 export interface LightningNode {
   last_update?: number;
-  last_update_str?: string;
   pub_key?: string;
   alias?: string;
   addresses?: NodeAddress[];
@@ -353,7 +345,6 @@ export interface ListPayments {
 
 export interface Payment {
   creation_date?: number;
-  creation_date_str?: string;
   payment_hash?: string;
   payment_request?: string;
   status?: string;
@@ -375,7 +366,6 @@ export interface PayRequest {
   payment_hash?: string;
   route_hints?: RouteHint[];
   timestamp?: number;
-  timestamp_str?: string;
   fallback_addr?: string;
   cltv_expiry?: number;
   description_hash?: string;
@@ -454,8 +444,7 @@ export interface ChannelsTransaction {
 
 export interface Transaction {
   dest_addresses?: string[];
-  time_stamp?: string;
-  time_stamp_str?: string;
+  time_stamp?: number;
   num_confirmations?: number;
   total_fees?: string;
   block_hash?: string;
@@ -483,8 +472,7 @@ export interface SwitchReq {
 }
 
 export interface ForwardingEvent {
-  timestamp?: string;
-  timestamp_str?: string;
+  timestamp?: number;
   chan_id_out?: string;
   alias_out?: string;
   amt_out?: string;

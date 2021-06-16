@@ -18,7 +18,6 @@ exports.decodePayment = (req, res, next) => {
       });
     } else {
       body.btc_num_satoshis = (!body.num_satoshis) ? 0 : common.convertToBTC(body.num_satoshis);
-      body.timestamp_str =  (!body.timestamp) ? '' : common.convertTimestampToDate(body.timestamp);
       res.status(200).json(body);
     }
   })

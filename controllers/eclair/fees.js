@@ -39,10 +39,8 @@ arrangePayments = (body) => {
     if (sentEle.recipientAmount) { sentEle.recipientAmount = Math.round(sentEle.recipientAmount/1000); }
     if (sentEle.parts && sentEle.parts.length > 0) { 
       sentEle.firstPartTimestamp = sentEle.parts[0].timestamp;
-      sentEle.firstPartTimestampStr =  (!sentEle.firstPartTimestamp) ? '' : common.convertTimestampToDate(Math.round(sentEle.firstPartTimestamp / 1000));
     }
     sentEle.parts.forEach(part => {
-      part.timestampStr =  (!part.timestamp) ? '' : common.convertTimestampToDate(Math.round(part.timestamp / 1000));
       if (part.amount) { part.amount = Math.round(part.amount/1000); }
       if (part.feesPaid) { part.feesPaid = Math.round(part.feesPaid/1000); }
     });
@@ -50,16 +48,13 @@ arrangePayments = (body) => {
   payments.received.forEach(receivedEle => {
     if (receivedEle.parts && receivedEle.parts.length > 0) { 
       receivedEle.firstPartTimestamp = receivedEle.parts[0].timestamp;
-      receivedEle.firstPartTimestampStr =  (!receivedEle.firstPartTimestamp) ? '' : common.convertTimestampToDate(Math.round(receivedEle.firstPartTimestamp / 1000));
     }
     receivedEle.parts.forEach(part => {
-      part.timestampStr =  (!part.timestamp) ? '' : common.convertTimestampToDate(Math.round(part.timestamp / 1000));
       if (part.amount) { part.amount = Math.round(part.amount/1000); }
     });      
   });
   payments.relayed.forEach(relayedEle => {
     logger.info({fileName: 'Fees', msg: 'Payment Relayed Transaction: ' + JSON.stringify(relayedEle)});
-    relayedEle.timestampStr =  (!relayedEle.timestamp) ? '' : common.convertTimestampToDate(Math.round(relayedEle.timestamp / 1000));
     if (relayedEle.amountIn) { relayedEle.amountIn = Math.round(relayedEle.amountIn/1000); }
     if (relayedEle.amountOut) { relayedEle.amountOut = Math.round(relayedEle.amountOut/1000); }
   });

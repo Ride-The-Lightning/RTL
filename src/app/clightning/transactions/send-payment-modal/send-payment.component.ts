@@ -84,7 +84,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentType === 'keysend') {
       this.keysendPayment();
     } else {
-      if (this.paymentDecoded.created_at_str) {
+      if (this.paymentDecoded.created_at) {
         this.sendPayment();
       } else {
         this.paymentAmount = null;
@@ -95,7 +95,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
         this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
           this.paymentDecoded = decodedPayment;
-          if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {
+          if (this.paymentDecoded.created_at && !this.paymentDecoded.msatoshi) {
             this.paymentDecoded.msatoshi = 0;
             this.zeroAmtInvoice = true;
             this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
@@ -142,7 +142,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.created_at_str && !this.paymentDecoded.msatoshi) {
+        if (this.paymentDecoded.created_at && !this.paymentDecoded.msatoshi) {
           this.paymentDecoded.msatoshi = 0;
           this.zeroAmtInvoice = true;
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;

@@ -52,9 +52,9 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.FETCH_INVOICES_ECL))
-    .subscribe((action: ECLActions.EffectError | ECLActions.FetchInvoices) => {
-      if (action.type === ECLActions.FETCH_INVOICES_ECL) {
+    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.ADD_INVOICE_ECL))
+    .subscribe((action: ECLActions.EffectError | ECLActions.AddInvoice) => {
+      if (action.type === ECLActions.ADD_INVOICE_ECL) {
         this.dialogRef.close();
       }    
       if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'CreateInvoice') {

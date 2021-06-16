@@ -53,14 +53,8 @@ exports.listInvoices = (req, res, next) => {
           invoice.r_preimage = invoice.r_preimage ? Buffer.from(invoice.r_preimage, 'base64').toString('hex') : '';
           invoice.r_hash = invoice.r_hash ? Buffer.from(invoice.r_hash, 'base64').toString('hex') : '';
           invoice.description_hash = invoice.description_hash ? Buffer.from(invoice.description_hash, 'base64').toString('hex') : null;
-          invoice.creation_date_str =  (!invoice.creation_date) ? '' : common.convertTimestampToDate(invoice.creation_date);
-          invoice.settle_date_str =  (!invoice.settle_date || invoice.settle_date === '0') ? '' : common.convertTimestampToDate(invoice.settle_date);
           invoice.btc_value = (!invoice.value) ? 0 : common.convertToBTC(invoice.value);
           invoice.btc_amt_paid_sat =  (!invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
-          invoice.htlcs.forEach(htlc => {
-            htlc.accept_time_str =  (!htlc.accept_time) ? '' : common.convertTimestampToDate(htlc.accept_time);
-            htlc.resolve_time_str =  (!htlc.resolve_time) ? '' : common.convertTimestampToDate(htlc.resolve_time);
-          });
         });
         body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
       }

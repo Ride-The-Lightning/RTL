@@ -17,17 +17,10 @@ exports.getPayments = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      if ( body.payments && body.payments.length > 0) {
-        body.payments.forEach(payment => {
-          payment.creation_date_str =  (!payment.creation_date) ? '' : common.convertTimestampToDate(payment.creation_date);
-          payment.htlcs.forEach(htlc => {
-            htlc.attempt_time_str =  (!htlc.attempt_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.attempt_time_ns/1000000000));
-            htlc.resolve_time_str =  (!htlc.resolve_time_ns) ? '' : common.convertTimestampToDate(Math.round(htlc.resolve_time_ns/1000000000));
-          });
-        });
+      if (body.payments && body.payments.length > 0) {
         body.payments = common.sortDescByKey(body.payments, 'creation_date');
       }
-      logger.info({fileName: 'Payments', msg: 'Payments After Dates: ' + JSON.stringify(body)});
+      logger.info({fileName: 'Payments', msg: 'Payments After Sort: ' + JSON.stringify(body)});
       res.status(200).json(body);
     }
   })
@@ -47,13 +40,16 @@ exports.getPayments = (req, res, next) => {
   });
 };
 
-exports.getTotalPayments = (req, res, next) => {  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
-  options = common.getOptions();
-  options.url = common.getSelLNServerUrl() + '/v1/payments';
-  request(options).then((body) => {
-    res.status(200).json((body && body.payments && body.payments.length ? body.payments.length : 0));
-  })
-  .catch(errRes => {
+exports.getAllLightningTransactions = (req, res, next) => {
+  const options1 = JSON.parse(JSON.stringify(common.getOptions()))
+  const options2 = JSON.parse(JSON.stringify(common.getOptions()))
+  options1.url = common.getSelLNServerUrl() + '/v1/payments?max_payments=1000000&index_offset=0&reversed=true';
+  options2.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=1000000&index_offset=0&reversed=true';
+  logger.info({fileName: 'Payments', msg: 'All Payments Options: ' + JSON.stringify(options1)});
+  logger.info({fileName: 'Payments', msg: 'All Invoices Options: ' + JSON.stringify(options2)});
+  Promise.all([request(options1), request(options2)]).then(function(values) {
+    res.status(200).json({paymentsAll: values[0], invoicesAll: values[1]});
+  }).catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
@@ -61,10 +57,10 @@ exports.getTotalPayments = (req, res, next) => {  // Delete after LND fixes http
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Payments', lineNum: 64, msg: 'Total Payments Error: ' + JSON.stringify(err)});
+    logger.error({fileName: 'Payments', lineNum: 84, msg: 'All Lightning Transactions Error: ' + JSON.stringify(err)});
     return res.status(500).json({
-      message: "Total Payments Failed!",
-      error: err.error
+      message: "All Lightning Transactions Failed!",
+      error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
     });
   });
 };

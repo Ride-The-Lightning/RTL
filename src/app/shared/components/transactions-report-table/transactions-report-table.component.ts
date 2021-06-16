@@ -86,7 +86,10 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
     this.transactions = trans ? new MatTableDataSource([...trans]) : new MatTableDataSource([]);
     this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.transactions.sort = this.sort;
-    this.transactions.filterPredicate = (tran: any, fltr: string) => JSON.stringify(tran).toLowerCase().includes(fltr);
+    this.transactions.filterPredicate = (rowData: any, fltr: string) => {
+      const newRowData = ((rowData.date) ? this.datePipe.transform(new Date(rowData.date), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.transactions.paginator = this.paginator;
 }
 

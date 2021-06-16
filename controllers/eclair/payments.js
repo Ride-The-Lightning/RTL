@@ -22,7 +22,6 @@ exports.decodePayment = (req, res, next) => {
   options.form = { invoice: req.params.invoice };
   request.post(options).then((body) => {
     logger.info({fileName: 'Payments', msg: 'Payment Decode Received: ' + JSON.stringify(body)});
-    body.timestampStr =  (!body.timestamp) ? '' : common.convertTimestampToDate(body.timestamp);
     if (body.amount) { body.amount = Math.round(body.amount/1000); }
     res.status(200).json(body);
   })
@@ -141,7 +140,6 @@ getSentInfoFromPaymentRequest = (payment) => {
     request.post(options).then((body) => {
       logger.info({fileName: 'Payments', msg: 'Payment Sent Information Received: ' + JSON.stringify(body)});
       body.forEach(sentPayment => {
-        sentPayment.createdAtStr =  (!sentPayment.createdAt) ? '' : common.convertTimestampToDate(sentPayment.createdAt);
         if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount/1000); }
         if (sentPayment.recipientAmount) { sentPayment.recipientAmount = Math.round(sentPayment.recipientAmount/1000); }
       });

@@ -9,9 +9,6 @@ exports.getNodes = (req, res, next) => {
   options.form = { nodeIds: req.params.id };
   request.post(options).then(function (body) {
     logger.info({fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
-    body.forEach(node => {
-      node.timestampStr =  (node.timestamp) ? common.convertTimestampToDate(node.timestamp) : '';
-    });
     res.status(200).json(body);
   })
   .catch(errRes => {

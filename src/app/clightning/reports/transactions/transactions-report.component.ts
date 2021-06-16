@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Payment, Invoice } from '../../../shared/models/clModels';
-import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -41,7 +40,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -49,15 +48,10 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.dataService.getTransactionsForReport(this.startDate, this.endDate)
-        .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-          this.payments = res.payments;
-          this.invoices = res.invoices;
-          this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
-          this.transactionsNonZeroReportData = this.prepareTableData();
-        });
-      }
+      this.payments = rtlStore.payments;
+      this.invoices = rtlStore.invoices.invoices;
+      this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
+      this.transactionsNonZeroReportData = this.prepareTableData();
     });
   }
 
@@ -87,9 +81,9 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.transactionFilterValue = event.series.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
-      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
@@ -140,8 +134,8 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   prepareTableData() {
     return this.transactionsReportData.reduce((acc, curr) => {
-      if (curr.series[0].value > 0 || curr.series[1].value >0) {
-        return acc.concat({date: curr.date, date_str: this.commonService.convertTimestampToDate(curr.date.getTime()/1000), amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
+      if (curr.series[0].extra.total > 0 || curr.series[1].extra.total > 0) {
+        return acc.concat({date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
       }
       return acc;
     }, []);

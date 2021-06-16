@@ -10,9 +10,9 @@
       </div>
     </div>
     <div *ngIf="transactionsNonZeroReportData.length <= 0" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No transactions report for the selected period</div>
-    <div class="mt-1">
+    <div class="mt-1" *ngIf="transactionsNonZeroReportData.length > 0">
       <ngx-charts-bar-vertical-2d
-        *ngIf="transactionsNonZeroReportData.length > 0"
+        *ngIf="transactionsReportData.length > 0 && transactionsNonZeroReportData.length > 0"
         class="two-color"
         [view]="view"
         [results]="transactionsReportData"

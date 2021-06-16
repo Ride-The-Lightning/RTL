@@ -3,8 +3,8 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
+  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
   SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments }
 from '../../shared/models/lndModels';
 
@@ -55,8 +55,6 @@ export const SET_TRANSACTIONS_LND = 'SET_TRANSACTIONS_LND';
 export const FETCH_UTXOS_LND = 'FETCH_UTXOS_LND';
 export const SET_UTXOS_LND = 'SET_UTXOS_LND';
 export const FETCH_PAYMENTS_LND = 'FETCH_PAYMENTS_LND';
-export const FETCH_TOTAL_PAYMENTS_LND = 'FETCH_TOTAL_PAYMENTS_LND';  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
-export const SET_TOTAL_PAYMENTS_LND = 'SET_TOTAL_PAYMENTS_LND';
 export const SET_PAYMENTS_LND = 'SET_PAYMENTS_LND';
 export const SEND_PAYMENT_LND = 'SEND_PAYMENT_LND';
 export const SEND_PAYMENT_STATUS_LND = 'SEND_PAYMENT_STATUS_LND';
@@ -79,6 +77,8 @@ export const GET_FORWARDING_HISTORY_LND = 'GET_FORWARDING_HISTORY_LND';
 export const SET_FORWARDING_HISTORY_LND = 'SET_FORWARDING_HISTORY_LND';
 export const GET_QUERY_ROUTES_LND = 'GET_QUERY_ROUTES_LND';
 export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
+export const GET_ALL_LIGHTNING_TRANSATIONS_LND = 'GET_ALL_LIGHTNING_TRANSATIONS_LND';
+export const SET_ALL_LIGHTNING_TRANSATIONS_LND = 'SET_ALL_LIGHTNING_TRANSATIONS_LND';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_LND;
@@ -311,15 +311,6 @@ export class SetPayments implements Action {
   constructor(public payload: ListPayments) {}
 }
 
-export class FetchTotalPayments implements Action {  // Delete after LND fixes https://github.com/lightningnetwork/lnd/issues/5382
-  readonly type = FETCH_TOTAL_PAYMENTS_LND;
-}
-
-export class SetTotalPayments implements Action {
-  readonly type = SET_TOTAL_PAYMENTS_LND;
-  constructor(public payload: number) {}
-}
-
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_LND;
   constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
@@ -425,6 +416,15 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
+export class GetAllLightningTransactions implements Action {
+  readonly type = GET_ALL_LIGHTNING_TRANSATIONS_LND;
+}
+
+export class SetAllLightningTransactions implements Action {
+  readonly type = SET_ALL_LIGHTNING_TRANSATIONS_LND;
+  constructor(public payload: { paymentsAll: ListPayments, invoicesAll: ListInvoices }) {}
+}
+
 export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
@@ -437,7 +437,8 @@ BackupChannels | VerifyChannels | BackupChannelsRes | VerifyChannelsRes |
 RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsList |
 FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
 FetchInvoices | SetInvoices | SetTotalInvoices |
-FetchPayments | SetPayments | SendPayment | SendPaymentStatus | FetchTotalPayments | SetTotalPayments |
+FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
+GetAllLightningTransactions | SetAllLightningTransactions |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |
