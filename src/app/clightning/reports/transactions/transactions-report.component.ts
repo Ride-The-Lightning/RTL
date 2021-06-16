@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Payment, Invoice } from '../../../shared/models/clModels';
-import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -41,7 +40,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -49,15 +48,10 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.dataService.getTransactionsForReportCLT(Math.round(this.startDate.getTime()/1000), Math.round(this.endDate.getTime()/1000))
-        .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-          this.payments = res.payments;
-          this.invoices = res.invoices;
-          this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
-          this.transactionsNonZeroReportData = this.prepareTableData();
-        });
-      }
+      this.payments = rtlStore.payments;
+      this.invoices = rtlStore.invoices.invoices;
+      this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
+      this.transactionsNonZeroReportData = this.prepareTableData();
     });
   }
 

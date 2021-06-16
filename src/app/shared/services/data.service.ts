@@ -212,19 +212,6 @@ export class DataService implements OnDestroy {
     }));
   }
 
-  getTransactionsForReportCLT(startDate: number, endDate: number) {
-    return this.httpClient.get<ListInvoices>(this.childAPIUrl + environment.INVOICES_API + '?num_max_invoices=100000&index_offset=0&reversed=true')
-    .pipe(takeUntil(this.unSubs[7]),
-    withLatestFrom('cl'),
-    mergeMap(([res, storeData]: [any, any]) => {
-      return of({payments: storeData.payments, invoices: (res.invoices && res.invoices.length && res.invoices.length > 0) ? res.invoices : (res.length && res.length > 0) ? res : []});
-    }),
-    catchError(err => {
-      this.handleErrorWithAlert('ERROR', 'Invoice List Failed', this.childAPIUrl + environment.INVOICES_API, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
-    }));
-  }
-
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.store.dispatch(new RTLActions.CloseSpinner());      
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));

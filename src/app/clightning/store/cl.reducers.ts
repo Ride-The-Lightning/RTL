@@ -19,7 +19,6 @@ export interface CLState {
   payments: Payment[];
   forwardingHistory: ForwardingHistoryRes;
   invoices: ListInvoices;
-  totalInvoices: number;
   utxos: UTXO[];
 }
 
@@ -38,7 +37,6 @@ export const initCLState: CLState = {
   payments: [],
   forwardingHistory: {},
   invoices: { invoices: [] },
-  totalInvoices: -1,
   utxos: []
 }
 
@@ -208,11 +206,6 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       return {
         ...state,
         invoices: action.payload
-      };
-    case CLActions.SET_TOTAL_INVOICES_CL:
-      return {
-        ...state,
-        totalInvoices: action.payload
       };
     case CLActions.SET_UTXOS_CL:
       newAPIStatus = [...state.initialAPIResponseStatus, 'UTXOS'];

@@ -613,8 +613,8 @@ export class CLEffects implements OnDestroy {
             this.store.dispatch(new RTLActions.CloseSpinner());
             this.store.dispatch(new RTLActions.OpenSnackBar('Invoices Deleted Successfully!'));
             return {
-              type: CLActions.FETCH_INVOICES_CL ,
-              payload: { num_max_invoices: 100, reversed: true }
+              type: CLActions.FETCH_INVOICES_CL,
+              payload: { num_max_invoices: 1000000, reversed: true }
             };
           }),
           catchError((err: any) => {
@@ -647,8 +647,8 @@ export class CLEffects implements OnDestroy {
                 component: CLInvoiceInformationComponent
             }}));
             return {
-              type: CLActions.FETCH_INVOICES_CL ,
-              payload: { num_max_invoices: 100, reversed: true }
+              type: CLActions.ADD_INVOICE_CL,
+              payload: postRes
             };
           }),
           catchError((err: any) => {
@@ -663,13 +663,12 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INVOICES_CL),
     mergeMap((action: CLActions.FetchInvoices) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
-      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 100;
+      const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 1000000;
       const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
-      const reversed = (action.payload.reversed) ? action.payload.reversed : false;
+      const reversed = (action.payload.reversed) ? action.payload.reversed : true;
       return this.httpClient.get<ListInvoices>(this.CHILD_API_URL + environment.INVOICES_API + '?num_max_invoices=' + num_max_invoices + '&index_offset=' + index_offset + '&reversed=' + reversed)
         .pipe(map((res: ListInvoices) => {
           this.logger.info(res);
-          this.store.dispatch(new CLActions.SetTotalInvoices(res.invoices ? res.invoices.length : 0));
           return {
             type: CLActions.SET_INVOICES_CL,
             payload: res
@@ -742,7 +741,7 @@ export class CLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 1000000, index_offset: 0, reversed: false}));
+    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 1000000, index_offset: 0, reversed: true}));
     this.store.dispatch(new CLActions.FetchFees());
     this.store.dispatch(new CLActions.FetchChannels());
     this.store.dispatch(new CLActions.FetchBalance());

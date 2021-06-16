@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
-export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
+export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
@@ -54,7 +54,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public private = false;
   public expiryStep = 100;
-  public totalInvoices = 100;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
@@ -89,25 +88,22 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      this.totalInvoices = rtlStore.totalInvoices;
-      this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
-      this.invoices = (this.invoiceJSONArr) ? new MatTableDataSource<Invoice>([...this.invoiceJSONArr]) : new MatTableDataSource([]);
-      this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-      this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
-        const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-        return newRowData.includes(fltr);   
-      };
-      this.invoices.paginator = this.paginator;    
-      setTimeout(() => { this.flgAnimate = false; }, 5000);
-      this.logger.info(this.invoices);
-  
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
+      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+        this.loadInvoicesTable(this.invoiceJSONArr);
       }
+      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
+      }
+      this.logger.info(rtlStore);
     });
+  }
 
+  ngAfterViewInit() {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+      this.loadInvoicesTable(this.invoiceJSONArr);
+    }
   }
 
   openCreateInvoiceModal() {
@@ -184,6 +180,17 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       });
     }
+  }
+
+  loadInvoicesTable(invs: Invoice[]) {
+    this.invoices = (invs) ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource([]);
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.sort = this.sort;
+    this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+      const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
+    this.invoices.paginator = this.paginator;    
   }
 
   onDownloadCSV() {

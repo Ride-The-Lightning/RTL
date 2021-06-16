@@ -53,7 +53,6 @@ export const GET_FORWARDING_HISTORY_CL = 'GET_FORWARDING_HISTORY_CL';
 export const SET_FORWARDING_HISTORY_CL = 'SET_FORWARDING_HISTORY_CL';
 export const FETCH_INVOICES_CL = 'FETCH_INVOICES_CL';
 export const SET_INVOICES_CL = 'SET_INVOICES_CL';
-export const SET_TOTAL_INVOICES_CL = 'SET_TOTAL_INVOICES_CL';
 export const SAVE_NEW_INVOICE_CL = 'SAVE_NEW_INVOICE_CL';
 export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
 export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
@@ -279,11 +278,6 @@ export class SetInvoices implements Action {
   constructor(public payload: ListInvoices) {}
 }
 
-export class SetTotalInvoices implements Action {
-  readonly type = SET_TOTAL_INVOICES_CL;
-  constructor(public payload: number) {}
-}
-
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE_CL;
   constructor(public payload: {amount: number, label: string, description: string, expiry: number, private: boolean}) {}
@@ -328,4 +322,4 @@ FetchPayments | SetPayments | SendPayment | SendPaymentStatus | DecodePayment | 
 GetQueryRoutes | SetQueryRoutes | SetChannelTransaction | SetChannelTransactionRes |
 PeerLookup | ChannelLookup | InvoiceLookup | SetLookup |
 GetForwardingHistory | SetForwardingHistory |
-FetchInvoices | SetInvoices | SetTotalInvoices | SaveNewInvoice | AddInvoice | DeleteExpiredInvoice;
+FetchInvoices | SetInvoices | SaveNewInvoice | AddInvoice | DeleteExpiredInvoice;
