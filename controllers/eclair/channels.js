@@ -64,21 +64,19 @@ simplifyAllChannels = (channels) => {
     });
   });
   channelNodeIds = channelNodeIds.substring(1);
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/nodes';
-    options.form = { nodeIds: channelNodeIds };
-    logger.info({fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
-    return request.post(options).then(function(nodes) {
-      logger.info({fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
-      let foundPeer = {};
-      simplifiedChannels.map(channel => {
-        foundPeer = nodes.find(channelWithAlias => channel.nodeId === channelWithAlias.nodeId);
-        channel.alias = foundPeer ? foundPeer.alias : channel.nodeId.substring(0, 20);
-      });
-      resolve(simplifiedChannels);
-    }).catch(err => {
-      resolve(simplifiedChannels);
+  options.url = common.getSelLNServerUrl() + '/nodes';
+  options.form = { nodeIds: channelNodeIds };
+  logger.info({fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
+  return request.post(options).then(function(nodes) {
+    logger.info({fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
+    let foundPeer = {};
+    simplifiedChannels.map(channel => {
+      foundPeer = nodes.find(channelWithAlias => channel.nodeId === channelWithAlias.nodeId);
+      channel.alias = foundPeer ? foundPeer.alias : channel.nodeId.substring(0, 20);
     });
+    return simplifiedChannels;
+  }).catch(err => {
+    return simplifiedChannels;
   });
 };
 
@@ -97,7 +95,7 @@ exports.getChannels = (req, res, next) => {
     request.post(options).then(function (body) {
       logger.info({fileName: 'Channels', msg: 'All Channels: ' + JSON.stringify(body)});
       if(body && body.length) {
-        simplifyAllChannels(body).then(function(simplifiedChannels) {
+        return simplifyAllChannels(body).then(function(simplifiedChannels) {
           logger.info({fileName: 'Channels', msg: 'Simplified Channels with Alias: ' + JSON.stringify(simplifiedChannels)});
           res.status(200).json(arrangeChannels(simplifiedChannels));
         });

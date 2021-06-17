@@ -4,15 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 getFilteredNodes = (peersNodeIds) => {
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/nodes';
-    options.form = { nodeIds: peersNodeIds };
-    request.post(options).then(function(nodes) {
-      logger.info({fileName: 'Peers', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
-      resolve(nodes);
-    }).catch(err => {
-      resolve([]);  
-    });
+  options.url = common.getSelLNServerUrl() + '/nodes';
+  options.form = { nodeIds: peersNodeIds };
+  return request.post(options).then(function(nodes) {
+    logger.info({fileName: 'Peers', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
+    return nodes;
+  }).catch(err => {
+    return [];  
   });
 }
 
@@ -29,7 +27,7 @@ exports.getPeers = (req, res, next) => {
         let peersNodeIds = '';
         body.forEach(peer => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
         peersNodeIds = peersNodeIds.substring(1);
-        getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
+        return getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
           let foundPeer = {};
           body.map(peer => {
             foundPeer = peersWithAlias.find(peerWithAlias => peer.nodeId === peerWithAlias.nodeId);
@@ -89,7 +87,7 @@ exports.connectPeer = (req, res, next) => {
         let peersNodeIds = '';
         body.forEach(peer => { peersNodeIds = peersNodeIds + ',' + peer.nodeId; });
         peersNodeIds = peersNodeIds.substring(1);
-        getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
+        return getFilteredNodes(peersNodeIds).then(function(peersWithAlias) {
           let foundPeer = {};
           body.map(peer => {
             foundPeer = peersWithAlias.find(peerWithAlias => peer.nodeId === peerWithAlias.nodeId);

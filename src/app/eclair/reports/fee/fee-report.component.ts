@@ -26,7 +26,6 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public eventFilterValue = '';
   public totalFeeSat = null;
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
@@ -73,8 +72,9 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   filterForwardingEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset);
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset);
+    const startDateInSeconds = Math.round(start.getTime()/1000);
+    const endDateInSeconds = Math.round(end.getTime()/1000);
+    this.logger.info('Filtering Forwarding Events Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString() + ' To ' + end.toLocaleString());
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeSat = null;
@@ -86,6 +86,7 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.feeReportData = this.prepareFeeReport(start);
     }
+    this.logger.info('Filtering Forwarding Events Finished at ' + new Date(Date.now()).toLocaleString());
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {
@@ -103,14 +104,15 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
     let feeReport = [];
+    this.logger.info('Fee Report Prepare Starting at ' + new Date(Date.now()).toLocaleString() + ' From ' + start.toLocaleString());
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let monthNumber = new Date(event.timestamp + (this.timezoneOffset*1000)).getMonth();
+        let monthNumber = new Date(event.timestamp).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (event.amountIn - event.amountOut);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
@@ -120,12 +122,13 @@ export class ECLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((Math.floor(event.timestamp/1000) - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((Math.floor(event.timestamp/1000) - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (event.amountIn - event.amountOut);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeSat = (this.totalFeeSat ? this.totalFeeSat : 0) + (event.amountIn - event.amountOut);
       });
     }
+    this.logger.info('Fee Report Prepare Finished at ' + new Date(Date.now()).toLocaleString());
     return feeReport;
   }
 

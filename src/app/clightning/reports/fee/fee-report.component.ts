@@ -80,8 +80,8 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   filterForwardingEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset);
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset);
+    const startDateInSeconds = Math.round(start.getTime()/1000);
+    const endDateInSeconds = Math.round(end.getTime()/1000);
     this.filteredEventsBySelectedPeriod = [];
     this.feeReportData = [];
     this.totalFeeMsat = null;
@@ -110,7 +110,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
     let feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
@@ -127,7 +127,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((+event.received_time - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+event.received_time - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;

@@ -4,17 +4,15 @@ var logger = require('../shared/logger');
 var options = {};
 
 getAliasForPeers = (peer) => {
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + peer.pub_key;
-    request(options).then(function(aliasBody) {
-      logger.info({fileName: 'Peers', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
-      peer.alias = aliasBody.node.alias;
-      resolve(aliasBody.node.alias);
-    })
-    .catch(err => {
-      peer.alias = peer.pub_key.slice(0, 10) + '...' + peer.pub_key.slice(-10);
-      resolve(peer.pub_key);  
-    });
+  options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + peer.pub_key;
+  return request(options).then(function(aliasBody) {
+    logger.info({fileName: 'Peers', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
+    peer.alias = aliasBody.node.alias;
+    return aliasBody.node.alias;
+  })
+  .catch(err => {
+    peer.alias = peer.pub_key.slice(0, 10) + '...' + peer.pub_key.slice(-10);
+    return peer.pub_key;
   });
 }
 
@@ -24,20 +22,15 @@ exports.getPeers = (req, res, next) => {
   request(options).then(function (body) {
     logger.info({fileName: 'Peers', msg: 'Peers Received: ' + JSON.stringify(body)});
     let peers = !body.peers ? [] : body.peers;
-    Promise.all(
-      peers.map(peer => {
-        return getAliasForPeers(peer);
-      }))
-    .then(function(values) {
+    Promise.all(peers.map(peer => getAliasForPeers(peer))).then(function(values) {
       logger.info({fileName: 'Peers', msg: 'Peers with Alias before Sort: ' + JSON.stringify(body)});
       if (body.peers) {
         body.peers = common.sortDescByStrKey(body.peers, 'alias');
       }
       logger.info({fileName: 'Peers', msg: 'Peers with Alias after Sort: ' + JSON.stringify(body)});
       res.status(200).json(body.peers);
-    });
-  })
-  .catch(errRes => {
+    })
+  }).catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
     if (err.options && err.options.headers && err.options.headers['Grpc-Metadata-macaroon']) {
       delete err.options.headers['Grpc-Metadata-macaroon'];
@@ -72,11 +65,7 @@ exports.postPeer = (req, res, next) => {
       options.url = common.getSelLNServerUrl() + '/v1/peers';
       request(options).then(function (body) {
         let peers = (!body.peers) ? [] : body.peers;
-        Promise.all(
-          peers.map(peer => {
-            return getAliasForPeers(peer);
-          }))
-        .then(function(values) {
+        Promise.all(peers.map(peer => getAliasForPeers(peer))).then(function(values) {
           if (body.peers) {
             body.peers = common.sortDescByStrKey(body.peers, 'alias');
             logger.info({fileName: 'Peers', msg: 'Peer with Alias: ' + JSON.stringify(body)});

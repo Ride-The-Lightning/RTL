@@ -4,15 +4,12 @@ var logger = require('../shared/logger');
 var options = {};
 
 getAliasFromPubkey = (pubkey) => {
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
-    request(options)
-    .then(function(res) {
-      logger.info({fileName: 'Graph', msg: 'Alias: ' + JSON.stringify(res.node.alias)});
-      resolve(res.node.alias);
-    })
-    .catch(err => resolve(pubkey.substring(0, 17) + '...'));
-  });
+  options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
+  return request(options).then(function(res) {
+    logger.info({fileName: 'Graph', msg: 'Alias: ' + JSON.stringify(res.node.alias)});
+    return res.node.alias;
+  })
+  .catch(err => pubkey.substring(0, 17) + '...');
 }
 
 exports.getDescribeGraph = (req, res, next) => {
@@ -163,7 +160,7 @@ exports.getQueryRoutes = (req, res, next) => {
       });
     }
     if(body.routes && body.routes.length && body.routes.length > 0 && body.routes[0].hops && body.routes[0].hops.length && body.routes[0].hops.length > 0) {
-      Promise.all(body.routes[0].hops.map(hop => {return getAliasFromPubkey(hop.pub_key)}))
+      Promise.all(body.routes[0].hops.map(hop => getAliasFromPubkey(hop.pub_key)))
       .then(function(values) {
         body.routes[0].hops.map((hop, i) => { 
           hop.hop_sequence = i + 1;
@@ -255,7 +252,7 @@ exports.getAliasesForPubkeys = (req, res, next) => {
   options = common.getOptions();
   if (req.query.pubkeys) {
     let pubkeyArr = req.query.pubkeys.split(',');
-    Promise.all(pubkeyArr.map(pubkey => {return getAliasFromPubkey(pubkey)}))
+    Promise.all(pubkeyArr.map(pubkey => getAliasFromPubkey(pubkey)))
     .then(function(values) {
       logger.info({fileName: 'Graph', msg: 'Node Alias: ' + JSON.stringify(values)});
       res.status(200).json(values);

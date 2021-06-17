@@ -4,18 +4,16 @@ var logger = require('../shared/logger');
 var options = {};
 
 getAliasForChannel = (channel) => {
-  return new Promise(function(resolve, reject) {
-    let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
-    options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
-    request(options).then(function(aliasBody) {
-      logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
-      channel.remote_alias = aliasBody.node.alias;
-      resolve(aliasBody.node.alias);
-    })
-    .catch(err => {
-      channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
-      resolve(pubkey);  
-    });
+  let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
+  options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
+  return request(options).then(function(aliasBody) {
+    logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
+    channel.remote_alias = aliasBody.node.alias;
+    return aliasBody.node.alias;
+  })
+  .catch(err => {
+    channel.remote_alias = pubkey.slice(0, 10) + '...' + pubkey.slice(-10);
+    return pubkey;
   });
 }
 

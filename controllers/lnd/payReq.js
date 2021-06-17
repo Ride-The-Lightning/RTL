@@ -41,7 +41,7 @@ exports.decodePayments = (req, res, next) => {
   options = common.getOptions();
   if (req.body.payments) {
     let paymentsArr = req.body.payments.split(',');
-    Promise.all(paymentsArr.map(payment => {return decodePaymentFromPaymentRequest(payment)}))
+    Promise.all(paymentsArr.map(payment => decodePaymentFromPaymentRequest(payment)))
     .then(function(values) {
       logger.info({fileName: 'PayReq', msg: 'Decoded Payments: ' + JSON.stringify(values)});
       res.status(200).json(values);
@@ -66,13 +66,10 @@ exports.decodePayments = (req, res, next) => {
 };
 
 decodePaymentFromPaymentRequest = (payment) => {
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/v1/payreq/' + payment;
-    request(options)
-    .then(function(res) {
-      logger.info({fileName: 'PayReq', msg: 'Description: ' + JSON.stringify(res.description)});
-      resolve(res);
-    })
-    .catch(err => resolve({}));
-  });
+  options.url = common.getSelLNServerUrl() + '/v1/payreq/' + payment;
+  return request(options).then(function(res) {
+    logger.info({fileName: 'PayReq', msg: 'Description: ' + JSON.stringify(res.description)});
+    return res;
+  })
+  .catch(err => {});
 }

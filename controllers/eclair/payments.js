@@ -4,15 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 getQueryNodes = (nodeIds) => {
-  return new Promise(function(resolve, reject) {
-    options.url = common.getSelLNServerUrl() + '/nodes';
-    options.form = { nodeIds: nodeIds };
-    request.post(options).then(function(nodes) {
-      logger.info({fileName: 'Payments', msg: 'Query Nodes: ' + JSON.stringify(nodes)});
-      resolve(nodes);
-    }).catch(err => {
-      resolve([]);  
-    });
+  options.url = common.getSelLNServerUrl() + '/nodes';
+  options.form = { nodeIds: nodeIds };
+  return request.post(options).then(function(nodes) {
+    logger.info({fileName: 'Payments', msg: 'Query Nodes: ' + JSON.stringify(nodes)});
+    return nodes;
+  }).catch(err => {
+    return [];  
   });
 }
 
@@ -76,7 +74,7 @@ exports.queryPaymentRoute = (req, res, next) => {
     logger.info({fileName: 'Payments', msg: 'Query Payment Route Received: ' + JSON.stringify(body)});
     if (body && body.length) {
       let queryRoutes = [];
-      getQueryNodes(body).then(function(hopsWithAlias) {
+      return getQueryNodes(body).then(function(hopsWithAlias) {
         let foundPeer = {};
         body.map(hop => {
           foundPeer = hopsWithAlias.find(hopWithAlias => hop === hopWithAlias.nodeId);
@@ -136,15 +134,13 @@ exports.getSentPaymentsInformation = (req, res, next) => {
 getSentInfoFromPaymentRequest = (payment) => {
   options.url = common.getSelLNServerUrl() + '/getsentinfo';    
   options.form = { paymentHash: payment };
-  return new Promise(function(resolve, reject) {
-    request.post(options).then((body) => {
-      logger.info({fileName: 'Payments', msg: 'Payment Sent Information Received: ' + JSON.stringify(body)});
-      body.forEach(sentPayment => {
-        if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount/1000); }
-        if (sentPayment.recipientAmount) { sentPayment.recipientAmount = Math.round(sentPayment.recipientAmount/1000); }
-      });
-      resolve(body);
-    })
-    .catch(err => resolve(err));
-  });
+  request.post(options).then((body) => {
+    logger.info({fileName: 'Payments', msg: 'Payment Sent Information Received: ' + JSON.stringify(body)});
+    body.forEach(sentPayment => {
+      if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount/1000); }
+      if (sentPayment.recipientAmount) { sentPayment.recipientAmount = Math.round(sentPayment.recipientAmount/1000); }
+    });
+    return body;
+  })
+  .catch(err => err);
 }

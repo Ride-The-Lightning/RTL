@@ -88,8 +88,8 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   }
 
   filterTransactionsForSelectedPeriod(start: Date, end: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
-    const endDateInSeconds = Math.round(end.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
+    const endDateInSeconds = Math.round(end.getTime()/1000);
     let transactionsReport = [];
     this.transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
     let filteredPayments = this.payments.filter(payment => payment.status === 'complete' && payment.created_at >= startDateInSeconds && payment.created_at < endDateInSeconds);
@@ -117,13 +117,13 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
         transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let dateNumber = Math.floor((+payment.created_at - startDateInSeconds) / this.secondsInADay);
+        let dateNumber = Math.floor((+payment.created_at - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let dateNumber = Math.floor((+invoice.paid_at - startDateInSeconds) / this.secondsInADay);
+        let dateNumber = Math.floor((+invoice.paid_at - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;

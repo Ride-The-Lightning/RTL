@@ -25,7 +25,6 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [];
@@ -90,8 +89,8 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
   }
 
   filterTransactionsForSelectedPeriod(start: Date, end: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
-    const endDateInSeconds = Math.round(end.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
+    const endDateInSeconds = Math.round(end.getTime()/1000);
     let transactionsReport = [];
     this.transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
     let filteredPayments = this.payments.filter(payment => Math.floor(payment.firstPartTimestamp/1000) >= startDateInSeconds && Math.floor(payment.firstPartTimestamp/1000) < endDateInSeconds);
@@ -103,13 +102,13 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
         transactionsReport.push({name: MONTHS[i].name, date: new Date(start.getFullYear(), i, 1, 0, 0, 0, 0), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let monthNumber = new Date(payment.firstPartTimestamp - (this.timezoneOffset*1000)).getMonth();
+        let monthNumber = new Date(payment.firstPartTimestamp).getMonth();
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + payment.recipientAmount;
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let monthNumber = new Date((invoice.timestamp - this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((invoice.timestamp)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + invoice.amountSettled;
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
@@ -119,13 +118,13 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
         transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let dateNumber = Math.floor((Math.floor(payment.firstPartTimestamp/1000) - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((Math.floor(payment.firstPartTimestamp/1000) - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + payment.recipientAmount;
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let dateNumber = Math.floor((invoice.timestamp - startDateInSeconds - this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((invoice.timestamp - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.amountSettled;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + invoice.amountSettled;
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;

@@ -17,7 +17,7 @@ common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
-common.read_dummy_data = false;
+common.read_dummy_data = true;
 
 common.getSwapServerOptions = () => {
   let swapOptions = {

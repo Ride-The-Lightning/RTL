@@ -7,30 +7,28 @@ var pendingInvoices = [];
 getReceivedPaymentInfo = (invoice) => {
   logger.info({fileName: 'Invoice', msg: 'Invoice Received: ' + JSON.stringify(invoice)});
   let idx = -1;
-  return new Promise(function(resolve, reject) {
-    invoice.expiresAt =  (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
-    if (invoice.amount) { invoice.amount = Math.round(invoice.amount/1000); }
-    idx = pendingInvoices.findIndex(pendingInvoice => invoice.serialized === pendingInvoice.serialized);
-    if (idx < 0) {
-      options.url = common.getSelLNServerUrl() + '/getreceivedinfo';
-      options.form = { paymentHash: invoice.paymentHash };
-      request(options).then(response => {
-        invoice.status = response.status.type;
-        if (response.status && response.status.type === 'received') {
-          invoice.amountSettled = response.status.amount ? Math.round(response.status.amount/1000) : 0;
-          invoice.receivedAt = response.status.receivedAt ? Math.round(response.status.receivedAt / 1000) : 0;
-        }
-        resolve(invoice);
-      }).catch(err => {
-        invoice.status = 'unknown';
-        resolve(invoice);
-      });
-    } else {
-      pendingInvoices.splice(idx, 1);
-      invoice.status = 'unpaid';      
-      resolve(invoice);
-    }
-  });  
+  invoice.expiresAt =  (!invoice.expiry) ? null : (+invoice.timestamp + +invoice.expiry);
+  if (invoice.amount) { invoice.amount = Math.round(invoice.amount/1000); }
+  idx = pendingInvoices.findIndex(pendingInvoice => invoice.serialized === pendingInvoice.serialized);
+  if (idx < 0) {
+    options.url = common.getSelLNServerUrl() + '/getreceivedinfo';
+    options.form = { paymentHash: invoice.paymentHash };
+    return request(options).then(response => {
+      invoice.status = response.status.type;
+      if (response.status && response.status.type === 'received') {
+        invoice.amountSettled = response.status.amount ? Math.round(response.status.amount/1000) : 0;
+        invoice.receivedAt = response.status.receivedAt ? Math.round(response.status.receivedAt / 1000) : 0;
+      }
+      return invoice;
+    }).catch(err => {
+      invoice.status = 'unknown';
+      return invoice;
+    });
+  } else {
+    pendingInvoices.splice(idx, 1);
+    invoice.status = 'unpaid';      
+    return invoice;
+  }
 }
 
 exports.listInvoices = (req, res, next) => {
@@ -46,20 +44,20 @@ exports.listInvoices = (req, res, next) => {
     common.getDummyData('Invoices').then(function(body) { 
       let invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
       pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-      Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
+      return Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
       .then(values => {
         body = common.sortDescByKey(invoices, 'expiresAt');
         res.status(200).json(invoices);
       });
     });
   } else {
-    Promise.all([request(options1), request(options2)])
+    return Promise.all([request(options1), request(options2)])
     .then(body => {
       logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
       let invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
       pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
       if (invoices && invoices.length > 0) {
-        Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
+        return Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
         .then(values => {
           body = common.sortDescByKey(invoices, 'expiresAt');
           logger.info({fileName: 'Invoice', msg: 'Final Invoices List: ' + JSON.stringify(invoices)});
