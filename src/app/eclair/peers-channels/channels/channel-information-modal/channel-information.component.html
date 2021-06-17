@@ -40,17 +40,6 @@
         <mat-divider [inset]="true" class="my-1"></mat-divider>        
         <div fxLayout="row">
           <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance (Sats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.toLocal | number}}</span>
-          </div>
-          <div fxFlex="50">
-            <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
-            <span class="overflow-wrap foreground-secondary-text">{{channel.toRemote | number}}</span>
-          </div>
-        </div>
-        <mat-divider [inset]="true" class="my-1"></mat-divider>
-        <div fxLayout="row">
-          <div fxFlex="50">
             <h4 fxLayoutAlign="start" class="font-bold-500">Private</h4>
             <span class="overflow-wrap foreground-secondary-text">{{channel.channelFlags === 0 ? 'Yes' : 'No'}}</span>
           </div>
@@ -60,15 +49,37 @@
           </div>
         </div>
         <mat-divider [inset]="true" class="my-1"></mat-divider>
+        <div fxLayout="row">
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">State</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.state | titlecase}}</span>
+          </div>
+          <div fxFlex="50">
+            <h4 fxLayoutAlign="start" class="font-bold-500">Buried</h4>
+            <span class="overflow-wrap foreground-secondary-text">{{channel.buried ? 'Yes' : 'No'}}</span>
+          </div>
+        </div>
+        <mat-divider [inset]="true" class="my-1"></mat-divider>
         <div *ngIf="showAdvanced && channelsType === 'open'">
+          <div fxLayout="row">
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Local Balance (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.toLocal | number}}</span>
+            </div>
+            <div fxFlex="50">
+              <h4 fxLayoutAlign="start" class="font-bold-500">Remote Balance (Sats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.toRemote | number}}</span>
+            </div>
+          </div>
+          <mat-divider [inset]="true" class="my-1"></mat-divider>
           <div fxLayout="row">
             <div fxFlex="50">
               <h4 fxLayoutAlign="start" class="font-bold-500">Base Fee (mSats)</h4>
               <span class="overflow-wrap foreground-secondary-text">{{channel.feeBaseMsat | number}}</span>
             </div>
             <div fxFlex="50">
-              <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mSats)</h4>
-              <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths}}</span>
+              <h4 fxLayoutAlign="start" class="font-bold-500">Fee Rate (mili mSats)</h4>
+              <span class="overflow-wrap foreground-secondary-text">{{channel.feeProportionalMillionths | number}}</span>
             </div>
           </div>
           <mat-divider [inset]="true" class="my-1"></mat-divider>

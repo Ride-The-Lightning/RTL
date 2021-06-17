@@ -2,11 +2,11 @@ var fs = require('fs');
 var common = require('../../routes/common');
 
 exports.info = (msgJSON, selNode = common.selectedNode) => {
-  const msgStr = '\r\nINFO: ' +  msgJSON.fileName + ' => ' + msgJSON.msg;
-  if (msgJSON.fileName !== 'Config Setup Variable') {
-    console.log(msgStr);
-  }
   if(selNode && selNode.enable_logging) {
+    const msgStr = '\r\nINFO: ' +  msgJSON.fileName + ' => ' + msgJSON.msg;
+    if (msgJSON.fileName !== 'Config Setup Variable') {
+      console.log(msgStr);
+    }
     fs.appendFile(selNode.log_file, msgStr, function(err) {
       if (err) {
         return ({ error: 'Updating Log Failed!' });

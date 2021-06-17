@@ -23,7 +23,7 @@
   width: 17%;
 }
 
-.mat-column-state, .mat-column-feeBaseMsat, .mat-column-feeRatePerKw, .mat-column-toLocal, .mat-column-toRemote {
+.mat-column-state, .mat-column-feeBaseMsat, .mat-column-feeProportionalMillionths, .mat-column-toLocal, .mat-column-toRemote {
   flex: 1 1 10%;
   width: 10%;
   white-space: nowrap;

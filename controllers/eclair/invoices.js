@@ -42,50 +42,62 @@ exports.listInvoices = (req, res, next) => {
   options2 = JSON.parse(JSON.stringify(options));
   options2.url = common.getSelLNServerUrl() + '/listpendinginvoices';
   options2.form = {};
-  Promise.all([request(options1), request(options2)])
-  .then(body => {
-    logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
-    let invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
-    pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
-    if (invoices && invoices.length > 0) {
+  if (common.read_dummy_data) {
+    common.getDummyData('Invoices').then(function(body) { 
+      let invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
+      pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
       Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
       .then(values => {
         body = common.sortDescByKey(invoices, 'expiresAt');
-        logger.info({fileName: 'Invoice', msg: 'Final Invoices List: ' + JSON.stringify(invoices)});
         res.status(200).json(invoices);
-      })
-      .catch(errRes => {
-        let err = JSON.parse(JSON.stringify(errRes));
-        if (err.options && err.options.headers && err.options.headers.authorization) {
-          delete err.options.headers.authorization;
-        }
-        if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-          delete err.response.request.headers.authorization;
-        }
-        logger.error({fileName: 'Invoice', lineNum: 66, msg: 'List Invoices Error: ' + JSON.stringify(err)});
-        return res.status(err.statusCode ? err.statusCode : 500).json({
-          message: "Fetching Invoices failed!",
-          error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
-        });
-      });    
-    } else {
-      res.status(200).json([]);      
-    }
-  })
-  .catch(errRes => {
-    let err = JSON.parse(JSON.stringify(errRes));
-    if (err.options && err.options.headers && err.options.headers.authorization) {
-      delete err.options.headers.authorization;
-    }
-    if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
-      delete err.response.request.headers.authorization;
-    }
-    logger.error({fileName: 'Invoice', lineNum: 84, msg: 'List Invoices Error: ' + JSON.stringify(err)});
-    return res.status(err.statusCode ? err.statusCode : 500).json({
-      message: "Fetching Invoices failed!",
-      error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+      });
     });
-  });
+  } else {
+    Promise.all([request(options1), request(options2)])
+    .then(body => {
+      logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
+      let invoices = (!body[0] || body[0].length <= 0) ? [] : body[0];
+      pendingInvoices = (!body[1] || body[1].length <= 0) ? [] : body[1];
+      if (invoices && invoices.length > 0) {
+        Promise.all(invoices.map(invoice => getReceivedPaymentInfo(invoice)))
+        .then(values => {
+          body = common.sortDescByKey(invoices, 'expiresAt');
+          logger.info({fileName: 'Invoice', msg: 'Final Invoices List: ' + JSON.stringify(invoices)});
+          res.status(200).json(invoices);
+        })
+        .catch(errRes => {
+          let err = JSON.parse(JSON.stringify(errRes));
+          if (err.options && err.options.headers && err.options.headers.authorization) {
+            delete err.options.headers.authorization;
+          }
+          if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+            delete err.response.request.headers.authorization;
+          }
+          logger.error({fileName: 'Invoice', lineNum: 66, msg: 'List Invoices Error: ' + JSON.stringify(err)});
+          return res.status(err.statusCode ? err.statusCode : 500).json({
+            message: "Fetching Invoices failed!",
+            error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+          });
+        });    
+      } else {
+        res.status(200).json([]);      
+      }
+    })
+    .catch(errRes => {
+      let err = JSON.parse(JSON.stringify(errRes));
+      if (err.options && err.options.headers && err.options.headers.authorization) {
+        delete err.options.headers.authorization;
+      }
+      if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
+        delete err.response.request.headers.authorization;
+      }
+      logger.error({fileName: 'Invoice', lineNum: 84, msg: 'List Invoices Error: ' + JSON.stringify(err)});
+      return res.status(err.statusCode ? err.statusCode : 500).json({
+        message: "Fetching Invoices failed!",
+        error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
+      });
+    });
+  }
 };
 
 exports.createInvoice = (req, res, next) => {

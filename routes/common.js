@@ -17,7 +17,7 @@ common.cookie = '';
 common.secret_key = crypto.randomBytes(64).toString('hex');
 common.nodes = [];
 common.selectedNode = {};
-common.read_dummy_data = false;
+common.read_dummy_data = true;
 
 common.getSwapServerOptions = () => {
   let swapOptions = {
@@ -260,6 +260,10 @@ filterData = (data_key) => {
 
     case 'Payments':
       search_string = 'INFO: Fees => Payments Response: ';
+      break;
+
+    case 'Invoices':
+      search_string = 'INFO: Invoice => Invoices List Received: ';
       break;
   
     case 'OnChainBalance':

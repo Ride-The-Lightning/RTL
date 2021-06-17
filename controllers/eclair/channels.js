@@ -68,7 +68,7 @@ simplifyAllChannels = (channels) => {
     options.url = common.getSelLNServerUrl() + '/nodes';
     options.form = { nodeIds: channelNodeIds };
     logger.info({fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
-    request.post(options).then(function(nodes) {
+    return request.post(options).then(function(nodes) {
       logger.info({fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
       let foundPeer = {};
       simplifiedChannels.map(channel => {
@@ -78,7 +78,7 @@ simplifyAllChannels = (channels) => {
       resolve(simplifiedChannels);
     }).catch(err => {
       resolve(simplifiedChannels);
-    });  
+    });
   });
 };
 

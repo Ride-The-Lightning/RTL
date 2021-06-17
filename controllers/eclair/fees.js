@@ -5,7 +5,6 @@ var options = {};
 
 arrangeFees = (body, current_time) => {
   let fees = { daily_fee: 0, daily_txs: 0, weekly_fee: 0, weekly_txs: 0, monthly_fee: 0, monthly_txs: 0 };
-  let month_start_time = current_time - 2629743000;
   let week_start_time = current_time - 604800000;
   let day_start_time = current_time - 86400000;
   let fee = 0;
@@ -20,10 +19,8 @@ arrangeFees = (body, current_time) => {
       fees.weekly_fee = fees.weekly_fee + fee;
       fees.weekly_txs = fees.weekly_txs + 1;
     }
-    if (relayedEle.timestamp >= month_start_time) {
-      fees.monthly_fee = fees.monthly_fee + fee;
-      fees.monthly_txs = fees.monthly_txs + 1;
-    }
+    fees.monthly_fee = fees.monthly_fee + fee;
+    fees.monthly_txs = fees.monthly_txs + 1;
   });
   logger.info({fileName: 'Fees', msg: JSON.stringify(fees)});
   return fees;
@@ -69,15 +66,14 @@ exports.getFees = (req, res, next) => {
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   let today = new Date(Date.now());
-  let timezoneOffset = today.getTimezoneOffset() * 60;
-  let tillToday = (Math.round(new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0).getTime()/1000) - timezoneOffset).toString();
-  let fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime()/1000) - timezoneOffset).toString();
+  let tillToday = (Math.round(today.getTime()/1000)).toString();
+  let fromLastMonth = (Math.round(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate() + 1, 0, 0, 0).getTime()/1000)).toString();
   options.form = {
     from: fromLastMonth,
     to: tillToday
   };
   if (common.read_dummy_data) {
-    common.getDummyData('Fees').then(function(data) { res.status(200).json(arrangeFees(data, 1609796725000)); });
+    common.getDummyData('Fees').then(function(data) { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
   } else {
     request.post(options).then((body) => {
       logger.info({fileName: 'Fees', msg: 'Fee Response: ' + JSON.stringify(body)});
