@@ -25,7 +25,6 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [{date: '', name: '1', series: [{extra: {total: 0.0}, name: 'Paid', value: 0.0}, {extra: {total: 0.0}, name: 'Received', value: 0.0}]}];
@@ -104,29 +103,29 @@ export class TransactionsReportComponent implements OnInit, AfterViewInit, OnDes
         transactionsReport.push({name: MONTHS[i].name, date: new Date(start.getFullYear(), i, 1, 0, 0, 0, 0), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let monthNumber = new Date((+payment.creation_date + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+payment.creation_date)*1000).getMonth();
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let monthNumber = new Date((+invoice.creation_date + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+invoice.creation_date)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (+invoice.amt_paid_msat);
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + (+invoice.amt_paid_msat / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
+        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let dateNumber = Math.floor((+payment.creation_date - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+payment.creation_date - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + (+payment.value_msat) + (+payment.fee_msat);
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + ((+payment.value_msat + +payment.fee_msat) / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let dateNumber = Math.floor((+invoice.creation_date - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+invoice.creation_date - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + (+invoice.amt_paid_msat);
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (+invoice.amt_paid_msat / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;

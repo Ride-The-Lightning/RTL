@@ -23,7 +23,6 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public events: SwitchRes = {};
   public eventFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
@@ -107,7 +106,7 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
-        let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+event.timestamp)*1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
@@ -117,7 +116,7 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
-        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+event.timestamp - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee_msat / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;

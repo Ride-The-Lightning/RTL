@@ -55,7 +55,7 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.selectedSwapType) {
+    if (changes.selectedSwapType && !changes.selectedSwapType.firstChange) {
       this.setTableColumns();
     }
     this.swapCaption = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'Swap In' : 'Swap Out';
@@ -85,7 +85,9 @@ export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
     
   applyFilter(selFilter: any) {
-    this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+    if (this.listSwaps) {
+      this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+    }
   }
 
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
