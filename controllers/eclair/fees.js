@@ -9,7 +9,6 @@ arrangeFees = (body, current_time) => {
   let day_start_time = current_time - 86400000;
   let fee = 0;
   body.relayed.forEach(relayedEle => {
-    logger.info({fileName: 'Fees', msg: 'Fee Relayed Transaction: ' + JSON.stringify(relayedEle)});
     fee = Math.round((relayedEle.amountIn - relayedEle.amountOut)/1000);
     if (relayedEle.timestamp >= day_start_time) {
       fees.daily_fee = fees.daily_fee + fee;
@@ -22,7 +21,7 @@ arrangeFees = (body, current_time) => {
     fees.monthly_fee = fees.monthly_fee + fee;
     fees.monthly_txs = fees.monthly_txs + 1;
   });
-  logger.info({fileName: 'Fees', msg: JSON.stringify(fees)});
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: JSON.stringify(fees)});
   return fees;
 };
 
@@ -51,18 +50,18 @@ arrangePayments = (body) => {
     });      
   });
   payments.relayed.forEach(relayedEle => {
-    logger.info({fileName: 'Fees', msg: 'Payment Relayed Transaction: ' + JSON.stringify(relayedEle)});
     if (relayedEle.amountIn) { relayedEle.amountIn = Math.round(relayedEle.amountIn/1000); }
     if (relayedEle.amountOut) { relayedEle.amountOut = Math.round(relayedEle.amountOut/1000); }
   });
   payments.sent = common.sortDescByKey(payments.sent, 'firstPartTimestamp');
   payments.received = common.sortDescByKey(payments.received, 'firstPartTimestamp');
   payments.relayed = common.sortDescByKey(payments.relayed, 'timestamp');
-  logger.info({fileName: 'Fees', msg: JSON.stringify(payments)});
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: JSON.stringify(payments)});
   return payments;
 };
 
 exports.getFees = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Fees...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   let today = new Date(Date.now());
@@ -72,11 +71,13 @@ exports.getFees = (req, res, next) => {
     from: fromLastMonth,
     to: tillToday
   };
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options: ' + JSON.stringify(options.form)});
   if (common.read_dummy_data) {
     common.getDummyData('Fees').then(function(data) { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
   } else {
     request.post(options).then((body) => {
-      logger.info({fileName: 'Fees', msg: 'Fee Response: ' + JSON.stringify(body)});
+      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response: ' + JSON.stringify(body)});
+      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fee Received.'});
       res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
     })
     .catch(errRes => {
@@ -97,6 +98,7 @@ exports.getFees = (req, res, next) => {
 };
 
 exports.getPayments = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Payments...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   options.form = null;
@@ -104,7 +106,8 @@ exports.getPayments = (req, res, next) => {
     common.getDummyData('Payments').then(function(data) { res.status(200).json(arrangePayments(data)); });
   } else {
     request.post(options).then((body) => {
-      logger.info({fileName: 'Fees', msg: 'Payments Response: ' + JSON.stringify(body)});
+      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response: ' + JSON.stringify(body)});
+      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Payments Received.'});
       res.status(200).json(arrangePayments(body));
     })
     .catch(errRes => {

@@ -6,8 +6,8 @@ var options = {};
 getAliasForChannel = (channel) => {
   let pubkey = (channel.remote_pubkey) ? channel.remote_pubkey : (channel.remote_node_pub) ? channel.remote_node_pub : '';
   options.url = common.getSelLNServerUrl() + '/v1/graph/node/' + pubkey;
-  return request(options).then(function(aliasBody) {
-    logger.info({fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
+  request(options).then(function(aliasBody) {
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Alias: ' + JSON.stringify(aliasBody.node.alias)});
     channel.remote_alias = aliasBody.node.alias;
     return aliasBody.node.alias;
   })
@@ -18,6 +18,7 @@ getAliasForChannel = (channel) => {
 }
 
 exports.getAllChannels = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Channels...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels';
   options.qs = req.query;
@@ -25,9 +26,9 @@ exports.getAllChannels = (req, res, next) => {
   let remote = 0;
   let total = 0;
   request(options).then(function (body) {
-    logger.info({fileName: 'Channels', msg: 'All Channels Received: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'All Channels Received: ' + JSON.stringify(body)});
     if(body.channels) {
-      Promise.all(
+      return Promise.all(
         body.channels.map(channel => {
           local = (channel.local_balance) ? +channel.local_balance : 0;
           remote = (channel.remote_balance) ? +channel.remote_balance : 0;
@@ -38,7 +39,8 @@ exports.getAllChannels = (req, res, next) => {
       )
       .then(function(values) {
         body.channels = common.sortDescByKey(body.channels, 'balancedness');
-        logger.info({fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
+        logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'All Channels with Alias: ' + JSON.stringify(body)});
+        logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channels Received.'});
         res.status(200).json(body);
       })
       .catch(errRes => {
@@ -57,6 +59,7 @@ exports.getAllChannels = (req, res, next) => {
       });
     } else {
       body.channels = [];
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Empty Channels Received.'});
       res.status(200).json(body);
     }
   })
@@ -77,6 +80,7 @@ exports.getAllChannels = (req, res, next) => {
 };
 
 exports.getPendingChannels = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Pending Channels...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels/pending';
   options.qs = req.query;
@@ -100,8 +104,9 @@ exports.getPendingChannels = (req, res, next) => {
     if(body.waiting_close_channels && body.waiting_close_channels.length > 0) {
       body.waiting_close_channels.map(channel => { return promises.push(getAliasForChannel(channel.channel))});
     }
-    Promise.all(promises).then(function(values) {
-      logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
+    return Promise.all(promises).then(function(values) {
+      logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(body)});
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Pending Channels Received.'});
       res.status(200).json(body);
     })
     .catch(errRes => {
@@ -136,12 +141,13 @@ exports.getPendingChannels = (req, res, next) => {
 };
 
 exports.getClosedChannels = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Closed Channels...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels/closed';
   options.qs = req.query;
   request(options).then(function (body) {
     if (body.channels && body.channels.length > 0) {
-      Promise.all(
+      return Promise.all(
         body.channels.map(channel => {
           channel.close_type = (!channel.close_type) ? 'COOPERATIVE_CLOSE' : channel.close_type;
           return getAliasForChannel(channel);
@@ -149,7 +155,8 @@ exports.getClosedChannels = (req, res, next) => {
       )
       .then(function(values) {
         body.channels = common.sortDescByKey(body.channels, 'close_height');
-        logger.info({fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
+        logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closed Channels: ' + JSON.stringify(body)});
+        logger.log({level: 'INFO', fileName: 'Channels', msg: 'Closed Channels Received.'});
         res.status(200).json(body);
       })
       .catch(errRes => {
@@ -188,6 +195,7 @@ exports.getClosedChannels = (req, res, next) => {
 };
 
 exports.postChannel = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Opening Channel...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels';
   options.form = { 
@@ -203,7 +211,7 @@ exports.postChannel = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Channel Open Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Channel Open Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Channels', lineNum: 152, msg: 'Open New Channel  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -211,6 +219,7 @@ exports.postChannel = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channels Opened.'});
       res.status(201).json(body);
     }
   })
@@ -231,6 +240,7 @@ exports.postChannel = (req, res, next) => {
 };
 
 exports.postTransactions = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Sending Payment...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/channels/transactions';
   options.form = { payment_request: req.body.paymentReq };
@@ -242,9 +252,9 @@ exports.postTransactions = (req, res, next) => {
   if (req.body.allowSelfPayment) { options.form.allow_self_payment = req.body.allowSelfPayment; }
   if (req.body.lastHopPubkey) { options.form.last_hop_pubkey = Buffer.from(req.body.lastHopPubkey, 'hex').toString('base64'); }
   options.form = JSON.stringify(options.form);
-  logger.info({fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Options: ' + options.form});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Channels', lineNum: 200, msg: 'Send Payment  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -258,6 +268,7 @@ exports.postTransactions = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.payment_error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Payment Sent.'});
       res.status(201).json(body);
     }
   })
@@ -278,15 +289,16 @@ exports.postTransactions = (req, res, next) => {
 };
 
 exports.closeChannel = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Closing Channel...'});
   req.setTimeout(60000 * 10); // timeout 10 mins
   options = common.getOptions();
   let channelpoint = req.params.channelPoint.replace(':', '/');
   options.url = common.getSelLNServerUrl() + '/v1/channels/' + channelpoint + '?force=' + req.query.force;
   if(req.query.target_conf) { options.url = options.url + '&target_conf=' + req.query.target_conf; }
   if(req.query.sat_per_byte) { options.url = options.url + '&sat_per_byte=' + req.query.sat_per_byte; }
-  logger.info({fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Closing Channel: ' + options.url});
   request.delete(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Channels', lineNum: 241, msg: 'Close Channel  Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -294,6 +306,7 @@ exports.closeChannel = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Closed.'});
       res.status(204).json({message: 'Channel Closed!'});
     }
   })
@@ -314,6 +327,7 @@ exports.closeChannel = (req, res, next) => {
 }
 
 exports.postChanPolicy = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Policy...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/chanpolicy';
   if(req.body.chanPoint === 'all') {
@@ -334,9 +348,9 @@ exports.postChanPolicy = (req, res, next) => {
       chan_point: {funding_txid_str: txid_str, output_index: parseInt(output_idx)}
     });
   }
-  logger.info({fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy Options: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Channels', lineNum: 290, msg: 'Update Channel Policy Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -344,6 +358,7 @@ exports.postChanPolicy = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Policy Updated.'});
       res.status(201).json(body);
     }
   })

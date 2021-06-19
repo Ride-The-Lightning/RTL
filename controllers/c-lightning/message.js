@@ -4,11 +4,12 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.signMessage = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Message', msg: 'Signing Message...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/utility/signMessage';
   options.form = { message: req.body.message };
   request.post(options, (error, response, body) => {
-    logger.info({fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Messages', lineNum: 13, msg: 'Message Sign Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -16,6 +17,7 @@ exports.signMessage = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Signed...'});
       res.status(201).json(body);
     }
   })
@@ -36,10 +38,11 @@ exports.signMessage = (req, res, next) => {
 };
 
 exports.verifyMessage = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Message', msg: 'Verifying Message...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/utility/checkMessage/' + req.body.message + '/' + req.body.signature;
   request.get(options, (error, response, body) => {
-    logger.info({fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Messages', lineNum: 43, msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -47,6 +50,7 @@ exports.verifyMessage = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Verified.'});
       res.status(201).json(body);
     }
   })

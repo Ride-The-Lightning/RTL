@@ -4,10 +4,11 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getInvoice = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Getting Invoice Information...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/invoice/' + req.params.rHashStr;
   request(options).then((body) => {
-    logger.info({fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoice Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Invoice', lineNum: 12, msg: 'Invoice Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -15,6 +16,7 @@ exports.getInvoice = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     }
+    logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Invoice Information Received.'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -34,13 +36,14 @@ exports.getInvoice = (req, res, next) => {
 };
 
 exports.listInvoices = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Getting List Invoices...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/invoices?num_max_invoices=' + req.query.num_max_invoices + '&index_offset=' + req.query.index_offset + 
   '&reversed=' + req.query.reversed;
   request(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + body_str});
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
       logger.error({fileName: 'Invoice', lineNum: 44, msg: 'List Invoices Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -58,7 +61,8 @@ exports.listInvoices = (req, res, next) => {
         });
         body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
       }
-      logger.info({fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
+      logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Invoices List Received: ' + JSON.stringify(body)});
+      logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Invoices List Received.'});
       res.status(200).json(body);
     }
   })
@@ -79,6 +83,7 @@ exports.listInvoices = (req, res, next) => {
 };
 
 exports.addInvoice = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Adding Invoice...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/invoices';
   options.form = { 
@@ -93,7 +98,7 @@ exports.addInvoice = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info({fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Invoice', msg: 'Add Invoice Responce: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Invoice', lineNum: 95, msg: 'Add Invoice Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -101,6 +106,7 @@ exports.addInvoice = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Invoice', msg: 'Invoice Added.'});
       res.status(201).json(body);
     }
   })

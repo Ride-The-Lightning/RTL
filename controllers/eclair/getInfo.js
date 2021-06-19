@@ -4,12 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getInfo = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'Getting Eclair Node Information...'});
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/getinfo';
   options.form = {};
-  logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
-  logger.info({fileName: 'GetInfo', msg: 'Calling Info from Eclair server url: ' + options.url});
+  logger.log({level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
+  logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url: ' + options.url});
   if (common.read_dummy_data) {
     common.getDummyData('GetInfo').then(function(data) { 
       data.currency_unit = 'BTC';
@@ -26,12 +27,13 @@ exports.getInfo = (req, res, next) => {
       });
     } else {
       request.post(options).then((body) => {
-        logger.info({fileName: 'GetInfo', msg: 'Get Info Response: ' + JSON.stringify(body)});
+        logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response: ' + JSON.stringify(body)});
         const body_str = (!body) ? '' : JSON.stringify(body);
         const search_idx = (!body) ? -1 : body_str.search('Not Found');
         body.currency_unit = 'BTC';
         body.smaller_currency_unit = 'Sats';
         body.lnImplementation = 'Eclair';
+        logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received.'});
         res.status(200).json(body);
       })
       .catch(errRes => {

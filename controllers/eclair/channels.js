@@ -35,10 +35,10 @@ arrangeChannels = (simplifiedChannels) => {
   });
   lightningBalances = { localBalance: totalLocalBalance, remoteBalance: totalRemoteBalance };
   activeChannels = common.sortDescByKey(activeChannels, 'balancedness');
-  logger.info({fileName: 'Channels', msg: 'Lightning Balances: ' + JSON.stringify(lightningBalances)});
-  logger.info({fileName: 'Channels', msg: 'Active Channels: ' + JSON.stringify(activeChannels)});
-  logger.info({fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(pendingChannels)});
-  logger.info({fileName: 'Channels', msg: 'Inactive Channels: ' + JSON.stringify(inactiveChannels)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Lightning Balances: ' + JSON.stringify(lightningBalances)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Active Channels: ' + JSON.stringify(activeChannels)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Pending Channels: ' + JSON.stringify(pendingChannels)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Inactive Channels: ' + JSON.stringify(inactiveChannels)});
   return ({activeChannels: activeChannels, pendingChannels: pendingChannels, inactiveChannels: inactiveChannels, lightningBalances: lightningBalances, channelStatus: channelStatus});
 };
 
@@ -66,9 +66,9 @@ simplifyAllChannels = (channels) => {
   channelNodeIds = channelNodeIds.substring(1);
   options.url = common.getSelLNServerUrl() + '/nodes';
   options.form = { nodeIds: channelNodeIds };
-  logger.info({fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Node Ids to find alias: ' + channelNodeIds});
   return request.post(options).then(function(nodes) {
-    logger.info({fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Filtered Nodes: ' + JSON.stringify(nodes)});
     let foundPeer = {};
     simplifiedChannels.map(channel => {
       foundPeer = nodes.find(channelWithAlias => channel.nodeId === channelWithAlias.nodeId);
@@ -81,25 +81,28 @@ simplifyAllChannels = (channels) => {
 };
 
 exports.getChannels = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'List Channels...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channels';
   options.form = {};
   if (req.query && req.query.nodeId) {
     options.form = req.query;
-    logger.info({fileName: 'Channels', msg: 'Channels Node Id: ' + JSON.stringify(options.form)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Channels Node Id: ' + JSON.stringify(options.form)});
   }
-  logger.info({fileName: 'Channels', msg: 'Options: ' + JSON.stringify(options)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Options: ' + JSON.stringify(options)});
   if (common.read_dummy_data) {
     common.getDummyData('Channels').then(function(data) { res.status(200).json(arrangeChannels(data)); });
   } else {
     request.post(options).then(function (body) {
-      logger.info({fileName: 'Channels', msg: 'All Channels: ' + JSON.stringify(body)});
+      logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'All Channels: ' + JSON.stringify(body)});
       if(body && body.length) {
         return simplifyAllChannels(body).then(function(simplifiedChannels) {
-          logger.info({fileName: 'Channels', msg: 'Simplified Channels with Alias: ' + JSON.stringify(simplifiedChannels)});
+          logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Simplified Channels with Alias: ' + JSON.stringify(simplifiedChannels)});
+          logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channels List Received.'});
           res.status(200).json(arrangeChannels(simplifiedChannels));
         });
       } else {
+        logger.log({level: 'INFO', fileName: 'Channels', msg: 'Empty Channels List Received.'});
         res.status(200).json({activeChannels: [], pendingChannels: [], inactiveChannels: [], lightningBalances: { localBalance: 0, remoteBalance: 0 }, channelStatus: {active: { channels: 0, capacity: 0 }, inactive: { channels: 0, capacity: 0 }, pending: { channels:  0, capacity: 0 }}});
       }
     })
@@ -121,11 +124,13 @@ exports.getChannels = (req, res, next) => {
 };
 
 exports.getChannelStats = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Getting Channel States...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/channelstats';
   options.form = {};
   request.post(options).then((body) => { 
-    logger.info({fileName: 'ChannelStats', msg: 'Channel Stats Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Channel Stats Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel States Received.'});
     res.status(201).json(body);
   })
   .catch(errRes => {
@@ -145,12 +150,13 @@ exports.getChannelStats = (req, res, next) => {
 }
 
 exports.openChannel = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Opening Channel...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/open';
   options.form = req.body;
-  logger.info({fileName: 'Channels', msg: 'Open Channel Params: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Channels', lineNum: 140, msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -158,6 +164,7 @@ exports.openChannel = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Opened.'});
       res.status(201).json(body);
     }
   })
@@ -178,12 +185,14 @@ exports.openChannel = (req, res, next) => {
 }
 
 exports.updateChannelRelayFee = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Channels', msg: 'Updating Channel Relay Fee...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/updaterelayfee';
   options.form = req.query;
-  logger.info({fileName: 'Channels', msg: 'Update Relay Fee Params: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Update Relay Fee Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Relay Fee Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Relay Fee Updated.'});
     res.status(201).json(body);
   })
   .catch(errRes => {
@@ -205,15 +214,18 @@ exports.updateChannelRelayFee = (req, res, next) => {
 exports.closeChannel = (req, res, next) => {
   options = common.getOptions();
   if (req.query.force !== 'true') {
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Closing Channel...'});
     options.url = common.getSelLNServerUrl() + '/close';
   } else {
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Force Closing Channel...'});
     options.url = common.getSelLNServerUrl() + '/forceclose';
   }
   options.form = { channelId: req.query.channelId };
-  logger.info({fileName: 'Channels', msg: 'Close Channel URL: ' + JSON.stringify(options.url)});
-  logger.info({fileName: 'Channels', msg: 'Close Channel Params: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel URL: ' + JSON.stringify(options.url)});
+  logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Params: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Channels', msg: 'Channel Closed.'});
     res.status(204).json(body);
   })
   .catch(errRes => {

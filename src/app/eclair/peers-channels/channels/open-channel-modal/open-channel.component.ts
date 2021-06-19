@@ -106,7 +106,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
 
   onAdvancedPanelToggle(isClosed: boolean) {
     if (isClosed) {
-      this.advancedTitle = (this.feeRate && this.feeRate > 0) ? 'Advanced Options | Fee (Sats/Byte): ' + this.feeRate : 'Advanced Options';
+      this.advancedTitle = (this.feeRate && this.feeRate > 0) ? 'Advanced Options | Fee (Sats/vByte): ' + this.feeRate : 'Advanced Options';
     } else {
       this.advancedTitle = 'Advanced Options';
     }

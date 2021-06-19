@@ -4,10 +4,11 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getFees = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Fees...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/getFees';
   request(options).then((body) => {
-    logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Fees', lineNum: 12, msg: 'Get Fee Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -21,6 +22,7 @@ exports.getFees = (req, res, next) => {
       } else {
         body.btc_feeCollected = common.convertToBTC(body.feeCollected);
       }
+      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fees Received.'});
       res.status(200).json(body);
     }
   })

@@ -5,11 +5,12 @@ var connect = require('../../routes/connect');
 var options = {};
 
 exports.getInfo = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'Getting LND Node Information...'});
   common.setOptions();
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/getinfo';
-  logger.info({fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
-  logger.info({fileName: 'GetInfo', msg: 'Calling Info from LND server url: ' + options.url});
+  logger.log({level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
+  logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from LND server url: ' + options.url});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
     logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'LND Get info failed due to bad or missing macaroon!'});
     res.status(502).json({
@@ -19,7 +20,7 @@ exports.getInfo = (req, res, next) => {
   } else {
     common.nodes.map(node => { if (node.lnImplementation === 'LND') { connect.getAllNodeAllChannelBackup(node); }});
     request(options).then((body) => {
-      logger.info({fileName: 'GetInfo', msg: JSON.stringify(body)});
+      logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: JSON.stringify(body)});
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if(!body || search_idx > -1 || body.error) {
@@ -29,6 +30,7 @@ exports.getInfo = (req, res, next) => {
           error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
         });
       } else {
+        logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'LND Node Information Received.'});
         res.status(200).json(body);
       }
     })

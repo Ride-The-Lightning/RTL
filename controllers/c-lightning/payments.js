@@ -46,10 +46,11 @@ function groupBy(payments) {
 }
 
 exports.listPayments = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Payments', msg: 'List Payments...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/pay/listPayments';
   request(options).then((body) => {
-    logger.info({fileName: 'Payments', msg: 'Payment List Received: ' + JSON.stringify(body.payments)});
+    logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received: ' + JSON.stringify(body.payments)});
     if(!body || body.error) {
       logger.error({fileName: 'Payments', lineNum: 12, msg: 'Payments List Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -60,6 +61,7 @@ exports.listPayments = (req, res, next) => {
       if ( body &&  body.payments && body.payments.length > 0) {
         body.payments = common.sortDescByKey(body.payments, 'created_at');
       }
+      logger.log({level: 'INFO', fileName: 'Payments', msg: 'List Payments Received.'});
       res.status(200).json(groupBy(body.payments));
     }
   })
@@ -80,10 +82,11 @@ exports.listPayments = (req, res, next) => {
 };
 
 exports.decodePayment = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Payments', msg: 'Decoding Payment...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/pay/decodePay/' + req.params.invoice;
   request(options).then((body) => {
-    logger.info({fileName: 'Payments', msg: 'Payment Decode Received: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Decode Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Payments', lineNum: 48, msg: 'Payment Decode Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -91,6 +94,7 @@ exports.decodePayment = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Decoded.'});
       res.status(200).json(body);
     }
   })
@@ -113,13 +117,15 @@ exports.decodePayment = (req, res, next) => {
 exports.postPayment = (req, res, next) => {
   options = common.getOptions();
   if (req.params.type === 'keysend') {
+    logger.log({level: 'INFO', fileName: 'Payments', msg: 'Keysend Payment...'});
     options.url = common.getSelLNServerUrl() + '/v1/pay/keysend';
   } else {
+    logger.log({level: 'INFO', fileName: 'Payments', msg: 'Send Payment...'});
     options.url = common.getSelLNServerUrl() + '/v1/pay';
   }
   options.body = req.body;
   request.post(options).then((body) => {
-    logger.info({fileName: 'Payments', msg: 'Send Payment Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Send Payment Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Payments', lineNum: 81, msg: 'Send Payment Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -127,6 +133,7 @@ exports.postPayment = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Payments', msg: 'Payment Sent.'});
       res.status(201).json(body);
     }
   })

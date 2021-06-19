@@ -4,11 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getNodes = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup...'});
   options = common.getOptions();  
   options.url = common.getSelLNServerUrl() + '/nodes';
   options.form = { nodeIds: req.params.id };
   request.post(options).then(function (body) {
-    logger.info({fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished.'});
     res.status(200).json(body);
   })
   .catch(errRes => {

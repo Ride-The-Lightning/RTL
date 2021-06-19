@@ -336,17 +336,17 @@ connect.logEnvVariables = () => {
   if (common.nodes && common.nodes.length > 0) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
-      logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
-      logger.info({fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node});
     });  
   }
 }
@@ -369,9 +369,9 @@ connect.getAllNodeAllChannelBackup = (node) => {
         }
       } else {
         if (node.ln_node) {
-          logger.info({fileName: 'Connect', msg: 'Channel Backup Successful for Node: ' + node.ln_node});
+          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful for Node: ' + node.ln_node});
         } else {
-          logger.info({fileName: 'Connect', msg: 'Channel Backup Successful'});
+          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful'});
         }
       }
     });

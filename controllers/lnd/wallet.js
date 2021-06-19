@@ -5,6 +5,7 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.genSeed = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Generating Seed...'});
   options = common.getOptions();
   if ( req.params.passphrase) {
     options.url = common.getSelLNServerUrl() + '/v1/genseed?aezeed_passphrase=' + Buffer.from(atob(req.params.passphrase)).toString('base64');
@@ -19,6 +20,7 @@ exports.genSeed = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Seed Generated.'});
       res.status(200).json(body);
     }
   })
@@ -42,12 +44,14 @@ exports.operateWallet = (req, res, next) => {
   options = common.getOptions();
   options.method = 'POST';
   if (!req.params.operation || req.params.operation === 'unlockwallet') {
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Unlocking Wallet...'});
     options.url = common.getSelLNServerUrl() + '/v1/unlockwallet';
     options.form = JSON.stringify({
       wallet_password: Buffer.from(atob(req.body.wallet_password)).toString('base64')
     });
     err_message = 'Unlocking wallet failed! Verify that lnd is running and the wallet is locked!';
   } else {
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Initializing Wallet...'});
     options.url = common.getSelLNServerUrl() + '/v1/initwallet';
     if ( req.body.aezeed_passphrase && req.body.aezeed_passphrase !== '') {
       options.form = JSON.stringify({
@@ -64,7 +68,7 @@ exports.operateWallet = (req, res, next) => {
     err_message = 'Initializing wallet failed!';
   }
   request(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'Wallet Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Wallet Response: ' + JSON.stringify(body)});
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     if(!body) {
@@ -90,6 +94,7 @@ exports.operateWallet = (req, res, next) => {
         });
       }
     } else {
+      logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Wallet Unlocked/Initialized.'});
       res.status(201).json('Successful');
     }
   })
@@ -119,10 +124,12 @@ exports.updateSelNodeOptions = (req, res, next) => {
 }
 
 exports.getUTXOs = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Getting UTXOs...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos?max_confs=' + req.query.max_confs;
   request.post(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'UTXO List Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO List Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'UTXOs Received.'});
     res.status(200).json(body.utxos ? body.utxos : []);
   })
   .catch(errRes => {
@@ -142,6 +149,7 @@ exports.getUTXOs = (req, res, next) => {
 }
 
 exports.bumpFee = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Bumping Fee...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/bumpfee';
   options.form = {};
@@ -156,7 +164,8 @@ exports.bumpFee = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'Bump Fee Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Bump Fee Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Fee Bumped.'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -176,6 +185,7 @@ exports.bumpFee = (req, res, next) => {
 }
 
 exports.labelTransaction = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Labelling Transaction...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/tx/label';
   options.form = {};
@@ -183,9 +193,10 @@ exports.labelTransaction = (req, res, next) => {
   options.form.label = req.body.label;
   options.form.overwrite = req.body.overwrite;
   options.form = JSON.stringify(options.form);
-  logger.info({fileName: 'Wallet', msg: 'Label Transaction Options: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Options: ' + JSON.stringify(options.form)});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'Label Transaction Post Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'Label Transaction Post Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Transaction Labelled.'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -205,6 +216,7 @@ exports.labelTransaction = (req, res, next) => {
 }
 
 exports.leaseUTXO = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Leasing UTXO...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/lease';
   options.form = {};
@@ -214,9 +226,10 @@ exports.leaseUTXO = (req, res, next) => {
     output_index: req.body.outputIndex
   };
   options.form = JSON.stringify(options.form);
-  logger.info({fileName: 'Wallet', msg: 'UTXO Lease Options: ' + options.form});
+  logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Options: ' + options.form});
   request.post(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'UTXO Lease Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Lease Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'UTXO Leased.'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -236,6 +249,7 @@ exports.leaseUTXO = (req, res, next) => {
 }
 
 exports.releaseUTXO = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Wallet', msg: 'Releasing UTXO...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v2/wallet/utxos/release';
   options.form = {};
@@ -246,7 +260,8 @@ exports.releaseUTXO = (req, res, next) => {
   };
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info({fileName: 'Wallet', msg: 'UTXO Release Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Wallet', msg: 'UTXO Release Response: ' + JSON.stringify(body)});
+    logger.log({level: 'INFO', fileName: 'Wallet', msg: 'UTXO Released.'});
     res.status(200).json(body);
   })
   .catch(errRes => {

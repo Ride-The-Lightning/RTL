@@ -4,12 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getNewAddress = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'NewAddress', msg: 'Getting New Address...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/newaddress?type=' + req.query.type;
   request(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    logger.info({fileName: 'NewAddress', msg: 'New Address Received: ' + body_str});
+    logger.log({level: 'DEBUG', fileName: 'NewAddress', msg: 'New Address Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
       logger.error({fileName: 'NewAddress', lineNum: 14, msg: 'New Address Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -17,6 +18,7 @@ exports.getNewAddress = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'NewAddress', msg: 'New Address Received.'});
       res.status(200).json(body);
     }
   })

@@ -5,10 +5,11 @@ var swtch = require('./switch');
 var options = {};
 
 exports.getFees = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Fees...'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/fees';
   request(options).then((body) => {
-    logger.info({fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
       logger.error({fileName: 'Fees', lineNum: 13, msg: 'Get Fee Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
@@ -22,14 +23,14 @@ exports.getFees = (req, res, next) => {
       let month_start_time = (Math.round(start_date.getTime()/1000)).toString();
       let week_start_time = current_time - 604800;
       let day_start_time = current_time - 86400;
-      swtch.getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
-        logger.info({fileName: 'Fees', msg: 'Forwarding History Received: ' + JSON.stringify(history)});
+      return swtch.getAllForwardingEvents(month_start_time, current_time, 0, (history) => {
+        logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Forwarding History Received: ' + JSON.stringify(history)});
         daily_sum = history.forwarding_events.reduce((acc, curr) => (curr.timestamp >= day_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc, [0, 0]);
         weekly_sum = history.forwarding_events.reduce((acc, curr) => (curr.timestamp >= week_start_time) ? [(acc[0] + 1), (acc[1] + +curr.fee_msat)] : acc, [0, 0]);
         monthly_sum = history.forwarding_events.reduce((acc, curr) => [(acc[0] + 1), (acc[1] + +curr.fee_msat)], [0, 0]);
-        logger.info({fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee): ' + daily_sum});
-        logger.info({fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee): ' + weekly_sum});
-        logger.info({fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee): ' + monthly_sum});
+        logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Daily Sum (Transactions, Fee): ' + daily_sum});
+        logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Weekly Sum (Transactions, Fee): ' + weekly_sum});
+        logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Monthly Sum (Transactions, Fee): ' + monthly_sum});
         body.daily_tx_count = daily_sum[0];
         body.weekly_tx_count = weekly_sum[0];
         body.monthly_tx_count = monthly_sum[0];
@@ -41,8 +42,9 @@ exports.getFees = (req, res, next) => {
         body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
         body.forwarding_events_history = history;
         if (history.error) { 
-          logger.error({fileName: 'Fees', lineNum: 50, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(history.error)}); 
+          logger.error({fileName: 'Fees', lineNum: 45, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(history.error)}); 
         }
+        logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fees Received.'});
         res.status(200).json(body);
       })
     }

@@ -25,6 +25,7 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   @Input() filterValue = '';
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  public timezoneOffset = new Date(Date.now()).getTimezoneOffset() * 60;
   public scrollRanges = SCROLL_RANGES;
   public transactions: any;
   public displayedColumns: any[] = [];
@@ -89,8 +90,8 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
     this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.transactions.sort = this.sort;
     this.transactions.filterPredicate = (rowData: any, fltr: string) => {
-      const newRowData = ((rowData.date) ? this.datePipe.transform(new Date(rowData.date), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);   
+      const newRowData = ((rowData.date) ? (this.datePipe.transform(rowData.date, 'dd/MMM') + '/' + rowData.date.getFullYear()).toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
     };
     this.transactions.paginator = this.paginator;
 }

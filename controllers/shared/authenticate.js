@@ -47,8 +47,10 @@ exports.verifyToken = (twoFAToken) => {
 };
 
 exports.authenticateUser = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User...'});
   if(+common.rtl_sso) {
     if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
@@ -56,6 +58,7 @@ exports.authenticateUser = (req, res, next) => {
         { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
       logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'SSO Authentication Failed! Access key too short or does not match.'});
@@ -84,6 +87,7 @@ exports.authenticateUser = (req, res, next) => {
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
       logger.error({fileName: 'Authenticate', lineNum: 89, msg: 'Invalid Password! Failed IP ' + reqIP});
@@ -95,6 +99,7 @@ exports.authenticateUser = (req, res, next) => {
 };
 
 exports.resetPassword = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password...'});
   if(+common.rtl_sso) {
     logger.error({fileName: 'Authenticate', lineNum: 99, msg: 'Password Reset Failed!'});
     res.status(401).json({
@@ -110,6 +115,7 @@ exports.resetPassword = (req, res, next) => {
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful.'});
       res.status(200).json({ token: token });
     } else {
       logger.error({fileName: 'Authenticate', lineNum: 115, msg: 'Password Reset Failed!'});
