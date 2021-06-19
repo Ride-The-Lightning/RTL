@@ -1,7 +1,7 @@
 var fs = require('fs');
-const selNode = require('../../routes/common').selectedNode;
+var common = require('../../routes/common');
 
-exports.log = (msgJSON) => {
+exports.log = (msgJSON, selNode = common.selectedNode) => {
   switch (msgJSON.level) {
     case 'INFO':
       if(selNode && !selNode.enable_logging) {
@@ -32,7 +32,7 @@ exports.log = (msgJSON) => {
   }
 }
 
-exports.error = (msgJSON) => {
+exports.error = (msgJSON, selNode = common.selectedNode) => {
   const msgStr = '\r\n[' + new Date().toISOString() + '] ERROR: ' +  msgJSON.fileName + '(' + msgJSON.lineNum + ') => ' + msgJSON.msg;
   console.error(msgStr);
   if(selNode && selNode.enable_logging) {
