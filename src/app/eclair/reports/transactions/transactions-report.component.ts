@@ -115,7 +115,7 @@ export class ECLTransactionsReportComponent implements OnInit, AfterViewInit, On
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
+        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
         let dateNumber = Math.floor((Math.floor(payment.firstPartTimestamp/1000) - startDateInSeconds) / this.secondsInADay);

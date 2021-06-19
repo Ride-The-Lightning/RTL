@@ -25,7 +25,6 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [];
@@ -101,29 +100,29 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
         transactionsReport.push({name: MONTHS[i].name, date: new Date(start.getFullYear(), i, 1, 0, 0, 0, 0), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let monthNumber = new Date((payment.created_at + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((payment.created_at)*1000).getMonth();
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let monthNumber = new Date((+invoice.paid_at + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+invoice.paid_at)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
+        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let dateNumber = Math.floor((+payment.created_at - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+payment.created_at - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[dateNumber].series[0].value = transactionsReport[dateNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[dateNumber].series[0].extra.total = transactionsReport[dateNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let dateNumber = Math.floor((+invoice.paid_at - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+invoice.paid_at - startDateInSeconds) / this.secondsInADay);
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[dateNumber].series[1].value = transactionsReport[dateNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[dateNumber].series[1].extra.total = transactionsReport[dateNumber].series[1].extra.total + 1;

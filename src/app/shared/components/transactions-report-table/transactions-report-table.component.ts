@@ -55,10 +55,10 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataList) {
+    if (changes.dataList && !changes.dataList.firstChange) {
       this.loadTransactionsTable(this.dataList);
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }  
@@ -79,7 +79,9 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   }
 
   applyFilter() {
-    this.transactions.filter = this.filterValue.trim().toLowerCase();
+    if (this.transactions) {
+      this.transactions.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   loadTransactionsTable(trans: any[]) {

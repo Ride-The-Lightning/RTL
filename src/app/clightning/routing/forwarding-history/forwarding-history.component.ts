@@ -78,12 +78,12 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
+    if (changes.eventsData && !changes.eventsData.firstChange) {
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
       this.loadForwardingEventsTable(this.successfulEvents);
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }
@@ -130,7 +130,9 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {

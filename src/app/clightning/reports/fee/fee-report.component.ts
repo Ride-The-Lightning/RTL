@@ -27,7 +27,6 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public errorMessage = '';
   public totalFeeMsat = null;
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
@@ -117,7 +116,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let monthNumber = new Date((+event.received_time + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+event.received_time)*1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;
@@ -127,7 +126,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
         feeReport.push({name: i + 1, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.filteredEventsBySelectedPeriod.map(event => {
-        let dateNumber = Math.floor((+event.received_time - startDateInSeconds + this.timezoneOffset) / this.secondsInADay);
+        let dateNumber = Math.floor((+event.received_time - startDateInSeconds) / this.secondsInADay);
         feeReport[dateNumber].value = feeReport[dateNumber].value + (+event.fee / 1000);
         feeReport[dateNumber].extra.totalEvents = feeReport[dateNumber].extra.totalEvents + 1;
         this.totalFeeMsat = (this.totalFeeMsat ? this.totalFeeMsat : 0) + +event.fee;

@@ -78,12 +78,12 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData) {
+    if (changes.eventsData && !changes.eventsData.firstChange) {
       this.eventsData = changes.eventsData.currentValue;
       this.forwardingHistoryData = this.eventsData;
       this.loadForwardingEventsTable(this.forwardingHistoryData);
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }
@@ -125,7 +125,9 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {
