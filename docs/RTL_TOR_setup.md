@@ -4,39 +4,34 @@ This guide will allow you to remotely connect to RTL over Tor. This can work on 
 
 #### Server Setup 
 Install Tor on the same local machine as RTL. see the tor project wiki [here](https://trac.torproject.org/projects/tor/wiki)
+On Debian based distros:
+    $> sudo apt install tor
 
-Edit the `torrc` configuration file, and add the following lines:
+Edit `/etc/tor/torrc` (Debian based distro) configuration file, and add the following lines:
 ```
-HiddenServiceDir /var/db/tor/rtl/
-HiddenServiceVersion 2
-HiddenServiceAuthorizeClient stealth mydevice
+HiddenServiceDir /var/lib/tor/rtl-service-v3/
+HiddenServiceVersion 3
 HiddenServicePort 3000 127.0.0.1:3000
 ```
-Change `/var/db/tor/rtl/` to any directory you want to store the hidden service credentials. 
-Change `mydevice` to anything you want. 
+Change `/var/lib/tor/rtl-service-v3/` to any directory you want to store the hidden service credentials. 
 
 Save the changes to the `torrc` file and restart tor.
+    $> sudo systemctl restart tor
+    or sometimes:
+    $> sudo systemctl daemon-reload    
 
-View the contents of the file `/var/db/tor/rtl/hostname`. It will show an onion address, an authentication password(cookie), and the associated `mydevice` label.
-
+View the contents of the file `/var/lib/tor/rtl-service-v3/hostname`. You need to be root. It will show an onion address. This is your address.
+On Debian based distro:
+    $> su -c "cat /var/lib/tor/rtl-service-v3/hostname"
+ 
 #### Client setup: Android
 
-Download Orbot for android (add their repos to F-Droid here: https://guardianproject.info/fdroid/
+Install Tor browser (or any other compatible browser) for Android from the app store
 
-Open orbot. Click the `⋮`, select `hidden services ˃`, select `Client cookies`.
+Open the tor enabled browser and type in the onion address (example `z1234567890abc.onion:3000`) 
+Only you have access to this website! All traffic in the tor enabled browser will go over Tor (which is slower than clearnet). 
 
-Press the + button on the lower right. Type in the the onion address and secret cookie you revealed in file `/var/lnd/tor/rtl/hostname`.
-
-Go back to orbot's main screen, and select the gear icon under `tor enabled apps`. 
-Add your favorite tor compatible browser (I use brave) `Brave`, then press back. 
-Click `stop` on the big onion logo. Exit orbot and reopen it. 
-Turn on `VPN Mode`. Start your connection to the tor network by clicking on the big onion (if it has not automatically connected already)
-
-Now open the tor enabled browser and type in the onion address (example `z1234567890abc.onion:3000`) 
-Only you have access to this website! All traffic in the brave browser will go over Tor (which is slower than clearnet). 
-To go back to clearnet browsing, turn off VPN mode in Orbot.
-
-#### Client setup: Windows Tor Browser
+#### Client setup: Windows Tor Browser (not updated)
 
 Download and install Tor Browser for windows: https://www.torproject.org/download/
 
@@ -50,5 +45,3 @@ HidServAuth 1234567890abcdefg.onion abcdef01234567890+/K mydevice
 Save and exit. 
 
 Now open Tor Browser, type in the `1234567890abcdefg.onion:3000` address!
-
-
