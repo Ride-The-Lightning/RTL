@@ -36,7 +36,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
   
     case 'DEBUG':
       if(selNode && selNode.enable_logging) {
-        if (msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
+        if (msgJSON.data && typeof msgJSON.data !== 'string' && msgJSON.data.length && msgJSON.data.length > 0) {
           msgStr = msgJSON.data.reduce((accumulator, dataEle) => {
             return accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ';
           }, msgStr + ': [');
