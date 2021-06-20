@@ -7,26 +7,26 @@ var request = require('request-promise');
 var options = {};
 
 exports.updateSelectedNode = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Selected Node..'});
   const selNodeIndex = req.body.selNodeIndex;
   common.selectedNode = common.findNode(selNodeIndex);
   const responseVal = common.selectedNode && common.selectedNode.ln_node ? common.selectedNode.ln_node : '';
-  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Selected Node Updated To: ' + JSON.stringify(responseVal)});
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated.'});
+  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Selected Node Updated To', data: responseVal});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Selected Node Updated'});
   res.status(200).json({status: 'Selected Node Updated To: ' + JSON.stringify(responseVal) + '!'});
 };
 
 exports.getRTLConfig = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting RTL Configuration..'});
   var confFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Getting Node Config'});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
       if (err.code === 'ENOENT') {
-        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!'});
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!', error: {error: 'Node config does not exist.'}});
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
-        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Getting Node Config Failed!'});
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Getting Node Config Failed!', error: err});
         res.status(500).json({
           message: "Reading Node Config Failed!",
           error: err
@@ -63,14 +63,14 @@ exports.getRTLConfig = (req, res, next) => {
             authentication: authentication})
         });
       }
-      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received.'});
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'RTL Configuration Received'});
       res.status(200).json({ defaultNodeIndex: nodeConfData.defaultNodeIndex, selectedNodeIndex: common.selectedNode.index, sso: sso, enable2FA: enable2FA, nodes: nodesArr });
     }
   });
 };
 
 exports.updateUISettings = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating UI Settings..'});
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.nodes.find(node => {
@@ -100,11 +100,11 @@ exports.updateUISettings = (req, res, next) => {
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Updating Node Settings Succesful!'});
-    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'UI Settings Updated.'});
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'UI Settings Updated'});
     res.status(201).json({message: 'Node Settings Updated Successfully'});
   }
   catch (err) {
-    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating Node Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Node Settings Failed!', error: {error: 'Updating node settings failed.'}});
     res.status(500).json({
       message: "Updating Node Settings Failed!",
       error: 'Updating Node Settings Failed!'
@@ -113,7 +113,7 @@ exports.updateUISettings = (req, res, next) => {
 };
 
 exports.update2FASettings = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating 2FA Settings..'});
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.secret2fa = req.body.secret2fa;
@@ -122,11 +122,11 @@ exports.update2FASettings = (req, res, next) => {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     common.rtl_secret2fa = config.secret2fa;
     logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: message});
-    logger.log({level: 'INFO', fileName: 'RTLConf', msg: '2FA Updated.'});
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: '2FA Updated'});
     res.status(201).json({message: message});
   }
   catch (err) {
-    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating 2FA Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating 2FA Settings Failed!', error: {error: 'Updating 2FA settings failed.'}});
     res.status(500).json({
       message: "Updating 2FA Settings Failed!",
       error: 'Updating 2FA Settings Failed!'
@@ -135,18 +135,18 @@ exports.update2FASettings = (req, res, next) => {
 };
 
 exports.updateDefaultNode = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Default Node...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Default Node..'});
   RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   config.defaultNodeIndex = req.body.defaultNodeIndex;
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Updating Default Node Succesful!'});
-    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Default Node Updated.'});
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Default Node Updated'});
     res.status(201).json({message: 'Default Node Updated Successfully'});
   }
   catch (err) {
-    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating Default Node Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Default Node Failed!', error: {error: 'Updating dafault node failed.'}});
     res.status(500).json({
       message: "Updating Default Node Failed!",
       error: 'Updating Default Node Failed!'
@@ -155,7 +155,7 @@ exports.updateDefaultNode = (req, res, next) => {
 };
 
 exports.getConfig = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Reading Configuration File...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Reading Configuration File..'});
   let confFile = '';
   let fileFormat = 'INI';
   switch (req.params.nodeType) {
@@ -173,10 +173,10 @@ exports.getConfig = (req, res, next) => {
       confFile = '';
       break;
   }
-  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Node Type: ' + req.params.nodeType + ', File Path: ' + confFile});
+  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: '[Node Type, File Path]', data: [req.params.nodeType, confFile]});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
-      logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Reading Conf Failed!'});
+      logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Reading Conf Failed!', error: err});
       res.status(500).json({
         message: "Reading Config File Failed!",
         error: err
@@ -195,19 +195,19 @@ exports.getConfig = (req, res, next) => {
       }
       jsonConfig = maskPasswords(jsonConfig);
       const responseJSON = (fileFormat === 'JSON') ? jsonConfig : ini.stringify(jsonConfig);
-      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Configuration Data Received.'});
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Configuration Data Received'});
       res.status(200).json({format: fileFormat, data: responseJSON});
     }
   });
 };
 
 exports.getFile = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting File...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting File..'});
   let file = req.query.path ? req.query.path : (common.selectedNode.channel_backup_path + common.path_separator + 'channel-' + req.query.channel.replace(':', '-') + '.bak');
-  logger.log({level: 'DEBUG', fileName: 'Conf', msg: 'Channel Point: ' + req.query.channel + ', File Path: ' + file});
+  logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: '[Channel Point, File Path]', data: [req.query.channel, file]});
   fs.readFile(file, 'utf8', function(err, data) {
     if (err) {
-      logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Reading File Failed!' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Reading File Failed!', error: err});
       if (err.code && err.code === 'ENOENT') {
         err.code = 'Backup File Not Found!';
       }
@@ -216,15 +216,15 @@ exports.getFile = (req, res, next) => {
         error: err
       });
     } else {
-      logger.log({level: 'DEBUG', fileName: 'Conf', msg: 'File Data: ' + data});
-      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received.'});
+      logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'File Data', data: data});
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'File Data Received'});
       res.status(200).json(data);
     }
   });
 };
 
 exports.getCurrencyRates = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Getting Currency Rates..'});
   options.url = 'https://blockchain.info/ticker';
   request(options).then((body) => {
     if(!body || body.error) {
@@ -233,12 +233,12 @@ exports.getCurrencyRates = (req, res, next) => {
         error: (!body) ? 'Error From External Server!' : body.error
       });
     } else {
-      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received.'});
+      logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Currency Rates Received'});
       res.status(200).json(JSON.parse(body));
     }
   })
   .catch(function (err) {
-    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Fetching Rates Failed!', error: err});
     return res.status(500).json({
       message: "Fetching Rates Failed!",
       error: err.error
@@ -247,7 +247,7 @@ exports.getCurrencyRates = (req, res, next) => {
 };
 
 exports.updateSSO = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating SSO Settings...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating SSO Settings..'});
   RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   delete config.SSO;
@@ -255,11 +255,11 @@ exports.updateSSO = (req, res, next) => {
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Updating SSO Succesful!'});
-    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'SSO Setting Updated.'});
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'SSO Setting Updated'});
     res.status(201).json({message: 'SSO Updated Successfully'});
   }
   catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating SSO Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating SSO Failed!', error: {error: 'Updating SSO failed.'}});
     res.status(500).json({
       message: "Updating SSO Failed!",
       error: 'Updating SSO Failed!'
@@ -268,7 +268,7 @@ exports.updateSSO = (req, res, next) => {
 };
 
 exports.updateServiceSettings = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings...'});
+  logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Updating Service Settings..'});
   var RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
   var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
   const selectedNode = common.findNode(common.selectedNode.index);
@@ -312,11 +312,11 @@ exports.updateServiceSettings = (req, res, next) => {
   try {
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Updating Service Settings Succesful!'});
-    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Service Settings Updated.'});
+    logger.log({level: 'INFO', fileName: 'RTLConf', msg: 'Service Settings Updated'});
     res.status(201).json({message: 'Service Settings Updated Successfully'});
   }
   catch (err) {
-    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Service Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Service Settings Failed!', error: {error: 'Updating service settings failed.'}});
     res.status(500).json({
       message: "Updating Service Settings Failed!",
       error: 'Updating Service Settings Failed!'

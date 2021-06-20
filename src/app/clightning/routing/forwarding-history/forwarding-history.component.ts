@@ -78,10 +78,12 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData && !changes.eventsData.firstChange) {
+    if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
-      this.loadForwardingEventsTable(this.successfulEvents);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      }
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();

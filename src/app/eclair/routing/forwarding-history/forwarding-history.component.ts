@@ -82,9 +82,11 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData && !changes.eventsData.firstChange) {
+    if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
-      this.loadForwardingEventsTable(this.eventsData);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();

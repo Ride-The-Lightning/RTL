@@ -4,13 +4,13 @@ var logger = require('../shared/logger');
 var options = {};
 
 exports.getNodes = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup...'});
+  logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup..'});
   options = common.getOptions();  
   options.url = common.getSelLNServerUrl() + '/nodes';
   options.form = { nodeIds: req.params.id };
   request.post(options).then(function (body) {
-    logger.log({level: 'DEBUG', fileName: 'Network', msg: 'Node Lookup: ' + JSON.stringify(body)});
-    logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished.'});
+    logger.log({level: 'DEBUG', fileName: 'Network', msg: 'Node Lookup', data: body});
+    logger.log({level: 'INFO', fileName: 'Network', msg: 'Node Lookup Finished'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -21,7 +21,7 @@ exports.getNodes = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Node Lookup Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Node Lookup Error', error: err});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: 'Node Lookup Failed!',
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

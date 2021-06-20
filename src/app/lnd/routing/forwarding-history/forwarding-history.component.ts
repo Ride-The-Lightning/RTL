@@ -78,10 +78,12 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.eventsData && !changes.eventsData.firstChange) {
+    if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
       this.forwardingHistoryData = this.eventsData;
-      this.loadForwardingEventsTable(this.forwardingHistoryData);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
+      }
     }
     if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();

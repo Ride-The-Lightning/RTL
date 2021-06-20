@@ -363,20 +363,20 @@ connect.getAllNodeAllChannelBackup = (node) => {
     fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
       if (err) {
         if (node.ln_node) {
-          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err)});
+          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Failed for Node ' + node.ln_node, error: err});
         } else {
-          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Failed: ' + JSON.stringify(err)});
+          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Error', error: err});
         }
       } else {
         if (node.ln_node) {
-          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful for Node: ' + node.ln_node});
+          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful for Node', data: node.ln_node});
         } else {
           logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful'});
         }
       }
     });
   }, (err) => {
-    logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Error', error: err});
   })
 };
 

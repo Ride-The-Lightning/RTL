@@ -21,7 +21,7 @@ arrangeFees = (body, current_time) => {
     fees.monthly_fee = fees.monthly_fee + fee;
     fees.monthly_txs = fees.monthly_txs + 1;
   });
-  logger.log({level: 'DEBUG', fileName: 'Fees', msg: JSON.stringify(fees)});
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Fee', data: fees});
   return fees;
 };
 
@@ -56,12 +56,12 @@ arrangePayments = (body) => {
   payments.sent = common.sortDescByKey(payments.sent, 'firstPartTimestamp');
   payments.received = common.sortDescByKey(payments.received, 'firstPartTimestamp');
   payments.relayed = common.sortDescByKey(payments.relayed, 'timestamp');
-  logger.log({level: 'DEBUG', fileName: 'Fees', msg: JSON.stringify(payments)});
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Arranged Payments', data: payments});
   return payments;
 };
 
 exports.getFees = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Fees...'});
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Fees..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   let today = new Date(Date.now());
@@ -71,13 +71,13 @@ exports.getFees = (req, res, next) => {
     from: fromLastMonth,
     to: tillToday
   };
-  logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options: ' + JSON.stringify(options.form)});
+  logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Audit Options', data: options.form});
   if (common.read_dummy_data) {
     common.getDummyData('Fees').then(function(data) { res.status(200).json(arrangeFees(data, Math.round((new Date().getTime())))); });
   } else {
     request.post(options).then((body) => {
-      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response: ' + JSON.stringify(body)});
-      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fee Received.'});
+      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Response', data: body});
+      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fee Received'});
       res.status(200).json(arrangeFees(body, Math.round((new Date().getTime()))));
     })
     .catch(errRes => {
@@ -88,7 +88,7 @@ exports.getFees = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Fees Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Fees Error', error: err});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Fetching Fees failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -98,7 +98,7 @@ exports.getFees = (req, res, next) => {
 };
 
 exports.getPayments = (req, res, next) => {
-  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Payments...'});
+  logger.log({level: 'INFO', fileName: 'Fees', msg: 'Getting Payments..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/audit';
   options.form = null;
@@ -106,8 +106,8 @@ exports.getPayments = (req, res, next) => {
     common.getDummyData('Payments').then(function(data) { res.status(200).json(arrangePayments(data)); });
   } else {
     request.post(options).then((body) => {
-      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response: ' + JSON.stringify(body)});
-      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Payments Received.'});
+      logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Payments Response', data: body});
+      logger.log({level: 'INFO', fileName: 'Fees', msg: 'Payments Received'});
       res.status(200).json(arrangePayments(body));
     })
     .catch(errRes => {
@@ -118,7 +118,7 @@ exports.getPayments = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Payments Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Payments Error', error: err});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Fetching Payments failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

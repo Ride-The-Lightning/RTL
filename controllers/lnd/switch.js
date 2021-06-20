@@ -17,7 +17,7 @@ exports.forwardingHistory = (req, res, next) => {
 };
 
 exports.getAllForwardingEvents = (start, end, offset, callback) => {
-  logger.log({level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events...'});
+  logger.log({level: 'INFO', fileName: 'Switch', msg: 'Getting Forwarding Events..'});
   if (offset === 0) { responseData = { forwarding_events: [], last_offset_index: 0 }; }
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/switch';
@@ -27,10 +27,10 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
   options.form.num_max_events = num_max_events;
   options.form.index_offset = offset;
   options.form = JSON.stringify(options.form);
-  logger.log({level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History Params: ' + options.form});
+  logger.log({level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History Params', data: options.form});
   return request.post(options).then((body) => { 
-    logger.log({level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History: ' + JSON.stringify(body)});
-    logger.log({level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received.'});
+    logger.log({level: 'DEBUG', fileName: 'Switch', msg: 'Forwarding History', data: body});
+    logger.log({level: 'INFO', fileName: 'Switch', msg: 'Forwarding Events Received'});
     if (body.forwarding_events) { 
       responseData.forwarding_events.push(...body.forwarding_events);
     }
@@ -52,7 +52,7 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.log({level: 'ERROR', fileName: 'Switch', msg: 'Get All Forwarding Events Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Switch', msg: 'Get All Forwarding Events Error', error: err});
     return callback({
       message: "Forwarding Events Failed!",
       error: err.error
