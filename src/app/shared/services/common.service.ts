@@ -82,7 +82,7 @@ export class CommonService {
         return this.dataService.getFiatRates()
         .pipe(take(1),
         map((data: any) => {
-          this.conversionData.data = data ? JSON.parse(data) : {};
+          this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
           this.conversionData.last_fetched = latest_date;
           return this.convertWithFiat(value, from, otherCurrencyUnit);
         }));

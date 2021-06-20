@@ -40,7 +40,7 @@ exports.getPeers = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Peers', lineNum: 39, msg: 'List Peers Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'List Peers Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Peers List Failed!",
       error: err.error
@@ -59,7 +59,7 @@ exports.postPeer = (req, res, next) => {
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Peers', lineNum: 63, msg: 'Add Peer Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Add Peer Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Adding peer failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -87,7 +87,7 @@ exports.postPeer = (req, res, next) => {
           if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
             delete err.response.request.headers['Grpc-Metadata-macaroon'];
           }
-          logger.error({fileName: 'Peer', lineNum: 93, msg: 'Add Peer Error: ' + JSON.stringify(err)});
+          logger.log({level: 'ERROR', fileName: 'Peer', msg: 'Add Peer Error: ' + JSON.stringify(err)});
           return res.status(500).json({
             message: "Peer Add Failed!",
             error: err.error
@@ -105,7 +105,7 @@ exports.deletePeer = (req, res, next) => {
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Detach Peer Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Peers', lineNum: 110, msg: 'Detach Peer Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Detach peer failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -124,7 +124,7 @@ exports.deletePeer = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Peers', lineNum: 127, msg: 'Detach Peer Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Detach Peer Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Detach Peer Failed!",
       error: err.error

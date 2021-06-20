@@ -72,7 +72,7 @@ exports.listInvoices = (req, res, next) => {
           if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
             delete err.response.request.headers.authorization;
           }
-          logger.error({fileName: 'Invoice', lineNum: 66, msg: 'List Invoices Error: ' + JSON.stringify(err)});
+          logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoices Error: ' + JSON.stringify(err)});
           return res.status(err.statusCode ? err.statusCode : 500).json({
             message: "Fetching Invoices failed!",
             error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -91,7 +91,7 @@ exports.listInvoices = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Invoice', lineNum: 84, msg: 'List Invoices Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'List Invoices Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Fetching Invoices failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -119,7 +119,7 @@ exports.createInvoice = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Invoice', lineNum: 108, msg: 'Create Invoice Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Invoice', msg: 'Create Invoice Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Create Invoice Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

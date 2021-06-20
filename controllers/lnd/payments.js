@@ -12,7 +12,7 @@ exports.getPayments = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment List Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'Payments', lineNum: 14, msg: 'List Payments Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'List Payments Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Payments List Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -34,7 +34,7 @@ exports.getPayments = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Payments', lineNum: 36, msg: 'List Payments Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'List Payments Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Payments List Failed!",
       error: err.error
@@ -61,7 +61,7 @@ exports.getAllLightningTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Payments', lineNum: 84, msg: 'All Lightning Transactions Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'All Lightning Transactions Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "All Lightning Transactions Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err

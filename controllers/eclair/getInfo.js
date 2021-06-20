@@ -20,7 +20,7 @@ exports.getInfo = (req, res, next) => {
     });
   } else {
     if (!options.headers || !options.headers.authorization) {
-      logger.error({fileName: 'GetInfo', lineNum: 13, msg: 'Eclair Get info failed due to missing or wrong password!'});
+      logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Eclair Get info failed due to missing or wrong password!'});
       res.status(502).json({
         message: "Fetching Info Failed!",
         error: "Missing Or Wrong Password"
@@ -44,7 +44,7 @@ exports.getInfo = (req, res, next) => {
         if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
           delete err.response.request.headers.authorization;
         }
-        logger.error({fileName: 'GetInfo', lineNum: 57, msg: 'Get Info Error: ' + JSON.stringify(err)});
+        logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error: ' + JSON.stringify(err)});
         return res.status(err.statusCode ? err.statusCode : 500).json({
           message: "Fetching Info failed!",
           error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

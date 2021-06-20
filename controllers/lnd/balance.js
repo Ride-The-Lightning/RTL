@@ -37,7 +37,7 @@ exports.getBalance = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Balance', lineNum: 38, msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Balance', msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching balance failed!",
       error: err.error

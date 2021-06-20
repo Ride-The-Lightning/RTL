@@ -12,7 +12,7 @@ exports.getInfo = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName:'GetInfo', msg: 'Selected Node: ' + JSON.stringify(common.selectedNode.ln_node)});
   logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from LND server url: ' + options.url});
   if (!options.headers || !options.headers['Grpc-Metadata-macaroon']) {
-    logger.error({fileName: 'GetInfo', lineNum: 17, msg: 'LND Get info failed due to bad or missing macaroon!'});
+    logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'LND Get info failed due to bad or missing macaroon!'});
     res.status(502).json({
       message: "Fetching Info Failed!",
       error: "Bad Macaroon"
@@ -24,7 +24,7 @@ exports.getInfo = (req, res, next) => {
       const body_str = (!body) ? '' : JSON.stringify(body);
       const search_idx = (!body) ? -1 : body_str.search('Not Found');
       if(!body || search_idx > -1 || body.error) {
-        logger.error({fileName: 'GetInfo', lineNum: 26, msg: 'Get Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+        logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
         res.status(500).json({
           message: "Fetching Info Failed!",
           error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -42,7 +42,7 @@ exports.getInfo = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'GetInfo', lineNum: 42, msg: 'Get Info Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'GetInfo', msg: 'Get Info Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Fetching Info Failed!",
         error: err.error

@@ -25,7 +25,7 @@ exports.loopOut = (req, res, next) => {
   request.post(options).then(loopOutRes => {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop Out: ' + JSON.stringify(loopOutRes)});
     if(!loopOutRes || loopOutRes.error) {
-      logger.error({fileName: 'Loop', lineNum: 28, msg: 'Loop Out Error: ' + JSON.stringify(loopOutRes.error)});
+      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Error: ' + JSON.stringify(loopOutRes.error)});
       res.status(500).json({
         message: 'Loop Out Failed!',
         error: (!loopOutRes) ? 'Error From Server!' : loopOutRes.error.message
@@ -43,7 +43,7 @@ exports.loopOut = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 44, msg: 'Loop Out Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -69,7 +69,7 @@ exports.loopOutTerms = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 67, msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -98,7 +98,7 @@ exports.loopOutQuote = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 94, msg: 'Loop Out Quote Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Quote Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Quote Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -136,7 +136,7 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'Loop', lineNum: 132, msg: 'Loop Out Quotes Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Quotes Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Loop Out Quotes Failed!",
         error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -151,7 +151,7 @@ exports.loopOutTermsAndQuotes = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 146, msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop Out Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Out Terms Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -174,7 +174,7 @@ exports.loopIn = (req, res, next) => {
   request.post(options).then(function (body) {
     logger.log({level: 'DEBUG', fileName: 'Loop', msg: 'Loop In: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Loop', lineNum: 166, msg: 'Loop In Error: ' + JSON.stringify(body.error)});
+      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Error: ' + JSON.stringify(body.error)});
       res.status(500).json({
         message: 'Loop In Failed!',
         error: (body.error && body.error.message) ? body.error.message : 'Error From Server!'
@@ -192,7 +192,7 @@ exports.loopIn = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 182, msg: 'Loop In Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -218,7 +218,7 @@ exports.loopInTerms = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 205, msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Terms Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -247,7 +247,7 @@ exports.loopInQuote = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 232, msg: 'Loop In Quote Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Quote Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Quote Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -285,7 +285,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'Loop', lineNum: 270, msg: 'Loop In Quotes Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Quotes Error: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Loop In Quotes Failed!",
         error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -300,7 +300,7 @@ exports.loopInTermsAndQuotes = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 284, msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Loop In Terms Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop In Terms Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -330,7 +330,7 @@ exports.swaps = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 327, msg: 'List Swaps Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'List Swaps Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Swaps Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -356,7 +356,7 @@ exports.swap = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Loop', lineNum: 342, msg: 'Swap Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Loop', msg: 'Swap Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Loop Swap Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err

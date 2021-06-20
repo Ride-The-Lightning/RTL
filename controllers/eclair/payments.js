@@ -33,7 +33,7 @@ exports.decodePayment = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Payments', lineNum: 22, msg: 'Payment Decode Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Decode Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Payment Decode Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -60,7 +60,7 @@ exports.postPayment = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Payments', lineNum: 46, msg: 'Send Payment Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Send Payment Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Send Payment Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -104,7 +104,7 @@ exports.queryPaymentRoute = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Payments', lineNum: 109, msg: 'Query Payment Route Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Query Payment Route Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Query Payment Route Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -119,6 +119,7 @@ exports.getSentPaymentsInformation = (req, res, next) => {
     let paymentsArr = req.body.payments.split(',');
     return Promise.all(paymentsArr.map(payment => {return getSentInfoFromPaymentRequest(payment)}))
     .then(function(values) {
+      console.warn(values);
       logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Informations: ' + JSON.stringify(values)});
       logger.log({level: 'INFO', fileName: 'Payments', msg: 'Sent Payment Information Received.'});
       res.status(200).json(values);
@@ -131,7 +132,7 @@ exports.getSentPaymentsInformation = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Payments', lineNum: 126, msg: 'Payment Sent Information Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Payments', msg: 'Payment Sent Information Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Payment Sent Information Failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -146,7 +147,7 @@ exports.getSentPaymentsInformation = (req, res, next) => {
 getSentInfoFromPaymentRequest = (payment) => {
   options.url = common.getSelLNServerUrl() + '/getsentinfo';    
   options.form = { paymentHash: payment };
-  request.post(options).then((body) => {
+  return request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Information Received: ' + JSON.stringify(body)});
     body.forEach(sentPayment => {
       if (sentPayment.amount) { sentPayment.amount = Math.round(sentPayment.amount/1000); }

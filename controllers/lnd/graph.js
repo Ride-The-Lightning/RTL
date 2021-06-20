@@ -21,7 +21,7 @@ exports.getDescribeGraph = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Describe Graph Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 27, msg: 'Describe Graph Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Describe Graph Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Describe Graph Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -39,7 +39,7 @@ exports.getDescribeGraph = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 43, msg: 'Describe Graph Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Describe Graph Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Describe Graph Failed!",
       error: err.error
@@ -56,7 +56,7 @@ exports.getGraphInfo = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Network Info Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 59, msg: 'Network Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Network Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching network Info failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -79,7 +79,7 @@ exports.getGraphInfo = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 80, msg: 'Fetch Network Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Network Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching network Info failed!",
       error: err.error
@@ -94,7 +94,7 @@ exports.getGraphNode = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Node Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 94, msg: 'Fetch Node Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Node Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching node Info failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -111,7 +111,7 @@ exports.getGraphNode = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 112, msg: 'Fetch Node Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Node Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching node Info failed!",
       error: err.error
@@ -126,7 +126,7 @@ exports.getGraphEdge = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 126, msg: 'Fetch Edge Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Edge Info Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -143,7 +143,7 @@ exports.getGraphEdge = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 144, msg: 'Fetch Edge Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Edge Info Failed!",
       error: err.error
@@ -162,7 +162,7 @@ exports.getQueryRoutes = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Query Routes Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 162, msg: 'Fetch Query Routes Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Query Routes Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Query Routes Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -188,7 +188,7 @@ exports.getQueryRoutes = (req, res, next) => {
         if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
           delete err.response.request.headers['Grpc-Metadata-macaroon'];
         }
-        logger.error({fileName: 'Graph', lineNum: 196, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
+        logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
         return res.status(500).json({
           message: "Fetching Query Routes Failed!",
           error: err.error
@@ -207,7 +207,7 @@ exports.getQueryRoutes = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 214, msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Query Routes Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Query Routes Failed!",
       error: err.error
@@ -222,7 +222,7 @@ exports.getRemoteFeePolicy = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Edge Info Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Graph', lineNum: 218, msg: 'Fetch Edge Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Edge Info Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -253,7 +253,7 @@ exports.getRemoteFeePolicy = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Graph', lineNum: 250, msg: 'Fetch Edge Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Fetch Edge Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Edge Info Failed!",
       error: err.error
@@ -278,7 +278,7 @@ exports.getAliasesForPubkeys = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'Graph', lineNum: 279, msg: 'Get Aliases for Pubkeys Failed: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Graph', msg: 'Get Aliases for Pubkeys Failed: ' + JSON.stringify(err)});
       return res.status(500).json({
         message: "Getting Aliases for Pubkeys Failed!",
         error: err.error

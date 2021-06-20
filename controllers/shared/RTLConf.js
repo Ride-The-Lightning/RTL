@@ -23,10 +23,10 @@ exports.getRTLConfig = (req, res, next) => {
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
       if (err.code === 'ENOENT') {
-        logger.error({fileName: 'RTLConf', lineNum: 22, msg: 'Node config does not exist!'});
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Node config does not exist!'});
         res.status(200).json({ defaultNodeIndex: 0, selectedNodeIndex: 0, sso: {}, nodes: [] });
       } else {
-        logger.error({fileName: 'RTLConf', lineNum: 25, msg: 'Getting Node Config Failed!'});
+        logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Getting Node Config Failed!'});
         res.status(500).json({
           message: "Reading Node Config Failed!",
           error: err
@@ -104,7 +104,7 @@ exports.updateUISettings = (req, res, next) => {
     res.status(201).json({message: 'Node Settings Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 101, msg: 'Updating Node Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating Node Settings Failed!'});
     res.status(500).json({
       message: "Updating Node Settings Failed!",
       error: 'Updating Node Settings Failed!'
@@ -126,7 +126,7 @@ exports.update2FASettings = (req, res, next) => {
     res.status(201).json({message: message});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 121, msg: 'Updating 2FA Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating 2FA Settings Failed!'});
     res.status(500).json({
       message: "Updating 2FA Settings Failed!",
       error: 'Updating 2FA Settings Failed!'
@@ -146,7 +146,7 @@ exports.updateDefaultNode = (req, res, next) => {
     res.status(201).json({message: 'Default Node Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'Conf', lineNum: 139, msg: 'Updating Default Node Failed!'});
+    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Updating Default Node Failed!'});
     res.status(500).json({
       message: "Updating Default Node Failed!",
       error: 'Updating Default Node Failed!'
@@ -176,7 +176,7 @@ exports.getConfig = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'RTLConf', msg: 'Node Type: ' + req.params.nodeType + ', File Path: ' + confFile});
   fs.readFile(confFile, 'utf8', function(err, data) {
     if (err) {
-      logger.error({fileName: 'Conf', lineNum: 168, msg: 'Reading Conf Failed!'});
+      logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Reading Conf Failed!'});
       res.status(500).json({
         message: "Reading Config File Failed!",
         error: err
@@ -207,7 +207,7 @@ exports.getFile = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'Conf', msg: 'Channel Point: ' + req.query.channel + ', File Path: ' + file});
   fs.readFile(file, 'utf8', function(err, data) {
     if (err) {
-      logger.error({fileName: 'Conf', lineNum: 207, msg: 'Reading File Failed!' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Reading File Failed!' + JSON.stringify(err)});
       if (err.code && err.code === 'ENOENT') {
         err.code = 'Backup File Not Found!';
       }
@@ -238,7 +238,7 @@ exports.getCurrencyRates = (req, res, next) => {
     }
   })
   .catch(function (err) {
-    logger.error({fileName: 'Conf', lineNum: 210, msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Conf', msg: 'Fetching Rates Failed! ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Rates Failed!",
       error: err.error
@@ -259,7 +259,7 @@ exports.updateSSO = (req, res, next) => {
     res.status(201).json({message: 'SSO Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'RTLConf', lineNum: 279, msg: 'Updating SSO Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating SSO Failed!'});
     res.status(500).json({
       message: "Updating SSO Failed!",
       error: 'Updating SSO Failed!'
@@ -316,7 +316,7 @@ exports.updateServiceSettings = (req, res, next) => {
     res.status(201).json({message: 'Service Settings Updated Successfully'});
   }
   catch (err) {
-    logger.error({fileName: 'RTLConf', lineNum: 333, msg: 'Updating Service Settings Failed!'});
+    logger.log({level: 'ERROR', fileName: 'RTLConf', msg: 'Updating Service Settings Failed!'});
     res.status(500).json({
       message: "Updating Service Settings Failed!",
       error: 'Updating Service Settings Failed!'

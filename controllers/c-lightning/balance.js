@@ -38,7 +38,7 @@ exports.getBalance = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Balance', lineNum: 38, msg: 'Balance Fetch Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Balance', msg: 'Balance Fetch Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching balance failed!",
       error: err.error

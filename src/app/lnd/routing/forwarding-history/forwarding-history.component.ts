@@ -119,7 +119,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   }
 
   onDownloadCSV() {
-    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+    if(this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }

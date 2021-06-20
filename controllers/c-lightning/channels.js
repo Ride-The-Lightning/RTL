@@ -27,7 +27,7 @@ exports.listChannels = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 26, msg: 'List Channels Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'List Channels Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching List Channels Failed!',
       error: err.error
@@ -44,7 +44,7 @@ exports.openChannel = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 42, msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Open Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -62,7 +62,7 @@ exports.openChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 58, msg: 'Open Channel Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Open Channel Failed!',
       error: err.error
@@ -79,7 +79,7 @@ exports.setChannelFee = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 74, msg: 'Update Channel Policy Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Channel Policy Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Update Channel Policy Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -97,7 +97,7 @@ exports.setChannelFee = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 90, msg: 'Update Channel Policy: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Channel Policy: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Update Channel Policy Failed!',
       error: err.error
@@ -115,7 +115,7 @@ exports.closeChannel = (req, res, next) => {
   request.delete(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Close Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 106, msg: 'Close Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Close Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -133,7 +133,7 @@ exports.closeChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 122, msg: 'Close Channel Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Close Channel Failed!',
       error: err.error
@@ -170,7 +170,7 @@ exports.getLocalRemoteBalance = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 156, msg: 'Local Remote Balance Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Local Remote Balance Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Fetching Local Remote Balance Failed!',
       error: err.error
@@ -185,7 +185,7 @@ exports.listForwards = (req, res, next) => {
   request.get(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Forwarding History Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 170, msg: 'Forwarding History Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Forwarding History Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Forwarding History Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -207,7 +207,7 @@ exports.listForwards = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Channels', lineNum: 194, msg: 'Forwarding History Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Forwarding History Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Forwarding History Failed!",
       error: err.error

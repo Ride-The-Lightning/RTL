@@ -11,7 +11,7 @@ exports.getFees = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Fees', msg: 'Fee Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Fees', lineNum: 13, msg: 'Get Fee Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Get Fee Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching fee failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -42,7 +42,7 @@ exports.getFees = (req, res, next) => {
         body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
         body.forwarding_events_history = history;
         if (history.error) { 
-          logger.error({fileName: 'Fees', lineNum: 45, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(history.error)}); 
+          logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(history.error)}); 
         }
         logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fees Received.'});
         res.status(200).json(body);
@@ -57,7 +57,7 @@ exports.getFees = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Fees', lineNum: 63, msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Fetch Forwarding Events Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching fee failed!",
       error: err.error

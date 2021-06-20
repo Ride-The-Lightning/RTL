@@ -10,7 +10,7 @@ exports.getRoute = (req, res, next) => {
   request(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Network', msg: 'Query Routes Received: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Network', lineNum: 12, msg: 'Query Routes Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Network', msg: 'Query Routes Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Query Routes Failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -27,7 +27,7 @@ exports.getRoute = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Network', lineNum: 27, msg: 'Query Routes Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Query Routes Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Query Routes Failed!",
       error: err.error
@@ -52,7 +52,7 @@ exports.listNode = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Network', lineNum: 52, msg: 'Node Lookup Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Node Lookup Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Node Lookup Failed!",
       error: err.error
@@ -77,7 +77,7 @@ exports.listChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Network', lineNum: 76, msg: 'Channel Lookup Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Channel Lookup Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Channel Lookup Failed!",
       error: err.error
@@ -101,7 +101,7 @@ exports.feeRates = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Network', lineNum: 97, msg: 'Fee Rates Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Network', msg: 'Fee Rates Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fee Rates Failed!",
       error: err.error

@@ -14,7 +14,7 @@ exports.genSeed = (req, res, next) => {
   }
   request(options).then((body) => {
     if(!body || body.error) {
-      logger.error({fileName: 'Wallet', lineNum: 16, msg: 'Gen Seed Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Gen Seed Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Genseed failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -32,7 +32,7 @@ exports.genSeed = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 32, msg: 'Gen Seed Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Gen Seed Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Genseed failed!",
       error: err.error
@@ -72,13 +72,13 @@ exports.operateWallet = (req, res, next) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     if(!body) {
-      logger.error({fileName: 'Wallet', lineNum: 70, msg: 'Wallet Error: ' + ((error) ? JSON.stringify(error) : err_message)});
+      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error: ' + ((error) ? JSON.stringify(error) : err_message)});
       res.status(500).json({
         message: err_message,
         error: (error) ? error : err_message
       });
     } else if(search_idx > -1) {
-      logger.error({fileName: 'Wallet', lineNum: 76, msg: 'Wallet Error: ' + err_message});
+      logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error: ' + err_message});
       res.status(500).json({
         message: err_message,
         error: err_message
@@ -87,7 +87,7 @@ exports.operateWallet = (req, res, next) => {
       if((body.code === 1 && body.error === 'context canceled') || (body.code === 14 && body.error === 'transport is closing')) {
         res.status(201).json('Successful');  
       } else {
-        logger.error({fileName: 'Wallet', lineNum: 85, msg: 'Wallet Error: ' + JSON.stringify(body.error)});
+        logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error: ' + JSON.stringify(body.error)});
         res.status(500).json({
           message: err_message,
           error: body.error
@@ -106,7 +106,7 @@ exports.operateWallet = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 101, msg: 'Wallet Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Wallet Error: ' + JSON.stringify(err)});
     if((err.error.code === 1 && err.error.error === 'context canceled') || (err.error.code === 14 && err.error.error === 'transport is closing')) {
       res.status(201).json('Successful');  
     } else {
@@ -140,7 +140,7 @@ exports.getUTXOs = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 143, msg: 'UTXOs Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'UTXOs Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "UTXO list failed!",
       error: err.error
@@ -176,7 +176,7 @@ exports.bumpFee = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 170, msg: 'Bump Fee Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Bump Fee Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Bump fee failed!",
       error: err.error
@@ -207,7 +207,7 @@ exports.labelTransaction = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 253, msg: 'Label Transaction Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Label Transaction Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Transaction label failed!",
       error: err.error
@@ -240,7 +240,7 @@ exports.leaseUTXO = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 197, msg: 'Lease UTXO Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Lease UTXO Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Lease UTXO failed!",
       error: err.error
@@ -272,7 +272,7 @@ exports.releaseUTXO = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Wallet', lineNum: 226, msg: 'Release UTXO Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Wallet', msg: 'Release UTXO Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Release UTXO failed!",
       error: err.error

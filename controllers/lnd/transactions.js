@@ -12,7 +12,7 @@ exports.getTransactions = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Received: ' + body_str});
     if (!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'Transactions', lineNum: 14, msg: 'List Transactions Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'List Transactions Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching Transactions Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -33,7 +33,7 @@ exports.getTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Transactions', lineNum: 36, msg: 'List Transactions Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'List Transactions Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching Transactions Failed!",
       error: err.error
@@ -58,7 +58,7 @@ exports.postTransactions = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Post Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Transactions', lineNum: 60, msg: 'Post Transaction Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'Post Transaction Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Transactions post failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -76,7 +76,7 @@ exports.postTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Transactions', lineNum: 76, msg: 'Transaction Post Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'Transaction Post Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Transactions post failed!",
       error: err.error

@@ -12,7 +12,7 @@ exports.getNewAddress = (req, res, next) => {
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
     logger.log({level: 'DEBUG', fileName: 'NewAddress', msg: 'New Address Received: ' + body_str});
     if(!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'NewAddress', lineNum: 14, msg: 'New Address Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'NewAddress', msg: 'New Address Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Fetching new address failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
@@ -30,7 +30,7 @@ exports.getNewAddress = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'NewAddress', lineNum: 30, msg: 'New Address Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'NewAddress', msg: 'New Address Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching new address failed!",
       error: err.error

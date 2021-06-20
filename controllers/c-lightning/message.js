@@ -11,7 +11,7 @@ exports.signMessage = (req, res, next) => {
   request.post(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Messages', lineNum: 13, msg: 'Message Sign Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Message Sign Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Sign message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -29,7 +29,7 @@ exports.signMessage = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Messages', lineNum: 29, msg: 'Sign Message Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Sign Message Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Sign Message Failed!',
       error: err.error
@@ -44,7 +44,7 @@ exports.verifyMessage = (req, res, next) => {
   request.get(options, (error, response, body) => {
     logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Messages', lineNum: 43, msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: "Verify message failed!",
         error: (!body) ? 'Error From Server!' : body.error
@@ -62,7 +62,7 @@ exports.verifyMessage = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'Messages', lineNum: 59, msg: 'Message Verification Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Message Verification Failed: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Verify Message Failed!',
       error: err.error

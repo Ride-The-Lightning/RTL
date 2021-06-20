@@ -21,7 +21,7 @@ exports.getInfo = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 22, msg: 'Boltz Get Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Get Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Boltz Get Info Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -47,7 +47,7 @@ exports.getServiceInfo = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 46, msg: 'Boltz Get Service Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Get Service Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Boltz Get Service Info Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -75,7 +75,7 @@ exports.listSwaps = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 70, msg: 'Boltz List Swaps Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz List Swaps Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Boltz List Swaps Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -101,7 +101,7 @@ exports.getSwapInfo = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 94, msg: 'Boltz Swap Info Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Boltz Swap Info Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Boltz Swap Info Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -120,7 +120,7 @@ exports.createSwap = (req, res, next) => {
   request.post(options).then(createSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Swap Response: ' + JSON.stringify(createSwapRes)});
     if(!createSwapRes || createSwapRes.error) {
-      logger.error({fileName: 'Boltz', lineNum: 112, msg: 'Create Swap Error: ' + JSON.stringify(createSwapRes.error)});
+      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Swap Error: ' + JSON.stringify(createSwapRes.error)});
       res.status(500).json({
         message: 'Create Swap Failed!',
         error: (!createSwapRes) ? 'Error From Server!' : createSwapRes.error.message
@@ -138,7 +138,7 @@ exports.createSwap = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 129, msg: 'Create Swap Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Swap Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Create Swap Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -157,7 +157,7 @@ exports.createReverseSwap = (req, res, next) => {
   request.post(options).then(createReverseSwapRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Reverse Swap Response: ' + JSON.stringify(createReverseSwapRes)});
     if(!createReverseSwapRes || createReverseSwapRes.error) {
-      logger.error({fileName: 'Boltz', lineNum: 147, msg: 'Create Reverse Swap Error: ' + JSON.stringify(createReverseSwapRes.error)});
+      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Reverse Swap Error: ' + JSON.stringify(createReverseSwapRes.error)});
       res.status(500).json({
         message: 'Create Reverse Swap Failed!',
         error: (!createReverseSwapRes) ? 'Error From Server!' : createReverseSwapRes.error.message
@@ -175,7 +175,7 @@ exports.createReverseSwap = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 164, msg: 'Create Reverse Swap Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Reverse Swap Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Create Reverse Swap Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -194,7 +194,7 @@ exports.createChannel = (req, res, next) => {
   request.post(options).then(createChannelRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Create Channel Response: ' + JSON.stringify(createChannelRes)});
     if(!createChannelRes || createChannelRes.error) {
-      logger.error({fileName: 'Boltz', lineNum: 182, msg: 'Create Channel Error: ' + JSON.stringify(createChannelRes.error)});
+      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Channel Error: ' + JSON.stringify(createChannelRes.error)});
       res.status(500).json({
         message: 'Create Channel Failed!',
         error: (!createChannelRes) ? 'Error From Server!' : createChannelRes.error.message
@@ -212,7 +212,7 @@ exports.createChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 199, msg: 'Create Channel Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Create Channel Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Create Channel Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err
@@ -228,7 +228,7 @@ exports.deposit = (req, res, next) => {
   request.post(options).then(depositRes => {
     logger.log({level: 'DEBUG', fileName: 'Boltz', msg: 'Deposit Response: ' + JSON.stringify(depositRes)});
     if(!depositRes || depositRes.error) {
-      logger.error({fileName: 'Boltz', lineNum: 214, msg: 'Deposit Error: ' + JSON.stringify(depositRes.error)});
+      logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Deposit Error: ' + JSON.stringify(depositRes.error)});
       res.status(500).json({
         message: 'Deposit Failed!',
         error: (!depositRes) ? 'Error From Server!' : depositRes.error.message
@@ -246,7 +246,7 @@ exports.deposit = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Boltz', lineNum: 231, msg: 'Deposit Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Boltz', msg: 'Deposit Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Deposit Failed!",
       error: (err.error && err.error.error) ? err.error.error : (err.error) ? err.error : err

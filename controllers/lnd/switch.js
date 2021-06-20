@@ -52,7 +52,7 @@ exports.getAllForwardingEvents = (start, end, offset, callback) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Switch', lineNum: 54, msg: 'Get All Forwarding Events Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Switch', msg: 'Get All Forwarding Events Error: ' + JSON.stringify(err)});
     return callback({
       message: "Forwarding Events Failed!",
       error: err.error

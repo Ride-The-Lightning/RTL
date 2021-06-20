@@ -114,7 +114,7 @@ exports.getChannels = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Channels', lineNum: 35, msg: 'Get Channels Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Get Channels Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: 'Fetching Channels Failed!',
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -141,7 +141,7 @@ exports.getChannelStats = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'ChannelStats', lineNum: 54, msg: 'Get Channel Stats Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'ChannelStats', msg: 'Get Channel Stats Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Channel Stats Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -158,7 +158,7 @@ exports.openChannel = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Open Channel Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'Channels', lineNum: 140, msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'Open Channel Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -176,7 +176,7 @@ exports.openChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Channels', lineNum: 58, msg: 'Open Channel Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Open Channel Failed: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Open Channel Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -203,7 +203,7 @@ exports.updateChannelRelayFee = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Channels', lineNum: 186, msg: 'Update Relay Fee Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Update Relay Fee Failed: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Update Relay Fee Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -236,7 +236,7 @@ exports.closeChannel = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Channels', lineNum: 217, msg: 'Close Channel Failed: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Channels', msg: 'Close Channel Failed: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Close Channel Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

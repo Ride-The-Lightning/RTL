@@ -52,7 +52,7 @@ exports.getPeers = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Peers', lineNum: 49, msg: 'Get Peers Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Get Peers Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: 'Fetching Peers Failed!',
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -115,7 +115,7 @@ exports.connectPeer = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Peers', lineNum: 89, msg: 'Connect Peer Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Connect Peer Failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -129,7 +129,7 @@ exports.connectPeer = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Peers', lineNum: 103, msg: 'Connect Peer Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Connect Peer Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -160,7 +160,7 @@ exports.deletePeer = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Peers', lineNum: 132, msg: 'Disconnect Peer Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Disconnect Peer Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Disconnect Peer Failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

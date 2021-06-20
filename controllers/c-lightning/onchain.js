@@ -19,7 +19,7 @@ exports.getNewAddress = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain New Address Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain New Address Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching new address failed!",
       error: err.error
@@ -36,7 +36,7 @@ exports.onChainWithdraw = (req, res, next) => {
   request.post(options).then((body) => {
     logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Response: ' + JSON.stringify(body)});
     if(!body || body.error) {
-      logger.error({fileName: 'OnChain', lineNum: 35, msg: 'OnChain Withdraw Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain Withdraw Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
       res.status(500).json({
         message: 'OnChain Withdraw Failed!',
         error: (!body) ? 'Error From Server!' : body.error
@@ -54,7 +54,7 @@ exports.onChainWithdraw = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 51, msg: 'OnChain Withdraw Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain Withdraw Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'OnChain Withdraw Failed!',
       error: err
@@ -78,7 +78,7 @@ exports.getUTXOs = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain List Funds Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain List Funds Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: "Fetching list funds failed!",
       error: err.error

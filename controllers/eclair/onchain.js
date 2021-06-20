@@ -39,7 +39,7 @@ exports.getNewAddress = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Onchain', lineNum: 21, msg: 'Get New Address Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Get New Address Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Getting New Address failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -68,7 +68,7 @@ exports.getBalance = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
         delete err.response.request.headers.authorization;
       }
-      logger.error({fileName: 'Onchain', lineNum: 58, msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Fetch Balance Error: ' + JSON.stringify(err)});
       return res.status(err.statusCode ? err.statusCode : 500).json({
         message: "Fetching balance failed!",
         error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -102,7 +102,7 @@ exports.getTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Onchain', lineNum: 101, msg: 'Get Transactions Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Get Transactions Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Getting transactions failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"
@@ -133,7 +133,7 @@ exports.sendFunds = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.authorization) {
       delete err.response.request.headers.authorization;
     }
-    logger.error({fileName: 'Onchain', lineNum: 129, msg: 'Send Funds Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Onchain', msg: 'Send Funds Error: ' + JSON.stringify(err)});
     return res.status(err.statusCode ? err.statusCode : 500).json({
       message: "Send funds failed!",
       error: err.error && err.error.error ? err.error.error : err.error ? err.error : "Unknown Server Error"

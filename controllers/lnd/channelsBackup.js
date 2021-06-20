@@ -56,7 +56,7 @@ exports.getBackup = (req, res, next) => {
         if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
           delete err.response.request.headers['Grpc-Metadata-macaroon'];
         }
-        logger.error({fileName: 'ChannelsBackup', lineNum: 57, msg: 'Channels Backup Error: ' + JSON.stringify(err)});
+        logger.log({level: 'ERROR', fileName: 'ChannelsBackup', msg: 'Channels Backup Error: ' + JSON.stringify(err)});
         return res.status(500).json({ message: 'Channels Backup Failed!', error: err });
       }
     }
@@ -72,7 +72,7 @@ exports.getBackup = (req, res, next) => {
         if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
           delete err.response.request.headers['Grpc-Metadata-macaroon'];
         }
-        logger.error({fileName: 'ChannelsBackup', lineNum: 72, msg: 'Channels Backup Error: ' + JSON.stringify(err)});
+        logger.log({level: 'ERROR', fileName: 'ChannelsBackup', msg: 'Channels Backup Error: ' + JSON.stringify(err)});
         return res.status(500).json({ message: 'Channels Backup Failed!', error: err.error });
       } else {
         logger.log({level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Backup Finished.'});
@@ -88,7 +88,7 @@ exports.getBackup = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'ChannelsBackup', lineNum: 86, msg: 'Channel Backup Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'ChannelsBackup', msg: 'Channel Backup Error: ' + JSON.stringify(err)});
     return res.status(500).json({
       message: 'Channels Backup Failed!',
       error: err.error
@@ -114,12 +114,12 @@ exports.postBackupVerify = (req, res, next) => {
         delete verify_backup.single_chan_backups;
         options.form = JSON.stringify(verify_backup);
       } else {
-        logger.error({fileName: 'ChannelBackup', lineNum: 117, msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
+        logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
         res.status(404).json({ message: 'Channels backup to verify does not Exist!' });        
       }
     } else {
       verify_backup = '';
-      logger.error({fileName: 'ChannelBackup', lineNum: 122, msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
       res.status(404).json({ message: 'Channels backup to verify does not Exist!' });
     }
   } else {
@@ -131,7 +131,7 @@ exports.postBackupVerify = (req, res, next) => {
       options.form = JSON.stringify({ single_chan_backups: { chan_backups: [JSON.parse(verify_backup)] } });
     } else {
       verify_backup = '';
-      logger.error({fileName: 'ChannelBackup', lineNum: 134, msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Backup Verify Error: Channel backup to verify does not Exist!'});
       res.status(404).json({ message: 'Channel backup to verify does not Exist!' });
     }
   }
@@ -149,7 +149,7 @@ exports.postBackupVerify = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'ChannelBackup', lineNum: 152, msg: 'Channel Backup Verify Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Backup Verify Error: ' + JSON.stringify(err)});
       return res.status(404).json({
         message: 'Channel backup to Verify failed!',
         error: err.error
@@ -176,7 +176,7 @@ exports.postRestore = (req, res, next) => {
         restore_backup = JSON.parse(restore_backup);
         options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
       } else {
-        logger.error({fileName: 'ChannelBackup', lineNum: 179, msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
+        logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
         res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
       }
     } else if (downloaded_exists) {
@@ -185,12 +185,12 @@ exports.postRestore = (req, res, next) => {
         restore_backup = JSON.parse(restore_backup);
         options.form = JSON.stringify({multi_chan_backup: restore_backup.multi_chan_backup.multi_chan_backup});
       } else {
-        logger.error({fileName: 'ChannelBackup', lineNum: 188, msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
+        logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
         res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
       }
     } else {
       restore_backup = '';
-      logger.error({fileName: 'ChannelBackup', lineNum: 193, msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
       res.status(404).json({ message: 'Channels backup to restore does not Exist!' });
     }
   } else {
@@ -202,7 +202,7 @@ exports.postRestore = (req, res, next) => {
       options.form = JSON.stringify({ chan_backups: { chan_backups: [JSON.parse(restore_backup)] } });
     } else {
       restore_backup = '';
-      logger.error({fileName: 'ChannelBackup', lineNum: 205, msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: Channels backup to restore does not Exist!'});
       res.status(404).json({ message: 'Channel backup to restore does not Exist!' });
     }
   }
@@ -212,7 +212,7 @@ exports.postRestore = (req, res, next) => {
       fs.rename(channel_restore_file, channel_restore_file + '.restored', () => {
         getFilesList(getFilesListRes => {
           if (getFilesListRes.error) {
-            logger.error({fileName: 'ChannelBackup', lineNum: 215, msg: 'Channel Restore Error: ' + JSON.stringify(getFilesListRes.error)});
+            logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: ' + JSON.stringify(getFilesListRes.error)});
             return res.status(500).json({ message: 'Channel restore failed!', list: getFilesListRes });
           } else {
             logger.log({level: 'INFO', fileName: 'ChannelBackup', msg: 'Channel Restored.'});
@@ -229,7 +229,7 @@ exports.postRestore = (req, res, next) => {
       if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
         delete err.response.request.headers['Grpc-Metadata-macaroon'];
       }
-      logger.error({fileName: 'ChannelBackup', lineNum: 232, msg: 'Channel Restore Error: ' + JSON.stringify(err)});
+      logger.log({level: 'ERROR', fileName: 'ChannelBackup', msg: 'Channel Restore Error: ' + JSON.stringify(err)});
       return res.status(404).json({
         message: 'Channel restore failed!',
         error: err.error.error
