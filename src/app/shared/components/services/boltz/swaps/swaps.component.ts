@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnDestroy, ViewChild, Input, AfterViewInit, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,7 +7,7 @@ import { faHistory } from '@fortawesome/free-solid-svg-icons';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Swap, ReverseSwap, ListSwaps } from '../../../../models/boltzModels';
+import { Swap, ReverseSwap } from '../../../../models/boltzModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, SwapTypeEnum, SwapStateEnum } from '../../../../services/consts-enums-functions';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
@@ -24,7 +24,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Swaps') }
   ]  
 })
-export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class BoltzSwapsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectedSwapType: SwapTypeEnum = SwapTypeEnum.SWAP_OUT;
   @Input() swapsData: Swap[] | ReverseSwap[] = [];
   @Input() flgLoading: Array<Boolean | 'error'> = [true];
@@ -48,8 +48,6 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
     this.setTableColumns();
   }
 
-  ngOnInit() {}
-
   ngAfterViewInit() {
     if (this.swapsData && this.swapsData.length > 0) {
       this.loadSwapsTable(this.swapsData);
@@ -57,7 +55,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.selectedSwapType) {
+    if (changes.selectedSwapType && !changes.selectedSwapType.firstChange) {
       this.setTableColumns();
     }
     this.swapCaption = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'Swap In' : 'Swap Out';
@@ -87,7 +85,9 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
   }
     
   applyFilter(selFilter: any) {
-    this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+    if (this.listSwaps) {
+      this.listSwaps.filter = selFilter.value.trim().toLowerCase();
+    }
   }
 
   onSwapClick(selSwap: Swap | ReverseSwap, event: any) {
@@ -134,7 +134,7 @@ export class BoltzSwapsComponent implements OnInit, AfterViewInit, OnChanges, On
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

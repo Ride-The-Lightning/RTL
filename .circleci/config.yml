@@ -11,7 +11,7 @@ jobs:
           command: |
             LATEST_TAG="${CIRCLE_TAG:1}"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
-            DOCKERHUB_DOCKERFILE="Dockerfile"
+            DOCKERHUB_DOCKERFILE="docker/Dockerfile"
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
@@ -26,7 +26,7 @@ jobs:
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
             LATEST_TAG="${CIRCLE_TAG:1}"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
-            DOCKERHUB_DOCKERFILE="Dockerfile.arm32v7"
+            DOCKERHUB_DOCKERFILE="docker/Dockerfile.arm32v7"
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"
@@ -41,7 +41,7 @@ jobs:
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
             LATEST_TAG="${CIRCLE_TAG:1}"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
-            DOCKERHUB_DOCKERFILE="Dockerfile.arm64v8"
+            DOCKERHUB_DOCKERFILE="docker/Dockerfile.arm64v8"
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKERFILE" .
             sudo docker push "$DOCKERHUB_DESTINATION"

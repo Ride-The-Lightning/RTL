@@ -1,5 +1,5 @@
-var common = require('../../common');
-var connect = require('../../connect');
+var common = require('../../routes/common');
+var connect = require('../../routes/connect');
 var logger = require('./logger');
 const jwt = require("jsonwebtoken");
 const otplib = require("otplib");
@@ -29,7 +29,7 @@ handleError = (failed, currentTime, errMsg) => {
   if (failed.count >= ALLOWED_LOGIN_ATTEMPTS && (currentTime <= (failed.lastTried + LOCKING_PERIOD))) {
     return {
       message: "Multiple Failed Login Attempts!",
-      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToLocalDate((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
+      error: "Application locked for " + (LOCKING_PERIOD/ONE_MINUTE)  + " minutes due to multiple failed login attempts! Try again after " + common.convertTimestampToTime((failed.lastTried + LOCKING_PERIOD)/1000) + "!"
     };
   } else {
     return {
@@ -47,8 +47,10 @@ exports.verifyToken = (twoFAToken) => {
 };
 
 exports.authenticateUser = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Authenticating User..'});
   if(+common.rtl_sso) {
     if(req.body.authenticateWith === 'JWT' && jwt.verify(req.body.authenticationValue, common.secret_key)) {
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated'});
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
@@ -56,9 +58,10 @@ exports.authenticateUser = (req, res, next) => {
         { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 61, msg: 'SSO Authentication Failed! Access key too short or does not match.'});
+      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'SSO Authentication Failed! Access key too short or does not match.', error: {error: 'Access key too short or does not match.'}});
       res.status(406).json({
         message: "SSO Authentication Failed!",
         error: "SSO failed. Access key too short or does not match."
@@ -72,7 +75,7 @@ exports.authenticateUser = (req, res, next) => {
     if (common.rtl_pass === password && failed.count < ALLOWED_LOGIN_ATTEMPTS) {
       if (req.body.twoFAToken && req.body.twoFAToken !== '') {
         if (!this.verifyToken(req.body.twoFAToken)) {
-          logger.error({fileName: 'Authenticate', lineNum: 75, msg: 'Invalid Token! Failed IP ' + reqIP});
+          logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Token! Failed IP ' + reqIP, error: {error: 'Invalid token.'}});
           failed.count = failed.count + 1;
           failed.lastTried = currentTime;
           return res.status(401).json(handleError(failed, currentTime, 'Invalid 2FA Token!'));
@@ -84,9 +87,10 @@ exports.authenticateUser = (req, res, next) => {
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated'});
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 89, msg: 'Invalid Password! Failed IP ' + reqIP});
+      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Invalid Password! Failed IP ' + reqIP, error: {error: 'Invalid password.'}});
       failed.count = common.rtl_pass !== password ? (failed.count + 1) : failed.count;
       failed.lastTried = common.rtl_pass !== password ? currentTime : failed.lastTried;
       return res.status(401).json(handleError(failed, currentTime, 'Invalid Password!'));
@@ -95,8 +99,9 @@ exports.authenticateUser = (req, res, next) => {
 };
 
 exports.resetPassword = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Resetting Password..'});
   if(+common.rtl_sso) {
-    logger.error({fileName: 'Authenticate', lineNum: 99, msg: 'Password Reset Failed!'});
+    logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
     res.status(401).json({
       message: "Password Reset Failed!",
       error: "Password cannot be reset for SSO authentication!"
@@ -110,9 +115,10 @@ exports.resetPassword = (req, res, next) => {
         { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
         common.secret_key
       );
+      logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful'});
       res.status(200).json({ token: token });
     } else {
-      logger.error({fileName: 'Authenticate', lineNum: 115, msg: 'Password Reset Failed!'});
+      logger.log({level: 'ERROR', fileName: 'Authenticate', msg: 'Password Reset Failed!', error: {error: 'Password reset failed.'}});
       res.status(401).json({
         message: "Password Reset Failed!",
         error: "Old password is not correct!"

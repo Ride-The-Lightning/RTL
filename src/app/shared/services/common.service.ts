@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
@@ -6,7 +6,7 @@ import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
 
 @Injectable()
-export class CommonService implements OnInit {
+export class CommonService {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
@@ -14,8 +14,6 @@ export class CommonService implements OnInit {
   private containerSize = {width: 1200, height: 800};
 
   constructor(private dataService: DataService) {}
-
-  ngOnInit() {}
 
   getScreenSize() {
     return this.screenSize;
@@ -84,7 +82,7 @@ export class CommonService implements OnInit {
         return this.dataService.getFiatRates()
         .pipe(take(1),
         map((data: any) => {
-          this.conversionData.data = data ? JSON.parse(data) : {};
+          this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
           this.conversionData.last_fetched = latest_date;
           return this.convertWithFiat(value, from, otherCurrencyUnit);
         }));
@@ -208,9 +206,9 @@ export class CommonService implements OnInit {
     return value;
   }
 
-  convertTimestampToDate(num: number) {
-    return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
-  };
+  // convertTimestampToDate(num: number) {
+  //   return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
+  // };
 
   downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
     let blob = new Blob();

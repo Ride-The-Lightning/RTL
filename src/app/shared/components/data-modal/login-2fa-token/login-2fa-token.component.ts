@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faUserClock } from '@fortawesome/free-solid-svg-icons';
@@ -11,13 +11,11 @@ import * as RTLActions from '../../../../store/rtl.actions';
   templateUrl: './login-2fa-token.component.html',
   styleUrls: ['./login-2fa-token.component.scss']
 })
-export class LoginTokenComponent implements OnInit {
+export class LoginTokenComponent {
   public faUserClock = faUserClock;
   public token = '';
 
   constructor(public dialogRef: MatDialogRef<LoginTokenComponent>, private store: Store<fromRTLReducer.RTLState>) { }
-
-  ngOnInit() {}
 
   onClose() {
     this.dialogRef.close(null);

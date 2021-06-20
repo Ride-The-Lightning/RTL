@@ -23,7 +23,6 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public events: SwitchRes = {};
   public eventFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public feeReportData: any = [];
@@ -70,8 +69,8 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
-    const startDateInSeconds = (Math.round(start.getTime()/1000) - this.timezoneOffset).toString();
-    const endDateInSeconds = (Math.round(end.getTime()/1000) - this.timezoneOffset).toString();
+    const startDateInSeconds = Math.round(start.getTime()/1000).toString();
+    const endDateInSeconds = Math.round(end.getTime()/1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
     .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
       if (res.forwarding_events && res.forwarding_events.length) {
@@ -93,21 +92,21 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.eventFilterValue = event.name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name + '/' + this.startDate.getFullYear();
     } else {
-      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.eventFilterValue = event.name.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
   prepareFeeReport(start: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
     let feeReport = [];
     if (this.reportPeriod === SCROLL_RANGES[1]) {
       for (let i = 0; i < 12; i++) {
         feeReport.push({name: MONTHS[i].name, value: 0.000000001, extra: {totalEvents: 0}});
       }
       this.events.forwarding_events.map(event => {
-        let monthNumber = new Date((+event.timestamp + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+event.timestamp)*1000).getMonth();
         feeReport[monthNumber].value = feeReport[monthNumber].value + (+event.fee_msat / 1000);
         feeReport[monthNumber].extra.totalEvents = feeReport[monthNumber].extra.totalEvents + 1;
         this.events.total_fee_msat = (this.events.total_fee_msat ? this.events.total_fee_msat : 0) + +event.fee_msat;
@@ -147,7 +146,7 @@ export class FeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

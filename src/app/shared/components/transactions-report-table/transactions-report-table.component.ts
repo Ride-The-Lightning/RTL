@@ -25,6 +25,7 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   @Input() filterValue = '';
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
+  public timezoneOffset = new Date(Date.now()).getTimezoneOffset() * 60;
   public scrollRanges = SCROLL_RANGES;
   public transactions: any;
   public displayedColumns: any[] = [];
@@ -55,10 +56,10 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataList) {
+    if (changes.dataList && !changes.dataList.firstChange) {
       this.loadTransactionsTable(this.dataList);
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }  
@@ -79,14 +80,19 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
   }
 
   applyFilter() {
-    this.transactions.filter = this.filterValue.trim().toLowerCase();
+    if (this.transactions) {
+      this.transactions.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   loadTransactionsTable(trans: any[]) {
     this.transactions = trans ? new MatTableDataSource([...trans]) : new MatTableDataSource([]);
     this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.transactions.sort = this.sort;
-    this.transactions.filterPredicate = (tran: any, fltr: string) => JSON.stringify(tran).toLowerCase().includes(fltr);
+    this.transactions.filterPredicate = (rowData: any, fltr: string) => {
+      const newRowData = ((rowData.date) ? (this.datePipe.transform(rowData.date, 'dd/MMM') + '/' + rowData.date.getFullYear()).toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);
+    };
     this.transactions.paginator = this.paginator;
 }
 

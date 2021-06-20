@@ -48,7 +48,7 @@
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field fxFlex="49">
-                  <input matInput [(ngModel)]="transTypeValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" [step]="1" [min]="0" tabindex="4" name="transTpValue" #transTypeVal="ngModel">
+                  <input matInput [(ngModel)]="transTypeValue" [required]="selTransType!=='0'" [disabled]="selTransType==='0'" [placeholder]="selTransType==='0' ? 'Default' : selTransType==='1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'" type="number" [step]="1" [min]="0" tabindex="4" name="transTpValue" #transTypeVal="ngModel">
                   <mat-error *ngIf="selTransType!=='0' && !transTypeValue">{{selTransType === '1' ? 'Target Confirmation Blocks' : 'Fee'}} is required.</mat-error>
                 </mat-form-field>
               </div>

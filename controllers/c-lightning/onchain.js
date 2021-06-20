@@ -1,12 +1,14 @@
 var request = require('request-promise');
-var common = require('../../common');
+var common = require('../../routes/common');
 var logger = require('../shared/logger');
 var options = {};
 
 exports.getNewAddress = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'OnChain', msg: 'Generating New Address..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/newaddr?addrType=' + req.query.type;
   request(options).then((body) => {
+    logger.log({level: 'INFO', fileName: 'OnChain', msg: 'New Address Generated'});
     res.status(200).json(body);
   })
   .catch(errRes => {
@@ -17,7 +19,7 @@ exports.getNewAddress = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain New Address Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain New Address Error', error: err});
     return res.status(500).json({
       message: "Fetching new address failed!",
       error: err.error
@@ -26,19 +28,21 @@ exports.getNewAddress = (req, res, next) => {
 };
 
 exports.onChainWithdraw = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'OnChain', msg: 'Withdrawing from On Chain..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/withdraw';
   options.body = req.body;
-  logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Options: ' + JSON.stringify(options.body)});
+  logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Options', data: options.body});
   request.post(options).then((body) => {
-    logger.info({fileName: 'OnChain', msg: 'OnChain Withdraw Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'OnChain', msg: 'OnChain Withdraw Response', data: body});
     if(!body || body.error) {
-      logger.error({fileName: 'OnChain', lineNum: 35, msg: 'OnChain Withdraw Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain Withdraw Error', error: body.error});
       res.status(500).json({
         message: 'OnChain Withdraw Failed!',
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'OnChain', msg: 'Withdraw Finished'});
       res.status(201).json(body);
     }
   })
@@ -50,7 +54,7 @@ exports.onChainWithdraw = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 51, msg: 'OnChain Withdraw Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain Withdraw Error', error: err});
     return res.status(500).json({
       message: 'OnChain Withdraw Failed!',
       error: err
@@ -59,10 +63,12 @@ exports.onChainWithdraw = (req, res, next) => {
 }
 
 exports.getUTXOs = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'OnChain', msg: 'List Funds..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/listFunds';
   request(options).then((body) => {
     if (body.outputs) { body.outputs = common.sortDescByStrKey(body.outputs, 'status'); }
+    logger.log({level: 'INFO', fileName: 'OnChain', msg: 'List Funds Received'});
     res.status(200).json(body);
   }).catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
@@ -72,7 +78,7 @@ exports.getUTXOs = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers.macaroon) {
       delete err.response.request.headers.macaroon;
     }
-    logger.error({fileName: 'OnChain', lineNum: 19, msg: 'OnChain List Funds Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'OnChain', msg: 'OnChain List Funds Error', error: err});
     return res.status(500).json({
       message: "Fetching list funds failed!",
       error: err.error

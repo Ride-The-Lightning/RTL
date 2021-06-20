@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -61,7 +61,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -134,7 +134,10 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices = invoices ? new MatTableDataSource<Invoice>([...invoices]) : new MatTableDataSource<Invoice>([]);
     this.invoices.sort = this.sort;
     this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
+    this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => {
+      const newInvoice = ((invoice.creation_date) ? this.datePipe.transform(new Date(invoice.creation_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((invoice.settle_date) ? this.datePipe.transform(new Date(invoice.settle_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(invoice).toLowerCase();
+      return newInvoice.includes(fltr);   
+    };
     setTimeout(() => { this.flgAnimate = false; }, 5000);
     this.logger.info(this.invoices);
   }
@@ -151,18 +154,23 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.invoices.filter = selFilter.value.trim().toLowerCase();
   }
 
-  onPageChange(event: any) {
-    let reversed = true;
-    let index_offset = this.firstOffset;
-    if (event.pageIndex < event.previousPageIndex) {
-      reversed = false;
-      index_offset = this.lastOffset;
-    }
-    if (event.pageIndex === event.previousPageIndex) {
-      reversed = true;
+  onPageChange(event: PageEvent) {
+    let reverse = true;
+    let index_offset = this.lastOffset;
+    if (event.pageIndex === 0) {
+      reverse = true;
       index_offset = 0;
+    } else if (event.pageIndex < event.previousPageIndex) {
+      reverse = false;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+      reverse = true;
+      index_offset = this.firstOffset;
+    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
+      reverse = false;
+      index_offset = event.length - (event.pageIndex * event.pageSize) + 1;
     }
-    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reversed}));
+    this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: event.pageSize, index_offset: index_offset, reversed: reverse}));
   }
 
   onInvoiceValueChange() {
@@ -191,7 +199,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

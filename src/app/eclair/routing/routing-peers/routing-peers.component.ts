@@ -134,7 +134,7 @@ export class ECLRoutingPeersComponent implements OnInit, AfterViewInit, OnDestro
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

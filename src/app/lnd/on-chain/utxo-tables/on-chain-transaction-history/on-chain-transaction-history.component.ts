@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input, OnChanges } from '@angular/core';
+import { DatePipe } from '@angular/common'
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -36,7 +36,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -68,7 +68,7 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
       [{key: 'block_hash', value: selTransaction.block_hash, title: 'Block Hash', width: 100}],
       [{key: 'tx_hash', value: selTransaction.tx_hash, title: 'Transaction Hash', width: 100}],
       [{key: 'label', value: selTransaction.label, title: 'Label', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'time_stamp_str', value: selTransaction.time_stamp_str, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'time_stamp', value: selTransaction.time_stamp, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'block_height', value: selTransaction.block_height, title: 'Block Height', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'num_confirmations', value: selTransaction.num_confirmations, title: 'Number of Confirmations', width: 34, type: DataTypeEnum.NUMBER},
         {key: 'total_fees', value: selTransaction.total_fees, title: 'Total Fees (Sats)', width: 33, type: DataTypeEnum.NUMBER},
@@ -87,7 +87,10 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
     this.listTransactions = new MatTableDataSource<Transaction>([...transactions]);
     this.listTransactions.sort = this.sort;
     this.listTransactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.listTransactions.filterPredicate = (transaction: Transaction, fltr: string) => JSON.stringify(transaction).toLowerCase().includes(fltr);
+    this.listTransactions.filterPredicate = (rowData: Transaction, fltr: string) => {
+      const newRowData = ((rowData.time_stamp) ? this.datePipe.transform(new Date(rowData.time_stamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.listTransactions.paginator = this.paginator;
     this.logger.info(this.listTransactions);
   }

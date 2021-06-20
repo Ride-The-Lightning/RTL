@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -14,12 +14,10 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']
 })
-export class ECLOnChainReceiveComponent implements OnInit {
+export class ECLOnChainReceiveComponent {
   public newAddress = '';
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects) {}
-
-  ngOnInit() {}
 
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));

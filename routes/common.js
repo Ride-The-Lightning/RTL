@@ -2,7 +2,7 @@ var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
 var common = {};
-const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const MONTHS = [{name: 'JAN', days: 31}, {name: 'FEB', days: 28}, {name: 'MAR', days: 31}, {name: 'APR', days: 30}, {name: 'MAY', days: 31}, {name: 'JUN', days: 30}, {name: 'JUL', days: 31}, {name: 'AUG', days: 31}, {name: 'SEP', days: 30}, {name: 'OCT', days: 31}, {name: 'NOV', days: 30}, {name: 'DEC', days: 31}];
 var dummy_data_array_from_file = [];
 
 common.rtl_conf_file_path = '';
@@ -161,18 +161,7 @@ common.convertToBTC = (num) => {
   return (num / 100000000).toFixed(6);
 };
 
-common.convertTimestampToDate = (num) => {
-  let myDate = new Date(+num * 1000);
-  let days = myDate.getDate().toString();
-  days = +days < 10 ? '0' + days : days;
-  let hours = myDate.getHours().toString();
-  hours = +hours < 10 ? '0' + hours : hours;
-  let minutes = myDate.getMinutes().toString();
-  minutes = +minutes < 10 ? '0' + minutes : minutes;
-  return days + "/" + MONTH_NAMES[myDate.getMonth()] + "/" + myDate.getFullYear() + " " + hours + ":" + minutes;
-};
-
-common.convertTimestampToLocalDate = (num) => {
+common.convertTimestampToTime = (num) => {
   let myDate = new Date(+num * 1000);
   let days = myDate.getDate().toString();
   days = +days < 10 ? '0' + days : days;
@@ -182,7 +171,7 @@ common.convertTimestampToLocalDate = (num) => {
   minutes = +minutes < 10 ? '0' + minutes : minutes;
   let seconds = myDate.getSeconds().toString();
   seconds = +seconds < 10 ? '0' + seconds : seconds;
-  return days + "/" + (MONTH_NAMES[myDate.getMonth()]) + "/" + myDate.getFullYear() + " " + hours + ":" + minutes + ":" + seconds;
+  return days + "/" + MONTHS[myDate.getMonth()].name + "/" + myDate.getFullYear() + " " + hours + ":" + minutes + ":" + seconds;
 };
 
 common.sortAscByKey = (array, key) => {
@@ -254,6 +243,10 @@ common.getDummyData = (data_key) => {
   });
 }
 
+common.getMonthDays = (selMonth, selYear) => {
+  return (selMonth === 1 && selYear%4 === 0) ? (MONTHS[selMonth].days+1) : MONTHS[selMonth].days;
+}
+
 filterData = (data_key) => {
   let search_string = '';
   switch (data_key) {
@@ -267,6 +260,10 @@ filterData = (data_key) => {
 
     case 'Payments':
       search_string = 'INFO: Fees => Payments Response: ';
+      break;
+
+    case 'Invoices':
+      search_string = 'INFO: Invoice => Invoices List Received: ';
       break;
   
     case 'OnChainBalance':

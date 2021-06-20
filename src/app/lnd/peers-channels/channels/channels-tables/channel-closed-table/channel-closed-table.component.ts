@@ -121,7 +121,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
 
   ngOnDestroy() {
     this.unsub.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

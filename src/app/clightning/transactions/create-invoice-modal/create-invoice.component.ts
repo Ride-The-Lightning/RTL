@@ -52,9 +52,9 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions$.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.FETCH_INVOICES_CL ))
-    .subscribe((action: CLActions.EffectError | CLActions.FetchInvoices) => {
-      if (action.type === CLActions.FETCH_INVOICES_CL ) {
+    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.ADD_INVOICE_CL))
+    .subscribe((action: CLActions.EffectError | CLActions.AddInvoice) => {
+      if (action.type === CLActions.ADD_INVOICE_CL) {
         this.dialogRef.close();
       }    
       if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SaveNewInvoice') {
@@ -106,7 +106,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

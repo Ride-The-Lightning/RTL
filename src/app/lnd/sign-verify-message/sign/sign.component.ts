@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,15 +11,13 @@ import { LoggerService } from '../../../shared/services/logger.service';
   templateUrl: './sign.component.html',
   styleUrls: ['./sign.component.scss']
 })
-export class SignComponent implements OnInit, OnDestroy {
+export class SignComponent implements OnDestroy {
   public message = '';
   public signedMessage = '';
   public signature = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
-
-  ngOnInit() {}
 
   onSign():boolean|void {
     if (!this.message || this.message === '') { return true; }
@@ -46,7 +44,7 @@ export class SignComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

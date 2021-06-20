@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,7 +11,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
   templateUrl: './verify.component.html',
   styleUrls: ['./verify.component.scss']
 })
-export class CLVerifyComponent implements OnInit, OnDestroy {
+export class CLVerifyComponent implements OnDestroy {
   public message = '';
   public verifiedMessage = '';
   public signature = '';
@@ -21,8 +21,6 @@ export class CLVerifyComponent implements OnInit, OnDestroy {
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private snackBar: MatSnackBar, private logger: LoggerService) {}
-
-  ngOnInit() {}
 
   onVerify():boolean|void {
     if ((!this.message || this.message === '') || (!this.signature || this.signature === '')) { return true; }
@@ -56,7 +54,7 @@ export class CLVerifyComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

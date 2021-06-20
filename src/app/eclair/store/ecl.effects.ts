@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Subject, of } from 'rxjs';
 import { map, mergeMap, catchError, withLatestFrom, takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
@@ -13,11 +13,12 @@ import { SessionService } from '../../shared/services/session.service';
 import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { GetInfo, Channel, OnChainBalance, LightningBalance, ChannelsStatus, ChannelStats, Peer, Audit, Transaction, Invoice } from '../../shared/models/eclModels';
+import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
+
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromECLReducer from './ecl.reducers';
 import * as ECLActions from './ecl.actions';
 import * as RTLActions from '../../store/rtl.actions';
-import { ECLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 
 @Injectable()
 export class ECLEffects implements OnDestroy {
@@ -43,17 +44,19 @@ export class ECLEffects implements OnDestroy {
       });
     }
 
-  @Effect()
-  infoFetchECL = this.actions$.pipe(
+  infoFetchECL = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
       this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.store.dispatch(new RTLActions.CloseSpinner());
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: ECLActions.SET_INFO_ECL,
@@ -61,6 +64,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
+            this.store.dispatch(new RTLActions.CloseSpinner());
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
             const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
@@ -68,11 +72,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  fetchFees = this.actions$.pipe(
+  fetchFees = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_FEES_ECL),
     mergeMap((action: ECLActions.FetchFees) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchFees'));
@@ -89,11 +93,11 @@ export class ECLEffects implements OnDestroy {
           return of({type: RTLActions.VOID});
         })
       ));
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  fetchPayments = this.actions$.pipe(
+  fetchPayments = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_PAYMENTS_ECL),
     mergeMap((action: ECLActions.FetchPayments) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchPayments'));
@@ -110,11 +114,11 @@ export class ECLEffects implements OnDestroy {
           return of({type: RTLActions.VOID});
         })
       ));
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  channelsFetch = this.actions$.pipe(
+  channelsFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_CHANNELS_ECL),
     mergeMap((action: ECLActions.FetchChannels) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchChannels'));
@@ -138,11 +142,11 @@ export class ECLEffects implements OnDestroy {
           return of({type: RTLActions.VOID});
         })
       ));
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  channelStatsFetch = this.actions$.pipe(
+  channelStatsFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
     mergeMap((action: ECLActions.FetchChannelStats) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchChannelStats'));
@@ -159,11 +163,11 @@ export class ECLEffects implements OnDestroy {
           return of({type: RTLActions.VOID});
         })
       ));
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  fetchOnchainBalance = this.actions$.pipe(
+  fetchOnchainBalance = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_ONCHAIN_BALANCE_ECL),
     mergeMap((action: ECLActions.FetchOnchainBalance) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchOnchainBalance'));
@@ -179,11 +183,11 @@ export class ECLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchOnchainBalance', 'Fetching Onchain Balances Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  peersFetch = this.actions$.pipe(
+  peersFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_PEERS_ECL),
     mergeMap((action: ECLActions.FetchPeers) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchPeers'));
@@ -201,11 +205,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  getNewAddress = this.actions$.pipe(
+  getNewAddress = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.GET_NEW_ADDRESS_ECL),
     mergeMap((action: ECLActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API)
@@ -221,20 +225,21 @@ export class ECLEffects implements OnDestroy {
           this.handleErrorWithAlert('ERROR', 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
           return of({type: RTLActions.VOID});
         }));
-    })
+    }))
   );
 
-  @Effect({ dispatch: false })
-  setNewAddress = this.actions$.pipe(
+  setNewAddress = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SET_NEW_ADDRESS_ECL),
     map((action: ECLActions.SetNewAddress) => {
       this.logger.info(action.payload);
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  saveNewPeer = this.actions$.pipe(
+  saveNewPeer = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SAVE_NEW_PEER_ECL),
     withLatestFrom(this.store.select('ecl')),
     mergeMap(([action, eclData]: [ECLActions.SaveNewPeer, fromECLReducer.ECLState]) => {
@@ -256,11 +261,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  detachPeer = this.actions$.pipe(
+  detachPeer = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: ECLActions.DisconnectPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId)
@@ -279,11 +284,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  openNewChannel = this.actions$.pipe(
+  openNewChannel = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SAVE_NEW_CHANNEL_ECL),
     mergeMap((action: ECLActions.SaveNewChannel) => {
       this.store.dispatch(new ECLActions.ClearEffectError('SaveNewChannel'));
@@ -308,11 +313,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  updateChannel = this.actions$.pipe(
+  updateChannel = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.UPDATE_CHANNELS_ECL),
     mergeMap((action: ECLActions.UpdateChannels) => {
       let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
@@ -341,11 +346,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  closeChannel = this.actions$.pipe(
+  closeChannel = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: ECLActions.CloseChannel) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force)
@@ -366,11 +371,11 @@ export class ECLEffects implements OnDestroy {
             return of({type: RTLActions.VOID});
           })
         );
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  queryRoutesFetch = this.actions$.pipe(
+  queryRoutesFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.GET_QUERY_ROUTES_ECL),
     mergeMap((action: ECLActions.GetQueryRoutes) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount)
@@ -386,21 +391,21 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(new ECLActions.SetQueryRoutes([]));
             this.handleErrorWithAlert('ERROR', 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    }
-    ));
+        }));
+    }))
+  );
 
-  @Effect({ dispatch: false })
-  setQueryRoutes = this.actions$.pipe(
+  setQueryRoutes = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SET_QUERY_ROUTES_ECL),
     map((action: ECLActions.SetQueryRoutes) => {
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
-  @Effect()
-  sendPayment = this.actions$.pipe(
+  sendPayment = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.SendPayment, any]) => {
@@ -418,7 +423,7 @@ export class ECLEffects implements OnDestroy {
               } else {
                 this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
               }
-              return of({type: RTLActions.VOID});
+              return {type: RTLActions.VOID};
             } else {
               setTimeout(() => {
                 this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
@@ -439,13 +444,12 @@ export class ECLEffects implements OnDestroy {
               this.handleErrorWithAlert('ERROR', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
             }
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect()
-  transactionsFetch = this.actions$.pipe(
+  transactionsFetch = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
     mergeMap((action: ECLActions.FetchTransactions) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchTransactions'));
@@ -461,11 +465,11 @@ export class ECLEffects implements OnDestroy {
     catchError((err: any) => {
       this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
       return of({type: RTLActions.VOID});
-    }
-  ));
+    }))
+  );
 
-  @Effect()
-  SendOnchainFunds = this.actions$.pipe(
+  SendOnchainFunds = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SEND_ONCHAIN_FUNDS_ECL),
     mergeMap((action: ECLActions.SendOnchainFunds) => {
       this.store.dispatch(new ECLActions.ClearEffectError('SendOnchainFunds'));
@@ -483,64 +487,61 @@ export class ECLEffects implements OnDestroy {
         this.handleErrorWithoutAlert('SendOnchainFunds', 'Sending Fund Failed.', err);
         return of({type: RTLActions.VOID});
       }));
-    })
+    }))
   );
 
-  @Effect()
-  createInvoice = this.actions$.pipe(
-  ofType(ECLActions.CREATE_INVOICE_ECL),
-  mergeMap((action: ECLActions.CreateInvoice) => {
-    this.store.dispatch(new ECLActions.ClearEffectError('CreateInvoice'));
-    return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload)
-      .pipe(map((postRes: Invoice) => {
-          this.logger.info(postRes);
-          this.store.dispatch(new RTLActions.CloseSpinner());
-          postRes.amount = action.payload.amountMsat;
-          postRes.timestamp = new Date().getTime() / 1000;
-          postRes.timestampStr = this.commonService.convertTimestampToDate(+postRes.timestamp);
-          postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
-          postRes.expiresAtStr = this.commonService.convertTimestampToDate(+postRes.expiresAt);
-          postRes.description = action.payload.description;
-          postRes.status = 'unpaid';
-          this.store.dispatch(new RTLActions.OpenAlert({ data: { 
-              invoice: postRes,
-              newlyAdded: false,
-              component: ECLInvoiceInformationComponent
-          }}));
+  createInvoice = createEffect(() => 
+    this.actions$.pipe(
+    ofType(ECLActions.CREATE_INVOICE_ECL),
+    mergeMap((action: ECLActions.CreateInvoice) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('CreateInvoice'));
+      return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload)
+        .pipe(map((postRes: Invoice) => {
+            this.logger.info(postRes);
+            this.store.dispatch(new RTLActions.CloseSpinner());
+            postRes.timestamp = new Date().getTime() / 1000;
+            postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
+            postRes.description = action.payload.description;
+            postRes.status = 'unpaid';
+            this.store.dispatch(new RTLActions.OpenAlert({ data: { 
+                invoice: postRes,
+                newlyAdded: false,
+                component: ECLInvoiceInformationComponent
+            }}));
+            return {
+              type: ECLActions.ADD_INVOICE_ECL,
+              payload: postRes
+            };
+          }),
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('CreateInvoice', 'Create Invoice Failed.', err);
+            return of({type: RTLActions.VOID});
+        }));
+    }))
+  );
+
+  invoicesFetch = createEffect(() => 
+    this.actions$.pipe(
+    ofType(ECLActions.FETCH_INVOICES_ECL),
+    mergeMap((action: ECLActions.FetchInvoices) => {
+      this.store.dispatch(new ECLActions.ClearEffectError('FetchInvoices'));
+      return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + environment.INVOICES_API)
+        .pipe(map((res: Invoice[]) => {
+          this.logger.info(res);
           return {
-            type: ECLActions.FETCH_INVOICES_ECL
+            type: ECLActions.SET_INVOICES_ECL,
+            payload: res
           };
         }),
-        catchError((err: any) => {
-          this.handleErrorWithoutAlert('CreateInvoice', 'Create Invoice Failed.', err);
-          return of({type: RTLActions.VOID});
-        })
-      );
-  }
-  ));
+          catchError((err: any) => {
+            this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
+            return of({type: RTLActions.VOID});
+        }));
+    }))
+  );
 
-  @Effect()
-  invoicesFetch = this.actions$.pipe(
-  ofType(ECLActions.FETCH_INVOICES_ECL),
-  mergeMap((action: ECLActions.FetchInvoices) => {
-    this.store.dispatch(new ECLActions.ClearEffectError('FetchInvoices'));
-    return this.httpClient.get<Invoice[]>(this.CHILD_API_URL + environment.INVOICES_API)
-      .pipe(map((res: Invoice[]) => {
-        this.logger.info(res);
-        return {
-          type: ECLActions.SET_INVOICES_ECL,
-          payload: res
-        };
-      }),
-        catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
-          return of({type: RTLActions.VOID});
-        }
-      ));
-  }));
-
-  @Effect()
-  peerLookup = this.actions$.pipe(
+  peerLookup = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.PEER_LOOKUP_ECL),
     mergeMap((action: ECLActions.PeerLookup) => {
       this.store.dispatch(new ECLActions.ClearEffectError('Lookup'));
@@ -558,18 +559,18 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(new ECLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
             this.handleErrorWithAlert('ERROR', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
             return of({type: RTLActions.VOID});
-          })
-        );
-    })
+        }));
+    }))
   );
 
-  @Effect({ dispatch: false })
-  setLookup = this.actions$.pipe(
+  setLookup = createEffect(() => 
+    this.actions$.pipe(
     ofType(ECLActions.SET_LOOKUP_ECL),
     map((action: ECLActions.SetLookup) => {
       this.logger.info(action.payload);
       return action.payload;
-    })
+    })),
+    { dispatch: false }
   );
 
   initializeRemainingData(info: any, landingPage: string) {
@@ -587,6 +588,7 @@ export class ECLEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
+    this.store.dispatch(new ECLActions.FetchInvoices());
     this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
     this.store.dispatch(new ECLActions.FetchFees());
     this.store.dispatch(new ECLActions.FetchOnchainBalance());
@@ -638,7 +640,7 @@ export class ECLEffects implements OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

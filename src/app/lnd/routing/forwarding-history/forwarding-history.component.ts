@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, SimpleChanges, OnDestroy, AfterViewInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -38,7 +39,7 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -80,16 +81,18 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
       this.forwardingHistoryData = this.eventsData;
-      this.loadForwardingEventsTable(this.forwardingHistoryData);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.forwardingHistoryData);
+      }
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }
 
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
-      [{key: 'timestamp_str', value: selFEvent.timestamp_str, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
+      [{key: 'timestamp', value: selFEvent.timestamp, title: 'Timestamp', width: 25, type: DataTypeEnum.DATE_TIME},
         {key: 'amt_in', value: selFEvent.amt_in, title: 'Inbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
         {key: 'amt_out', value: selFEvent.amt_out, title: 'Outbound Amount (Sats)', width: 25, type: DataTypeEnum.NUMBER},
         {key: 'fee_msat', value: selFEvent.fee_msat, title: 'Fee (mSats)', width: 25, type: DataTypeEnum.NUMBER}],
@@ -109,24 +112,29 @@ export class ForwardingHistoryComponent implements OnInit, AfterViewInit, OnChan
     this.forwardingHistoryEvents = forwardingEvents ? new MatTableDataSource<ForwardingEvent>([...forwardingEvents]) : new MatTableDataSource([]);
     this.forwardingHistoryEvents.sort = this.sort;
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.forwardingHistoryEvents.filterPredicate = (fhEvents: ForwardingEvent, fltr: string) => JSON.stringify(fhEvents).toLowerCase().includes(fltr);
+    this.forwardingHistoryEvents.filterPredicate = (rowData: ForwardingEvent, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
 
   onDownloadCSV() {
-    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+    if(this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

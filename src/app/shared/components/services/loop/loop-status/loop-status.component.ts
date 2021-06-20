@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { LoopStatus } from '../../../../models/loopModels';
 
 @Component({
@@ -6,11 +6,9 @@ import { LoopStatus } from '../../../../models/loopModels';
   templateUrl: './loop-status.component.html',
   styleUrls: ['./loop-status.component.scss']
 })
-export class LoopStatusComponent implements OnInit {
+export class LoopStatusComponent {
   @Input() loopStatus: LoopStatus;
 
   constructor() {}
-
-  ngOnInit() {}
 
 }

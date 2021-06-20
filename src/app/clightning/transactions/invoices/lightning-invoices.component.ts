@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
   ]  
 })
-export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
+export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;  
@@ -54,14 +54,13 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   public flgSticky = false;
   public private = false;
   public expiryStep = 100;
-  public totalInvoices = 100;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -79,7 +78,6 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 100, index_offset: 0, reversed: false}));
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -90,22 +88,22 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
       });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      this.totalInvoices = rtlStore.totalInvoices;
-      this.logger.info(rtlStore);
       this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
-      this.invoices = (this.invoiceJSONArr) ? new MatTableDataSource<Invoice>([...this.invoiceJSONArr]) : new MatTableDataSource([]);
-      this.invoices.sort = this.sort;
-      this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-      this.invoices.filterPredicate = (invoice: Invoice, fltr: string) => JSON.stringify(invoice).toLowerCase().includes(fltr);
-      this.invoices.paginator = this.paginator;    
-      setTimeout(() => { this.flgAnimate = false; }, 5000);
-      this.logger.info(this.invoices);
-  
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.invoices) ? false : true;
+      if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+        this.loadInvoicesTable(this.invoiceJSONArr);
       }
+      setTimeout(() => { this.flgAnimate = false; }, 5000);
+      if (this.flgLoading[0] !== 'error') {
+        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
+      }
+      this.logger.info(rtlStore);
     });
+  }
 
+  ngAfterViewInit() {
+    if (this.invoiceJSONArr && this.invoiceJSONArr.length > 0 && this.sort && this.paginator) {
+      this.loadInvoicesTable(this.invoiceJSONArr);
+    }
   }
 
   openCreateInvoiceModal() {
@@ -146,8 +144,8 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     let reCreatedInvoice: Invoice = {
       msatoshi: selInvoice.msatoshi,
       label: selInvoice.label,
-      expires_at_str: selInvoice.expires_at_str,
-      paid_at_str: selInvoice.paid_at_str,
+      expires_at: selInvoice.expires_at,
+      paid_at: selInvoice.paid_at,
       bolt11: selInvoice.bolt11,
       payment_hash: selInvoice.payment_hash,
       description: selInvoice.description,
@@ -184,6 +182,17 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadInvoicesTable(invs: Invoice[]) {
+    this.invoices = (invs) ? new MatTableDataSource<Invoice>([...invs]) : new MatTableDataSource([]);
+    this.invoices.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+    this.invoices.sort = this.sort;
+    this.invoices.filterPredicate = (rowData: Invoice, fltr: string) => {
+      const newRowData = ((rowData.paid_at) ? this.datePipe.transform(new Date(rowData.paid_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + ((rowData.expires_at) ? this.datePipe.transform(new Date(rowData.expires_at*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
+    this.invoices.paginator = this.paginator;    
+  }
+
   onDownloadCSV() {
     if(this.invoices.data && this.invoices.data.length > 0) {
       this.commonService.downloadFile(this.invoices.data, 'Invoices');
@@ -192,7 +201,7 @@ export class CLLightningInvoicesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

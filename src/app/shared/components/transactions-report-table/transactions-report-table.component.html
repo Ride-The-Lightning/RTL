@@ -11,11 +11,11 @@
         <table mat-table #table fxFlex="100" [dataSource]="transactions" matSort class="overflow-auto">
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-            <td mat-cell *matCellDef="let transaction">{{transaction?.date | date:(dataRange === scrollRanges[1] ? 'MMM/yyyy' : 'dd/MMM/yyyy') | uppercase}}</td>
+            <td mat-cell *matCellDef="let transaction">{{transaction?.date | date:(dataRange === scrollRanges[1] ? 'MMM/yyyy' : 'dd/MMM/yyyy')}}</td>
           </ng-container>
           <ng-container matColumnDef="amount_paid">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount Paid (Sats)</th>
-            <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction?.amount_paid | number:'1.0-0'}}</span></td>
+            <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction?.amount_paid | number:'1.0-2'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="num_payments">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"># Payments</th>
@@ -23,7 +23,7 @@
           </ng-container>
           <ng-container matColumnDef="amount_received">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Amount Received (Sats)</th>
-            <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction?.amount_received | number:'1.0-0'}}</span></td>
+            <td mat-cell *matCellDef="let transaction"><span fxLayoutAlign="end center">{{transaction?.amount_received | number:'1.0-2'}}</span></td>
           </ng-container>
           <ng-container matColumnDef="num_invoices">
             <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before"># Invoices</th>

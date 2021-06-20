@@ -1,18 +1,18 @@
 <div fxLayout="column" fxFlex="100" fxLayoutAlign="center stretch" class="login-container">
   <div fxLayout="row" fxFlex="50" fxLayoutAlign="center stretch">
     <mat-card fxLayout="row" fxFlex="50" fxLayoutAlign="center stretch">
-      <div fxLayout="row" fxFlex="100" fxLayoutAlign="stretch stretch">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxFlex="100" fxLayoutAlign="stretch stretch">
         <div fxFlex="35" fxLayoutAlign="center center" class="bg-primary">
           <img src="assets/images/RTL-Horse-BY.svg" alt="RTL Logo" class="rtl-logo-svg">
         </div>
-        <div fxFlex="65" fxLayout="column" fxLayoutAlign="center stretch" class="padding-gap-large">
+        <div fxFlex="65" fxLayout="column" fxLayoutAlign="center stretch" [ngClass]="{'padding-gap-large': screenSize === screenSizeEnum.XS}">
           <mat-card-header fxLayout="row" fxLayoutAlign="center center" class="page-title-container p-0">
-            <mat-card-title class="font-size-300 font-bold-500">
+            <mat-card-title class="font-bold-500" [ngClass]="{'font-size-200': screenSize === screenSizeEnum.XS, 'font-size-300': screenSize !== screenSizeEnum.XS}">
               <span class="page-title">Welcome</span>
             </mat-card-title>
           </mat-card-header>
-          <mat-card-content class="mt-5px mb-0 pr-2">
-            <form #loginForm="ngForm"  fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
+          <mat-card-content class="mt-5px mb-0 px-2">
+            <form #loginForm="ngForm" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between">
               <mat-form-field fxFlex="100" fxLayoutAlign="start">
                 <input autoFocus matInput placeholder="Password" [type]="flgShow ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password" tabindex="1" required>
                 <mat-icon tabindex="2" matSuffix (click)="flgShow = !flgShow">{{flgShow ? 'visibility_off' : 'visibility'}}</mat-icon>

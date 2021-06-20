@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import './color-swatches/light-dull-theme.scss';
 @import './color-swatches/dark-bright-theme.scss';
 @import './color-swatches/red-warn.swatch.scss';
@@ -5,11 +6,11 @@
 @import './color-swatches/white.swatch.scss';
 @import '~@angular/material/theming';
 
-$yellow-primary: mat-palette($yellow-primary, 500, 300, A200);
-$yellow-accent:  mat-palette($mat-gray, 800, 600, 900);
-$yellow-accent-night:  mat-palette($mat-white, 300, 600, 900);
-$yellow-warn: mat-palette($red-warn, 500);
+$yellow-primary: mat.define-palette($yellow-primary, 500, 300, A200);
+$yellow-accent:  mat.define-palette(mat.$gray-palette, 800, 600, 900);
+$yellow-accent-night:  mat.define-palette($mat-white, 300, 600, 900);
+$yellow-warn: mat.define-palette($red-warn, 500);
 
 $yellow-night-theme: create-dark-bright-theme($yellow-primary, $yellow-accent-night, $yellow-warn);
 
-$yellow-day-theme: mat-light-theme($yellow-primary, $yellow-accent, $yellow-warn);
+$yellow-day-theme: mat.define-light-theme($yellow-primary, $yellow-accent, $yellow-warn);

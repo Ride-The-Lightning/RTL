@@ -15,7 +15,7 @@
           </div>
           <div fxFlex="70">
             <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
-            <span class="foreground-secondary-text">{{payment.firstPartTimestampStr}}</span>
+            <span class="foreground-secondary-text">{{(payment.firstPartTimestamp) | date:'dd/MMM/YYYY HH:mm'}}</span>
           </div>
         </div>
         <mat-divider class="w-100 my-1"></mat-divider>   
@@ -72,7 +72,7 @@
                     </div>
                     <div fxFlex="50">
                       <h4 fxLayoutAlign="start" class="font-bold-500">Date/Time</h4>
-                      <span class="foreground-secondary-text">{{part.timestampStr}}</span>
+                      <span class="foreground-secondary-text">{{(part.timestamp) | date:'dd/MMM/YYYY HH:mm'}}</span>
                     </div>
                   </div>
                   <mat-divider class="w-100 my-1"></mat-divider>

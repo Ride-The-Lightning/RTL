@@ -1,6 +1,6 @@
-FROM node:10-stretch-slim AS builder
+FROM node:14-stretch-slim AS builder
 
-ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-static-arm64 /tini
+ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static-arm64 /tini
 RUN chmod +x /tini
 
 WORKDIR /RTL
@@ -11,11 +11,11 @@ COPY package.json /RTL/package.json
 COPY package-lock.json /RTL/package-lock.json
 
 # Install dependencies
-RUN npm install --only=prod
+RUN npm install --production
 
 COPY . /RTL
 
-FROM arm64v8/node:10-stretch-slim
+FROM arm64v8/node:14-stretch-slim
 
 WORKDIR /RTL
 

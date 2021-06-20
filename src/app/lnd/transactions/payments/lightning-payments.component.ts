@@ -1,12 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { Subject, forkJoin } from 'rxjs';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
@@ -37,7 +36,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -46,6 +44,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any;
+  public totalPayments = 100;
   public paymentJSONArr: Payment[] = [];
   public displayedColumns: any[] = [];
   public htlcColumns = [];
@@ -53,13 +52,15 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public paymentRequest = '';
   public paymentDecodedHint = '';
   public flgSticky = false;
+  private firstOffset = -1;
+  private lastOffset = -1;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -92,7 +93,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
-      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
+      this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.payments && rtlStore.payments.payments.length > 0) ? rtlStore.payments.payments : [];
+      this.totalPayments = rtlStore.allLightningTransactions.paymentsAll && rtlStore.allLightningTransactions.paymentsAll.payments && rtlStore.allLightningTransactions.paymentsAll.payments.length ? rtlStore.allLightningTransactions.paymentsAll.payments.length : 0;
+      this.firstOffset = +rtlStore.payments.first_index_offset;
+      this.lastOffset = +rtlStore.payments.last_index_offset;
       if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
         this.loadPaymentsTable(this.paymentJSONArr);
       }
@@ -112,13 +116,13 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
 
   onSendPayment():boolean|void {
     if(!this.paymentRequest) { return true; } 
-    if ( this.paymentDecoded.timestamp_str) {
+    if ( this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
       this.dataService.decodePayment(this.paymentRequest, false)
       .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.timestamp_str) {
+        if (this.paymentDecoded.timestamp) {
           if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
             this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
           } else {
@@ -144,7 +148,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
           [{key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100}],
           [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-          [{key: 'timestamp_str', value: this.paymentDecoded.timestamp_str, title: 'Creation Date', width: 40},
+          [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME},
             {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
             {key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 30}]
         ];
@@ -176,7 +180,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         [{key: 'payment_hash', value: this.paymentDecoded.payment_hash, title: 'Payment Hash', width: 100}],
         [{key: 'destination', value: this.paymentDecoded.destination, title: 'Destination', width: 100}],
         [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-        [{key: 'timestamp_str', value: this.paymentDecoded.timestamp_str, title: 'Creation Date', width: 50},
+        [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
           {key: 'num_satoshis', value: this.paymentDecoded.num_satoshis, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'cltv_expiry', value: this.paymentDecoded.cltv_expiry, title: 'CLTV Expiry', width: 50}]
@@ -233,6 +237,27 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
+  onPageChange(event: any) {
+    let reverse = true;
+    let index_offset = this.lastOffset;
+    let page_size = event.pageSize;
+    if (event.pageIndex === 0) {
+      reverse = true;
+      index_offset = 0;
+    } else if (event.pageIndex < event.previousPageIndex) {
+      reverse = false;
+      index_offset = this.lastOffset;
+    } else if (event.pageIndex > event.previousPageIndex && (event.length > ((event.pageIndex + 1) * event.pageSize))) {
+      reverse = true;
+      index_offset = this.firstOffset;
+    } else if (event.length <= ((event.pageIndex + 1) * event.pageSize)) {
+      reverse = false;
+      index_offset = 0;
+      page_size = event.length - (event.pageIndex * event.pageSize);
+    }
+    this.store.dispatch(new LNDActions.FetchPayments({max_payments: page_size, index_offset: index_offset, reversed: reverse}));
+  }
+
   is_group(index: number, payment: Payment) {
     return payment.htlcs && payment.htlcs.length > 1;
   }  
@@ -279,8 +304,8 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{key: 'preimage', value: selHtlc.preimage, title: 'Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'status', value: selHtlc.status, title: 'Status', width: 33, type: DataTypeEnum.STRING},
-        {key: 'attempt_time_str', value: selHtlc.attempt_time_str, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME},
-        {key: 'resolve_time_str', value: selHtlc.resolve_time_str, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME}],
+        {key: 'attempt_time_ns', value: +selHtlc.attempt_time_ns / 1000000000, title: 'Attempt Time', width: 33, type: DataTypeEnum.DATE_TIME},
+        {key: 'resolve_time_ns', value: +selHtlc.resolve_time_ns / 1000000000, title: 'Resolve Time', width: 34, type: DataTypeEnum.DATE_TIME}],
       [{key: 'total_amt', value: selHtlc.route.total_amt, title: 'Amount (Sats)', width: 33, type: DataTypeEnum.NUMBER},
         {key: 'total_fees', value: selHtlc.route.total_fees, title: 'Fee (Sats)', width: 33, type: DataTypeEnum.NUMBER},
         {key: 'total_time_lock', value: selHtlc.route.total_time_lock, title: 'Total Time Lock', width: 34, type: DataTypeEnum.NUMBER}],
@@ -300,11 +325,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onPaymentClick(selPayment: Payment) {
     if (selPayment.htlcs && selPayment.htlcs[0] && selPayment.htlcs[0].route && selPayment.htlcs[0].route.hops && selPayment.htlcs[0].route.hops.length > 0) {
       let nodePubkeys = selPayment.htlcs[0].route.hops.reduce((pubkeys, hop) => { return pubkeys === '' ? hop.pub_key : pubkeys + ',' + hop.pub_key }, '');
-      forkJoin(this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
+      this.dataService.getAliasesFromPubkeys(nodePubkeys, true)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe((nodes: any) => {
         this.showPaymentView(selPayment, nodes.reduce((pathAliases, node) => { return pathAliases === '' ? node : pathAliases + '\n' + node }, ''));
-      }));
+      });
     } else {
       this.showPaymentView(selPayment, '');
     }
@@ -316,7 +341,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       [{key: 'payment_preimage', value: selPayment.payment_preimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'payment_request', value: selPayment.payment_request, title: 'Payment Request', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'status', value: selPayment.status, title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'creation_date_str', value: selPayment.creation_date_str, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME}],
+        {key: 'creation_date', value: selPayment.creation_date, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'value_msat', value: selPayment.value_msat, title: 'Value (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'fee_msat', value: selPayment.fee_msat, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'path', value: pathAliases, title: 'Path', width: 100, type: DataTypeEnum.STRING}]
@@ -359,9 +384,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       }
     }
     this.payments.sort = this.sort;
-    this.payments.filterPredicate = (payment: Payment, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
-    this.payments.paginator = this.paginator;
-}
+    this.payments.filterPredicate = (payment: Payment, fltr: string) => {
+      const newPayment = ((payment.creation_date) ? this.datePipe.transform(new Date(payment.creation_date*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(payment).toLowerCase();
+      return newPayment.includes(fltr);   
+    };
+  }
 
   onDownloadCSV() {
     if(this.payments.data && this.payments.data.length > 0) {
@@ -372,7 +399,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         }
         return paymentReqs;
       }, '');
-      forkJoin(this.dataService.decodePayments(paymentRequests)
+      this.dataService.decodePayments(paymentRequests)
       .pipe(takeUntil(this.unSubs[4]))
       .subscribe((decodedPayments: PayRequest[]) => {
         let increament = 0;
@@ -384,13 +411,13 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         });
         let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
         this.commonService.downloadFile(flattenedPayments, 'Payments');
-      }));
+      });
     }
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

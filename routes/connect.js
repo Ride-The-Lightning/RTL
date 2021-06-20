@@ -5,10 +5,10 @@ var crypto = require('crypto');
 var hash = crypto.createHash('sha256');
 var common = require('./common');
 var path = require('path');
-var logger = require('./controllers/shared/logger');
+var logger = require('../controllers/shared/logger');
 var connect = {};
 var errMsg = '';
-var request = require('request');
+var request = require('request-promise');
 var ini = require('ini');
 var parseHocon = require('hocon-parser');
 common.path_separator = (platform === 'win32') ? '\\' : '/';
@@ -84,7 +84,7 @@ connect.normalizePort = val => {
 };
 
 connect.replacePasswordWithHash = (multiPassHashed) => {
-  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
+  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
   try {
     RTLConfFile = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
@@ -336,17 +336,17 @@ connect.logEnvVariables = () => {
   if (common.nodes && common.nodes.length > 0) {
     common.nodes.forEach((node, idx) => {
       if (!node.enable_logging) { return; }
-      logger.info({fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
-      logger.info({fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
-      logger.info({fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'SSO: ' + common.rtl_sso, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LOGOUT REDIRECT LINK: ' + common.logout_redirect_link + '\r\n', node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'INDEX: ' + node.index, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN NODE: ' + node.ln_node, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN IMPLEMENTATION: ' + node.ln_implementation, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'FIAT CONVERSION: ' + node.fiat_conversion, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'CURRENCY UNIT: ' + node.currency_unit, node});
+      logger.log({level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'LN SERVER URL: ' + node.ln_server_url, node});
     });  
   }
 }
@@ -359,26 +359,24 @@ connect.getAllNodeAllChannelBackup = (node) => {
     json: true,
     headers: {'Grpc-Metadata-macaroon': fs.readFileSync(node.macaroon_path + '/admin.macaroon').toString('hex')}
   };
-  request(options, function (err, res, body) {
-    if (err) {
-      logger.error({fileName: 'Connect', lineNum: 443, msg: 'Channel Backup Response Failed: ' + JSON.stringify(err)});
-    } else {
-      fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
-        if (err) {
-          if (node.ln_node) {
-            logger.error({fileName: 'Connect', lineNum: 448, msg: 'Channel Backup Failed for Node ' + node.ln_node + ' with error response: ' + JSON.stringify(err)});
-          } else {
-            logger.error({fileName: 'Connect', lineNum: 450, msg: 'Channel Backup Failed: ' + JSON.stringify(err)});
-          }
+  request(options).then(function(body) {
+    fs.writeFile(channel_backup_file, JSON.stringify(body), function(err) {
+      if (err) {
+        if (node.ln_node) {
+          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Failed for Node ' + node.ln_node, error: err});
         } else {
-          if (node.ln_node) {
-            logger.info({fileName: 'Connect', msg: 'Channel Backup Successful for Node: ' + node.ln_node});
-          } else {
-            logger.info({fileName: 'Connect', msg: 'Channel Backup Successful'});
-          }
+          logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Error', error: err});
         }
-      });
-    }
+      } else {
+        if (node.ln_node) {
+          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful for Node', data: node.ln_node});
+        } else {
+          logger.log({level: 'DEBUG', fileName: 'Connect', msg: 'Channel Backup Successful'});
+        }
+      }
+    });
+  }, (err) => {
+    logger.log({level: 'ERROR', fileName: 'Connect', msg: 'Channel Backup Response Error', error: err});
   })
 };
 
@@ -553,7 +551,7 @@ connect.upgradeConfig = (confFileFullPath) => {
 
 connect.setServerConfiguration = () => {
   try {
-    common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.normalize(__dirname);
+    common.rtl_conf_file_path = (process.env.RTL_CONFIG_PATH) ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '/..');
     confFileFullPath = common.rtl_conf_file_path +  common.path_separator + 'RTL-Config.json';
     if(!fs.existsSync(confFileFullPath)) {
       connect.upgradeConfig(confFileFullPath);

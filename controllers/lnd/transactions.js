@@ -1,28 +1,27 @@
 var request = require('request-promise');
-var common = require('../../common');
+var common = require('../../routes/common');
 var logger = require('../shared/logger');
 var options = {};
 
 exports.getTransactions = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Transactions', msg: 'Getting Transactions..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/transactions';
   request(options).then((body) => {
     const body_str = (!body) ? '' : JSON.stringify(body);
     const search_idx = (!body) ? -1 : body_str.search('Not Found');
-    logger.info({fileName: 'Transactions', msg: 'Transaction Received: ' + body_str});
+    logger.log({level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Received', data: body_str});
     if (!body || search_idx > -1 || body.error) {
-      logger.error({fileName: 'Transactions', lineNum: 14, msg: 'List Transactions Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'List Transactions Error', error: body.error});
       res.status(500).json({
         message: "Fetching Transactions Failed!",
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
       if (body.transactions && body.transactions.length > 0) {
-        body.transactions.forEach(transaction => {
-          transaction.time_stamp_str =  (!transaction.time_stamp) ? '' : common.convertTimestampToDate(transaction.time_stamp);
-        });
         body.transactions = common.sortDescByKey(body.transactions, 'time_stamp');
       }
+      logger.log({level: 'INFO', fileName: 'Transactions', msg: 'Transactions Received'});
       res.status(200).json(body.transactions);
     }
   })
@@ -34,7 +33,7 @@ exports.getTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Transactions', lineNum: 36, msg: 'List Transactions Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'List Transactions Error', error: err});
     return res.status(500).json({
       message: "Fetching Transactions Failed!",
       error: err.error
@@ -43,6 +42,7 @@ exports.getTransactions = (req, res, next) => {
 };
 
 exports.postTransactions = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Transactions', msg: 'Sending Transaction..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/transactions';
   options.form = { 
@@ -56,14 +56,15 @@ exports.postTransactions = (req, res, next) => {
   }
   options.form = JSON.stringify(options.form);
   request.post(options).then((body) => {
-    logger.info({fileName: 'Transactions', msg: 'Transaction Post Response: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Transactions', msg: 'Transaction Post Response', data: body});
     if(!body || body.error) {
-      logger.error({fileName: 'Transactions', lineNum: 60, msg: 'Post Transaction Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'Post Transaction Error', error: body.error});
       res.status(500).json({
         message: "Transactions post failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Transactions', msg: 'Transaction Sent'});
       res.status(201).json(body);
     }
   })
@@ -75,7 +76,7 @@ exports.postTransactions = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Transactions', lineNum: 76, msg: 'Transaction Post Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Transactions', msg: 'Transaction Post Error', error: err});
     return res.status(500).json({
       message: "Transactions post failed!",
       error: err.error

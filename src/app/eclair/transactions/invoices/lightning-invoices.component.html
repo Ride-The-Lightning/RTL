@@ -36,7 +36,7 @@
             <span *ngIf="invoice.status === 'received'" class="dot green" matTooltip="Received" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice.status === 'unpaid'" class="dot yellow" matTooltip="Unpaid" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
             <span *ngIf="invoice.status === 'expired' || invoice.status === 'unknown'" class="dot red" matTooltip="Expired" matTooltipPosition="right" [ngClass]="{'mr-0': screenSize === screenSizeEnum.XS}"></span>
-            {{invoice.timestampStr}}
+            {{(invoice.timestamp * 1000) | date:'dd/MMM/YYYY HH:mm'}}
           </td>
         </ng-container>
         <ng-container matColumnDef="receivedAt">
@@ -83,7 +83,7 @@
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.label == newlyAddedInvoiceMemo && row.value == newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [@newlyAddedRowAnimation]="(row.label === newlyAddedInvoiceMemo && row.value === newlyAddedInvoiceValue && flgAnimate) ? 'added' : 'notAdded'"></tr>
       </table>
     </div>
     <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

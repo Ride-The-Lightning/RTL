@@ -1,8 +1,8 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import {
-  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, Payment, ListInvoices,
-  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO
+  GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, ListInvoices,
+  PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO, ListPayments
 } from '../../shared/models/lndModels';
 import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
@@ -34,8 +34,9 @@ export interface LNDState {
   totalInvoices: number;
   transactions: Transaction[];
   utxos: UTXO[];
-  payments: Payment[];
+  payments: ListPayments;
   invoices: ListInvoices;
+  allLightningTransactions: { paymentsAll: ListPayments, invoicesAll: ListInvoices };
   forwardingHistory: SwitchRes;
 }
 
@@ -62,8 +63,9 @@ export const initLNDState: LNDState = {
   totalInvoices: -1,
   transactions: [],
   utxos: [],
-  payments: [],
+  payments: {payments: []},
   invoices: {invoices: []},
+  allLightningTransactions: { paymentsAll: null, invoicesAll: null },
   forwardingHistory: {}
 }
 
@@ -267,6 +269,11 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         ...state,
         initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
+      };
+    case LNDActions.SET_ALL_LIGHTNING_TRANSATIONS_LND:
+      return {
+        ...state,
+        allLightningTransactions: action.payload
       };
     case LNDActions.SET_FORWARDING_HISTORY_LND:
       if (action.payload.forwarding_events) {

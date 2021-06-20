@@ -8,11 +8,11 @@
     </mat-card-header>    
     <mat-card-content class="padding-gap-x-large">
       <form fxLayout="column">
-        <div *ngIf="warningMessage && warningMessage != ''" fxFlex="100" class="alert alert-warn">
+        <div *ngIf="warningMessage && warningMessage !== ''" fxFlex="100" class="alert alert-warn">
           <fa-icon [icon]="faExclamationTriangle" class="mr-1 alert-icon"></fa-icon>
           <span>{{warningMessage}}</span>
         </div>
-        <div *ngIf="informationMessage && informationMessage != ''" fxFlex="100" class="alert alert-info">
+        <div *ngIf="informationMessage && informationMessage !== ''" fxFlex="100" class="alert alert-info">
           <fa-icon [icon]="faInfoCircle" class="mr-1 alert-icon"></fa-icon>
           <span>{{informationMessage}}</span>
         </div>
@@ -25,6 +25,7 @@
                 <span *ngIf="obj && obj.value; else emptyField">
                   <span [ngSwitch]="obj.type" class="foreground-secondary-text">
                     <ng-container *ngSwitchCase="dataTypeEnum.ARRAY"><span *ngFor="let arrayObj of obj.value" class="display-block">{{arrayObj}}</span></ng-container>
+                    <ng-container *ngSwitchCase="dataTypeEnum.DATE_TIME">{{(obj.value * 1000) | date:'dd/MMM/YYYY HH:mm'}}</ng-container>
                     <ng-container *ngSwitchCase="dataTypeEnum.NUMBER">{{obj.value | number:'1.0-3'}}</ng-container>
                     <ng-container *ngSwitchCase="dataTypeEnum.BOOLEAN">{{obj.value === true ? 'True' : 'False'}}</ng-container>
                     <ng-container *ngSwitchDefault>{{obj.value}}</ng-container>
@@ -45,6 +46,7 @@
               <input *ngIf="i === 0" autoFocus matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
               <input *ngIf="i !== 0" matInput [placeholder]="getInput.placeholder" name="input{{i}}" [min]="getInput.min" [step]="getInput.step" [type]="getInput.inputType | lowercase" [(ngModel)]="getInput.inputValue" [tabindex]="i+1" required>
               <mat-error *ngIf="!getInput.inputValue">{{getInput.placeholder}} is required.</mat-error>
+              <mat-hint>{{getInput.hintFunction ? getInput.hintFunction(getInput.inputValue) : getInput.hintText}}</mat-hint>
             </mat-form-field>
           </div>        
         </div>

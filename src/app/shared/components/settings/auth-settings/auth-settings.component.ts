@@ -9,6 +9,8 @@ import * as sha256 from 'sha256';
 
 import { TwoFactorAuthComponent } from '../../data-modal/two-factor-auth/two-factor-auth.component';
 import { RTLConfiguration, ConfigSettingsNode } from '../../../models/RTLconfig';
+import { PASSWORD_BLACKLIST } from '../../../services/consts-enums-functions';
+import { SessionService } from '../../../services/session.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
@@ -35,10 +37,10 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
-    this.initializeNodeData = !!history.state.initial;
+    this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
@@ -49,7 +51,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
     this.actions$.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
-      if (this.currPassword.toLowerCase() === 'password') {
+      if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done
         switch (this.selNode.lnImplementation.toUpperCase()) {
           case 'CLT':
             this.router.navigate(['/cl/home']);
@@ -65,11 +67,11 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
         }
       }
       this.form.resetForm();
-    });    
+    });
   }
 
   onChangePassword():boolean|void {
-    if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword) { return true; }
+    if(!this.currPassword || !this.newPassword || !this.confirmPassword || this.currPassword === this.newPassword || this.newPassword !== this.confirmPassword || PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) { return true; }
     this.store.dispatch(new RTLActions.ResetPassword({currPassword: sha256(this.currPassword), newPassword: sha256(this.newPassword)}));
   }
 
@@ -83,6 +85,10 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       } else if (this.currPassword !== '' && this.newPassword !== '' && this.currPassword === this.newPassword) {
         this.form.controls.newpassword.setErrors({invalid: true});
         this.errorMsg = 'Old and New password cannot be same.';
+        invalid = true;
+      } else if (PASSWORD_BLACKLIST.includes(this.newPassword.toLowerCase())) {
+        this.form.controls.newpassword.setErrors({invalid: true});
+        this.errorMsg = PASSWORD_BLACKLIST.reduce((totalList, currentPass, i) => (i < (PASSWORD_BLACKLIST.length - 1)) ? (totalList + currentPass + '" / "') : (totalList + currentPass + '".'), 'Password cannot be "');
         invalid = true;
       } else {
         this.form.controls.newpassword.setErrors(null);

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, AfterViewInit } from '@angular/core';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { forkJoin, Subject } from 'rxjs';
+import { DecimalPipe, DatePipe } from '@angular/common';
+import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +18,7 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import { ECLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { ECLPaymentInformationComponent } from '../payment-information-modal/payment-information.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
-import { ECLEffects } from '../../store/ecl.effects';
+
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -58,7 +58,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private decimalPipe: DecimalPipe, private dataService: DataService) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -106,19 +106,19 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       // FOR MPP TESTING START
       // if(this.paymentJSONArr.length > 0) { 
       //   this.paymentJSONArr[3].parts.push({
-      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075, timestampStr: "02/AUG/2020 17:37"
+      //     id: '34b609a5-f0f1-474e-9e5d-d7783b48702d', amount: 26000, feesPaid: 22, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c87', toChannelAlias: 'ion.radar.tech1', timestamp: 1596389827075
       //   });
       //   this.paymentJSONArr[3].parts.push({
-      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075, timestampStr: "02/AUG/2020 17:36"
+      //     id: '35b609a5-f0f1-474e-9e5d-d7783b48702e', amount: 27000, feesPaid: 20, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c86', toChannelAlias: 'ion.radar.tech2', timestamp: 1596389817075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075, timestampStr: "02/AUG/2020 17:38"
+      //     id: '38b609a5-f0f1-474e-9e5d-d7783b48702h', amount: 31000, feesPaid: 18, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c85', toChannelAlias: 'ion.radar.tech3', timestamp: 1596389887075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075, timestampStr: "02/AUG/2020 17:34"
+      //     id: '36b609a5-f0f1-474e-9e5d-d7783b48702f', amount: 28000, feesPaid: 13, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c84', toChannelAlias: 'ion.radar.tech4', timestamp: 1596389687075
       //   });
       //   this.paymentJSONArr[5].parts.push({
-      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075, timestampStr: "02/AUG/2020 17:35"
+      //     id: '37b609a5-f0f1-474e-9e5d-d7783b48702g', amount: 25000, feesPaid: 19, toChannelId: '7e78fa4a27db55df2955fb2be54162d01168744ad45a6539172a6dd6e6139c83', toChannelAlias: 'ion.radar.tech5', timestamp: 1596389707075
       //   });
       // }
       // this.paymentJSONArr = this.paymentJSONArr.splice(2, 5);
@@ -162,7 +162,10 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
-    this.payments.filterPredicate = (payment: PaymentSent, fltr: string) => JSON.stringify(payment).toLowerCase().includes(fltr);
+    this.payments.filterPredicate = (rowData: PaymentSent, fltr: string) => {
+      const newRowData = ((rowData.firstPartTimestamp) ? this.datePipe.transform(new Date(rowData.firstPartTimestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.payments.paginator = this.paginator;
   }
 
@@ -194,7 +197,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           [{key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100}],
           [{key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100}],
           [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-          [{key: 'timestampStr', value: this.paymentDecoded.timestampStr, title: 'Creation Date', width: 40},
+          [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 40, type: DataTypeEnum.DATE_TIME},
             {key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 30, type: DataTypeEnum.NUMBER},
             {key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 30}]
         ];
@@ -226,7 +229,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         [{key: 'paymentHash', value: this.paymentDecoded.paymentHash, title: 'Payment Hash', width: 100}],
         [{key: 'nodeId', value: this.paymentDecoded.nodeId, title: 'Payee', width: 100}],
         [{key: 'description', value: this.paymentDecoded.description, title: 'Description', width: 100}],
-        [{key: 'timestampStr', value: this.paymentDecoded.timestampStr, title: 'Creation Date', width: 50},
+        [{key: 'timestamp', value: this.paymentDecoded.timestamp, title: 'Creation Date', width: 50, type: DataTypeEnum.DATE_TIME},
           {key: 'amount', value: this.paymentDecoded.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
         [{key: 'expiry', value: this.paymentDecoded.expiry, title: 'Expiry', width: 50, type: DataTypeEnum.NUMBER},
           {key: 'minFinalCltvExpiry', value: this.paymentDecoded.minFinalCltvExpiry, title: 'CLTV Expiry', width: 50}]
@@ -332,7 +335,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       [{key: 'paymentPreimage', value: selPayment.paymentPreimage, title: 'Payment Preimage', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'toChannelId', value: selPart.toChannelId, title: 'Channel', width: 100, type: DataTypeEnum.STRING}],
       [{key: 'id', value: selPart.id, title: 'Part ID', width: 50, type: DataTypeEnum.STRING},
-        {key: 'timestampStr', value: selPart.timestampStr, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME}],
+        {key: 'timestamp', value: selPart.timestamp, title: 'Time', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'amount', value: selPart.amount, title: 'Amount (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'feesPaid', value: selPart.feesPaid, title: 'Fee (Sats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
@@ -359,7 +362,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         }
         return paymentReqs;
       }, '');
-      forkJoin(this.dataService.decodePayments(paymentRequests)
+      this.dataService.decodePayments(paymentRequests)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe((decodedPayments: any[][]) => {
         decodedPayments.forEach((decodedPayment, idx) => {
@@ -369,14 +372,14 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         });
         let flattenedPayments = paymentsDataCopy.reduce((acc, curr) => acc.concat(curr), []);
         this.commonService.downloadFile(flattenedPayments, 'Payments');
-      }));
+      });
     }
 
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

@@ -51,8 +51,8 @@
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field fxFlex="30">
-                    <input matInput formControlName="transTypeValue" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'" type="number" name="transTypeValue" [step]="1" tabindex="4" [required]="channelFormGroup.controls.selTransType.value !== '0'">
-                    <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/Byte)'}} is required.</mat-error>
+                    <input matInput formControlName="transTypeValue" [placeholder]="channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'" type="number" name="transTypeValue" [step]="1" tabindex="4" [required]="channelFormGroup.controls.selTransType.value !== '0'">
+                    <mat-error *ngIf="channelFormGroup.controls.transTypeValue.errors?.required">{{channelFormGroup.controls.selTransType.value === '0' ? 'Default' : channelFormGroup.controls.selTransType.value === '1' ? 'Target Confirmation Blocks' : 'Fee (Sats/vByte)'}} is required.</mat-error>
                   </mat-form-field>
                   <div fxFlex="35" fxLayoutAlign="start center">
                     <mat-slide-toggle tabindex="6" color="primary" formControlName="spendUnconfirmed" name="spendUnconfirmed">Spend Unconfirmed Output</mat-slide-toggle>

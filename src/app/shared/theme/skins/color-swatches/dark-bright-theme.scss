@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 $dark-grey: (
   50 : #484848,
   100 : #464646,
@@ -35,11 +36,7 @@ $dark-bright-foreground: (
   base:              white,
   divider:           rgba(white, 0.3),
   dividers:          rgba(white, 0.3),
-  disabled:          $light-disabled-text,
   disabled-button:   rgba(white, 0.26),
-  disabled-text:     $light-disabled-text,
-  hint-text:         $light-disabled-text,
-  secondary-text:    $light-secondary-text,
   icon:              rgba(white, 1),
   icons:             rgba(white, 1),
   text:              rgba(white, 1),
@@ -57,7 +54,6 @@ $dark-bright-background: (
   dialog:     map_get($dark-grey, 600),
   disabled-button: map_get($dark-grey, 300),
   raised-button: map_get($dark-grey, 400),
-  focused-button: $dark-focused,
   selected-button: map_get($dark-grey, 500),
   selected-disabled-button: map_get($dark-grey, 400),
   disabled-button-toggle: map_get($dark-grey, 300),
@@ -65,7 +61,7 @@ $dark-bright-background: (
   disabled-list-option: map_get($dark-grey, 200),
 );
 
-@function create-dark-bright-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+@function create-dark-bright-theme($primary, $accent, $warn: mat.define-palette(mat.$red-palette)) {
   @return (
     primary: $primary,
     accent: $accent,

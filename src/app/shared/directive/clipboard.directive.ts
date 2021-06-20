@@ -6,7 +6,7 @@ import { Directive, Input, Output, EventEmitter, HostListener } from '@angular/c
 export class ClipboardDirective {
   @Input() payload: string;
 
-  @Output('copied')
+  @Output()
   public copied: EventEmitter<string> = new EventEmitter<string>();
 
   @HostListener('click', ['$event'])

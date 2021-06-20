@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, AfterViewInit, ViewChild, OnDestroy, Input, SimpleChanges } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -37,7 +38,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -83,9 +84,11 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   ngOnChanges(changes: SimpleChanges) {
     if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
-      this.loadForwardingEventsTable(this.eventsData);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.eventsData);
+      }
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }
@@ -93,7 +96,7 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   onForwardingEventClick(selFEvent: PaymentRelayed, event: any) {
     const reorderedFHEvent = [
       [{key: 'paymentHash', value: selFEvent.paymentHash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'timestampStr', value: selFEvent.timestampStr, title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
+      [{key: 'timestamp', value: Math.round(selFEvent.timestamp/1000), title: 'Date/Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'fee', value: (selFEvent.amountIn - selFEvent.amountOut), title: 'Fee Earned (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'amountIn', value: selFEvent.amountIn, title: 'Amount In (Sats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'amountOut', value: selFEvent.amountOut, title: 'Amount Out (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
@@ -123,24 +126,29 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
           return (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
       }
     }
-    this.forwardingHistoryEvents.filterPredicate = (fwhev: PaymentRelayed, fltr: string) => JSON.stringify(fwhev).toLowerCase().includes(fltr);
+    this.forwardingHistoryEvents.filterPredicate = (rowData: PaymentRelayed, fltr: string) => {
+      const newRowData = ((rowData.timestamp) ? this.datePipe.transform(new Date(rowData.timestamp), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+      return newRowData.includes(fltr);   
+    };
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.logger.info(this.forwardingHistoryEvents);
   }
 
   onDownloadCSV() {
-    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+    if(this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

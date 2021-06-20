@@ -1,23 +1,25 @@
 var request = require('request-promise');
-var common = require('../../common');
+var common = require('../../routes/common');
 var logger = require('../shared/logger');
 var options = {};
 
 exports.signMessage = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Message', msg: 'Signing Message..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/signmessage';
   options.form = JSON.stringify({ 
     msg: Buffer.from(req.body.message).toString('base64')
   });
   request.post(options, (error, response, body) => {
-    logger.info({fileName: 'Messages', msg: 'Message Signed: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Signed', data: body});
     if(!body || body.error) {
-      logger.error({fileName: 'Messages', lineNum: 15, msg: 'Sign Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Sign Message Error', error: body.error});
       res.status(500).json({
         message: "Sign message failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Signed'});
       res.status(201).json(body);
     }
   })
@@ -29,7 +31,7 @@ exports.signMessage = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Messages', lineNum: 31, msg: 'Sign Message Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Sign Message Error', error: err});
     return res.status(500).json({
       message: 'Sign Message Failed!',
       error: err.error
@@ -38,6 +40,7 @@ exports.signMessage = (req, res, next) => {
 };
 
 exports.verifyMessage = (req, res, next) => {
+  logger.log({level: 'INFO', fileName: 'Message', msg: 'Verifying Message..'});
   options = common.getOptions();
   options.url = common.getSelLNServerUrl() + '/v1/verifymessage';
   options.form = JSON.stringify({ 
@@ -45,14 +48,15 @@ exports.verifyMessage = (req, res, next) => {
     signature: req.body.signature
   });
   request.post(options, (error, response, body) => {
-    logger.info({fileName: 'Messages', msg: 'Message Verified: ' + JSON.stringify(body)});
+    logger.log({level: 'DEBUG', fileName: 'Messages', msg: 'Message Verified', data: body});
     if(!body || body.error) {
-      logger.error({fileName: 'Messages', lineNum: 49, msg: 'Verify Message Error: ' + ((!body || !body.error) ? 'Error From Server!' : JSON.stringify(body.error))});
+      logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Verify Message Error', error: body.error});
       res.status(500).json({
         message: "Verify message failed!",
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
+      logger.log({level: 'INFO', fileName: 'Message', msg: 'Message Verified'});
       res.status(201).json(body);
     }
   })
@@ -64,7 +68,7 @@ exports.verifyMessage = (req, res, next) => {
     if (err.response && err.response.request && err.response.request.headers && err.response.request.headers['Grpc-Metadata-macaroon']) {
       delete err.response.request.headers['Grpc-Metadata-macaroon'];
     }
-    logger.error({fileName: 'Messages', lineNum: 65, msg: 'Message Verification Error: ' + JSON.stringify(err)});
+    logger.log({level: 'ERROR', fileName: 'Messages', msg: 'Message Verification Error', error: err});
     return res.status(500).json({
       message: 'Verify Message Failed!',
       error: err.error

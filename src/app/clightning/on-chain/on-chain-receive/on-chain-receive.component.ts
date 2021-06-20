@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -15,14 +15,12 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './on-chain-receive.component.html',
   styleUrls: ['./on-chain-receive.component.scss']
 })
-export class CLOnChainReceiveComponent implements OnInit {
+export class CLOnChainReceiveComponent {
   public addressTypes = ADDRESS_TYPES;
   public selectedAddressType = ADDRESS_TYPES[0];
   public newAddress = '';
 
   constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects) {}
-
-  ngOnInit() {}
 
   onGenerateAddress() {
     this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));

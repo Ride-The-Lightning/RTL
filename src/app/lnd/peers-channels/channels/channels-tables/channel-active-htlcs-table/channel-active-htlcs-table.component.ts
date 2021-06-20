@@ -157,7 +157,7 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const app = require("./app");
-const common = require("./common");
+const app = require("./routes/app");
+const common = require("./routes/common");
 const http = require("http");
-var connect = require('./connect').setServerConfiguration(); //Do NOT Remove
+var connect = require("./routes/connect").setServerConfiguration(); //Do NOT Remove
 
 const onError = error => {
   if (error.syscall !== "listen") {
@@ -13,13 +13,15 @@ const onError = error => {
     case "EACCES":
       console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " requires elevated privileges");
       process.exit(1);
-      break;
     case "EADDRINUSE":
       console.error("http://" + (common.host ? common.host : 'localhost') + ":" + common.port + " is already in use");
       process.exit(1);
-      break;
     case "ECONNREFUSED":
       console.error("Server is down/locked");
+      process.exit(1);
+    case "EBADCSRFTOKEN":
+      console.error("Form tempered");
+      process.exit(1);
     default:
       console.error("DEFUALT ERROR");
       console.error(error.code);

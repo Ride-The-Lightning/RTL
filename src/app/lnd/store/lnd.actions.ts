@@ -3,9 +3,9 @@ import { Action } from '@ngrx/store';
 import { ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
-  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices, Payment,
-  PayRequest, ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
-  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO }
+  GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
+  ChannelsTransaction, PendingChannels, ClosedChannel, Transaction, SwitchReq, 
+  SwitchRes, QueryRoutes, PendingChannelsGroup, LightningNode, UTXO, ListPayments }
 from '../../shared/models/lndModels';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
@@ -77,6 +77,8 @@ export const GET_FORWARDING_HISTORY_LND = 'GET_FORWARDING_HISTORY_LND';
 export const SET_FORWARDING_HISTORY_LND = 'SET_FORWARDING_HISTORY_LND';
 export const GET_QUERY_ROUTES_LND = 'GET_QUERY_ROUTES_LND';
 export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
+export const GET_ALL_LIGHTNING_TRANSATIONS_LND = 'GET_ALL_LIGHTNING_TRANSATIONS_LND';
+export const SET_ALL_LIGHTNING_TRANSATIONS_LND = 'SET_ALL_LIGHTNING_TRANSATIONS_LND';
 
 export class ClearEffectError implements Action {
   readonly type = CLEAR_EFFECT_ERROR_LND;
@@ -301,11 +303,12 @@ export class SetUTXOs implements Action {
 
 export class FetchPayments implements Action {
   readonly type = FETCH_PAYMENTS_LND;
+  constructor(public payload: {max_payments?: number, index_offset?: number, reversed?: boolean}) {}
 }
 
 export class SetPayments implements Action {
   readonly type = SET_PAYMENTS_LND;
-  constructor(public payload: Payment[]) {}
+  constructor(public payload: ListPayments) {}
 }
 
 export class SendPayment implements Action {
@@ -413,6 +416,15 @@ export class SetQueryRoutes implements Action {
   constructor(public payload: QueryRoutes) {}
 }
 
+export class GetAllLightningTransactions implements Action {
+  readonly type = GET_ALL_LIGHTNING_TRANSATIONS_LND;
+}
+
+export class SetAllLightningTransactions implements Action {
+  readonly type = SET_ALL_LIGHTNING_TRANSATIONS_LND;
+  constructor(public payload: { paymentsAll: ListPayments, invoicesAll: ListInvoices }) {}
+}
+
 export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
@@ -426,6 +438,7 @@ RestoreChannels | RestoreChannelsRes | RestoreChannelsList | SetRestoreChannelsL
 FetchTransactions | SetTransactions | FetchUTXOs | SetUTXOs |
 FetchInvoices | SetInvoices | SetTotalInvoices |
 FetchPayments | SetPayments | SendPayment | SendPaymentStatus |
+GetAllLightningTransactions | SetAllLightningTransactions |
 FetchGraphNode | SetGraphNode | GetQueryRoutes | SetQueryRoutes |
 GetNewAddress | SetNewAddress | SetChannelTransaction | SetChannelTransactionRes |
 GenSeed | GenSeedResponse | InitWallet | InitWalletResponse | UnlockWallet |

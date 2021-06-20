@@ -30,12 +30,12 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field fxFlex="48" *ngIf="selTransType=='1'">
+          <mat-form-field fxFlex="48" *ngIf="selTransType === '1'">
             <input matInput [(ngModel)]="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" [step]="1" [min]="0" required tabindex="5" #blocks="ngModel">
             <mat-error *ngIf="!transactionBlocks">Number of blocks is required.</mat-error>
           </mat-form-field>
-          <mat-form-field fxFlex="48" *ngIf="selTransType=='2'">
-            <input matInput [(ngModel)]="transactionFees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="6" #fees="ngModel">
+          <mat-form-field fxFlex="48" *ngIf="selTransType === '2'">
+            <input matInput [(ngModel)]="transactionFees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/vByte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="6" #fees="ngModel">
             <mat-error *ngIf="!transactionFees">Fees is required.</mat-error>
           </mat-form-field>
         </div>
@@ -85,12 +85,12 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value=='1'">
+            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value === '1'">
               <input matInput formControlName="transactionBlocks" placeholder="Number of Blocks" type="number" name="blcks" [step]="1" [min]="0" required tabindex="6">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionBlocks.errors?.required">Number of blocks is required.</mat-error>
             </mat-form-field>
-            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value=='2'">
-              <input matInput formControlName="transactionFees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/Byte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="7">
+            <mat-form-field fxFlex.gt-sm="25" fxLayoutAlign="start end" *ngIf="sendFundFormGroup.controls.selTransType.value === '2'">
+              <input matInput formControlName="transactionFees" placeholder="Fees ({{nodeData?.smaller_currency_unit}}/vByte)" type="number" name="chainFees" [step]="1" [min]="0" required tabindex="7">
               <mat-error *ngIf="sendFundFormGroup.controls.transactionFees.errors?.required">Fees is required.</mat-error>
             </mat-form-field>
           </div>

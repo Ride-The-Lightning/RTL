@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Payment, Invoice } from '../../../shared/models/clModels';
-import { DataService } from '../../../shared/services/data.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -26,7 +25,6 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   public transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
   public transactionFilterValue = '';
   public today = new Date(Date.now());
-  public timezoneOffset = this.today.getTimezoneOffset() * 60;
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
   public endDate = new Date(this.today.getFullYear(), this.today.getMonth(), this.getMonthDays(this.today.getMonth(), this.today.getFullYear()), 23, 59, 59);
   public transactionsReportData: any = [];
@@ -41,7 +39,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
@@ -49,15 +47,10 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.dataService.getTransactionsForReport()
-        .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
-          this.payments = res.payments;
-          this.invoices = res.invoices;
-          this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
-          this.transactionsNonZeroReportData = this.prepareTableData();
-        });
-      }
+      this.payments = rtlStore.payments;
+      this.invoices = rtlStore.invoices.invoices;
+      this.transactionsReportData = this.filterTransactionsForSelectedPeriod(this.startDate, this.endDate);
+      this.transactionsNonZeroReportData = this.prepareTableData();
     });
   }
 
@@ -87,15 +80,15 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   onChartBarSelected(event) {
     if(this.reportPeriod === SCROLL_RANGES[1]) {
-      this.transactionFilterValue = event.series.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series + '/' + this.startDate.getFullYear();
     } else {
-      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name.toUpperCase() + '/' + this.startDate.getFullYear();
+      this.transactionFilterValue = event.series.toString().padStart(2, '0') + '/' + MONTHS[this.startDate.getMonth()].name + '/' + this.startDate.getFullYear();
     }
   }
 
   filterTransactionsForSelectedPeriod(start: Date, end: Date) {
-    const startDateInSeconds = Math.round(start.getTime()/1000) - this.timezoneOffset;
-    const endDateInSeconds = Math.round(end.getTime()/1000) - this.timezoneOffset;
+    const startDateInSeconds = Math.round(start.getTime()/1000);
+    const endDateInSeconds = Math.round(end.getTime()/1000);
     let transactionsReport = [];
     this.transactionsReportSummary = { paymentsSelectedPeriod: 0, invoicesSelectedPeriod: 0, amountPaidSelectedPeriod: 0, amountReceivedSelectedPeriod: 0 };
     let filteredPayments = this.payments.filter(payment => payment.status === 'complete' && payment.created_at >= startDateInSeconds && payment.created_at < endDateInSeconds);
@@ -107,20 +100,20 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
         transactionsReport.push({name: MONTHS[i].name, date: new Date(start.getFullYear(), i, 1, 0, 0, 0, 0), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
-        let monthNumber = new Date((payment.created_at + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((payment.created_at)*1000).getMonth();
         this.transactionsReportSummary.amountPaidSelectedPeriod = this.transactionsReportSummary.amountPaidSelectedPeriod + payment.msatoshi_sent;
         transactionsReport[monthNumber].series[0].value = transactionsReport[monthNumber].series[0].value + (payment.msatoshi_sent / 1000);
         transactionsReport[monthNumber].series[0].extra.total = transactionsReport[monthNumber].series[0].extra.total + 1;
       });
       filteredInvoices.map(invoice => {
-        let monthNumber = new Date((+invoice.paid_at + this.timezoneOffset)*1000).getMonth();
+        let monthNumber = new Date((+invoice.paid_at)*1000).getMonth();
         this.transactionsReportSummary.amountReceivedSelectedPeriod = this.transactionsReportSummary.amountReceivedSelectedPeriod + invoice.msatoshi_received;
         transactionsReport[monthNumber].series[1].value = transactionsReport[monthNumber].series[1].value + (invoice.msatoshi_received / 1000);
         transactionsReport[monthNumber].series[1].extra.total = transactionsReport[monthNumber].series[1].extra.total + 1;
       });
     } else {
       for (let i = 0; i < this.getMonthDays(start.getMonth(), start.getFullYear()); i++) {
-        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i+1)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
+        transactionsReport.push({name: (i + 1).toString(), date: new Date((((i)*this.secondsInADay) + startDateInSeconds)*1000), series: [{name: 'Paid', value: 0, extra: {total: 0}}, {name: 'Received', value: 0, extra: {total: 0}}]});
       }
       filteredPayments.map(payment => {
         let dateNumber = Math.floor((+payment.created_at - startDateInSeconds) / this.secondsInADay);
@@ -140,8 +133,8 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   prepareTableData() {
     return this.transactionsReportData.reduce((acc, curr) => {
-      if (curr.series[0].value > 0 || curr.series[1].value >0) {
-        return acc.concat({date: curr.date, date_str: this.commonService.convertTimestampToDate(curr.date.getTime()/1000), amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
+      if (curr.series[0].extra.total > 0 || curr.series[1].extra.total > 0) {
+        return acc.concat({date: curr.date, amount_paid: curr.series[0].value, num_payments: curr.series[0].extra.total, amount_received: curr.series[1].value, num_invoices: curr.series[1].extra.total});
       }
       return acc;
     }, []);
@@ -169,7 +162,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

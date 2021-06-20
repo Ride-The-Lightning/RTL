@@ -7,6 +7,8 @@ import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { LoginTokenComponent } from '../data-modal/login-2fa-token/login-2fa-token.component';
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
+import { PASSWORD_BLACKLIST, ScreenSizeEnum } from '../../services/consts-enums-functions';
+import { CommonService } from '../../services/common.service';
 import { LoggerService } from '../../services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
@@ -28,11 +30,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   public accessKey = '';
   public loginErrorMessage = '';
   public flgShow = false;
+  public screenSize = '';
+  public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects) { }
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
 
   ngOnInit() {
+    this.screenSize = this.commonService.getScreenSize();
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
@@ -59,11 +64,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(alertRes => {
         if (alertRes) {
-          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password', twoFAToken: alertRes.twoFAToken}));
+          this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase()), twoFAToken: alertRes.twoFAToken}));
         }
       });
     } else {
-      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: this.password === 'password'}));
+      this.store.dispatch(new RTLActions.Login({password: sha256(this.password), defaultPassword: PASSWORD_BLACKLIST.includes(this.password.toLowerCase())}));
     }
   }
 
@@ -75,7 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

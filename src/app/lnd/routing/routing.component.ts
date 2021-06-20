@@ -60,7 +60,7 @@ export class RoutingComponent implements OnInit, OnDestroy {
     this.resetData();
     this.store.dispatch(new LNDActions.SetForwardingHistory({}));    
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

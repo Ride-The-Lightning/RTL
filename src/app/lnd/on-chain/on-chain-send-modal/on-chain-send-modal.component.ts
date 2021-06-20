@@ -207,7 +207,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (' + this.nodeData.smaller_currency_unit + '/Byte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (' + this.nodeData.smaller_currency_unit + '/vByte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
         break;
 
       default:
@@ -239,7 +239,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }

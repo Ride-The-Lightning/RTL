@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 @import 'theme-font';
 @import 'theme-mode-dark';
@@ -6,19 +7,19 @@
 @import 'typography';
 
 .rtl-container{
-  @include mat-core(); //CHECK IF MATERIAL STYLES BEHAVE STRANGELY
+  @include mat.core(); //CHECK IF MATERIAL STYLES BEHAVE STRANGELY
   &.purple {
     @import "../skins/purple";
     &.small {@include theme-font($small-typography);}
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($purple-day-theme);
+      @include mat.all-component-themes($purple-day-theme);
       @include theme-mode-light($purple-day-theme);
       @include theme-color($purple-day-theme);
     }
     &.night {
-      @include angular-material-theme($purple-night-theme);
+      @include mat.all-component-themes($purple-night-theme);
       @include theme-mode-dark($purple-night-theme);
       @include theme-color($purple-night-theme);
     }
@@ -29,12 +30,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($blue-day-theme);
+      @include mat.all-component-themes($blue-day-theme);
       @include theme-mode-light($blue-day-theme);
       @include theme-color($blue-day-theme);
     }
     &.night {
-      @include angular-material-theme($blue-night-theme);
+      @include mat.all-component-themes($blue-night-theme);
       @include theme-mode-dark($blue-night-theme);
       @include theme-color($blue-night-theme);
     }
@@ -45,12 +46,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($indigo-day-theme);
+      @include mat.all-component-themes($indigo-day-theme);
       @include theme-mode-light($indigo-day-theme);
       @include theme-color($indigo-day-theme);
     }
     &.night {
-      @include angular-material-theme($indigo-night-theme);
+      @include mat.all-component-themes($indigo-night-theme);
       @include theme-mode-dark($indigo-night-theme);
       @include theme-color($indigo-night-theme);
     }
@@ -61,12 +62,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($green-day-theme);
+      @include mat.all-component-themes($green-day-theme);
       @include theme-mode-light($green-day-theme);
       @include theme-color($green-day-theme);
     }
     &.night {
-      @include angular-material-theme($green-night-theme);
+      @include mat.all-component-themes($green-night-theme);
       @include theme-mode-dark($green-night-theme);
       @include theme-color($green-night-theme);
     }
@@ -77,12 +78,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($teal-day-theme);
+      @include mat.all-component-themes($teal-day-theme);
       @include theme-mode-light($teal-day-theme);
       @include theme-color($teal-day-theme);
     }
     &.night {
-      @include angular-material-theme($teal-night-theme);
+      @include mat.all-component-themes($teal-night-theme);
       @include theme-mode-dark($teal-night-theme);
       @include theme-color($teal-night-theme);
     }
@@ -93,12 +94,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($pink-day-theme);
+      @include mat.all-component-themes($pink-day-theme);
       @include theme-mode-light($pink-day-theme);
       @include theme-color($pink-day-theme);
     }
     &.night {
-      @include angular-material-theme($pink-night-theme);
+      @include mat.all-component-themes($pink-night-theme);
       @include theme-mode-dark($pink-night-theme);
       @include theme-color($pink-night-theme);
     }
@@ -109,12 +110,12 @@
     &.medium {@include theme-font($medium-typography);}
     &.large {@include theme-font($large-typography);}
     &.day {
-      @include angular-material-theme($yellow-day-theme);
+      @include mat.all-component-themes($yellow-day-theme);
       @include theme-mode-light($yellow-day-theme);
       @include theme-color($yellow-day-theme);
     }
     &.night {
-      @include angular-material-theme($yellow-night-theme);
+      @include mat.all-component-themes($yellow-night-theme);
       @include theme-mode-dark($yellow-night-theme);
       @include theme-color($yellow-night-theme);
     }

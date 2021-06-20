@@ -1,29 +1,26 @@
+@use '~@angular/material' as mat;
 @import "constants";
 @import "mixins";
 
 @mixin theme-color($theme) {
   $primary: map-get($theme, primary);
-  $primary-color: mat-color($primary);
-  $primary-lighter: mat-color($primary, lighter);
-  $primary-darker: mat-color($primary, darker);
+  $primary-color: mat.get-color-from-palette($primary);
+  $primary-lighter: mat.get-color-from-palette($primary, lighter);
+  $primary-darker: mat.get-color-from-palette($primary, darker);
   $accent: map-get($theme, accent);
-  $accent-color: mat-color($accent);
+  $accent-color: mat.get-color-from-palette($accent);
   $warn: map-get($theme, warn);
-  $warn-color: mat-color($warn);
+  $warn-color: mat.get-color-from-palette($warn);
   $foreground: map-get($theme, foreground);
-  $foreground-base: mat-color($foreground, base); // 1
-  $foreground-text: mat-color($foreground, text); //.87
-  $foreground-secondary-text: mat-color($foreground, secondary-text); // .54
-  $foreground-disabled: mat-color($foreground, disabled); // .38
-  $foreground-divider: mat-color($foreground, divider); // .12
+  $foreground-base: mat.get-color-from-palette($foreground, base); // 1
+  $foreground-text: mat.get-color-from-palette($foreground, text); //.87
+  $foreground-secondary-text: mat.get-color-from-palette($foreground, secondary-text); // .54
+  $foreground-disabled: mat.get-color-from-palette($foreground, disabled); // .38
+  $foreground-divider: mat.get-color-from-palette($foreground, divider); // .12
   $background: map-get($theme, background);
-  $background-color: mat-color($background, card);
+  $background-color: mat.get-color-from-palette($background, card);
   $hover-background: rgba(0, 0, 0, 0.04);
   $hover-background-dark: rgba(255, 255, 255, 0.06);
-
-  .bg-primary {
-    @include _mat-toolbar-color($primary);
-  }
 
   .mat-expansion-panel.flat-expansion-panel {
     box-shadow: none;
@@ -33,7 +30,7 @@
   }
 
   .mat-progress-bar-buffer {
-    background-color: mat-color($primary, 100);
+    background-color: mat.get-color-from-palette($primary, 100);
   }
 
   .foreground-text {
@@ -138,7 +135,7 @@
     background-color: white;
     color: $primary-color;
     &:hover {
-      @include mat-elevation(4);
+      @include mat.elevation(4);
     }
     &:hover .mat-button-focus-overlay {
       opacity: 0.09;
@@ -284,11 +281,11 @@
 
   .balances-info-pie-chart {
     & .legend-label:nth-child(1) .legend-label-color {
-      background-color: mat-color($primary, 200) !important;
+      background-color: mat.get-color-from-palette($primary, 200) !important;
     }
 
     & .legend-label:nth-child(2) .legend-label-color {
-      background-color: mat-color($primary, 600) !important;
+      background-color: mat.get-color-from-palette($primary, 600) !important;
     }
   }
 

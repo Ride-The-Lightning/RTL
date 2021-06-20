@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, OnDestroy, SimpleChanges, Input, AfterViewInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -22,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Events') }
   ]
 })
-export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
@@ -38,7 +39,7 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -80,9 +81,11 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
     if (changes.eventsData) {
       this.eventsData = changes.eventsData.currentValue;
       this.successfulEvents = this.eventsData;
-      this.loadForwardingEventsTable(this.successfulEvents);
+      if (!changes.eventsData.firstChange) {
+        this.loadForwardingEventsTable(this.successfulEvents);
+      }
     }
-    if (changes.filterValue) {
+    if (changes.filterValue && !changes.filterValue.firstChange) {
       this.applyFilter();
     }
   }
@@ -94,8 +97,8 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'received_time_str', value: selFEvent.received_time_str, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'resolved_time_str', value: selFEvent.resolved_time_str, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME}],
+      [{key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
+        {key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING},
         {key: 'out_channel', value: selFEvent.out_channel_alias ? selFEvent.out_channel_alias : selFEvent.out_channel, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'status', value: (selFEvent.status === 'settled' ? 'Settled' : 'Failed'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
@@ -116,25 +119,27 @@ export class CLForwardingHistoryComponent implements OnInit, AfterViewInit, OnDe
     this.forwardingHistoryEvents.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
     this.forwardingHistoryEvents.paginator = this.paginator;
     this.forwardingHistoryEvents.filterPredicate = (event: ForwardingEvent, fltr: string) => {
-      const newEvent = (event.received_time_str ? event.received_time_str.toLowerCase() : '') + (event.resolved_time_str ? event.resolved_time_str.toLowerCase() : '') + (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') + (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
+      const newEvent = (event.received_time ? this.datePipe.transform(new Date(event.received_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + (event.resolved_time ? this.datePipe.transform(new Date(event.resolved_time*1000), 'dd/MMM/YYYY HH:mm').toLowerCase() : '') + (event.in_channel ? event.in_channel.toLowerCase() : '') + (event.out_channel ? event.out_channel.toLowerCase() : '') + (event.in_msatoshi ? (event.in_msatoshi/1000) : '') + (event.out_msatoshi ? (event.out_msatoshi/1000) : '') + (event.fee ? event.fee : '');
       return newEvent.includes(fltr);
     };    
     this.logger.info(this.forwardingHistoryEvents);
   }
 
   onDownloadCSV() {
-    if(this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
+    if(this.forwardingHistoryEvents && this.forwardingHistoryEvents.data && this.forwardingHistoryEvents.data.length > 0) {
       this.commonService.downloadFile(this.forwardingHistoryEvents.data, 'Forwarding-history');
     }
   }
 
   applyFilter() {
-    this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    if (this.forwardingHistoryEvents) {
+      this.forwardingHistoryEvents.filter = this.filterValue.trim().toLowerCase();
+    }
   }
 
   ngOnDestroy() {
     this.unSubs.forEach(completeSub => {
-      completeSub.next();
+      completeSub.next(null);
       completeSub.complete();
     });
   }
