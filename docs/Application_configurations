@@ -6,7 +6,7 @@ parameters have `default` values for initial setup and can be updated after RTL 
 {
   "multiPass": "<The password in plain text, default 'password', Required>",
   "port": "<port number for the rtl node server, default '3000', Required>",
-  "host": "<host for the rtl node server, default 'localhost', Optional>",
+  "host": "<host for the rtl node server, default 'all IPs', Optional>",
   "defaultNodeIndex": <Default index to load when rtl server starts, default 1, Optional>,
   "SSO": {
     "rtlSSO": <parameter to turn SSO off/on. Allowed values - 1 (single sign on via an external cookie), 0 (stand alone RTL authentication), default 0, Required>,
