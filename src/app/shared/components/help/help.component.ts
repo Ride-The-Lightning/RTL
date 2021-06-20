@@ -58,7 +58,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         '2. Specify the amount to commit to the channel and click on "Open Channel".\n' +
         '3. There are a variety of options available while opening a channel. \n' +
         '   a. Private Channel - When this option is selected, a private channel is opened with the peer. \n' +
-        '   b. Priority (advanced option) - Specify either Target confirmation Block or Fee in Sat/Byte. \n' +
+        '   b. Priority (advanced option) - Specify either Target confirmation Block or Fee in Sat/vByte. \n' +
         '   c. Spend Unconfirmd Output (advanced option) - Allow channels to be opened with unconfirmed UTXOs.\n' +
         '4. Track the pending open channels under the "Pending" tab . \n' +
         '5. Wait for the channel to be confirmed. Only a confimed channel can be used for payments or routing. \n',
