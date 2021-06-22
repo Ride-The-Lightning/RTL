@@ -68,7 +68,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   confirmFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions$: Actions, private formBuilder: FormBuilder) {}
+  constructor(public dialogRef: MatDialogRef<OnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: OnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService, private decimalPipe: DecimalPipe, private snackBar: MatSnackBar, private actions: Actions, private formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -105,7 +105,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    this.actions.pipe(takeUntil(this.unSubs[2]),
     filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.SetChannelTransactionRes) => {
       if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {

@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CommonService } from '../../../../../shared/services/common.service';
 
 import { LoopOutInfoGraphicsComponent } from './info-graphics.component';
 
@@ -6,9 +8,10 @@ describe('LoopOutInfoGraphicsComponent', () => {
   let component: LoopOutInfoGraphicsComponent;
   let fixture: ComponentFixture<LoopOutInfoGraphicsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopOutInfoGraphicsComponent ]
+      declarations: [ LoopOutInfoGraphicsComponent ],
+      providers: [ CommonService ]
     })
     .compileComponents();
   }));

@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
+
+import { CommonService } from '../../../services/common.service';
+import { LoggerService } from '../../../services/logger.service';
 
 import { OnChainGeneratedAddressComponent } from './on-chain-generated-address.component';
 
@@ -6,9 +11,10 @@ describe('OnChainGeneratedAddressComponent', () => {
   let component: OnChainGeneratedAddressComponent;
   let fixture: ComponentFixture<OnChainGeneratedAddressComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainGeneratedAddressComponent ]
+      declarations: [ OnChainGeneratedAddressComponent ],
+      providers: [ LoggerService, CommonService,  MatSnackBar, MatDialogRef ]
     })
     .compileComponents();
   }));

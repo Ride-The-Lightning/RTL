@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelRestoreTableComponent } from './channel-restore-table.component';
 
@@ -6,9 +11,18 @@ describe('ChannelRestoreTableComponent', () => {
   let component: ChannelRestoreTableComponent;
   let fixture: ComponentFixture<ChannelRestoreTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelRestoreTableComponent ]
+      declarations: [ ChannelRestoreTableComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ LoggerService, CommonService ]
     })
     .compileComponents();
   }));

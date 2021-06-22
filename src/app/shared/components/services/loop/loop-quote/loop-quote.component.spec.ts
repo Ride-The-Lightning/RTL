@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoopQuoteComponent } from './loop-quote.component';
 
@@ -6,7 +6,7 @@ describe('LoopQuoteComponent', () => {
   let component: LoopQuoteComponent;
   let fixture: ComponentFixture<LoopQuoteComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopQuoteComponent ]
     })

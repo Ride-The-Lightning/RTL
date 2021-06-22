@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ECLBalancesInfoComponent } from './balances-info.component';
 
@@ -6,7 +6,7 @@ describe('ECLBalancesInfoComponent', () => {
   let component: ECLBalancesInfoComponent;
   let fixture: ComponentFixture<ECLBalancesInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLBalancesInfoComponent ]
     })

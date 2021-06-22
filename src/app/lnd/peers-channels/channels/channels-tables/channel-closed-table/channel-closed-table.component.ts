@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -40,7 +39,7 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSizeEnum = ScreenSizeEnum;
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;

@@ -71,7 +71,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   confirmFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<CLOnChainSendModalComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOnChainSendFunds, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private formBuilder: FormBuilder, private rtlEffects: RTLEffects, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.sweepAll = this.data.sweepAll;
@@ -119,7 +119,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
     .subscribe((action: CLActions.EffectError | CLActions.SetChannelTransactionRes) => {
       if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {

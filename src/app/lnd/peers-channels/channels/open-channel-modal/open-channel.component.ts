@@ -43,7 +43,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
   public transTypes = TRANS_TYPES;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) { }
+  constructor(public dialogRef: MatDialogRef<OpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) { }
 
   ngOnInit() {
     this.information = this.data.message.information;
@@ -51,7 +51,7 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
+    this.actions.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.FetchAllChannels) => {
       if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {

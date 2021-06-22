@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
+
+import { CommonService } from '../../../../shared/services/common.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ECLChannelInformationComponent } from './channel-information.component';
 
@@ -6,9 +11,10 @@ describe('ECLChannelInformationComponent', () => {
   let component: ECLChannelInformationComponent;
   let fixture: ComponentFixture<ECLChannelInformationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelInformationComponent ]
+      declarations: [ ECLChannelInformationComponent ],
+      providers: [ LoggerService, CommonService, MatSnackBar, MatDialogRef ]
     })
     .compileComponents();
   }));

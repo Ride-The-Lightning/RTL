@@ -1,6 +1,5 @@
 import { Component, ViewChild, Input, OnChanges, AfterViewInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Actions } from '@ngrx/effects';
 
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -36,7 +35,7 @@ export class CLOnChainUtxosComponent implements OnChanges, AfterViewInit {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;

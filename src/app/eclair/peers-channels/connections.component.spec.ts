@@ -1,14 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { StoreModule } from '@ngrx/store';
 
+import { RTLReducer } from '../../store/rtl.reducers';
 import { ECLConnectionsComponent } from './connections.component';
 
 describe('ECLConnectionsComponent', () => {
   let component: ECLConnectionsComponent;
   let fixture: ComponentFixture<ECLConnectionsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLConnectionsComponent ]
+      declarations: [ ECLConnectionsComponent ],
+      imports: [ RouterTestingModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ]
     })
     .compileComponents();
   }));

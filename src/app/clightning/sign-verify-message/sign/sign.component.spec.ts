@@ -1,4 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { LoggerService } from '../../../shared/services/logger.service';
+import { DataService } from '../../../shared/services/data.service';
 
 import { CLSignComponent } from './sign.component';
 
@@ -6,9 +10,10 @@ describe('CLSignComponent', () => {
   let component: CLSignComponent;
   let fixture: ComponentFixture<CLSignComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLSignComponent ]
+      declarations: [ CLSignComponent ],
+      providers: [ LoggerService, DataService, MatSnackBar ]
     })
     .compileComponents();
   }));

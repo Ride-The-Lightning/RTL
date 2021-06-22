@@ -1,14 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
 
+import { RTLReducer } from '../../../store/rtl.reducers';
 import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
 
 describe('ECLOnChainReceiveComponent', () => {
   let component: ECLOnChainReceiveComponent;
   let fixture: ComponentFixture<ECLOnChainReceiveComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainReceiveComponent ]
+      declarations: [ ECLOnChainReceiveComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ]
     })
     .compileComponents();
   }));

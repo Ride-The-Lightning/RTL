@@ -1,4 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLQueryRoutesComponent } from './query-routes.component';
 
@@ -6,9 +9,10 @@ describe('ECLQueryRoutesComponent', () => {
   let component: ECLQueryRoutesComponent;
   let fixture: ComponentFixture<ECLQueryRoutesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLQueryRoutesComponent ]
+      declarations: [ ECLQueryRoutesComponent ],
+      providers: [ LoggerService, CommonService ]
     })
     .compileComponents();
   }));

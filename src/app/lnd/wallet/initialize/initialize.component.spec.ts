@@ -1,14 +1,26 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
+import { StoreModule } from '@ngrx/store';
 
+import { RTLReducer } from '../../../store/rtl.reducers';
 import { InitializeWalletComponent } from './initialize.component';
 
 describe('InitializeWalletComponent', () => {
   let component: InitializeWalletComponent;
   let fixture: ComponentFixture<InitializeWalletComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ InitializeWalletComponent ]
+      declarations: [ InitializeWalletComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ FormBuilder ]
     })
     .compileComponents();
   }));

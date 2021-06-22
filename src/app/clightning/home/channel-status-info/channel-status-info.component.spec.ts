@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CLChannelStatusInfoComponent } from './channel-status-info.component';
 
@@ -6,7 +6,7 @@ describe('CLChannelStatusInfoComponent', () => {
   let component: CLChannelStatusInfoComponent;
   let fixture: ComponentFixture<CLChannelStatusInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelStatusInfoComponent ]
     })

@@ -41,7 +41,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
   public invoiceError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLCreateInvoiceComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLInvoiceInformation, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private actions: Actions) {}
 
   ngOnInit() {
     this.pageSize = this.data.pageSize;
@@ -51,7 +51,7 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.ADD_INVOICE_ECL))
     .subscribe((action: ECLActions.EffectError | ECLActions.AddInvoice) => {
       if (action.type === ECLActions.ADD_INVOICE_ECL) {

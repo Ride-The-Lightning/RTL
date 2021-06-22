@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
+
+import { CommonService } from '../../../../shared/services/common.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ChannelInformationComponent } from './channel-information.component';
 
@@ -6,9 +11,10 @@ describe('ChannelInformationComponent', () => {
   let component: ChannelInformationComponent;
   let fixture: ComponentFixture<ChannelInformationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelInformationComponent ]
+      declarations: [ ChannelInformationComponent ],
+      providers: [ LoggerService, CommonService, MatSnackBar, MatDialogRef ]
     })
     .compileComponents();
   }));

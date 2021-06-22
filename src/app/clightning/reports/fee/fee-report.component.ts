@@ -7,7 +7,6 @@ import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/cl
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
-import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -40,7 +39,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();

@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { CLTransactionsReportComponent } from './transactions-report.component';
 
@@ -6,9 +11,18 @@ describe('CLTransactionsReportComponent', () => {
   let component: CLTransactionsReportComponent;
   let fixture: ComponentFixture<CLTransactionsReportComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLTransactionsReportComponent ]
+      declarations: [ CLTransactionsReportComponent ],
+      imports: [ SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ CommonService ]
     })
     .compileComponents();
   }));

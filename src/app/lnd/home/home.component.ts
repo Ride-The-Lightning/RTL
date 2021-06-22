@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private router: Router) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
     this.screenSize = this.commonService.getScreenSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.XS:
@@ -191,7 +191,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    this.actions.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === LNDActions.FETCH_FEES_LND || action.type === LNDActions.SET_FEES_LND))
     .subscribe(action => {
       if(action.type === LNDActions.FETCH_FEES_LND) {

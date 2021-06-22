@@ -1,4 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { FeeReportComponent } from './fee-report.component';
@@ -6,15 +10,19 @@ import { FeeReportComponent } from './fee-report.component';
 describe('FeeReportComponent', () => {
   let component: FeeReportComponent;
   let fixture: ComponentFixture<FeeReportComponent>;
-  const mockDataService = jasmine.createSpyObj("DataService", ["getChildAPIUrl","setChildAPIUrl","getFiatRates",
-  "getAliasesFromPubkeys","signMessage","verifyMessage","handleErrorWithoutAlert","handleErrorWithAlert"]);
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ FeeReportComponent ],
-      providers: [
-        { provide: DataService, useValue: mockDataService }
-      ]
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ DataService, CommonService ]
     })
     .compileComponents();
   }));

@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CommonService } from '../../../../../shared/services/common.service';
 
 import { SwapOutInfoGraphicsComponent } from './info-graphics.component';
 
@@ -6,9 +8,10 @@ describe('SwapOutInfoGraphicsComponent', () => {
   let component: SwapOutInfoGraphicsComponent;
   let fixture: ComponentFixture<SwapOutInfoGraphicsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapOutInfoGraphicsComponent ]
+      declarations: [ SwapOutInfoGraphicsComponent ],
+      providers: [ CommonService ]
     })
     .compileComponents();
   }));

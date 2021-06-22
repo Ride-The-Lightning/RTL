@@ -1,4 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DatePipe } from '@angular/common';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLFailedTransactionsComponent } from './failed-transactions.component';
 
@@ -6,9 +12,18 @@ describe('CLFailedTransactionsComponent', () => {
   let component: CLFailedTransactionsComponent;
   let fixture: ComponentFixture<CLFailedTransactionsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFailedTransactionsComponent ]
+      declarations: [ CLFailedTransactionsComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ LoggerService, CommonService, DatePipe ]
     })
     .compileComponents();
   }));

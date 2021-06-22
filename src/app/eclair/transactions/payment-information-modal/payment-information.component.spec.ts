@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { ECLPaymentInformationComponent } from './payment-information.component';
 
@@ -6,9 +7,10 @@ describe('ECLPaymentInformationComponent', () => {
   let component: ECLPaymentInformationComponent;
   let fixture: ComponentFixture<ECLPaymentInformationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPaymentInformationComponent ]
+      declarations: [ ECLPaymentInformationComponent ],
+      providers: [ MatDialogRef ]
     })
     .compileComponents();
   }));

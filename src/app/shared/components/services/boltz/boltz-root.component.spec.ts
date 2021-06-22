@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../../store/rtl.reducers';
+import { BoltzService } from '../../../services/boltz.service';
 
 import { BoltzRootComponent } from './boltz-root.component';
 
@@ -6,9 +11,18 @@ describe('BoltzRootComponent', () => {
   let component: BoltzRootComponent;
   let fixture: ComponentFixture<BoltzRootComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoltzRootComponent ]
+      declarations: [ BoltzRootComponent ],
+      imports: [ RouterTestingModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ BoltzService ]
     })
     .compileComponents();
   }));

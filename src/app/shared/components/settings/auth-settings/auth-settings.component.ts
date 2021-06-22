@@ -37,7 +37,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
   public selNode: ConfigSettingsNode;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions$: Actions, private router: Router, private sessionService: SessionService) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private actions: Actions, private router: Router, private sessionService: SessionService) {}
 
   ngOnInit() {
     this.initializeNodeData = this.sessionService.getItem('defaultPassword') === 'true';
@@ -48,7 +48,7 @@ export class AuthSettingsComponent implements OnInit, OnDestroy {
       this.selNode = rtlStore.selNode;
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    this.actions.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.RESET_PASSWORD_RES))
     .subscribe((action: (RTLActions.ResetPasswordRes)) => {
       if (PASSWORD_BLACKLIST.includes(this.currPassword.toLowerCase())) { // To redirect after initial password reset is done

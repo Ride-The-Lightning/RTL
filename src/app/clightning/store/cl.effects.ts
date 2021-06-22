@@ -27,7 +27,7 @@ export class CLEffects implements OnDestroy {
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
-    private actions$: Actions,
+    private actions: Actions,
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private sessionService: SessionService,
@@ -46,7 +46,7 @@ export class CLEffects implements OnDestroy {
     }
 
   infoFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
@@ -54,7 +54,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
-          takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
+          takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
             this.store.dispatch(new RTLActions.CloseSpinner());
@@ -90,7 +90,7 @@ export class CLEffects implements OnDestroy {
   );
 
   fetchFeesCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_FEES_CL),
     mergeMap((action: CLActions.FetchFees) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchFees'));
@@ -110,7 +110,7 @@ export class CLEffects implements OnDestroy {
   );
 
   fetchFeeRatesCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_FEE_RATES_CL),
     mergeMap((action: CLActions.FetchFeeRates) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchFeeRates'));
@@ -130,7 +130,7 @@ export class CLEffects implements OnDestroy {
   );
 
   fetchBalanceCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_BALANCE_CL),
     mergeMap((action: CLActions.FetchBalance) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchBalance'));
@@ -150,7 +150,7 @@ export class CLEffects implements OnDestroy {
   );
 
   fetchLocalRemoteBalanceCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_LOCAL_REMOTE_BALANCE_CL),
     mergeMap((action: CLActions.FetchLocalRemoteBalance) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchLocalRemoteBalance'));
@@ -170,7 +170,7 @@ export class CLEffects implements OnDestroy {
   );
 
   getNewAddressCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.GET_NEW_ADDRESS_CL),
     mergeMap((action: CLActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressCode)
@@ -190,7 +190,7 @@ export class CLEffects implements OnDestroy {
   );
 
   setNewAddressCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SET_NEW_ADDRESS_CL),
     map((action: CLActions.SetNewAddress) => {
       this.logger.info(action.payload);
@@ -200,7 +200,7 @@ export class CLEffects implements OnDestroy {
   );
 
   peersFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_PEERS_CL),
     mergeMap((action: CLActions.FetchPeers) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchPeers'));
@@ -221,7 +221,7 @@ export class CLEffects implements OnDestroy {
   );
 
   saveNewPeerCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SAVE_NEW_PEER_CL),
     withLatestFrom(this.store.select('cl')),
     mergeMap(([action, clData]: [CLActions.SaveNewPeer, fromCLReducers.CLState]) => {
@@ -245,7 +245,7 @@ export class CLEffects implements OnDestroy {
   );
 
   detachPeerCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.DETACH_PEER_CL),
     mergeMap((action: CLActions.DetachPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.id + '?force=' + action.payload.force)
@@ -267,7 +267,7 @@ export class CLEffects implements OnDestroy {
   );
 
   channelsFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_CHANNELS_CL),
     mergeMap((action: CLActions.FetchChannels) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchChannels'));
@@ -290,7 +290,7 @@ export class CLEffects implements OnDestroy {
   );
 
   openNewChannelCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: CLActions.SaveNewChannel) => {
       this.store.dispatch(new CLActions.ClearEffectError('SaveNewChannel'));
@@ -315,7 +315,7 @@ export class CLEffects implements OnDestroy {
   );
 
   updateChannelCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.UPDATE_CHANNELS_CL),
     mergeMap((action: CLActions.UpdateChannels) => {
       return this.httpClient.post(this.CHILD_API_URL + environment.CHANNELS_API + '/setChannelFee',
@@ -341,7 +341,7 @@ export class CLEffects implements OnDestroy {
   );
 
   closeChannelCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.CLOSE_CHANNEL_CL),
     mergeMap((action: CLActions.CloseChannel) => {
       const queryParam = action.payload.force ? '?force=' + action.payload.force : '';
@@ -365,7 +365,7 @@ export class CLEffects implements OnDestroy {
   );
 
   paymentsFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_PAYMENTS_CL),
     mergeMap((action: CLActions.FetchPayments) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchPayments'));
@@ -385,7 +385,7 @@ export class CLEffects implements OnDestroy {
   );
 
   decodePaymentCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.DECODE_PAYMENT_CL),
     mergeMap((action: CLActions.DecodePayment) => {
       this.store.dispatch(new CLActions.ClearEffectError('DecodePayment'));
@@ -411,7 +411,7 @@ export class CLEffects implements OnDestroy {
   );
 
   setDecodedPaymentCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SET_DECODED_PAYMENT_CL),
     map((action: CLActions.SetDecodedPayment) => {
       this.logger.info(action.payload);
@@ -421,7 +421,7 @@ export class CLEffects implements OnDestroy {
   );
 
   sendPaymentCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SEND_PAYMENT_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.SendPayment, any]) => {
@@ -466,7 +466,7 @@ export class CLEffects implements OnDestroy {
   );
 
   queryRoutesFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.GET_QUERY_ROUTES_CL),
     mergeMap((action: CLActions.GetQueryRoutes) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/getRoute/' + action.payload.destPubkey + '/' + action.payload.amount)
@@ -487,7 +487,7 @@ export class CLEffects implements OnDestroy {
   );
 
   setQueryRoutesCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SET_QUERY_ROUTES_CL),
     map((action: CLActions.SetQueryRoutes) => {
       return action.payload;
@@ -496,7 +496,7 @@ export class CLEffects implements OnDestroy {
   );
 
   peerLookupCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.PEER_LOOKUP_CL),
     mergeMap((action: CLActions.PeerLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -519,7 +519,7 @@ export class CLEffects implements OnDestroy {
   );
 
   channelLookupCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.CHANNEL_LOOKUP_CL),
     mergeMap((action: CLActions.ChannelLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -547,7 +547,7 @@ export class CLEffects implements OnDestroy {
   );
 
   invoiceLookupCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.INVOICE_LOOKUP_CL),
     mergeMap((action: CLActions.InvoiceLookup) => {
       this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
@@ -570,7 +570,7 @@ export class CLEffects implements OnDestroy {
   );
 
   setLookupCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SET_LOOKUP_CL),
     map((action: CLActions.SetLookup) => {
       this.logger.info(action.payload);
@@ -580,7 +580,7 @@ export class CLEffects implements OnDestroy {
   );
 
   fetchForwardingHistoryCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
     mergeMap((action: CLActions.GetForwardingHistory) => {
       this.store.dispatch(new CLActions.ClearEffectError('GetForwardingHistory'));
@@ -602,7 +602,7 @@ export class CLEffects implements OnDestroy {
   );
 
   deleteExpiredInvoiceCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.DELETE_EXPIRED_INVOICE_CL),
     mergeMap((action: CLActions.DeleteExpiredInvoice) => {
       const queryStr = (action.payload) ?  '?maxexpiry=' + action.payload : '';
@@ -625,7 +625,7 @@ export class CLEffects implements OnDestroy {
   );
 
   saveNewInvoiceCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: CLActions.SaveNewInvoice) => {
       this.store.dispatch(new CLActions.ClearEffectError('SaveNewInvoice'));
@@ -659,7 +659,7 @@ export class CLEffects implements OnDestroy {
   );
 
   invoicesFetchCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_INVOICES_CL),
     mergeMap((action: CLActions.FetchInvoices) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
@@ -682,7 +682,7 @@ export class CLEffects implements OnDestroy {
   );
 
   SetChannelTransactionCL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
     mergeMap((action: CLActions.SetChannelTransaction) => {
       this.store.dispatch(new CLActions.ClearEffectError('SetChannelTransaction'));
@@ -706,7 +706,7 @@ export class CLEffects implements OnDestroy {
   );
 
   utxosFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(CLActions.FETCH_UTXOS_CL),
     mergeMap((action: CLActions.FetchUTXOs) => {
       this.store.dispatch(new CLActions.ClearEffectError('FetchUTXOs'));

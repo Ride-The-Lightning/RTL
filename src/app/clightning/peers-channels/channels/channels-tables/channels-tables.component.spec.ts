@@ -1,14 +1,29 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { StoreModule } from '@ngrx/store';
+import { CommonService } from '../../../../shared/services/common.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
+import { RTLReducer } from '../../../../store/rtl.reducers';
 import { CLChannelsTablesComponent } from './channels-tables.component';
 
 describe('CLChannelsTablesComponent', () => {
   let component: CLChannelsTablesComponent;
   let fixture: ComponentFixture<CLChannelsTablesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelsTablesComponent ]
+      declarations: [ CLChannelsTablesComponent ],
+      imports: [ RouterTestingModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }),
+ ],
+      providers: [ LoggerService, CommonService ]
+
     })
     .compileComponents();
   }));

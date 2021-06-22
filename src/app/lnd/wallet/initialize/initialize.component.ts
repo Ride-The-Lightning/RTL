@@ -43,7 +43,7 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
   warnRes = false;
   private unsubs = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private lndEffects: LNDEffects) {}
 
   ngOnInit() {
     this.passwordFormGroup = this.formBuilder.group({

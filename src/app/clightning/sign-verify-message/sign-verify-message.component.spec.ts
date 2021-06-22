@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { CLSignVerifyMessageComponent } from './sign-verify-message.component';
 
@@ -6,9 +7,10 @@ describe('CLSignVerifyMessageComponent', () => {
   let component: CLSignVerifyMessageComponent;
   let fixture: ComponentFixture<CLSignVerifyMessageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLSignVerifyMessageComponent ]
+      declarations: [ CLSignVerifyMessageComponent ],
+      imports: [ RouterTestingModule ],
     })
     .compileComponents();
   }));

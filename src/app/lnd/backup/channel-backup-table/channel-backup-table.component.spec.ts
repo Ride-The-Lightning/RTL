@@ -1,4 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+import { provideMockActions } from '@ngrx/effects/testing';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelBackupTableComponent } from './channel-backup-table.component';
 
@@ -6,9 +12,17 @@ describe('ChannelBackupTableComponent', () => {
   let component: ChannelBackupTableComponent;
   let fixture: ComponentFixture<ChannelBackupTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelBackupTableComponent ]
+      declarations: [ ChannelBackupTableComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        }), provideMockActions ],
+      providers: [ LoggerService, CommonService ]
     })
     .compileComponents();
   }));

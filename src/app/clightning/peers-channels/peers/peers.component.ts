@@ -16,7 +16,6 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
-import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -52,7 +51,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -89,7 +88,7 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.logger.info(rtlStore);
     });
-    this.actions$
+    this.actions
     .pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === CLActions.SET_PEERS_CL)
