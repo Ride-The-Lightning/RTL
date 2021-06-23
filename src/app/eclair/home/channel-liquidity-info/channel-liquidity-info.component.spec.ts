@@ -5,6 +5,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 
+const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 describe('ECLChannelLiquidityInfoComponent', () => {
   let component: ECLChannelLiquidityInfoComponent;
   let fixture: ComponentFixture<ECLChannelLiquidityInfoComponent>;
@@ -13,7 +15,9 @@ describe('ECLChannelLiquidityInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelLiquidityInfoComponent ],
       imports: [ RouterTestingModule ],
-      providers: [ CommonService ]
+      providers: [ 
+        { provide: CommonService, useValue: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogRef } from '@angular/material/dialog';
 
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLInvoiceInformationComponent } from './invoice-information.component';

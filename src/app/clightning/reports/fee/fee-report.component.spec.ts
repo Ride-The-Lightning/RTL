@@ -3,6 +3,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLFeeReportComponent } from './fee-report.component';

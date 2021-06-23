@@ -171,9 +171,9 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       this.totalInboundLiquidity = 0;
       this.totalOutboundLiquidity = 0;
       this.allChannels = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
-      this.allChannelsCapacity = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness')));
-      this.allInboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them')));
-      this.allOutboundChannels = JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us')));
+      this.allChannelsCapacity = this.allChannels ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels, 'balancedness'))) : this.allChannelsCapacity;
+      this.allInboundChannels = this.allChannels ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_them > 0), 'msatoshi_to_them'))) : [];
+      this.allOutboundChannels = this.allChannels ? JSON.parse(JSON.stringify(this.commonService.sortDescByKey(this.allChannels.filter(channel => channel.msatoshi_to_us > 0), 'msatoshi_to_us'))) : [];
       this.allChannels.forEach(channel => {
         this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them/1000);
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us/1000);

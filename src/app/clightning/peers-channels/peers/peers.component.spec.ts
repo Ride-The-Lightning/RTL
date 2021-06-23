@@ -4,6 +4,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLPeersComponent } from './peers.component';

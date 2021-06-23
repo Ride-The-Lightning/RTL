@@ -3,9 +3,10 @@ import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
-import { SharedModule } from '../../../shared/shared.module';
 
 import { CLTransactionsReportComponent } from './transactions-report.component';
+
+const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
 
 describe('CLTransactionsReportComponent', () => {
   let component: CLTransactionsReportComponent;
@@ -14,15 +15,17 @@ describe('CLTransactionsReportComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLTransactionsReportComponent ],
-      imports: [ SharedModule,
+      imports: [ 
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ CommonService ]
+      ],
+      providers: [ 
+        { provide: CommonService, useValue: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

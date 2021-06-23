@@ -4,6 +4,8 @@ import { CommonService } from '../../../../../shared/services/common.service';
 
 import { LoopOutInfoGraphicsComponent } from './info-graphics.component';
 
+const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 describe('LoopOutInfoGraphicsComponent', () => {
   let component: LoopOutInfoGraphicsComponent;
   let fixture: ComponentFixture<LoopOutInfoGraphicsComponent>;
@@ -11,7 +13,9 @@ describe('LoopOutInfoGraphicsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopOutInfoGraphicsComponent ],
-      providers: [ CommonService ]
+      providers: [ 
+        { provide: CommonService, useValue: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

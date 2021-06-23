@@ -6,6 +6,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLTransactionsReportComponent } from './transactions-report.component';
 
+const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 describe('ECLTransactionsReportComponent', () => {
   let component: ECLTransactionsReportComponent;
   let fixture: ComponentFixture<ECLTransactionsReportComponent>;
@@ -20,8 +22,10 @@ describe('ECLTransactionsReportComponent', () => {
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ CommonService ]
+      ],
+      providers: [ 
+        { provide: CommonService, useValue: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

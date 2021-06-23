@@ -2,20 +2,20 @@
   <div>
     <h4 class="dashboard-info-title">Alias</h4>
     <div class="overflow-wrap dashboard-info-value">
-      {{information.alias}}
-      <span *ngIf="!showColorFieldSeparately" class="dashboard-node-dot dot" [ngStyle]="{'backgroundColor': '#' + information.color}"></span>
+      {{information?.alias}}
+      <span *ngIf="!showColorFieldSeparately" class="dashboard-node-dot dot" [ngStyle]="{'backgroundColor': '#' + information?.color}"></span>
     </div>
   </div>
   <div *ngIf="showColorFieldSeparately">
     <h4 class="dashboard-info-title">Color</h4>
     <div class="overflow-wrap dashboard-info-value">
-      <span class="dashboard-node-square" [ngStyle]="{'backgroundColor': '#' + information.color}"></span>
-      {{information.color | uppercase}}
+      <span class="dashboard-node-square" [ngStyle]="{'backgroundColor': '#' + information?.color}"></span>
+      {{information?.color | uppercase}}
     </div>
   </div>
   <div>
     <h4 class="dashboard-info-title">Implementation</h4>
-    <div class="overflow-wrap dashboard-info-value">{{(information.lnImplementation || information.version) ? information.lnImplementation + ' ' + information.version : ''}}</div>
+    <div class="overflow-wrap dashboard-info-value">{{(information?.lnImplementation || information?.version) ? information?.lnImplementation + ' ' + information?.version : ''}}</div>
   </div>
   <div>
     <h4 class="dashboard-info-title">Chain</h4>

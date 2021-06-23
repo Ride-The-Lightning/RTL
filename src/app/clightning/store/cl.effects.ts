@@ -10,7 +10,6 @@ import { Location } from '@angular/common';
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import { SessionService } from '../../shared/services/session.service';
-import { CommonService } from '../../shared/services/common.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
@@ -32,7 +31,6 @@ export class CLEffects implements OnDestroy {
     private store: Store<fromRTLReducer.RTLState>,
     private sessionService: SessionService,
     private logger: LoggerService,
-    private commonService: CommonService,
     private router: Router,
     private location: Location) { 
       this.store.select('cl')

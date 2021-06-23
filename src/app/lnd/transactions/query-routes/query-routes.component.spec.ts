@@ -6,6 +6,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { QueryRoutesComponent } from './query-routes.component';
 
+const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 describe('QueryRoutesComponent', () => {
   let component: QueryRoutesComponent;
   let fixture: ComponentFixture<QueryRoutesComponent>;
@@ -20,8 +22,10 @@ describe('QueryRoutesComponent', () => {
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ CommonService ]
+      ],
+      providers: [ 
+        { provide: CommonService, useValue: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
