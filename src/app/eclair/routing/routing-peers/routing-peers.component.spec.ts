@@ -6,6 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLRoutingPeersComponent } from './routing-peers.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ECLRoutingPeersComponent', () => {
   let component: ECLRoutingPeersComponent;
@@ -22,7 +23,11 @@ describe('ECLRoutingPeersComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ECLRoutingPeersComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -6,6 +6,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { NodeSettingsComponent } from './node-settings.component';
+import { mockCommonService } from '../../../services/test-consts';
 
 describe('NodeSettingsComponent', () => {
   let component: NodeSettingsComponent;
@@ -22,7 +23,11 @@ describe('NodeSettingsComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('NodeSettingsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

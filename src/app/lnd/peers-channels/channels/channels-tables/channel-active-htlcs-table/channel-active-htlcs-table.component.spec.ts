@@ -6,6 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ChannelActiveHTLCsTableComponent } from './channel-active-htlcs-table.component';
+import { mockCommonService } from '../../../../../shared/services/test-consts';
 
 describe('ChannelActiveHTLCsTableComponent', () => {
   let component: ChannelActiveHTLCsTableComponent;
@@ -22,7 +23,11 @@ describe('ChannelActiveHTLCsTableComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ChannelActiveHTLCsTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

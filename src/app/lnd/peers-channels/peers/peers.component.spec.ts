@@ -6,6 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { PeersComponent } from './peers.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('PeersComponent', () => {
   let component: PeersComponent;
@@ -22,7 +23,11 @@ describe('PeersComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('PeersComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

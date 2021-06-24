@@ -6,6 +6,10 @@ import { RTLReducer } from '../../store/rtl.reducers';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { CLTransactionsComponent } from './transactions.component';
+import { SharedModule } from '../../shared/shared.module';
+import { CLQueryRoutesComponent } from './query-routes/query-routes.component';
+import { mockCommonService } from '../../shared/services/test-consts';
+import { CommonService } from '../../shared/services/common.service';
 
 describe('CLTransactionsComponent', () => {
   let component: CLTransactionsComponent;
@@ -13,16 +17,21 @@ describe('CLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLTransactionsComponent ],
-      imports: [ RouterTestingModule,
+      declarations: [ CLTransactionsComponent, CLQueryRoutesComponent ],
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -36,4 +45,9 @@ describe('CLTransactionsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

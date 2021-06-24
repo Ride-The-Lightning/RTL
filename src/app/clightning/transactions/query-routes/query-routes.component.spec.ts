@@ -5,8 +5,15 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLQueryRoutesComponent } from './query-routes.component';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
+import { RTLEffects } from '../../../store/rtl.effects';
+import { LNDEffects } from '../../../lnd/store/lnd.effects';
+import { CLEffects } from '../../store/cl.effects';
+import { ECLEffects } from '../../../eclair/store/ecl.effects';
+import { EffectsModule } from '@ngrx/effects';
+import { SharedModule } from '../../../shared/shared.module';
 
-const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 
 describe('CLQueryRoutesComponent', () => {
   let component: CLQueryRoutesComponent;
@@ -16,15 +23,21 @@ describe('CLQueryRoutesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLQueryRoutesComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
+        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
       ],
       providers: [ 
-        { provide: CommonService, useValue: mockCommonService }
+        { provide: RTLEffects, useValue: mockRTLEffects },
+        { provide: LNDEffects, useValue: mockLNDEffects },
+        { provide: CLEffects, useClass: mockCLEffects },
+        { provide: ECLEffects, useValue: mockECLEffects },
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();
@@ -39,4 +52,9 @@ describe('CLQueryRoutesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

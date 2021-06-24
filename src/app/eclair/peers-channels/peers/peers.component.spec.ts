@@ -1,12 +1,13 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLPeersComponent } from './peers.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ECLPeersComponent', () => {
   let component: ECLPeersComponent;
@@ -22,8 +23,12 @@ describe('ECLPeersComponent', () => {
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
-      providers: [ LoggerService, CommonService ]
+ ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -37,4 +42,9 @@ describe('ECLPeersComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -22,7 +22,7 @@ describe('TopMenuComponent', () => {
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
+ ],
       providers: [ LoggerService, SessionService ]
     })
     .compileComponents();
@@ -37,4 +37,9 @@ describe('TopMenuComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

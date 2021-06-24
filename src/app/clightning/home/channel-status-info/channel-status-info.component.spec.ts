@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { CLChannelStatusInfoComponent } from './channel-status-info.component';
 
@@ -8,7 +9,8 @@ describe('CLChannelStatusInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelStatusInfoComponent ]
+      declarations: [ CLChannelStatusInfoComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));
@@ -22,4 +24,9 @@ describe('CLChannelStatusInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

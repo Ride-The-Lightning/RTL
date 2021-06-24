@@ -4,7 +4,7 @@ import { DecimalPipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogRef } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
@@ -26,7 +26,7 @@ describe('OnChainSendModalComponent', () => {
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
+ ],
       providers: [ LoggerService, CommonService, MatSnackBar, MatDialogRef, DecimalPipe, FormBuilder ]
 
     })
@@ -42,4 +42,9 @@ describe('OnChainSendModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

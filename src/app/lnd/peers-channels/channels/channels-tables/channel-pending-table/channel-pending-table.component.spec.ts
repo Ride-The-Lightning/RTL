@@ -6,6 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ChannelPendingTableComponent } from './channel-pending-table.component';
+import { mockCommonService } from '../../../../../shared/services/test-consts';
 
 describe('ChannelPendingTableComponent', () => {
   let component: ChannelPendingTableComponent;
@@ -22,7 +23,11 @@ describe('ChannelPendingTableComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ChannelPendingTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

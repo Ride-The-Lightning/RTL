@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 
 import { SharedModule } from '../../../../shared.module';
@@ -23,8 +22,7 @@ describe('SwapInInfoGraphicsComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
-        BrowserAnimationsModule
+        })
       ],
       providers: [ CommonService, DataService ]
     })
@@ -40,4 +38,9 @@ describe('SwapInInfoGraphicsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

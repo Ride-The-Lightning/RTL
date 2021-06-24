@@ -5,8 +5,9 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLTransactionsReportComponent } from './transactions-report.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
-const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 
 describe('ECLTransactionsReportComponent', () => {
   let component: ECLTransactionsReportComponent;
@@ -24,7 +25,7 @@ describe('ECLTransactionsReportComponent', () => {
         }),
       ],
       providers: [ 
-        { provide: CommonService, useValue: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();
@@ -39,4 +40,9 @@ describe('ECLTransactionsReportComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

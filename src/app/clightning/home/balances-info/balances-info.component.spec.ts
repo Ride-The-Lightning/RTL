@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { CLBalancesInfoComponent } from './balances-info.component';
 
@@ -8,7 +9,8 @@ describe('CLBalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLBalancesInfoComponent ]
+      declarations: [ CLBalancesInfoComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));
@@ -22,4 +24,9 @@ describe('CLBalancesInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

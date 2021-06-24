@@ -1,7 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -22,7 +22,7 @@ describe('CloseChannelComponent', () => {
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
+ ],
       providers: [ LoggerService, MatDialogRef ]
     })
     .compileComponents();
@@ -37,4 +37,9 @@ describe('CloseChannelComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

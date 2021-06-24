@@ -3,6 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
+import { mockCommonService } from '../../../../shared/services/test-consts';
+import { SharedModule } from '../../../../shared/shared.module';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { CLChannelsTablesComponent } from './channels-tables.component';
@@ -14,16 +16,20 @@ describe('CLChannelsTablesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelsTablesComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService ]
-
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -37,4 +43,9 @@ describe('CLChannelsTablesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+  
 });

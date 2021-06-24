@@ -8,6 +8,8 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLFailedTransactionsComponent } from './failed-transactions.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLFailedTransactionsComponent', () => {
   let component: CLFailedTransactionsComponent;
@@ -17,14 +19,18 @@ describe('CLFailedTransactionsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLFailedTransactionsComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, DatePipe ]
+        })
+      ],
+      providers: [ 
+        LoggerService, DatePipe,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -38,4 +44,9 @@ describe('CLFailedTransactionsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

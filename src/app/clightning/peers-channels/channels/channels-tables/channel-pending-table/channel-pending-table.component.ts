@@ -80,7 +80,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       this.channelsData = this.commonService.sortByKey(rtlStore.allChannels.filter(channel => !(channel.state === 'CHANNELD_NORMAL' && channel.connected)), 'state', 'string');
-      if (this.channelsData.length > 0) {
+      if (this.channelsData && this.channelsData.length > 0) {
         this.loadChannelsTable(this.channelsData);
       }
       if (this.flgLoading[0] !== 'error') {
@@ -91,7 +91,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   }
 
   ngAfterViewInit() {
-    if (this.channelsData.length > 0) {
+    if (this.channelsData && this.channelsData.length > 0) {
       this.loadChannelsTable(this.channelsData);
     }
   }

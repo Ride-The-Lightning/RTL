@@ -5,8 +5,9 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { QueryRoutesComponent } from './query-routes.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
-const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
+
 
 describe('QueryRoutesComponent', () => {
   let component: QueryRoutesComponent;
@@ -24,7 +25,7 @@ describe('QueryRoutesComponent', () => {
         }),
       ],
       providers: [ 
-        { provide: CommonService, useValue: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();
@@ -39,4 +40,9 @@ describe('QueryRoutesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

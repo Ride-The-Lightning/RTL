@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../shared/shared.module';
 
 import { CLReportsComponent } from './reports.component';
 
@@ -10,7 +11,7 @@ describe('CLReportsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLReportsComponent ],
-      imports: [ RouterTestingModule ]
+      imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
   }));
@@ -24,4 +25,9 @@ describe('CLReportsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

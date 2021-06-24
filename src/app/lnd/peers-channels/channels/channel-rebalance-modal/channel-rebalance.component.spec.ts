@@ -3,7 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
@@ -24,7 +24,7 @@ describe('ChannelRebalanceComponent', () => {
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
+ ],
       providers: [ LoggerService, MatDialogRef, DecimalPipe, FormBuilder ]
 
     })
@@ -40,4 +40,9 @@ describe('ChannelRebalanceComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

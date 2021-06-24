@@ -12,7 +12,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./channel-lookup.component.scss']
 })
 export class CLChannelLookupComponent implements OnInit {
-  @Input() lookupResult: ChannelEdge[];
+  @Input() lookupResult: ChannelEdge[] = [];
   public node1_match = false;
   public node2_match = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];

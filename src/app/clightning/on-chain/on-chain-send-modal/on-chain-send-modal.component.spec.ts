@@ -3,16 +3,20 @@ import { FormBuilder } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogRef } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+import { EffectsModule } from '@ngrx/effects';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
-import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLOnChainSendModalComponent } from './on-chain-send-modal.component';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { RTLEffects } from '../../../store/rtl.effects';
+import { LNDEffects } from '../../../lnd/store/lnd.effects';
+import { CLEffects } from '../../store/cl.effects';
+import { ECLEffects } from '../../../eclair/store/ecl.effects';
 
 describe('CLOnChainSendModalComponent', () => {
   let component: CLOnChainSendModalComponent;
@@ -21,15 +25,26 @@ describe('CLOnChainSendModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLOnChainSendModalComponent ],
-      imports: [ SharedModule,
+      imports: [ 
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
-, provideMockActions ],
-      providers: [ LoggerService, CommonService, MatSnackBar, MatDialogRef, DecimalPipe, FormBuilder ]
+        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+      ],
+      providers: [ 
+        LoggerService, MatSnackBar, DecimalPipe, FormBuilder,
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
+        { provide: RTLEffects, useValue: mockRTLEffects },
+        { provide: LNDEffects, useValue: mockLNDEffects },
+        { provide: CLEffects, useClass: mockCLEffects },
+        { provide: ECLEffects, useValue: mockECLEffects },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -43,4 +58,9 @@ describe('CLOnChainSendModalComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

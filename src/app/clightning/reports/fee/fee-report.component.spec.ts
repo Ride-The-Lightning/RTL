@@ -7,6 +7,8 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLFeeReportComponent } from './fee-report.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLFeeReportComponent', () => {
   let component: CLFeeReportComponent;
@@ -16,14 +18,18 @@ describe('CLFeeReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLFeeReportComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService ]
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -37,4 +43,9 @@ describe('CLFeeReportComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

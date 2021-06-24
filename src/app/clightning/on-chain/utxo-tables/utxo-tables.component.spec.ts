@@ -1,9 +1,13 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
+import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CLUTXOTablesComponent } from './utxo-tables.component';
+import { CLOnChainUtxosComponent } from './utxos/utxos.component';
 
 describe('CLUTXOTablesComponent', () => {
   let component: CLUTXOTablesComponent;
@@ -11,16 +15,20 @@ describe('CLUTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLUTXOTablesComponent ],
+      declarations: [ CLUTXOTablesComponent, CLOnChainUtxosComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -34,4 +42,9 @@ describe('CLUTXOTablesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

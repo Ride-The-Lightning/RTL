@@ -6,6 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelInactiveTableComponent } from './channel-inactive-table.component';
+import { mockCommonService } from '../../../../../shared/services/test-consts';
 
 describe('ECLChannelInactiveTableComponent', () => {
   let component: ECLChannelInactiveTableComponent;
@@ -22,7 +23,11 @@ describe('ECLChannelInactiveTableComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ECLChannelInactiveTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -20,8 +20,8 @@ export class CLNodeLookupComponent implements OnInit {
   constructor(private logger: LoggerService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.addresses = this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
-    this.addresses.data = this.lookupResult.addresses ? this.lookupResult.addresses : [];
+    this.addresses = this.lookupResult && this.lookupResult.addresses ? new MatTableDataSource<any>([...this.lookupResult.addresses]) : new MatTableDataSource([]);
+    this.addresses.data = this.lookupResult && this.lookupResult.addresses ? this.lookupResult.addresses : [];
     this.addresses.sort = this.sort;
     this.addresses.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
   }

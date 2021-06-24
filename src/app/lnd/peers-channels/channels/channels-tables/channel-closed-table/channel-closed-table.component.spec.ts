@@ -6,6 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ChannelClosedTableComponent } from './channel-closed-table.component';
+import { mockCommonService } from '../../../../../shared/services/test-consts';
 
 describe('ChannelClosedTableComponent', () => {
   let component: ChannelClosedTableComponent;
@@ -22,7 +23,11 @@ describe('ChannelClosedTableComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ChannelClosedTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { CLChannelCapacityInfoComponent } from './channel-capacity-info.component';
 
@@ -10,7 +11,7 @@ describe('CLChannelCapacityInfoComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelCapacityInfoComponent ],
-      imports: [ RouterTestingModule ]
+      imports: [ RouterTestingModule, SharedModule ]
     })
     .compileComponents();
   }));
@@ -24,4 +25,9 @@ describe('CLChannelCapacityInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -6,6 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLFeeReportComponent } from './fee-report.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ECLFeeReportComponent', () => {
   let component: ECLFeeReportComponent;
@@ -22,7 +23,11 @@ describe('ECLFeeReportComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ECLFeeReportComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

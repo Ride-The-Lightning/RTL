@@ -2,10 +2,9 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 import { CLNodeInfoComponent } from './node-info.component';
-
-const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
 
 describe('CLNodeInfoComponent', () => {
   let component: CLNodeInfoComponent;
@@ -17,7 +16,7 @@ describe('CLNodeInfoComponent', () => {
       declarations: [ CLNodeInfoComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        { provide: CommonService, useValue: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();
@@ -33,4 +32,9 @@ describe('CLNodeInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

@@ -7,6 +7,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLForwardingHistoryComponent } from './forwarding-history.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLForwardingHistoryComponent', () => {
   let component: CLForwardingHistoryComponent;
@@ -16,14 +18,18 @@ describe('CLForwardingHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLForwardingHistoryComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, DatePipe ]
+        })
+      ],
+      providers: [
+        LoggerService, DatePipe,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -37,4 +43,9 @@ describe('CLForwardingHistoryComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

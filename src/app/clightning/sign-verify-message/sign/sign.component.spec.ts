@@ -5,6 +5,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { CLSignComponent } from './sign.component';
+import { mockDataService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLSignComponent', () => {
   let component: CLSignComponent;
@@ -13,7 +15,11 @@ describe('CLSignComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLSignComponent ],
-      providers: [ LoggerService, DataService, MatSnackBar ]
+      imports: [ SharedModule ],
+      providers: [
+        LoggerService,
+        { provide: DataService, useClass: mockDataService }        
+      ]
     })
     .compileComponents();
   }));
@@ -27,4 +33,9 @@ describe('CLSignComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

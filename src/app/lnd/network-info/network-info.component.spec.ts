@@ -6,6 +6,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { NetworkInfoComponent } from './network-info.component';
+import { mockCommonService } from '../../shared/services/test-consts';
 
 describe('NetworkInfoComponent', () => {
   let component: NetworkInfoComponent;
@@ -22,7 +23,11 @@ describe('NetworkInfoComponent', () => {
           }
         }),
  ],
-      providers: [ LoggerService, CommonService ]
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('NetworkInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

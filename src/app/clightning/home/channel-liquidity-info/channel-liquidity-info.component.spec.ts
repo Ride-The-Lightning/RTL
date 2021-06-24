@@ -3,10 +3,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 import { CLChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
-
-const mockCommonService = jasmine.createSpyObj("CommonService", ["getScreenSize", "setScreenSize", "getContainerSize", "setContainerSize", "sortByKey", "sortDescByKey", "sortAscByKey", "camelCase", "titleCase", "convertCurrency", "convertWithoutFiat", "convertWithFiat", "convertTime", "downloadFile", "convertToCSV", "isVersionCompatible"]);
 
 describe('CLChannelLiquidityInfoComponent', () => {
   let component: CLChannelLiquidityInfoComponent;  
@@ -18,7 +17,7 @@ describe('CLChannelLiquidityInfoComponent', () => {
       declarations: [ CLChannelLiquidityInfoComponent ],
       imports: [ RouterTestingModule, SharedModule ],
       providers: [ 
-        { provide: CommonService, useValue: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();

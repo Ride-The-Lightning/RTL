@@ -1,12 +1,13 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
+
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelBackupTableComponent } from './channel-backup-table.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ChannelBackupTableComponent', () => {
   let component: ChannelBackupTableComponent;
@@ -21,8 +22,12 @@ describe('ChannelBackupTableComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }), provideMockActions ],
-      providers: [ LoggerService, CommonService ]
+        }) ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
+
     })
     .compileComponents();
   }));
@@ -36,4 +41,9 @@ describe('ChannelBackupTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });
