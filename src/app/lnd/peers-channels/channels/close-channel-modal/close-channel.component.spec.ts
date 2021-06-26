@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
 
@@ -7,6 +7,9 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { CloseChannelComponent } from './close-channel.component';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/services/test-consts';
+import { EffectsModule } from '@ngrx/effects';
+import { SharedModule } from '../../../../shared/shared.module';
 
 describe('CloseChannelComponent', () => {
   let component: CloseChannelComponent;
@@ -16,14 +19,20 @@ describe('CloseChannelComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CloseChannelComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ LoggerService, MatDialogRef ]
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
+      providers: [
+        LoggerService,
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
+      ]
     })
     .compileComponents();
   }));

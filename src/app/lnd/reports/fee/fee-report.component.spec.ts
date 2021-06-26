@@ -6,6 +6,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { FeeReportComponent } from './fee-report.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCommonService, mockDataService } from '../../../shared/services/test-consts';
 
 describe('FeeReportComponent', () => {
   let component: FeeReportComponent;
@@ -15,14 +17,18 @@ describe('FeeReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ FeeReportComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ DataService, CommonService ]
+        })
+      ],
+      providers: [ 
+        { provide: DataService, useClass: mockDataService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

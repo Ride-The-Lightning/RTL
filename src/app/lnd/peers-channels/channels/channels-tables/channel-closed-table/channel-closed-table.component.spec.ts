@@ -7,6 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ChannelClosedTableComponent } from './channel-closed-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 describe('ChannelClosedTableComponent', () => {
   let component: ChannelClosedTableComponent;
@@ -16,18 +17,18 @@ describe('ChannelClosedTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelClosedTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
-
     })
     .compileComponents();
   }));

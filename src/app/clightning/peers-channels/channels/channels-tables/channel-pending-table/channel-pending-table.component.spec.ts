@@ -8,9 +8,6 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CLChannelPendingTableComponent } from './channel-pending-table.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
-import { ECLEffects } from '../../../../../eclair/store/ecl.effects';
-import { CLEffects } from '../../../../store/cl.effects';
-import { LNDEffects } from '../../../../../lnd/store/lnd.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 
@@ -29,15 +26,12 @@ describe('CLChannelPendingTableComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         LoggerService,
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService },
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();

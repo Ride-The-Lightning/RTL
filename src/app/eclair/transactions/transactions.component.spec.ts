@@ -6,6 +6,10 @@ import { RTLReducer } from '../../store/rtl.reducers';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { ECLTransactionsComponent } from './transactions.component';
+import { SharedModule } from '../../shared/shared.module';
+import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
+import { mockCommonService } from '../../shared/services/test-consts';
+import { CommonService } from '../../shared/services/common.service';
 
 describe('ECLTransactionsComponent', () => {
   let component: ECLTransactionsComponent;
@@ -13,16 +17,21 @@ describe('ECLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLTransactionsComponent ],
-      imports: [ RouterTestingModule,
+      declarations: [ ECLTransactionsComponent, CurrencyUnitConverterComponent ],
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

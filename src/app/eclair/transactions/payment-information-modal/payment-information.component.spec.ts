@@ -1,5 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { mockMatDialogRef } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { ECLPaymentInformationComponent } from './payment-information.component';
 
@@ -10,7 +12,11 @@ describe('ECLPaymentInformationComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLPaymentInformationComponent ],
-      providers: [ MatDialogRef ]
+      imports: [ SharedModule ],
+      providers: [ 
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {payment:{}, sentPaymentInfo:{}} }
+      ]
     })
     .compileComponents();
   }));

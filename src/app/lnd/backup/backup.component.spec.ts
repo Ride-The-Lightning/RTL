@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../shared/shared.module';
 
 import { BackupComponent } from './backup.component';
 
@@ -10,7 +11,7 @@ describe('BackupComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BackupComponent ],
-      imports: [ RouterTestingModule ]
+      imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
   }));

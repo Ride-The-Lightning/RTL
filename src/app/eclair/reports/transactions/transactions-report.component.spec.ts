@@ -6,6 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLTransactionsReportComponent } from './transactions-report.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 
 
@@ -17,12 +18,13 @@ describe('ECLTransactionsReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLTransactionsReportComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
       providers: [ 
         { provide: CommonService, useClass: mockCommonService }

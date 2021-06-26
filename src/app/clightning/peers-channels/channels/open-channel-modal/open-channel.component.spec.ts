@@ -29,16 +29,12 @@ describe('CLOpenChannelComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
         DecimalPipe,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {message:{}} },
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects }
+        { provide: MAT_DIALOG_DATA, useValue: {message:{}} }
       ]
     })
     .compileComponents();

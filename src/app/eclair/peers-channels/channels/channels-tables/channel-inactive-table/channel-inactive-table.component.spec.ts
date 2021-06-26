@@ -6,7 +6,10 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelInactiveTableComponent } from './channel-inactive-table.component';
-import { mockCommonService } from '../../../../../shared/services/test-consts';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { EffectsModule } from '@ngrx/effects';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 describe('ECLChannelInactiveTableComponent', () => {
   let component: ECLChannelInactiveTableComponent;
@@ -16,15 +19,17 @@ describe('ECLChannelInactiveTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelInactiveTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
+        { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: CommonService, useClass: mockCommonService }
       ]
 

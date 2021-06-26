@@ -11,6 +11,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { SwapModalComponent } from './swap-modal.component';
+import { SharedModule } from '../../../../shared.module';
 
 describe('SwapModalComponent', () => {
   let component: SwapModalComponent;
@@ -19,7 +20,9 @@ describe('SwapModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SwapModalComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

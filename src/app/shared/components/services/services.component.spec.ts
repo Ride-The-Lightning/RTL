@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
+import { SharedModule } from '../../shared.module';
 import { ServicesComponent } from './services.component';
 
 describe('ServicesComponent', () => {
@@ -12,7 +13,9 @@ describe('ServicesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ServicesComponent ],
-      imports: [ RouterTestingModule, 
+      imports: [
+        SharedModule,
+        RouterTestingModule, 
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

@@ -2,7 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
 
@@ -11,6 +11,10 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { OnChainSendModalComponent } from './on-chain-send-modal.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { RTLEffects } from '../../../store/rtl.effects';
+import { EffectsModule } from '@ngrx/effects';
 
 describe('OnChainSendModalComponent', () => {
   let component: OnChainSendModalComponent;
@@ -20,15 +24,22 @@ describe('OnChainSendModalComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OnChainSendModalComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ LoggerService, CommonService, MatSnackBar, MatDialogRef, DecimalPipe, FormBuilder ]
-
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
+      providers: [
+        LoggerService,
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {sweepAll:true} },
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

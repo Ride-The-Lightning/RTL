@@ -6,6 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
+import { SharedModule } from '../../../shared.module';
 
 describe('LoopComponent', () => {
   let component: LoopComponent;
@@ -14,7 +15,9 @@ describe('LoopComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopComponent ],
-      imports: [ RouterTestingModule,
+      imports: [
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

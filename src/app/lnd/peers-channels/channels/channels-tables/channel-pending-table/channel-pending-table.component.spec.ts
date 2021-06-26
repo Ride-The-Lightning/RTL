@@ -7,6 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ChannelPendingTableComponent } from './channel-pending-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 describe('ChannelPendingTableComponent', () => {
   let component: ChannelPendingTableComponent;
@@ -16,18 +17,18 @@ describe('ChannelPendingTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelPendingTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
-
     })
     .compileComponents();
   }));

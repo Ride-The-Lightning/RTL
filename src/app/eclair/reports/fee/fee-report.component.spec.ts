@@ -7,6 +7,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLFeeReportComponent } from './fee-report.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('ECLFeeReportComponent', () => {
   let component: ECLFeeReportComponent;
@@ -16,18 +17,18 @@ describe('ECLFeeReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLFeeReportComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
-
     })
     .compileComponents();
   }));

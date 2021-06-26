@@ -1,6 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
+import { CommonService } from '../../shared/services/common.service';
+import { mockCommonService } from '../../shared/services/test-consts';
+import { SharedModule } from '../../shared/shared.module';
 
 import { RTLReducer } from '../../store/rtl.reducers';
 import { ECLConnectionsComponent } from './connections.component';
@@ -12,14 +15,19 @@ describe('ECLConnectionsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLConnectionsComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ],
+      providers: [
+        { provide: CommonService, useClass: mockCommonService },
+      ]
     })
     .compileComponents();
   }));

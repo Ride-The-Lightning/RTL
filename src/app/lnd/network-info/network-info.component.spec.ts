@@ -7,6 +7,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import { NetworkInfoComponent } from './network-info.component';
 import { mockCommonService } from '../../shared/services/test-consts';
+import { SharedModule } from '../../shared/shared.module';
 
 describe('NetworkInfoComponent', () => {
   let component: NetworkInfoComponent;
@@ -16,13 +17,14 @@ describe('NetworkInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ NetworkInfoComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }

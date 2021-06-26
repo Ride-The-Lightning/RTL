@@ -7,6 +7,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { RoutingPeersComponent } from './routing-peers.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('RoutingPeersComponent', () => {
   let component: RoutingPeersComponent;
@@ -16,18 +17,18 @@ describe('RoutingPeersComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ RoutingPeersComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
-
     })
     .compileComponents();
   }));

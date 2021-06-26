@@ -11,6 +11,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { LoopModalComponent } from './loop-modal.component';
+import { SharedModule } from '../../../../shared.module';
 
 describe('LoopModalComponent', () => {
   let component: LoopModalComponent;
@@ -19,7 +20,9 @@ describe('LoopModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopModalComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

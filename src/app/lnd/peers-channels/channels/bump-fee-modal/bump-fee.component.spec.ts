@@ -1,12 +1,13 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { BumpFeeComponent } from './bump-fee.component';
+import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { SharedModule } from '../../../../shared/shared.module';
 
 describe('BumpFeeComponent', () => {
   let component: BumpFeeComponent;
@@ -16,15 +17,19 @@ describe('BumpFeeComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ BumpFeeComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ DataService, MatSnackBar, MatDialogRef ]
-
+        })
+      ],
+      providers: [ 
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {pendingChannel:{channel:{}}} },
+        { provide: DataService, useClass: mockDataService }
+      ]
     })
     .compileComponents();
   }));

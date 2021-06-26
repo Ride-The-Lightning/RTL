@@ -7,7 +7,9 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { LookupsComponent } from './lookups.component';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
+import { EffectsModule } from '@ngrx/effects';
+import { SharedModule } from '../../shared/shared.module';
 
 describe('LookupsComponent', () => {
   let component: LookupsComponent;
@@ -17,13 +19,15 @@ describe('LookupsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ LookupsComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }

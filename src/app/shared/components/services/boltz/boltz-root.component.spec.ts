@@ -4,6 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { BoltzService } from '../../../services/boltz.service';
+import { SharedModule } from '../../../shared.module';
 
 import { BoltzRootComponent } from './boltz-root.component';
 
@@ -14,7 +15,9 @@ describe('BoltzRootComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BoltzRootComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

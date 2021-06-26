@@ -7,6 +7,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLOnChainTransactionHistoryComponent } from './on-chain-transaction-history.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ECLOnChainTransactionHistoryComponent', () => {
   let component: ECLOnChainTransactionHistoryComponent;
@@ -16,14 +18,18 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLOnChainTransactionHistoryComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ LoggerService, CommonService, DatePipe ]
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

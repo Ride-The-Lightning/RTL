@@ -5,6 +5,13 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { UTXOTablesComponent } from './utxo-tables.component';
+import { OnChainTransactionHistoryComponent } from './on-chain-transaction-history/on-chain-transaction-history.component';
+import { mockCommonService, mockDataService, mockRTLEffects } from '../../../shared/services/test-consts';
+import { CommonService } from '../../../shared/services/common.service';
+import { SharedModule } from '../../../shared/shared.module';
+import { OnChainUTXOsComponent } from './utxos/utxos.component';
+import { DataService } from '../../../shared/services/data.service';
+import { RTLEffects } from '../../../store/rtl.effects';
 
 describe('UTXOTablesComponent', () => {
   let component: UTXOTablesComponent;
@@ -12,15 +19,22 @@ describe('UTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UTXOTablesComponent ],
-      imports: [StoreModule.forRoot(RTLReducer, {
+      declarations: [ UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent ],
+      imports: [
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: DataService, useClass: mockDataService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

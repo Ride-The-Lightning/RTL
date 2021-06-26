@@ -2,6 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { NodeLookupComponent } from './node-lookup.component';
 
@@ -12,7 +13,8 @@ describe('NodeLookupComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NodeLookupComponent ],
-      providers: [ LoggerService, MatSnackBar ]
+      imports: [ SharedModule ],
+      providers: [ LoggerService ]
     })
     .compileComponents();
   }));

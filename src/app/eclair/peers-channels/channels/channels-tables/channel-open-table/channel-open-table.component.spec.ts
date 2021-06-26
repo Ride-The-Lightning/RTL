@@ -6,7 +6,9 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockCommonService } from '../../../../../shared/services/test-consts';
+import { mockCommonService, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 describe('ECLChannelOpenTableComponent', () => {
   let component: ECLChannelOpenTableComponent;
@@ -16,15 +18,17 @@ describe('ECLChannelOpenTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelOpenTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [
         LoggerService,
+        { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: CommonService, useClass: mockCommonService }
       ]
 

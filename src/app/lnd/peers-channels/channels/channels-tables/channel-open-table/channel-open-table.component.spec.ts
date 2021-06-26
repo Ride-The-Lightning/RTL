@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DecimalPipe } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../../store/rtl.reducers';
@@ -8,6 +7,10 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { ChannelOpenTableComponent } from './channel-open-table.component';
+import { SharedModule } from '../../../../../shared/shared.module';
+import { mockCommonService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { RTLEffects } from '../../../../../store/rtl.effects';
+import { LNDEffects } from '../../../../store/lnd.effects';
 
 describe('ChannelOpenTableComponent', () => {
   let component: ChannelOpenTableComponent;
@@ -17,15 +20,20 @@ describe('ChannelOpenTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelOpenTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, LoopService, DecimalPipe ]
-
+        })
+      ],
+      providers: [ 
+        LoggerService, LoopService,
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: LNDEffects, useClass: mockLNDEffects },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

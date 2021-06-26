@@ -7,6 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelPendingTableComponent } from './channel-pending-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
+import { SharedModule } from '../../../../../shared/shared.module';
 
 describe('ECLChannelPendingTableComponent', () => {
   let component: ECLChannelPendingTableComponent;
@@ -16,6 +17,7 @@ describe('ECLChannelPendingTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelPendingTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { AuthSettingsComponent } from './auth-settings.component';
+import { SharedModule } from '../../../shared.module';
 
 describe('AuthSettingsComponent', () => {
   let component: AuthSettingsComponent;
@@ -16,7 +17,9 @@ describe('AuthSettingsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AuthSettingsComponent ],
-      imports: [ RouterTestingModule, 
+      imports: [
+        SharedModule,
+        RouterTestingModule, 
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

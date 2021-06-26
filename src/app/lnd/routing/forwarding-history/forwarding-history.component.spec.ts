@@ -8,6 +8,8 @@ import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ForwardingHistoryComponent } from './forwarding-history.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ForwardingHistoryComponent', () => {
   let component: ForwardingHistoryComponent;
@@ -17,14 +19,18 @@ describe('ForwardingHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ForwardingHistoryComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, DataService, DatePipe ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

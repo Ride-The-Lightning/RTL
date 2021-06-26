@@ -12,7 +12,6 @@ import { Peer } from '../../../shared/models/eclModels';
 import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';

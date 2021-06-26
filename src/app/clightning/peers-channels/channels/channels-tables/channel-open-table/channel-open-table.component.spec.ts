@@ -1,8 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { ECLEffects } from '../../../../../eclair/store/ecl.effects';
-import { LNDEffects } from '../../../../../lnd/store/lnd.effects';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
@@ -28,15 +26,13 @@ describe('CLChannelOpenTableComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         LoggerService,
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService },
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: CLEffects, useClass: mockCLEffects }        
       ]
     })
     .compileComponents();

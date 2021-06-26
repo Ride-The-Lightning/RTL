@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DecimalPipe } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
@@ -8,6 +7,9 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { OnChainUTXOsComponent } from './utxos.component';
+import { SharedModule } from '../../../../shared/shared.module';
+import { mockCommonService, mockDataService, mockRTLEffects } from '../../../../shared/services/test-consts';
+import { RTLEffects } from '../../../../store/rtl.effects';
 
 describe('OnChainUTXOsComponent', () => {
   let component: OnChainUTXOsComponent;
@@ -17,14 +19,20 @@ describe('OnChainUTXOsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OnChainUTXOsComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, DataService, CommonService, DecimalPipe ]
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: DataService, useClass: mockDataService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

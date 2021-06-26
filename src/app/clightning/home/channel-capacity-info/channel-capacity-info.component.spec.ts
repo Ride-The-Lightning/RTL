@@ -11,7 +11,7 @@ describe('CLChannelCapacityInfoComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelCapacityInfoComponent ],
-      imports: [ RouterTestingModule, SharedModule ]
+      imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
   }));

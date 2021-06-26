@@ -6,6 +6,9 @@ import { RTLReducer } from '../../store/rtl.reducers';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { TransactionsComponent } from './transactions.component';
+import { SharedModule } from '../../shared/shared.module';
+import { mockCommonService } from '../../shared/services/test-consts';
+import { CommonService } from '../../shared/services/common.service';
 
 describe('TransactionsComponent', () => {
   let component: TransactionsComponent;
@@ -14,15 +17,20 @@ describe('TransactionsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TransactionsComponent ],
-      imports: [ RouterTestingModule,
+      imports: [
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

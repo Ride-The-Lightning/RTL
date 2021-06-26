@@ -9,9 +9,6 @@ import { CLPeersComponent } from './peers.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { RTLEffects } from '../../../store/rtl.effects';
-import { LNDEffects } from '../../../lnd/store/lnd.effects';
-import { CLEffects } from '../../store/cl.effects';
-import { ECLEffects } from '../../../eclair/store/ecl.effects';
 import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLPeersComponent', () => {
@@ -29,15 +26,12 @@ describe('CLPeersComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         LoggerService,
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService },
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();

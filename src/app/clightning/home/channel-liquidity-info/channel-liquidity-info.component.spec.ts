@@ -15,7 +15,7 @@ describe('CLChannelLiquidityInfoComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelLiquidityInfoComponent ],
-      imports: [ RouterTestingModule, SharedModule ],
+      imports: [ SharedModule, RouterTestingModule ],
       providers: [ 
         { provide: CommonService, useClass: mockCommonService }
       ]

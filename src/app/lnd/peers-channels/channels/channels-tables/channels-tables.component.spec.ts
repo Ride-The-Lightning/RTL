@@ -6,6 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ChannelsTablesComponent } from './channels-tables.component';
+import { SharedModule } from '../../../../shared/shared.module';
 
 describe('ChannelsTablesComponent', () => {
   let component: ChannelsTablesComponent;
@@ -14,7 +15,9 @@ describe('ChannelsTablesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ChannelsTablesComponent ],
-      imports: [ RouterTestingModule, 
+      imports: [ 
+        SharedModule,
+        RouterTestingModule, 
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

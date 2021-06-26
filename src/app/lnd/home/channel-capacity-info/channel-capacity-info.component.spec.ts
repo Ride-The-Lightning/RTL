@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { ChannelCapacityInfoComponent } from './channel-capacity-info.component';
 
@@ -10,7 +11,7 @@ describe('ChannelCapacityInfoComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ChannelCapacityInfoComponent ],
-      imports: [ RouterTestingModule ]
+      imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
   }));

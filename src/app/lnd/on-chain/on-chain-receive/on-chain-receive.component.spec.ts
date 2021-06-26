@@ -1,7 +1,10 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
+import { mockLNDEffects } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
+import { LNDEffects } from '../../store/lnd.effects';
 import { OnChainReceiveComponent } from './on-chain-receive.component';
 
 describe('OnChainReceiveComponent', () => {
@@ -12,13 +15,17 @@ describe('OnChainReceiveComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OnChainReceiveComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ],
+      providers: [
+        { provide: LNDEffects, useClass: mockLNDEffects }
+      ]
     })
     .compileComponents();
   }));

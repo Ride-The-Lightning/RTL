@@ -30,14 +30,10 @@ describe('CLLookupsComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
         LoggerService,
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects },
         { provide: CommonService, useClass: mockCommonService }
       ]
     })

@@ -1,7 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
+import { mockECLEffects } from '../../../shared/services/test-consts';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
+import { ECLEffects } from '../../store/ecl.effects';
 import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
 
 describe('ECLOnChainReceiveComponent', () => {
@@ -17,8 +19,11 @@ describe('ECLOnChainReceiveComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ],
+      providers: [
+        { provide: ECLEffects, useClass: mockECLEffects }
+      ]
     })
     .compileComponents();
   }));

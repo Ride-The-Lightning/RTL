@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { ECLBalancesInfoComponent } from './balances-info.component';
 
@@ -8,7 +9,8 @@ describe('ECLBalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLBalancesInfoComponent ]
+      declarations: [ ECLBalancesInfoComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));

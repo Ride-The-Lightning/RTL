@@ -7,7 +7,9 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelBackupTableComponent } from './channel-backup-table.component';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
+import { EffectsModule } from '@ngrx/effects';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('ChannelBackupTableComponent', () => {
   let component: ChannelBackupTableComponent;
@@ -17,17 +19,19 @@ describe('ChannelBackupTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelBackupTableComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }) ],
+        }),
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
       providers: [
         LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
-
     })
     .compileComponents();
   }));

@@ -7,6 +7,9 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { LoopService } from '../../../shared/services/loop.service';
 
 import { ChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { CommonService } from '../../../shared/services/common.service';
 
 describe('ChannelLiquidityInfoComponent', () => {
   let component: ChannelLiquidityInfoComponent;
@@ -15,15 +18,20 @@ describe('ChannelLiquidityInfoComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ChannelLiquidityInfoComponent ],
-      imports: [ RouterTestingModule,
+      imports: [ 
+        SharedModule,
+        RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, LoopService ]
+        })
+      ],
+      providers: [
+        LoggerService, LoopService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

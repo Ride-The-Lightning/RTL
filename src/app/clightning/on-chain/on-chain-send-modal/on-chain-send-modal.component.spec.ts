@@ -14,9 +14,6 @@ import { CLOnChainSendModalComponent } from './on-chain-send-modal.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
-import { LNDEffects } from '../../../lnd/store/lnd.effects';
-import { CLEffects } from '../../store/cl.effects';
-import { ECLEffects } from '../../../eclair/store/ecl.effects';
 
 describe('CLOnChainSendModalComponent', () => {
   let component: CLOnChainSendModalComponent;
@@ -33,17 +30,14 @@ describe('CLOnChainSendModalComponent', () => {
             strictActionImmutability: false
           }
         }),
-        EffectsModule.forRoot([RTLEffects, LNDEffects, CLEffects, ECLEffects])
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
         LoggerService, MatSnackBar, DecimalPipe, FormBuilder,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
-        { provide: RTLEffects, useValue: mockRTLEffects },
-        { provide: LNDEffects, useValue: mockLNDEffects },
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: ECLEffects, useValue: mockECLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: CommonService, useClass: mockCommonService },
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();

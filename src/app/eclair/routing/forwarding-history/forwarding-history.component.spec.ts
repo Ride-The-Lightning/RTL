@@ -7,6 +7,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLForwardingHistoryComponent } from './forwarding-history.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 describe('ECLForwardingHistoryComponent', () => {
   let component: ECLForwardingHistoryComponent;
@@ -16,14 +18,18 @@ describe('ECLForwardingHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLForwardingHistoryComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, DatePipe ]
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
