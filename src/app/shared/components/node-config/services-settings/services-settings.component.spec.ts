@@ -4,6 +4,8 @@ import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { SharedModule } from '../../../shared.module';
+import { BoltzServiceSettingsComponent } from './boltz-service-settings/boltz-service-settings.component';
+import { LoopServiceSettingsComponent } from './loop-service-settings/loop-service-settings.component';
 import { ServicesSettingsComponent } from './services-settings.component';
 
 describe('ServicesSettingsComponent', () => {
@@ -12,7 +14,7 @@ describe('ServicesSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServicesSettingsComponent ],
+      declarations: [ ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent ],
       imports: [ 
         SharedModule,
         RouterTestingModule,
@@ -21,8 +23,8 @@ describe('ServicesSettingsComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ]
     })
     .compileComponents();
   }));

@@ -8,6 +8,10 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { SideNavigationComponent } from './side-navigation.component';
+import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../services/test-consts';
+import { EffectsModule } from '@ngrx/effects';
+import { RTLEffects } from '../../../../store/rtl.effects';
+import { SharedModule } from '../../../shared.module';
 
 describe('SideNavigationComponent', () => {
   let component: SideNavigationComponent;
@@ -17,14 +21,20 @@ describe('SideNavigationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SideNavigationComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
         }),
- ],
-      providers: [ LoggerService, CommonService, SessionService ]
+        EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
+      ],
+      providers: [ 
+        LoggerService, SessionService, 
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

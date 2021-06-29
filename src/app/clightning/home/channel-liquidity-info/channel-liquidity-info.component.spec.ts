@@ -31,7 +31,6 @@ describe('CLChannelLiquidityInfoComponent', () => {
   });
 
   it('should create', () => {
-    console.warn(commonService);
     expect(component).toBeTruthy();
   });
 

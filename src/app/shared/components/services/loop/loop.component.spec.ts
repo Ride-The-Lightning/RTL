@@ -7,6 +7,8 @@ import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
+import { mockCommonService, mockLoopService } from '../../../services/test-consts';
+import { CommonService } from '../../../services/common.service';
 
 describe('LoopComponent', () => {
   let component: LoopComponent;
@@ -23,9 +25,12 @@ describe('LoopComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoopService ]
+        })
+      ],
+      providers: [ 
+        { provide: LoopService, useClass: mockLoopService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

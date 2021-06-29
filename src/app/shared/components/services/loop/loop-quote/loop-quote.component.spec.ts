@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../../shared.module';
 
 import { LoopQuoteComponent } from './loop-quote.component';
 
@@ -8,7 +9,8 @@ describe('LoopQuoteComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopQuoteComponent ]
+      declarations: [ LoopQuoteComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));

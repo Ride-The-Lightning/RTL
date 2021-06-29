@@ -7,6 +7,7 @@ import { CommonService } from '../../../../services/common.service';
 import { DataService } from '../../../../services/data.service';
 
 import { SwapInInfoGraphicsComponent } from './info-graphics.component';
+import { mockCommonService, mockDataService } from '../../../../services/test-consts';
 
 describe('SwapInInfoGraphicsComponent', () => {
   let component: SwapInInfoGraphicsComponent;
@@ -24,7 +25,10 @@ describe('SwapInInfoGraphicsComponent', () => {
           }
         })
       ],
-      providers: [ CommonService, DataService ]
+      providers: [ 
+        { provide: DataService, useClass: mockDataService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../../shared.module';
 
 import { LoopStatusComponent } from './loop-status.component';
 
@@ -8,7 +9,8 @@ describe('LoopStatusComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopStatusComponent ]
+      declarations: [ LoopStatusComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));

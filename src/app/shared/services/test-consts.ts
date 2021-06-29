@@ -1,4 +1,4 @@
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import * as CLActions from '../../clightning/store/cl.actions';
 
 export class mockMatDialogRef {
@@ -43,6 +43,35 @@ export class mockDataService {
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {};
   handleErrorWithAlert(alertType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {};
 };
+
+export class mockLoopService {
+  public swapsChanged = new BehaviorSubject<any[]>([]);
+  getSwapsList() {};
+  listSwaps() {};
+  loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) {};
+  getLoopOutTerms() {};
+  getLoopOutQuote(amount: number, targetConf: number, swapPublicationDeadline: number) {};
+  getLoopOutTermsAndQuotes(targetConf: number) {};
+  loopIn(amount: number, swapFee: number, minerFee: number, lastHop: string, externalHtlc: boolean) {};
+  getLoopInTerms() {};
+  getLoopInQuote(amount: number, targetConf: string, swapPublicationDeadline: number) {};
+  getLoopInTermsAndQuotes(targetConf: number) {};
+  getSwap(id: string) {};
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {};
+  handleErrorWithAlert(errURL: string, err: any) {};
+}
+
+export class mockBoltzService {
+  public swapsChanged = new BehaviorSubject<any[]>([]);
+  getSwapsList() {};
+  listSwaps() {};
+  swapInfo(id: string) {};
+  serviceInfo() {};
+  swapOut(amount: number, address: string) {};
+  swapIn(amount: number) {};
+  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {};
+  handleErrorWithAlert(errURL: string, err: any) {};
+}
 
 export class mockRTLEffects {
   closeAllDialogs() {};
@@ -184,3 +213,4 @@ export class mockECLEffects {
   handleErrorWithoutAlert(actionName: string, genericErrorMessage: string, err: { status: number, error: any }) {};
   handleErrorWithAlert(alerType: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {};
 }
+

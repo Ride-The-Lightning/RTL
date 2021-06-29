@@ -29,7 +29,7 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
   public faInfoCircle = faInfoCircle;
   public flgValidated = false;
   public isTokenValid = true;
-  public otpauth: string;
+  public otpauth: string = '';
   public appConfig: RTLConfiguration;
   public flgEditable = true;
   public showDisableStepper = false;

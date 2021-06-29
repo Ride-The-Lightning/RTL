@@ -21,8 +21,8 @@ describe('SettingsComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ]
     })
     .compileComponents();
   }));

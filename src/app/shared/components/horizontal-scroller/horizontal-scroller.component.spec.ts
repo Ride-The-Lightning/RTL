@@ -1,6 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoggerService } from '../../services/logger.service';
+import { SharedModule } from '../../shared.module';
 
 import { HorizontalScrollerComponent } from './horizontal-scroller.component';
 
@@ -11,6 +12,7 @@ describe('HorizontalScrollerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HorizontalScrollerComponent ],
+      imports: [ SharedModule ],
       providers: [ LoggerService ]
     })
     .compileComponents();

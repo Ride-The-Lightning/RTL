@@ -19,8 +19,8 @@ describe('AppSettingsComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+      ],
       providers: [ LoggerService ]
     })
     .compileComponents();

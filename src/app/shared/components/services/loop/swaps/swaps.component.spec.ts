@@ -7,6 +7,8 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { SwapsComponent } from './swaps.component';
+import { mockCommonService, mockLoopService } from '../../../../services/test-consts';
+import { SharedModule } from '../../../../shared.module';
 
 describe('SwapsComponent', () => {
   let component: SwapsComponent;
@@ -16,14 +18,19 @@ describe('SwapsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SwapsComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, LoopService ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: LoopService, useClass: mockLoopService },
+        { provide: CommonService, useClass: mockCommonService }        
+      ]
     })
     .compileComponents();
   }));

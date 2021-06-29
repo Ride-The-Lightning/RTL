@@ -2,6 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommonService } from '../../../../../shared/services/common.service';
 import { mockCommonService } from '../../../../services/test-consts';
+import { SharedModule } from '../../../../shared.module';
 
 import { LoopOutInfoGraphicsComponent } from './info-graphics.component';
 
@@ -14,6 +15,7 @@ describe('LoopOutInfoGraphicsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopOutInfoGraphicsComponent ],
+      imports: [ SharedModule ],
       providers: [ 
         { provide: CommonService, useClass: mockCommonService }
       ]

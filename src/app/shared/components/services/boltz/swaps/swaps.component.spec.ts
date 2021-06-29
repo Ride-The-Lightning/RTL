@@ -7,6 +7,8 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { BoltzSwapsComponent } from './swaps.component';
+import { mockBoltzService, mockCommonService } from '../../../../services/test-consts';
+import { SharedModule } from '../../../../shared.module';
 
 describe('BoltzSwapsComponent', () => {
   let component: BoltzSwapsComponent;
@@ -16,14 +18,19 @@ describe('BoltzSwapsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ BoltzSwapsComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService, CommonService, BoltzService ]
+        })
+      ],
+      providers: [ 
+        LoggerService,
+        { provide: BoltzService, useClass: mockBoltzService },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));

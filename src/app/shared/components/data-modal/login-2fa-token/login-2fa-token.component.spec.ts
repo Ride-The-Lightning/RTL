@@ -4,6 +4,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { mockMatDialogRef } from '../../../services/test-consts';
+import { SharedModule } from '../../../shared.module';
 import { LoginTokenComponent } from './login-2fa-token.component';
 
 describe('LoginTokenComponent', () => {
@@ -14,6 +15,7 @@ describe('LoginTokenComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ LoginTokenComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,

@@ -6,8 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { CurrencyUnitConverterComponent } from './currency-unit-converter.component';
 import { mockCommonService } from '../../services/test-consts';
-
-
+import { SharedModule } from '../../shared.module';
 
 describe('CurrencyUnitConverterComponent', () => {
   let component: CurrencyUnitConverterComponent;
@@ -17,12 +16,13 @@ describe('CurrencyUnitConverterComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CurrencyUnitConverterComponent ],
       imports: [
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
       providers: [ 
         { provide: CommonService, useClass: mockCommonService }

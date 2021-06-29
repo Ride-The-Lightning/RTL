@@ -21,8 +21,8 @@ describe('ServicesComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ]
     })
     .compileComponents();
   }));

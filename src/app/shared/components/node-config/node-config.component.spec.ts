@@ -21,8 +21,8 @@ describe('NodeConfigComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ]
+        })
+      ]
     })
     .compileComponents();
   }));
