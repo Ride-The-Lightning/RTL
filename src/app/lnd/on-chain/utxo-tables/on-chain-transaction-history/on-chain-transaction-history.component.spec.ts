@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DatePipe } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
@@ -9,6 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { OnChainTransactionHistoryComponent } from './on-chain-transaction-history.component';
 import { mockCommonService } from '../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('OnChainTransactionHistoryComponent', () => {
   let component: OnChainTransactionHistoryComponent;
@@ -18,6 +18,7 @@ describe('OnChainTransactionHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OnChainTransactionHistoryComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

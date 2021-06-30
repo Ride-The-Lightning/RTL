@@ -7,6 +7,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ECLChannelsTablesComponent } from './channels-tables.component';
 import { SharedModule } from '../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLChannelsTablesComponent', () => {
   let component: ECLChannelsTablesComponent;
@@ -16,6 +17,7 @@ describe('ECLChannelsTablesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelsTablesComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

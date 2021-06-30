@@ -1,6 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
@@ -13,6 +11,7 @@ import { BoltzService } from '../../../../../shared/services/boltz.service';
 import { SwapModalComponent } from './swap-modal.component';
 import { SharedModule } from '../../../../shared.module';
 import { mockBoltzService, mockCommonService, mockMatDialogRef } from '../../../../services/test-consts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SwapModalComponent', () => {
   let component: SwapModalComponent;
@@ -22,6 +21,7 @@ describe('SwapModalComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SwapModalComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

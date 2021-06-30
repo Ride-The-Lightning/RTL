@@ -1,6 +1,6 @@
 import { NgModule, Injectable } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -134,7 +134,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
 @NgModule({
   imports: [
     CommonModule,
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
@@ -178,7 +177,6 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     PerfectScrollbarModule
   ],
   exports: [
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,

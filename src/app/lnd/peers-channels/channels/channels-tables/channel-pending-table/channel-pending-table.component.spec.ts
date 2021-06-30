@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ChannelPendingTableComponent } from './channel-pending-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelPendingTableComponent', () => {
   let component: ChannelPendingTableComponent;
@@ -17,6 +18,7 @@ describe('ChannelPendingTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelPendingTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

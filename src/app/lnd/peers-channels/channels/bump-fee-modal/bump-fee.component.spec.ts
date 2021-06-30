@@ -8,6 +8,7 @@ import { DataService } from '../../../../shared/services/data.service';
 import { BumpFeeComponent } from './bump-fee.component';
 import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('BumpFeeComponent', () => {
   let component: BumpFeeComponent;
@@ -17,6 +18,7 @@ describe('BumpFeeComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ BumpFeeComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

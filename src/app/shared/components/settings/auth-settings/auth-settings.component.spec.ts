@@ -10,6 +10,7 @@ import { AuthSettingsComponent } from './auth-settings.component';
 import { SharedModule } from '../../../shared.module';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('AuthSettingsComponent', () => {
   let component: AuthSettingsComponent;
@@ -19,6 +20,7 @@ describe('AuthSettingsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ AuthSettingsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule, 
         StoreModule.forRoot(RTLReducer, {

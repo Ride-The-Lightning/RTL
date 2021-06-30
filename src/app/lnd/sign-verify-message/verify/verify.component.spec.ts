@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -9,6 +8,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { mockDataService } from '../../../shared/services/test-consts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('VerifyComponent', () => {
   let component: VerifyComponent;
@@ -18,6 +18,7 @@ describe('VerifyComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ VerifyComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

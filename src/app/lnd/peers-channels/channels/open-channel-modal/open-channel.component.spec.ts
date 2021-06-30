@@ -1,5 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/services/test-consts';
@@ -7,7 +8,6 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { RTLEffects } from '../../../../store/rtl.effects';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
-import { LNDEffects } from '../../../store/lnd.effects';
 import { OpenChannelComponent } from './open-channel.component';
 
 describe('OpenChannelComponent', () => {
@@ -18,6 +18,7 @@ describe('OpenChannelComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OpenChannelComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

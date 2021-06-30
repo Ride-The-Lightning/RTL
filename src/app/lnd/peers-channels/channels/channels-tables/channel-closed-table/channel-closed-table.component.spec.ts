@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ChannelClosedTableComponent } from './channel-closed-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelClosedTableComponent', () => {
   let component: ChannelClosedTableComponent;
@@ -17,6 +18,7 @@ describe('ChannelClosedTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelClosedTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

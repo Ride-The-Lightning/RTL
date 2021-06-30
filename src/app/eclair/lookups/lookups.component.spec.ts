@@ -9,6 +9,7 @@ import { ECLLookupsComponent } from './lookups.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLLookupsComponent', () => {
   let component: ECLLookupsComponent;
@@ -18,6 +19,7 @@ describe('ECLLookupsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLLookupsComponent ],
        imports: [
+        BrowserAnimationsModule,
          SharedModule,
          StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

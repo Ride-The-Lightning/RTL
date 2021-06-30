@@ -9,6 +9,7 @@ import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
 import { mockCommonService, mockLoopService } from '../../../services/test-consts';
 import { CommonService } from '../../../services/common.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LoopComponent', () => {
   let component: LoopComponent;
@@ -18,6 +19,7 @@ describe('LoopComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ LoopComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

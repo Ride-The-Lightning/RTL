@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
@@ -13,7 +13,10 @@ describe('ECLNodeLookupComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLNodeLookupComponent ],
-      imports: [ SharedModule ],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule
+      ],
       providers: [ LoggerService ]
     })
     .compileComponents();

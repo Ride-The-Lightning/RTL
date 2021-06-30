@@ -6,9 +6,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelRestoreTableComponent } from './channel-restore-table.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCommonService, mockLNDEffects } from '../../../shared/services/test-consts';
 import { LNDEffects } from '../../store/lnd.effects';
-import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared/shared.module';
 
 describe('ChannelRestoreTableComponent', () => {

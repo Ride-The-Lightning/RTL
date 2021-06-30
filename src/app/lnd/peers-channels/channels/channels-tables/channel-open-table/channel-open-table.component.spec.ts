@@ -11,6 +11,7 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { mockCommonService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { LNDEffects } from '../../../../store/lnd.effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelOpenTableComponent', () => {
   let component: ChannelOpenTableComponent;
@@ -20,6 +21,7 @@ describe('ChannelOpenTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelOpenTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

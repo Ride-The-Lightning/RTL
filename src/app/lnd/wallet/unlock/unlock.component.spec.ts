@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '../../../shared/shared.module';
 
@@ -13,6 +14,7 @@ describe('UnlockWalletComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ UnlockWalletComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

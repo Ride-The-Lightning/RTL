@@ -10,10 +10,7 @@ import { CLNodeLookupComponent } from './node-lookup/node-lookup.component';
 import { CLChannelLookupComponent } from './channel-lookup/channel-lookup.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
-import { RTLEffects } from '../../store/rtl.effects';
-import { LNDEffects } from '../../lnd/store/lnd.effects';
-import { CLEffects } from '../store/cl.effects';
-import { ECLEffects } from '../../eclair/store/ecl.effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLLookupsComponent', () => {
   let component: CLLookupsComponent;
@@ -23,6 +20,7 @@ describe('CLLookupsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

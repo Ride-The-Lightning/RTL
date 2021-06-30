@@ -10,6 +10,7 @@ import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockR
 import { EffectsModule } from '@ngrx/effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLChannelPendingTableComponent', () => {
   let component: CLChannelPendingTableComponent;
@@ -19,6 +20,7 @@ describe('CLChannelPendingTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLChannelPendingTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

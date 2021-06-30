@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DatePipe } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
@@ -9,6 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { CLForwardingHistoryComponent } from './forwarding-history.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLForwardingHistoryComponent', () => {
   let component: CLForwardingHistoryComponent;
@@ -18,6 +18,7 @@ describe('CLForwardingHistoryComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLForwardingHistoryComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -27,7 +28,7 @@ describe('CLForwardingHistoryComponent', () => {
         })
       ],
       providers: [
-        LoggerService, DatePipe,
+        LoggerService,
         { provide: CommonService, useClass: mockCommonService }
       ]
     })

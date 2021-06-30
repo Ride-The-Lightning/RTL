@@ -8,6 +8,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { FeeReportComponent } from './fee-report.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { mockCommonService, mockDataService } from '../../../shared/services/test-consts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('FeeReportComponent', () => {
   let component: FeeReportComponent;
@@ -17,6 +18,7 @@ describe('FeeReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ FeeReportComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

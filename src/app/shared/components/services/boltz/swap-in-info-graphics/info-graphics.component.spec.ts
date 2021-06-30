@@ -8,6 +8,7 @@ import { DataService } from '../../../../services/data.service';
 
 import { SwapInInfoGraphicsComponent } from './info-graphics.component';
 import { mockCommonService, mockDataService } from '../../../../services/test-consts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SwapInInfoGraphicsComponent', () => {
   let component: SwapInInfoGraphicsComponent;
@@ -17,6 +18,7 @@ describe('SwapInInfoGraphicsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SwapInInfoGraphicsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

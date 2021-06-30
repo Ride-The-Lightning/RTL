@@ -10,6 +10,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { CLQueryRoutesComponent } from './query-routes/query-routes.component';
 import { mockCommonService } from '../../shared/services/test-consts';
 import { CommonService } from '../../shared/services/common.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLTransactionsComponent', () => {
   let component: CLTransactionsComponent;
@@ -19,6 +20,7 @@ describe('CLTransactionsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLTransactionsComponent, CLQueryRoutesComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

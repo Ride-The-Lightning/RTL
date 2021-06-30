@@ -9,6 +9,7 @@ import { ChannelRebalanceComponent } from './channel-rebalance.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelRebalanceComponent', () => {
   let component: ChannelRebalanceComponent;
@@ -18,6 +19,7 @@ describe('ChannelRebalanceComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelRebalanceComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

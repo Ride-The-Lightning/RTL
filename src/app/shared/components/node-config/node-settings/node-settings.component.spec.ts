@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { NodeSettingsComponent } from './node-settings.component';
 import { mockCommonService } from '../../../services/test-consts';
 import { SharedModule } from '../../../shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('NodeSettingsComponent', () => {
   let component: NodeSettingsComponent;
@@ -17,6 +18,7 @@ describe('NodeSettingsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ NodeSettingsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

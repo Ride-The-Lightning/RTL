@@ -8,6 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { RoutingPeersComponent } from './routing-peers.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('RoutingPeersComponent', () => {
   let component: RoutingPeersComponent;
@@ -17,6 +18,7 @@ describe('RoutingPeersComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ RoutingPeersComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

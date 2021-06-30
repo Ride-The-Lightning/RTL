@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StoreModule } from '@ngrx/store';
 
@@ -9,11 +8,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLConnectPeerComponent } from './connect-peer.component';
 import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
-import { ECLEffects } from '../../../eclair/store/ecl.effects';
-import { CLEffects } from '../../store/cl.effects';
-import { LNDEffects } from '../../../lnd/store/lnd.effects';
-import { RTLEffects } from '../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLConnectPeerComponent', () => {
   let component: CLConnectPeerComponent;
@@ -22,7 +18,9 @@ describe('CLConnectPeerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CLConnectPeerComponent ],
-      imports: [ SharedModule,
+      imports: [ 
+        BrowserAnimationsModule,
+        SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
             strictStateImmutability: false,
@@ -32,7 +30,7 @@ describe('CLConnectPeerComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService, FormBuilder,
+        LoggerService,
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', titleMessage: '', message: {}, newlyAdded: true}}
       ]

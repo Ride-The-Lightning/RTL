@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
 
@@ -13,7 +12,7 @@ describe('CLNodeLookupComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLNodeLookupComponent ],
       imports: [ SharedModule ],
-      providers: [ LoggerService, MatSnackBar]
+      providers: [ LoggerService ]
     })
     .compileComponents();
   }));

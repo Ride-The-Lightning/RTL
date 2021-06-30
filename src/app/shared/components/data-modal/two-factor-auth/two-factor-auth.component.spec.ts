@@ -7,6 +7,7 @@ import { TwoFactorAuthComponent } from './two-factor-auth.component';
 import { SharedModule } from '../../../shared.module';
 import { mockMatDialogRef, mockRTLEffects } from '../../../services/test-consts';
 import { RTLEffects } from '../../../../store/rtl.effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('TwoFactorAuthComponent', () => {
   let component: TwoFactorAuthComponent;
@@ -16,6 +17,7 @@ describe('TwoFactorAuthComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ TwoFactorAuthComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

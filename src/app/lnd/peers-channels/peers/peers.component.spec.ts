@@ -9,6 +9,7 @@ import { PeersComponent } from './peers.component';
 import { mockCommonService, mockRTLEffects } from '../../../shared/services/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('PeersComponent', () => {
   let component: PeersComponent;
@@ -18,6 +19,7 @@ describe('PeersComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ PeersComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

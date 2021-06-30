@@ -1,12 +1,11 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../services/common.service';
 import { mockCommonService } from '../../../../services/test-consts';
 import { SharedModule } from '../../../../shared.module';
 
 import { LoopInInfoGraphicsComponent } from './info-graphics.component';
-
-
 
 describe('LoopInInfoGraphicsComponent', () => {
   let component: LoopInInfoGraphicsComponent;
@@ -15,7 +14,10 @@ describe('LoopInInfoGraphicsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoopInInfoGraphicsComponent ],
-      imports: [ SharedModule ],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule
+      ],
       providers: [ 
         { provide: CommonService, useClass: mockCommonService }
       ]

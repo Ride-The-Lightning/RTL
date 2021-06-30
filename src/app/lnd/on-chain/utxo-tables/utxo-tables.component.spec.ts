@@ -12,6 +12,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { OnChainUTXOsComponent } from './utxos/utxos.component';
 import { DataService } from '../../../shared/services/data.service';
 import { RTLEffects } from '../../../store/rtl.effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('UTXOTablesComponent', () => {
   let component: UTXOTablesComponent;
@@ -21,6 +22,7 @@ describe('UTXOTablesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

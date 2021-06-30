@@ -10,6 +10,7 @@ import { OnChainUTXOsComponent } from './utxos.component';
 import { SharedModule } from '../../../../shared/shared.module';
 import { mockCommonService, mockDataService, mockRTLEffects } from '../../../../shared/services/test-consts';
 import { RTLEffects } from '../../../../store/rtl.effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('OnChainUTXOsComponent', () => {
   let component: OnChainUTXOsComponent;
@@ -19,6 +20,7 @@ describe('OnChainUTXOsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OnChainUTXOsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

@@ -8,6 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { ECLFeeReportComponent } from './fee-report.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLFeeReportComponent', () => {
   let component: ECLFeeReportComponent;
@@ -17,6 +18,7 @@ describe('ECLFeeReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLFeeReportComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

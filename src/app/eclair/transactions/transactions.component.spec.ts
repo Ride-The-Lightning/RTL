@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
@@ -19,6 +20,7 @@ describe('ECLTransactionsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLTransactionsComponent, CurrencyUnitConverterComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

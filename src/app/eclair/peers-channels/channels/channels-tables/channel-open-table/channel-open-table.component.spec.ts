@@ -9,6 +9,7 @@ import { ECLChannelOpenTableComponent } from './channel-open-table.component';
 import { mockCommonService, mockRTLEffects } from '../../../../../shared/services/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLChannelOpenTableComponent', () => {
   let component: ECLChannelOpenTableComponent;
@@ -18,6 +19,7 @@ describe('ECLChannelOpenTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLChannelOpenTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

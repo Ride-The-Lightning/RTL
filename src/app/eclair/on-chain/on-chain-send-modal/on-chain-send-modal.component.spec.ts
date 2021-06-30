@@ -10,6 +10,7 @@ import { ECLOnChainSendModalComponent } from './on-chain-send-modal.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { EffectsModule } from '@ngrx/effects';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLOnChainSendModalComponent', () => {
   let component: ECLOnChainSendModalComponent;
@@ -19,6 +20,7 @@ describe('ECLOnChainSendModalComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLOnChainSendModalComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

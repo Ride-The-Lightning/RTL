@@ -9,6 +9,7 @@ import { ConnectionsComponent } from './connections.component';
 import { SharedModule } from '../../shared/shared.module';
 import { mockCommonService } from '../../shared/services/test-consts';
 import { CommonService } from '../../shared/services/common.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ConnectionsComponent', () => {
   let component: ConnectionsComponent;
@@ -18,6 +19,7 @@ describe('ConnectionsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ConnectionsComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         RouterTestingModule,
         StoreModule.forRoot(RTLReducer, {

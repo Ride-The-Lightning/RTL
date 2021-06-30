@@ -9,6 +9,7 @@ import { BoltzService } from '../../../../../shared/services/boltz.service';
 import { BoltzSwapsComponent } from './swaps.component';
 import { mockBoltzService, mockCommonService } from '../../../../services/test-consts';
 import { SharedModule } from '../../../../shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('BoltzSwapsComponent', () => {
   let component: BoltzSwapsComponent;
@@ -18,6 +19,7 @@ describe('BoltzSwapsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ BoltzSwapsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

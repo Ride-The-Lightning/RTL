@@ -10,6 +10,7 @@ import { LookupsComponent } from './lookups.component';
 import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LookupsComponent', () => {
   let component: LookupsComponent;
@@ -19,6 +20,7 @@ describe('LookupsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ LookupsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

@@ -7,6 +7,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CurrencyUnitConverterComponent } from './currency-unit-converter.component';
 import { mockCommonService } from '../../services/test-consts';
 import { SharedModule } from '../../shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CurrencyUnitConverterComponent', () => {
   let component: CurrencyUnitConverterComponent;
@@ -16,6 +17,7 @@ describe('CurrencyUnitConverterComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CurrencyUnitConverterComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

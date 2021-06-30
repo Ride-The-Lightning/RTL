@@ -9,6 +9,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 import { SwapsComponent } from './swaps.component';
 import { mockCommonService, mockLoopService } from '../../../../services/test-consts';
 import { SharedModule } from '../../../../shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SwapsComponent', () => {
   let component: SwapsComponent;
@@ -18,6 +19,7 @@ describe('SwapsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ SwapsComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

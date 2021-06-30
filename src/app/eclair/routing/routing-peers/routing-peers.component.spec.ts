@@ -8,6 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { ECLRoutingPeersComponent } from './routing-peers.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLRoutingPeersComponent', () => {
   let component: ECLRoutingPeersComponent;
@@ -17,6 +18,7 @@ describe('ECLRoutingPeersComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLRoutingPeersComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

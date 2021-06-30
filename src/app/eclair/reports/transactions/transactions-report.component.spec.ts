@@ -7,8 +7,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { ECLTransactionsReportComponent } from './transactions-report.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
-
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLTransactionsReportComponent', () => {
   let component: ECLTransactionsReportComponent;
@@ -18,6 +17,7 @@ describe('ECLTransactionsReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLTransactionsReportComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {

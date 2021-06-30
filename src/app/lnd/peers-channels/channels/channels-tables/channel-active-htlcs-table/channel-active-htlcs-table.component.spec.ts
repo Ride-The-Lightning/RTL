@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ChannelActiveHTLCsTableComponent } from './channel-active-htlcs-table.component';
 import { mockCommonService } from '../../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelActiveHTLCsTableComponent', () => {
   let component: ChannelActiveHTLCsTableComponent;
@@ -17,6 +18,7 @@ describe('ChannelActiveHTLCsTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelActiveHTLCsTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
