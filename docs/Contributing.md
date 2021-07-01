@@ -38,16 +38,33 @@ Design suggestions are always welcome and helpful. Design suggestion can range f
 
 #### <a name="code"></a>Code
 Contributions via code is the most sought after contribution and something we enthusiastically encourage. Follow the below guideline to be able to contribute code to RTL.
+
 ##### Pull Code
+* Pull the code from the `master` branch (https://github.com/Ride-The-Lightning/RTL/tree/master) into your local workspace via github commandline/GUI.
+
 ##### Install Dependencies
+* Assuming that nodejs (v12 & above) and npm are already installed on your local machine. Go into your RTL root folder and run `npm install`. 
+* Sometimes after installation, user receives a message from npm to fix dependency vulnerability by running `npm audit fix`. Please do not follow this step as it can break some of the working RTL code on your machine. We audit and fix these vulnerabilities as soon as possible at our end.
+	
 ##### Node Server
+* To run RTL node server in development mode, go to workspace/RTL and excute `npm run server` in the command window. This will run the script named `server` defined in package.json. This script sets the node environment as development and starts the server from rtl.js. Nodemon restarts the node application when file changes in the directory are detected.
+* To check all available scripts for the project, explore the `scripts` section of package.json. 
+
 ##### Angular Server for Development
-##### Package Angular Updates
-##### Create a New Branch
+* The last step starts the node server but it cannot detect and update the code written in Angular. We run the angular development server separately while working on the frontend of the project and package the final build once the development is finished. 
+* To run the angular development server, go to workspace/RTL and run `npm run start`. It will start the angular server at default '4200' port and serve the application on localhost:4200.
+	
+##### Package Angular Build
+* If the change/update were only made for the backend, you can directly move to the next step.
+* In case the code was updated for the frontend (in the src folder), the Angular application code needs to be compiled into the output directory named `angular` at workspace/RTL. It can be done by running `npm run build` command in the RTL root.
+* Please make sure to remove all linting and other errors thrown by the build command before moving to the next step.
+	
+##### Create a Pull Request
+* Create a new branch on the github to push your updated code.
+* Commit your updates into the newly created branch.
+* Create a new pull request once you are satisfied with your updates to be merged into the `master` branch with details of your updates and submit it for the review.
+
 ##### Caution about adding new libraries
 * We are very conservative in adding new dependencies. Do your best to not add any new libraries on RTL. This is the best strategy to keep the software safe from adding new vulnerabilites.
 * Confirm before starting by creating an issue about the adding the library 
 * The library should be popular, well maintained and pre-existing vulnerability free.
-
-##### Commit Updates
-##### Create Pull Request
