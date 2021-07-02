@@ -69,6 +69,6 @@ Contributions via code is the most sought after contribution and something we en
 * Create a new pull request once you are satisfied with your updates to be merged into the `release`/`master` branch with details of your updates and submit it for the review.
 
 ##### Caution about adding new libraries
-* We are very conservative in adding new dependencies. Do your best to not add any new libraries on RTL. This is the best strategy to keep the software safe from adding new vulnerabilites.
-* Confirm before starting by creating an issue about the adding the library 
+* We are conservative in adding new dependencies to the repository. Do your best to not add any new libraries on RTL. We believe this is the best strategy to keep the software safe from vulnerabilites.
+* Confirm before starting by creating an issue about adding the library 
 * The library should be popular, well maintained and pre-existing vulnerability free.
