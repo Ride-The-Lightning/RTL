@@ -10,8 +10,9 @@ import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { SwapModalComponent } from './swap-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockBoltzService, mockCommonService, mockMatDialogRef } from '../../../../services/test-consts';
+import { mockBoltzService, mockDataService, mockMatDialogRef } from '../../../../services/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../services/data.service';
 
 describe('SwapModalComponent', () => {
   let component: SwapModalComponent;
@@ -32,11 +33,11 @@ describe('SwapModalComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, serviceInfo: { fees: {percentage: 2, miner: {normal: 2, reverse: 2}}, limits: {minimal: 10000, maximal: 50000000}}, direction: 'SWAP_IN'}},
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, serviceInfo: { fees: {percentage: 2, miner: {normal: 2, reverse: 2}}, limits: {minimal: 10000, maximal: 50000000}}, direction: 'SWAP_IN'}}
       ]
     })
     .compileComponents();

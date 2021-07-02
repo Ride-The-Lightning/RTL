@@ -8,7 +8,7 @@ import { DataService } from '../../../../shared/services/data.service';
 
 import { OnChainUTXOsComponent } from './utxos.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { mockCommonService, mockDataService, mockRTLEffects } from '../../../../shared/services/test-consts';
+import { mockDataService, mockRTLEffects } from '../../../../shared/services/test-consts';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -30,10 +30,9 @@ describe('OnChainUTXOsComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: RTLEffects, useClass: mockRTLEffects },
+        LoggerService, CommonService,
         { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();

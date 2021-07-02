@@ -10,9 +10,10 @@ import { CLOnChainSendComponent } from './on-chain-send/on-chain-send.component'
 import { CLOnChainReceiveComponent } from './on-chain-receive/on-chain-receive.component';
 import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
 import { CommonService } from '../../shared/services/common.service';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService } from '../../shared/services/test-consts';
 import { CLUTXOTablesComponent } from './utxo-tables/utxo-tables.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../shared/services/data.service';
 
 describe('CLOnChainComponent', () => {
   let component: CLOnChainComponent;
@@ -33,7 +34,8 @@ describe('CLOnChainComponent', () => {
         })
       ],
       providers: [
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

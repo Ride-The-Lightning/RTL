@@ -6,7 +6,8 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ECLChannelInformationComponent } from './channel-information.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { mockCommonService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { DataService } from '../../../../shared/services/data.service';
 
 describe('ECLChannelInformationComponent', () => {
   let component: ECLChannelInformationComponent;
@@ -17,10 +18,10 @@ describe('ECLChannelInformationComponent', () => {
       declarations: [ ECLChannelInformationComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
       ]
     })
     .compileComponents();

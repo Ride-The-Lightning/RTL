@@ -7,7 +7,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { ECLHomeComponent } from './home.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../shared/shared.module';
 import { ECLNodeInfoComponent } from './node-info/node-info.component';
@@ -15,6 +15,7 @@ import { ECLBalancesInfoComponent } from './balances-info/balances-info.componen
 import { ECLChannelCapacityInfoComponent } from './channel-capacity-info/channel-capacity-info.component';
 import { ECLFeeInfoComponent } from './fee-info/fee-info.component';
 import { ECLChannelStatusInfoComponent } from './channel-status-info/channel-status-info.component';
+import { DataService } from '../../shared/services/data.service';
 
 describe('ECLHomeComponent', () => {
   let component: ECLHomeComponent;
@@ -35,8 +36,8 @@ describe('ECLHomeComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
 
     })

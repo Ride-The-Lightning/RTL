@@ -8,8 +8,9 @@ import { LoopService } from '../../../shared/services/loop.service';
 
 import { ChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockDataService } from '../../../shared/services/test-consts';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('ChannelLiquidityInfoComponent', () => {
   let component: ChannelLiquidityInfoComponent;
@@ -29,8 +30,8 @@ describe('ChannelLiquidityInfoComponent', () => {
         })
       ],
       providers: [
-        LoggerService, LoopService,
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService, LoopService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

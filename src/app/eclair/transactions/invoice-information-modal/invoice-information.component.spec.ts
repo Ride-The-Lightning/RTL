@@ -5,8 +5,9 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLInvoiceInformationComponent } from './invoice-information.component';
-import { mockCommonService, mockMatDialogRef } from '../../../shared/services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('ECLInvoiceInformationComponent', () => {
   let component: ECLInvoiceInformationComponent;
@@ -17,10 +18,10 @@ describe('ECLInvoiceInformationComponent', () => {
       declarations: [ ECLInvoiceInformationComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} }
       ]
     })
     .compileComponents();

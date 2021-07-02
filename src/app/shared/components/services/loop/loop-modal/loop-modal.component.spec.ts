@@ -10,8 +10,9 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { LoopModalComponent } from './loop-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockCommonService, mockLoopService, mockMatDialogRef } from '../../../../services/test-consts';
+import { mockDataService, mockLoopService, mockMatDialogRef } from '../../../../services/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../services/data.service';
 
 describe('LoopModalComponent', () => {
   let component: LoopModalComponent;
@@ -32,11 +33,11 @@ describe('LoopModalComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService,
+        LoggerService, CommonService, 
+        { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, minQuote: {}, maxQuote: {}, direction: ''} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {channel: {}, minQuote: {}, maxQuote: {}, direction: ''} }
       ]
     })
     .compileComponents();

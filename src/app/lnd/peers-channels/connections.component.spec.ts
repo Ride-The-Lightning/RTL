@@ -7,9 +7,10 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import { ConnectionsComponent } from './connections.component';
 import { SharedModule } from '../../shared/shared.module';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService } from '../../shared/services/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../shared/services/data.service';
 
 describe('ConnectionsComponent', () => {
   let component: ConnectionsComponent;
@@ -30,8 +31,8 @@ describe('ConnectionsComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

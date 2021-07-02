@@ -6,11 +6,12 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLPeersComponent } from './peers.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLPeersComponent', () => {
   let component: CLPeersComponent;
@@ -31,8 +32,8 @@ describe('CLPeersComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService },
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })

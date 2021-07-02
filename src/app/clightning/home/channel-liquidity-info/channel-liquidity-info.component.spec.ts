@@ -3,9 +3,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockDataService } from '../../../shared/services/test-consts';
 
 import { CLChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLChannelLiquidityInfoComponent', () => {
   let component: CLChannelLiquidityInfoComponent;  
@@ -17,7 +18,8 @@ describe('CLChannelLiquidityInfoComponent', () => {
       declarations: [ CLChannelLiquidityInfoComponent ],
       imports: [ SharedModule, RouterTestingModule ],
       providers: [ 
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

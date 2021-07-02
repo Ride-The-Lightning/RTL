@@ -3,8 +3,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../../../shared/services/common.service';
+import { DataService } from '../../../../../shared/services/data.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 
@@ -31,8 +32,8 @@ describe('CLChannelOpenTableComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService },
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: CLEffects, useClass: mockCLEffects }        
       ]

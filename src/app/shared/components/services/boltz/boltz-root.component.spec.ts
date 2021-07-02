@@ -6,7 +6,8 @@ import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { BoltzService } from '../../../services/boltz.service';
 import { CommonService } from '../../../services/common.service';
-import { mockBoltzService, mockCommonService } from '../../../services/test-consts';
+import { DataService } from '../../../services/data.service';
+import { mockBoltzService, mockDataService } from '../../../services/test-consts';
 import { SharedModule } from '../../../shared.module';
 
 import { BoltzRootComponent } from './boltz-root.component';
@@ -30,8 +31,9 @@ describe('BoltzRootComponent', () => {
         })
       ],
       providers: [ 
-        { provide: BoltzService, useClass: mockBoltzService },
-        { provide: CommonService, useClass: mockCommonService }        
+        CommonService,
+        { provide: DataService, useClass: mockDataService },
+        { provide: BoltzService, useClass: mockBoltzService }
       ]
     })
     .compileComponents();

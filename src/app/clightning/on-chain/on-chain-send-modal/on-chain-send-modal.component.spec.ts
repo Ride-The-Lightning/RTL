@@ -9,9 +9,10 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLOnChainSendModalComponent } from './on-chain-send-modal.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLOnChainSendModalComponent', () => {
   let component: CLOnChainSendModalComponent;
@@ -32,10 +33,10 @@ describe('CLOnChainSendModalComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { sweepAll: true } },
-        { provide: CommonService, useClass: mockCommonService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })

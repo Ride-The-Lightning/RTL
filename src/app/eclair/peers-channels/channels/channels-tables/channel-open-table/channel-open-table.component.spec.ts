@@ -6,10 +6,11 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockCommonService, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { mockDataService, mockRTLEffects } from '../../../../../shared/services/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../../shared/services/data.service';
 
 describe('ECLChannelOpenTableComponent', () => {
   let component: ECLChannelOpenTableComponent;
@@ -29,9 +30,9 @@ describe('ECLChannelOpenTableComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: RTLEffects, useClass: mockRTLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
     })

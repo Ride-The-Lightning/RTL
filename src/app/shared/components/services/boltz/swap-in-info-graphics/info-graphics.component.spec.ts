@@ -7,7 +7,7 @@ import { CommonService } from '../../../../services/common.service';
 import { DataService } from '../../../../services/data.service';
 
 import { SwapInInfoGraphicsComponent } from './info-graphics.component';
-import { mockCommonService, mockDataService } from '../../../../services/test-consts';
+import { mockDataService } from '../../../../services/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SwapInInfoGraphicsComponent', () => {
@@ -28,8 +28,8 @@ describe('SwapInInfoGraphicsComponent', () => {
         })
       ],
       providers: [ 
-        { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

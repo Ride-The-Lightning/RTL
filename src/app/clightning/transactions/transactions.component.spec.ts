@@ -8,9 +8,10 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CLTransactionsComponent } from './transactions.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CLQueryRoutesComponent } from './query-routes/query-routes.component';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService } from '../../shared/services/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../shared/services/data.service';
 
 describe('CLTransactionsComponent', () => {
   let component: CLTransactionsComponent;
@@ -31,8 +32,8 @@ describe('CLTransactionsComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

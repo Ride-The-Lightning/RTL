@@ -5,30 +5,13 @@ export class mockMatDialogRef {
   close = (dialogResult: any) => {};
 }
 
-export class mockCommonService {
-  getScreenSize = () => ({width: 1200, height: 900});
-  setScreenSize = () => {};
-  getContainerSize = () => ({width: 1000, height: 800});
-  setContainerSize = () => {}; 
-  sortByKey = () => {};
-  sortDescByKey = () => {}; 
-  sortAscByKey = () => {}; 
-  camelCase = () => {}; 
-  titleCase = () => {}; 
-  convertCurrency = () => {}; 
-  convertWithoutFiat = () => {}; 
-  convertWithFiat = () => {}; 
-  convertTime = () => {}; 
-  downloadFile = () => {}; 
-  convertToCSV = () => {};
-  isVersionCompatible = () => {}; 
-}
-
 export class mockDataService {
   getChildAPIUrl(){};
   getLnImplementation(){};
   setChildAPIUrl(lnImplementation: string) {};
-  getFiatRates() {};
+  getFiatRates() {
+    return of({"USD":{"15m":33438.82,"last":33438.82,"buy":33438.82,"sell":33438.82,"symbol":"USD"},"EUR":{"15m":28193.8,"last":28193.8,"buy":28193.8,"sell":28193.8,"symbol":"EUR"},"GBP":{"15m":23987.68,"last":23987.68,"buy":23987.68,"sell":23987.68,"symbol":"GBP"},"AUD":{"15m":44548.88,"last":44548.88,"buy":44548.88,"sell":44548.88,"symbol":"AUD"},"BRL":{"15m":170094.31,"last":170094.31,"buy":170094.31,"sell":170094.31,"symbol":"BRL"},"CAD":{"15m":41287.51,"last":41287.51,"buy":41287.51,"sell":41287.51,"symbol":"CAD"},"TRY":{"15m":291352.46,"last":291352.46,"buy":291352.46,"sell":291352.46,"symbol":"TRY"},"CLP":{"15m":24845458.07,"last":24845458.07,"buy":24845458.07,"sell":24845458.07,"symbol":"CLP"},"ISK":{"15m":4508648.05,"last":4508648.05,"buy":4508648.05,"sell":4508648.05,"symbol":"ISK"},"JPY":{"15m":3715369.25,"last":3715369.25,"buy":3715369.25,"sell":3715369.25,"symbol":"JPY"},"KRW":{"15m":39148401.79,"last":39148401.79,"buy":39148401.79,"sell":39148401.79,"symbol":"KRW"},"CHF":{"15m":30889.26,"last":30889.26,"buy":30889.26,"sell":30889.26,"symbol":"CHF"},"CNY":{"15m":216826.46,"last":216826.46,"buy":216826.46,"sell":216826.46,"symbol":"CNY"},"CZK":{"15m":724605.76,"last":724605.76,"buy":724605.76,"sell":724605.76,"symbol":"CZK"},"DKK":{"15m":245951.1,"last":245951.1,"buy":245951.1,"sell":245951.1,"symbol":"DKK"},"HKD":{"15m":260276.41,"last":260276.41,"buy":260276.41,"sell":260276.41,"symbol":"HKD"},"HUF":{"15m":11866363.6,"last":11866363.6,"buy":11866363.6,"sell":11866363.6,"symbol":"HUF"},"HRK":{"15m":584240.71,"last":584240.71,"buy":584240.71,"sell":584240.71,"symbol":"HRK"},"INR":{"15m":2687019.47,"last":2687019.47,"buy":2687019.47,"sell":2687019.47,"symbol":"INR"},"NZD":{"15m":47535.46,"last":47535.46,"buy":47535.46,"sell":47535.46,"symbol":"NZD"},"PLN":{"15m":127106.86,"last":127106.86,"buy":127106.86,"sell":127106.86,"symbol":"PLN"},"RON":{"15m":128655.22,"last":128655.22,"buy":128655.22,"sell":128655.22,"symbol":"RON"},"RUB":{"15m":2450480.5,"last":2450480.5,"buy":2450480.5,"sell":2450480.5,"symbol":"RUB"},"SEK":{"15m":285404.7,"last":285404.7,"buy":285404.7,"sell":285404.7,"symbol":"SEK"},"SGD":{"15m":45233.21,"last":45233.21,"buy":45233.21,"sell":45233.21,"symbol":"SGD"},"THB":{"15m":1074389.36,"last":1074389.36,"buy":1074389.36,"sell":1074389.36,"symbol":"THB"},"TWD":{"15m":1092607.79,"last":1092607.79,"buy":1092607.79,"sell":1092607.79,"symbol":"TWD"}});
+  }
   decodePayment(payment: string, fromDialog: boolean) {};
   decodePayments(payments: string) {};
   getAliasesFromPubkeys(pubkey: string, multiple: boolean) {};

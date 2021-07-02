@@ -3,8 +3,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { mockCommonService, mockECLEffects } from '../../../shared/services/test-consts';
+import { mockDataService, mockECLEffects } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
@@ -29,9 +30,9 @@ describe('ECLQueryRoutesComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: ECLEffects, useClass: mockECLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService, 
+        { provide: DataService, useClass: mockDataService },
+        { provide: ECLEffects, useClass: mockECLEffects }
       ]
     })
     .compileComponents();

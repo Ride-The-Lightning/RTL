@@ -8,9 +8,10 @@ import { CLLookupsComponent } from './lookups.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CLNodeLookupComponent } from './node-lookup/node-lookup.component';
 import { CLChannelLookupComponent } from './channel-lookup/channel-lookup.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../shared/services/data.service';
 
 describe('CLLookupsComponent', () => {
   let component: CLLookupsComponent;
@@ -31,8 +32,8 @@ describe('CLLookupsComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

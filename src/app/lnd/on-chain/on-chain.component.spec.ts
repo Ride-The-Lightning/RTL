@@ -5,7 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockCommonService, mockDataService, mockRTLEffects } from '../../shared/services/test-consts';
+import { mockDataService, mockRTLEffects } from '../../shared/services/test-consts';
 import { SharedModule } from '../../shared/shared.module';
 import { RTLEffects } from '../../store/rtl.effects';
 
@@ -34,10 +34,10 @@ describe('OnChainComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: RTLEffects, useClass: mockRTLEffects },
+        LoggerService, CommonService,
         { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

@@ -8,7 +8,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { OnChainLabelModalComponent } from './on-chain-label-modal.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCommonService, mockDataService, mockMatDialogRef } from '../../../shared/services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../shared/services/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('OnChainLabelModalComponent', () => {
@@ -29,10 +29,10 @@ describe('OnChainLabelModalComponent', () => {
         })
       ],
       providers: [
-        { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {utxo:{}} },
+        CommonService,
         { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {utxo:{}} }
       ]
     })
     .compileComponents();

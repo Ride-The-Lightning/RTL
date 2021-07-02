@@ -5,11 +5,12 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLQueryRoutesComponent } from './query-routes.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/services/test-consts';
 import { CLEffects } from '../../store/cl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLQueryRoutesComponent', () => {
   let component: CLQueryRoutesComponent;
@@ -30,8 +31,9 @@ describe('CLQueryRoutesComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        { provide: CLEffects, useClass: mockCLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService },
+        { provide: CLEffects, useClass: mockCLEffects }
       ]
     })
     .compileComponents();

@@ -1,8 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonService } from '../../../../shared/services/common.service';
+import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { mockCommonService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
 import { SharedModule } from '../../../../shared/shared.module';
 
 import { CLChannelInformationComponent } from './channel-information.component';
@@ -18,10 +19,10 @@ describe('CLChannelInformationComponent', () => {
         SharedModule
       ],
       providers: [
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
       ]
     })
     .compileComponents();

@@ -5,9 +5,10 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CurrencyUnitConverterComponent } from './currency-unit-converter.component';
-import { mockCommonService } from '../../services/test-consts';
+import { mockDataService } from '../../services/test-consts';
 import { SharedModule } from '../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../services/data.service';
 
 describe('CurrencyUnitConverterComponent', () => {
   let component: CurrencyUnitConverterComponent;
@@ -27,7 +28,8 @@ describe('CurrencyUnitConverterComponent', () => {
         })
       ],
       providers: [ 
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

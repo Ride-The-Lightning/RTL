@@ -2,7 +2,8 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../../shared/services/common.service';
-import { mockCommonService } from '../../../../services/test-consts';
+import { DataService } from '../../../../services/data.service';
+import { mockDataService } from '../../../../services/test-consts';
 import { SharedModule } from '../../../../shared.module';
 
 import { LoopOutInfoGraphicsComponent } from './info-graphics.component';
@@ -19,7 +20,8 @@ describe('LoopOutInfoGraphicsComponent', () => {
         SharedModule
       ],
       providers: [ 
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

@@ -8,10 +8,11 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { OnChainSendModalComponent } from './on-chain-send-modal.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('OnChainSendModalComponent', () => {
   let component: OnChainSendModalComponent;
@@ -32,11 +33,11 @@ describe('OnChainSendModalComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
+        LoggerService, CommonService,
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {sweepAll:true} },
-        { provide: RTLEffects, useClass: mockRTLEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();

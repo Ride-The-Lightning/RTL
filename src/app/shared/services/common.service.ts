@@ -13,7 +13,7 @@ export class CommonService {
   private screenSize = ScreenSizeEnum.MD;
   private containerSize = {width: 1200, height: 800};
 
-  constructor(private dataService: DataService) {}
+  constructor(public dataService: DataService) {}
 
   getScreenSize() {
     return this.screenSize;
