@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -16,7 +16,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./transactions-report.component.scss'],
   animations: [fadeIn]
 })
-export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLTransactionsReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public scrollRanges = SCROLL_RANGES;
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
@@ -54,7 +54,7 @@ export class CLTransactionsReportComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     const CONTAINER_SIZE = this.commonService.getContainerSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.MD:

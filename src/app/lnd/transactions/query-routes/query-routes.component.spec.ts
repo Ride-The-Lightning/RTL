@@ -9,6 +9,7 @@ import { mockCommonService, mockLNDEffects } from '../../../shared/services/test
 import { LNDEffects } from '../../store/lnd.effects';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('QueryRoutesComponent', () => {
   let component: QueryRoutesComponent;
@@ -18,6 +19,7 @@ describe('QueryRoutesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ QueryRoutesComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -41,9 +43,9 @@ describe('QueryRoutesComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();

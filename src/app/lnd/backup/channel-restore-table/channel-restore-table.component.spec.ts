@@ -9,6 +9,7 @@ import { ChannelRestoreTableComponent } from './channel-restore-table.component'
 import { mockCommonService, mockLNDEffects } from '../../../shared/services/test-consts';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ChannelRestoreTableComponent', () => {
   let component: ChannelRestoreTableComponent;
@@ -18,6 +19,7 @@ describe('ChannelRestoreTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ChannelRestoreTableComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -42,9 +44,9 @@ describe('ChannelRestoreTableComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();

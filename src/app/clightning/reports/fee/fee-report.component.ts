@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, AfterContentInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -17,7 +17,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./fee-report.component.scss'],
   animations: [fadeIn]
 })
-export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public reportPeriod = SCROLL_RANGES[0];
   public secondsInADay = 24 * 60 * 60;
   public events: ForwardingHistoryRes = {};
@@ -59,7 +59,7 @@ export class CLFeeReportComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     const CONTAINER_SIZE = this.commonService.getContainerSize();
     switch (this.screenSize) {
       case ScreenSizeEnum.MD:

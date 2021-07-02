@@ -9,6 +9,7 @@ import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockR
 import { CLEffects } from '../../store/cl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CLQueryRoutesComponent', () => {
   let component: CLQueryRoutesComponent;
@@ -18,6 +19,7 @@ describe('CLQueryRoutesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CLQueryRoutesComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -41,9 +43,9 @@ describe('CLQueryRoutesComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-    // expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();

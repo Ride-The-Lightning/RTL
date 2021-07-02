@@ -7,6 +7,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { TransactionsReportComponent } from './transactions-report.component';
 import { mockCommonService } from '../../../shared/services/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('TransactionsReportComponent', () => {
   let component: TransactionsReportComponent;
@@ -16,6 +17,7 @@ describe('TransactionsReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ TransactionsReportComponent ],
       imports: [
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -37,9 +39,9 @@ describe('TransactionsReportComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();

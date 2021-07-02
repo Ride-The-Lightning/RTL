@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../shared/services/common.service';
@@ -18,6 +19,7 @@ describe('ECLQueryRoutesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ ECLQueryRoutesComponent ],
       imports: [ 
+        BrowserAnimationsModule,
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
@@ -41,9 +43,9 @@ describe('ECLQueryRoutesComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();
