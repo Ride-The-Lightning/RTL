@@ -18,7 +18,7 @@ export class CLRoutingComponent implements OnInit, OnDestroy {
   public activeLink = this.links[0].link;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     let linkFound = this.links.find(link => this.router.url.includes(link.link));

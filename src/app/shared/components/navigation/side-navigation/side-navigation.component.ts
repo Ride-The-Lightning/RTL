@@ -53,7 +53,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   navMenusLogout = new MatTreeNestedDataSource<MenuChildNode>();
   navMenusShowData = new MatTreeNestedDataSource<MenuChildNode>();
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private rtlEffects: RTLEffects) {
     this.version = environment.VERSION;
     if (MENU_DATA.LNDChildren[MENU_DATA.LNDChildren.length - 1].id === 200) {
       MENU_DATA.LNDChildren.pop();
@@ -103,7 +103,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       this.showLogout = session.token ? true : false;
       this.flgLoading = session.token ? true : false;
     });
-    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    this.actions.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.LOGOUT))
     .subscribe((action: RTLActions.Logout) => {
       this.showLogout = false;

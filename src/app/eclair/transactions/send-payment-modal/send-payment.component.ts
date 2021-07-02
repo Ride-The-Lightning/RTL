@@ -42,7 +42,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private dataService: DataService) {}
+  constructor(public dialogRef: MatDialogRef<ECLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) {}
 
   ngOnInit() {
     this.store.select('ecl')
@@ -52,7 +52,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.activeChannels = rtlStore.activeChannels;
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL))
     .subscribe((action: ECLActions.EffectError | ECLActions.SendPaymentStatus) => {
       if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) { 

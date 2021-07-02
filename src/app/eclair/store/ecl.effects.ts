@@ -26,7 +26,7 @@ export class ECLEffects implements OnDestroy {
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
-    private actions$: Actions,
+    private actions: Actions,
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private sessionService: SessionService,
@@ -45,7 +45,7 @@ export class ECLEffects implements OnDestroy {
     }
 
   infoFetchECL = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_INFO_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.FetchInfo, fromRTLReducer.RootState]) => {
@@ -53,7 +53,7 @@ export class ECLEffects implements OnDestroy {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
-          takeUntil(this.actions$.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
+          takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
             this.store.dispatch(new RTLActions.CloseSpinner());
@@ -76,7 +76,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   fetchFees = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_FEES_ECL),
     mergeMap((action: ECLActions.FetchFees) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchFees'));
@@ -97,7 +97,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   fetchPayments = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_PAYMENTS_ECL),
     mergeMap((action: ECLActions.FetchPayments) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchPayments'));
@@ -118,7 +118,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   channelsFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_CHANNELS_ECL),
     mergeMap((action: ECLActions.FetchChannels) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchChannels'));
@@ -146,7 +146,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   channelStatsFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_CHANNEL_STATS_ECL),
     mergeMap((action: ECLActions.FetchChannelStats) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchChannelStats'));
@@ -167,7 +167,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   fetchOnchainBalance = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_ONCHAIN_BALANCE_ECL),
     mergeMap((action: ECLActions.FetchOnchainBalance) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchOnchainBalance'));
@@ -187,7 +187,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   peersFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_PEERS_ECL),
     mergeMap((action: ECLActions.FetchPeers) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchPeers'));
@@ -209,7 +209,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   getNewAddress = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.GET_NEW_ADDRESS_ECL),
     mergeMap((action: ECLActions.GetNewAddress) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API)
@@ -229,7 +229,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   setNewAddress = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SET_NEW_ADDRESS_ECL),
     map((action: ECLActions.SetNewAddress) => {
       this.logger.info(action.payload);
@@ -239,7 +239,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   saveNewPeer = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SAVE_NEW_PEER_ECL),
     withLatestFrom(this.store.select('ecl')),
     mergeMap(([action, eclData]: [ECLActions.SaveNewPeer, fromECLReducer.ECLState]) => {
@@ -265,7 +265,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   detachPeer = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: ECLActions.DisconnectPeer) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId)
@@ -288,7 +288,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   openNewChannel = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SAVE_NEW_CHANNEL_ECL),
     mergeMap((action: ECLActions.SaveNewChannel) => {
       this.store.dispatch(new ECLActions.ClearEffectError('SaveNewChannel'));
@@ -317,7 +317,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   updateChannel = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.UPDATE_CHANNELS_ECL),
     mergeMap((action: ECLActions.UpdateChannels) => {
       let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
@@ -350,7 +350,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   closeChannel = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: ECLActions.CloseChannel) => {
       return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force)
@@ -375,7 +375,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   queryRoutesFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.GET_QUERY_ROUTES_ECL),
     mergeMap((action: ECLActions.GetQueryRoutes) => {
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount)
@@ -396,7 +396,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   setQueryRoutes = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SET_QUERY_ROUTES_ECL),
     map((action: ECLActions.SetQueryRoutes) => {
       return action.payload;
@@ -405,7 +405,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   sendPayment = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.SendPayment, any]) => {
@@ -449,7 +449,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   transactionsFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_TRANSACTIONS_ECL),
     mergeMap((action: ECLActions.FetchTransactions) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchTransactions'));
@@ -469,7 +469,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   SendOnchainFunds = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SEND_ONCHAIN_FUNDS_ECL),
     mergeMap((action: ECLActions.SendOnchainFunds) => {
       this.store.dispatch(new ECLActions.ClearEffectError('SendOnchainFunds'));
@@ -491,7 +491,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   createInvoice = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.CREATE_INVOICE_ECL),
     mergeMap((action: ECLActions.CreateInvoice) => {
       this.store.dispatch(new ECLActions.ClearEffectError('CreateInvoice'));
@@ -521,7 +521,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   invoicesFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.FETCH_INVOICES_ECL),
     mergeMap((action: ECLActions.FetchInvoices) => {
       this.store.dispatch(new ECLActions.ClearEffectError('FetchInvoices'));
@@ -541,7 +541,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   peerLookup = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.PEER_LOOKUP_ECL),
     mergeMap((action: ECLActions.PeerLookup) => {
       this.store.dispatch(new ECLActions.ClearEffectError('Lookup'));
@@ -564,7 +564,7 @@ export class ECLEffects implements OnDestroy {
   );
 
   setLookup = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(ECLActions.SET_LOOKUP_ECL),
     map((action: ECLActions.SetLookup) => {
       this.logger.info(action.payload);

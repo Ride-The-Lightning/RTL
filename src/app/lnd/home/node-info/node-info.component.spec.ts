@@ -1,4 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
+import { mockCommonService } from '../../../shared/services/test-consts';
 
 import { NodeInfoComponent } from './node-info.component';
 
@@ -6,9 +10,12 @@ describe('NodeInfoComponent', () => {
   let component: NodeInfoComponent;
   let fixture: ComponentFixture<NodeInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeInfoComponent ]
+      declarations: [ NodeInfoComponent ],
+      providers: [
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +29,9 @@ describe('NodeInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

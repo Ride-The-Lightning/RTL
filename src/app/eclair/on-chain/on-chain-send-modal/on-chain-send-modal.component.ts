@@ -45,7 +45,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
 
   ngOnInit() {
     this.store.select('root')
@@ -57,7 +57,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.nodeData = rootStore.nodeData;
       this.logger.info(rootStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL))
     .subscribe((action: ECLActions.EffectError | ECLActions.SendOnchainFundsRes) => {
       if (action.type === ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL) {

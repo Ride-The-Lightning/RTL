@@ -38,7 +38,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
   public feeRate = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {}
+  constructor(public dialogRef: MatDialogRef<ECLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {}
 
   ngOnInit() {
     this.information = this.data.message.information;
@@ -46,7 +46,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
+    this.actions.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL))
     .subscribe((action: ECLActions.EffectError | ECLActions.FetchChannels) => {
       if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'SaveNewChannel') {

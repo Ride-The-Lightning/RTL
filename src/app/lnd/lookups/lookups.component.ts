@@ -36,12 +36,12 @@ export class LookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.actions$
+    this.actions
     .pipe(
       takeUntil(this.unSubs[0]),
       filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.EFFECT_ERROR_LND))

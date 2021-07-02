@@ -43,7 +43,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<CLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -74,7 +74,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.minConfValue.setValidators(null);
       }
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.EFFECT_ERROR_CL))
     .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.EffectError)) => {
       if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 

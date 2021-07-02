@@ -1,14 +1,38 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
 
 import { QueryRoutesComponent } from './query-routes.component';
+import { mockCommonService, mockLNDEffects } from '../../../shared/services/test-consts';
+import { LNDEffects } from '../../store/lnd.effects';
+import { LoggerService } from '../../../shared/services/logger.service';
+import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('QueryRoutesComponent', () => {
   let component: QueryRoutesComponent;
   let fixture: ComponentFixture<QueryRoutesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ QueryRoutesComponent ]
+      declarations: [ QueryRoutesComponent ],
+      imports: [ 
+        BrowserAnimationsModule,
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        })
+      ],
+      providers: [
+        LoggerService,
+        { provide: LNDEffects, useClass: mockLNDEffects },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +46,9 @@ describe('QueryRoutesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

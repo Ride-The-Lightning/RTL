@@ -43,7 +43,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -72,7 +72,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
         this.channelFormGroup.controls.transTypeValue.setValidators([Validators.required]);
       }
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.EFFECT_ERROR_LND))
     .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.EffectError)) => {
       if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) { 

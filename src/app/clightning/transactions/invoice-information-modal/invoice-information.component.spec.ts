@@ -1,14 +1,27 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLInvoiceInformationComponent } from './invoice-information.component';
+import { mockCommonService, mockMatDialogRef } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('CLInvoiceInformationComponent', () => {
   let component: CLInvoiceInformationComponent;
   let fixture: ComponentFixture<CLInvoiceInformationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLInvoiceInformationComponent ]
+      declarations: [ CLInvoiceInformationComponent ],
+      imports: [ SharedModule ],
+      providers: [ 
+        LoggerService,
+        { provide: MatDialogRef, useClass: mockMatDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} },
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +35,9 @@ describe('CLInvoiceInformationComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

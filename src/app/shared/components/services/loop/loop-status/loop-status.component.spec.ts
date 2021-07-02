@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../../shared.module';
 
 import { LoopStatusComponent } from './loop-status.component';
 
@@ -6,9 +7,10 @@ describe('LoopStatusComponent', () => {
   let component: LoopStatusComponent;
   let fixture: ComponentFixture<LoopStatusComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopStatusComponent ]
+      declarations: [ LoopStatusComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));
@@ -22,4 +24,9 @@ describe('LoopStatusComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

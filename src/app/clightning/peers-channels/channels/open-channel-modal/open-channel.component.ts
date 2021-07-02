@@ -48,7 +48,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
   public minConfValue = null;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private decimalPipe: DecimalPipe) {}
+  constructor(public dialogRef: MatDialogRef<CLOpenChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: CLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private decimalPipe: DecimalPipe) {}
 
   ngOnInit() {
     this.isCompatibleVersion = this.data.message.isCompatibleVersion;
@@ -58,7 +58,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.alertTitle = this.data.alertTitle;
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
+    this.actions.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.FETCH_CHANNELS_CL))
     .subscribe((action: CLActions.EffectError | CLActions.FetchChannels) => {
       if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SaveNewChannel') {

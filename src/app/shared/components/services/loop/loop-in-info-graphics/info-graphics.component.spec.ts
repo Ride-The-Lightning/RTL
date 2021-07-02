@@ -1,4 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { CommonService } from '../../../../services/common.service';
+import { mockCommonService } from '../../../../services/test-consts';
+import { SharedModule } from '../../../../shared.module';
 
 import { LoopInInfoGraphicsComponent } from './info-graphics.component';
 
@@ -6,9 +11,16 @@ describe('LoopInInfoGraphicsComponent', () => {
   let component: LoopInInfoGraphicsComponent;
   let fixture: ComponentFixture<LoopInInfoGraphicsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopInInfoGraphicsComponent ]
+      declarations: [ LoopInInfoGraphicsComponent ],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule
+      ],
+      providers: [ 
+        { provide: CommonService, useClass: mockCommonService }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +34,9 @@ describe('LoopInInfoGraphicsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

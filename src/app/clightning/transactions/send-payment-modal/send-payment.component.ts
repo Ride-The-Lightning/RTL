@@ -15,7 +15,6 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLEffects } from '../../store/cl.effects';
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -47,7 +46,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   public isCompatibleVersion = false;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private rtlEffects: RTLEffects) {}
+  constructor(public dialogRef: MatDialogRef<CLLightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
 
   ngOnInit() {
     this.store.select('cl')
@@ -60,7 +59,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         && this.commonService.isVersionCompatible(rtlStore.information.api_version, '0.4.0');
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SEND_PAYMENT_STATUS_CL))
     .subscribe((action: CLActions.EffectError | CLActions.SendPaymentStatus) => {
       if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) { 

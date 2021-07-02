@@ -2,14 +2,14 @@
   <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
-      <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90"><strong class="font-weight-900 mr-5px">Local:</strong>{{channelBalances.localBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
+      <mat-hint fxFlex="40" fxLayoutAlign="start center" class="font-size-90"><strong class="font-weight-900 mr-5px">Local:</strong>{{channelBalances?.localBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
       <mat-hint fxFlex="20" fxLayoutAlign="center center" class="font-size-90">
         <fa-icon [icon]="faBalanceScale" class="mr-3px" matTooltip="Balance Score"></fa-icon>
         ({{channelBalances?.balancedness || 0 | number}})
       </mat-hint>
-      <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channelBalances.remoteBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
+      <mat-hint fxFlex="40" fxLayoutAlign="end center" class="font-size-90"><strong class="font-weight-900 mr-5px">Remote:</strong>{{channelBalances?.remoteBalance || 0 | number:'1.0-0'}} Sats</mat-hint>
     </div>
-    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{channelBalances.localBalance && channelBalances.localBalance > 0 ? ((+channelBalances.localBalance/((+channelBalances.localBalance)+(+channelBalances.remoteBalance)))*100) : 0}}"></mat-progress-bar>
+    <mat-progress-bar class="dashboard-progress-bar this-channel-bar" mode="determinate" color="accent" value="{{channelBalances?.localBalance && channelBalances?.localBalance > 0 ? ((+channelBalances?.localBalance/((+channelBalances?.localBalance)+(+channelBalances?.remoteBalance)))*100) : 0}}"></mat-progress-bar>
   </div>
   <div fxLayout="column" fxFlex="3" fxLayoutAlign="end stretch"><mat-divider class="dashboard-divider"></mat-divider></div>
   <div class="channels-capacity-scroll" [perfectScrollbar]>

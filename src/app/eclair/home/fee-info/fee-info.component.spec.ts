@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ECLFeeInfoComponent } from './fee-info.component';
 
@@ -6,7 +6,7 @@ describe('ECLFeeInfoComponent', () => {
   let component: ECLFeeInfoComponent;
   let fixture: ComponentFixture<ECLFeeInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLFeeInfoComponent ]
     })
@@ -22,4 +22,9 @@ describe('ECLFeeInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

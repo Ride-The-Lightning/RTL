@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, Input, AfterViewInit, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 
@@ -19,7 +19,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
-export class TransactionsReportTableComponent implements AfterViewInit, OnChanges {
+export class TransactionsReportTableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() dataRange = SCROLL_RANGES[0];
   @Input() dataList = [];
   @Input() filterValue = '';
@@ -49,10 +49,14 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
     }
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     if (this.dataList && this.dataList.length > 0) {
       this.loadTransactionsTable(this.dataList);
     }
+  }
+
+  ngAfterViewInit() {
+    this.setTableWidgets();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -87,14 +91,20 @@ export class TransactionsReportTableComponent implements AfterViewInit, OnChange
 
   loadTransactionsTable(trans: any[]) {
     this.transactions = trans ? new MatTableDataSource([...trans]) : new MatTableDataSource([]);
-    this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
-    this.transactions.sort = this.sort;
-    this.transactions.filterPredicate = (rowData: any, fltr: string) => {
-      const newRowData = ((rowData.date) ? (this.datePipe.transform(rowData.date, 'dd/MMM') + '/' + rowData.date.getFullYear()).toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
-      return newRowData.includes(fltr);
-    };
-    this.transactions.paginator = this.paginator;
-}
+    this.setTableWidgets();
+  }
+
+  setTableWidgets() {
+    if(this.transactions && this.transactions.data && this.transactions.data.length > 0) {
+      this.transactions.sortingDataAccessor = (data: any, sortHeaderId: string) => (data[sortHeaderId] && isNaN(data[sortHeaderId])) ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId] ? +data[sortHeaderId] : null;
+      this.transactions.sort = this.sort;
+      this.transactions.filterPredicate = (rowData: any, fltr: string) => {
+        const newRowData = ((rowData.date) ? (this.datePipe.transform(rowData.date, 'dd/MMM') + '/' + rowData.date.getFullYear()).toLowerCase() : '') + JSON.stringify(rowData).toLowerCase();
+        return newRowData.includes(fltr);
+      };
+      this.transactions.paginator = this.paginator;
+    }
+  }
 
   onDownloadCSV() {
     if(this.transactions.data && this.transactions.data.length > 0) {

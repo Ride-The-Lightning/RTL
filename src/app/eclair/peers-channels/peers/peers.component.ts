@@ -17,7 +17,6 @@ import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-cha
 import { ECLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
-import { ECLEffects } from '../../store/ecl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
@@ -52,7 +51,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private eclEffects: ECLEffects, private actions$: Actions, private commonService: CommonService) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
@@ -88,7 +87,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       this.logger.info(rtlStore);
     });
-    this.actions$
+    this.actions
     .pipe(
       takeUntil(this.unSubs[1]),
       filter((action) => action.type === ECLActions.SET_PEERS_ECL)

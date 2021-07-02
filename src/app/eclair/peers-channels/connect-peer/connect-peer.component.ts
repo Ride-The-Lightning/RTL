@@ -12,7 +12,6 @@ import { Peer } from '../../../shared/models/eclModels';
 import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
-import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -41,7 +40,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects, private formBuilder: FormBuilder, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<ECLConnectPeerComponent>, @Inject(MAT_DIALOG_DATA) public data: ECLOpenChannelAlert, private store: Store<fromRTLReducer.RTLState>, private formBuilder: FormBuilder, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.totalBalance = this.data.message.balance;
@@ -58,7 +57,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       hiddenAmount: ['', [Validators.required]]
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))
     .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.EffectError)) => {
       if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) { 

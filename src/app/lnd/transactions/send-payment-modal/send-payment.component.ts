@@ -44,7 +44,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   public paymentError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions$: Actions, private dataService: DataService) {}
+  constructor(public dialogRef: MatDialogRef<LightningSendPaymentsComponent>, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions, private dataService: DataService) {}
 
   ngOnInit() {
     this.store.select('lnd')
@@ -55,7 +55,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.filteredMinAmtActvChannels = this.activeChannels;
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.SendPaymentStatus) => {
       if (action.type === LNDActions.SEND_PAYMENT_STATUS_LND) { 

@@ -1,19 +1,35 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DataService } from '../../../shared/services/data.service';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLFeeReportComponent } from './fee-report.component';
+import { mockCommonService } from '../../../shared/services/test-consts';
+import { SharedModule } from '../../../shared/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ECLFeeReportComponent', () => {
   let component: ECLFeeReportComponent;
   let fixture: ComponentFixture<ECLFeeReportComponent>;
-  const mockDataService = jasmine.createSpyObj("DataService", ["getChildAPIUrl","setChildAPIUrl","getFiatRates",
-  "getAliasesFromPubkeys","signMessage","verifyMessage","handleErrorWithoutAlert","handleErrorWithAlert"]);
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ECLFeeReportComponent ],
+      imports: [
+        BrowserAnimationsModule,
+        SharedModule,
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        })
+      ],
       providers: [
-        { provide: DataService, useValue: mockDataService }
+        LoggerService,
+        { provide: CommonService, useClass: mockCommonService }
       ]
     })
     .compileComponents();
@@ -28,4 +44,9 @@ describe('ECLFeeReportComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

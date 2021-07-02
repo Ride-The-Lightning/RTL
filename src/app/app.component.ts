@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public flgLoggedIn = false;
   unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions,
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions,
     private userIdle: UserIdleService, private router: Router, private sessionService: SessionService, private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
 
   ngOnInit() {
@@ -92,7 +92,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.sessionService.getItem('defaultPassword') === 'true') {
       this.flgSideNavOpened = false;
     }    
-    this.actions$.pipe(takeUntil(this.unSubs[2]),
+    this.actions.pipe(takeUntil(this.unSubs[2]),
     filter((action) => action.type === RTLActions.SET_RTL_CONFIG || action.type === RTLActions.LOGOUT))
     .subscribe((action: (RTLActions.SetRTLConfig | RTLActions.Logout)) => {
       if (action.type === RTLActions.SET_RTL_CONFIG) {

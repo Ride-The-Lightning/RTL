@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../../shared.module';
 
 import { SwapStatusComponent } from './swap-status.component';
 
@@ -6,9 +7,10 @@ describe('SwapStatusComponent', () => {
   let component: SwapStatusComponent;
   let fixture: ComponentFixture<SwapStatusComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapStatusComponent ]
+      declarations: [ SwapStatusComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));
@@ -22,4 +24,9 @@ describe('SwapStatusComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

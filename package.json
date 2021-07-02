@@ -7,12 +7,9 @@
     "start": "ng serve --open",
     "prebuild": "node ./src/prebuild",
     "build": "ng analytics off && ng lint && ng build --configuration production",
-    "devbuild": "ng build --configuration production",
-    "serve": "ng serve",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "postinstall": "ngcc"
   },
   "private": true,
