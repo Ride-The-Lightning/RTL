@@ -71,43 +71,11 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   onSendPayment():boolean|void {
-    if(!this.paymentRequest) { return true; } 
+    if(!this.paymentRequest || (this.zeroAmtInvoice && (!this.paymentAmount || this.paymentAmount <= 0))) { return true; } 
     if (this.paymentDecoded.timestamp) {
       this.sendPayment();
     } else {
-      this.paymentAmount = null;
-      this.paymentError = '';
-      this.paymentDecodedHint = '';
-      this.paymentReq.control.setErrors(null);
-      this.dataService.decodePayment(this.paymentRequest, true)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
-        this.selActiveChannel = {};
-        this.paymentDecoded = decodedPayment;
-        if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
-          this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
-        }
-        if(this.paymentDecoded.num_satoshis && this.paymentDecoded.num_satoshis !== '' && this.paymentDecoded.num_satoshis !== '0') {
-          this.zeroAmtInvoice = false;
-          this.filteredMinAmtActvChannels = this.activeChannels.filter(actvChannel => actvChannel.local_balance >= this.paymentDecoded.num_satoshis);
-          if(this.selNode.fiatConversion) {
-            this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-            .pipe(takeUntil(this.unSubs[2]))
-            .subscribe(data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-            });
-          } else {
-            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-          }
-        } else {
-          this.zeroAmtInvoice = true;
-          this.filteredMinAmtActvChannels = this.activeChannels;
-          this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
-        }
-      }, err => {
-        this.logger.error(err);
-        this.paymentDecodedHint = 'ERROR: ' + err.message;
-        this.paymentReq.control.setErrors({'decodeError': true});
-      });
+      this.onPaymentRequestEntry(this.paymentRequest)
     }
   }
 
@@ -140,7 +108,8 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.dataService.decodePayment(this.paymentRequest, true)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+      .pipe(take(1)).subscribe({
+        next : (decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         this.selActiveChannel = {};
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -153,7 +122,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
             this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
             .subscribe(data => {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats (' + data.symbol + ' ' + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
             });
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis) + ' Sats | Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
@@ -163,11 +132,12 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
-      }, err => {
+      },
+      error: err => {
         this.logger.error(err);
         this.paymentDecodedHint = 'ERROR: ' + err.message;
         this.paymentReq.control.setErrors({'decodeError': true});
-      });
+      }});
     }
   }
 

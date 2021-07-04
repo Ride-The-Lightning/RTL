@@ -1,6 +1,8 @@
 import { BehaviorSubject, of, throwError } from 'rxjs';
+
 import { API_URL } from '../../../environments/environment';
 import { mockResponseData } from '../test-helpers/test-data';
+
 import * as CLActions from '../../clightning/store/cl.actions';
 
 export class mockMatDialogRef {
@@ -11,6 +13,7 @@ export class mockLoggerService {
   info(){};
   warn(){};
   error(){};
+  invokeConsoleMethod(type: string, args?: any): void {};
 }
 
 export class mockDataService {
