@@ -6,7 +6,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ECLChannelInformationComponent } from './channel-information.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
 import { DataService } from '../../../../shared/services/data.service';
 
 describe('ECLChannelInformationComponent', () => {

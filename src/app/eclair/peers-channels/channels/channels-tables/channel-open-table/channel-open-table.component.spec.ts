@@ -6,7 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockDataService, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { mockDataService, mockRTLEffects } from '../../../../../shared/test-helpers/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

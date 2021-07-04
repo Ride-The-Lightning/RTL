@@ -6,7 +6,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { UTXOTablesComponent } from './utxo-tables.component';
 import { OnChainTransactionHistoryComponent } from './on-chain-transaction-history/on-chain-transaction-history.component';
-import { mockDataService, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockDataService, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
 import { CommonService } from '../../../shared/services/common.service';
 import { SharedModule } from '../../../shared/shared.module';
 import { OnChainUTXOsComponent } from './utxos/utxos.component';

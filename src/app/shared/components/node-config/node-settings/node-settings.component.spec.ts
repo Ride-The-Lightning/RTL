@@ -6,7 +6,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { NodeSettingsComponent } from './node-settings.component';
-import { mockDataService } from '../../../services/test-consts';
+import { mockDataService } from '../../../test-helpers/test-consts';
 import { SharedModule } from '../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../services/data.service';

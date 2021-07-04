@@ -8,7 +8,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CLTransactionsComponent } from './transactions.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CLQueryRoutesComponent } from './query-routes/query-routes.component';
-import { mockDataService } from '../../shared/services/test-consts';
+import { mockDataService } from '../../shared/test-helpers/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../shared/services/data.service';

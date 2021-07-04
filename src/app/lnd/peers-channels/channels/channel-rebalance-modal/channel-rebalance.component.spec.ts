@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ChannelRebalanceComponent } from './channel-rebalance.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

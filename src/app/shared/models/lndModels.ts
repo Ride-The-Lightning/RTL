@@ -246,7 +246,7 @@ export interface GraphNode {
 export interface HopHint {
   cltv_expiry_delta?: number;
   node_id?: string;
-  chan_id?: number;
+  chan_id?: string;
   fee_proportional_millionths?: number;
   fee_base_msat?: number;
 }
@@ -365,16 +365,18 @@ export interface Payment {
 export interface PayRequest {
   payment_hash?: string;
   route_hints?: RouteHint[];
-  timestamp?: number;
+  timestamp?: string;
   fallback_addr?: string;
-  cltv_expiry?: number;
+  cltv_expiry?: string;
   description_hash?: string;
   destination?: string;
-  expiry?: number;
+  expiry?: string;
   description?: string;
+  payment_addr?: string;
   num_msat?: string;
   num_satoshis?: string;
   btc_num_satoshis?: string;
+  features?: any;
 }
 
 export interface Peer {

@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { TopMenuComponent } from './top-menu.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared.module';

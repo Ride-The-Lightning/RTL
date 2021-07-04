@@ -1,0 +1,491 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/app/lnd/peers-channels/channels/open-channel-modal/open-channel.component.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../../../../index.html">All files</a> / <a href="index.html">src/app/lnd/peers-channels/channels/open-channel-modal</a> open-channel.component.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">44.44% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>32/72</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">3.61% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>3/83</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">22.22% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>4/18</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">42.86% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>27/63</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, startWith, map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { Actions } from '@ngrx/effects';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+&nbsp;
+import { Peer, GetInfo } from '../../../../shared/models/lndModels';
+import { OpenChannelAlert } from '../../../../shared/models/alertData';
+import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+&nbsp;
+import * as LNDActions from '../../../store/lnd.actions';
+import * as RTLActions from '../../../../store/rtl.actions';
+import * as fromRTLReducer from '../../../../store/rtl.reducers';
+&nbsp;
+@Component({
+  selector: 'rtl-open-channel',
+  templateUrl: './open-channel.component.html',
+  styleUrls: ['./open-channel.component.scss']
+})
+export class OpenChannelComponent implements OnInit, OnDestroy {
+  @ViewChild('form', { static: true }) form: any;
+  public selectedPeer = new FormControl();
+  public amount = new FormControl();
+  public faExclamationTriangle = faExclamationTriangle;
+  public alertTitle: string;
+  public peer: Peer;
+  public peers: Peer[];
+  public sortedPeers: Peer[];
+  public filteredPeers: Observable&lt;Peer[]&gt;;
+  public channelConnectionError = '';
+  public advancedTitle = 'Advanced Options';
+  public information: GetInfo;
+  public totalBalance = 0;
+  public fundingAmount: number;
+  public selectedPubkey = '';
+  public isPrivate = false;
+  public selTransType = '0';
+  public spendUnconfirmed = false;
+  public transTypeValue = '';
+  public transTypes = TRANS_TYPES;
+  private unSubs: Array&lt;Subject&lt;void&gt;&gt; = [new Subject(), new Subject()];
+&nbsp;
+  constructor(public dialogRef: MatDialogRef&lt;OpenChannelComponent&gt;, @Inject(MAT_DIALOG_DATA) public data: OpenChannelAlert, private store: Store&lt;fromRTLReducer.RTLState&gt;, private actions: Actions) { }
+&nbsp;
+  ngOnInit() {
+    this.information = this.data.message.information;
+    this.totalBalance = this.data.message.balance;
+    this.alertTitle = this.data.alertTitle;
+    this.peer = this.data.message.peer ? <span class="branch-0 cbranch-no" title="branch not covered" >this.data.message.peer </span>: null;
+    this.peers = this.data.message.peers &amp;&amp;  <span class="branch-1 cbranch-no" title="branch not covered" >this.data.message.peers.length </span>? <span class="branch-0 cbranch-no" title="branch not covered" >this.data.message.peers </span>: [];
+    this.actions.pipe(takeUntil(this.unSubs[0]),
+    filter(<span class="fstat-no" title="function not covered" >action </span>=&gt; <span class="cstat-no" title="statement not covered" >action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND)</span>)
+    .subscribe(<span class="fstat-no" title="function not covered" >(a</span>ction: LNDActions.EffectError | LNDActions.FetchAllChannels) =&gt; {
+<span class="cstat-no" title="statement not covered" >      if (action.type === LNDActions.EFFECT_ERROR_LND &amp;&amp; action.payload.action === 'SaveNewChannel') {</span>
+<span class="cstat-no" title="statement not covered" >        this.channelConnectionError = action.payload.message;</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (action.type === LNDActions.FETCH_ALL_CHANNELS_LND) {</span>
+<span class="cstat-no" title="statement not covered" >        this.dialogRef.close();</span>
+      }
+    });
+    let x = '', y = '';
+    this.sortedPeers = this.peers.sort(<span class="fstat-no" title="function not covered" >(p</span>1, p2) =&gt; {
+<span class="cstat-no" title="statement not covered" >      x = p1.alias ? p1.alias.toLowerCase() : p1.pub_key ? p1.pub_key.toLowerCase() : '';</span>
+<span class="cstat-no" title="statement not covered" >      y = p2.alias ? p2.alias.toLowerCase() : p1.pub_key.toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >      return ((x &lt; y) ? -1 : ((x &gt; y) ? 1 : 0));      </span>
+    });
+    this.filteredPeers = this.selectedPeer.valueChanges.pipe(takeUntil(this.unSubs[1]), startWith(''),
+      map(<span class="fstat-no" title="function not covered" >peer </span>=&gt; <span class="cstat-no" title="statement not covered" >typeof peer === 'string' ? peer : peer.alias ? peer.alias : peer.pub_key)</span>,
+      map(<span class="fstat-no" title="function not covered" >alias </span>=&gt; <span class="cstat-no" title="statement not covered" >alias ? this.filterPeers(alias) : this.sortedPeers.slice())</span>
+    );
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >filterPeers(</span>newlySelectedPeer: string): Peer[] {
+<span class="cstat-no" title="statement not covered" >    return this.sortedPeers.filter(<span class="fstat-no" title="function not covered" >peer </span>=&gt; <span class="cstat-no" title="statement not covered" >peer.alias.toLowerCase().indexOf(newlySelectedPeer ? newlySelectedPeer.toLowerCase() : '') === 0)</span>;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  displayFn(</span>peer: Peer): string {
+<span class="cstat-no" title="statement not covered" >    return (peer &amp;&amp; peer.alias) ? peer.alias : (peer &amp;&amp; peer.pub_key) ? peer.pub_key : '';</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  onSelectedPeerChanged(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.channelConnectionError = '';</span>
+<span class="cstat-no" title="statement not covered" >    this.selectedPubkey = (this.selectedPeer.value &amp;&amp; this.selectedPeer.value.pub_key) ? this.selectedPeer.value.pub_key : undefined;</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof this.selectedPeer.value === 'string') {</span>
+      let selPeer = <span class="cstat-no" title="statement not covered" >this.peers.filter(<span class="fstat-no" title="function not covered" >peer </span>=&gt; <span class="cstat-no" title="statement not covered" >peer.alias.length === this.selectedPeer.value.length &amp;&amp; peer.alias.toLowerCase().indexOf(this.selectedPeer.value ? this.selectedPeer.value.toLowerCase() : '') === 0)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      if (selPeer.length === 1 &amp;&amp; selPeer[0].pub_key) { <span class="cstat-no" title="statement not covered" >this.selectedPubkey = selPeer[0].pub_key; </span>}</span>
+    }
+<span class="cstat-no" title="statement not covered" >    if (this.selectedPeer.value &amp;&amp; !this.selectedPubkey) {</span>
+<span class="cstat-no" title="statement not covered" >      this.selectedPeer.setErrors({notfound: true});</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      this.selectedPeer.setErrors(null);</span>
+    }
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  onClose(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.dialogRef.close(false);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  resetData(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.selectedPeer.setValue('');</span>
+<span class="cstat-no" title="statement not covered" >    this.fundingAmount = null;</span>
+<span class="cstat-no" title="statement not covered" >    this.isPrivate = false;</span>
+<span class="cstat-no" title="statement not covered" >    this.spendUnconfirmed = false;</span>
+<span class="cstat-no" title="statement not covered" >    this.selTransType = '0';</span>
+<span class="cstat-no" title="statement not covered" >    this.transTypeValue = '';</span>
+<span class="cstat-no" title="statement not covered" >    this.channelConnectionError = '';</span>
+<span class="cstat-no" title="statement not covered" >    this.advancedTitle = 'Advanced Options';</span>
+<span class="cstat-no" title="statement not covered" >    this.form.resetForm();  </span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  onOpenChannel(</span>):boolean|void {
+<span class="cstat-no" title="statement not covered" >    if ((!this.peer &amp;&amp; !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) &lt; 0) || ((this.selTransType === '1' || this.selTransType === '2') &amp;&amp; !this.transTypeValue))) { <span class="cstat-no" title="statement not covered" >return true; </span>}</span>
+<span class="cstat-no" title="statement not covered" >    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));</span>
+<span class="cstat-no" title="statement not covered" >    this.store.dispatch(new LNDActions.SaveNewChannel({</span>
+      selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
+      transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed
+    }));
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  onAdvancedPanelToggle(</span>isClosed: boolean) {
+<span class="cstat-no" title="statement not covered" >    if (isClosed) {</span>
+<span class="cstat-no" title="statement not covered" >      this.advancedTitle = 'Advanced Options | ' + (this.selTransType === '1' ? 'Target Confirmation Blocks: ' : this.selTransType === '2' ? 'Fee (Sats/vByte): ' : 'Default') + ((this.selTransType === '1' || this.selTransType === '2') ? this.transTypeValue : '') + ' | Spend Unconfirmed Output: ' + (this.spendUnconfirmed ? 'Yes' : 'No');</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      this.advancedTitle = 'Advanced Options';</span>
+    }
+  }
+&nbsp;
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub =&gt; {
+      completeSub.next(null);
+      completeSub.complete();
+    });
+  }
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
+                at Sat Jul 03 2021 21:31:50 GMT-0400 (Eastern Daylight Time)
+            </div>
+        </div>
+        <script src="../../../../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../../../../sorter.js"></script>
+        <script src="../../../../../../block-navigation.js"></script>
+    </body>
+</html>
+    

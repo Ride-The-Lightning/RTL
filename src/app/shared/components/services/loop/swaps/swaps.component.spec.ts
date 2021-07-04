@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { SwapsComponent } from './swaps.component';
-import { mockDataService, mockLoopService } from '../../../../services/test-consts';
+import { mockDataService, mockLoopService } from '../../../../test-helpers/test-consts';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';

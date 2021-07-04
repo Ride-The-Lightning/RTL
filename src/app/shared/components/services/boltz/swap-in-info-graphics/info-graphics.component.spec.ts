@@ -7,7 +7,7 @@ import { CommonService } from '../../../../services/common.service';
 import { DataService } from '../../../../services/data.service';
 
 import { SwapInInfoGraphicsComponent } from './info-graphics.component';
-import { mockDataService } from '../../../../services/test-consts';
+import { mockDataService } from '../../../../test-helpers/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SwapInInfoGraphicsComponent', () => {

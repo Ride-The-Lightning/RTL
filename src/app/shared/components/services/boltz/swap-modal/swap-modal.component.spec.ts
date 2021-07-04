@@ -10,7 +10,7 @@ import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { SwapModalComponent } from './swap-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockBoltzService, mockDataService, mockMatDialogRef } from '../../../../services/test-consts';
+import { mockBoltzService, mockDataService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
 

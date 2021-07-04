@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../services/common.service';
 import { DataService } from '../../../../services/data.service';
-import { mockDataService } from '../../../../services/test-consts';
+import { mockDataService } from '../../../../test-helpers/test-consts';
 import { SharedModule } from '../../../../shared.module';
 
 import { LoopInInfoGraphicsComponent } from './info-graphics.component';

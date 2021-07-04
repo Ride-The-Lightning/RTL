@@ -7,7 +7,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLConnectPeerComponent } from './connect-peer.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 

@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { SideNavigationComponent } from './side-navigation.component';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { SharedModule } from '../../../shared.module';

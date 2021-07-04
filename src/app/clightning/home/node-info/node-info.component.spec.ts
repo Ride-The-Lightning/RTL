@@ -2,7 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
-import { mockDataService } from '../../../shared/services/test-consts';
+import { mockDataService } from '../../../shared/test-helpers/test-consts';
 
 import { CLNodeInfoComponent } from './node-info.component';
 import { DataService } from '../../../shared/services/data.service';

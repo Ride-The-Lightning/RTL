@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
-import { mockLNDEffects } from '../../../shared/services/test-consts';
+import { mockLNDEffects } from '../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 
 import { RTLReducer } from '../../../store/rtl.reducers';

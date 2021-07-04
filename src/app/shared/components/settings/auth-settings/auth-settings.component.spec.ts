@@ -8,7 +8,7 @@ import { SessionService } from '../../../../shared/services/session.service';
 
 import { AuthSettingsComponent } from './auth-settings.component';
 import { SharedModule } from '../../../shared.module';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 

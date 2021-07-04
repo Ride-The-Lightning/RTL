@@ -8,7 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { OnChainSendModalComponent } from './on-chain-send-modal.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

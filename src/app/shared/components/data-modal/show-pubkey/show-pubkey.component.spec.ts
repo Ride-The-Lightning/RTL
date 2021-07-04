@@ -5,7 +5,7 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import { ShowPubkeyComponent } from './show-pubkey.component';
-import { mockDataService, mockMatDialogRef } from '../../../services/test-consts';
+import { mockDataService, mockMatDialogRef } from '../../../test-helpers/test-consts';
 import { SharedModule } from '../../../shared.module';
 import { DataService } from '../../../services/data.service';
 

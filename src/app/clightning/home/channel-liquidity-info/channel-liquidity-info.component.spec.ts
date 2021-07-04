@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
-import { mockDataService } from '../../../shared/services/test-consts';
+import { mockDataService } from '../../../shared/test-helpers/test-consts';
 
 import { CLChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { DataService } from '../../../shared/services/data.service';

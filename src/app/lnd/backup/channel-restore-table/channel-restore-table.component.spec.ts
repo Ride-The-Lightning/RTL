@@ -6,7 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelRestoreTableComponent } from './channel-restore-table.component';
-import { mockDataService, mockLNDEffects } from '../../../shared/services/test-consts';
+import { mockDataService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

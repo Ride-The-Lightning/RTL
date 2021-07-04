@@ -2,7 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
-import { mockDataService } from '../../../shared/services/test-consts';
+import { mockDataService } from '../../../shared/test-helpers/test-consts';
 import { ECLNodeInfoComponent } from './node-info.component';
 
 describe('ECLNodeInfoComponent', () => {

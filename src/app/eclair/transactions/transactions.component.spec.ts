@@ -9,7 +9,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { ECLTransactionsComponent } from './transactions.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
-import { mockDataService } from '../../shared/services/test-consts';
+import { mockDataService } from '../../shared/test-helpers/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 

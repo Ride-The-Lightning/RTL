@@ -7,7 +7,7 @@ import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
-import { mockDataService, mockLoopService } from '../../../services/test-consts';
+import { mockDataService, mockLoopService } from '../../../test-helpers/test-consts';
 import { CommonService } from '../../../services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../services/data.service';
