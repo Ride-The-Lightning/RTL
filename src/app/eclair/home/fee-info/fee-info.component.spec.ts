@@ -11,13 +11,10 @@ describe('ECLFeeInfoComponent', () => {
       declarations: [ ECLFeeInfoComponent ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ECLFeeInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

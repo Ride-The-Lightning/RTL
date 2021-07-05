@@ -14,13 +14,10 @@ describe('CLReportsComponent', () => {
       imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLReportsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

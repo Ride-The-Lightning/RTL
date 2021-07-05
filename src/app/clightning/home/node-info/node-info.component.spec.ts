@@ -22,14 +22,11 @@ describe('CLNodeInfoComponent', () => {
       ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLNodeInfoComponent);
     commonService = TestBed.inject(CommonService);    
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

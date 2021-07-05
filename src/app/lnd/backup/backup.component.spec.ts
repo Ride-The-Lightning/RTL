@@ -14,13 +14,10 @@ describe('BackupComponent', () => {
       imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(BackupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

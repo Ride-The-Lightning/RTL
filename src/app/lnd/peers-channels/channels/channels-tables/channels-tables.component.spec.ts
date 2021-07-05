@@ -30,13 +30,10 @@ describe('ChannelsTablesComponent', () => {
       providers: [ LoggerService ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelsTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

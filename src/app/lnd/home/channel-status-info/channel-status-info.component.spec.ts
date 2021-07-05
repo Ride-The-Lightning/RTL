@@ -11,13 +11,10 @@ describe('ChannelStatusInfoComponent', () => {
       declarations: [ ChannelStatusInfoComponent ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelStatusInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

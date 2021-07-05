@@ -1,4 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { Store, StoreModule } from '@ngrx/store';
 
 import { CommonService } from '../../../shared/services/common.service';
@@ -12,6 +13,8 @@ import { DataService } from '../../../shared/services/data.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { EffectsModule } from '@ngrx/effects';
 import { FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { mockRTLStoreState } from '../../../shared/test-helpers/test-data';
+
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 describe('LightningSendPaymentsComponent', () => {
@@ -42,29 +45,26 @@ describe('LightningSendPaymentsComponent', () => {
       ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LightningSendPaymentsComponent);
     component = fixture.componentInstance;
     commonService = fixture.debugElement.injector.get(CommonService);
     store = fixture.debugElement.injector.get(Store);
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should get lnd store value on ngOnInit', () => {
-    // let storeSpy = jasmine.createSpyObj('store', ['select']);
+    let storeSpy = spyOn(store, 'select').and.returnValue(of(mockRTLStoreState.lnd));
     component.ngOnInit();
-    expect(component.selNode.lnImplementation).toBe('');
-    // expect(storeSpy.select).toHaveBeenCalled();
+    expect(component.selNode.lnImplementation).toBe('LND');
+    expect(storeSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should send payment buttons work as expected', () => {
-    // let storeSpy = jasmine.createSpyObj('store', ['dispatch']);
+    let storeSpy = spyOn(store, 'dispatch').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
     component.paymentRequest = "lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3";
@@ -73,8 +73,7 @@ describe('LightningSendPaymentsComponent', () => {
     sendButton.click();
     // const expectedPayload = {type: 'SET_NOTIFICATION_DIALOG', status: '200', message:"loading", model: 'LOADING' };
     // expect(storeSpy.dispatch).toHaveBeenCalledWith([expectedPayload]);
-    // expect(store.dispatch).toHaveBeenCalled();
-    expect(component).toBeTruthy();
+    expect(storeSpy).toHaveBeenCalledTimes(2);
   });
 
   it('should reset the component', () => {
@@ -142,7 +141,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should send the payment when the payment is decoded', () => {
-    // spyOn(component, 'sendPayment');
+    spyOn(component, 'sendPayment').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
     component.paymentRequest = "lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3";
@@ -150,11 +149,11 @@ describe('LightningSendPaymentsComponent', () => {
     component.onSendPayment();
     expect(component.paymentDecoded.num_satoshis).toEqual('400');
     expect(component.zeroAmtInvoice).toBe(false);
-    // expect(component.sendPayment).toHaveBeenCalled();
+    expect(component.sendPayment).toHaveBeenCalledTimes(1);
   });
 
   it('should decode the payment when send payment clicked but payment is not decoded yet', () => {
-    // let onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry');
+    let onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry').and.callThrough();
     component.zeroAmtInvoice = true;
     component.paymentAmount = 600;
     component.paymentRequest = "lntb4u1psvdzaypp555uks3f6774kl3vdy2dfr00j847pyxtrqelsdnczuxnmtqv99srsdpy23jhxarfdenjqmn8wfuzq3txvejkxarnyq6qcqp2sp5xjzu6pz2sf8x4v8nmr58kjdm6k05etjfq9c96mwkhzl0g9j7sjkqrzjq28vwprzypa40c75myejm8s2aenkeykcnd7flvy9plp2yjq56nvrc8ss5cqqqzgqqqqqqqlgqqqqqqgq9q9qy9qsqpt6u4rwfrck3tmpn54kdxjx3xdch62t5wype2f44mmlar07y749xt9elhfhf6dnlfk2tjwg3qpy8njh6remphfcc0630aq38j0s3hrgpv4eel3";
@@ -162,18 +161,18 @@ describe('LightningSendPaymentsComponent', () => {
     component.onSendPayment();
     expect(component.paymentDecoded.num_satoshis).toEqual('400');
     expect(component.zeroAmtInvoice).toBe(false);
-    // expect(onPaymentRequestEntrySpy).toHaveBeenCalled();
+    expect(onPaymentRequestEntrySpy).toHaveBeenCalledTimes(1);
   });
 
   it('should decode the zero amount payment when send payment clicked but payment is not decoded yet', () => {
-    // let onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry');
+    let onPaymentRequestEntrySpy = spyOn(component, 'onPaymentRequestEntry').and.callThrough();
     component.zeroAmtInvoice = false;
     component.paymentRequest = "lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk";
     component.paymentDecoded = {};
     component.onSendPayment();
     expect(component.zeroAmtInvoice).toBe(true);
     expect(component.filteredMinAmtActvChannels).toEqual(component.activeChannels);
-    // expect(onPaymentRequestEntrySpy).toHaveBeenCalled();
+    expect(onPaymentRequestEntrySpy).toHaveBeenCalledTimes(1);
   });
 
   it('should complete subscriptions on ngOnDestroy', () => {
@@ -183,6 +182,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   afterEach(() => {
+    fixture.destroy();
     TestBed.resetTestingModule();
   });
 

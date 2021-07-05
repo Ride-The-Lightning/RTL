@@ -14,13 +14,10 @@ describe('CLChannelCapacityInfoComponent', () => {
       imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLChannelCapacityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

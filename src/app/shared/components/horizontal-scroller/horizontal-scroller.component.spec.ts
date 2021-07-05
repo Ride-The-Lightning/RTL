@@ -20,13 +20,10 @@ describe('HorizontalScrollerComponent', () => {
       providers: [ LoggerService ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(HorizontalScrollerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

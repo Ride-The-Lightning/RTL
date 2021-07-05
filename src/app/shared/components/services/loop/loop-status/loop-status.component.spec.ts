@@ -13,13 +13,10 @@ describe('LoopStatusComponent', () => {
       imports: [ SharedModule ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LoopStatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

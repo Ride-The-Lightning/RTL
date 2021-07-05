@@ -34,13 +34,10 @@ describe('CLTransactionsReportComponent', () => {
     })
     .compileComponents();
     let service = TestBed.inject(CommonService);
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

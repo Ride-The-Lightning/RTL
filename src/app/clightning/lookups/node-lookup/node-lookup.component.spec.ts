@@ -15,13 +15,10 @@ describe('CLNodeLookupComponent', () => {
       providers: [ LoggerService ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLNodeLookupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

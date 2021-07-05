@@ -14,13 +14,10 @@ describe('ECLChannelCapacityInfoComponent', () => {
       imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ECLChannelCapacityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

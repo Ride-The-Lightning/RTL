@@ -34,13 +34,10 @@ describe('AuthSettingsComponent', () => {
       providers: [ LoggerService, SessionService ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(AuthSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

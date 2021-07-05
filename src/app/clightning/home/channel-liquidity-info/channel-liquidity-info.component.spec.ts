@@ -10,7 +10,6 @@ import { DataService } from '../../../shared/services/data.service';
 
 describe('CLChannelLiquidityInfoComponent', () => {
   let component: CLChannelLiquidityInfoComponent;  
-  let commonService: CommonService;  
   let fixture: ComponentFixture<CLChannelLiquidityInfoComponent>;
 
   beforeEach(waitForAsync(() => {
@@ -23,20 +22,13 @@ describe('CLChannelLiquidityInfoComponent', () => {
       ]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(CLChannelLiquidityInfoComponent);
     component = fixture.componentInstance;
-    commonService = TestBed.inject<CommonService>(CommonService);
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should create common service', () => {
-    expect(commonService).toBeTruthy();
-  });  
 });
