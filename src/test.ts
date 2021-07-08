@@ -7,5 +7,5 @@ getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting()
 );
-const context = require.context('./', true, /\.spec\.ts$/);
+const context = require.context('./app/store/', true, /\.spec\.ts$/);
 context.keys().map(context);
