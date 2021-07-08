@@ -7,7 +7,7 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { HomeComponent } from './home.component';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../shared/shared.module';
 import { ChannelStatusInfoComponent } from './channel-status-info/channel-status-info.component';
 import { ChannelCapacityInfoComponent } from './channel-capacity-info/channel-capacity-info.component';
@@ -37,15 +37,19 @@ describe('HomeComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

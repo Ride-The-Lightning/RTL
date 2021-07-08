@@ -5,7 +5,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { InvoiceInformationComponent } from './invoice-information.component';
-import { mockDataService, mockMatDialogRef } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { DataService } from '../../../shared/services/data.service';
 
@@ -18,17 +18,21 @@ describe('InvoiceInformationComponent', () => {
       declarations: [ InvoiceInformationComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(InvoiceInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

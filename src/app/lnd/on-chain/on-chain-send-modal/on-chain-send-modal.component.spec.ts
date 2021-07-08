@@ -8,7 +8,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { OnChainSendModalComponent } from './on-chain-send-modal.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,7 +33,8 @@ describe('OnChainSendModalComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {sweepAll:true} },
@@ -41,10 +42,13 @@ describe('OnChainSendModalComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(OnChainSendModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

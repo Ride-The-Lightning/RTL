@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../../shared/services/common.service';
 import { DataService } from '../../../../services/data.service';
-import { mockDataService } from '../../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../../test-helpers/test-consts';
 import { SharedModule } from '../../../../shared.module';
 
 import { SwapOutInfoGraphicsComponent } from './info-graphics.component';
@@ -25,10 +25,13 @@ describe('SwapOutInfoGraphicsComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(SwapOutInfoGraphicsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { mockDataService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../../shared/shared.module';
 
 import { CLChannelInformationComponent } from './channel-information.component';
@@ -19,17 +19,21 @@ describe('CLChannelInformationComponent', () => {
         SharedModule
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLChannelInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

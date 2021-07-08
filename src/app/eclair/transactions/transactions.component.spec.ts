@@ -9,7 +9,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { ECLTransactionsComponent } from './transactions.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
-import { mockDataService } from '../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 
@@ -32,15 +32,19 @@ describe('ECLTransactionsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLTransactionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

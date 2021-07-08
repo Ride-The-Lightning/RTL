@@ -7,7 +7,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { BoltzService } from '../../../services/boltz.service';
 import { CommonService } from '../../../services/common.service';
 import { DataService } from '../../../services/data.service';
-import { mockBoltzService, mockDataService } from '../../../test-helpers/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../test-helpers/test-consts';
 import { SharedModule } from '../../../shared.module';
 
 import { BoltzRootComponent } from './boltz-root.component';
@@ -37,10 +37,13 @@ describe('BoltzRootComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(BoltzRootComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

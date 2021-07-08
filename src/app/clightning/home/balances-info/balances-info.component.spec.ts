@@ -13,10 +13,13 @@ describe('CLBalancesInfoComponent', () => {
       imports: [ SharedModule ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLBalancesInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

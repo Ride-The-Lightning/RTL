@@ -176,7 +176,7 @@ export class mockLNDEffects {
   initWalletRes = of(() => ({}));
   initWallet = of(() => ({}));
   genSeedResponse = of(() => ({}));
-  setRestoreChannelList = of(() => ({}));
+  setRestoreChannelList = of({files: [], all_restore_exists: true});
 }
 
 export class mockCLEffects {
@@ -232,7 +232,7 @@ export class mockECLEffects {
   setDecodedPayment = of(() => ({}));
   sendPayment = of(() => ({}));
   queryRoutesFetch = of(() => ({}));
-  setQueryRoutes = of(() => ({ type: 'SET_QUERY_ROUTES_ECL', payload: []}))
+  setQueryRoutes = of([]);
   peerLookup = of(() => ({}));
   channelLookup = of(() => ({}));
   invoiceLookup = of(() => ({}));

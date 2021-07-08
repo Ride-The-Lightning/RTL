@@ -5,7 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockDataService, mockRTLEffects } from '../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../shared/shared.module';
 import { RTLEffects } from '../../store/rtl.effects';
 
@@ -34,17 +34,21 @@ describe('OnChainComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(OnChainComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

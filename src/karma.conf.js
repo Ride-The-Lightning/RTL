@@ -11,6 +11,7 @@ module.exports = function (config) {
     ],
     client: {
       jasmine: {
+        timeoutInterval: 500
       },
       clearContext: false
     },

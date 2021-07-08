@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { BumpFeeComponent } from './bump-fee.component';
-import { mockDataService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -34,10 +34,13 @@ describe('BumpFeeComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(BumpFeeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

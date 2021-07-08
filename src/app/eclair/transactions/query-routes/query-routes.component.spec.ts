@@ -5,7 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { mockDataService, mockECLEffects } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockECLEffects } from '../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';
@@ -30,16 +30,20 @@ describe('ECLQueryRoutesComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, 
         { provide: DataService, useClass: mockDataService },
         { provide: ECLEffects, useClass: mockECLEffects }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLQueryRoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

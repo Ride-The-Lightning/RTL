@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLTransactionsReportComponent } from './transactions-report.component';
-import { mockDataService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
@@ -33,11 +33,14 @@ describe('CLTransactionsReportComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+    
+  beforeEach(() => {
     let service = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(CLTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

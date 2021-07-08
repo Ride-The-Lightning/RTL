@@ -20,10 +20,13 @@ describe('ECLNodeLookupComponent', () => {
       providers: [ LoggerService ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLNodeLookupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

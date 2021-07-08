@@ -6,7 +6,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ECLChannelInformationComponent } from './channel-information.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { mockDataService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
 import { DataService } from '../../../../shared/services/data.service';
 
 describe('ECLChannelInformationComponent', () => {
@@ -18,17 +18,21 @@ describe('ECLChannelInformationComponent', () => {
       declarations: [ ECLChannelInformationComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLChannelInformationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

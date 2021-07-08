@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { SideNavigationComponent } from './side-navigation.component';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { SharedModule } from '../../../shared.module';
@@ -31,16 +31,20 @@ describe('SideNavigationComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService, CommonService, SessionService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, SessionService, 
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(SideNavigationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

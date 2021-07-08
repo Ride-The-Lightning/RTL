@@ -10,7 +10,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { LoopModalComponent } from './loop-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockDataService, mockLoopService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
 
@@ -33,7 +33,8 @@ describe('LoopModalComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, 
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
@@ -41,10 +42,13 @@ describe('LoopModalComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(LoopModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

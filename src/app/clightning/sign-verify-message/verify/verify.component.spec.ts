@@ -4,7 +4,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { CLVerifyComponent } from './verify.component';
-import { mockDataService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -20,15 +20,18 @@ describe('CLVerifyComponent', () => {
         SharedModule
       ],
       providers: [ 
-        LoggerService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLVerifyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -6,7 +6,7 @@ import { CommonService } from '../../../../../shared/services/common.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 
 import { ECLChannelOpenTableComponent } from './channel-open-table.component';
-import { mockDataService, mockRTLEffects } from '../../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../../../shared/test-helpers/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,17 +30,21 @@ describe('ECLChannelOpenTableComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
 
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLChannelOpenTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

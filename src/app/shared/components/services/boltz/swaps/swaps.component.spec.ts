@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { BoltzSwapsComponent } from './swaps.component';
-import { mockBoltzService, mockDataService } from '../../../../test-helpers/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../../test-helpers/test-consts';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
@@ -30,16 +30,20 @@ describe('BoltzSwapsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(BoltzSwapsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

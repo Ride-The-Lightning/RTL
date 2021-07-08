@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CurrencyUnitConverterComponent } from './currency-unit-converter.component';
-import { mockDataService } from '../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../test-helpers/test-consts';
 import { SharedModule } from '../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../services/data.service';
@@ -33,10 +33,13 @@ describe('CurrencyUnitConverterComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CurrencyUnitConverterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

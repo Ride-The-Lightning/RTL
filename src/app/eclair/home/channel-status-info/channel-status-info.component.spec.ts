@@ -11,10 +11,13 @@ describe('ECLChannelStatusInfoComponent', () => {
       declarations: [ ECLChannelStatusInfoComponent ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLChannelStatusInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -14,10 +14,13 @@ describe('ECLRoutingComponent', () => {
       imports: [ SharedModule, RouterTestingModule ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ECLRoutingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

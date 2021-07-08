@@ -6,7 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelRestoreTableComponent } from './channel-restore-table.component';
-import { mockDataService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,17 +30,21 @@ describe('ChannelRestoreTableComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
 
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelRestoreTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

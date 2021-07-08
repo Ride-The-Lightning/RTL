@@ -3,7 +3,7 @@ import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
 import { DataService } from '../../shared/services/data.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockDataService } from '../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/test-consts';
 import { SharedModule } from '../../shared/shared.module';
 
 import { RTLReducer } from '../../store/rtl.reducers';
@@ -27,15 +27,19 @@ describe('CLNetworkInfoComponent', () => {
         }),
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLNetworkInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

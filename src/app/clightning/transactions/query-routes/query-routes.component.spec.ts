@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLQueryRoutesComponent } from './query-routes.component';
-import { mockCLEffects, mockDataService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
 import { CLEffects } from '../../store/cl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared/shared.module';
@@ -37,10 +37,13 @@ describe('CLQueryRoutesComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLQueryRoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

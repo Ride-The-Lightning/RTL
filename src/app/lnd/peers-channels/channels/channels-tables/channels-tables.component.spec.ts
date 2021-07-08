@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { ChannelsTablesComponent } from './channels-tables.component';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { mockLoggerService } from '../../../../shared/test-helpers/test-consts';
 
 describe('ChannelsTablesComponent', () => {
   let component: ChannelsTablesComponent;
@@ -25,15 +26,20 @@ describe('ChannelsTablesComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [ 
+        { provide: LoggerService, useClass: mockLoggerService },  
+      ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelsTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

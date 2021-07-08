@@ -10,7 +10,7 @@ import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { SwapModalComponent } from './swap-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockBoltzService, mockDataService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
 
@@ -33,7 +33,8 @@ describe('SwapModalComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: BoltzService, useClass: mockBoltzService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
@@ -41,10 +42,13 @@ describe('SwapModalComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(SwapModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

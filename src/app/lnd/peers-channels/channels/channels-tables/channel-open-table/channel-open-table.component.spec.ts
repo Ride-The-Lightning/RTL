@@ -8,7 +8,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { ChannelOpenTableComponent } from './channel-open-table.component';
 import { SharedModule } from '../../../../../shared/shared.module';
-import { mockDataService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/test-consts';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,17 +32,21 @@ describe('ChannelOpenTableComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService, LoopService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, LoopService,
         { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelOpenTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

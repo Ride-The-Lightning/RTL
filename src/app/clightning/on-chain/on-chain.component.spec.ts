@@ -10,7 +10,7 @@ import { CLOnChainSendComponent } from './on-chain-send/on-chain-send.component'
 import { CLOnChainReceiveComponent } from './on-chain-receive/on-chain-receive.component';
 import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
 import { CommonService } from '../../shared/services/common.service';
-import { mockDataService } from '../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/test-consts';
 import { CLUTXOTablesComponent } from './utxo-tables/utxo-tables.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../shared/services/data.service';
@@ -39,10 +39,13 @@ describe('CLOnChainComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CLOnChainComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

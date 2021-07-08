@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { QueryRoutesComponent } from './query-routes.component';
-import { mockDataService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
 import { LNDEffects } from '../../store/lnd.effects';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';
@@ -30,16 +30,20 @@ describe('QueryRoutesComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, 
         { provide: DataService, useClass: mockDataService },
         { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(QueryRoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

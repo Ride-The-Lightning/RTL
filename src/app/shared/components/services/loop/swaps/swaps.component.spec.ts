@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { SwapsComponent } from './swaps.component';
-import { mockDataService, mockLoopService } from '../../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService } from '../../../../test-helpers/test-consts';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
@@ -30,16 +30,20 @@ describe('SwapsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: LoopService, useClass: mockLoopService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(SwapsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -6,7 +6,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { NodeSettingsComponent } from './node-settings.component';
-import { mockDataService } from '../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../test-helpers/test-consts';
 import { SharedModule } from '../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../services/data.service';
@@ -29,15 +29,19 @@ describe('NodeSettingsComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(NodeSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -7,7 +7,7 @@ import { VerifyComponent } from './verify.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../store/rtl.reducers';
-import { mockDataService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('VerifyComponent', () => {
@@ -28,15 +28,18 @@ describe('VerifyComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(VerifyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

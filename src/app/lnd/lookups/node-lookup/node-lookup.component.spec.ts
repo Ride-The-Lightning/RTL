@@ -16,10 +16,13 @@ describe('NodeLookupComponent', () => {
       providers: [ LoggerService ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(NodeLookupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -8,7 +8,7 @@ import { LoopService } from '../../../shared/services/loop.service';
 
 import { ChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
@@ -30,15 +30,19 @@ describe('ChannelLiquidityInfoComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService, LoopService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, LoopService,
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ChannelLiquidityInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

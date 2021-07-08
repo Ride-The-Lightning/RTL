@@ -8,7 +8,7 @@ import { SessionService } from '../../../../shared/services/session.service';
 
 import { AuthSettingsComponent } from './auth-settings.component';
 import { SharedModule } from '../../../shared.module';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects, mockLoggerService } from '../../../test-helpers/test-consts';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -31,13 +31,19 @@ describe('AuthSettingsComponent', () => {
         }),
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
-      providers: [ LoggerService, SessionService ]
+      providers: [ 
+        SessionService,
+        { provide: LoggerService, useClass: mockLoggerService }
+      ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(AuthSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { SessionService } from '../../../../shared/services/session.service';
 
 import { TopMenuComponent } from './top-menu.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../../test-helpers/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockLoggerService, mockRTLEffects } from '../../../test-helpers/test-consts';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../shared.module';
@@ -30,15 +30,19 @@ describe('TopMenuComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService, SessionService,
+        SessionService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: RTLEffects, useClass: mockRTLEffects }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(TopMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -5,7 +5,7 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import { OnChainGeneratedAddressComponent } from './on-chain-generated-address.component';
-import { mockDataService, mockMatDialogRef } from '../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../test-helpers/test-consts';
 import { SharedModule } from '../../../shared.module';
 import { DataService } from '../../../services/data.service';
 
@@ -18,17 +18,21 @@ describe('OnChainGeneratedAddressComponent', () => {
       declarations: [ OnChainGeneratedAddressComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', address: 'test', addressType: 'test'}}
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(OnChainGeneratedAddressComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

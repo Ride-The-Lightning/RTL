@@ -7,7 +7,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 
 import { ConnectionsComponent } from './connections.component';
 import { SharedModule } from '../../shared/shared.module';
-import { mockDataService } from '../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/test-consts';
 import { CommonService } from '../../shared/services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../shared/services/data.service';
@@ -31,15 +31,19 @@ describe('ConnectionsComponent', () => {
         })
       ],
       providers: [
-        LoggerService, CommonService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ConnectionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

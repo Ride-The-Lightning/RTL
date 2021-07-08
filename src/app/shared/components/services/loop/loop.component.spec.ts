@@ -7,7 +7,7 @@ import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
-import { mockDataService, mockLoopService } from '../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService } from '../../../test-helpers/test-consts';
 import { CommonService } from '../../../services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../services/data.service';
@@ -37,10 +37,13 @@ describe('LoopComponent', () => {
       ]
     })
     .compileComponents();
+  }));
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(LoopComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
