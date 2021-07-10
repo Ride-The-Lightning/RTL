@@ -1,7 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
-import { mockLNDEffects } from '../../../shared/test-helpers/test-consts';
+import { mockLNDEffects } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 
 import { RTLReducer } from '../../../store/rtl.reducers';

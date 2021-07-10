@@ -6,7 +6,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { PeersComponent } from './peers.component';
-import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../store/rtl.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

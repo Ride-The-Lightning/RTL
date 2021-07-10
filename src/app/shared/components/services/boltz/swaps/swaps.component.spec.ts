@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { BoltzSwapsComponent } from './swaps.component';
-import { mockBoltzService, mockDataService, mockLoggerService } from '../../../../test-helpers/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../../test-helpers/mock-services';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';

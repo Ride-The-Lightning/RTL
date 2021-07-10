@@ -5,7 +5,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLInvoiceInformationComponent } from './invoice-information.component';
-import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { DataService } from '../../../shared/services/data.service';
 

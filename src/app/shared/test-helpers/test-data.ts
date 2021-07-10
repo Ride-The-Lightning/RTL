@@ -15,6 +15,64 @@ export const mockResponseData = ({
 });
 
 export const mockActionsData = {
+  resetRootStore: {
+    settings: { 
+      userPersona: 'MERCHANT',
+      themeMode: 'NIGHT',
+      themeColor: 'TEAL',
+      currencyUnits: [ 'BTC', 'SATS', 'USD' ],
+      fiatConversion: true,
+      bitcoindConfigPath: '',
+      enableLogging: true,
+      lnServerUrl: '',
+      swapServerUrl: '',
+      boltzServerUrl: '',
+      channelBackupPath: '',
+      currencyUnit: ''
+    },
+    authentication: {
+      swapMacaroonPath: '',
+      boltzMacaroonPath: '', 
+      configPath: '' 
+    },
+    index: '1',
+    lnNode: 'LN Node Name',
+    lnImplementation: 'LND'
+  },
+  resetChildrenStores: {
+    userPersona: 'MERCHANT',
+    channelBackupPath: '',
+    selCurrencyUnit: '',
+    currencyUnits: [ 'Sats', 'BTC' ],
+    fiatConversion: true,
+    lnImplementation: 'LND',
+    swapServerUrl: '',
+    boltzServerUrl: ''    
+  },
+  setSelectedNode: { 
+    settings: {
+      userPersona: 'MERCHANT',
+      themeMode: 'NIGHT',
+      themeColor: 'TEAL',
+      currencyUnits: ['BTC', 'SATS', 'USD'],
+      fiatConversion: true,
+      bitcoindConfigPath: '',
+      enableLogging: true,
+      lnServerUrl: '',
+      swapServerUrl: '',
+      boltzServerUrl: '',
+      channelBackupPath: '',
+      currencyUnit: ''
+    },
+    authentication: {
+      swapMacaroonPath: '',
+      boltzMacaroonPath: '',
+      configPath: ''
+    },
+    index: '1',
+    lnNode: 'LN Node Name',
+    lnImplementation: 'LND'
+  },
   errorSendPaymentStatus: {action: 'SendPayment', code: '500', message: 'invoice expired. Valid until 2021-06-13 19:50:12 -0400 EDT'},
   successfulSendPaymentStatus: {payment_error: '', payment_preimage: 'A8A8boZ/0FPDDTjzX1elYpMeAacYLl8aov4E3Ft/BGg=', payment_route: { total_time_lock: 2007733, total_fees: '0', total_amt: '100', hops: [{ chan_id: '1830637382236438528', chan_capacity: '1000000', amt_to_forward: '100', fee: '0', expiry: 2007733, amt_to_forward_msat: '100000', fee_msat: '0', pub_key: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', tlv_payload: true, mpp_record: { payment_addr: 'QFJt3hhqsRmNDppvjKGmVPg3yB+H+ZdKFV6ISAbOj6s=', total_amt_msat: '100000' }, custom_records: {} }], total_fees_msat: '0', total_amt_msat: '100000' }, payment_hash: 'qsC2AhYkbveGd2R+8f4fv2bb0lBkUMmvVmwondr/cqY='}
 };

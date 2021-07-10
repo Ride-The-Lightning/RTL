@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../../shared/services/common.service';
 import { DataService } from '../../../../services/data.service';
-import { mockDataService, mockLoggerService } from '../../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../../test-helpers/mock-services';
 import { SharedModule } from '../../../../shared.module';
 
 import { SwapOutInfoGraphicsComponent } from './info-graphics.component';

@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
-import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../shared/shared.module';
 
 import { CLChannelInformationComponent } from './channel-information.component';

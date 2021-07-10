@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 
 import { RTLReducer } from '../../../../store/rtl.reducers';
-import { mockMatDialogRef } from '../../../test-helpers/test-consts';
+import { mockMatDialogRef } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
 import { LoginTokenComponent } from './login-2fa-token.component';
 

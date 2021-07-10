@@ -5,7 +5,7 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import { OnChainGeneratedAddressComponent } from './on-chain-generated-address.component';
-import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
 import { DataService } from '../../../services/data.service';
 

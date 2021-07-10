@@ -8,7 +8,7 @@ import { LoopService } from '../../../shared/services/loop.service';
 
 import { ChannelLiquidityInfoComponent } from './channel-liquidity-info.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 

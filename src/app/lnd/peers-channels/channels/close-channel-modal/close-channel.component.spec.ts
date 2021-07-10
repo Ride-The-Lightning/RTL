@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { CloseChannelComponent } from './close-channel.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

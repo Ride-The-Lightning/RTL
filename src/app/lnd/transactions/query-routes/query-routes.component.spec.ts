@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { QueryRoutesComponent } from './query-routes.component';
-import { mockDataService, mockLoggerService, mockLNDEffects } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { SharedModule } from '../../../shared/shared.module';

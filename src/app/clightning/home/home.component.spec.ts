@@ -6,7 +6,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/mock-services';
 
 import { RTLReducer } from '../../store/rtl.reducers';
 import { CLHomeComponent } from './home.component';

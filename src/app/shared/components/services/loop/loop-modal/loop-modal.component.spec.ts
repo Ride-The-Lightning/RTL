@@ -10,7 +10,7 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { LoopModalComponent } from './loop-modal.component';
 import { SharedModule } from '../../../../shared.module';
-import { mockDataService, mockLoggerService, mockLoopService, mockMatDialogRef } from '../../../../test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService, mockMatDialogRef } from '../../../../test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../services/data.service';
 

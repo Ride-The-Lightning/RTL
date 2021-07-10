@@ -7,7 +7,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { FeeReportComponent } from './fee-report.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('FeeReportComponent', () => {

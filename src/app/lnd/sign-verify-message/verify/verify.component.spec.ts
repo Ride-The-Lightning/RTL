@@ -7,7 +7,7 @@ import { VerifyComponent } from './verify.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../store/rtl.reducers';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('VerifyComponent', () => {

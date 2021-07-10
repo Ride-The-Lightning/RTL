@@ -8,7 +8,7 @@ import { DataService } from '../../../../shared/services/data.service';
 
 import { OnChainUTXOsComponent } from './utxos.component';
 import { SharedModule } from '../../../../shared/shared.module';
-import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 

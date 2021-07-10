@@ -6,7 +6,7 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { OnChainTransactionHistoryComponent } from './on-chain-transaction-history.component';
-import { mockDataService, mockLoggerService } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../../shared/services/data.service';

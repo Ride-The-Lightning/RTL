@@ -5,7 +5,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { ECLTransactionsReportComponent } from './transactions-report.component';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';

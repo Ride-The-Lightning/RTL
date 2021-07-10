@@ -8,7 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { ChannelsTablesComponent } from './channels-tables.component';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { mockLoggerService } from '../../../../shared/test-helpers/test-consts';
+import { mockLoggerService } from '../../../../shared/test-helpers/mock-services';
 
 describe('ChannelsTablesComponent', () => {
   let component: ChannelsTablesComponent;

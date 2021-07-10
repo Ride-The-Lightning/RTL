@@ -517,7 +517,6 @@ export class RTLEffects implements OnDestroy {
       ));
     }))
   );
-
   
   showFile = createEffect(() => 
     this.actions.pipe(

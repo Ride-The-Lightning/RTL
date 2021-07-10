@@ -7,7 +7,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { BoltzService } from '../../../services/boltz.service';
 import { CommonService } from '../../../services/common.service';
 import { DataService } from '../../../services/data.service';
-import { mockBoltzService, mockDataService, mockLoggerService } from '../../../test-helpers/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
 
 import { BoltzRootComponent } from './boltz-root.component';

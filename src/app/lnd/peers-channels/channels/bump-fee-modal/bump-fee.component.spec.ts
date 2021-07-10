@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { BumpFeeComponent } from './bump-fee.component';
-import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 

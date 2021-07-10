@@ -7,7 +7,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ForwardingHistoryComponent } from './forwarding-history.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from '../../../shared/services/data.service';
 
