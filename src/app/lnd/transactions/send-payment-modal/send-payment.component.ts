@@ -108,7 +108,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
       this.dataService.decodePayment(this.paymentRequest, true)
-      .pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
+      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
         this.paymentDecoded = decodedPayment;
         this.selActiveChannel = {};
         if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
@@ -131,12 +131,11 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
           this.filteredMinAmtActvChannels = this.activeChannels;
           this.paymentDecodedHint = 'Memo: ' + (this.paymentDecoded.description ? this.paymentDecoded.description : 'None');
         }
-      },
-      error: err => {
+      }, err => {
         this.logger.error(err);
         this.paymentDecodedHint = 'ERROR: ' + err.message;
         this.paymentReq.control.setErrors({'decodeError': true});
-      }});
+      });
     }
   }
 

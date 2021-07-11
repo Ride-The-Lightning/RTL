@@ -121,6 +121,7 @@ describe('LightningSendPaymentsComponent', () => {
     component.paymentDecoded = {};
     component.paymentRequest = 'lntb1ps8neg8pp5u897fhxxzg068jzt59tgqe458jt7srjtd6k93x4t9ts3hqdkd2nsdpj23jhxarfdenjq3tdwp68jgzfdemx76trv5sxvmmjypxyu3pqxvxqyd9uqcqp2sp5feg8wftf3fasmp2fe86kehyqfat2xcrjvunare7rrn28yjdrw8yqrzjq2m42d94jc8fxjzq675cmhr7fpjg0vr6238xutxp9p78yeaucwjfjxgpcuqqqxsqqyqqqqlgqqqqqqgq9q9qy9qsqwf6a4w9uqthm3aslwt03ucqt03e8j2atxrmt022d5kaw65cmqc3pnghz5xmsh2tlz9syhaulrxtwmvh3gdx9j33gec6yrycwh2g05qgqdnftgk';
     component.onPaymentRequestEntry(component.paymentRequest);
+    fixture.detectChanges();
     expect(component.zeroAmtInvoice).toBe(true);
     expect(component.paymentDecodedHint).toEqual('Memo: Testing Empty Invoice for LND 3');
     expect(component.filteredMinAmtActvChannels).toEqual(component.activeChannels);

@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Store } from "@ngrx/store";
 import { of, throwError } from 'rxjs';
 import { DataService } from "./data.service";
@@ -35,7 +34,7 @@ describe("DataService", () => {
     dataService.getFiatRates().subscribe(
       rates => done.fail('expected an error, not rates'),
       error  => {
-        expect(error.status).toEqual(401);
+        expect(error.status).toEqual('401');
         expect(error.statusText).toContain('Not Found');
         done();
       }

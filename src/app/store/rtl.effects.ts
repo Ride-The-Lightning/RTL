@@ -486,7 +486,7 @@ export class RTLEffects implements OnDestroy {
           return { type: RTLActions.VOID };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
+          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error && err.error.message && typeof err.error.message === 'string' ? err.error.message : JSON.stringify(err.error) }));
           this.handleErrorWithAlert('ERROR', 'Update Selected Node Failed!', environment.CONF_API + '/updateSelNode', err);
           return of({type: RTLActions.VOID});
         })
