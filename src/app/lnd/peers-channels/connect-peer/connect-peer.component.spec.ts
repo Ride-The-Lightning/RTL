@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ConnectPeerComponent } from './connect-peer.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { EffectsModule } from '@ngrx/effects';

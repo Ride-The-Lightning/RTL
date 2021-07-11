@@ -7,9 +7,10 @@ import { LoopService } from '../../../../shared/services/loop.service';
 
 import { LoopComponent } from './loop.component';
 import { SharedModule } from '../../../shared.module';
-import { mockCommonService, mockLoopService } from '../../../services/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService } from '../../../test-helpers/mock-services';
 import { CommonService } from '../../../services/common.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../services/data.service';
 
 describe('LoopComponent', () => {
   let component: LoopComponent;
@@ -30,8 +31,9 @@ describe('LoopComponent', () => {
         })
       ],
       providers: [ 
-        { provide: LoopService, useClass: mockLoopService },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService },
+        { provide: LoopService, useClass: mockLoopService }
       ]
     })
     .compileComponents();

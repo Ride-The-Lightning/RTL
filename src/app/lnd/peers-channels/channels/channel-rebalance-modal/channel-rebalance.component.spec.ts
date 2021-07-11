@@ -6,7 +6,7 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { ChannelRebalanceComponent } from './channel-rebalance.component';
-import { mockCLEffects, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../../shared/services/test-consts';
+import { mockCLEffects, mockECLEffects, mockLNDEffects, mockLoggerService, mockMatDialogRef, mockRTLEffects } from '../../../../shared/test-helpers/mock-services';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,7 +30,7 @@ describe('ChannelRebalanceComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {channel:{}} }
       ]

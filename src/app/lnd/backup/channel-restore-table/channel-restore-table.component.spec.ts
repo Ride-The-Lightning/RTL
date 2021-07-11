@@ -6,10 +6,11 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ChannelRestoreTableComponent } from './channel-restore-table.component';
-import { mockCommonService, mockLNDEffects } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects } from '../../../shared/test-helpers/mock-services';
 import { LNDEffects } from '../../store/lnd.effects';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('ChannelRestoreTableComponent', () => {
   let component: ChannelRestoreTableComponent;
@@ -29,9 +30,10 @@ describe('ChannelRestoreTableComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: LNDEffects, useClass: mockLNDEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        { provide: LNDEffects, useClass: mockLNDEffects }
       ]
 
     })

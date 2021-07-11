@@ -6,9 +6,10 @@ import { RTLReducer } from '../../../../store/rtl.reducers';
 import { DataService } from '../../../../shared/services/data.service';
 
 import { BumpFeeComponent } from './bump-fee.component';
-import { mockDataService, mockMatDialogRef } from '../../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
 describe('BumpFeeComponent', () => {
   let component: BumpFeeComponent;
@@ -28,6 +29,7 @@ describe('BumpFeeComponent', () => {
         })
       ],
       providers: [ 
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {pendingChannel:{channel:{}}} },
         { provide: DataService, useClass: mockDataService }

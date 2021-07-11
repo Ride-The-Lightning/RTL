@@ -7,10 +7,11 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { ECLOnChainSendModalComponent } from './on-chain-send-modal.component';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockMatDialogRef, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { EffectsModule } from '@ngrx/effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('ECLOnChainSendModalComponent', () => {
   let component: ECLOnChainSendModalComponent;
@@ -31,10 +32,11 @@ describe('ECLOnChainSendModalComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [ 
-        LoggerService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

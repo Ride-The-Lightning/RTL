@@ -13,7 +13,7 @@ export class CommonService {
   private screenSize = ScreenSizeEnum.MD;
   private containerSize = {width: 1200, height: 800};
 
-  constructor(private dataService: DataService) {}
+  constructor(public dataService: DataService) {}
 
   getScreenSize() {
     return this.screenSize;
@@ -277,7 +277,7 @@ export class CommonService {
   }
 
   isVersionCompatible(currentVersion, checkVersion) {
-    let versionsArr = currentVersion.trim().replace('v', '').split('-')[0].split('.');
+    let versionsArr = currentVersion ? currentVersion.trim().replace('v', '').split('-')[0].split('.') : [];
     let checkVersionsArr = checkVersion.split('.');
     return (+versionsArr[0] > +checkVersionsArr[0])
     || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] > +checkVersionsArr[1])

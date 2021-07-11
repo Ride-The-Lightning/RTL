@@ -5,9 +5,10 @@ import { RTLReducer } from '../../../store/rtl.reducers';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { CLTransactionsReportComponent } from './transactions-report.component';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLTransactionsReportComponent', () => {
   let component: CLTransactionsReportComponent;
@@ -27,14 +28,15 @@ describe('CLTransactionsReportComponent', () => {
         })
       ],
       providers: [ 
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();
-    let service = TestBed.inject(CommonService);
   }));
-
+    
   beforeEach(() => {
+    let service = TestBed.inject(CommonService);
     fixture = TestBed.createComponent(CLTransactionsReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

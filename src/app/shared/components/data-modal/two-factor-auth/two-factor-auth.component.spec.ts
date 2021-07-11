@@ -5,7 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../../store/rtl.reducers';
 import { TwoFactorAuthComponent } from './two-factor-auth.component';
 import { SharedModule } from '../../../shared.module';
-import { mockMatDialogRef, mockRTLEffects } from '../../../services/test-consts';
+import { mockMatDialogRef, mockRTLEffects } from '../../../test-helpers/mock-services';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 

@@ -9,8 +9,9 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { ECLTransactionsComponent } from './transactions.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CurrencyUnitConverterComponent } from '../../shared/components/currency-unit-converter/currency-unit-converter.component';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mock-services';
 import { CommonService } from '../../shared/services/common.service';
+import { DataService } from '../../shared/services/data.service';
 
 describe('ECLTransactionsComponent', () => {
   let component: ECLTransactionsComponent;
@@ -31,8 +32,9 @@ describe('ECLTransactionsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

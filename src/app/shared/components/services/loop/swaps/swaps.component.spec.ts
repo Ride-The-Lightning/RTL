@@ -7,9 +7,10 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { SwapsComponent } from './swaps.component';
-import { mockCommonService, mockLoopService } from '../../../../services/test-consts';
+import { mockDataService, mockLoggerService, mockLoopService } from '../../../../test-helpers/mock-services';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../services/data.service';
 
 describe('SwapsComponent', () => {
   let component: SwapsComponent;
@@ -29,9 +30,10 @@ describe('SwapsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService,
-        { provide: LoopService, useClass: mockLoopService },
-        { provide: CommonService, useClass: mockCommonService }        
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        { provide: LoopService, useClass: mockLoopService }
       ]
     })
     .compileComponents();

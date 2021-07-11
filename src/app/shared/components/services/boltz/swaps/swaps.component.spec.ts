@@ -7,9 +7,10 @@ import { LoggerService } from '../../../../../shared/services/logger.service';
 import { BoltzService } from '../../../../../shared/services/boltz.service';
 
 import { BoltzSwapsComponent } from './swaps.component';
-import { mockBoltzService, mockCommonService } from '../../../../services/test-consts';
+import { mockBoltzService, mockDataService, mockLoggerService } from '../../../../test-helpers/mock-services';
 import { SharedModule } from '../../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../services/data.service';
 
 describe('BoltzSwapsComponent', () => {
   let component: BoltzSwapsComponent;
@@ -29,9 +30,10 @@ describe('BoltzSwapsComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService,
-        { provide: BoltzService, useClass: mockBoltzService },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
+        { provide: BoltzService, useClass: mockBoltzService }
       ]
     })
     .compileComponents();

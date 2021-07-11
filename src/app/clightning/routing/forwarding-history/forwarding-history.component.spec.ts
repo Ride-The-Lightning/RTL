@@ -6,9 +6,10 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { CLForwardingHistoryComponent } from './forwarding-history.component';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('CLForwardingHistoryComponent', () => {
   let component: CLForwardingHistoryComponent;
@@ -28,8 +29,9 @@ describe('CLForwardingHistoryComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

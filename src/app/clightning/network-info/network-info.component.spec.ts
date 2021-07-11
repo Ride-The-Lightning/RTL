@@ -1,8 +1,9 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
 import { CommonService } from '../../shared/services/common.service';
+import { DataService } from '../../shared/services/data.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../shared/shared.module';
 
 import { RTLReducer } from '../../store/rtl.reducers';
@@ -26,8 +27,9 @@ describe('CLNetworkInfoComponent', () => {
         }),
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

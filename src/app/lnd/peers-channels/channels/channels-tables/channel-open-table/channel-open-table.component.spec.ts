@@ -8,10 +8,11 @@ import { LoopService } from '../../../../../shared/services/loop.service';
 
 import { ChannelOpenTableComponent } from './channel-open-table.component';
 import { SharedModule } from '../../../../../shared/shared.module';
-import { mockCommonService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService, mockLNDEffects, mockRTLEffects } from '../../../../../shared/test-helpers/mock-services';
 import { RTLEffects } from '../../../../../store/rtl.effects';
 import { LNDEffects } from '../../../../store/lnd.effects';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../../../shared/services/data.service';
 
 describe('ChannelOpenTableComponent', () => {
   let component: ChannelOpenTableComponent;
@@ -31,10 +32,11 @@ describe('ChannelOpenTableComponent', () => {
         })
       ],
       providers: [ 
-        LoggerService, LoopService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService }, LoopService,
+        { provide: DataService, useClass: mockDataService },
         { provide: RTLEffects, useClass: mockRTLEffects },
-        { provide: LNDEffects, useClass: mockLNDEffects },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: LNDEffects, useClass: mockLNDEffects }
       ]
     })
     .compileComponents();

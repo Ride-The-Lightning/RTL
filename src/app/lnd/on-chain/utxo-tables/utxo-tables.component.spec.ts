@@ -6,7 +6,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import { UTXOTablesComponent } from './utxo-tables.component';
 import { OnChainTransactionHistoryComponent } from './on-chain-transaction-history/on-chain-transaction-history.component';
-import { mockCommonService, mockDataService, mockRTLEffects } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService, mockRTLEffects } from '../../../shared/test-helpers/mock-services';
 import { CommonService } from '../../../shared/services/common.service';
 import { SharedModule } from '../../../shared/shared.module';
 import { OnChainUTXOsComponent } from './utxos/utxos.component';
@@ -32,10 +32,11 @@ describe('UTXOTablesComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: RTLEffects, useClass: mockRTLEffects },
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: RTLEffects, useClass: mockRTLEffects },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

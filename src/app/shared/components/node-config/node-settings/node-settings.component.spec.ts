@@ -6,9 +6,10 @@ import { CommonService } from '../../../../shared/services/common.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 import { NodeSettingsComponent } from './node-settings.component';
-import { mockCommonService } from '../../../services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataService } from '../../../services/data.service';
 
 describe('NodeSettingsComponent', () => {
   let component: NodeSettingsComponent;
@@ -28,8 +29,9 @@ describe('NodeSettingsComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

@@ -2,7 +2,8 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CommonService } from '../../../../services/common.service';
-import { mockCommonService } from '../../../../services/test-consts';
+import { DataService } from '../../../../services/data.service';
+import { mockDataService, mockLoggerService } from '../../../../test-helpers/mock-services';
 import { SharedModule } from '../../../../shared.module';
 
 import { LoopInInfoGraphicsComponent } from './info-graphics.component';
@@ -19,7 +20,8 @@ describe('LoopInInfoGraphicsComponent', () => {
         SharedModule
       ],
       providers: [ 
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

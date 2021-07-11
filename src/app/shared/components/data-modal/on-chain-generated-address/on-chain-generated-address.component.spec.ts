@@ -5,8 +5,9 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import { OnChainGeneratedAddressComponent } from './on-chain-generated-address.component';
-import { mockCommonService, mockMatDialogRef } from '../../../services/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
+import { DataService } from '../../../services/data.service';
 
 describe('OnChainGeneratedAddressComponent', () => {
   let component: OnChainGeneratedAddressComponent;
@@ -17,10 +18,11 @@ describe('OnChainGeneratedAddressComponent', () => {
       declarations: [ OnChainGeneratedAddressComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', address: 'test', addressType: 'test'}},
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {alertTitle: '', address: 'test', addressType: 'test'}}
       ]
     })
     .compileComponents();

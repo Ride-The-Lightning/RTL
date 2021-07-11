@@ -2,7 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
-import { mockCommonService } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 
 import { NodeInfoComponent } from './node-info.component';
 
@@ -14,7 +14,8 @@ describe('NodeInfoComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ NodeInfoComponent ],
       providers: [
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

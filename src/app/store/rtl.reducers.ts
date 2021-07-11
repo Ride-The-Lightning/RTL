@@ -17,7 +17,7 @@ export interface RootState {
 const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
 const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
 
-const initRootState: RootState = {
+export const initRootState: RootState = {
   effectErrorsRoot: [],
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
   appConfig: {

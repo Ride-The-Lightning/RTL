@@ -5,8 +5,9 @@ import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import { InvoiceInformationComponent } from './invoice-information.component';
-import { mockCommonService, mockMatDialogRef } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../../shared/shared.module';
+import { DataService } from '../../../shared/services/data.service';
 
 describe('InvoiceInformationComponent', () => {
   let component: InvoiceInformationComponent;
@@ -17,10 +18,11 @@ describe('InvoiceInformationComponent', () => {
       declarations: [ InvoiceInformationComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService,
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {invoice:{}} }
       ]
     })
     .compileComponents();

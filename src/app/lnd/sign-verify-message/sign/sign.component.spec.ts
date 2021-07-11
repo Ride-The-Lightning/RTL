@@ -7,7 +7,7 @@ import { SignComponent } from './sign.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { StoreModule } from '@ngrx/store';
 import { RTLReducer } from '../../../store/rtl.reducers';
-import { mockDataService } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SignComponent', () => {
@@ -28,7 +28,7 @@ describe('SignComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })

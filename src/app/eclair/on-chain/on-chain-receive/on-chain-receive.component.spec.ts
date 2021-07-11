@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
-import { mockECLEffects } from '../../../shared/services/test-consts';
+import { mockECLEffects } from '../../../shared/test-helpers/mock-services';
 
 import { RTLReducer } from '../../../store/rtl.reducers';
 import { ECLEffects } from '../../store/ecl.effects';

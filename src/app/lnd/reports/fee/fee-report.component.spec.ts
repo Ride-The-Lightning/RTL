@@ -7,7 +7,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { FeeReportComponent } from './fee-report.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockCommonService, mockDataService } from '../../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('FeeReportComponent', () => {
@@ -28,8 +28,8 @@ describe('FeeReportComponent', () => {
         })
       ],
       providers: [ 
-        { provide: DataService, useClass: mockDataService },
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

@@ -6,7 +6,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
-import { mockCLEffects, mockCommonService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/services/test-consts';
+import { mockCLEffects, mockDataService, mockLoggerService, mockECLEffects, mockLNDEffects, mockRTLEffects } from '../../shared/test-helpers/mock-services';
 
 import { RTLReducer } from '../../store/rtl.reducers';
 import { CLHomeComponent } from './home.component';
@@ -15,11 +15,7 @@ import { CLBalancesInfoComponent } from './balances-info/balances-info.component
 import { CLChannelCapacityInfoComponent } from './channel-capacity-info/channel-capacity-info.component';
 import { CLChannelStatusInfoComponent } from './channel-status-info/channel-status-info.component';
 import { CLFeeInfoComponent } from './fee-info/fee-info.component';
-import { ECLEffects } from '../../eclair/store/ecl.effects';
-import { CLEffects } from '../store/cl.effects';
-import { LNDEffects } from '../../lnd/store/lnd.effects';
-import { RTLEffects } from '../../store/rtl.effects';
-
+import { DataService } from '../../shared/services/data.service';
 
 describe('CLHomeComponent', () => {
   let component: CLHomeComponent;
@@ -40,8 +36,9 @@ describe('CLHomeComponent', () => {
         EffectsModule.forRoot([mockRTLEffects, mockLNDEffects, mockCLEffects, mockECLEffects])
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
     })
     .compileComponents();

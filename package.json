@@ -6,9 +6,9 @@
     "ng": "ng",
     "start": "ng serve --open",
     "prebuild": "node ./src/prebuild",
-    "build": "ng analytics off && ng lint && ng build --configuration production",
+    "build": "ng analytics off && ng lint && ng test && ng build --configuration production",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
-    "test": "ng test",
+    "test": "ng test --watch=true --code-coverage",
     "lint": "ng lint",
     "postinstall": "ngcc"
   },

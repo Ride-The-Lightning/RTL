@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../shared/services/logger.service';
 import { ECLChannelsTablesComponent } from './channels-tables.component';
 import { SharedModule } from '../../../../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { mockLoggerService } from '../../../../shared/test-helpers/mock-services';
 
 describe('ECLChannelsTablesComponent', () => {
   let component: ECLChannelsTablesComponent;
@@ -25,9 +26,11 @@ describe('ECLChannelsTablesComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
-      providers: [ LoggerService ]
+        })
+      ],
+      providers: [
+        { provide: LoggerService, useClass: mockLoggerService }
+      ]
     })
     .compileComponents();
   }));

@@ -6,8 +6,9 @@ import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import { NetworkInfoComponent } from './network-info.component';
-import { mockCommonService } from '../../shared/services/test-consts';
+import { mockDataService, mockLoggerService } from '../../shared/test-helpers/mock-services';
 import { SharedModule } from '../../shared/shared.module';
+import { DataService } from '../../shared/services/data.service';
 
 describe('NetworkInfoComponent', () => {
   let component: NetworkInfoComponent;
@@ -26,8 +27,9 @@ describe('NetworkInfoComponent', () => {
         })
       ],
       providers: [
-        LoggerService,
-        { provide: CommonService, useClass: mockCommonService }
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService }
       ]
 
     })

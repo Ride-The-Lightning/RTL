@@ -5,8 +5,9 @@ import { CommonService } from '../../../services/common.service';
 import { LoggerService } from '../../../services/logger.service';
 
 import { ShowPubkeyComponent } from './show-pubkey.component';
-import { mockCommonService, mockMatDialogRef } from '../../../services/test-consts';
+import { mockDataService, mockLoggerService, mockMatDialogRef } from '../../../test-helpers/mock-services';
 import { SharedModule } from '../../../shared.module';
+import { DataService } from '../../../services/data.service';
 
 describe('ShowPubkeyComponent', () => {
   let component: ShowPubkeyComponent;
@@ -17,10 +18,11 @@ describe('ShowPubkeyComponent', () => {
       declarations: [ ShowPubkeyComponent ],
       imports: [ SharedModule ],
       providers: [ 
-        LoggerService, 
+        CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
+        { provide: DataService, useClass: mockDataService },
         { provide: MatDialogRef, useClass: mockMatDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: {information:{identity_pubkey: 'test'}} },
-        { provide: CommonService, useClass: mockCommonService }
+        { provide: MAT_DIALOG_DATA, useValue: {information:{identity_pubkey: 'test'}} }
       ]
     })
     .compileComponents();
