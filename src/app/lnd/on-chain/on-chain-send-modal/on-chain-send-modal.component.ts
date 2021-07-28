@@ -63,6 +63,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public passwordFormLabel = 'Authenticate with your RTL password';
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
+  public amountError = 'Amount is Required.';
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;  
   confirmFormGroup: FormGroup;  
@@ -139,17 +140,8 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   onSendFunds():boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
-    let amount = this.transactionAmount ? this.transactionAmount : 0;
-    if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
-      .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
-        amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
-      });
-    }
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     const postTransaction = {
-      amount: amount,
+      amount: this.transactionAmount ? this.transactionAmount : 0,
       sendAll: this.sweepAll
     };
     if (this.sweepAll) {
@@ -169,7 +161,23 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         postTransaction['fees'] = this.transactionFees;
       }
     }
-    this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+    if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
+      this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
+      .pipe(takeUntil(this.unSubs[3]))
+      .subscribe(data => {
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
+        postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
+        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
+        this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+      }, err => {
+        this.transactionAmount = null;
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
+        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+      });
+    } else {
+      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
+      this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
+    }
   }
 
   get invalidValues(): boolean {
@@ -228,13 +236,18 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transactionAmount && this.selAmountUnit !== event.value) {
       let amount = this.transactionAmount ? this.transactionAmount : 0;
-      this.commonService.convertCurrency(amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
+        this.selAmountUnit = event.value;
         self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+      }, err => {
+        self.transactionAmount = null;
+        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.selAmountUnit = prevSelectedUnit;
+        currSelectedUnit = prevSelectedUnit;
       });
     }
-    this.selAmountUnit = event.value;
   }  
 
   ngOnDestroy() {

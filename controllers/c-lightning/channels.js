@@ -160,9 +160,7 @@ exports.getLocalRemoteBalance = (req, res, next) => {
       body.btc_remoteBalance = common.convertToBTC(body.remoteBalance);
     }
     logger.log({level: 'INFO', fileName: 'Channels', msg: 'Local & Remote Balances Received'});
-    // setTimeout(() => {
-      res.status(200).json(body);
-    // }, 5000);
+    res.status(200).json(body);
   })
   .catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));
@@ -193,17 +191,6 @@ exports.listForwards = (req, res, next) => {
         error: (!body) ? 'Error From Server!' : body.error
       });
     } else {
-
-      // myforwards = JSON.parse(JSON.stringify(body));
-      // for (let i = 0; i < 2500; i++) {
-      //   body = [...body, ...myforwards];
-      // }
-
-      // return res.status(500).json({
-      //   message: "Forwarding History Failed!",
-      //   error: {error:'Forwarding History Failed.'}
-      // });
-
       if (body && body.length > 0) {
         body = common.sortDescByKey(body, 'received_time');
       }

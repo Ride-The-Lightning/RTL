@@ -160,7 +160,7 @@ describe('LightningSendPaymentsComponent', () => {
   });
 
   it('should convert Sats to USD by calling convertCurrency method from CommonService', () => {
-    commonService.convertCurrency(200000, 'Sats', 'USD', true).subscribe(data => {
+    commonService.convertCurrency(200000, 'Sats', 'OTHER', 'USD', true).subscribe(data => {
       expect(data.OTHER).toBe(66.87764);
     });
   });

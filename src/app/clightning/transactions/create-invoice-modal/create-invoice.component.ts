@@ -52,12 +52,12 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.ADD_INVOICE_CL))
-    .subscribe((action: CLActions.EffectError | CLActions.AddInvoice) => {
+    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.ADD_INVOICE_CL))
+    .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.AddInvoice) => {
       if (action.type === CLActions.ADD_INVOICE_CL) {
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });
@@ -89,10 +89,12 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
   onInvoiceValueChange() {
     if(this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+      }, err => {
+        this.invoiceValueHint = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     }
   }

@@ -66,6 +66,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public passwordFormLabel = 'Authenticate with your RTL password';
   public sendFundFormLabel = 'Sweep funds';
   public confirmFormLabel = 'Confirm sweep';
+  public amountError = 'Amount is Required.';
   passwordFormGroup: FormGroup;
   sendFundFormGroup: FormGroup;  
   confirmFormGroup: FormGroup;  
@@ -120,13 +121,13 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === CLActions.EFFECT_ERROR_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
-    .subscribe((action: CLActions.EffectError | CLActions.SetChannelTransactionRes) => {
+    filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL))
+    .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.SetChannelTransactionRes) => {
       if (action.type === CLActions.SET_CHANNEL_TRANSACTION_RES_CL) {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.EFFECT_ERROR_CL && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -160,8 +161,8 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.transaction.utxos = [];
       this.selUTXOs.forEach(utxo => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     if (this.sweepAll) {
+      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
       this.transaction.satoshis = 'all';
       this.transaction.address = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.flgMinConf.value) {
@@ -179,14 +180,20 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
     } else {
       if(this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-        this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
+        this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
         .pipe(takeUntil(this.unSubs[2]))
         .subscribe(data => {
+          this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
           this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
           this.selAmountUnit = CurrencyUnitEnum.SATS;
           this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
+        }, err => {
+          this.transaction.satoshis = null;
+          this.selAmountUnit = CurrencyUnitEnum.SATS;
+          this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
         });
       } else {
+        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));        
         this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
       }
     }
@@ -268,13 +275,18 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
+        this.selAmountUnit = event.value;
         self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+      }, err => {
+        self.transaction.satoshis = null;
+        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.selAmountUnit = prevSelectedUnit;
+        currSelectedUnit = prevSelectedUnit;
       });
     }
-    this.selAmountUnit = event.value;
   }  
 
   onAdvancedPanelToggle(isClosed: boolean) {
