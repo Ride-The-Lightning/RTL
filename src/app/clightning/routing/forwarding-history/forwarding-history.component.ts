@@ -9,6 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -37,6 +38,8 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
@@ -59,8 +62,9 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
     .subscribe((rtlStore) => {
       if (this.eventsData.length <= 0) {
         this.errorMessage = '';
-        if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
-          this.errorMessage = (typeof(rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
         }
         this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
         if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
