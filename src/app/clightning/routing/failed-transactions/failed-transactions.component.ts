@@ -41,13 +41,13 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'actions'];
+      this.displayedColumns = ['status', 'received_time', 'in_msatoshi', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM || this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
-      this.displayedColumns = ['status', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['status', 'received_time', 'in_msatoshi', 'actions'];
     } else {
       this.flgSticky = true;
-      this.displayedColumns = ['status', 'received_time', 'resolved_time', 'in_channel', 'out_channel', 'in_msatoshi', 'out_msatoshi', 'fee', 'actions'];
+      this.displayedColumns = ['status', 'received_time', 'in_channel', 'in_msatoshi', 'actions'];
     }
   }
 
@@ -82,14 +82,10 @@ export class CLFailedTransactionsComponent implements OnInit, AfterViewInit, OnD
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
-      [{key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
-        {key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME}],
-      [{key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING},
-        {key: 'out_channel', value: selFEvent.out_channel_alias ? selFEvent.out_channel_alias : selFEvent.out_channel, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING}],
       [{key: 'status', value: (selFEvent.status=== 'settled' ? 'Settled' : 'Unsettled'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER},
-        {key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Out (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
+        {key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME}],
+      [{key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING},
+        {key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

@@ -280,8 +280,8 @@ export class CLEffects implements OnDestroy {
             };
           },
           catchError((err: any) => {
-              this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
-              return of({type: RTLActions.VOID});
+            this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
+            return of({type: RTLActions.VOID});
           })
         ));
     }))
@@ -592,8 +592,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new CLActions.EffectError({ action: 'GetForwardingHistory', code: err.status, message: err.error.error }));
-            this.handleErrorWithAlert('ERROR', 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards', err);
+            this.handleErrorWithoutAlert('GetForwardingHistory', 'Get Forwarding History Failed.', err);
             return of({type: RTLActions.VOID});
         }));
     }))
