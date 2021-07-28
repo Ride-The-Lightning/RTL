@@ -185,3 +185,10 @@ export enum ServicesEnum {
 }
 
 export const PASSWORD_BLACKLIST = ['password', 'changeme', 'moneyprintergobrrr'];
+
+export enum APICallStatusEnum {
+  UN_INITIATED = 'UN_INITIATED',
+  INITIATED = 'INITIATED',
+  COMPLETED = 'COMPLETED',
+  ERROR = 'ERROR'
+}

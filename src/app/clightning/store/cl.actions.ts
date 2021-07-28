@@ -1,12 +1,13 @@
 import { Action } from '@ngrx/store';
 
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload, ErrorPayload } from '../../shared/models/errorPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
   ForwardingHistoryRes, Invoice, ListInvoices, OnChain, UTXO
 } from '../../shared/models/clModels';
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
+export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
 export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
 export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
 export const SET_CHILD_NODE_SETTINGS_CL = 'SET_CHILD_NODE_SETTINGS_CL';
@@ -67,6 +68,11 @@ export class ClearEffectError implements Action {
 export class EffectError implements Action {
   readonly type = EFFECT_ERROR_CL;
   constructor(public payload: ErrorPayload) { }
+}
+
+export class UpdateAPICallStatus implements Action {
+  readonly type = UPDATE_API_CALL_STATUS_CL;
+  constructor(public payload: ApiCallStatusPayload) { }
 }
 
 export class ResetCLStore implements Action {
@@ -312,7 +318,7 @@ export class SetUTXOs implements Action {
   constructor(public payload: UTXO[]) {}
 }
 
-export type CLActions =   ClearEffectError | EffectError | ResetCLStore |
+export type CLActions =   ClearEffectError | EffectError | UpdateAPICallStatus | ResetCLStore |
 SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
 FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
 GetNewAddress | SetNewAddress | FetchUTXOs | SetUTXOs |
