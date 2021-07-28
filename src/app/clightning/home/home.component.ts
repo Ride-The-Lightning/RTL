@@ -9,7 +9,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
-import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import * as CLActions from '../store/cl.actions';
@@ -109,26 +109,24 @@ export class CLHomeComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
       this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchBalance') {
-          this.flgLoading[2] = 'error';
-        }
-        if (effectsErr.action === 'FetchLocalRemoteBalance') {
-          this.flgLoading[3] = 'error';
-        }
-        if (effectsErr.action === 'FetchFeeRates') {
-          this.flgLoading[4] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[5] = 'error';
-        }
-      });
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[0] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[1] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[2] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[3] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.ERROR || rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[4] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[5] = 'error';
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {

@@ -7,6 +7,7 @@ import { UTXO } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-utxo-tables',
@@ -29,11 +30,9 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchUTXOs') {
-          this.flgLoading[1] = 'error';
-        }
-      });
+      if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[1] = 'error';
+      }
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;

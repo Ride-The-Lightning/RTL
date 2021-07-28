@@ -9,6 +9,7 @@ export interface ErrorPayload {
 }
 
 export interface ApiCallsList {
+  FetchInfo: any;
   FetchInvoices: any;
   FetchFees: any;
   FetchChannels: any;

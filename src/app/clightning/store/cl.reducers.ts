@@ -6,7 +6,6 @@ import * as CLActions from '../store/cl.actions';
 
 export interface CLState {
   apisCallStatus: ApiCallsList;
-  effectErrors: ErrorPayload[];
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
@@ -23,8 +22,7 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  apisCallStatus: { FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED } },
-  effectErrors: [],
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -42,23 +40,6 @@ export const initCLState: CLState = {
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
   switch (action.type) {
-    case CLActions.CLEAR_EFFECT_ERROR_CL:
-      const clearedEffectErrors = [...state.effectErrors];
-      const removeEffectIdx = state.effectErrors.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrors: clearedEffectErrors
-      };
-    case CLActions.EFFECT_ERROR_CL:
-      return {
-        ...state,
-        effectErrors: [...state.effectErrors, action.payload]
-      };
     case CLActions.UPDATE_API_CALL_STATUS_CL:
       const updatedApisCallStatus = state.apisCallStatus;
       updatedApisCallStatus[action.payload.action] = {

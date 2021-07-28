@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -48,11 +48,9 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.errorMessage = '';
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistory') {
-          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-        }
-      });
+      if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
+      }
       this.events = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) ? rtlStore.forwardingHistory : {};
       this.filterForwardingEvents(this.startDate, this.endDate);
       this.logger.info(rtlStore);

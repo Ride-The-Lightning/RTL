@@ -10,7 +10,7 @@ import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import { CommonService } from '../../shared/services/common.service';
-import { ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-network-info',
@@ -68,17 +68,15 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchFeeRates') {
-          this.flgLoading[2] = 'error';
-        }
-      });
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[0] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[1] = 'error';
+      }
+      if (rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.ERROR || rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[2] = 'error';
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {

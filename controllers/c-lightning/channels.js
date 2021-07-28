@@ -160,9 +160,9 @@ exports.getLocalRemoteBalance = (req, res, next) => {
       body.btc_remoteBalance = common.convertToBTC(body.remoteBalance);
     }
     logger.log({level: 'INFO', fileName: 'Channels', msg: 'Local & Remote Balances Received'});
-    setTimeout(() => {
+    // setTimeout(() => {
       res.status(200).json(body);
-    }, 5000);
+    // }, 5000);
   })
   .catch(errRes => {
     let err = JSON.parse(JSON.stringify(errRes));

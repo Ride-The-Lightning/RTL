@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
@@ -68,11 +68,9 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[0] = 'error';
+      }
       this.information = rtlStore.information;
       if (this.information.api_version) {
         this.isCompatibleVersion = this.commonService.isVersionCompatible(this.information.api_version, '0.4.2');

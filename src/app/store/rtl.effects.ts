@@ -376,7 +376,7 @@ export class RTLEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
       this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
+      // this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
       this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
       return this.httpClient.post(environment.AUTHENTICATE_API, { 

@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
@@ -72,11 +72,9 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPeers') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
+        this.flgLoading[0] = 'error';
+      }
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.balance.totalBalance || 0;
       this.peersData = rtlStore.peers ? rtlStore.peers : [];

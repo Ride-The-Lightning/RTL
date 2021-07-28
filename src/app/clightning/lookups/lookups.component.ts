@@ -45,8 +45,8 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.actions
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.EFFECT_ERROR_CL))
-    ).subscribe((resLookup: CLActions.SetLookup | CLActions.EffectError) => {
+      filter((action) => (action.type === CLActions.SET_LOOKUP_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
+    ).subscribe((resLookup: CLActions.SetLookup | CLActions.UpdateAPICallStatus) => {
       if(resLookup.type === CLActions.SET_LOOKUP_CL) {
         this.flgLoading[0] = true;
         switch (this.selectedFieldId) {
@@ -63,7 +63,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
         this.logger.info(this.nodeLookupValue);
         this.logger.info(this.channelLookupValue);
       }
-      if (resLookup.type === CLActions.EFFECT_ERROR_CL && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });

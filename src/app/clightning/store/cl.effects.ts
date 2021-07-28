@@ -58,13 +58,14 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INFO_CL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.INITIATED}));
       this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new RTLActions.CloseSpinner());
             if (info.chains && info.chains.length && info.chains[0]
               && (typeof info.chains[0] === 'object' && info.chains[0].hasOwnProperty('chain') && info.chains[0].chain.toLowerCase().indexOf('bitcoin') < 0)
@@ -102,7 +103,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_FEES_CL),
     mergeMap((action: CLActions.FetchFees) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchFees', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchFees'));
       return this.httpClient.get<Fees>(this.CHILD_API_URL + environment.FEES_API);
     }),
     map((fees) => {
@@ -124,7 +124,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_FEE_RATES_CL),
     mergeMap((action: CLActions.FetchFeeRates) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchFeeRates' + action.payload, status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchFeeRates'));
       return this.httpClient.get<FeeRates>(this.CHILD_API_URL + environment.NETWORK_API + '/feeRates/' + action.payload)
       .pipe(map((feeRates) => {
         this.logger.info(feeRates);
@@ -146,7 +145,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_BALANCE_CL),
     mergeMap((action: CLActions.FetchBalance) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchBalance', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchBalance'));
       return this.httpClient.get<Balance>(this.CHILD_API_URL + environment.BALANCE_API);
     }),
     map((balance) => {
@@ -168,7 +166,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_LOCAL_REMOTE_BALANCE_CL),
     mergeMap((action: CLActions.FetchLocalRemoteBalance) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchLocalRemoteBalance', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchLocalRemoteBalance'));
       return this.httpClient.get<LocalRemoteBalance>(this.CHILD_API_URL + environment.CHANNELS_API + '/localremotebalance');
     }),
     map((lrBalance) => {
@@ -219,7 +216,6 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.FETCH_PEERS_CL),
     mergeMap((action: CLActions.FetchPeers) => {
-      this.store.dispatch(new CLActions.ClearEffectError('FetchPeers'));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchPeers', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.PEERS_API)
         .pipe(
@@ -243,7 +239,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.SAVE_NEW_PEER_CL),
     withLatestFrom(this.store.select('cl')),
     mergeMap(([action, clData]: [CLActions.SaveNewPeer, fromCLReducers.CLState]) => {
-      this.store.dispatch(new CLActions.ClearEffectError('SaveNewPeer'));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { id: action.payload.id })
         .pipe(
@@ -290,7 +285,6 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.FETCH_CHANNELS_CL),
     mergeMap((action: CLActions.FetchChannels) => {
-      this.store.dispatch(new CLActions.ClearEffectError('FetchChannels'));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchChannels', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels')
         .pipe(
@@ -315,7 +309,6 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.SAVE_NEW_CHANNEL_CL),
     mergeMap((action: CLActions.SaveNewChannel) => {
-      this.store.dispatch(new CLActions.ClearEffectError('SaveNewChannel'));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED}));
       let newPayload = {id: action.payload.peerId, satoshis: action.payload.satoshis, feeRate: action.payload.feeRate, announce: action.payload.announce, minconf: (action.payload.minconf) ? action.payload.minconf : null};
       if (action.payload.utxos) { newPayload['utxos'] = action.payload.utxos; }
@@ -393,7 +386,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_PAYMENTS_CL),
     mergeMap((action: CLActions.FetchPayments) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchPayments', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchPayments'));
       return this.httpClient.get<Payment[]>(this.CHILD_API_URL + environment.PAYMENTS_API);
     }),
     map((payments) => {
@@ -415,7 +407,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.DECODE_PAYMENT_CL),
     mergeMap((action: CLActions.DecodePayment) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'DecodePayment', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('DecodePayment'));
       return this.httpClient.get(this.CHILD_API_URL + environment.PAYMENTS_API + '/' + action.payload.routeParam)
         .pipe(
           map((decodedPayment) => {
@@ -454,7 +445,6 @@ export class CLEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.SendPayment, any]) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('SendPayment'));
       let paymentUrl = (action.payload.pubkey && action.payload.pubkey !== '') ? this.CHILD_API_URL + environment.PAYMENTS_API + '/keysend' : this.CHILD_API_URL + environment.PAYMENTS_API + '/invoice';
       return this.httpClient.post(paymentUrl, action.payload).pipe(
         map((sendRes: any) => {
@@ -531,13 +521,12 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.PEER_LOOKUP_CL),
     mergeMap((action: CLActions.PeerLookup) => {
-      this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
-      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'PeerLookup', status: APICallStatusEnum.INITIATED}));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload)
         .pipe(
           map((resPeer) => {
             this.logger.info(resPeer);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'PeerLookup', status: APICallStatusEnum.COMPLETED}));
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: CLActions.SET_LOOKUP_CL,
@@ -545,8 +534,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new CLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
-            this.handleErrorWithAlert('PeerLookup', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listNode/' + action.payload, err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -556,13 +544,12 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.CHANNEL_LOOKUP_CL),
     mergeMap((action: CLActions.ChannelLookup) => {
-      this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
-      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'ChannelLookup', status: APICallStatusEnum.INITIATED}));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload.shortChannelID)
         .pipe(
           map((resChannel) => {
             this.logger.info(resChannel);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'ChannelLookup', status: APICallStatusEnum.COMPLETED}));
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: CLActions.SET_LOOKUP_CL,
@@ -571,8 +558,7 @@ export class CLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             if(action.payload.showError) {
-              this.store.dispatch(new CLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
-              this.handleErrorWithAlert('ChannelLookup', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload.shortChannelID, err);
+              this.handleErrorWithAlert('Lookup', 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listChannel/' + action.payload.shortChannelID, err);
             } else {
               this.store.dispatch(new RTLActions.CloseSpinner());
             }
@@ -586,13 +572,12 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.INVOICE_LOOKUP_CL),
     mergeMap((action: CLActions.InvoiceLookup) => {
-      this.store.dispatch(new CLActions.ClearEffectError('Lookup'));
-      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'InvoiceLookup', status: APICallStatusEnum.INITIATED}));
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/listInvoice?label=' + action.payload)
         .pipe(
           map((resInvoice) => {
             this.logger.info(resInvoice);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'InvoiceLookup', status: APICallStatusEnum.COMPLETED}));
+            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new RTLActions.CloseSpinner());
             return {
               type: CLActions.SET_LOOKUP_CL,
@@ -600,8 +585,7 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new CLActions.EffectError({ action: 'Lookup', code: err.status, message: err.error.message }));
-            this.handleErrorWithAlert('InvoiceLookup', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listInvoice?label=' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listInvoice?label=' + action.payload, err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -622,7 +606,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.GET_FORWARDING_HISTORY_CL),
     mergeMap((action: CLActions.GetForwardingHistory) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'GetForwardingHistory', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('GetForwardingHistory'));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards')
         .pipe(
           map((fhRes: any) => {
@@ -634,7 +617,6 @@ export class CLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.store.dispatch(new CLActions.EffectError({ action: 'GetForwardingHistory', code: err.status, message: err.error.error }));
             this.handleErrorWithAlert('GetForwardingHistory', 'Get Forwarding History Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/listForwards', err);
             return of({type: RTLActions.VOID});
         }));
@@ -668,7 +650,6 @@ export class CLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(CLActions.SAVE_NEW_INVOICE_CL),
     mergeMap((action: CLActions.SaveNewInvoice) => {
-      this.store.dispatch(new CLActions.ClearEffectError('SaveNewInvoice'));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SaveNewInvoice', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, {
         label: action.payload.label, amount: action.payload.amount, description: action.payload.description, expiry: action.payload.expiry, private: action.payload.private
@@ -705,7 +686,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_INVOICES_CL),
     mergeMap((action: CLActions.FetchInvoices) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchInvoices', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchInvoices'));
       const num_max_invoices = (action.payload.num_max_invoices) ? action.payload.num_max_invoices : 1000000;
       const index_offset = (action.payload.index_offset) ? action.payload.index_offset : 0;
       const reversed = (action.payload.reversed) ? action.payload.reversed : true;
@@ -730,7 +710,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.SET_CHANNEL_TRANSACTION_CL),
     mergeMap((action: CLActions.SetChannelTransaction) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SetChannelTransaction', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('SetChannelTransaction'));
       return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
       .pipe(
       map((postRes: any) => {
@@ -756,7 +735,6 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_UTXOS_CL),
     mergeMap((action: CLActions.FetchUTXOs) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchUTXOs', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new CLActions.ClearEffectError('FetchUTXOs'));
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '/utxos');
     }),
     map((utxos: any) => {
@@ -820,7 +798,6 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());
-      this.store.dispatch(new CLActions.EffectError({ action: actionName, code: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage }));
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }

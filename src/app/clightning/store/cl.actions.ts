@@ -8,8 +8,6 @@ import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRate
 
 export const RESET_CL_STORE = 'RESET_CL_STORE';
 export const UPDATE_API_CALL_STATUS_CL = 'UPDATE_API_CALL_STATUS_CL';
-export const CLEAR_EFFECT_ERROR_CL = 'CLEAR_EFFECT_ERROR_CL';
-export const EFFECT_ERROR_CL = 'EFFECT_ERROR_CL';
 export const SET_CHILD_NODE_SETTINGS_CL = 'SET_CHILD_NODE_SETTINGS_CL';
 export const FETCH_INFO_CL = 'FETCH_INFO_CL_CL';
 export const SET_INFO_CL = 'SET_INFO_CL';
@@ -59,16 +57,6 @@ export const ADD_INVOICE_CL = 'ADD_INVOICE_CL';
 export const DELETE_EXPIRED_INVOICE_CL = 'DELETE_EXPIRED_INVOICE_CL';
 export const SET_CHANNEL_TRANSACTION_CL = 'SET_CHANNEL_TRANSACTION_CL';
 export const SET_CHANNEL_TRANSACTION_RES_CL = 'SET_CHANNEL_TRANSACTION_RES_CL';
-
-export class ClearEffectError implements Action {
-  readonly type = CLEAR_EFFECT_ERROR_CL;
-  constructor(public payload: string) { } // payload = errorAction
-}
-
-export class EffectError implements Action {
-  readonly type = EFFECT_ERROR_CL;
-  constructor(public payload: ErrorPayload) { }
-}
 
 export class UpdateAPICallStatus implements Action {
   readonly type = UPDATE_API_CALL_STATUS_CL;
@@ -318,7 +306,7 @@ export class SetUTXOs implements Action {
   constructor(public payload: UTXO[]) {}
 }
 
-export type CLActions =   ClearEffectError | EffectError | UpdateAPICallStatus | ResetCLStore |
+export type CLActions =   UpdateAPICallStatus | ResetCLStore |
 SetChildNodeSettings | FetchInfo | SetInfo | FetchFees | SetFees | FetchFeeRates | SetFeeRates |
 FetchBalance | SetBalance | FetchLocalRemoteBalance | SetLocalRemoteBalance |
 GetNewAddress | SetNewAddress | FetchUTXOs | SetUTXOs |
