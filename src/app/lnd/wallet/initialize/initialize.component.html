@@ -18,13 +18,13 @@
   <mat-step [stepControl]="passwordFormGroup" label="Wallet Password" state="password">
     <form [formGroup]="passwordFormGroup" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="start" fxLayoutAlign.gt-sm="space-between" class="mt-1">
       <mat-form-field fxFlex="49" fxLayoutAlign="start">
-        <input matInput type="password" placeholder="Password" name="initWalletPassword" formControlName="initWalletPassword" tabindex="5" required>
+        <input matInput type="password" autocomplete="new-password" placeholder="Password" name="initWalletPassword" formControlName="initWalletPassword" tabindex="5" required>
         <mat-hint>Enter Wallet Password</mat-hint>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.required">Password is required.</mat-error>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletPassword.errors?.minlength">Password must be at least 8 characters in length.</mat-error>
       </mat-form-field>
       <mat-form-field fxFlex="49" fxLayoutAlign="start">
-        <input matInput type="password" placeholder="Confirm Password" name="initWalletConfirmPassword" formControlName="initWalletConfirmPassword" tabindex="6" required>
+        <input matInput type="password" autocomplete="new-password" placeholder="Confirm Password" name="initWalletConfirmPassword" formControlName="initWalletConfirmPassword" tabindex="6" required>
         <mat-hint>Confirm Wallet Password</mat-hint>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletConfirmPassword.errors?.required">Confirm password is required.</mat-error>
         <mat-error *ngIf="passwordFormGroup.controls.initWalletConfirmPassword.errors?.minlength">Confirm password must be at least 8 characters in length.</mat-error>

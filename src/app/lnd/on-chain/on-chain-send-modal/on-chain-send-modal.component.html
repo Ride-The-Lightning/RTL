@@ -61,7 +61,7 @@
           <ng-template matStepLabel>{{passwordFormLabel}}</ng-template>
           <div fxLayout="row">
             <mat-form-field fxFlex="100">
-              <input autoFocus matInput placeholder="Password" type="password" tabindex="1" formControlName="password" required>
+              <input autoFocus matInput placeholder="Password" type="password" autocomplete="current-password" tabindex="1" formControlName="password" required>
               <mat-error *ngIf="passwordFormGroup.controls.password.errors?.required">Password is required.</mat-error>
             </mat-form-field>
           </div>

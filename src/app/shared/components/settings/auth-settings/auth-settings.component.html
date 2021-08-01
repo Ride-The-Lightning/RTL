@@ -5,15 +5,15 @@
       <span class="page-title">Password</span>
     </div>
     <mat-form-field>
-      <input matInput placeholder="Current Password" type="password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="6" required>
+      <input matInput placeholder="Current Password" type="password" autocomplete="current-password" id="currpassword" name="currpassword" [(ngModel)]="currPassword" tabindex="6" required>
       <mat-error *ngIf="!currPassword">Current password is required.</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="New Password" type="password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="7" required>
+      <input matInput placeholder="New Password" type="password" autocomplete="new-password" id="newpassword" name="newpassword" [(ngModel)]="newPassword" tabindex="7" required>
       <mat-error *ngIf="matchOldAndNewPasswords()">{{errorMsg}}</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Confirm New Password" type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="8" required>
+      <input matInput placeholder="Confirm New Password" type="password" autocomplete="new-password" id="confirmpassword" name="confirmpassword" [(ngModel)]="confirmPassword" tabindex="8" required>
       <mat-error *ngIf="matchNewPasswords()">{{errorConfirmMsg}}</mat-error>
     </mat-form-field>
     <div fxLayout="row" fxLayoutAlign="start start" class="mt-1">
