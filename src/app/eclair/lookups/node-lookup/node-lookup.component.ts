@@ -13,7 +13,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 })
 export class ECLNodeLookupComponent implements OnInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
-  @Input() lookupResult: LookupNode;
+  @Input() lookupResult: LookupNode = {};
   public addresses: any;
   public displayedColumns = ['address', 'actions'];
 

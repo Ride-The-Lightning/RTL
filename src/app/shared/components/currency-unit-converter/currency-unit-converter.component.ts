@@ -20,14 +20,6 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
   public currencyUnits = [];
   public fiatConversion = false;
   private unSubs = [new Subject(), new Subject()];
-  // private _values: Array<any>;
-  // get values(): Array<any> { return this._values; }  
-  // @Input() set values(data: Array<any>) { 
-  //   this._values = data;
-  //   if(this.currencyUnits.length > 1 && this._values[0].dataValue >= 0) {
-  //     this.getCurrencyValues(this._values);
-  //   }
-  // }
 
   constructor(public commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
 
@@ -40,14 +32,14 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
       if(!this.fiatConversion) {
         this.currencyUnits.splice(2, 1);
       }
-      if(this.currencyUnits.length > 1 && this.values[0].dataValue >= 0) {
+      if(this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
         this.getCurrencyValues(this.values);
       }
     });
   }
 
   ngOnChanges() {
-    if(this.currencyUnits.length > 1 && this.values[0].dataValue >= 0) {
+    if(this.currencyUnits.length > 1 && this.values[0] && this.values[0].dataValue >= 0) {
       this.getCurrencyValues(this.values);
     }
   }

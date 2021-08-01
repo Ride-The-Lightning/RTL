@@ -6,7 +6,6 @@ import { Store } from '@ngrx/store';
 import { faUsers, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import { LoggerService } from '../../shared/services/logger.service';
-import { CommonService } from '../../shared/services/common.service';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -25,7 +24,7 @@ export class CLConnectionsComponent implements OnInit, OnDestroy {
   public activeLink = 0;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private commonService: CommonService, private router: Router) {}
+  constructor(private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private router: Router) {}
 
   ngOnInit() {
     this.activeLink = this.links.findIndex(link => link.link === this.router.url.substring(this.router.url.lastIndexOf('/') + 1));

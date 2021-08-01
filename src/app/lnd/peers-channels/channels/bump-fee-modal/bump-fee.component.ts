@@ -4,15 +4,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
 import { faCopy, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { PendingOpenChannel } from '../../../../shared/models/lndModels';
 import { PendingOpenChannelInformation } from '../../../../shared/models/alertData';
 import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../../shared/services/data.service';
-
-import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { LoggerService } from '../../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-bump-fee',
@@ -34,7 +32,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
   public bumpFeeError = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private store: Store<fromRTLReducer.RTLState>, private dataService: DataService, private snackBar: MatSnackBar) {}
+  constructor(public dialogRef: MatDialogRef<BumpFeeComponent>, @Inject(MAT_DIALOG_DATA) public data: PendingOpenChannelInformation, private logger: LoggerService, private dataService: DataService, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.transTypes = this.transTypes.splice(1);
@@ -54,7 +52,7 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
     .subscribe(res => { 
       this.dialogRef.close(false);
     }, (err) => {
-      console.error(err);
+      this.logger.error(err);
       this.bumpFeeError = err.message ? err.message : err;
     });
   }

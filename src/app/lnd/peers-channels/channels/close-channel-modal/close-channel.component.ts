@@ -32,11 +32,11 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   public errorMsg = 'Please wait for pending HTLCs to settle before attempting channel closure.';  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private logger: LoggerService) {}
+  constructor(public dialogRef: MatDialogRef<CloseChannelComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private logger: LoggerService) {}
 
   ngOnInit() {
     this.channelToClose = this.data.channel;
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
+    this.actions.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND))
     .subscribe((action: LNDActions.EffectError | LNDActions.SetAllChannels) => {
       if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {

@@ -1,14 +1,21 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
+import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 import { ECLNodeInfoComponent } from './node-info.component';
 
 describe('ECLNodeInfoComponent', () => {
   let component: ECLNodeInfoComponent;
   let fixture: ComponentFixture<ECLNodeInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLNodeInfoComponent ]
+      declarations: [ ECLNodeInfoComponent ],
+      providers: [ 
+        CommonService,
+        { provide: DataService, useClass: mockDataService }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +29,9 @@ describe('ECLNodeInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

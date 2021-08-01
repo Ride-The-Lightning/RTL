@@ -70,7 +70,7 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    if (this.channelsData.length > 0) {
+    if (this.channelsData && this.channelsData.length > 0) {
       this.loadRestoreTable(this.channelsData);
     }
   }

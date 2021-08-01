@@ -1,18 +1,15 @@
 {
   "name": "rtl",
-  "version": "0.11.0-beta",
+  "version": "0.11.1-beta",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
     "prebuild": "node ./src/prebuild",
-    "build": "ng analytics off && ng lint && ng build --configuration production",
-    "devbuild": "ng build --configuration production",
-    "serve": "ng serve",
+    "build": "ng analytics off && ng lint && ng test && ng build --configuration production",
     "server": "set NODE_ENV=development&&nodemon ./rtl.js",
-    "test": "ng test",
+    "test": "ng test --watch=true --code-coverage",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "postinstall": "ngcc"
   },
   "private": true,

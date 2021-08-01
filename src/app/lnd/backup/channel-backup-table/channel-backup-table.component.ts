@@ -47,7 +47,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private commonService: CommonService, private rtlEffects: RTLEffects) {
+  constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
@@ -70,7 +70,7 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
       }
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
+    this.actions.pipe(takeUntil(this.unSubs[1]), filter((action) => action.type === LNDActions.SET_ALL_CHANNELS_LND || action.type === RTLActions.SHOW_FILE)
     ).subscribe((action: LNDActions.SetAllChannels | RTLActions.ShowFile) => {
       if(action.type === LNDActions.SET_ALL_CHANNELS_LND) {
         this.selectedChannel = undefined;

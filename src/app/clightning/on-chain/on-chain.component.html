@@ -17,13 +17,13 @@
   <mat-card>
     <mat-card-content fxLayout="column">
       <nav mat-tab-nav-bar>
-        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link.link" (click)="activeLink = link.link" [routerLink]="[link.link, selectedTable.name]">{{link.name}}</div>
+        <div role="tab" mat-tab-link *ngFor="let link of links" class="mat-tab-label" [active]="activeLink === link?.link" (click)="activeLink = link?.link" [routerLink]="[link?.link, selectedTable?.name]">{{link?.name}}</div>
       </nav>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="mat-tab-body-wrapper">
         <router-outlet></router-outlet>
       </div>
       <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" class="padding-gap-x-large">
-        <rtl-cl-utxo-tables [selectedTableIndex]="selectedTable.id" (selectedTableIndexChange)="onSelectedTableIndexChanged($event)" fxLayout="row" fxFlex="100"></rtl-cl-utxo-tables>
+        <rtl-cl-utxo-tables [selectedTableIndex]="selectedTable?.id" (selectedTableIndexChange)="onSelectedTableIndexChanged($event)" fxLayout="row" fxFlex="100"></rtl-cl-utxo-tables>
       </div>
     </mat-card-content>
   </mat-card>

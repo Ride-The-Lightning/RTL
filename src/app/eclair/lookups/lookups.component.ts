@@ -40,12 +40,12 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions) {
+  constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
     this.screenSize = this.commonService.getScreenSize();
   }
 
   ngOnInit() {
-    this.actions$.pipe(takeUntil(this.unSubs[0]),
+    this.actions.pipe(takeUntil(this.unSubs[0]),
       filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))).subscribe((resLookup: ECLActions.SetLookup | ECLActions.EffectError) => {
         if(resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           this.flgLoading[0] = true;

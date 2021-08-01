@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { ECLBalancesInfoComponent } from './balances-info.component';
 
@@ -6,9 +7,10 @@ describe('ECLBalancesInfoComponent', () => {
   let component: ECLBalancesInfoComponent;
   let fixture: ComponentFixture<ECLBalancesInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLBalancesInfoComponent ]
+      declarations: [ ECLBalancesInfoComponent ],
+      imports: [ SharedModule ]
     })
     .compileComponents();
   }));
@@ -22,4 +24,9 @@ describe('ECLBalancesInfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

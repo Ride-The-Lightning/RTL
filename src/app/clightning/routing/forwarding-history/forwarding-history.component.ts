@@ -65,7 +65,9 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
           }
         });
         this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
-        this.loadForwardingEventsTable(this.successfulEvents);
+        if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
+          this.loadForwardingEventsTable(this.successfulEvents);
+        }
         this.logger.info(rtlStore);
       }
     });

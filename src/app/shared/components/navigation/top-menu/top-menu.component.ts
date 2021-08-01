@@ -36,7 +36,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
   public showLogout = false;
   private unSubs = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions$: Actions) {
+  constructor(private logger: LoggerService, private sessionService: SessionService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions) {
     this.version = environment.VERSION;
   }
 
@@ -68,7 +68,7 @@ export class TopMenuComponent implements OnInit, OnDestroy {
       this.showLogout = session.token ? true : false;
       this.flgLoading = session.token ? true : false;
     });
-    this.actions$
+    this.actions
     .pipe(
       takeUntil(this.unSubs[2]),
       filter((action) => action.type === RTLActions.LOGOUT)

@@ -119,7 +119,6 @@ exports.getSentPaymentsInformation = (req, res, next) => {
     let paymentsArr = req.body.payments.split(',');
     return Promise.all(paymentsArr.map(payment => {return getSentInfoFromPaymentRequest(payment)}))
     .then(function(values) {
-      console.warn(values);
       logger.log({level: 'DEBUG', fileName: 'Payments', msg: 'Payment Sent Informations', data: values});
       logger.log({level: 'INFO', fileName: 'Payments', msg: 'Sent Payment Information Received'});
       res.status(200).json(values);

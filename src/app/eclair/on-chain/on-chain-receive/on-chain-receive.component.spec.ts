@@ -1,14 +1,29 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+import { mockECLEffects } from '../../../shared/test-helpers/mock-services';
 
+import { RTLReducer } from '../../../store/rtl.reducers';
+import { ECLEffects } from '../../store/ecl.effects';
 import { ECLOnChainReceiveComponent } from './on-chain-receive.component';
 
 describe('ECLOnChainReceiveComponent', () => {
   let component: ECLOnChainReceiveComponent;
   let fixture: ComponentFixture<ECLOnChainReceiveComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainReceiveComponent ]
+      declarations: [ ECLOnChainReceiveComponent ],
+      imports: [
+        StoreModule.forRoot(RTLReducer, {
+          runtimeChecks: {
+            strictStateImmutability: false,
+            strictActionImmutability: false
+          }
+        })
+      ],
+      providers: [
+        { provide: ECLEffects, useClass: mockECLEffects }
+      ]
     })
     .compileComponents();
   }));
@@ -22,4 +37,9 @@ describe('ECLOnChainReceiveComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
 });

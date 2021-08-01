@@ -39,7 +39,7 @@ export class RTLEffects implements OnDestroy {
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(
-    private actions$: Actions,
+    private actions: Actions,
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private logger: LoggerService,
@@ -51,7 +51,7 @@ export class RTLEffects implements OnDestroy {
     private router: Router) {}
 
   closeAllDialogs = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.CLOSE_ALL_DIALOGS),
     map((action: RTLActions.CloseAllDialogs) => {
       this.dialog.closeAll();
@@ -60,7 +60,7 @@ export class RTLEffects implements OnDestroy {
   );
   
   openSnackBar = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.OPEN_SNACK_BAR),
     map((action: RTLActions.OpenSnackBar) => {
       if (typeof action.payload === 'string') {
@@ -73,7 +73,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   openSpinner = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.OPEN_SPINNER),
     map((action: RTLActions.OpenSpinner) => {
       this.dialogRef = this.dialog.open(SpinnerDialogComponent, { data: { titleMessage: action.payload}});
@@ -82,7 +82,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   closeSpinner = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
       if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage.includes('...'))) { this.dialogRef.close(); }
@@ -100,7 +100,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   openAlert = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.OPEN_ALERT),
     map((action: RTLActions.OpenAlert) => {
       action.payload.width = this.alertWidth;
@@ -114,7 +114,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   closeAlert = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.CLOSE_ALERT),
     map((action: RTLActions.CloseAlert) => {
       if (this.dialogRef) { this.dialogRef.close(); }
@@ -124,7 +124,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   openConfirm = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.OPEN_CONFIRMATION),
     map((action: RTLActions.OpenConfirmation) => {
       action.payload.width = this.confirmWidth;
@@ -134,7 +134,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   closeConfirm = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.CLOSE_CONFIRMATION),
     take(1),
     map((action: RTLActions.CloseConfirmation) => {
@@ -146,7 +146,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   showNodePubkey = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SHOW_PUBKEY),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootData]: [RTLActions.ShowPubkey, fromRTLReducer.RootState]) => {
@@ -163,7 +163,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   appConfigFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.FETCH_RTL_CONFIG),
     mergeMap((action: RTLActions.FetchRTLConfig) => {
       this.screenSize = this.commonService.getScreenSize();
@@ -206,7 +206,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   settingSave = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SAVE_SETTINGS),
     mergeMap((action: RTLActions.SaveSettings) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSettings'));
@@ -237,7 +237,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   updateServicesettings = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.UPDATE_SERVICE_SETTINGS),
     mergeMap((action: RTLActions.UpdateServiceSettings) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateServiceSettings'));
@@ -259,7 +259,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   ssoSave = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SAVE_SSO),
     mergeMap((action: RTLActions.SaveSSO) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSSO'));
@@ -281,7 +281,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   twoFASettingSave = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.TWO_FA_SAVE_SETTINGS),
     mergeMap((action: RTLActions.TwoFASaveSettings) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Update2FASettings'));
@@ -300,7 +300,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   configFetch = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.FETCH_CONFIG),
     mergeMap((action: RTLActions.FetchConfig) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('fetchConfig'));
@@ -323,7 +323,7 @@ export class RTLEffects implements OnDestroy {
   );
   
   showLnConfig = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SHOW_CONFIG),
     map((action: RTLActions.ShowConfig) => {
       return action.payload;
@@ -332,7 +332,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   isAuthorized = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.IS_AUTHORIZED),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [RTLActions.IsAuthorized, any]) => {
@@ -362,7 +362,7 @@ export class RTLEffects implements OnDestroy {
   );
   
   isAuthorizedRes = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.IS_AUTHORIZED_RES),
     map((action: RTLActions.IsAuthorizedRes) => {
       return action.payload;
@@ -371,7 +371,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   authLogin = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.LOGIN),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
@@ -406,7 +406,7 @@ export class RTLEffects implements OnDestroy {
   );
   
   tokenVerify = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.VERIFY_TWO_FA),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.VerifyTwoFA, fromRTLReducer.RootState]) => {
@@ -429,7 +429,7 @@ export class RTLEffects implements OnDestroy {
   );
   
   logOut = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.LOGOUT),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]) => {
@@ -447,7 +447,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   resetPassword = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.RESET_PASSWORD),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
@@ -473,7 +473,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   setSelectedNode = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SET_SELECTED_NODE),
     mergeMap((action: RTLActions.SetSelelectedNode) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
@@ -486,7 +486,7 @@ export class RTLEffects implements OnDestroy {
           return { type: RTLActions.VOID };
         }),
         catchError((err: any) => {
-          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error.message }));
+          this.store.dispatch(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: err.status, message: err.error && err.error.message && typeof err.error.message === 'string' ? err.error.message : JSON.stringify(err.error) }));
           this.handleErrorWithAlert('ERROR', 'Update Selected Node Failed!', environment.CONF_API + '/updateSelNode', err);
           return of({type: RTLActions.VOID});
         })
@@ -495,7 +495,7 @@ export class RTLEffects implements OnDestroy {
   );
 
   fetchFile = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.FETCH_FILE),
     mergeMap((action: RTLActions.FetchFile) => {
       this.store.dispatch(new RTLActions.ClearEffectErrorRoot('fetchFile'));
@@ -517,10 +517,9 @@ export class RTLEffects implements OnDestroy {
       ));
     }))
   );
-
   
   showFile = createEffect(() => 
-    this.actions$.pipe(
+    this.actions.pipe(
     ofType(RTLActions.SHOW_FILE),
     map((action: RTLActions.ShowFile) => {
       return action.payload;

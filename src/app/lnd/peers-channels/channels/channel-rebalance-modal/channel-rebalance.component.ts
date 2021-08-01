@@ -44,7 +44,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   statusFormGroup: FormGroup;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions$: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
+  constructor(public dialogRef: MatDialogRef<ChannelRebalanceComponent>, @Inject(MAT_DIALOG_DATA) public data: ChannelInformation, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private formBuilder: FormBuilder, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     this.selChannel = this.data.channel;
@@ -73,7 +73,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
       this.invoices = rtlStore.invoices;
       this.logger.info(rtlStore);
     });
-    this.actions$.pipe(takeUntil(this.unSubs[1]),
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     filter((action) => action.type === LNDActions.SET_QUERY_ROUTES_LND || action.type === LNDActions.SEND_PAYMENT_STATUS_LND || action.type === LNDActions.NEWLY_SAVED_INVOICE_LND))
     .subscribe((action: (LNDActions.SetQueryRoutes | LNDActions.SendPaymentStatus | LNDActions.NewlySavedInvoice)) => {
       if (action.type === LNDActions.SET_QUERY_ROUTES_LND) { this.queryRoute = action.payload; }     
