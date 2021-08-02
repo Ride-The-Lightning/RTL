@@ -11,6 +11,7 @@ var errMsg = '';
 var request = require('request-promise');
 var ini = require('ini');
 var parseHocon = require('hocon-parser');
+const { config } = require('rxjs');
 common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 connect.setDefaultConfig = () => {
@@ -88,7 +89,6 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
   try {
     RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    // console.log(config.nodes[0].Settings.enableLogging)
     config.multiPassHashed = multiPassHashed;
     delete config.multiPass;
     fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
@@ -99,27 +99,47 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
   }
 }
 
-
-connect.logByLevel = (idx) => {
-  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
-  try {
-    RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
-    var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-    if (config.nodes[idx].Settings.enableLogging) {
-      config.nodes[idx].Settings.logLevel = "INFO";
-    } else {
-      config.nodes[idx].Settings.logLevel = "ERROR";
+/*this function will detect change in RTL-Config.json , if one of the nodes doesn't have logLevel it will bitwise OR des with true and at the end will
+return des*/
+connect.detectConfigChange = (allNodes) => {
+  des = false
+  allNodes.forEach((node, idx) => {
+    if(typeof allNodes[idx].Settings.enableLogging !== "undefined") {
+      des|=true
     }
-    delete config.nodes[idx].Settings.enableLogging;
-    // console.log(RTLConfFile, "-----")
-    fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    return config.nodes[idx].Settings.logLevel
-  }
+  })
+  return des
+}
 
-  catch (err) {
-    errMsg = errMsg + '\nloglevel setup failed!';
+connect.logByLevel = (allNodes) => {
+  // true means a node needs to change, else no change needed
+  if(connect.detectConfigChange(allNodes)) {
+    common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
+    try {
+      allNodes.forEach((node, idx) => {
+        var des = allNodes[idx].Settings.enableLogging
+        if(des === true) {
+          allNodes[idx].Settings.logLevel="INFO"
+        } else {
+          allNodes[idx].Settings.logLevel="ERROR"
+        }
+        common.nodes[idx].logLevel = allNodes[idx].Settings.logLevel
+        delete allNodes[idx].Settings.enableLogging
+      })
+      RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
+      var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+      config.nodes = allNodes
+      fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    } catch (err) {
+      errMsg = errMsg + '\nerror configuring logLevel';
+    }
+  } else {
+    allNodes.forEach((node, idx) => {
+      common.nodes[idx].logLevel = allNodes[idx].Settings.logLevel
+    })
   }
 }
+
 
 connect.validateNodeConfig = (config) => {
   if ((process.env.RTL_SSO == 0) || (typeof process.env.RTL_SSO === 'undefined' && +config.SSO.rtlSSO === 0)) {
@@ -136,7 +156,6 @@ connect.validateNodeConfig = (config) => {
   common.host = (process.env.HOST) ? process.env.HOST : (config.host) ? config.host : null;
   if (config.nodes && config.nodes.length > 0) {
     config.nodes.forEach((node, idx) => {
-      // console.log(node, "++++++++++++++++++++++\n")
       common.nodes[idx] = {};
       common.nodes[idx].index = node.index;
       common.nodes[idx].ln_node = node.lnNode;
@@ -230,15 +249,6 @@ connect.validateNodeConfig = (config) => {
         common.nodes[idx].boltz_macaroon_path = '';
       }
       common.nodes[idx].bitcoind_config_path = process.env.BITCOIND_CONFIG_PATH ? process.env.BITCOIND_CONFIG_PATH : (node.Settings.bitcoindConfigPath) ? node.Settings.bitcoindConfigPath : '';
-      // common.nodes[idx].enable_logging = (node.Settings.enableLogging) ? !!node.Settings.enableLogging : false;
-      // common.nodes[idx].logLevel = connect.logByLevel(idx);
-      // if(config.nodes)
-      if(config.nodes[idx].Settings.logLevel==undefined) {
-        common.nodes[idx].logLevel = connect.logByLevel(idx);
-      } else if(config.nodes[idx].Settings.logLevel!==undefined) {
-        common.nodes[idx].logLevel = config.nodes[idx].Settings.logLevel
-      }
-      // console.log(common.nodes[idx].logLevel, "++++")
       common.nodes[idx].channel_backup_path = process.env.CHANNEL_BACKUP_PATH ? process.env.CHANNEL_BACKUP_PATH : (node.Settings.channelBackupPath) ? node.Settings.channelBackupPath : common.rtl_conf_file_path + common.path_separator + 'backup' + common.path_separator + 'node-' + node.index;
       try {
         connect.createDirectory(common.nodes[idx].channel_backup_path);
@@ -255,10 +265,8 @@ connect.validateNodeConfig = (config) => {
         console.error('Something went wrong while creating the backup directory: \n' + err);
       }
 
-      // if (common.nodes[idx].enable_logging) {
         common.nodes[idx].log_file = common.rtl_conf_file_path + '/logs/RTL-Node-' + node.index + '.log';
         const log_file = common.nodes[idx].log_file;
-        // console.log(log_file)
         if (fs.existsSync(log_file)) {
           fs.writeFile(log_file, '', () => { });
         } else {
@@ -272,8 +280,8 @@ connect.validateNodeConfig = (config) => {
             console.error('Something went wrong while creating log file ' + log_file + ': \n' + err);
           }
         }
-      // }
     });
+    connect.logByLevel(config.nodes)
   }
 
   connect.setSSOParams(config);
