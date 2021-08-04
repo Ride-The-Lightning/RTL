@@ -99,7 +99,6 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 }
 
 connect.updateLogByLevel = () => {
-  console.log("_+_+_+")
   updateLogFlag = false
   common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
   try {
@@ -112,7 +111,6 @@ connect.updateLogByLevel = () => {
         delete node.Settings.enableLogging
       }
     })
-    console.log(updateLogFlag)
     if(updateLogFlag === true) {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }

@@ -19,7 +19,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
       break;
 
     case 'WARN':
-      if (selNode && (selNode.logLevel == "INFO" || selNode.logLevel == "WARN" || selNode.logLevel == "DEBUG")) {
+      if (selNode && (selNode.log_level == "INFO" || selNode.log_level == "WARN" || selNode.log_level == "DEBUG")) {
         msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
         console.warn(msgStr)
         fs.appendFile(selNode.log_file, msgStr, function (err) {
@@ -33,7 +33,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
       break;
 
     case 'INFO':
-      if (selNode && (selNode.logLevel == "INFO" || selNode.logLevel == "DEBUG")) {
+      if (selNode && (selNode.log_level == "INFO" || selNode.log_level == "DEBUG")) {
         msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
         console.log(msgStr);
         fs.appendFile(selNode.log_file, msgStr, function (err) {
@@ -47,8 +47,8 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
       break;
 
     case 'DEBUG':
-      if (selNode && selNode.logLevel == "DEBUG") {
-        if (typeof msgJSON.data !== 'string' && msgJSON.data.length && msgJSON.data.length > 0) {
+      if (selNode && selNode.log_level == "DEBUG") {
+        if (typeof msgJSON.data !== 'string' && msgJSON.data && msgJSON.data.length && msgJSON.data.length > 0) {
           msgStr = msgJSON.data.reduce((accumulator, dataEle) => {
             return accumulator + (typeof dataEle === 'object' ? JSON.stringify(dataEle) : (typeof dataEle === 'string') ? dataEle : '') + ', ';
           }, msgStr + ': [');
