@@ -7,7 +7,6 @@ import { UTXO } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-utxo-tables',
@@ -21,7 +20,6 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
   public numUtxos = 0;
   public dustUtxos: UTXO[] = [];
   public numDustUtxos = 0;
-  public flgLoading: Array<Boolean | 'error'> = [true, true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -30,24 +28,15 @@ export class CLUTXOTablesComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      if (rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.ERROR) {
-        this.flgLoading[1] = 'error';
-      }
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;
         this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.value < 1000);
         this.numDustUtxos = this.dustUtxos.length;
       }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.utxos) ? false : true;
-      }
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = rtlStore.utxos;
         this.numUtxos = this.utxos.length;
-      }
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (rtlStore.utxos) ? false : true;
       }
       this.logger.info(rtlStore);
     });

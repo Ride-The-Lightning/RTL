@@ -41,12 +41,7 @@ export class CLEffects implements OnDestroy {
           rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.COMPLETED &&
           rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.COMPLETED &&
           rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchUTXOs.status === APICallStatusEnum.COMPLETED
+          rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner());
         }
@@ -563,29 +558,6 @@ export class CLEffects implements OnDestroy {
               this.store.dispatch(new RTLActions.CloseSpinner());
             }
             this.store.dispatch(new CLActions.SetLookup([]));
-            return of({type: RTLActions.VOID});
-        }));
-    }))
-  );
-
-  invoiceLookupCL = createEffect(() => 
-    this.actions.pipe(
-    ofType(CLActions.INVOICE_LOOKUP_CL),
-    mergeMap((action: CLActions.InvoiceLookup) => {
-      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
-      return this.httpClient.get(this.CHILD_API_URL + environment.INVOICES_API + '/listInvoice?label=' + action.payload)
-        .pipe(
-          map((resInvoice) => {
-            this.logger.info(resInvoice);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
-            return {
-              type: CLActions.SET_LOOKUP_CL,
-              payload: resInvoice
-            };
-          }),
-          catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', 'Invoice Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/listInvoice?label=' + action.payload, err);
             return of({type: RTLActions.VOID});
         }));
     }))

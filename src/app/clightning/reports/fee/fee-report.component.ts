@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -23,7 +24,6 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public events: ForwardingHistoryRes = {};
   public filteredEventsBySelectedPeriod: ForwardingEvent[] = [];
   public eventFilterValue = '';
-  public errorMessage = '';
   public totalFeeMsat = null;
   public today = new Date(Date.now());
   public startDate = new Date(this.today.getFullYear(), this.today.getMonth(), 1, 0, 0, 0);
@@ -37,6 +37,9 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -48,6 +51,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
         this.errorMessage = (typeof(rtlStore.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(rtlStore.apisCallStatus.GetForwardingHistory.message) : rtlStore.apisCallStatus.GetForwardingHistory.message;
       }

@@ -9,6 +9,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -17,8 +18,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
-import { RTLEffects } from '../../../store/rtl.effects';
 
+import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -50,7 +51,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];  
   public information: GetInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public private = false;
   public expiryStep = 100;
@@ -58,6 +58,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
@@ -81,8 +84,10 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.ERROR) {
-        this.flgLoading[0] = 'error';
+        this.errorMessage = (typeof(this.apisCallStatus.FetchInvoices.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInvoices.message) : this.apisCallStatus.FetchInvoices.message;
       }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
@@ -91,9 +96,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
         this.loadInvoicesTable(this.invoiceJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 5000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }

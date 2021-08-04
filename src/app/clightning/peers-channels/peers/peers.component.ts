@@ -11,8 +11,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
+import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 import { CLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 
@@ -20,7 +22,6 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { CLConnectPeerComponent } from '../connect-peer/connect-peer.component';
 
 @Component({
   selector: 'rtl-cl-peers',
@@ -43,12 +44,14 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
@@ -72,17 +75,16 @@ export class CLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
-        this.flgLoading[0] = 'error';
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
       }
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.balance.totalBalance || 0;
       this.peersData = rtlStore.peers ? rtlStore.peers : [];
       if (this.peersData.length > 0) {
         this.loadPeersTable(this.peersData);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = false;
       }
       this.logger.info(rtlStore);
     });

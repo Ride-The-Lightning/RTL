@@ -10,18 +10,19 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
+
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { Payments } from '../../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -41,7 +42,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: Payment[] = [];
@@ -55,6 +55,9 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
@@ -82,8 +85,10 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
-        this.flgLoading[0] = 'error';
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
       }
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
@@ -92,9 +97,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         this.loadPaymentsTable(this.paymentJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }
