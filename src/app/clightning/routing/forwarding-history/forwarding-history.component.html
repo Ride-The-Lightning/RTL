@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== '', 'padding-gap-x': true}">
+<div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border my-1': errorMessage !== '', 'padding-gap-x': true}">
   <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
@@ -7,6 +7,7 @@
     </mat-form-field>
   </div>
   <div *ngIf="errorMessage === ''" [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <mat-progress-bar *ngIf="apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
     <table mat-table #table [dataSource]="forwardingHistoryEvents" fxFlex="100" matSort class="overflow-auto">
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
@@ -40,12 +41,6 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before">Fee (mSat)</th>
         <td mat-cell *matCellDef="let fhEvent"><span fxLayoutAlign="end center">{{fhEvent?.fee | number}}</span></td>
       </ng-container>
-      <ng-container matColumnDef="payment_hash">
-        <th mat-header-cell class="pl-4" *matHeaderCellDef mat-sort-header>Payment Hash</th>
-        <td mat-cell class="pl-4" *matCellDef="let fhEvent">
-          <div>{{fhEvent?.payment_hash | slice:0:10}}...</div>
-        </td>
-      </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef class="px-3">
           <div class="bordered-box table-actions-select">
@@ -61,7 +56,8 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1">No forwarding event available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>
@@ -69,5 +65,5 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator *ngIf="errorMessage === ''" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
 </div>

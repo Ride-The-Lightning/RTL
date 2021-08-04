@@ -43,6 +43,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public currConvertorRate = {};
   public unitConversionValue = 0;
   public currencyUnitFormats = CURRENCY_UNIT_FORMATS;
+  public amountError = 'Amount is Required.';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(public dialogRef: MatDialogRef<ECLOnChainSendModalComponent>, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService, private decimalPipe: DecimalPipe, private actions: Actions) {}
@@ -73,16 +74,21 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   onSendFunds():boolean|void {
     if(this.invalidValues) { return true; }
     this.sendFundError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
-      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(data => {
+        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
+      }, err => {
+        this.transaction.amount = null;
+        this.selAmountUnit = CurrencyUnitEnum.SATS;
+        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     } else {
+      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
       this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
     }
   }
@@ -103,13 +109,18 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     let prevSelectedUnit = (this.selAmountUnit === this.amountUnits[2]) ? CurrencyUnitEnum.OTHER : this.selAmountUnit;
     let currSelectedUnit = event.value === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : event.value;
     if(this.transaction.amount && this.selAmountUnit !== event.value) {
-      this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, this.amountUnits[2], this.fiatConversion)
+      this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(data => {
+        this.selAmountUnit = event.value;
         self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
+      }, err => {
+        self.transaction.amount = null;
+        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.selAmountUnit = prevSelectedUnit;
+        currSelectedUnit = prevSelectedUnit;
       });
     }
-    this.selAmountUnit = event.value;
   }  
 
   ngOnDestroy() {

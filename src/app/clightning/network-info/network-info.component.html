@@ -10,13 +10,19 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxFlex="100" class="dashboard-card-content">
+            <mat-card-content fxLayout="column" fxFlex="100" class="dashboard-card-content">
+              <mat-progress-bar mode="indeterminate"
+                *ngIf="((card.id === 'node' || card.id === 'status') && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+              ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
-                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
-                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': errorMessages[0] !== ''}"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': errorMessages[0] !== ''}"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': errorMessages[1] !== ''}"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [ngClass]="{'error-border': errorMessages[2] !== ''}"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [ngClass]="{'error-border': errorMessages[3] !== ''}"></rtl-cl-fee-rates>
               </div>
             </mat-card-content>
           </mat-card>
@@ -35,13 +41,19 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="stretch center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center stretch" class="w-100 h-93">
           <mat-card fxLayout="row" fxFlex="95" fxLayoutAlign="start stretch" class="dashboard-card w-96 h-93">
-            <mat-card-content fxFlex="100" class="dashboard-card-content">
+            <mat-card-content fxLayout="column" fxFlex="100" class="dashboard-card-content">
+              <mat-progress-bar mode="indeterminate"
+                *ngIf="((card.id === 'node' || card.id === 'status') && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKB' && apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED) ||
+                (card.id === 'feeRatesKW' && apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED)"
+              ></mat-progress-bar>
               <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
-                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-node-info>
-                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': flgLoading[0]==='error'}"></rtl-cl-channel-status-info>
-                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': flgLoading[1]==='error'}"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="flgLoading[2]" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100"></rtl-cl-fee-rates>
+                <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false" [ngClass]="{'error-border': errorMessages[0] !== ''}"></rtl-cl-node-info>
+                <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [ngClass]="{'error-border': errorMessages[0] !== ''}"></rtl-cl-channel-status-info>
+                <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [ngClass]="{'error-border': errorMessages[1] !== ''}"></rtl-cl-fee-info>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [ngClass]="{'error-border': errorMessages[2] !== ''}"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [ngClass]="{'error-border': errorMessages[3] !== ''}"></rtl-cl-fee-rates>
               </div>
             </mat-card-content>
           </mat-card>

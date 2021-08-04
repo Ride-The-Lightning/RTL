@@ -8,7 +8,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { ForwardingEvent } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -37,6 +38,8 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
@@ -59,11 +62,10 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
     .subscribe((rtlStore) => {
       if (this.eventsData.length <= 0) {
         this.errorMessage = '';
-        rtlStore.effectErrors.forEach(effectsErr => {
-          if (effectsErr.action === 'GetForwardingHistory') {
-            this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-          }
-        });
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (this.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+        }
         this.successfulEvents = (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length > 0) ? this.filterSuccessfulEvents(rtlStore.forwardingHistory.forwarding_events) : [];
         if (this.successfulEvents.length > 0 && this.sort && this.paginator) {
           this.loadForwardingEventsTable(this.successfulEvents);
@@ -99,12 +101,12 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   onForwardingEventClick(selFEvent: ForwardingEvent, event: any) {
     const reorderedFHEvent = [
       [{key: 'payment_hash', value: selFEvent.payment_hash, title: 'Payment Hash', width: 100, type: DataTypeEnum.STRING}],
+      [{key: 'status', value: (selFEvent.status === 'settled' ? 'Settled' : 'Failed'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
+        {key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'received_time', value: selFEvent.received_time, title: 'Received Time', width: 50, type: DataTypeEnum.DATE_TIME},
         {key: 'resolved_time', value: selFEvent.resolved_time, title: 'Resolved Time', width: 50, type: DataTypeEnum.DATE_TIME}],
       [{key: 'in_channel', value: selFEvent.in_channel_alias ? selFEvent.in_channel_alias : selFEvent.in_channel, title: 'Inbound Channel', width: 50, type: DataTypeEnum.STRING},
         {key: 'out_channel', value: selFEvent.out_channel_alias ? selFEvent.out_channel_alias : selFEvent.out_channel, title: 'Outbound Channel', width: 50, type: DataTypeEnum.STRING}],
-      [{key: 'status', value: (selFEvent.status === 'settled' ? 'Settled' : 'Failed'), title: 'Status', width: 50, type: DataTypeEnum.STRING},
-        {key: 'fee', value: selFEvent.fee, title: 'Fee (mSats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'in_msatoshi', value: selFEvent.in_msatoshi, title: 'In (mSats)', width: 50, type: DataTypeEnum.NUMBER},
         {key: 'out_msatoshi', value: selFEvent.out_msatoshi, title: 'Out (mSats)', width: 50, type: DataTypeEnum.NUMBER}]
     ];

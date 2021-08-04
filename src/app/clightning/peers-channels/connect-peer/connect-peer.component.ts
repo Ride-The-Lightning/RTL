@@ -75,8 +75,8 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.EFFECT_ERROR_CL))
-    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.EffectError)) => {
+    filter((action) => action.type === CLActions.NEWLY_ADDED_PEER_CL || action.type === CLActions.FETCH_CHANNELS_CL || action.type === CLActions.UPDATE_API_CALL_STATUS_CL))
+    .subscribe((action: (CLActions.NewlyAddedPeer | CLActions.FetchChannels | CLActions.UpdateAPICallStatus)) => {
       if (action.type === CLActions.NEWLY_ADDED_PEER_CL) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -87,7 +87,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.FETCH_CHANNELS_CL) { 
         this.dialogRef.close();
       }
-      if (action.type === CLActions.EFFECT_ERROR_CL) { 
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

@@ -7,7 +7,7 @@
         <mat-panel-title>Pending Open ({{pendingOpenChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container">
-        <mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'w-100 error-border bordered-box': flgLoading[0]==='error','bordered-box w-100': true}">
+        <table mat-table #table [dataSource]="pendingOpenChannels" matSort [ngClass]="{'w-100 error-border bordered-box': flgLoading[0]==='error','bordered-box w-100': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
             <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
@@ -44,7 +44,7 @@
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_open']" [ngClass]="{'display-none': pendingOpenChannels && pendingOpenChannels?.data && pendingOpenChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedOpenColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedOpenColumns;"></mat-row>
-        </mat-table>
+        </table>
       </div>            
     </mat-expansion-panel>
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
@@ -53,7 +53,7 @@
         <mat-panel-title>Pending Force Closing ({{pendingForceClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] class="table-container">
-        <mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
+        <table mat-table #table [dataSource]="pendingForceClosingChannels" matSort [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
             <mat-cell *matCellDef="let channel" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '10rem' : '30rem'}">{{channel.channel.remote_alias}}</mat-cell>
@@ -84,7 +84,7 @@
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_force_closing']" [ngClass]="{'display-none': pendingForceClosingChannels && pendingForceClosingChannels?.data && pendingForceClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedForceClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedForceClosingColumns;"></mat-row>
-        </mat-table>
+        </table>
       </div>
     </mat-expansion-panel>
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
@@ -93,7 +93,7 @@
         <mat-panel-title>Pending Closing ({{pendingClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] class="table-container">
-        <mat-table #table [dataSource]="pendingClosingChannels" matSort
+        <table mat-table #table [dataSource]="pendingClosingChannels" matSort
           [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
@@ -131,7 +131,7 @@
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_closing']" [ngClass]="{'display-none': pendingClosingChannels && pendingClosingChannels?.data && pendingClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedClosingColumns;"></mat-row>
-        </mat-table>
+        </table>
       </div>
     </mat-expansion-panel>
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
@@ -140,7 +140,7 @@
         <mat-panel-title>Waiting Close ({{pendingWaitClosingChannelsLength}})</mat-panel-title>
       </mat-expansion-panel-header>
       <div [perfectScrollbar] class="table-container">
-        <mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
+        <table mat-table #table [dataSource]="pendingWaitClosingChannels" matSort
           [ngClass]="{'error-border bordered-box': flgLoading[0]==='error','bordered-box': true}">
           <ng-container matColumnDef="remote_alias">
             <mat-header-cell class="pl-2" *matHeaderCellDef mat-sort-header> Peer </mat-header-cell>
@@ -184,7 +184,7 @@
           <tr mat-footer-row fxLayoutAlign="start center" *matFooterRowDef="['no_pending_wait_closing']" [ngClass]="{'py-0': true, 'display-none': pendingWaitClosingChannels && pendingWaitClosingChannels?.data && pendingWaitClosingChannels?.data?.length>0}"></tr>
           <mat-header-row *matHeaderRowDef="displayedWaitClosingColumns"></mat-header-row>
           <mat-row fxLayoutAlign="stretch stretch" *matRowDef="let row; columns: displayedWaitClosingColumns;"></mat-row>
-        </mat-table>
+        </table>
       </div>
     </mat-expansion-panel>
   </mat-accordion>

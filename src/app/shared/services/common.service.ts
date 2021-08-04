@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { of, Observable } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { of, Observable, throwError } from 'rxjs';
+import { take, map, catchError } from 'rxjs/operators';
 
 import { DataService } from './data.service';
 import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
@@ -73,18 +73,20 @@ export class CommonService {
     return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
   } 
 
-  convertCurrency(value: number, from: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
+  convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(fiatConversion && otherCurrencyUnit) {
+    if(fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
       if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
-        return this.dataService.getFiatRates()
-        .pipe(take(1),
+        return this.dataService.getFiatRates().pipe(take(1),
         map((data: any) => {
           this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
           this.conversionData.last_fetched = latest_date;
           return this.convertWithFiat(value, from, otherCurrencyUnit);
+        }),
+        catchError(err => {
+          return throwError(err);
         }));
       }
     } else {

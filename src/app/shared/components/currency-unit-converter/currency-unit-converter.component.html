@@ -8,5 +8,8 @@
         <span class="cc-data-value" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC">{{value[currencyUnitEnum.OTHER] | number:currencyUnitFormats.OTHER}}</span>
       </div>
     </div>
+    <div fxLayout="row" fxFlex="100" *ngIf="fiatConversion && currencyUnit !== currencyUnitEnum.SATS && currencyUnit !== currencyUnitEnum.BTC && conversionErrorMsg !== ''">
+      <div class="cc-data-block">{{conversionErrorMsg}}</div>
+    </div>
   </mat-tab>
 </mat-tab-group>

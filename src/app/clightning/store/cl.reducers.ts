@@ -1,12 +1,11 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, UTXO } from '../../shared/models/clModels';
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallsList, ErrorPayload } from '../../shared/models/errorPayload';
 import * as CLActions from '../store/cl.actions';
 
 export interface CLState {
-  initialAPIResponseStatus: String[];
-  effectErrors: ErrorPayload[];
+  apisCallStatus: ApiCallsList;
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
@@ -23,8 +22,7 @@ export interface CLState {
 }
 
 export const initCLState: CLState = {
-  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
-  effectErrors: [],
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchLocalRemoteBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkb: { status: APICallStatusEnum.UN_INITIATED }, FetchFeeRatesperkw: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -41,25 +39,19 @@ export const initCLState: CLState = {
 }
 
 export function CLReducer(state = initCLState, action: CLActions.CLActions) {
-  let newAPIStatus = state.initialAPIResponseStatus;
-
   switch (action.type) {
-    case CLActions.CLEAR_EFFECT_ERROR_CL:
-      const clearedEffectErrors = [...state.effectErrors];
-      const removeEffectIdx = state.effectErrors.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrors: clearedEffectErrors
+    case CLActions.UPDATE_API_CALL_STATUS_CL:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath      
       };
-    case CLActions.EFFECT_ERROR_CL:
       return {
         ...state,
-        effectErrors: [...state.effectErrors, action.payload]
+        apisCallStatus: updatedApisCallStatus
       };
     case CLActions.SET_CHILD_NODE_SETTINGS_CL:
       return {
@@ -77,25 +69,19 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         information: action.payload
       };
     case CLActions.SET_FEES_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case CLActions.SET_FEE_RATES_CL:
       if (action.payload.perkb) {
-        newAPIStatus = [...state.initialAPIResponseStatus, 'FEERATEKB'];
         return {
           ...state,
-          initialAPIResponseStatus: newAPIStatus,
           feeRatesPerKB: action.payload
         };
       } else if (action.payload.perkw) {
-        newAPIStatus = [...state.initialAPIResponseStatus, 'FEERATEKW'];
         return {
           ...state,
-          initialAPIResponseStatus: newAPIStatus,
           feeRatesPerKW: action.payload
         };
       } else {
@@ -104,24 +90,18 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         }
       }
     case CLActions.SET_BALANCE_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'BALANCE'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         balance: action.payload
       };
     case CLActions.SET_LOCAL_REMOTE_BALANCE_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELBALANCE'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         localRemoteBalance: action.payload
       };
     case CLActions.SET_PEERS_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case CLActions.ADD_PEER_CL:
@@ -142,10 +122,8 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         peers: modifiedPeers
       };
     case CLActions.SET_CHANNELS_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         allChannels: action.payload,
       };
     case CLActions.REMOVE_CHANNEL_CL:
@@ -161,10 +139,8 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         allChannels: modifiedChannels
       };
     case CLActions.SET_PAYMENTS_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case CLActions.SET_FORWARDING_HISTORY_CL:
@@ -191,7 +167,6 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
       }
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         fee: modifiedFeeWithTxCount,
         forwardingHistory: action.payload
       };
@@ -208,10 +183,8 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
         invoices: action.payload
       };
     case CLActions.SET_UTXOS_CL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'UTXOS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         utxos: action.payload
       };
     default:

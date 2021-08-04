@@ -8,7 +8,8 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/clModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -17,8 +18,8 @@ import { CommonService } from '../../../shared/services/common.service';
 import { CLCreateInvoiceComponent } from '../create-invoice-modal/create-invoice.component';
 import { CLInvoiceInformationComponent } from '../invoice-information-modal/invoice-information.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
-import { RTLEffects } from '../../../store/rtl.effects';
 
+import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -50,7 +51,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public invoices: any;
   public invoiceJSONArr: Invoice[] = [];  
   public information: GetInfo = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public private = false;
   public expiryStep = 100;
@@ -58,6 +58,9 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private decimalPipe: DecimalPipe, private commonService: CommonService, private rtlEffects: RTLEffects, private datePipe: DatePipe) {
@@ -81,11 +84,11 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInvoices') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchInvoices.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInvoices.message) : this.apisCallStatus.FetchInvoices.message;
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.invoiceJSONArr = (rtlStore.invoices.invoices && rtlStore.invoices.invoices.length > 0) ? rtlStore.invoices.invoices : [];
@@ -93,9 +96,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
         this.loadInvoicesTable(this.invoiceJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 5000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.invoices) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }
@@ -174,10 +174,12 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
   onInvoiceValueChange() {
     if(this.selNode.fiatConversion && this.invoiceValue > 99) {
       this.invoiceValueHint = '';
-      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+      this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
       .pipe(takeUntil(this.unSubs[1]))
       .subscribe(data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
+      }, err => {
+        this.invoiceValueHint = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     }
   }

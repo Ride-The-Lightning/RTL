@@ -8,13 +8,15 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, ChannelEdge } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../../../shared/models/errorPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { CLEffects } from '../../../../store/cl.effects';
 import { RTLEffects } from '../../../../../store/rtl.effects';
+
 import * as CLActions from '../../../../store/cl.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
@@ -40,13 +42,15 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private commonService: CommonService) {
@@ -70,20 +74,17 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+      }
       this.information = rtlStore.information;
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.balance.totalBalance;
       this.channelsData = rtlStore.allChannels.filter(channel => channel.state === 'CHANNELD_NORMAL' && channel.connected);
       if (this.channelsData.length > 0) {
         this.loadChannelsTable(this.channelsData);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });

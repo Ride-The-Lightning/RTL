@@ -4,13 +4,14 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
-import { LoggerService } from '../../shared/services/logger.service';
-import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
+import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../shared/models/errorPayload';
+import { LoggerService } from '../../shared/services/logger.service';
+import { CommonService } from '../../shared/services/common.service';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { CommonService } from '../../shared/services/common.service';
-import { ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-network-info',
@@ -25,14 +26,16 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public information: GetInfo = {};
   public fees: Fees;
   public channelsStatus: ChannelsStatus = {};
-  feeRatesPerKB: FeeRates = {};
-  feeRatesPerKW: FeeRates = {};
+  public feeRatesPerKB: FeeRates = {};
+  public feeRatesPerKW: FeeRates = {};
   public nodeCardsOperator = [];
   public nodeCardsMerchant = [];
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true];
+  public errorMessages = ['', '', '', ''];
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -68,32 +71,30 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchFeeRates') {
-          this.flgLoading[2] = 'error';
-        }
-      });
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.information.id) ? false : true;
+      this.errorMessages = ['', '', '', ''];
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchFeeRatesperkb.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkb.message) : this.apisCallStatus.FetchFeeRatesperkb.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchFeeRatesperkw.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkw.message) : this.apisCallStatus.FetchFeeRatesperkw.message;
       }
 
+      this.selNode = rtlStore.nodeSettings;
+      this.information = rtlStore.information;
       this.fees = rtlStore.fees;
       this.fees.totalTxCount = 0;
+
       if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events && rtlStore.forwardingHistory.forwarding_events.length) {
         this.fees.totalTxCount = rtlStore.forwardingHistory.forwarding_events.filter(event => event.status === 'settled').length
       }
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
-      }
-      
+
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: 0 },
         inactive: { channels: rtlStore.information.num_inactive_channels, capacity: 0 },
@@ -102,9 +103,6 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
 
       this.feeRatesPerKB = rtlStore.feeRatesPerKB;
       this.feeRatesPerKW = rtlStore.feeRatesPerKW;
-      if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = ( this.feeRatesPerKB &&  this.feeRatesPerKW) ? false : true;
-      }
 
       this.logger.info(rtlStore);
     });

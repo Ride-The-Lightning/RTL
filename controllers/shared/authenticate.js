@@ -54,10 +54,7 @@ exports.authenticateUser = (req, res, next) => {
       res.status(200).json({ token: token });
     } else if (req.body.authenticateWith === 'PASSWORD' && common.cookie.trim().length >= 32 && crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(common.cookie).digest('hex'), 'utf-8'), Buffer.from(req.body.authenticationValue, 'utf-8'))) {
       connect.refreshCookie(common.rtl_cookie_path);
-      const token = jwt.sign(
-        { user: 'SSO_USER', configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'SSO_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated.'});
       res.status(200).json({ token: token });
     } else {
@@ -82,11 +79,7 @@ exports.authenticateUser = (req, res, next) => {
         }
       }
       delete failedLoginAttempts[reqIP];
-      let rpcUser = 'NODE_USER';
-      const token = jwt.sign(
-        { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'User Authenticated'});
       res.status(200).json({ token: token });
     } else {
@@ -110,11 +103,7 @@ exports.resetPassword = (req, res, next) => {
     const currPassword = req.body.currPassword;
     if (common.rtl_pass === currPassword) {
       common.rtl_pass = connect.replacePasswordWithHash(req.body.newPassword);
-      var rpcUser = 'NODE_USER';
-      const token = jwt.sign(
-        { user: rpcUser, configPath: common.nodes[0].config_path, macaroonPath: common.nodes[0].macaroon_path },
-        common.secret_key
-      );
+      const token = jwt.sign({ user: 'NODE_USER' }, common.secret_key);
       logger.log({level: 'INFO', fileName: 'Authenticate', msg: 'Password Reset Successful'});
       res.status(200).json({ token: token });
     } else {

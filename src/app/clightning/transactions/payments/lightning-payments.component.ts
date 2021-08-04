@@ -9,19 +9,20 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsList } from '../../../shared/models/errorPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
 import { CLLightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
+
 import { CLEffects } from '../../store/cl.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { Payments } from '../../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-cl-lightning-payments',
@@ -41,7 +42,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: Payment[] = [];
@@ -55,6 +55,9 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private clEffects: CLEffects, private decimalPipe: DecimalPipe, private titleCasePipe: TitleCasePipe, private datePipe: DatePipe) {
@@ -82,11 +85,11 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+      }
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.paymentJSONArr = (rtlStore.payments && rtlStore.payments.length > 0) ? rtlStore.payments : [];
@@ -94,9 +97,6 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         this.loadPaymentsTable(this.paymentJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }
@@ -208,15 +208,17 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;
         if(this.paymentDecoded.msatoshi) {
-          this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
-          .pipe(takeUntil(this.unSubs[1]))
-          .subscribe(data => {
-            if(this.selNode.fiatConversion) {
+          if(this.selNode.fiatConversion) {
+            this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
+            .pipe(takeUntil(this.unSubs[1]))
+            .subscribe(data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            } else {
-              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
-            }
-          });
+            }, error => {
+              this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
+            });
+          } else {
+            this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
+          }
         } else {
           this.paymentDecodedHint = 'Zero Amount Invoice | Memo: ' + this.paymentDecoded.description;
         }

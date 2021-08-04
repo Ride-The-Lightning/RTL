@@ -7,11 +7,13 @@ import { Actions } from '@ngrx/effects';
 import { faSmile, faFrown } from '@fortawesome/free-regular-svg-icons';
 import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
+import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
+import { ChannelsStatus, GetInfo, Fees, Channel, Balance } from '../../shared/models/clModels';
+import { ApiCallsList } from '../../shared/models/errorPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
-import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { ChannelsStatus, GetInfo, Fees, Channel, Balance, FeeRates } from '../../shared/models/clModels';
-import { SelNodeChild } from '../../shared/models/RTLconfig';
+
 import * as CLActions from '../store/cl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
@@ -44,15 +46,15 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public allOutboundChannels: Channel[] = [];
   public totalInboundLiquidity = 0;
   public totalOutboundLiquidity = 0;
-  public feeRatesPerKB: FeeRates = {};
-  public feeRatesPerKW: FeeRates = {};
   public operatorCards = [];
   public merchantCards = [];
   public screenSize = '';
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
+  public errorMessages = ['', '', '', '', '', ''];
+  public apisCallStatus: ApiCallsList = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
@@ -108,60 +110,43 @@ export class CLHomeComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchBalance') {
-          this.flgLoading[2] = 'error';
-        }
-        if (effectsErr.action === 'FetchLocalRemoteBalance') {
-          this.flgLoading[3] = 'error';
-        }
-        if (effectsErr.action === 'FetchFeeRates') {
-          this.flgLoading[4] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[5] = 'error';
-        }
-      });
-      this.selNode = rtlStore.nodeSettings;
-      this.information = rtlStore.information;
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.information.id) ? false : true;
+      this.errorMessages = ['', '', '', '', '', ''];
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+      }
+      if (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalance.message) : this.apisCallStatus.FetchBalance.message;
+      }
+      if (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchLocalRemoteBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLocalRemoteBalance.message) : this.apisCallStatus.FetchLocalRemoteBalance.message;
+      }
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[4] = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
       }
 
-      this.fees = rtlStore.fees;
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = ( this.fees.feeCollected) ? false : true;
+      if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[5] = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
       }
+
+      this.selNode = rtlStore.nodeSettings;
+      this.information = rtlStore.information;
+
+      this.fees = rtlStore.fees;
 
       this.totalBalance = rtlStore.balance;
       this.balances.onchain = rtlStore.balance.totalBalance;
       this.balances.lightning = rtlStore.localRemoteBalance.localBalance;
       this.balances.total = this.balances.lightning + this.balances.onchain;
       this.balances = Object.assign({}, this.balances);
-      if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = ('' !== this.totalBalance) ? false : true;
-      }
 
       let local = (rtlStore.localRemoteBalance.localBalance) ? +rtlStore.localRemoteBalance.localBalance : 0;
       let remote = (rtlStore.localRemoteBalance.remoteBalance) ? +rtlStore.localRemoteBalance.remoteBalance : 0;
       let total = local + remote;
       this.channelBalances = { localBalance: local, remoteBalance: remote, balancedness: +(1 - Math.abs((local-remote)/total)).toFixed(3) };
-      if (this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = (rtlStore.localRemoteBalance.localBalance) ? false : true;
-      }
-
-      this.feeRatesPerKB = rtlStore.feeRatesPerKB;
-      this.feeRatesPerKW = rtlStore.feeRatesPerKW;
-      if (this.flgLoading[4] !== 'error') {
-        this.flgLoading[4] = ( this.feeRatesPerKB &&  this.feeRatesPerKW) ? false : true;
-      }
 
       this.channelsStatus = {
         active: { channels: rtlStore.information.num_active_channels, capacity: rtlStore.localRemoteBalance.localBalance },
@@ -178,9 +163,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
         this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.msatoshi_to_them/1000);
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.msatoshi_to_us/1000);
       });
-      if (this.flgLoading[5] !== 'error') {
-        this.flgLoading[5] = (this.allChannels && this.allChannels.length) ? false : true;
-      }      
+
       if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.feeCollected >= 0) {
         this.flgChildInfoUpdated = true;
       } else {
