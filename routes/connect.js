@@ -99,6 +99,7 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 }
 
 connect.updateLogByLevel = () => {
+  console.log("_+_+_+")
   updateLogFlag = false
   common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
   try {
@@ -106,11 +107,12 @@ connect.updateLogByLevel = () => {
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.forEach((node) => {
       if(node.Settings.hasOwnProperty('enableLogging')) {
-        flag = true
+        updateLogFlag = true
         node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR'
         delete node.Settings.enableLogging
       }
     })
+    console.log(updateLogFlag)
     if(updateLogFlag === true) {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }
