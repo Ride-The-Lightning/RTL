@@ -38,8 +38,7 @@ export class CLEffects implements OnDestroy {
       .subscribe((rtlStore) => {
         if (
           rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.COMPLETED &&
+          rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED &&
           rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED &&
           rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED
         ) {
@@ -281,22 +280,20 @@ export class CLEffects implements OnDestroy {
     ofType(CLActions.FETCH_CHANNELS_CL),
     mergeMap((action: CLActions.FetchChannels) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchChannels', status: APICallStatusEnum.INITIATED}));
-      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels')
-        .pipe(
-          map((channels: any) => {
-            this.logger.info(channels);
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchChannels', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new CLActions.GetForwardingHistory());
-            return {
-              type: CLActions.SET_CHANNELS_CL,
-              payload: (channels && channels.length > 0) ? channels : []
-            };
-          },
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
-            return of({type: RTLActions.VOID});
-          })
-        ));
+      return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/listChannels');
+    }),
+    map((channels: any) => {
+      this.logger.info(channels);
+      this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchChannels', status: APICallStatusEnum.COMPLETED}));
+      this.store.dispatch(new CLActions.GetForwardingHistory());
+      return {
+        type: CLActions.SET_CHANNELS_CL,
+        payload: (channels && channels.length > 0) ? channels : []
+      };
+    }),
+    catchError((err: any) => {
+      this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
+      return of({type: RTLActions.VOID});
     }))
   );
 
