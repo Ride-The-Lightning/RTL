@@ -11,7 +11,6 @@ var errMsg = '';
 var request = require('request-promise');
 var ini = require('ini');
 var parseHocon = require('hocon-parser');
-const { config } = require('rxjs');
 common.path_separator = (platform === 'win32') ? '\\' : '/';
 
 connect.setDefaultConfig = () => {
@@ -64,7 +63,7 @@ connect.setDefaultConfig = () => {
           themeMode: "DAY",
           themeColor: "PURPLE",
           channelBackupPath: channelBackupPath,
-          enableLogging: false,
+          logLevel: "ERROR",
           lnServerUrl: "https://localhost:8080",
           fiatConversion: false
         }
@@ -99,44 +98,24 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
   }
 }
 
-/*this function will detect change in RTL-Config.json , if one of the nodes doesn't have logLevel it will bitwise OR des with true and at the end will
-return des*/
-connect.detectConfigChange = (allNodes) => {
-  des = false
-  allNodes.forEach((node, idx) => {
-    if(typeof allNodes[idx].Settings.enableLogging !== "undefined") {
-      des|=true
-    }
-  })
-  return des
-}
-
-connect.logByLevel = (allNodes) => {
-  // true means a node needs to change, else no change needed
-  if(connect.detectConfigChange(allNodes)) {
-    common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
-    try {
-      allNodes.forEach((node, idx) => {
-        var des = allNodes[idx].Settings.enableLogging
-        if(des === true) {
-          allNodes[idx].Settings.logLevel="INFO"
-        } else {
-          allNodes[idx].Settings.logLevel="ERROR"
-        }
-        common.nodes[idx].logLevel = allNodes[idx].Settings.logLevel
-        delete allNodes[idx].Settings.enableLogging
-      })
-      RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
-      var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
-      config.nodes = allNodes
-      fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
-    } catch (err) {
-      errMsg = errMsg + '\nerror configuring logLevel';
-    }
-  } else {
-    allNodes.forEach((node, idx) => {
-      common.nodes[idx].logLevel = allNodes[idx].Settings.logLevel
+connect.updateLogByLevel = () => {
+  updateLogFlag = false
+  common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
+  try {
+    RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
+    var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
+    config.nodes.forEach((node) => {
+      if(node.Settings.hasOwnProperty('enableLogging')) {
+        flag = true
+        node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR'
+        delete node.Settings.enableLogging
+      }
     })
+    if(updateLogFlag === true) {
+      fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    errMsg = errMsg + '\nPassword hashing failed!';
   }
 }
 
@@ -224,6 +203,7 @@ connect.validateNodeConfig = (config) => {
       common.nodes[idx].user_persona = node.Settings.userPersona ? node.Settings.userPersona : 'MERCHANT';
       common.nodes[idx].theme_mode = node.Settings.themeMode ? node.Settings.themeMode : 'DAY';
       common.nodes[idx].theme_color = node.Settings.themeColor ? node.Settings.themeColor : 'PURPLE';
+      common.nodes[idx].log_level = node.Settings.logLevel ? node.Settings.logLevel : 'ERROR'
       common.nodes[idx].fiat_conversion = node.Settings.fiatConversion ? !!node.Settings.fiatConversion : false;
       if (common.nodes[idx].fiat_conversion) {
         common.nodes[idx].currency_unit = node.Settings.currencyUnit ? node.Settings.currencyUnit : 'USD';
@@ -281,7 +261,6 @@ connect.validateNodeConfig = (config) => {
           }
         }
     });
-    connect.logByLevel(config.nodes)
   }
 
   connect.setSSOParams(config);
@@ -376,7 +355,6 @@ connect.refreshCookie = (cookieFile) => {
 connect.logEnvVariables = () => {
   if (common.nodes && common.nodes.length > 0) {
     common.nodes.forEach((node, idx) => {
-      if (!node.enable_logging) { return; }
       logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'PORT: ' + common.port, node });
       logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'HOST: ' + common.host, node });
       logger.log({ level: 'DEBUG', fileName: 'Config Setup Variable', msg: 'DEFAULT NODE INDEX: ' + common.selectedNode.index });
@@ -458,7 +436,7 @@ connect.modifyJsonMultiNodeConfig = (confFileFullPath) => {
         },
         Settings: {
           userPersona: node.Settings.userPersona ? node.Settings.userPersona : "MERCHANT",
-          enableLogging: node.Settings.enableLogging ? !!node.Settings.enableLogging : false,
+          logLevel: node.Settings.logLevel,
           fiatConversion: node.Settings.fiatConversion ? node.Settings.fiatConversion : false
         }
       };
@@ -524,7 +502,7 @@ connect.modifyIniSingleNodeConfig = (confFileFullPath) => {
         },
         Settings: {
           userPersona: config.Settings.userPersona ? config.Settings.userPersona : "MERCHANT",
-          enableLogging: config.Settings.enableLogging ? !!config.Settings.enableLogging : (config.Authentication.enableLogging ? !!config.Authentication.enableLogging : false),
+          logLevel: config.Settings.logLevel ? config.Settings.logLevel : 'ERROR',
           fiatConversion: config.Settings.fiatConversion ? config.Settings.fiatConversion : false
         }
       }
@@ -598,6 +576,8 @@ connect.setServerConfiguration = () => {
       connect.upgradeConfig(confFileFullPath);
     }
     var config = JSON.parse(fs.readFileSync(confFileFullPath, 'utf-8'));
+
+    connect.updateLogByLevel();
     connect.validateNodeConfig(config);
     connect.setSelectedNode(config);
     connect.logEnvVariables();

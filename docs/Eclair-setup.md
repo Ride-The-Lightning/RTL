@@ -73,7 +73,7 @@ Ensure that the follow values are correct per your config:
         "themeMode": "DAY",
         "themeColor": "PURPLE",
         "bitcoindConfigPath": "",
-        "enableLogging": true,
+        "logLevel": "INFO",
         "fiatConversion": false,
         "lnServerUrl": "http://<eclair api server ip address>:port"
       }

@@ -78,7 +78,7 @@ Ensure that the follow values are correct per your config:
         "themeMode": "DAY",
         "themeColor": "PURPLE",
         "bitcoindConfigPath": "",
-        "enableLogging": true,
+        "logLevel": "INFO",
         "fiatConversion": false,
         "lnServerUrl": "https://<cl-rest api server ip address>:3001"
       }

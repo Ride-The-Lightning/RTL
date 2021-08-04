@@ -104,7 +104,7 @@ Example RTL-Config.json:
         "themeColor": "PURPLE",
         "channelBackupPath": "C:\\RTL\\backup\\node-1",
         "bitcoindConfigPath": "<Optional: path of bitcoind.conf path if available locally>",
-        "enableLogging": true,
+        "logLevel": "INFO",
         "fiatConversion": false,
         "lnServerUrl": "<url for LND REST APIs for node #1 e.g. https://192.168.0.1:8080>",
         "swapServerUrl": "<url for swap server REST APIs for the node. e.g. https://localhost:8081>",

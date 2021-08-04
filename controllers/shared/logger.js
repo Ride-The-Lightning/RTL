@@ -5,16 +5,18 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
   let msgStr = '\r\n[' + new Date().toISOString() + '] ' + msgJSON.level + ': ' + msgJSON.fileName + ' => ' + msgJSON.msg;
   switch (msgJSON.level) {
     case 'ERROR':
-      msgStr = msgStr + ': ' + (msgJSON.error && typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (msgJSON.error && typeof msgJSON.error === 'string') ? msgJSON.error : '');
-      console.error(msgStr);
-      if (selNode) {
-        fs.appendFile(selNode.log_file, msgStr, function (err) {
-          if (err) {
-            return ({ error: 'Updating Log Failed!' });
-          } else {
-            return ({ message: 'Log Updated Successfully' });
-          }
-        });
+      if (selNode && msgJSON.error) {
+        msgStr = msgStr + ': ' + (typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+        console.error(msgStr);
+        if (selNode) {
+          fs.appendFile(selNode.log_file, msgStr, function (err) {
+            if (err) {
+              return ({ error: 'Updating Log Failed!' });
+            } else {
+              return ({ message: 'Log Updated Successfully' });
+            }
+          });
+        }
       }
       break;
 
@@ -29,15 +31,13 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
             return ({ message: 'Log Updated Successfully' });
           }
         });
-      } else {
-        console.log(msgStr + '.');
       }
       break;
 
     case 'INFO':
       if (selNode && (selNode.logLevel == "INFO" || selNode.logLevel == "DEBUG") && msgJSON.data) {
         msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
-        console.log(msgStr)
+        console.log(msgStr);
         fs.appendFile(selNode.log_file, msgStr, function (err) {
           if (err) {
             return ({ error: 'Updating Log Failed!' });
@@ -45,8 +45,6 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
             return ({ message: 'Log Updated Successfully' });
           }
         });
-      } else {
-        console.log(msgStr + '.');
       }
       break;
 
@@ -60,7 +58,13 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
         } else {
           msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : msgJSON.data);
         }
-        console.log(msgStr)
+        fs.appendFile(selNode.log_file, msgStr, function (err) {
+          if (err) {
+            return ({ error: 'Updating Log Failed!' });
+          } else {
+            return ({ message: 'Log Updated Successfully' });
+          }
+        });
       }
       break;
 
