@@ -99,23 +99,23 @@ connect.replacePasswordWithHash = (multiPassHashed) => {
 }
 
 connect.updateLogByLevel = () => {
-  updateLogFlag = false
+  updateLogFlag = false;
   common.rtl_conf_file_path = process.env.RTL_CONFIG_PATH ? process.env.RTL_CONFIG_PATH : path.join(__dirname, '..');
   try {
     RTLConfFile = common.rtl_conf_file_path + common.path_separator + 'RTL-Config.json';
     var config = JSON.parse(fs.readFileSync(RTLConfFile, 'utf-8'));
     config.nodes.forEach((node) => {
       if(node.Settings.hasOwnProperty('enableLogging')) {
-        updateLogFlag = true
-        node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR'
-        delete node.Settings.enableLogging
+        updateLogFlag = true;
+        node.Settings.logLevel = node.Settings.enableLogging? 'INFO' : 'ERROR';
+        delete node.Settings.enableLogging;
       }
     })
-    if(updateLogFlag === true) {
+    if(updateLogFlag) {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }
   } catch (err) {
-    errMsg = errMsg + '\nlog level config update failed!';
+    errMsg = errMsg + '\nLog level update failed!';
   }
 }
 
