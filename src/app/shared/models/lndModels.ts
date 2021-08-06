@@ -232,8 +232,6 @@ export interface GetInfo {
   uris?: string[];
   best_header_timestamp?: number;
   version?: string;
-  currency_unit?: string;
-  smaller_currency_unit?: string;
   lnImplementation?: string;
 }
 

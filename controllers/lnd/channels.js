@@ -87,9 +87,6 @@ exports.getPendingChannels = (req, res, next) => {
   request(options).then(function (body) {
     if (!body.total_limbo_balance) {
       body.total_limbo_balance = 0;
-      body.btc_total_limbo_balance = 0;
-    } else {
-      body.btc_total_limbo_balance = common.convertToBTC(body.total_limbo_balance);
     }
     const promises = [];
     if(body.pending_open_channels && body.pending_open_channels.length > 0) {

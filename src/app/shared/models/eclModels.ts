@@ -8,8 +8,6 @@ export interface GetInfo {
   network?: string;
   blockHeight?: number;
   publicAddresses?: string[];
-  currency_unit?: string;
-  smaller_currency_unit?: string;
   lnImplementation?: string;
 }
 

@@ -13,8 +13,6 @@ exports.getInfo = (req, res, next) => {
   logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Calling Info from Eclair server url', data: options.url});
   if (common.read_dummy_data) {
     common.getDummyData('GetInfo').then(function(data) { 
-      data.currency_unit = 'BTC';
-      data.smaller_currency_unit = 'Sats';
       data.lnImplementation = 'Eclair';
       res.status(200).json(data); 
     });
@@ -30,8 +28,6 @@ exports.getInfo = (req, res, next) => {
         logger.log({level: 'DEBUG', fileName: 'GetInfo', msg: 'Get Info Response', data: body});
         const body_str = (!body) ? '' : JSON.stringify(body);
         const search_idx = (!body) ? -1 : body_str.search('Not Found');
-        body.currency_unit = 'BTC';
-        body.smaller_currency_unit = 'Sats';
         body.lnImplementation = 'Eclair';
         logger.log({level: 'INFO', fileName: 'GetInfo', msg: 'Eclair Node Information Received'});
         res.status(200).json(body);

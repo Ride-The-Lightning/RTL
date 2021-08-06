@@ -56,8 +56,6 @@ exports.listInvoices = (req, res, next) => {
           invoice.r_preimage = invoice.r_preimage ? Buffer.from(invoice.r_preimage, 'base64').toString('hex') : '';
           invoice.r_hash = invoice.r_hash ? Buffer.from(invoice.r_hash, 'base64').toString('hex') : '';
           invoice.description_hash = invoice.description_hash ? Buffer.from(invoice.description_hash, 'base64').toString('hex') : null;
-          invoice.btc_value = (!invoice.value) ? 0 : common.convertToBTC(invoice.value);
-          invoice.btc_amt_paid_sat =  (!invoice.amt_paid_sat) ? 0 : common.convertToBTC(invoice.amt_paid_sat);
         });
         body.invoices = common.sortDescByKey(body.invoices, 'creation_date');
       }

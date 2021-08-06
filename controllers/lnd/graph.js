@@ -62,10 +62,6 @@ exports.getGraphInfo = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      body.btc_total_network_capacity = (!body.total_network_capacity) ? 0 : common.convertToBTC(body.total_network_capacity);
-      body.btc_avg_channel_size = (!body.avg_channel_size) ? 0 : common.convertToBTC(body.avg_channel_size);
-      body.btc_min_channel_size = (!body.min_channel_size) ? 0 : common.convertToBTC(body.min_channel_size);
-      body.btc_max_channel_size = (!body.max_channel_size) ? 0 : common.convertToBTC(body.max_channel_size);
       logger.log({level: 'DEBUG', fileName: 'Graph', msg: 'Network Information After Rounding and Conversion', data: body_str});
       logger.log({level: 'INFO', fileName: 'Graph', msg: 'Graph Information Received'});
       res.status(200).json(body);

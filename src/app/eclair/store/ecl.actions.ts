@@ -1,12 +1,11 @@
 import { Action } from '@ngrx/store';
 
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, PayRequest, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
-export const CLEAR_EFFECT_ERROR_ECL = 'CLEAR_EFFECT_ERROR_ECL';
-export const EFFECT_ERROR_ECL = 'EFFECT_ERROR_ECL';
+export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';
 export const SET_CHILD_NODE_SETTINGS_ECL = 'SET_CHILD_NODE_SETTINGS_ECL';
 export const FETCH_INFO_ECL = 'FETCH_INFO_ECL';
 export const SET_INFO_ECL = 'SET_INFO_ECL';
@@ -54,14 +53,9 @@ export const ADD_INVOICE_ECL = 'ADD_INVOICE_ECL';
 export const PEER_LOOKUP_ECL = 'PEER_LOOKUP_ECL';
 export const SET_LOOKUP_ECL = 'SET_LOOKUP_ECL';
 
-export class ClearEffectError implements Action {
-  readonly type = CLEAR_EFFECT_ERROR_ECL;
-  constructor(public payload: string) { } // payload = errorAction
-}
-
-export class EffectError implements Action {
-  readonly type = EFFECT_ERROR_ECL;
-  constructor(public payload: ErrorPayload) { }
+export class UpdateAPICallStatus implements Action {
+  readonly type = UPDATE_API_CALL_STATUS_ECL;
+  constructor(public payload: ApiCallStatusPayload) { }
 }
 
 export class ResetECLStore implements Action {
@@ -281,7 +275,7 @@ export class SetLookup implements Action {
   constructor(public payload: any) {} // payload = lookup Response (Peer)
 }
 
-export type ECLActions = ResetECLStore | ClearEffectError | EffectError | SetChildNodeSettings |
+export type ECLActions = ResetECLStore | UpdateAPICallStatus | SetChildNodeSettings |
   FetchInfo | SetInfo | FetchFees | SetFees |
   FetchChannels | SetActiveChannels | SetPendingChannels | SetInactiveChannels |
   FetchPeers | SetPeers | AddPeer | DisconnectPeer | SaveNewPeer | RemovePeer | NewlyAddedPeer |

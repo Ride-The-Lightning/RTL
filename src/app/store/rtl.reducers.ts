@@ -1,5 +1,4 @@
 import { ActionReducerMap } from '@ngrx/store';
-import { ErrorPayload } from '../shared/models/errorPayload';
 import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import * as fromECL from '../eclair/store/ecl.reducers';
@@ -8,7 +7,6 @@ import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
 
 export interface RootState {
-  effectErrorsRoot: ErrorPayload[];
   selNode: ConfigSettingsNode;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
@@ -18,7 +16,6 @@ const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor
 const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
 
 export const initRootState: RootState = {
-  effectErrorsRoot: [],
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
   appConfig: {
     defaultNodeIndex: -1,
@@ -32,23 +29,6 @@ export const initRootState: RootState = {
 
 export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
   switch (action.type) {
-    case RTLActions.CLEAR_EFFECT_ERROR_ROOT:
-      const clearedEffectErrors = [...state.effectErrorsRoot];
-      const removeEffectIdx = state.effectErrorsRoot.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrorsRoot: clearedEffectErrors
-      };
-    case RTLActions.EFFECT_ERROR_ROOT:
-      return {
-        ...state,
-        effectErrorsRoot: [...state.effectErrorsRoot, action.payload]
-      };
     case RTLActions.RESET_ROOT_STORE:
       return {
         ...initRootState,

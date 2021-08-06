@@ -14,7 +14,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
           <mat-form-field fxFlex="40">
             <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3" name="invoiceValue">
-            <span matSuffix> {{information?.smaller_currency_unit}} </span>
+            <span matSuffix>  Sats </span>
             <mat-hint>{{invoiceValueHint}}</mat-hint>
           </mat-form-field>
           <mat-form-field fxFlex="30">

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ApiCallStatusPayload, ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
   ForwardingHistoryRes, Invoice, ListInvoices, OnChain, UTXO

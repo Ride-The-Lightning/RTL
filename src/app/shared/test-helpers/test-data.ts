@@ -217,9 +217,7 @@ export const mockRTLStoreState = {
       uris: [
         '02fad37ef58f76c1a5f802d198a07da5a8e55620b9ffbcbdc316fc8c9e9eac02cb@69.122.24.206:9999'
       ],
-      version: '0.12.1-beta',
-      currency_unit: 'BTC',
-      smaller_currency_unit: 'Sats'
+      version: '0.12.1-beta'
     }
   },
   lnd: {

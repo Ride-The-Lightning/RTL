@@ -1,10 +1,10 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import {
   GetInfo, Peer, Fees, NetworkInfo, Balance, Channel, ListInvoices,
   PendingChannels, ClosedChannel, Transaction, SwitchRes, PendingChannelsGroup, UTXO, ListPayments
 } from '../../shared/models/lndModels';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 import * as LNDActions from './lnd.actions';
 
@@ -12,8 +12,7 @@ let flgTransactionsSet = false;
 let flgUTXOsSet = false;
 
 export interface LNDState {
-  initialAPIResponseStatus: String[];
-  effectErrors: ErrorPayload[];
+  apisCallStatus: ApiCallsListLND;
   nodeSettings: SelNodeChild;  
   information: GetInfo;
   peers: Peer[];
@@ -41,8 +40,7 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
-  effectErrors: [],
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
@@ -70,26 +68,7 @@ export const initLNDState: LNDState = {
 }
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
-  let newAPIStatus = state.initialAPIResponseStatus;
-
   switch (action.type) {
-    case LNDActions.CLEAR_EFFECT_ERROR_LND:
-      const clearedEffectErrors = [...state.effectErrors];
-      const removeEffectIdx = state.effectErrors.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrors: clearedEffectErrors
-      };
-    case LNDActions.EFFECT_ERROR_LND:
-      return {
-        ...state,
-        effectErrors: [...state.effectErrors, action.payload]
-      };
     case LNDActions.SET_CHILD_NODE_SETTINGS_LND:
       return {
         ...state,
@@ -106,10 +85,8 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         information: action.payload
       };
     case LNDActions.SET_PEERS_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case LNDActions.REMOVE_PEER_LND:
@@ -132,24 +109,18 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         invoices: newInvoices
       };
     case LNDActions.SET_FEES_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case LNDActions.SET_CLOSED_CHANNELS_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'CLOSEDCHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         closedChannels: action.payload,
       };
     case LNDActions.SET_PENDING_CHANNELS_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PENDINGCHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         pendingChannels: action.payload.channels,
         numberOfPendingChannels: action.payload.pendingChannels,
       };
@@ -177,10 +148,8 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
           }
         });
       }
-      newAPIStatus = [...state.initialAPIResponseStatus, 'ALLCHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         allChannels: action.payload,
         numberOfActiveChannels: activeChannels,
         numberOfInactiveChannels: inactiveChannels,
@@ -203,10 +172,8 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
       };
     case LNDActions.SET_BALANCE_LND:
       if (action.payload.target === 'channels') {
-        newAPIStatus = [...state.initialAPIResponseStatus,'BALANCE'];
         return {
           ...state,
-          initialAPIResponseStatus: newAPIStatus,
           channelBalance: action.payload.balance
         };
       } else {
@@ -221,10 +188,8 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         networkInfo: action.payload
       };
     case LNDActions.SET_INVOICES_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus,'INVOICES'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         invoices: action.payload
       };
     case LNDActions.SET_TOTAL_INVOICES_LND:
@@ -264,10 +229,8 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         utxos: action.payload
       };
     case LNDActions.SET_PAYMENTS_LND:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case LNDActions.SET_ALL_LIGHTNING_TRANSATIONS_LND:

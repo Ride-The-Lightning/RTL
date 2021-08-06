@@ -730,8 +730,6 @@ export class CLEffects implements OnDestroy {
       uris: info.uris,      
       version: info.version,
       api_version: info.api_version,
-      currency_unit: CurrencyUnitEnum.BTC,
-      smaller_currency_unit: CurrencyUnitEnum.SATS,
       numberOfPendingChannels: info.num_pending_channels
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));

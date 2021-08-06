@@ -37,9 +37,6 @@ exports.getFees = (req, res, next) => {
         body.day_fee_sum = (daily_sum[1] / 1000).toFixed(2);
         body.week_fee_sum = (weekly_sum[1] / 1000).toFixed(2);
         body.month_fee_sum = (monthly_sum[1] / 1000).toFixed(2);
-        body.btc_day_fee_sum = common.convertToBTC(body.day_fee_sum);
-        body.btc_week_fee_sum = common.convertToBTC(body.week_fee_sum);
-        body.btc_month_fee_sum = common.convertToBTC(body.month_fee_sum);
         body.forwarding_events_history = history;
         if (history.error) { 
           logger.log({level: 'ERROR', fileName: 'Fees', msg: 'Fetch Forwarding Events Error', error: history.error}); 

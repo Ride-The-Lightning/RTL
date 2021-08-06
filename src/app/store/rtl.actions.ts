@@ -1,15 +1,14 @@
 import { Action } from '@ngrx/store';
 
-import { ErrorPayload } from '../shared/models/errorPayload';
 import { DialogConfig } from '../shared/models/alertData';
+import { ApiCallStatusPayload } from '../shared/models/apiCallsPayload';
 import { RTLConfiguration, Settings, ConfigSettingsNode, GetInfoRoot, SSO } from '../shared/models/RTLconfig';
 import { ServicesEnum } from '../shared/services/consts-enums-functions';
 
 export const VOID = 'VOID';
 export const UPDATE_SELECTED_NODE_OPTIONS = 'UPDATE_SELECTED_NODE_OPTIONS';
+export const UPDATE_API_CALL_STATUS_ROOT = 'UPDATE_API_CALL_STATUS_ROOT';
 export const RESET_ROOT_STORE = 'RESET_ROOT_STORE';
-export const CLEAR_EFFECT_ERROR_ROOT = 'CLEAR_EFFECT_ERROR_ROOT';
-export const EFFECT_ERROR_ROOT = 'EFFECT_ERROR_ROOT';
 export const CLOSE_ALL_DIALOGS = 'CLOSE_ALL_DIALOGS';
 export const OPEN_SNACK_BAR = 'OPEN_SNACKBAR';
 export const OPEN_SPINNER = 'OPEN_SPINNER';
@@ -45,14 +44,9 @@ export class VoidAction implements Action {
   readonly type = VOID;
 }
 
-export class ClearEffectErrorRoot implements Action {
-  readonly type = CLEAR_EFFECT_ERROR_ROOT;
-  constructor(public payload: string) {} // payload = errorAction
-}
-
-export class EffectErrorRoot implements Action {
-  readonly type = EFFECT_ERROR_ROOT;
-  constructor(public payload: ErrorPayload) {}
+export class UpdateAPICallStatus implements Action {
+  readonly type = UPDATE_API_CALL_STATUS_ROOT;
+  constructor(public payload: ApiCallStatusPayload) { }
 }
 
 export class CloseAllDialogs implements Action {
@@ -201,8 +195,7 @@ export class ShowFile implements Action {
   constructor(public payload: any) {}
 }
 
-export type RTLActions = ClearEffectErrorRoot | EffectErrorRoot |
-  IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
+export type RTLActions = UpdateAPICallStatus | IsAuthorized | IsAuthorizedRes | Login | VerifyTwoFA |
   VoidAction | CloseAllDialogs | OpenSnackBar | OpenSpinner | CloseSpinner | FetchRTLConfig | SetRTLConfig | SaveSettings |
   OpenAlert | CloseAlert |  OpenConfirmation | CloseConfirmation | ShowPubkey | FetchConfig | ShowConfig |
   UpdateSelectedNodeOptions | ResetRootStore |

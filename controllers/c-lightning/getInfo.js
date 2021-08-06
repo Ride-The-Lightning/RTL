@@ -28,8 +28,6 @@ exports.getInfo = (req, res, next) => {
           error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
         });
       } else {
-        body.currency_unit = 'BTC';
-        body.smaller_currency_unit = 'Sats';
         body.lnImplementation = 'C-Lightning';
         let chainObj = { chain: '', network: '' };
         if (body.network === 'testnet') {

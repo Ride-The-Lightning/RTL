@@ -27,7 +27,6 @@ exports.decodePayment = (req, res, next) => {
         error: (!body || search_idx > -1) ? 'Error From Server!' : body.error
       });
     } else {
-      body.btc_num_satoshis = (!body.num_satoshis) ? 0 : common.convertToBTC(body.num_satoshis);
       logger.log({level: 'INFO', fileName: 'PayRequest', msg: 'Payment Decoded'});
       res.status(200).json(body);
     }

@@ -18,9 +18,6 @@ exports.getFees = (req, res, next) => {
     } else {
       if(!body.feeCollected) {
         body.feeCollected = 0;
-        body.btc_feeCollected = 0;
-      } else {
-        body.btc_feeCollected = common.convertToBTC(body.feeCollected);
       }
       logger.log({level: 'INFO', fileName: 'Fees', msg: 'Fees Received'});
       res.status(200).json(body);

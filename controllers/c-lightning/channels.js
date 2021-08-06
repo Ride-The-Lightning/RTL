@@ -149,15 +149,9 @@ exports.getLocalRemoteBalance = (req, res, next) => {
     logger.log({level: 'DEBUG', fileName: 'Channels', msg: 'Local Remote Balance', data: body});
     if(!body.localBalance) {
       body.localBalance = 0;
-      body.btc_localBalance = 0;
-    } else {
-      body.btc_localBalance = common.convertToBTC(body.localBalance);
     }
     if(!body.remoteBalance) {
       body.remoteBalance = 0;
-      body.btc_remoteBalance = 0;
-    } else {
-      body.btc_remoteBalance = common.convertToBTC(body.remoteBalance);
     }
     logger.log({level: 'INFO', fileName: 'Channels', msg: 'Local & Remote Balances Received'});
     res.status(200).json(body);

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload, ErrorPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
@@ -9,8 +9,7 @@ import {
 from '../../shared/models/lndModels';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
-export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
-export const EFFECT_ERROR_LND = 'EFFECT_ERROR_LND';
+export const UPDATE_API_CALL_STATUS_LND = 'UPDATE_API_CALL_STATUS_LND';
 export const SET_CHILD_NODE_SETTINGS_LND = 'SET_CHILD_NODE_SETTINGS_LND';
 export const FETCH_INFO_LND = 'FETCH_INFO_LND';
 export const SET_INFO_LND = 'SET_INFO_LND';
@@ -80,14 +79,9 @@ export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
 export const GET_ALL_LIGHTNING_TRANSATIONS_LND = 'GET_ALL_LIGHTNING_TRANSATIONS_LND';
 export const SET_ALL_LIGHTNING_TRANSATIONS_LND = 'SET_ALL_LIGHTNING_TRANSATIONS_LND';
 
-export class ClearEffectError implements Action {
-  readonly type = CLEAR_EFFECT_ERROR_LND;
-  constructor(public payload: string) {} // payload = errorAction
-}
-
-export class EffectError implements Action {
-  readonly type = EFFECT_ERROR_LND;
-  constructor(public payload: ErrorPayload) {}
+export class UpdateAPICallStatus implements Action {
+  readonly type = UPDATE_API_CALL_STATUS_LND;
+  constructor(public payload: ApiCallStatusPayload) { }
 }
 
 export class ResetLNDStore implements Action {
@@ -425,7 +419,7 @@ export class SetAllLightningTransactions implements Action {
   constructor(public payload: { paymentsAll: ListPayments, invoicesAll: ListInvoices }) {}
 }
 
-export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
+export type LNDActions = UpdateAPICallStatus | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
 FetchFees | SetFees |

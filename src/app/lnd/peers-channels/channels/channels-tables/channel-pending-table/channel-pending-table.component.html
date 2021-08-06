@@ -1,5 +1,5 @@
 <div fxLayout="column" class="mb-2">
-  <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} {{information?.smaller_currency_unit}}</span>
+  <span class="page-title">Total Limbo Balance: {{pendingChannels.total_limbo_balance | number}} Sats</span>
   <mat-accordion displayMode="flat" class="mt-1">
     <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
     <mat-expansion-panel fxLayout="column" class="flat-expansion-panel">

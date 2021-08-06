@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsList } from '../../../shared/models/errorPayload';
+import { ApiCallsList } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';

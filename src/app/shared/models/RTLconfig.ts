@@ -60,8 +60,6 @@ export interface GetInfoRoot {
   uris?: string[];  
   version?: string;
   api_version?: string;
-  currency_unit?: string;
-  smaller_currency_unit?: string;  
 }
 
 export interface SelNodeChild {

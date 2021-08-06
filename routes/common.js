@@ -157,10 +157,6 @@ common.replaceNode = (selNodeIndex, newNode) => {
   common.selectedNode = common.findNode(selNodeIndex);
 }
 
-common.convertToBTC = (num) => {
-  return (num / 100000000).toFixed(6);
-};
-
 common.convertTimestampToTime = (num) => {
   let myDate = new Date(+num * 1000);
   let days = myDate.getDate().toString();

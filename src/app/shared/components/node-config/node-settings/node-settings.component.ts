@@ -55,8 +55,6 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
       this.selectedThemeMode = this.themeModes.find(themeMode => this.selNode.settings.themeMode === themeMode.id);
       this.selectedThemeColor = this.selNode.settings.themeColor;
       this.information = rtlStore.nodeData;
-      this.smallerCurrencyUnit = ( this.information &&  this.information.smaller_currency_unit) ? this.information.smaller_currency_unit : 'Sats';
-      this.currencyUnit = ( this.information &&  this.information.currency_unit) ? this.information.currency_unit : 'BTC';
       if(!this.selNode.settings.fiatConversion) {
         this.selNode.settings.currencyUnit = null;
       }

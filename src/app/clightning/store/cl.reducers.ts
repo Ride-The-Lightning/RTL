@@ -1,11 +1,11 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Peer, Payment, Channel, FeeRates, ForwardingHistoryRes, ListInvoices, UTXO } from '../../shared/models/clModels';
-import { ApiCallsList, ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import * as CLActions from '../store/cl.actions';
 
 export interface CLState {
-  apisCallStatus: ApiCallsList;
+  apisCallStatus: ApiCallsListCL;
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
