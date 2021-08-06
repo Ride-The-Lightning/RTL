@@ -115,7 +115,7 @@ connect.updateLogByLevel = () => {
       fs.writeFileSync(RTLConfFile, JSON.stringify(config, null, 2), 'utf-8');
     }
   } catch (err) {
-    errMsg = errMsg + '\nPassword hashing failed!';
+    errMsg = errMsg + '\nlog level config update failed!';
   }
 }
 
