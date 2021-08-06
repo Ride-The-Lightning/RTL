@@ -49,7 +49,7 @@ exports.getRTLConfig = (req, res, next) => {
           settings.themeColor = (node.theme_color) ? node.theme_color : 'PURPLE';
           settings.fiatConversion = (node.fiat_conversion) ? !!node.fiat_conversion : false;
           settings.bitcoindConfigPath = node.bitcoind_config_path;
-          settings.enableLogging = node.enable_logging ? !!node.enable_logging : false;
+          settings.logLevel = node.log_level ? node.log_level : 'ERROR';
           settings.lnServerUrl = node.ln_server_url;
           settings.swapServerUrl = node.swap_server_url;
           settings.boltzServerUrl = node.boltz_server_url;

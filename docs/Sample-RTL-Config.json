@@ -23,7 +23,7 @@
         "themeMode": "DAY",
         "themeColor": "PURPLE",
         "channelBackupPath": "C:\\Users\\xyz\\backup\\node-1",
-        "enableLogging": false,
+        "logLevel": "ERROR",
         "lnServerUrl": "https://localhost:8080",
         "swapServerUrl": "https://localhost:8081",
         "boltzServerUrl": "https://localhost:9003",

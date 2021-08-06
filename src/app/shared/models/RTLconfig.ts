@@ -15,7 +15,7 @@ export class Settings {
     public currencyUnits: Array<string>,
     public fiatConversion: boolean,
     public bitcoindConfigPath?: string,
-    public enableLogging?: boolean,
+    public logLevel?: string,
     public lnServerUrl?: string,
     public swapServerUrl?: string,
     public boltzServerUrl?: string,
