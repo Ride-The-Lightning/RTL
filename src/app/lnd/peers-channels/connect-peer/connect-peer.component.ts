@@ -112,7 +112,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(graphNode => {
         this.store.dispatch(new RTLActions.CloseSpinner());
-        host = (!graphNode.node.addresses || !graphNode.node.addresses[0].addr) ? '' : graphNode.node.addresses[0].addr;
+        host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
         this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
       });
     }
