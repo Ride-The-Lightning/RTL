@@ -8,6 +8,8 @@ import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as LNDActions from '../../store/lnd.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-utxo-tables',
@@ -17,13 +19,9 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class UTXOTablesComponent implements OnInit, OnDestroy {
   @Input() selectedTableIndex = 0;
   @Output() selectedTableIndexChange = new EventEmitter<number>();
-  public transactions: Transaction[] = [];
   public numTransactions = 0;
-  public utxos: UTXO[] = [];
   public numUtxos = 0;
-  public dustUtxos: UTXO[] = [];
   public numDustUtxos = 0;
-  public flgLoading: Array<Boolean | 'error'> = [true, true];
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -34,29 +32,12 @@ export class UTXOTablesComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchUTXOs') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchTransactions') {
-          this.flgLoading[1] = 'error';
-        }
-      });
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
-        this.utxos = rtlStore.utxos;
-        this.numUtxos = this.utxos.length;
-        this.dustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000);
-        this.numDustUtxos = this.dustUtxos.length;
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.utxos) ? false : true;
+        this.numUtxos = rtlStore.utxos.length;
+        this.numDustUtxos = rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000).length;
       }
       if (rtlStore.transactions && rtlStore.transactions.length > 0) {
-        this.transactions = rtlStore.transactions;
-        this.numTransactions = this.transactions.length;
-      }
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = (rtlStore.transactions) ? false : true;
+        this.numTransactions = rtlStore.transactions.length;
       }
       this.logger.info(rtlStore);
     });

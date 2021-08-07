@@ -7,13 +7,14 @@ import { faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { LoginTokenComponent } from '../data-modal/login-2fa-token/login-2fa-token.component';
 import { ConfigSettingsNode, RTLConfiguration } from '../../models/RTLconfig';
-import { PASSWORD_BLACKLIST, ScreenSizeEnum } from '../../services/consts-enums-functions';
+import { APICallStatusEnum, PASSWORD_BLACKLIST, ScreenSizeEnum } from '../../services/consts-enums-functions';
 import { CommonService } from '../../services/common.service';
 import { LoggerService } from '../../services/logger.service';
 
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as RTLActions from '../../../store/rtl.actions';
+import { ApiCallsListRoot } from '../../models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-login',
@@ -28,10 +29,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   public rtlSSO = 0;
   public rtlCookiePath = '';
   public accessKey = '';
-  public loginErrorMessage = '';
   public flgShow = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public loginErrorMessage = '';
+  public apisCallStatus: ApiCallsListRoot = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) { }
@@ -41,12 +44,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.store.select('root')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrorsRoot.forEach(effectsErr => {
-        if (effectsErr.action === 'Login' || effectsErr.action === 'IsAuthorized') {
-          this.loginErrorMessage = this.loginErrorMessage + effectsErr.message + ' ';
-        }
-        this.logger.error(effectsErr);
-      });
+      this.loginErrorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.Login.status === APICallStatusEnum.ERROR) {
+        this.loginErrorMessage = this.loginErrorMessage + ((typeof(this.apisCallStatus.Login.message) === 'object') ? JSON.stringify(this.apisCallStatus.Login.message) : this.apisCallStatus.Login.message);
+        this.logger.error(this.apisCallStatus.Login.message);
+      }
+      if (rtlStore.apisCallStatus.IsAuthorized.status === APICallStatusEnum.ERROR) {
+        this.loginErrorMessage = this.loginErrorMessage + ((typeof(this.apisCallStatus.IsAuthorized.message) === 'object') ? JSON.stringify(this.apisCallStatus.IsAuthorized.message) : this.apisCallStatus.IsAuthorized.message);
+        this.logger.error(this.apisCallStatus.IsAuthorized.message);
+      }
       this.selNode = rtlStore.selNode;
       this.appConfig = rtlStore.appConfig;
       this.logger.info(rtlStore);

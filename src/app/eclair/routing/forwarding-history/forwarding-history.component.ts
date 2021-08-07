@@ -8,12 +8,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { PaymentRelayed } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-forwarding-history',
@@ -28,7 +29,6 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   @Input() eventsData = [];
   @Input() filterValue = '';
-  public errorMessage = '';
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -36,6 +36,9 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
@@ -61,11 +64,10 @@ export class ECLForwardingHistoryComponent implements OnInit, OnChanges, AfterVi
     .subscribe((rtlStore: any) => {
       if (this.eventsData.length <= 0) {
         this.errorMessage = '';
-        rtlStore.effectErrors.forEach(effectsErr => {
-          if (effectsErr.action === 'FetchPayments') {
-            this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-          }
-        });
+        this.apisCallStatus = rtlStore.apisCallStatus;
+        if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+        }
         this.eventsData = rtlStore.payments && rtlStore.payments.relayed ? rtlStore.payments.relayed : [];
         if (this.eventsData.length > 0 && this.sort && this.paginator) {
           this.loadForwardingEventsTable(this.eventsData);

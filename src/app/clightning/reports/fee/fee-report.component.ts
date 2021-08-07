@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { ForwardingHistoryRes, ForwardingEvent } from '../../../shared/models/clModels';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsList } from '../../../shared/models/apiCallsPayload';
+import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
@@ -38,7 +38,7 @@ export class CLFeeReportComponent implements OnInit, AfterContentInit, OnDestroy
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsList = null;
+  public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 

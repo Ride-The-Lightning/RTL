@@ -10,7 +10,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
 import { ChannelsStatus, GetInfo, Fees, Channel, Balance } from '../../shared/models/clModels';
-import { ApiCallsList } from '../../shared/models/apiCallsPayload';
+import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
@@ -53,7 +53,7 @@ export class CLHomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public errorMessages = ['', '', '', '', '', ''];
-  public apisCallStatus: ApiCallsList = null;
+  public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
@@ -127,7 +127,6 @@ export class CLHomeComponent implements OnInit, OnDestroy {
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
         this.errorMessages[4] = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
       }
-
       if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
         this.errorMessages[5] = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
       }

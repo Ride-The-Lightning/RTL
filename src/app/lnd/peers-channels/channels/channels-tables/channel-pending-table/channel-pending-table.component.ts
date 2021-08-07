@@ -13,7 +13,8 @@ import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-pending-table',
@@ -38,9 +39,11 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
   public displayedWaitClosingColumns = ['remote_alias', 'limbo_balance', 'local_balance', 'remote_balance', 'actions'];
   public pendingWaitClosingChannelsLength = 0;
   public pendingWaitClosingChannels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
@@ -67,17 +70,14 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/pending') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.pendingChannels = rtlStore.pendingChannels;
-      if (this.pendingChannels.total_limbo_balance) {
-        this.flgLoading[1] = false;
-      }
       if (this.pendingChannels.pending_open_channels && this.pendingChannels.pending_open_channels.length && this.pendingChannels.pending_open_channels.length > 0) {
         this.loadOpenChannelsTable(this.pendingChannels.pending_open_channels);
       }
@@ -89,9 +89,6 @@ export class ChannelPendingTableComponent implements OnInit, AfterViewInit, OnDe
       }
       if (this.pendingChannels.waiting_close_channels && this.pendingChannels.waiting_close_channels.length && this.pendingChannels.waiting_close_channels.length > 0) {
         this.loadWaitClosingChannelsTable(this.pendingChannels.waiting_close_channels);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (this.information.identity_pubkey) ? false : true;
       }
       this.logger.info(rtlStore);
     });

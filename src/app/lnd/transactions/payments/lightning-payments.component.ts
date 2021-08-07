@@ -9,7 +9,7 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -22,6 +22,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-lightning-payments',
@@ -40,7 +41,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any;
@@ -58,6 +58,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
@@ -85,11 +88,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+      }
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
@@ -101,9 +104,6 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         this.loadPaymentsTable(this.paymentJSONArr);
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }

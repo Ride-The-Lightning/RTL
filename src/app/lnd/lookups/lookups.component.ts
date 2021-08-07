@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import * as LNDActions from '../store/lnd.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 
 @Component({
@@ -44,15 +44,15 @@ export class LookupsComponent implements OnInit, OnDestroy {
     this.actions
     .pipe(
       takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.EFFECT_ERROR_LND))
-    ).subscribe((resLookup: LNDActions.SetLookup | LNDActions.EffectError) => {
+      filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))
+    ).subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
       if(resLookup.type === LNDActions.SET_LOOKUP_LND) {
         this.flgLoading[0] = true;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
         this.flgSetLookupValue = true;
         this.logger.info(this.lookupValue);
       }
-      if (resLookup.type === LNDActions.EFFECT_ERROR_LND && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });

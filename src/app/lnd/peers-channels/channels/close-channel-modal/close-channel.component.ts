@@ -9,7 +9,7 @@ import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel } from '../../../../shared/models/lndModels';
 import { ChannelInformation } from '../../../../shared/models/alertData';
-import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -37,15 +37,15 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.channelToClose = this.data.channel;
     this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND))
-    .subscribe((action: LNDActions.EffectError | LNDActions.SetAllChannels) => {
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_ALL_CHANNELS_LND))
+    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetAllChannels) => {
       if (action.type === LNDActions.SET_ALL_CHANNELS_LND) {
         let filteredChannel = action.payload.find(channel => channel.chan_id === this.data.channel.chan_id);
         if (filteredChannel.pending_htlcs && filteredChannel.pending_htlcs.length && filteredChannel.pending_htlcs.length > 0) {
           this.flgPendingHtlcs = true;
         }
       }    
-      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'FetchChannels/all') {
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'FetchAllChannels') {
         this.logger.error('Fetching latest channel information failed!\n' + action.payload.message);
       }
     });

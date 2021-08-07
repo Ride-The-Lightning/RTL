@@ -11,7 +11,8 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-routing-peers',
@@ -22,13 +23,15 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sortIn: MatSort;
   @ViewChild('tableOut', {read: MatSort, static: false}) sortOut: MatSort;
   public routingPeersData = [];
-  public errorMessage = '';
   public displayedColumns: any[] = [];
   public RoutingPeersIncoming: any;
   public RoutingPeersOutgoing: any;
   public flgSticky = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -53,11 +56,10 @@ export class RoutingPeersComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       this.errorMessage = '';
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'GetForwardingHistory') {
-          this.errorMessage = (typeof(effectsErr.message) === 'object') ? JSON.stringify(effectsErr.message) : effectsErr.message;
-        }
-      });
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+      }
       if (rtlStore.forwardingHistory && rtlStore.forwardingHistory.forwarding_events) {
         this.routingPeersData = rtlStore.forwardingHistory.forwarding_events;
       } else {

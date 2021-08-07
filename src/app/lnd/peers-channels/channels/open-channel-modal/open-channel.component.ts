@@ -9,7 +9,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo } from '../../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../../shared/models/alertData';
-import { TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -52,9 +52,9 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers &&  this.data.message.peers.length ? this.data.message.peers : [];
     this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
-    .subscribe((action: LNDActions.EffectError | LNDActions.FetchAllChannels) => {
-      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewChannel') {
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_ALL_CHANNELS_LND))
+    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchAllChannels) => {
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
       if (action.type === LNDActions.FETCH_ALL_CHANNELS_LND) {

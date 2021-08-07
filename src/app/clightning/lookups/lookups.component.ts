@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 
 @Component({
@@ -63,7 +63,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
         this.logger.info(this.nodeLookupValue);
         this.logger.info(this.channelLookupValue);
       }
-      if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.action === 'Lookup') {
+      if (resLookup.type === CLActions.UPDATE_API_CALL_STATUS_CL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
         this.flgLoading[0] = 'error';
       }
     });

@@ -11,7 +11,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
-import { TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
@@ -73,8 +73,8 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       }
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.EFFECT_ERROR_LND))
-    .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.EffectError)) => {
+    filter((action) => action.type === LNDActions.NEWLY_ADDED_PEER_LND || action.type === LNDActions.FETCH_PENDING_CHANNELS_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))
+    .subscribe((action: (LNDActions.NewlyAddedPeer | LNDActions.FetchPendingChannels | LNDActions.UpdateAPICallStatus)) => {
       if (action.type === LNDActions.NEWLY_ADDED_PEER_LND) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -85,7 +85,7 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === LNDActions.FETCH_PENDING_CHANNELS_LND) { 
         this.dialogRef.close();
       }
-      if (action.type === LNDActions.EFFECT_ERROR_LND) { 
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR) { 
         if (action.payload.action === 'SaveNewPeer' || action.payload.action === 'FetchGraphNode') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

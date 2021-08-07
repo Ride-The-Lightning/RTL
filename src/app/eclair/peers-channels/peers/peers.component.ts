@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
@@ -21,6 +21,7 @@ import { RTLEffects } from '../../../store/rtl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-peers',
@@ -43,12 +44,14 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
   public peers: any;
   public information: GetInfo = {};
   public availableBalance = 0;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: peers
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private actions: Actions, private commonService: CommonService) {
@@ -72,18 +75,15 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPeers') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPeers.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPeers.message) : this.apisCallStatus.FetchPeers.message;
+      }
       this.information = rtlStore.information;
       this.availableBalance = rtlStore.onchainBalance.total || 0;
       this.peersData = rtlStore.peers;
       this.loadPeersTable(this.peersData);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = false;
-      }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       this.logger.info(rtlStore);
     });

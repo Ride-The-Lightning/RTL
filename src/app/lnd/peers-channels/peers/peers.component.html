@@ -12,9 +12,9 @@
         <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+      <mat-progress-bar *ngIf="apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <table mat-table #table [dataSource]="peers" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="alias">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
           <td mat-cell *matCellDef="let peer" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '25rem'}"> {{peer?.alias}} </td>
@@ -60,7 +60,9 @@
           </ng-container>
           <ng-container matColumnDef="no_peer">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!peers?.data || peers.data?.length<1">No connected peers.</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.COMPLETED">No connected peer.</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.INITIATED">Getting peers...</p>
+              <p *ngIf="(!peers?.data || peers.data?.length<1) && apisCallStatus?.FetchPeers.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_peer']" [ngClass]="{'display-none': peers?.data && peers?.data?.length>0}"></tr>

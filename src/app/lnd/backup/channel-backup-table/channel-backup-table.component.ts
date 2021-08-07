@@ -11,14 +11,14 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
-import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-backup-table',
@@ -41,10 +41,12 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   public selectedChannel: Channel;
   public channelsData = [];
   public channels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true]; // 0: channels
   public flgSticky = false;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService) {
@@ -55,18 +57,15 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+      }
       this.selNode = rtlStore.nodeSettings;
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'Fetchchannels') {
-          this.flgLoading[0] = 'error';
-        }
-      });
       this.channelsData = rtlStore.allChannels;
       if (this.channelsData.length > 0) {
         this.loadBackupTable(this.channelsData);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = false;
       }
       this.logger.info(rtlStore);
     });

@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -52,12 +52,12 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.FETCH_INVOICES_LND)) //NEWLY_SAVED_INVOICE
-    .subscribe((action: LNDActions.EffectError | LNDActions.FetchInvoices) => { // NewlySavedInvoice
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.FETCH_INVOICES_LND)) //NEWLY_SAVED_INVOICE
+    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.FetchInvoices) => { // NewlySavedInvoice
       if (action.type === LNDActions.FETCH_INVOICES_LND) { // NEWLY_SAVED_INVOICE && openModal: false at line 73
         this.dialogRef.close();
       }    
-      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });

@@ -40,7 +40,7 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalancechannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceblockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
@@ -69,6 +69,19 @@ export const initLNDState: LNDState = {
 
 export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) {
   switch (action.type) {
+    case LNDActions.UPDATE_API_CALL_STATUS_LND:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath      
+      };
+      return {
+        ...state,
+        apisCallStatus: updatedApisCallStatus
+      };
     case LNDActions.SET_CHILD_NODE_SETTINGS_LND:
       return {
         ...state,

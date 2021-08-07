@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/clModels';
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -65,7 +65,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.SEND_PAYMENT_STATUS_CL) { 
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL) {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) {
         if (action.payload.action === 'SendPayment') {
           delete this.paymentDecoded.msatoshi;
           this.paymentError = action.payload.message;

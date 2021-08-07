@@ -13,7 +13,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -127,7 +127,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });

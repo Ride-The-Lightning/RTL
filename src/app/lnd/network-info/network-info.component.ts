@@ -66,23 +66,23 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchNetwork') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[2] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels/all') {
-          this.flgLoading[3] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels/pending') {
-          this.flgLoading[4] = 'error';
-        }
-      });
+      // rtlStore.effectErrors.forEach(effectsErr => {
+      //   if (effectsErr.action === 'FetchInfo') {
+      //     this.flgLoading[0] = 'error';
+      //   }
+      //   if (effectsErr.action === 'FetchNetwork') {
+      //     this.flgLoading[1] = 'error';
+      //   }
+      //   if (effectsErr.action === 'FetchFees') {
+      //     this.flgLoading[2] = 'error';
+      //   }
+      //   if (effectsErr.action === 'FetchChannels/all') {
+      //     this.flgLoading[3] = 'error';
+      //   }
+      //   if (effectsErr.action === 'FetchChannels/pending') {
+      //     this.flgLoading[4] = 'error';
+      //   }
+      // });
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if (this.flgLoading[0] !== 'error') {

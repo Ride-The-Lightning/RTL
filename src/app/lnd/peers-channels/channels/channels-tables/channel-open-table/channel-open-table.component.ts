@@ -11,7 +11,7 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -24,6 +24,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 
 
 @Component({
@@ -47,7 +48,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public myChanPolicy: any = {};
   public information: GetInfo = {};
   public numPeers = -1;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
@@ -58,6 +58,9 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   public faEye = faEye;
   public faEyeSlash = faEyeSlash
   private targetConf = 6;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private commonService: CommonService, private loopService: LoopService, private decimalPipe: DecimalPipe) {
@@ -81,11 +84,11 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/all') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       if(this.information && this.information.version) { this.versionsArr = this.information.version.split('.'); }
@@ -94,9 +97,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
       this.channelsData = this.calculateUptime(rtlStore.allChannels);
       if (this.channelsData.length > 0) {
         this.loadChannelsTable(this.channelsData);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.allChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });

@@ -13,7 +13,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -107,13 +107,13 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
-    .subscribe((action: LNDActions.EffectError | LNDActions.SetChannelTransactionRes) => {
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
+    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
       if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });

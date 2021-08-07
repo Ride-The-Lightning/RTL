@@ -7,7 +7,7 @@ import { faBolt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-ic
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, ChannelsStatus, FeeRates } from '../../shared/models/clModels';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
-import { ApiCallsList } from '../../shared/models/apiCallsPayload';
+import { ApiCallsListCL } from '../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 
@@ -34,7 +34,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
   public errorMessages = ['', '', '', ''];
-  public apisCallStatus: ApiCallsList = null;
+  public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject()];
 

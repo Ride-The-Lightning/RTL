@@ -41,13 +41,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.fetchEvents(this.startDate, this.endDate);
-      }
-    });
+    this.fetchEvents(this.startDate, this.endDate);
   }
 
   ngAfterContentInit() {

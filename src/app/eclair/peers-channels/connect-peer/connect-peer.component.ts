@@ -15,6 +15,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -58,8 +59,8 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))
-    .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.EffectError)) => {
+    filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))
+    .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.UpdateAPICallStatus)) => {
       if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -70,7 +71,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === ECLActions.FETCH_CHANNELS_ECL) { 
         this.dialogRef.close();
       }
-      if (action.type === ECLActions.EFFECT_ERROR_ECL) { 
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

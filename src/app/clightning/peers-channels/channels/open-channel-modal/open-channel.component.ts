@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as CLActions from '../../../store/cl.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
@@ -61,7 +61,7 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
     this.actions.pipe(takeUntil(this.unSubs[0]),
     filter(action => action.type === CLActions.UPDATE_API_CALL_STATUS_CL || action.type === CLActions.FETCH_CHANNELS_CL))
     .subscribe((action: CLActions.UpdateAPICallStatus | CLActions.FetchChannels) => {
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SaveNewChannel') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
       if (action.type === CLActions.FETCH_CHANNELS_CL) {

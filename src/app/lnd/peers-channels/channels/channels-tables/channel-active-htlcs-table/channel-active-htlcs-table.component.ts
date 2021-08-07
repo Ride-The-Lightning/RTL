@@ -8,12 +8,13 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { Channel, ChannelHTLC } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-active-htlcs-table',
@@ -26,7 +27,6 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public channels: any;
   public channelsJSONArr: Channel[] = [];
   public displayedColumns: any[] = [];
@@ -36,6 +36,9 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -59,16 +62,13 @@ export class ChannelActiveHTLCsTableComponent implements OnInit, AfterViewInit, 
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/all') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+      }
       this.channelsJSONArr = (rtlStore.allChannels && rtlStore.allChannels.length > 0) ? rtlStore.allChannels.filter(channel => channel.pending_htlcs && channel.pending_htlcs.length > 0) : [];
       this.loadHTLCsTable(this.channelsJSONArr);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.channelsJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }

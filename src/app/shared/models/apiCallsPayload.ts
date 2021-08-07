@@ -9,26 +9,36 @@ export interface ApiCallStatusPayload {
   filePath?: string;
 }
 
+export interface ApiCallsListRoot {
+  Login: any;
+  IsAuthorized: any;
+}
+
 export interface ApiCallsListLND {
   FetchInfo: any;
   FetchFees: any;
-  FetchPeers: any;
-  FetchClosedChannels: any;
   FetchPendingChannels: any;
   FetchAllChannels: any;
   FetchBalancechannels: any;
-  FetchBalanceblockchain: any;
+  // Non-initial calls
+  FetchPeers: any;
+  FetchClosedChannels: any;
   FetchInvoices: any;
   FetchPayments: any;
+  FetchBalanceblockchain: any;
+  GetForwardingHistory: any;
+  FetchUTXOs: any;
+  FetchTransactions: any;
 }
 
 export interface ApiCallsListCL {
   FetchInfo: any;
-  FetchInvoices: any;
   FetchFees: any;
   FetchChannels: any;
   FetchBalance: any;
   FetchLocalRemoteBalance: any;
+  // Non-initial calls
+  FetchInvoices: any;
   FetchFeeRatesperkb: any;
   FetchFeeRatesperkw: any;
   FetchPeers: any;
@@ -41,7 +51,10 @@ export interface ApiCallsListECL {
   FetchInfo: any;
   FetchFees: any;
   FetchChannels: any;
+  // Non-initial calls
   FetchOnchainBalance: any;
   FetchPeers: any;
   FetchPayments: any;
+  FetchInvoices: any;
+  FetchTransactions: any;
 }

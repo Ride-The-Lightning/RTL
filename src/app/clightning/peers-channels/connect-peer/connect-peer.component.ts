@@ -11,7 +11,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
@@ -87,7 +87,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.FETCH_CHANNELS_CL) { 
         this.dialogRef.close();
       }
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL) { 
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {

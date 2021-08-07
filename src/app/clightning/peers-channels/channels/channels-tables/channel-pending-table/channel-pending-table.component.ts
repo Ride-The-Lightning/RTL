@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsList } from '../../../../../shared/models/apiCallsPayload';
+import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 import { CLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
@@ -45,7 +45,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsList = null;
+  public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 

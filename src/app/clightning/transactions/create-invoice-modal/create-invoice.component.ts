@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -57,7 +57,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.ADD_INVOICE_CL) {
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SaveNewInvoice') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewInvoice') {
         this.invoiceError = action.payload.message;
       }
     });

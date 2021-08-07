@@ -13,6 +13,7 @@ import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 import * as ECLActions from '../../../store/ecl.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -47,9 +48,9 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
     this.peer = this.data.message.peer ? this.data.message.peer : null;
     this.peers = this.data.message.peers && this.data.message.peers.length ? this.data.message.peers : [];
     this.actions.pipe(takeUntil(this.unSubs[0]),
-    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL))
-    .subscribe((action: ECLActions.EffectError | ECLActions.FetchChannels) => {
-      if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'SaveNewChannel') {
+    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL))
+    .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.FetchChannels) => {
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SaveNewChannel') {
         this.channelConnectionError = action.payload.message;
       }
       if (action.type === ECLActions.FETCH_CHANNELS_ECL) {

@@ -5,8 +5,11 @@ import * as fromECL from '../eclair/store/ecl.reducers';
 import * as fromCL from '../clightning/store/cl.reducers';
 import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
+import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
+import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 
 export interface RootState {
+  apisCallStatus: ApiCallsListRoot;
   selNode: ConfigSettingsNode;
   appConfig: RTLConfiguration;
   nodeData: GetInfoRoot;
@@ -16,6 +19,7 @@ const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor
 const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
 
 export const initRootState: RootState = {
+  apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
   selNode: {settings: initNodeSettings, authentication: initNodeAuthentication, lnImplementation: 'LND'},
   appConfig: {
     defaultNodeIndex: -1,
@@ -29,6 +33,19 @@ export const initRootState: RootState = {
 
 export function RootReducer(state = initRootState, action: RTLActions.RTLActions) {
   switch (action.type) {
+    case RTLActions.UPDATE_API_CALL_STATUS_ROOT:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath      
+      };
+      return {
+        ...state,
+        apisCallStatus: updatedApisCallStatus
+      };
     case RTLActions.RESET_ROOT_STORE:
       return {
         ...initRootState,

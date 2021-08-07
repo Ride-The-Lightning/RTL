@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ApiCallStatusPayload, ErrorPayload } from '../../shared/models/apiCallsPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,

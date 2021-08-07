@@ -15,7 +15,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, Fees, Balance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO, ListPayments } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { AlertTypeEnum, APICallStatusEnum, CurrencyUnitEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -43,14 +43,9 @@ export class LNDEffects implements OnDestroy {
     .subscribe((rtlStore) => {
       if (
         rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchPeers.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchClosedChannels.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED &&
         rtlStore.apisCallStatus.FetchBalancechannels.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchBalanceblockchain.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchInvoices.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.COMPLETED
+        rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED &&
+        rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED
       ) {
         this.store.dispatch(new RTLActions.CloseSpinner());
       }
@@ -492,7 +487,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchChannels/all', 'Fetching All Channels Failed.', err);
+            this.handleErrorWithoutAlert('FetchAllChannels', 'Fetching All Channels Failed.', err);
             return of({type: RTLActions.VOID});
           })
       );

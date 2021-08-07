@@ -376,10 +376,9 @@ export class RTLEffects implements OnDestroy {
     ofType(RTLActions.LOGIN),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.Login, fromRTLReducer.RootState]) => {
-      // this.store.dispatch(new LNDActions.ClearEffectError('FetchInfo'));
-      // this.store.dispatch(new CLActions.ClearEffectError('FetchInfo'));    
-      // this.store.dispatch(new ECLActions.ClearEffectError('FetchInfo'));    
-      // this.store.dispatch(new RTLActions.ClearEffectErrorRoot('Login'));
+      this.store.dispatch(new LNDActions.ResetLNDStore({}));
+      this.store.dispatch(new CLActions.ResetCLStore({}));
+      this.store.dispatch(new ECLActions.ResetECLStore({}));
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'Login', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(environment.AUTHENTICATE_API, { 
         authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
@@ -600,20 +599,20 @@ export class RTLEffects implements OnDestroy {
 
   handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    if (err.status === 401) {
+    if (err.status === 401 && actionName !== 'Login') {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner());      
-      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error.error === 'string' ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error.'}));
+      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error.'}));
     }
   }
 
   handleErrorWithAlert(actionName: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
-    if (err.status === 401) {
+    if (err.status === 401 && actionName !== 'Login') {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.CloseAllDialogs());
       this.store.dispatch(new RTLActions.Logout());
