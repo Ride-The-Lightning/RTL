@@ -76,7 +76,9 @@ export class RTLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(RTLActions.OPEN_SPINNER),
     map((action: RTLActions.OpenSpinner) => {
-      this.dialogRef = this.dialog.open(SpinnerDialogComponent, { data: { titleMessage: action.payload}});
+      if (action.payload !== UI_MESSAGES.NO_SPINNER) {
+        this.dialogRef = this.dialog.open(SpinnerDialogComponent, { data: { titleMessage: action.payload}});
+      }
     })),
     { dispatch: false }
   );

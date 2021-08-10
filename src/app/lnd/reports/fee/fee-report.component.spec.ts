@@ -7,8 +7,9 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { FeeReportComponent } from './fee-report.component';
 import { SharedModule } from '../../../shared/shared.module';
-import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
+import { mockDataService } from '../../../shared/test-helpers/mock-services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ForwardingHistoryComponent } from '../../routing/forwarding-history/forwarding-history.component';
 
 describe('FeeReportComponent', () => {
   let component: FeeReportComponent;
@@ -16,7 +17,7 @@ describe('FeeReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FeeReportComponent ],
+      declarations: [ FeeReportComponent, ForwardingHistoryComponent ],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
