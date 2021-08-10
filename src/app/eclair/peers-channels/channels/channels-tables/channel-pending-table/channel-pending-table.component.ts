@@ -9,14 +9,14 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
-import { ECLChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
-
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
+
 
 @Component({
   selector: 'rtl-ecl-channel-pending-table',

@@ -85,18 +85,20 @@ export class RTLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(RTLActions.CLOSE_SPINNER),
     map((action: RTLActions.CloseSpinner) => {
-      try {
-        if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage === action.payload)) { 
-          this.dialogRef.close();
-        } else {
-          this.dialog.openDialogs.forEach(localDialog => {
-            if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage === action.payload) {
-              localDialog.close();
-            }
-          });
+      if(action.payload !== UI_MESSAGES.NO_SPINNER) {
+        try {
+          if (this.dialogRef && (this.dialogRef.componentInstance && this.dialogRef.componentInstance.data && this.dialogRef.componentInstance.data.titleMessage && this.dialogRef.componentInstance.data.titleMessage === action.payload)) { 
+            this.dialogRef.close();
+          } else {
+            this.dialog.openDialogs.forEach(localDialog => {
+              if (localDialog.componentInstance && localDialog.componentInstance.data && localDialog.componentInstance.data.titleMessage && localDialog.componentInstance.data.titleMessage === action.payload) {
+                localDialog.close();
+              }
+            });
+          }
+        } catch (err) {
+          this.logger.error(err);
         }
-      } catch (err) {
-        this.logger.error(err);
       }
     })),
     { dispatch: false }
@@ -471,18 +473,14 @@ export class RTLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(RTLActions.SET_SELECTED_NODE),
     mergeMap((action: RTLActions.SetSelelectedNode) => {
-      if (action.payload.uiMessage !== UI_MESSAGES.NO_SPINNER) {
-        this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
-      }
+      this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(environment.CONF_API + '/updateSelNode', { selNodeIndex: action.payload.lnNode.index })
       .pipe(
         map((postRes: any) => {
           this.logger.info(postRes);
           this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED}));
-          if (action.payload.uiMessage !== UI_MESSAGES.NO_SPINNER) {
-            this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
-          }
+          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
           this.initializeNode(action.payload.lnNode, action.payload.isInitialSetup);
           return { type: RTLActions.VOID };
         }),
@@ -601,7 +599,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error.'}));
     }
   }
@@ -614,7 +612,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: 'ERROR',
           alertTitle: alertTitle,

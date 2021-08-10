@@ -8,9 +8,10 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
+import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -21,7 +22,6 @@ import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation'
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-lightning-invoices',
@@ -122,7 +122,6 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CREATE_INVOICE));
     this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
     this.resetData();
   }

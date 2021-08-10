@@ -3,13 +3,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { Transaction, UTXO } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as LNDActions from '../../store/lnd.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-utxo-tables',

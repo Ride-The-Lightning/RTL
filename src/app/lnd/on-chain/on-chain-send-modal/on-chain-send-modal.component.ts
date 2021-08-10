@@ -13,14 +13,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -166,7 +165,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
-        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
         this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
       }, err => {
         this.transactionAmount = null;
@@ -174,7 +172,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
       this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
     }
   }

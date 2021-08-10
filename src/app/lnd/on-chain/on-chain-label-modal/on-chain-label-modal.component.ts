@@ -14,7 +14,6 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as LNDActions from '../../../lnd/store/lnd.actions';
 import { CommonService } from '../../../shared/services/common.service';
-import { UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-on-chain-lebel-modal',
@@ -39,17 +38,14 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   onLabelUTXO(): boolean|void {
     if(!this.label || this.label === '') { return true; }
     this.labelError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.LABEL_UTXO));
     this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true)
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(res => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new LNDActions.FetchTransactions());
       this.store.dispatch(new LNDActions.FetchUTXOs());
       this.snackBar.open('Successfully labelled the UTXO.');
       this.dialogRef.close();
     }, (err) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.labelError = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
       this.labelError = (typeof this.labelError === 'string') ? this.commonService.titleCase(this.labelError) : JSON.stringify(this.labelError);
     });

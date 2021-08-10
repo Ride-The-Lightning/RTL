@@ -17,7 +17,6 @@ import { DataService } from '../../../shared/services/data.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -104,7 +103,6 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
     if (this.zeroAmtInvoice) {
       this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
     } else {

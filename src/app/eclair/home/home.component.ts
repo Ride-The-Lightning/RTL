@@ -11,11 +11,11 @@ import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
 import { GetInfo, Channel, Fees, OnChainBalance, ChannelsStatus } from '../../shared/models/eclModels';
+import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as ECLActions from '../store/ecl.actions';
-import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-home',

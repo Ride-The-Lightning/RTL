@@ -10,12 +10,12 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
 import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
 import * as LNDActions from '../store/lnd.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
 export interface Tile {
   id: string;

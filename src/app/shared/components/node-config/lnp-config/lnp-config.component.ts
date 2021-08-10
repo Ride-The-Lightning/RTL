@@ -8,7 +8,6 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-lnp-config',

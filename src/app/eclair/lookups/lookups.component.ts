@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { CommonService } from '../../shared/services/common.service';
+import { LookupNode } from '../../shared/models/eclModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as ECLActions from '../store/ecl.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { APICallStatusEnum, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
-import { CommonService } from '../../shared/services/common.service';
-import { FormControl } from '@angular/forms';
-import { LookupNode } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -88,7 +87,6 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
       this.flgSetLookupValue = false;
       this.nodeLookupValue = {};
       this.channelLookupValue = [];
-      this.store.dispatch(new RTLActions.OpenSpinner(this.selectedFieldId ? UI_MESSAGES.SEARCHING_NODE : UI_MESSAGES.SEARCHING_CHANNEL));
       switch (this.selectedFieldId) {
         case 0:
           this.store.dispatch(new ECLActions.PeerLookup(this.lookupKeyCtrl.value.trim()));

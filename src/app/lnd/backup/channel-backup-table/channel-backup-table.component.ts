@@ -12,13 +12,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-backup-table',
@@ -88,12 +88,10 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onBackupChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.BACKUP_CHANNEL));
-    this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
+    this.store.dispatch(new LNDActions.BackupChannels({ uiMessage: UI_MESSAGES.BACKUP_CHANNEL, channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.VERIFY_CHANNEL));
     this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
 

@@ -71,7 +71,7 @@ export class BoltzService implements OnDestroy {
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
@@ -113,7 +113,7 @@ export class BoltzService implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
     }
     this.logger.error(err);
-    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());

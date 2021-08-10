@@ -135,7 +135,7 @@ export class RemovePeer implements Action {
 
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE_LND;
-  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
+  constructor(public payload: {uiMessage: string, memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
 }
 
 export class NewlySavedInvoice implements Action {
@@ -225,7 +225,7 @@ export class RemoveChannel implements Action {
 
 export class BackupChannels implements Action {
   readonly type = BACKUP_CHANNELS_LND;
-  constructor(public payload: {channelPoint: string, showMessage: string}) {}
+  constructor(public payload: {uiMessage: string, channelPoint: string, showMessage: string}) {}
 }
 
 export class VerifyChannels implements Action {
@@ -307,7 +307,7 @@ export class SetPayments implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_LND;
-  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+  constructor(public payload: { uiMessage: string, fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -377,7 +377,7 @@ export class PeerLookup implements Action {
 
 export class ChannelLookup implements Action {
   readonly type = CHANNEL_LOOKUP_LND;
-  constructor(public payload: string) {} // payload = chanID
+  constructor(public payload: {uiMessage: string, channelID: string}) {}
 }
 
 export class InvoiceLookup implements Action {

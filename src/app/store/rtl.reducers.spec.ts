@@ -1,7 +1,8 @@
-import * as fromRTLReducer from './rtl.reducers';
-import * as RTLActions from './rtl.actions';
 import { mockActionsData } from '../shared/test-helpers/test-data';
 import { UI_MESSAGES } from '../shared/services/consts-enums-functions';
+
+import * as fromRTLReducer from './rtl.reducers';
+import * as RTLActions from './rtl.actions';
 
 describe('RTL reducer', () => {
   describe('default action', () => {

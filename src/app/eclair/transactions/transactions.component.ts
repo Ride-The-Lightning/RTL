@@ -5,9 +5,9 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faExchangeAlt, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
+import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../shared/services/logger.service';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-transactions',

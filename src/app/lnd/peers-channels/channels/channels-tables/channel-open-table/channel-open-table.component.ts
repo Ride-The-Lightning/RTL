@@ -6,12 +6,13 @@ import { Store } from '@ngrx/store';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -24,8 +25,6 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as LNDActions from '../../../../store/lnd.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
-
 
 @Component({
   selector: 'rtl-channel-open-table',
@@ -109,7 +108,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new LNDActions.ChannelLookup(selChannel.chan_id.toString() + '/' + this.information.identity_pubkey));
+    this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, channelID: selChannel.chan_id.toString() + '/' + this.information.identity_pubkey}));
     this.lndEffects.setLookup
     .pipe(take(1))
     .subscribe((resLookup):boolean|void => {
@@ -160,14 +159,12 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_CHAN_POLICY));
-      this.store.dispatch(new LNDActions.ChannelLookup(channelToUpdate.chan_id.toString()));
+      this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.GET_CHAN_POLICY, channelID: channelToUpdate.chan_id.toString()}));
       this.lndEffects.setLookup
       .pipe(take(1))
       .subscribe(resLookup => {
@@ -179,7 +176,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};
         }
         this.logger.info(this.myChanPolicy);
-        this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update fee policy for channel point: ' + channelToUpdate.channel_point;
         const confirmationMsg = [];
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
@@ -204,7 +200,6 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
         }
       });

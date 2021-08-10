@@ -12,7 +12,6 @@ import { OpenChannelAlert } from '../../../../shared/models/alertData';
 import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
@@ -113,7 +112,6 @@ export class OpenChannelComponent implements OnInit, OnDestroy {
 
   onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0) || ((this.selTransType === '1' || this.selTransType === '2') && !this.transTypeValue))) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
     this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: ((!this.peer || !this.peer.pub_key) ? this.selectedPubkey : this.peer.pub_key), fundingAmount: this.fundingAmount, private: this.isPrivate,
       transType: this.selTransType, transTypeValue: this.transTypeValue, spendUnconfirmed: this.spendUnconfirmed

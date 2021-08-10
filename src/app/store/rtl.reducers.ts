@@ -1,12 +1,13 @@
 import { ActionReducerMap } from '@ngrx/store';
+
+import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
+import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 import { RTLConfiguration, ConfigSettingsNode, GetInfoRoot } from '../shared/models/RTLconfig';
 
 import * as fromECL from '../eclair/store/ecl.reducers';
 import * as fromCL from '../clightning/store/cl.reducers';
 import * as fromLND from '../lnd/store/lnd.reducers';
 import * as RTLActions from './rtl.actions';
-import { ApiCallsListRoot } from '../shared/models/apiCallsPayload';
-import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 
 export interface RootState {
   apisCallStatus: ApiCallsListRoot;

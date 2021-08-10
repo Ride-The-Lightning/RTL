@@ -152,14 +152,23 @@ export class DataService implements OnDestroy {
 
   labelUTXO(txid: string, label: string, overwrite: boolean = true) {
     let labelBody = {txid: txid, label: label, overwrite: overwrite};
-    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/label', labelBody);
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.LABEL_UTXO));
+    return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/label', labelBody)
+    .pipe(takeUntil(this.unSubs[5]),
+    map(res => {
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LABEL_UTXO));
+      return res;
+    }, (err) => {
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LABEL_UTXO));
+      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }));
   }
 
   leaseUTXO(txid: string, output_index: number) {
     let leaseBody: any = {txid: txid, outputIndex: output_index};
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.LEASE_UTXO));
     return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
-    .pipe(takeUntil(this.unSubs[7]))
+    .pipe(takeUntil(this.unSubs[6]))
     .subscribe((res: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LEASE_UTXO));
       this.store.dispatch(new LNDActions.FetchTransactions());
@@ -177,7 +186,7 @@ export class DataService implements OnDestroy {
     const queryHeaders: SwitchReq = {end_time: end, start_time: start};
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_FEE_REPORT));
     return this.httpClient.post(this.childAPIUrl + environment.SWITCH_API, queryHeaders)
-    .pipe(takeUntil(this.unSubs[5]),
+    .pipe(takeUntil(this.unSubs[7]),
     withLatestFrom(this.store.select('lnd')),
     mergeMap(([res, lndData]: [any, fromLNDReducers.LNDState]) => {
       if (res.forwarding_events) {

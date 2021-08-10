@@ -58,7 +58,7 @@ export class ECLEffects implements OnDestroy {
           map((info) => {
             this.logger.info(info);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
             this.initializeRemainingData(info, action.payload.loadPage);
             return {
               type: ECLActions.SET_INFO_ECL,
@@ -66,11 +66,10 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
             const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
             const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
             this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-            this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);            
+            this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);            
             return of({type: RTLActions.VOID});
           })
         );
@@ -92,7 +91,7 @@ export class ECLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
+          this.handleErrorWithoutAlert('FetchFees', UI_MESSAGES.NO_SPINNER, 'Fetching Fees Failed.', err);
           return of({type: RTLActions.VOID});
         })
       );
@@ -114,7 +113,7 @@ export class ECLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
+          this.handleErrorWithoutAlert('FetchPayments', UI_MESSAGES.NO_SPINNER, 'Fetching Payments Failed.', err);
           return of({type: RTLActions.VOID});
         })
       );
@@ -143,7 +142,7 @@ export class ECLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
+          this.handleErrorWithoutAlert('FetchChannels', UI_MESSAGES.NO_SPINNER, 'Fetching Channels Failed.', err);
           return of({type: RTLActions.VOID});
         })
       );
@@ -165,7 +164,7 @@ export class ECLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithoutAlert('FetchChannelStats', 'Fetching Channel Stats Failed.', err);
+          this.handleErrorWithoutAlert('FetchChannelStats', UI_MESSAGES.NO_SPINNER, 'Fetching Channel Stats Failed.', err);
           return of({type: RTLActions.VOID});
         })
       );
@@ -188,7 +187,7 @@ export class ECLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchOnchainBalance', 'Fetching Onchain Balances Failed.', err);
+      this.handleErrorWithoutAlert('FetchOnchainBalance', UI_MESSAGES.NO_SPINNER, 'Fetching Onchain Balances Failed.', err);
       return of({type: RTLActions.VOID});
     }))
   );
@@ -209,7 +208,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchPeers', 'Fetching Peers Failed.', err);
+            this.handleErrorWithoutAlert('FetchPeers', UI_MESSAGES.NO_SPINNER, 'Fetching Peers Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -220,17 +219,18 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.GET_NEW_ADDRESS_ECL),
     mergeMap((action: ECLActions.GetNewAddress) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
-          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
           return {
             type: ECLActions.SET_NEW_ADDRESS_ECL,
             payload: newAddress
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('GetNewAddress', 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
+          this.handleErrorWithAlert('GetNewAddress', UI_MESSAGES.GENERATE_NEW_ADDRESS, 'Generate New Address Failed', this.CHILD_API_URL + environment.ON_CHAIN_API, err);
           return of({type: RTLActions.VOID});
         }));
     }))
@@ -251,6 +251,7 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.SAVE_NEW_PEER_ECL),
     withLatestFrom(this.store.select('ecl')),
     mergeMap(([action, eclData]: [ECLActions.SaveNewPeer, fromECLReducer.ECLState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API + ((action.payload.id.includes('@') ? '?uri=' : '?nodeId=') + action.payload.id), {})
         .pipe(
@@ -258,7 +259,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED}));
             postRes = (postRes && postRes.length) ? postRes : [];
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.CONNECT_PEER));
             this.store.dispatch(new ECLActions.SetPeers(postRes));
             return {
               type: ECLActions.NEWLY_ADDED_PEER_ECL,
@@ -266,7 +267,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('SaveNewPeer', 'Peer Connection Failed.', err);
+            this.handleErrorWithoutAlert('SaveNewPeer', UI_MESSAGES.CONNECT_PEER, 'Peer Connection Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -277,11 +278,12 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.DETACH_PEER_ECL),
     mergeMap((action: ECLActions.DisconnectPeer) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DISCONNECT_PEER));
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.DISCONNECT_PEER));
             this.store.dispatch(new RTLActions.OpenSnackBar('Disconnecting Peer!'));
             return {
               type: ECLActions.REMOVE_PEER_ECL,
@@ -289,7 +291,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('DisconnectPeer', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId, err);
+            this.handleErrorWithAlert('DisconnectPeer', UI_MESSAGES.DISCONNECT_PEER, 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.nodeId, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -300,6 +302,7 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.SAVE_NEW_CHANNEL_ECL),
     mergeMap((action: ECLActions.SaveNewChannel) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SaveNewChannel', status: APICallStatusEnum.INITIATED}));
       const reqBody = action.payload.feeRate && action.payload.feeRate > 0 ? 
           { nodeId: action.payload.nodeId, fundingSatoshis: action.payload.amount, channelFlags: +!action.payload.private, fundingFeerateSatByte: action.payload.feeRate }
@@ -311,7 +314,7 @@ export class ECLEffects implements OnDestroy {
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SaveNewChannel', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new ECLActions.FetchPeers());
             this.store.dispatch(new ECLActions.FetchOnchainBalance());
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.OPEN_CHANNEL));
             this.store.dispatch(new RTLActions.OpenSnackBar('Channel Added Successfully!'));
             return {
               type: ECLActions.FETCH_CHANNELS_ECL,
@@ -319,7 +322,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('SaveNewChannel', 'Opening Channel Failed.', err);
+            this.handleErrorWithoutAlert('SaveNewChannel', UI_MESSAGES.OPEN_CHANNEL, 'Opening Channel Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -330,6 +333,7 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.UPDATE_CHANNELS_ECL),
     mergeMap((action: ECLActions.UpdateChannels) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
       let queryParam = '?feeBaseMsat=' + action.payload.baseFeeMsat + '&feeProportionalMillionths=' + action.payload.feeRate;
       if (action.payload.channelIds) {
         queryParam = queryParam + '&channelIds=' + action.payload.channelIds;
@@ -340,7 +344,7 @@ export class ECLEffects implements OnDestroy {
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
             if(action.payload.channelIds) {
               this.store.dispatch(new RTLActions.OpenSnackBar('Channels Updated Successfully.'));
             } else {
@@ -352,7 +356,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('UpdateChannels', 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithAlert('UpdateChannels', UI_MESSAGES.UPDATE_CHAN_POLICY, 'Update Channel Failed', this.CHILD_API_URL + environment.CHANNELS_API, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -363,12 +367,13 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.CLOSE_CHANNEL_ECL),
     mergeMap((action: ECLActions.CloseChannel) => {
+      this.store.dispatch(new RTLActions.OpenSpinner((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
       return this.httpClient.delete(this.CHILD_API_URL + environment.CHANNELS_API + '?channelId=' + action.payload.channelId + '&force=' + action.payload.force)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             setTimeout(() => {
-              this.store.dispatch(new RTLActions.CloseSpinner());
+              this.store.dispatch(new RTLActions.CloseSpinner((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
               this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: false}));
               this.store.dispatch(new RTLActions.OpenSnackBar(action.payload.force ? 'Channel Force Closed Successfully!' : 'Channel Closed Successfully!'));
             }, 2000);
@@ -377,7 +382,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('CloseChannel', 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
+            this.handleErrorWithAlert('CloseChannel', ((action.payload.force) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL), 'Unable to Close Channel. Try again later.', this.CHILD_API_URL + environment.CHANNELS_API, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -399,7 +404,7 @@ export class ECLEffects implements OnDestroy {
           }),
           catchError((err: any) => {
             this.store.dispatch(new ECLActions.SetQueryRoutes([]));
-            this.handleErrorWithAlert('GetQueryRoutes', 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
+            this.handleErrorWithAlert('GetQueryRoutes', UI_MESSAGES.NO_SPINNER, 'Get Query Routes Failed', this.CHILD_API_URL + environment.PAYMENTS_API + '/route?nodeId=' + action.payload.nodeId + '&amountMsat=' + action.payload.amount, err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -419,26 +424,26 @@ export class ECLEffects implements OnDestroy {
     ofType(ECLActions.SEND_PAYMENT_ECL),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [ECLActions.SendPayment, any]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.PAYMENTS_API, action.payload)
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
             if (sendRes.error) {
-              this.store.dispatch(new RTLActions.CloseSpinner());
               this.logger.error('Error: ' + sendRes.payment_error);
               const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
               if (action.payload.fromDialog) {
-                this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+                this.handleErrorWithoutAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed.', myErr);
               } else {
-                this.handleErrorWithAlert('SendPayment', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+                this.handleErrorWithAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
               }
               return {type: RTLActions.VOID};
             } else {
               setTimeout(() => {
                 this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
                 this.store.dispatch(new ECLActions.SendPaymentStatus(sendRes));
-                this.store.dispatch(new RTLActions.CloseSpinner());
+                this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_PAYMENT));
                 this.store.dispatch(new ECLActions.FetchChannels({fetchPayments: true}));
                 this.store.dispatch(new ECLActions.FetchPayments());
                 this.store.dispatch(new RTLActions.OpenSnackBar('Payment Submitted!'));
@@ -450,9 +455,9 @@ export class ECLEffects implements OnDestroy {
             this.logger.error('Error: ' + JSON.stringify(err));
             const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
             if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('SendPayment', 'Send Payment Failed.', myErr);
+              this.handleErrorWithoutAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed.', myErr);
             } else {
-              this.handleErrorWithAlert('SendPayment', 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+              this.handleErrorWithAlert('SendPayment', UI_MESSAGES.SEND_PAYMENT, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
             }
             return of({type: RTLActions.VOID});
         }));
@@ -475,7 +480,7 @@ export class ECLEffects implements OnDestroy {
       };
     }),
     catchError((err: any) => {
-      this.handleErrorWithoutAlert('FetchTransactions', 'Fetching Transactions Failed.', err);
+      this.handleErrorWithoutAlert('FetchTransactions', UI_MESSAGES.NO_SPINNER, 'Fetching Transactions Failed.', err);
       return of({type: RTLActions.VOID});
     }))
   );
@@ -484,12 +489,13 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.SEND_ONCHAIN_FUNDS_ECL),
     mergeMap((action: ECLActions.SendOnchainFunds) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SendOnchainFunds', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.ON_CHAIN_API, action.payload)
       .pipe(map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'SendOnchainFunds', status: APICallStatusEnum.COMPLETED}));
-        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEND_FUNDS));
         this.store.dispatch(new ECLActions.FetchOnchainBalance());
         return {
           type: ECLActions.SEND_ONCHAIN_FUNDS_RES_ECL,
@@ -497,7 +503,7 @@ export class ECLEffects implements OnDestroy {
         };
       }),
       catchError((err: any) => {
-        this.handleErrorWithoutAlert('SendOnchainFunds', 'Sending Fund Failed.', err);
+        this.handleErrorWithoutAlert('SendOnchainFunds', UI_MESSAGES.SEND_FUNDS, 'Sending Fund Failed.', err);
         return of({type: RTLActions.VOID});
       }));
     }))
@@ -507,12 +513,13 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.CREATE_INVOICE_ECL),
     mergeMap((action: ECLActions.CreateInvoice) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CREATE_INVOICE));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'CreateInvoice', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.INVOICES_API, action.payload)
         .pipe(map((postRes: Invoice) => {
             this.logger.info(postRes);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'CreateInvoice', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.CREATE_INVOICE));
             postRes.timestamp = new Date().getTime() / 1000;
             postRes.expiresAt = Math.round(postRes.timestamp + action.payload.expireIn);
             postRes.description = action.payload.description;
@@ -528,7 +535,7 @@ export class ECLEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('CreateInvoice', 'Create Invoice Failed.', err);
+            this.handleErrorWithoutAlert('CreateInvoice', UI_MESSAGES.CREATE_INVOICE, 'Create Invoice Failed.', err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -549,7 +556,7 @@ export class ECLEffects implements OnDestroy {
           };
         }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchInvoices', 'Fetching Invoices Failed.', err);
+            this.handleErrorWithoutAlert('FetchInvoices', UI_MESSAGES.NO_SPINNER, 'Fetching Invoices Failed.', err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -559,20 +566,21 @@ export class ECLEffects implements OnDestroy {
     this.actions.pipe(
     ofType(ECLActions.PEER_LOOKUP_ECL),
     mergeMap((action: ECLActions.PeerLookup) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEARCHING_NODE));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload)
         .pipe(
           map((resPeer) => {
             this.logger.info(resPeer);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.SEARCHING_NODE));
             return {
               type: ECLActions.SET_LOOKUP_ECL,
               payload: resPeer
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', UI_MESSAGES.SEARCHING_NODE, 'Peer Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/nodes/' + action.payload, err);
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -626,7 +634,7 @@ export class ECLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
       this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }
@@ -639,7 +647,7 @@ export class ECLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

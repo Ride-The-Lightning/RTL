@@ -2,17 +2,17 @@ import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { ForwardingEvent, RoutingPeers } from '../../../shared/models/lndModels';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-routing-peers',

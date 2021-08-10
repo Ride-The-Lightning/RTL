@@ -97,7 +97,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
   
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: selChannel.short_channel_id, showError: true}));
+    this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
     .subscribe((resLookup: ChannelEdge[]):boolean|void => {
@@ -147,14 +147,12 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_CHAN_POLICY));
-      this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: channelToUpdate.short_channel_id, showError: false}));
+      this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false}));
       this.clEffects.setLookupCL
       .pipe(take(1))
       .subscribe((resLookup: ChannelEdge[]) => {
@@ -166,7 +164,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
         }
         this.logger.info(this.myChanPolicy);
-        this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update fee policy for Channel: ' + channelToUpdate.channel_id;
         const confirmationMsg = [];
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
@@ -189,7 +186,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
         }
       });
@@ -213,7 +209,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CLOSE_CHANNEL));
         this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: false}));
       }
     });

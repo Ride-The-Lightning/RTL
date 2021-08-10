@@ -37,10 +37,10 @@ exports.postPeer = (req, res, next) => {
   options.body = req.body;
   request.post(options, (error, response, body) => {
     if(!body || body.error) {
-      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error', error: body.error});
+      logger.log({level: 'ERROR', fileName: 'Peers', msg: 'Connect Peer Error', error: body && body.error ? body.error : body ? body : ''});
       res.status(500).json({
         message: "Adding peer failed!",
-        error: (!body) ? 'Error From Server!' : body.error
+        error: (!body) ? 'Error From Server!' : body.error ? body.error : 'Error From Server!'
       });
     } else {
       logger.log({level: 'DEBUG', fileName: 'Peers', msg: 'Peer Added', data: body});

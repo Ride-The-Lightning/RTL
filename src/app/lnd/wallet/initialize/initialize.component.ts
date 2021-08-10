@@ -11,7 +11,6 @@ import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 export const matchedPasswords: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const initWalletPassword = control.get('initWalletPassword');
@@ -110,7 +109,6 @@ export class InitializeWalletComponent implements OnInit, OnDestroy {
 
   onInitWallet():boolean|void {
     if (this.passwordFormGroup.invalid || this.cipherFormGroup.invalid || this.passphraseFormGroup.invalid) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITIALIZE));
     if (this.cipherFormGroup.controls.existingCipher.value) {
       const cipherArr = this.cipherFormGroup.controls.cipherSeed.value.toString().trim().split(',');
       if (this.passphraseFormGroup.controls.enterPassphrase.value) {

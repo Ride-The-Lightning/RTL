@@ -119,7 +119,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = 'ulbl' + Math.random().toString(36).slice(2) + Date.now();
     this.newlyAddedInvoiceValue = this.invoiceValue;
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.ADD_INVOICE));
     this.store.dispatch(new CLActions.SaveNewInvoice({
       label: this.newlyAddedInvoiceMemo, amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));
@@ -134,7 +133,6 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DELETE_INVOICE));
         this.store.dispatch(new CLActions.DeleteExpiredInvoice());
       }
     });    

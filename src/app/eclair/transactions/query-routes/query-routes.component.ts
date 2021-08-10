@@ -3,13 +3,13 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-
-import { CommonService } from '../../../shared/services/common.service';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Route } from '../../../shared/models/eclModels';
 
 import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { Route } from '../../../shared/models/eclModels';
+import { CommonService } from '../../../shared/services/common.service';
+
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';

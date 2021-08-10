@@ -8,13 +8,12 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -76,7 +75,6 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.RESTORE_CHANNEL));
     this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }  
 

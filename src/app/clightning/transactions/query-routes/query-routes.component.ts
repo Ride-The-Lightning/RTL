@@ -2,18 +2,18 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-
-import { CommonService } from '../../../shared/services/common.service';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { faRoute, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+
 import { Routes } from '../../../shared/models/clModels';
+import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+import { CommonService } from '../../../shared/services/common.service';
 
 import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-cl-query-routes',

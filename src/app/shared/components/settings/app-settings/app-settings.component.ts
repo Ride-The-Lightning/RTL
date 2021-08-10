@@ -4,12 +4,12 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faWindowRestore, faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
+import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-app-settings',

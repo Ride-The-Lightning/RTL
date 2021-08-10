@@ -6,8 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { CLInvoiceInformation } from '../../../shared/models/alertData';
-import { Invoice } from '../../../shared/models/clModels';
 import { ScreenSizeEnum } from '../../../shared/services/consts-enums-functions';
+
+import { Invoice } from '../../../shared/models/clModels';
 
 @Component({
   selector: 'rtl-cl-invoice-information',

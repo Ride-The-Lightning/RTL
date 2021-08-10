@@ -7,11 +7,11 @@ import { faProjectDiagram, faBolt, faServer, faNetworkWired } from '@fortawesome
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, ChannelsStatus } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-
-import * as fromRTLReducer from '../../store/rtl.reducers';
 import { CommonService } from '../../shared/services/common.service';
 import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
+
+import * as fromRTLReducer from '../../store/rtl.reducers';
 
 @Component({
   selector: 'rtl-network-info',

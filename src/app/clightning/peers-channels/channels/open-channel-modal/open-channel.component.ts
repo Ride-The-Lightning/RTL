@@ -10,10 +10,9 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer, GetInfo, UTXO } from '../../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, FEE_RATE_TYPES, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as CLActions from '../../../store/cl.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
@@ -166,7 +165,6 @@ export class CLOpenChannelComponent implements OnInit, OnDestroy {
       newChannel['utxos'] = [];
       this.selUTXOs.forEach(utxo => newChannel['utxos'].push(utxo.txid + ':' + utxo.output));
     }
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
     this.store.dispatch(new CLActions.SaveNewChannel(newChannel));
   }
 

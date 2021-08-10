@@ -16,7 +16,6 @@ import { AuthConfig } from '../../../models/alertData';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 import * as RTLActions from '../../../../store/rtl.actions';
-import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-two-factor-auth',

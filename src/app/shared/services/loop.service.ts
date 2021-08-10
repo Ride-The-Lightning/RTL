@@ -5,13 +5,13 @@ import { catchError, takeUntil, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { environment, API_URL } from '../../../environments/environment';
-import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { LoggerService } from '../../shared/services/logger.service';
 import { AlertTypeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { LoopSwapStatus } from '../models/loopModels';
+import { LoggerService } from '../../shared/services/logger.service';
+import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { LoopSwapStatus } from '../models/loopModels';
 
 @Injectable()
 export class LoopService implements OnDestroy {
@@ -130,7 +130,7 @@ export class LoopService implements OnDestroy {
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
@@ -156,7 +156,7 @@ export class LoopService implements OnDestroy {
       (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
       (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error';
     this.logger.error(err);
-    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
+    this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());

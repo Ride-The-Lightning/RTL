@@ -6,6 +6,8 @@ import { Store } from '@ngrx/store';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, PendingChannels, PendingOpenChannel } from '../../../../../shared/models/lndModels';
+import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -13,8 +15,6 @@ import { BumpFeeComponent } from '../../bump-fee-modal/bump-fee.component';
 
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
-import { AlertTypeEnum, APICallStatusEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-channel-pending-table',

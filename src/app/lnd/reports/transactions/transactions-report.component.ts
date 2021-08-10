@@ -6,10 +6,11 @@ import { Store } from '@ngrx/store';
 import { Payment, Invoice } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
 import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
+
 
 @Component({
   selector: 'rtl-transactions-report',

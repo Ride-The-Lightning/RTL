@@ -10,15 +10,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UTXO } from '../../../../shared/models/lndModels';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, WALLET_ADDRESS_TYPE, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 import { DataService } from '../../../../shared/services/data.service';
 import { OnChainLabelModalComponent } from '../../on-chain-label-modal/on-chain-label-modal.component';
 
+import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { RTLEffects } from '../../../../store/rtl.effects';
-import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-on-chain-utxos',

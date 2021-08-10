@@ -9,10 +9,9 @@ import { faExclamationTriangle, faInfoCircle } from '@fortawesome/free-solid-svg
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { Channel } from '../../../../shared/models/lndModels';
 import { ChannelInformation } from '../../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, TRANS_TYPES } from '../../../../shared/services/consts-enums-functions';
 
 import * as LNDActions from '../../../store/lnd.actions';
-import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
 @Component({
@@ -56,7 +55,6 @@ export class CloseChannelComponent implements OnInit, OnDestroy {
     let closeChannelParams: any = { channelPoint: this.channelToClose.channel_point, forcibly: !this.channelToClose.active };
     if (this.blocks) { closeChannelParams.targetConf = this.blocks; }
     if (this.fees) { closeChannelParams.satPerByte = this.fees; }
-    this.store.dispatch(new RTLActions.OpenSpinner(this.channelToClose.active ? UI_MESSAGES.CLOSE_CHANNEL : UI_MESSAGES.FORCE_CLOSE_CHANNEL));
     this.store.dispatch(new LNDActions.CloseChannel(closeChannelParams));
     this.dialogRef.close(false);
   }

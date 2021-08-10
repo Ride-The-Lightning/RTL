@@ -5,14 +5,13 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { APICallStatusEnum, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
+import { CommonService } from '../../shared/services/common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as LNDActions from '../store/lnd.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { APICallStatusEnum, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
-import { CommonService } from '../../shared/services/common.service';
-import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-lookups',
@@ -67,13 +66,12 @@ export class LookupsComponent implements OnInit, OnDestroy {
     if(!this.lookupKey) { return true; }
     this.flgSetLookupValue = false;
     this.lookupValue = {};
-    this.store.dispatch(new RTLActions.OpenSpinner(this.selectedFieldId ? UI_MESSAGES.SEARCHING_NODE : UI_MESSAGES.SEARCHING_CHANNEL));
     switch (this.selectedFieldId) {
       case 0:
         this.store.dispatch(new LNDActions.PeerLookup(this.lookupKey.trim()));
         break;
       case 1:
-        this.store.dispatch(new LNDActions.ChannelLookup(this.lookupKey.trim()));
+        this.store.dispatch(new LNDActions.ChannelLookup({ uiMessage: UI_MESSAGES.SEARCHING_CHANNEL, channelID: this.lookupKey.trim()}));
         break;
       default:
         break;

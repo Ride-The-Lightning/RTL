@@ -11,11 +11,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/lndModels';
 import { OpenChannelAlert } from '../../../shared/models/alertData';
-import { APICallStatusEnum, TRANS_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, TRANS_TYPES } from '../../../shared/services/consts-enums-functions';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -106,12 +105,10 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
       host = this.peerFormGroup.controls.peerAddress.value.substring(deviderIndex + 1);
       this.connectPeerWithParams(pubkey, host);
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_ADDRESS));
       this.store.dispatch(new LNDActions.FetchGraphNode({pubkey: this.peerFormGroup.controls.peerAddress.value}));
       this.lndEffects.setGraphNode
       .pipe(take(1))
       .subscribe(graphNode => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
         host = (graphNode.node.addresses && graphNode.node.addresses.length && graphNode.node.addresses.length > 0 && graphNode.node.addresses[0].addr) ? graphNode.node.addresses[0].addr : '';
         this.connectPeerWithParams(this.peerFormGroup.controls.peerAddress.value, host);
       });
@@ -125,7 +122,6 @@ export class ConnectPeerComponent implements OnInit, OnDestroy {
   onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.selTransType.value === '1' && !this.channelFormGroup.controls.transTypeValue.value) || (this.channelFormGroup.controls.selTransType.value === '2' && !this.channelFormGroup.controls.transTypeValue.value)) { return true; }
     this.channelConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
     this.store.dispatch(new LNDActions.SaveNewChannel({
       selectedPeerPubkey: this.newlyAddedPeer.pub_key, fundingAmount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value,
       transType: this.channelFormGroup.controls.selTransType.value, transTypeValue: this.channelFormGroup.controls.transTypeValue.value, spendUnconfirmed: this.channelFormGroup.controls.spendUnconfirmed.value

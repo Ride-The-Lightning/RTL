@@ -16,7 +16,6 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -81,14 +80,13 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
-    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount:this.paymentAmount, outgoingChannel: this.selActiveChannel, feeLimitType:{id: this.selFeeLimitType.id, name: this.selFeeLimitType.name}, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount:this.paymentAmount, outgoingChannel: this.selActiveChannel, feeLimitType:{id: this.selFeeLimitType.id, name: this.selFeeLimitType.name}, feeLimit: this.feeLimit, fromDialog: true}));
     } else {
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: {id: this.selFeeLimitType.id, name: this.selFeeLimitType.name}, feeLimit: this.feeLimit, fromDialog: true}));
+      this.store.dispatch(new LNDActions.SendPayment({ uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, outgoingChannel: this.selActiveChannel, feeLimitType: {id: this.selFeeLimitType.id, name: this.selFeeLimitType.name}, feeLimit: this.feeLimit, fromDialog: true}));
     }
   }
 
