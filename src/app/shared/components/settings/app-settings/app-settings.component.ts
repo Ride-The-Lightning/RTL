@@ -9,6 +9,7 @@ import { LoggerService } from '../../../services/logger.service';
 
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-app-settings',
@@ -43,8 +44,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   onUpdateSettings():boolean|void {
     let defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : +this.appConfig.nodes[0].index;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Defaule Node Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings({defaultNodeIndex: defaultNodeIndex}));
+    this.store.dispatch(new RTLActions.SaveSettings({uiMessage: UI_MESSAGES.UPDATE_DEFAULT_NODE_SETTING, defaultNodeIndex: defaultNodeIndex}));
   }
 
   onResetSettings() {

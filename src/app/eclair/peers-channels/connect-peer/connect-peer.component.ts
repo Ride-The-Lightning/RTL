@@ -15,7 +15,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-connect-peer',
@@ -84,14 +84,14 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   onConnectPeer():boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
     this.store.dispatch(new ECLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
   onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0)) { return true; }
     this.channelConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
     this.store.dispatch(new ECLActions.SaveNewChannel({
       nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
     }));

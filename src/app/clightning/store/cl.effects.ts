@@ -13,7 +13,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { GetInfo, Fees, Balance, LocalRemoteBalance, Payment, FeeRates, ListInvoices, Invoice, Peer } from '../../shared/models/clModels';
-import { AlertTypeEnum, APICallStatusEnum, CurrencyUnitEnum } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as RTLActions from '../../store/rtl.actions';
@@ -42,7 +42,7 @@ export class CLEffects implements OnDestroy {
           rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED &&
           rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED
         ) {
-          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
         }
       });
     }
@@ -53,7 +53,7 @@ export class CLEffects implements OnDestroy {
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [CLActions.FetchInfo, fromRTLReducer.RootState]) => {
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.INITIATED}));
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(
           takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
@@ -183,7 +183,7 @@ export class CLEffects implements OnDestroy {
       return this.httpClient.get(this.CHILD_API_URL + environment.ON_CHAIN_API + '?type=' + action.payload.addressCode)
         .pipe(map((newAddress: any) => {
           this.logger.info(newAddress);
-          this.store.dispatch(new RTLActions.CloseSpinner());
+          this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
           return {
             type: CLActions.SET_NEW_ADDRESS_CL,
             payload: (newAddress && newAddress.address) ? newAddress.address : {}
@@ -732,7 +732,7 @@ export class CLEffects implements OnDestroy {
       api_version: info.api_version,
       numberOfPendingChannels: info.num_pending_channels
     };
-    this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new CLActions.FetchInvoices({num_max_invoices: 1000000, index_offset: 0, reversed: true}));
     this.store.dispatch(new CLActions.FetchFees());
@@ -756,7 +756,7 @@ export class CLEffects implements OnDestroy {
     this.router.navigate([newRoute]);
   }
   
-  handleErrorWithoutAlert(actionName: string, genericErrorMessage: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -764,12 +764,12 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
+      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }
 
-  handleErrorWithAlert(actionName: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -777,7 +777,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
+      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

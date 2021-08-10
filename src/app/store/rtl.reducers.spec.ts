@@ -1,6 +1,7 @@
 import * as fromRTLReducer from './rtl.reducers';
 import * as RTLActions from './rtl.actions';
 import { mockActionsData } from '../shared/test-helpers/test-data';
+import { UI_MESSAGES } from '../shared/services/consts-enums-functions';
 
 describe('RTL reducer', () => {
   describe('default action', () => {
@@ -14,7 +15,7 @@ describe('RTL reducer', () => {
   describe('Action SetSelectedNode', () => {
     it('should set selected node', () => {
       const { initRootState } = fromRTLReducer;
-      const SetSelectedNodeAction = new RTLActions.SetSelelectedNode({ lnNode: mockActionsData.setSelectedNode, isInitialSetup: false });
+      const SetSelectedNodeAction = new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: mockActionsData.setSelectedNode, isInitialSetup: false });
       const newState = fromRTLReducer.RootReducer(initRootState, SetSelectedNodeAction);
 
       expect(newState.selNode.settings.themeMode).toBe('NIGHT');

@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-unlock-wallet',
@@ -21,7 +22,7 @@ export class UnlockWalletComponent implements OnInit {
 
   onUnlockWallet():boolean|void {
     if(!this.walletPassword) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner('Unlocking...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UNLOCK_WALLET));
     this.store.dispatch(new LNDActions.UnlockWallet({pwd: window.btoa(this.walletPassword)}));
   }
 

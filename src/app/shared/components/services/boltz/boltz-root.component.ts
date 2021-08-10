@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { SwapTypeEnum } from '../../../services/consts-enums-functions';
+import { SwapTypeEnum, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { SwapModalComponent } from './swap-modal/swap-modal.component';
 import { ReverseSwap, Swap, ListSwaps } from '../../../models/boltzModels';
 import { BoltzService } from '../../../services/boltz.service';
@@ -64,11 +64,9 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
   }
 
   onSwap(direction: SwapTypeEnum) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Service Info...'));
     this.boltzService.serviceInfo()
     .pipe(takeUntil(this.unSubs[2]))
     .subscribe(response => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({data: {
         serviceInfo: response,
         direction: direction,

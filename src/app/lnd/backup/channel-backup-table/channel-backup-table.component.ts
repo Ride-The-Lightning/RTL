@@ -11,7 +11,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { Channel } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 
@@ -77,7 +77,6 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
       if(action.type === RTLActions.SHOW_FILE) {
         this.commonService.downloadFile(action.payload, 'channel-' + (this.selectedChannel.channel_point ? this.selectedChannel.channel_point : 'all'), '.bak', '.bak');
         this.selectedChannel = undefined;
-        this.store.dispatch(new RTLActions.CloseSpinner());
       }
     });
   }
@@ -89,18 +88,17 @@ export class ChannelBackupTableComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onBackupChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Backup Channels...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.BACKUP_CHANNEL));
     this.store.dispatch(new LNDActions.BackupChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL', showMessage: ''}));
   }
 
   onVerifyChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Verify Channels...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.VERIFY_CHANNEL));
     this.store.dispatch(new LNDActions.VerifyChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }
 
   onDownloadBackup(selChannel: Channel) {
     this.selectedChannel = selChannel;
-    this.store.dispatch(new RTLActions.OpenSpinner('Downloading Backup File...'));
     this.store.dispatch(new RTLActions.FetchFile({channelPoint: selChannel.channel_point ? selChannel.channel_point : 'all'}));
   }
 

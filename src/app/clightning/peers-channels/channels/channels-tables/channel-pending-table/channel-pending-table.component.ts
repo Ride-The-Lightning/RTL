@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { GetInfo, Channel } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -119,7 +119,7 @@ export class CLChannelPendingTableComponent implements OnInit, AfterViewInit, On
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Force Closing Channel...'));
+        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.FORCE_CLOSE_CHANNEL));
         this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: true}));
       }
     });

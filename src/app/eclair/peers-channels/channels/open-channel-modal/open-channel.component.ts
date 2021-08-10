@@ -13,7 +13,7 @@ import { ECLOpenChannelAlert } from '../../../../shared/models/alertData';
 import * as ECLActions from '../../../store/ecl.actions';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, UI_MESSAGES } from '../../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-open-channel',
@@ -115,7 +115,7 @@ export class ECLOpenChannelComponent implements OnInit, OnDestroy {
 
   onOpenChannel():boolean|void {
     if ((!this.peer && !this.selectedPubkey) || (!this.fundingAmount || ((this.totalBalance - this.fundingAmount) < 0))) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.OPEN_CHANNEL));
     this.store.dispatch(new ECLActions.SaveNewChannel({
       nodeId: ((!this.peer || !this.peer.nodeId) ? this.selectedPubkey : this.peer.nodeId), amount: this.fundingAmount, private: this.isPrivate, feeRate: this.feeRate
     }));

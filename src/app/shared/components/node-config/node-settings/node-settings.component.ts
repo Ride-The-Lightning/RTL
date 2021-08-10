@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faMoneyBillAlt, faPaintBrush, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS } from '../../../services/consts-enums-functions';
+import { CURRENCY_UNITS, UserPersonaEnum, ScreenSizeEnum, FIAT_CURRENCY_UNITS, NODE_SETTINGS, UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, Settings, RTLConfiguration, GetInfoRoot } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 import { CommonService } from '../../../services/common.service';
@@ -86,8 +86,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
   onUpdateSettings():boolean|void {
     if(this.selNode.settings.fiatConversion && !this.selNode.settings.currencyUnit) { return true; }
     this.logger.info(this.selNode.settings);
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Node Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings({settings: this.selNode.settings}));
+    this.store.dispatch(new RTLActions.SaveSettings({uiMessage: UI_MESSAGES.UPDATE_NODE_SETTINGS, settings: this.selNode.settings}));
     this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
@@ -97,7 +96,7 @@ export class NodeSettingsComponent implements OnInit, OnDestroy {
     this.selNode.settings = this.previousSettings;
     this.selectedThemeMode = this.themeModes.find(themeMode => themeMode.id === this.previousSettings.themeMode);
     this.selectedThemeColor = this.previousSettings.themeColor;
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: this.selNode, isInitialSetup: true }));    
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.NO_SPINNER, lnNode: this.selNode, isInitialSetup: true }));    
   }  
 
   ngOnDestroy() {

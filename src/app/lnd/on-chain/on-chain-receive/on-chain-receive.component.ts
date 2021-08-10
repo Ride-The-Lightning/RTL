@@ -24,7 +24,7 @@ export class OnChainReceiveComponent {
   constructor(private store: Store<fromRTLReducer.RTLState>, private lndEffects: LNDEffects) {}
 
   onGenerateAddress() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
     this.store.dispatch(new LNDActions.GetNewAddress(this.selectedAddressType));
     this.lndEffects.setNewAddress
     .pipe(take(1))

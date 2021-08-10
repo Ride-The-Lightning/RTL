@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { InvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/clModels';
 import { CommonService } from '../../../shared/services/common.service';
@@ -70,7 +70,7 @@ export class CLCreateInvoiceComponent implements OnInit, OnDestroy {
     if (this.selTimeUnit !== TimeUnitEnum.SECS) {
       expiryInSecs = this.commonService.convertTime(this.expiry, this.selTimeUnit, TimeUnitEnum.SECS);
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.ADD_INVOICE));
     this.store.dispatch(new CLActions.SaveNewInvoice({
       label: ('ulbl' + Math.random().toString(36).slice(2) + Date.now()), amount: this.invoiceValue*1000, description: this.description, expiry: expiryInSecs, private: this.private
     }));

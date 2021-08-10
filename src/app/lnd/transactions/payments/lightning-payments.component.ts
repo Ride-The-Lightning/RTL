@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -173,7 +173,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+            this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
             this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false}));
             this.resetData();
           }
@@ -199,7 +199,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
           this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }

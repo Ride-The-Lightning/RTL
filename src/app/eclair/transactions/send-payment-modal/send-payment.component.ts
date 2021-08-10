@@ -104,7 +104,7 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
     if (this.zeroAmtInvoice) {
       this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
     } else {

@@ -8,7 +8,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/eclModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -122,7 +122,7 @@ export class ECLLightningInvoicesComponent implements OnInit, AfterViewInit, OnD
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CREATE_INVOICE));
     this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
     this.resetData();
   }

@@ -8,7 +8,7 @@ import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/pag
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo, Invoice } from '../../../shared/models/lndModels';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -116,7 +116,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
     this.flgAnimate = true;
     this.newlyAddedInvoiceMemo = this.memo;
     this.newlyAddedInvoiceValue = this.invoiceValue;
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Invoice...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.ADD_INVOICE));
     this.store.dispatch(new LNDActions.SaveNewInvoice({
       memo: this.memo, invoiceValue: this.invoiceValue, private: this.private, expiry: expiryInSecs, pageSize: this.pageSize, openModal: true
     }));

@@ -10,7 +10,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Peer, GetInfo } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, ScreenSizeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { ECLOpenChannelComponent } from '../channels/open-channel-modal/open-channel.component';
@@ -165,7 +165,7 @@ export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Disconnecting Peer...'));
+        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DISCONNECT_PEER));
         this.store.dispatch(new ECLActions.DisconnectPeer({nodeId: peerToDetach.nodeId}));
       }
     });

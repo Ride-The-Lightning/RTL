@@ -60,11 +60,12 @@ export class OpenSnackBar implements Action {
 
 export class OpenSpinner implements Action {
   readonly type = OPEN_SPINNER;
-  constructor(public payload: string) {} // payload = titleMessage
+  constructor(public payload: string) {}
 }
 
 export class CloseSpinner implements Action {
   readonly type = CLOSE_SPINNER;
+  constructor(public payload: string) {}
 }
 
 export class OpenAlert implements Action {
@@ -122,7 +123,7 @@ export class SetRTLConfig implements Action {
 
 export class SaveSettings implements Action {
   readonly type = SAVE_SETTINGS;
-  constructor(public payload: {settings?: Settings, defaultNodeIndex?: number}) {}
+  constructor(public payload: {uiMessage: string, settings?: Settings, defaultNodeIndex?: number}) {}
 }
 
 export class TwoFASaveSettings implements Action {
@@ -132,12 +133,12 @@ export class TwoFASaveSettings implements Action {
 
 export class SetSelelectedNode implements Action {
   readonly type = SET_SELECTED_NODE;
-  constructor(public payload: { lnNode: ConfigSettingsNode, isInitialSetup: boolean }) {}
+  constructor(public payload: { uiMessage: string, lnNode: ConfigSettingsNode, isInitialSetup: boolean }) {}
 }
 
 export class UpdateServiceSettings implements Action {
   readonly type = UPDATE_SERVICE_SETTINGS;
-  constructor(public payload: { service: ServicesEnum, settings: any }) {}
+  constructor(public payload: { uiMessage: string, service: ServicesEnum, settings: any }) {}
 }
 
 export class SetNodeData implements Action {

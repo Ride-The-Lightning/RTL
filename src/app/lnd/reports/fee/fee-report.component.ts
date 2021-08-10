@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { SwitchRes } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { MONTHS, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -64,7 +64,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
-    this.errorMessage = 'Getting fee report...';
+    this.errorMessage = UI_MESSAGES.GET_FEE_REPORT;
     const startDateInSeconds = Math.round(start.getTime()/1000).toString();
     const endDateInSeconds = Math.round(end.getTime()/1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)

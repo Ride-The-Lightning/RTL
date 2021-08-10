@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/clModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 
@@ -90,7 +90,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
         this.paymentError = '';
         this.paymentDecodedHint = '';
         this.paymentReq.control.setErrors(null);      
-        this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_PAYMENT));
         this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
         this.clEffects.setDecodedPaymentCL.pipe(take(1)).subscribe(decodedPayment => {
           this.paymentDecoded = decodedPayment;
@@ -118,12 +118,12 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   keysendPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Keysend Payment...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_KEYSEND));
     this.store.dispatch(new CLActions.SendPayment({pubkey: this.pubkey, amount: this.keysendAmount*1000, fromDialog: true}));
   }
 
   sendPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
     if (this.zeroAmtInvoice) {
       this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, amount: this.paymentAmount*1000, fromDialog: true}));
     } else {
@@ -139,7 +139,7 @@ export class CLLightningSendPaymentsComponent implements OnInit, OnDestroy {
     if(this.paymentRequest && this.paymentRequest.length > 100) {
       this.paymentReq.control.setErrors(null);
       this.zeroAmtInvoice = false;
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_PAYMENT));
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: true}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;

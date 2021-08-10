@@ -11,7 +11,7 @@ import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import { ChannelInformationComponent } from '../../channel-information-modal/channel-information.component';
 import { SelNodeChild } from '../../../../../shared/models/RTLconfig';
 import { Channel, GetInfo } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, UserPersonaEnum, LoopTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { LoopService } from '../../../../../shared/services/loop.service';
 import { CommonService } from '../../../../../shared/services/common.service';
@@ -160,13 +160,13 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
+          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0, time_lock_delta: 0};      
-      this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_CHAN_POLICY));
       this.store.dispatch(new LNDActions.ChannelLookup(channelToUpdate.chan_id.toString()));
       this.lndEffects.setLookup
       .pipe(take(1))
@@ -204,7 +204,7 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
           const time_lock_delta = confirmRes[2].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
+          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
           this.store.dispatch(new LNDActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, timeLockDelta: time_lock_delta, chanPoint: channelToUpdate.channel_point}));
         }
       });
@@ -301,11 +301,9 @@ export class ChannelOpenTableComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onLoopOut(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Terms and Quotes...'));
     this.loopService.getLoopOutTermsAndQuotes(this.targetConf)
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(response => {
-      this.store.dispatch(new RTLActions.CloseSpinner());
       this.store.dispatch(new RTLActions.OpenAlert({ minHeight: '56rem', data: {
         channel: selChannel,
         minQuote: response[0],

@@ -15,7 +15,7 @@ import { SessionService } from '../../shared/services/session.service';
 import { GetInfo, Fees, Balance, NetworkInfo, GraphNode, Transaction, SwitchReq, ListInvoices, PendingChannelsGroup, UTXO, ListPayments } from '../../shared/models/lndModels';
 import { InvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
-import { AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE } from '../../shared/services/consts-enums-functions';
+import { AlertTypeEnum, APICallStatusEnum, FEE_LIMIT_TYPES, PAGE_SIZE, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
@@ -47,7 +47,7 @@ export class LNDEffects implements OnDestroy {
         rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED &&
         rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED
       ) {
-        this.store.dispatch(new RTLActions.CloseSpinner());
+        this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
       }
     });
   }
@@ -57,14 +57,14 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.FETCH_INFO_LND),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, store]: [LNDActions.FetchInfo, fromRTLReducer.RootState]) => {
-      this.store.dispatch(new RTLActions.OpenSpinner('Getting Node Information...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_NODE_INFO));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get<GetInfo>(this.CHILD_API_URL + environment.GETINFO_API)
         .pipe(takeUntil(this.actions.pipe(ofType(RTLActions.SET_SELECTED_NODE))),
           map((info) => {
             this.logger.info(info);
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchInfo', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
             if (info.chains && info.chains.length && info.chains[0]
               && (
                 (typeof info.chains[0] === 'string' && info.chains[0].toLowerCase().indexOf('bitcoin') < 0)
@@ -96,17 +96,17 @@ export class LNDEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_NODE_INFO));
             if ((typeof err.error.error === 'string' && err.error.error.includes('Not Found')) || err.status === 502) {
               this.sessionService.removeItem('lndUnlocked');
               this.logger.info('Redirecting to Unlock');
               this.router.navigate(['/lnd/wallet']);
-              this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
+              this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
             } else {
               const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
               const message = (err.error.message ? err.error.message + ' ' : '') + ((err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error');
               this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-              this.handleErrorWithoutAlert('FetchInfo', 'Fetching Node Info Failed.', err);
+              this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
             }
             return of({type: RTLActions.VOID});
           })
@@ -130,7 +130,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchPeers', 'Fetching Peers Failed.', err);
+            this.handleErrorWithoutAlert('FetchPeers', UI_MESSAGES.NO_SPINNER, 'Fetching Peers Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -143,13 +143,14 @@ export class LNDEffects implements OnDestroy {
     ofType(LNDActions.SAVE_NEW_PEER_LND),
     withLatestFrom(this.store.select('lnd')),
     mergeMap(([action, lndData]: [LNDActions.SaveNewPeer, fromLNDReducers.LNDState]) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.CONNECT_PEER));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SaveNewPeer', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(this.CHILD_API_URL + environment.PEERS_API, { pubkey: action.payload.pubkey, host: action.payload.host, perm: action.payload.perm })
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SaveNewPeer', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.CONNECT_PEER));
             this.store.dispatch(new LNDActions.SetPeers((postRes && postRes.length > 0) ? postRes : []));
             return {
               type: LNDActions.NEWLY_ADDED_PEER_LND,
@@ -157,7 +158,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithoutAlert('SaveNewPeer', 'Peer Connection Failed.', err);
+            this.handleErrorWithoutAlert('SaveNewPeer', UI_MESSAGES.CONNECT_PEER, 'Peer Connection Failed.', err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -169,11 +170,12 @@ export class LNDEffects implements OnDestroy {
     this.actions.pipe(
     ofType(LNDActions.DETACH_PEER_LND),
     mergeMap((action: LNDActions.DetachPeer) => {
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DISCONNECT_PEER));
       return this.httpClient.delete(this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey)
         .pipe(
           map((postRes: any) => {
             this.logger.info(postRes);
-            this.store.dispatch(new RTLActions.CloseSpinner());
+            this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.DISCONNECT_PEER));
             this.store.dispatch(new RTLActions.OpenSnackBar('Peer Disconnected Successfully.'));
             return {
               type: LNDActions.REMOVE_PEER_LND,
@@ -181,7 +183,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('DetachPeer', 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey, err);
+            this.handleErrorWithAlert('DetachPeer', UI_MESSAGES.DISCONNECT_PEER, 'Unable to Detach Peer. Try again later.', this.CHILD_API_URL + environment.PEERS_API + '/' + action.payload.pubkey, err);
             return of({type: RTLActions.VOID});
           })
         );
@@ -990,7 +992,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node...'));
+            this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITIALIZE_NODE));
             this.logger.info('Successfully Unlocked!');
             this.sessionService.setItem('lndUnlocked', 'true');
             setTimeout(() => {
@@ -1156,7 +1158,7 @@ export class LNDEffects implements OnDestroy {
       uris: info.uris,
       version: (!info.version) ? '' : info.version.split(' ')[0],
     };
-    this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
     this.store.dispatch(new LNDActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
@@ -1180,7 +1182,7 @@ export class LNDEffects implements OnDestroy {
     this.router.navigate([newRoute]);
   }
 
-  handleErrorWithoutAlert(actionName: string, genericErrorMessage: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, uiMessage: string, genericErrorMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -1188,12 +1190,12 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
+      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : genericErrorMessage}));
     }
   }
 
-  handleErrorWithAlert(actionName: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
+  handleErrorWithAlert(actionName: string, uiMessage: string, alertTitle: string, errURL: string, err: { status: number, error: any }) {
     this.logger.error(err);
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
@@ -1201,7 +1203,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner());
+      if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

@@ -10,7 +10,7 @@ import { LoggerService } from '../../shared/services/logger.service';
 import * as CLActions from '../store/cl.actions';
 import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, ScreenSizeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
 
 @Component({
@@ -74,7 +74,7 @@ export class CLLookupsComponent implements OnInit, OnDestroy {
     this.flgSetLookupValue = false;
     this.nodeLookupValue = {nodeid: ''};
     this.channelLookupValue = [];
-    this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(this.selectedFieldId ? UI_MESSAGES.SEARCHING_NODE : UI_MESSAGES.SEARCHING_CHANNEL));
     switch (this.selectedFieldId) {
       case 0:
         this.store.dispatch(new CLActions.PeerLookup(this.lookupKey.trim()));

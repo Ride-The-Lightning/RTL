@@ -8,6 +8,7 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
+import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-lnp-config',
@@ -29,7 +30,6 @@ export class LNPConfigComponent implements OnInit, OnDestroy {
     .subscribe((value: ResolveEnd) => {
       this.selectedNodeType = (value.urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
     });
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Config File...'));
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
     this.rtlEffects.showLnConfig
     .pipe(takeUntil(this.unSubs[1]))

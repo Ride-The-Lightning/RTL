@@ -1,13 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, throwError } from 'rxjs';
-import { catchError, takeUntil } from 'rxjs/operators';
+import { catchError, takeUntil, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 import { LoggerService } from './logger.service';
-import { AlertTypeEnum } from './consts-enums-functions';
+import { AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
 import { ListSwaps } from '../models/boltzModels';
 
 import * as RTLActions from '../../store/rtl.actions';
@@ -27,44 +27,51 @@ export class BoltzService implements OnDestroy {
   }
 
   listSwaps() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Boltz Swaps...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl)
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((swapResponse: ListSwaps) => {
-      this.store.dispatch(new RTLActions.CloseSpinner());      
+    .pipe(takeUntil(this.unSubs[0]),
+    map((swapResponse: ListSwaps) => {
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));      
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
-    }, err => {
-      return this.handleErrorWithAlert('List Swaps', err);
-    });
+    }), catchError(err => {
+      return this.handleErrorWithAlert('List Swaps', UI_MESSAGES.GET_BOLTZ_SWAPS, err);
+    }));
   }
 
   swapInfo(id: string) {
     this.swapUrl = API_URL + environment.BOLTZ_API + '/swapInfo/' + id;
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert(this.swapUrl, err)));
+    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert(UI_MESSAGES.NO_SPINNER, this.swapUrl, err)));
   }
 
   serviceInfo() {
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_SERVICE_INFO));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/serviceInfo';
-    return this.httpClient.get(this.swapUrl).pipe(catchError(err => this.handleErrorWithAlert('Service Info', err)));
+    return this.httpClient.get(this.swapUrl)
+    .pipe(takeUntil(this.unSubs[1]),
+    map(res => {
+      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
+      return res;
+    }),
+    catchError(err => this.handleErrorWithAlert('Service Info', UI_MESSAGES.NO_SPINNER, err)));
   }
 
   swapOut(amount: number, address: string) {
     let requestBody = { amount: amount, address: address };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createreverseswap';
-    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, err)));
+    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap Out for Address: ' + address, UI_MESSAGES.NO_SPINNER, err)));
   }
 
   swapIn(amount: number) {
     let requestBody = { amount: amount };
     this.swapUrl = API_URL + environment.BOLTZ_API + '/createswap';
-    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, err)));
+    return this.httpClient.post(this.swapUrl, requestBody).pipe(catchError(err => this.handleErrorWithoutAlert('Swap In for Amount: ' + amount, UI_MESSAGES.NO_SPINNER, err)));
   }
 
-  handleErrorWithoutAlert(actionName: string, err: { status: number, error: any }) {
+  handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
-    this.store.dispatch(new RTLActions.CloseSpinner())
+    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
@@ -100,13 +107,13 @@ export class BoltzService implements OnDestroy {
     return throwError(JSON.stringify(err));
   }
 
-  handleErrorWithAlert(errURL: string, err: any) {
+  handleErrorWithAlert(uiMessage: string, errURL: string, err: any) {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     }
     this.logger.error(err);
-    this.store.dispatch(new RTLActions.CloseSpinner())
+    if (uiMessage.trim() !== UI_MESSAGES.NO_SPINNER) { this.store.dispatch(new RTLActions.CloseSpinner(uiMessage)); }
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());

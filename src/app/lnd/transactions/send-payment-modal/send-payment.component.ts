@@ -10,7 +10,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/lndModels';
-import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -81,7 +81,7 @@ export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
     if (this.paymentDecoded.num_msat && !this.paymentDecoded.num_satoshis) {
       this.paymentDecoded.num_satoshis = (+this.paymentDecoded.num_msat / 1000).toString();
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
     if (!this.paymentDecoded.num_satoshis || this.paymentDecoded.num_satoshis === '' ||  this.paymentDecoded.num_satoshis === '0') {
       this.zeroAmtInvoice = true;
       this.paymentDecoded.num_satoshis = this.paymentAmount;

@@ -8,7 +8,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -128,7 +128,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
         } else {
           updateRequestPayload = { baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channelId };
         }
-        this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
+        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.UPDATE_CHAN_POLICY));
         this.store.dispatch(new ECLActions.UpdateChannels(updateRequestPayload));
       }
     });
@@ -154,7 +154,7 @@ export class ECLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDe
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner((forceClose) ? 'Force Closing Channel...' : 'Closing Channel...'));
+        this.store.dispatch(new RTLActions.OpenSpinner((forceClose) ? UI_MESSAGES.FORCE_CLOSE_CHANNEL : UI_MESSAGES.CLOSE_CHANNEL));
         this.store.dispatch(new ECLActions.CloseChannel({channelId: channelToClose.channelId, force: forceClose}));
       }
     });

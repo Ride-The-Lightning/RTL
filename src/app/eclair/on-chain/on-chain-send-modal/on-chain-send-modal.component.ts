@@ -9,7 +9,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, OnChainBalance, SendPaymentOnChain } from '../../../shared/models/eclModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -77,7 +77,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(data => {
-        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
+        this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
@@ -87,7 +87,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_FUNDS));
       this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
     }
   }

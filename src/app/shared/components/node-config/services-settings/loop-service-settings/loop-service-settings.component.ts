@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { ServicesEnum } from '../../../../services/consts-enums-functions';
+import { ServicesEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
 import { ConfigSettingsNode, RTLConfiguration } from '../../../../models/RTLconfig';
 import { LoggerService } from '../../../../services/logger.service';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -56,8 +56,7 @@ export class LoopServiceSettingsComponent implements OnInit, OnDestroy {
     }
     if(this.enableLoop && (!this.selNode.settings.swapServerUrl || this.selNode.settings.swapServerUrl.trim() === '' || !this.selNode.authentication.swapMacaroonPath || this.selNode.authentication.swapMacaroonPath.trim() === '')) { return true; }
     this.logger.info(this.selNode);
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Loop Service Settings...'));
-    this.store.dispatch(new RTLActions.UpdateServiceSettings({service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath }}));
+    this.store.dispatch(new RTLActions.UpdateServiceSettings({uiMessage:UI_MESSAGES.UPDATE_LOOP_SETTINGS, service: ServicesEnum.LOOP, settings: { enable: this.enableLoop, serverUrl: this.selNode.settings.swapServerUrl, macaroonPath: this.selNode.authentication.swapMacaroonPath }}));
     this.store.dispatch(new LNDActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new CLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));
     this.store.dispatch(new ECLActions.SetChildNodeSettings({userPersona: this.selNode.settings.userPersona, channelBackupPath: this.selNode.settings.channelBackupPath, selCurrencyUnit: this.selNode.settings.currencyUnit, currencyUnits: this.selNode.settings.currencyUnits, fiatConversion: this.selNode.settings.fiatConversion, lnImplementation: this.selNode.lnImplementation, swapServerUrl: this.selNode.settings.swapServerUrl, boltzServerUrl: this.selNode.settings.boltzServerUrl}));

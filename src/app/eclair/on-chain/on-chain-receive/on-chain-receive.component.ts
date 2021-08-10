@@ -8,6 +8,7 @@ import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-ecl-on-chain-receive',
@@ -20,7 +21,7 @@ export class ECLOnChainReceiveComponent {
   constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects) {}
 
   onGenerateAddress() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GENERATE_NEW_ADDRESS));
     this.store.dispatch(new ECLActions.GetNewAddress());
     this.eclEffects.setNewAddress.pipe(take(1))
     .subscribe(newAddress => {

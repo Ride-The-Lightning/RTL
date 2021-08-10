@@ -14,6 +14,7 @@ import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 import * as LNDActions from '../../../lnd/store/lnd.actions';
 import { CommonService } from '../../../shared/services/common.service';
+import { UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-on-chain-lebel-modal',
@@ -38,7 +39,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
   onLabelUTXO(): boolean|void {
     if(!this.label || this.label === '') { return true; }
     this.labelError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Labelling UTXO...'));
+    this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.LABEL_UTXO));
     this.dataService.labelUTXO(this.utxo.outpoint.txid_bytes, this.label, true)
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(res => {

@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -219,7 +219,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.amount = confirmRes[0].inputValue;
-            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+            this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
             this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
@@ -245,7 +245,7 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
           this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }

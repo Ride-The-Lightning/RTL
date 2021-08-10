@@ -9,7 +9,7 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest } from '../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { ApiCallsListCL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
@@ -116,7 +116,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     if (this.paymentDecoded.created_at) {
       this.sendPayment();
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_PAYMENT));
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL
       .pipe(take(1))
@@ -165,7 +165,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.msatoshi = confirmRes[0].inputValue;
-            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+            this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
             this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, amount: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
@@ -191,7 +191,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
       .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
+          this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.SEND_PAYMENT));
           this.store.dispatch(new CLActions.SendPayment({invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
@@ -203,7 +203,7 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
     this.paymentRequest = event;
     this.paymentDecodedHint = '';
     if(this.paymentRequest && this.paymentRequest.length > 100) {
-      this.store.dispatch(new RTLActions.OpenSpinner('Decoding Payment...'));
+      this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.DECODE_PAYMENT));
       this.store.dispatch(new CLActions.DecodePayment({routeParam: this.paymentRequest, fromDialog: false}));
       this.clEffects.setDecodedPaymentCL.subscribe(decodedPayment => {
         this.paymentDecoded = decodedPayment;

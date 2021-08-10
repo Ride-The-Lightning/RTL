@@ -18,7 +18,7 @@ import { MenuChildNode, MENU_DATA } from '../../../models/navMenu';
 import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
-import { AlertTypeEnum, UserPersonaEnum } from '../../../services/consts-enums-functions';
+import { AlertTypeEnum, UI_MESSAGES, UserPersonaEnum } from '../../../services/consts-enums-functions';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
@@ -194,8 +194,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
 
   onNodeSelectionChange(selNodeValue: ConfigSettingsNode) {
     this.selNode = selNodeValue;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Selected Node...'));
-    this.store.dispatch(new RTLActions.SetSelelectedNode({ lnNode: selNodeValue, isInitialSetup: false }));
+    this.store.dispatch(new RTLActions.SetSelelectedNode({ uiMessage: UI_MESSAGES.UPDATE_SELECTED_NODE, lnNode: selNodeValue, isInitialSetup: false }));
     this.ChildNavClicked.emit('selectNode');
   }
 
