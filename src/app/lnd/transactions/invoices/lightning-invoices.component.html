@@ -26,7 +26,7 @@
         <input matInput (keyup)="applyFilter($event.target)" tabindex="6" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="creation_date">

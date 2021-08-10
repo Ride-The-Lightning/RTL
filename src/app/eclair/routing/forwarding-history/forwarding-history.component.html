@@ -48,7 +48,9 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1">No forwarding event available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>

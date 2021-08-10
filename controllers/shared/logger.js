@@ -6,7 +6,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
   switch (msgJSON.level) {
     case 'ERROR':
       if (selNode) {
-        msgStr = msgStr + ': ' + (typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
+        msgStr = msgStr + '. ' + (typeof msgJSON.error === 'object' ? JSON.stringify(msgJSON.error) : (typeof msgJSON.error === 'string') ? msgJSON.error : '');
         console.error(msgStr);
         fs.appendFile(selNode.log_file, msgStr, function (err) {
           if (err) {
@@ -20,7 +20,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
 
     case 'WARN':
       if (selNode && (selNode.log_level == "INFO" || selNode.log_level == "WARN" || selNode.log_level == "DEBUG")) {
-        msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
+        msgStr = msgStr + '. ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
         console.warn(msgStr)
         fs.appendFile(selNode.log_file, msgStr, function (err) {
           if (err) {
@@ -34,7 +34,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
 
     case 'INFO':
       if (selNode && (selNode.log_level == "INFO" || selNode.log_level == "DEBUG")) {
-        msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
+        msgStr = msgStr + '. ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : (typeof msgJSON.data === 'string') ? msgJSON.data : '');
         console.log(msgStr);
         fs.appendFile(selNode.log_file, msgStr, function (err) {
           if (err) {
@@ -54,7 +54,7 @@ exports.log = (msgJSON, selNode = common.selectedNode) => {
           }, msgStr + ': [');
           msgStr = msgStr.slice(0, -2) + ']';
         } else {
-          msgStr = msgStr + ': ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : typeof msgJSON.data == 'string' ? msgJSON.data : '');
+          msgStr = msgStr + '. ' + (typeof msgJSON.data === 'object' ? JSON.stringify(msgJSON.data) : typeof msgJSON.data == 'string' ? msgJSON.data : '');
         }
         fs.appendFile(selNode.log_file, msgStr, function (err) {
           if (err) {

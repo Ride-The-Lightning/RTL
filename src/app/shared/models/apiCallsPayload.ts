@@ -19,16 +19,17 @@ export interface ApiCallsListLND {
   FetchFees: any;
   FetchPendingChannels: any;
   FetchAllChannels: any;
-  FetchBalancechannels: any;
+  FetchBalanceBlockchain: any;
   // Non-initial calls
   FetchPeers: any;
   FetchClosedChannels: any;
   FetchInvoices: any;
   FetchPayments: any;
-  FetchBalanceblockchain: any;
   GetForwardingHistory: any;
   FetchUTXOs: any;
   FetchTransactions: any;
+  FetchNetwork: any;
+  FetchLightningTransactions: any;
 }
 
 export interface ApiCallsListCL {

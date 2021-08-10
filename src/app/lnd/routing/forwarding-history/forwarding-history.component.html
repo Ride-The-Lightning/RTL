@@ -1,5 +1,5 @@
-<div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== ''}">
-  <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+<div fxLayout="column" fxLayoutAlign="start stretch">
+  <div class="p-2 error-border" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center" fxLayoutAlign="start stretch" class="page-sub-title-container">
     <div fxFlex="70"></div>
     <mat-form-field fxFlex="30">
@@ -48,7 +48,9 @@
       </ng-container>
       <ng-container matColumnDef="no_event">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1">No forwarding event available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED">No forwarding history available.</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED">Getting forwarding history...</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>
@@ -56,5 +58,5 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
+  <mat-paginator *ngIf="errorMessage === ''" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
 </div>

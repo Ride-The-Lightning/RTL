@@ -5,7 +5,7 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
@@ -37,6 +37,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
@@ -100,8 +101,10 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.totalPayments = rtlStore.allLightningTransactions.paymentsAll && rtlStore.allLightningTransactions.paymentsAll.payments && rtlStore.allLightningTransactions.paymentsAll.payments.length ? rtlStore.allLightningTransactions.paymentsAll.payments.length : 0;
       this.firstOffset = +rtlStore.payments.first_index_offset;
       this.lastOffset = +rtlStore.payments.last_index_offset;
-      if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
+      if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
         this.loadPaymentsTable(this.paymentJSONArr);
+      } else if (this.paymentJSONArr && this.paymentJSONArr.length === 0) {
+        this.payments = new MatTableDataSource([]);        
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
       this.logger.info(rtlStore);

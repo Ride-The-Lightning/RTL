@@ -5,7 +5,7 @@
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
-    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
       <mat-progress-bar *ngIf="apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
       <table mat-table #table fxFlex="100" [dataSource]="listUTXOs" matSort
         [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
@@ -64,12 +64,13 @@
         </ng-container>
         <ng-container matColumnDef="no_utxo">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listUTXOs?.data || listUTXOs?.data?.length<1">No UTXOs available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_utxo']" [ngClass]="{'display-none': listUTXOs?.data && listUTXOs?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'alert alert-warn': !isDustUTXO && row.amount_sat < 1000}"></tr> -->
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

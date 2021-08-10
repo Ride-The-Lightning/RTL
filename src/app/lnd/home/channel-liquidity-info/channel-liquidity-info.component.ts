@@ -22,6 +22,7 @@ export class ChannelLiquidityInfoComponent implements OnInit, OnDestroy {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
+  @Input() errorMessage: string;
   public showLoop: boolean;
   private targetConf = 6;
   public screenSize = '';

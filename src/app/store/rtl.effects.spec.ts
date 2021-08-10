@@ -28,6 +28,7 @@ import * as LNDActions from '../lnd/store/lnd.actions';
 import * as ECLActions from '../eclair/store/ecl.actions';
 import * as CLActions from '../clightning/store/cl.actions';
 import * as fromRTLReducer from './rtl.reducers';
+import { APICallStatusEnum } from '../shared/services/consts-enums-functions';
 
 describe('RTL Root Effects', () => {
   let actions: ReplaySubject<any>;
@@ -82,14 +83,15 @@ describe('RTL Root Effects', () => {
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe(setSelectedNodeResponse => {
       expect(setSelectedNodeResponse).toEqual({type: RTLActions.VOID});
-      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.CloseSpinner());
-      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.ResetRootStore(mockActionsData.resetRootStore));
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new LNDActions.ResetLNDStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new CLActions.ResetCLStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(new ECLActions.ResetECLStore(mockActionsData.resetChildrenStores));
-      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(new LNDActions.FetchInfo({loadPage: 'HOME'}));
-      expect(storeDispatchSpy).toHaveBeenCalledTimes(7);
+      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED}));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.COMPLETED}));
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.CloseSpinner());
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.ResetRootStore(mockActionsData.resetRootStore));
+      expect(storeDispatchSpy.calls.all()[4].args[0]).toEqual(new LNDActions.ResetLNDStore(mockActionsData.resetChildrenStores));
+      expect(storeDispatchSpy.calls.all()[5].args[0]).toEqual(new CLActions.ResetCLStore(mockActionsData.resetChildrenStores));
+      expect(storeDispatchSpy.calls.all()[6].args[0]).toEqual(new ECLActions.ResetECLStore(mockActionsData.resetChildrenStores));
+      expect(storeDispatchSpy.calls.all()[7].args[0]).toEqual(new LNDActions.FetchInfo({loadPage: 'HOME'}));
+      expect(storeDispatchSpy).toHaveBeenCalledTimes(8);
       done();
       setTimeout(() => sub.unsubscribe());
     });
@@ -113,10 +115,10 @@ describe('RTL Root Effects', () => {
     actions.next(setSelectedNodeAction);
     const sub = effects.setSelectedNode.subscribe((setSelectedNodeResponse: any) => {
       expect(setSelectedNodeResponse).toEqual({type: RTLActions.VOID});
-      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.ClearEffectErrorRoot('UpdateSelNode'));
-      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.EffectErrorRoot({ action: 'UpdateSelNode', code: '500', message: '"' + mockResponseData.error.error + '"' }));
-      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.CloseSpinner());
-      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.OpenAlert({data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent}}));
+      expect(storeDispatchSpy.calls.all()[0].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.INITIATED}));
+      expect(storeDispatchSpy.calls.all()[1].args[0]).toEqual(new RTLActions.CloseSpinner());
+      expect(storeDispatchSpy.calls.all()[2].args[0]).toEqual(new RTLActions.OpenAlert({data: { type: 'ERROR', alertTitle: 'Update Selected Node Failed!', message: { code: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode' }, component: ErrorMessageComponent}}));
+      expect(storeDispatchSpy.calls.all()[3].args[0]).toEqual(new RTLActions.UpdateAPICallStatus({action: 'UpdateSelNode', status: APICallStatusEnum.ERROR, statusCode: '500', message: 'Request failed.', URL: environment.CONF_API + '/updateSelNode'}));
       expect(storeDispatchSpy).toHaveBeenCalledTimes(4);
       done();
       setTimeout(() => sub.unsubscribe());

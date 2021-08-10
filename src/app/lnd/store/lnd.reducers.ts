@@ -18,7 +18,6 @@ export interface LNDState {
   peers: Peer[];
   fees: Fees;
   networkInfo: NetworkInfo;
-  channelBalance: Balance;
   blockchainBalance: Balance;
   allChannels: Channel[];
   closedChannels: ClosedChannel[];
@@ -40,14 +39,13 @@ export interface LNDState {
 }
 
 export const initLNDState: LNDState = {
-  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalancechannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceblockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED } },
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchClosedChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchPendingChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchAllChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchBalanceBlockchain: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, GetForwardingHistory: { status: APICallStatusEnum.UN_INITIATED }, FetchUTXOs: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED }, FetchLightningTransactions: { status: APICallStatusEnum.UN_INITIATED }, FetchNetwork: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, fiatConversion: false, channelBackupPath: '', currencyUnits: [], selCurrencyUnit: '', lnImplementation: '', swapServerUrl: '' },
   information: {},
   peers: [],
   fees: {},
   networkInfo: {},
-  channelBalance: { balance: -1, btc_balance: -1 },
-  blockchainBalance: { total_balance: -1, btc_total_balance: -1 },
+  blockchainBalance: { total_balance: -1 },
   allChannels: [],
   closedChannels: [],
   pendingChannels: {},
@@ -184,16 +182,13 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
         allChannels: modifiedChannels
       };
     case LNDActions.SET_BALANCE_LND:
-      if (action.payload.target === 'channels') {
-        return {
-          ...state,
-          channelBalance: action.payload.balance
-        };
-      } else {
+      if (action.payload.target === 'Blockchain') {
         return {
           ...state,
           blockchainBalance: action.payload.balance
         };
+      } else {
+        return { ...state };
       }
     case LNDActions.SET_NETWORK_LND:
       return {

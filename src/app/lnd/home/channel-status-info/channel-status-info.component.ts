@@ -8,6 +8,7 @@ import { ChannelsStatus } from '../../../shared/models/lndModels';
 })
 export class ChannelStatusInfoComponent {
   @Input() channelsStatus: ChannelsStatus = {};
+  @Input() errorMessage: string;
 
   constructor() {}
 

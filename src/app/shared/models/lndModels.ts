@@ -17,15 +17,10 @@ export interface AddressType {
 }
 
 export interface Balance {
-  btc_balance?: number;
   balance?: number;
-  btc_pending_open_balance?: number;
   pending_open_balance?: number;
-  btc_total_balance?: number;
   total_balance?: number;
-  btc_confirmed_balance?: number;
   confirmed_balance?: number;
-  btc_unconfirmed_balance?: number;
   unconfirmed_balance?: number;
 }
 
@@ -76,7 +71,6 @@ export interface Channel {
 
 export interface PendingChannels {
   total_limbo_balance?: number;
-  btc_total_limbo_balance?: number;
   pending_closing_channels?: Array<PendingClosingChannel>;
   pending_force_closing_channels?: Array<PendingForceClosingChannel>;
   pending_open_channels?: Array<PendingOpenChannel>;
@@ -203,9 +197,6 @@ export interface Fees {
   day_fee_sum?: number;
   week_fee_sum?: number;
   month_fee_sum?: number;
-  btc_day_fee_sum?: number;
-  btc_week_fee_sum?: number;
-  btc_month_fee_sum?: number;
   daily_tx_count?: number;
   weekly_tx_count?: number;
   monthly_tx_count?: number;
@@ -276,7 +267,6 @@ export interface Invoice {
   r_preimage?: string;
   r_hash?: string;
   value?: string;
-  btc_value?: string;
   value_msat?: string;
   settled?: boolean;
   creation_date?: number;
@@ -292,7 +282,6 @@ export interface Invoice {
   settle_index?: string;
   amt_paid?: string;
   amt_paid_sat?: string;
-  btc_amt_paid_sat?: string;
   amt_paid_msat?: string;
   state?: string;
   htlcs?: InvoiceHTLC[];
@@ -316,17 +305,13 @@ export interface LightningNode {
 
 export interface NetworkInfo {
   num_nodes?: number;
-  btc_max_channel_size?: string;
   max_channel_size?: string;
-  btc_avg_channel_size?: string;
   avg_channel_size?: string;
   graph_diameter?: number;
   num_channels?: number;
   max_out_degree?: number;
-  btc_total_network_capacity?: string;
   total_network_capacity?: string;
   avg_out_degree?: number;
-  btc_min_channel_size?: string;
   min_channel_size?: string;
 }
 
@@ -373,7 +358,6 @@ export interface PayRequest {
   payment_addr?: string;
   num_msat?: string;
   num_satoshis?: string;
-  btc_num_satoshis?: string;
   features?: any;
 }
 

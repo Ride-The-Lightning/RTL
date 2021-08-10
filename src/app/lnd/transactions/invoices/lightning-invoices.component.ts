@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -35,6 +35,7 @@ import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   faHistory = faHistory;
   public selNode: SelNodeChild = {};
   public newlyAddedInvoiceMemo = null;
@@ -96,7 +97,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       this.firstOffset = +rtlStore.invoices.first_index_offset;
       this.lastOffset = +rtlStore.invoices.last_index_offset;
       this.invoicesData = rtlStore.invoices.invoices ? rtlStore.invoices.invoices : [];
-      if (this.invoicesData.length > 0) {
+      if (this.invoicesData.length > 0 && this.sort && this.paginator) {
         this.loadInvoicesTable(this.invoicesData);
       }
       this.logger.info(rtlStore);

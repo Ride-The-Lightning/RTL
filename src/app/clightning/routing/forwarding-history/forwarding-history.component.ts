@@ -30,7 +30,6 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   @Input() eventsData = [];
   @Input() filterValue = '';
   public successfulEvents = [];
-  public errorMessage = '';
   public displayedColumns: any[] = [];
   public forwardingHistoryEvents: any;
   public flgSticky = false;
@@ -38,6 +37,7 @@ export class CLForwardingHistoryComponent implements OnInit, OnChanges, AfterVie
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
   public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];

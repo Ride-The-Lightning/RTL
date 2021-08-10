@@ -90,12 +90,12 @@ export class ECLEffects implements OnDestroy {
             type: ECLActions.SET_FEES_ECL,
             payload: fees ? fees : {}
           };
-        },
+        }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchFees', 'Fetching Fees Failed.', err);
           return of({type: RTLActions.VOID});
         })
-      ));
+      );
     }))
   );
 
@@ -112,12 +112,12 @@ export class ECLEffects implements OnDestroy {
             type: ECLActions.SET_PAYMENTS_ECL,
             payload: payments ? payments : {}
           };
-        },
+        }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
           return of({type: RTLActions.VOID});
         })
-      ));
+      );
     }))
   );
 
@@ -141,12 +141,12 @@ export class ECLEffects implements OnDestroy {
             type: ECLActions.SET_CHANNELS_STATUS_ECL,
             payload: channelsRes.channelStatus
           };
-        },
+        }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchChannels', 'Fetching Channels Failed.', err);
           return of({type: RTLActions.VOID});
         })
-      ));
+      );
     }))
   );
 
@@ -163,12 +163,12 @@ export class ECLEffects implements OnDestroy {
             type: ECLActions.SET_CHANNEL_STATS_ECL,
             payload: (channelStats && channelStats.length > 0) ? channelStats : []
           };
-        },
+        }),
         catchError((err: any) => {
           this.handleErrorWithoutAlert('FetchChannelStats', 'Fetching Channel Stats Failed.', err);
           return of({type: RTLActions.VOID});
         })
-      ));
+      );
     }))
   );
 

@@ -44,7 +44,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public selUTXOs = [];
   public flgUseAllBalance = false;
   public totalSelectedUTXOAmount = null;
-  public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};

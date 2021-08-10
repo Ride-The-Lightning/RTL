@@ -40,7 +40,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
   public addressTypes = [];
-  public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress: AddressType = {};
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};

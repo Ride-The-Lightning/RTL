@@ -70,6 +70,7 @@ export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, On
       }
       if (rtlStore.transactions && rtlStore.transactions.length > 0) {
         this.transactions = rtlStore.transactions;
+        this.loadTransactionsTable(this.transactions);
       }
       this.logger.info(rtlStore);
     });

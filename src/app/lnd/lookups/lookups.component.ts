@@ -12,6 +12,7 @@ import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
 import { CommonService } from '../../shared/services/common.service';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-lookups',
@@ -19,7 +20,6 @@ import { CommonService } from '../../shared/services/common.service';
   styleUrls: ['./lookups.component.scss']
 })
 export class LookupsComponent implements OnInit, OnDestroy {
-  @ViewChild('form', { static: true }) form: any;
   public lookupKey = '';
   public lookupValue = {};
   public flgSetLookupValue = false;
@@ -30,10 +30,12 @@ export class LookupsComponent implements OnInit, OnDestroy {
     { id: 0, name: 'Node', placeholder: 'Pubkey'},
     { id: 1, name: 'Channel', placeholder: 'Channel ID'}
   ];
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public faSearch = faSearch;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions) {
@@ -41,19 +43,22 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.actions
-    .pipe(
-      takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND))
-    ).subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
+    this.actions.pipe(takeUntil(this.unSubs[0]), filter((action) => (action.type === LNDActions.SET_LOOKUP_LND || action.type === LNDActions.UPDATE_API_CALL_STATUS_LND)))
+    .subscribe((resLookup: LNDActions.SetLookup | LNDActions.UpdateAPICallStatus) => {
       if(resLookup.type === LNDActions.SET_LOOKUP_LND) {
-        this.flgLoading[0] = true;
+        this.errorMessage = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? '' : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? '' : this.errorMessage;
         this.lookupValue = JSON.parse(JSON.stringify(resLookup.payload));
-        this.flgSetLookupValue = true;
+        this.flgSetLookupValue = (this.selectedFieldId === 0 && resLookup.payload.hasOwnProperty('node')) ? true : (this.selectedFieldId === 1 && resLookup.payload.hasOwnProperty('channel_id')) ? true : false;
         this.logger.info(this.lookupValue);
       }
-      if (resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
-        this.flgLoading[0] = 'error';
+      if(resLookup.type === LNDActions.UPDATE_API_CALL_STATUS_LND && resLookup.payload.action === 'Lookup') {
+        this.errorMessage = '';
+        if(resLookup.payload.status === APICallStatusEnum.ERROR) {
+          this.errorMessage = (typeof(resLookup.payload.message) === 'object') ? JSON.stringify(resLookup.payload.message) : resLookup.payload.message;
+        }
+        if(resLookup.payload.status === APICallStatusEnum.INITIATED) {
+          this.errorMessage = 'Getting lookup details...';
+        }
       }
     });
   }
@@ -81,14 +86,11 @@ export class LookupsComponent implements OnInit, OnDestroy {
   }
 
   resetData() {
-    this.form.resetForm();
     this.flgSetLookupValue = false;
     this.selectedFieldId = 0;
     this.lookupKey = '';
     this.lookupValue = {};
-    this.flgLoading.forEach((flg, i) => {
-      this.flgLoading[i] = true;
-    });
+    this.errorMessage = '';
   }
 
   clearLookupValue() {

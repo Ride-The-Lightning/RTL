@@ -48,7 +48,6 @@ export interface GetInfo {
 
 export interface Fees {
   feeCollected?: number;
-  btc_feeCollected?: number;
   totalTxCount?: number;
 }
 
@@ -56,9 +55,6 @@ export interface Balance {
   totalBalance?: number;
   confBalance?: number;
   unconfBalance?: number;
-  btc_totalBalance?: number;
-  btc_confBalance?: number;
-  btc_unconfBalance?: number;
 }
 
 export interface LocalRemoteBalance {
@@ -66,10 +62,6 @@ export interface LocalRemoteBalance {
   remoteBalance: number;
   pendingBalance?: number;
   inactiveBalance?: number;
-  btc_localBalance?: number;
-  btc_remoteBalance?: number;
-  btc_pendingBalance?: number;
-  btc_inactiveBalance?: number;
 }
 
 export interface Peer {

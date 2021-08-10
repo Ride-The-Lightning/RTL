@@ -150,8 +150,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
         this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
       }
-      if (rtlStore.apisCallStatus.FetchBalancechannels.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchBalancechannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalancechannels.message) : this.apisCallStatus.FetchBalancechannels.message;
+      if (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchBalanceBlockchain.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalanceBlockchain.message) : this.apisCallStatus.FetchBalanceBlockchain.message;
       }
       if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
         this.errorMessages[3] = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;

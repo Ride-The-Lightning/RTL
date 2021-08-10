@@ -78,9 +78,8 @@
         </ng-container>
         <ng-container matColumnDef="no_invoice">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!invoices?.data || invoices?.data?.length<1">No invoices available.</p>
-            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.COMPLETED">No payment available.</p>
-            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.INITIATED">Getting payments...</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
             <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>

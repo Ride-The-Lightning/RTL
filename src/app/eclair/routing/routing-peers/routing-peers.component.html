@@ -34,7 +34,9 @@
           </ng-container>
           <ng-container matColumnDef="no_incoming_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1">No incoming routing peer available.</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No incoming routing peer available.</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting incoming routing peers...</p>
+              <p *ngIf="(!RoutingPeersIncoming?.data || RoutingPeersIncoming?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_incoming_event']" [ngClass]="{'display-none': RoutingPeersIncoming?.data && RoutingPeersIncoming?.data?.length>0}"></tr>
@@ -77,7 +79,9 @@
           </ng-container>
           <ng-container matColumnDef="no_outgoing_event">
             <td mat-footer-cell *matFooterCellDef colspan="4">
-              <p *ngIf="!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1">No outgoing routing peer available.</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.COMPLETED">No outgoing routing peer available.</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED">Getting outgoing routing peers...</p>
+              <p *ngIf="(!RoutingPeersOutgoing?.data || RoutingPeersOutgoing?.data?.length<1) && apisCallStatus?.FetchPayments.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
             </td>
           </ng-container>
           <tr mat-footer-row *matFooterRowDef="['no_outgoing_event']" [ngClass]="{'display-none': RoutingPeersOutgoing?.data && RoutingPeersOutgoing?.data?.length>0}"></tr>

@@ -43,7 +43,7 @@ export class LNDEffects implements OnDestroy {
     .subscribe((rtlStore) => {
       if (
         rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchBalancechannels.status === APICallStatusEnum.COMPLETED &&
+        rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED &&
         rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED &&
         rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED
       ) {
@@ -247,7 +247,7 @@ export class LNDEffects implements OnDestroy {
             this.logger.info(postRes);
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SaveNewChannel', status: APICallStatusEnum.COMPLETED}));
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new LNDActions.FetchBalance('blockchain'));
+            this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
             this.store.dispatch(new LNDActions.FetchAllChannels());
             this.store.dispatch(new LNDActions.BackupChannels({ channelPoint: 'ALL', showMessage: 'Channel Added Successfully!' }));
             return {
@@ -301,8 +301,7 @@ export class LNDEffects implements OnDestroy {
           map((postRes: any) => {
             this.logger.info(postRes);
             this.store.dispatch(new RTLActions.CloseSpinner());
-            this.store.dispatch(new LNDActions.FetchBalance('channels'));
-            this.store.dispatch(new LNDActions.FetchBalance('blockchain'));
+            this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
             this.store.dispatch(new LNDActions.FetchAllChannels());
             if (action.payload.forcibly) {
               this.store.dispatch(new LNDActions.FetchPendingChannels());
@@ -432,11 +431,8 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((res: any) => {
             this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchBalance' + action.payload, status: APICallStatusEnum.COMPLETED}));
-            if (action.payload === 'channels') {
-              this.store.dispatch(new LNDActions.FetchBalance('blockchain'));
-            }
             this.logger.info(res);
-            const emptyRes = (action.payload === 'channels') ? { balance: '', btc_balance: '' } : { total_balance: '', btc_total_balance: '' };
+            const emptyRes = (action.payload === 'channels') ? { balance: '' } : { total_balance: '' };
             return {
               type: LNDActions.SET_BALANCE_LND,
               payload: res ? { target: action.payload, balance: res } : { target: action.payload, balance: emptyRes }
@@ -555,20 +551,19 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: LNDActions.FetchClosedChannels) => {
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchClosedChannels', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.get(this.CHILD_API_URL + environment.CHANNELS_API + '/closed')
-        .pipe(
-          map((channels: any) => {
-            this.logger.info(channels);
-            this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchClosedChannels', status: APICallStatusEnum.COMPLETED}));
-            return {
-              type: LNDActions.SET_CLOSED_CHANNELS_LND,
-              payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
-            };
-          },
-          catchError((err: any) => {
-            this.handleErrorWithoutAlert('FetchClosedChannels', 'Fetching Closed Channels Failed.', err);
-            return of({type: RTLActions.VOID});
-          })
-      ));
+        .pipe(map((channels: any) => {
+          this.logger.info(channels);
+          this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'FetchClosedChannels', status: APICallStatusEnum.COMPLETED}));
+          return {
+            type: LNDActions.SET_CLOSED_CHANNELS_LND,
+            payload: (channels && channels.channels && channels.channels.length > 0) ? channels.channels : []
+          };
+        }),
+        catchError((err: any) => {
+          this.handleErrorWithoutAlert('FetchClosedChannels', 'Fetching Closed Channels Failed.', err);
+          return of({type: RTLActions.VOID});
+        })
+      );
     }))
   );
 
@@ -661,7 +656,10 @@ export class LNDEffects implements OnDestroy {
       }),
       catchError((err: any) => {
         this.handleErrorWithoutAlert('FetchPayments', 'Fetching Payments Failed.', err);
-        return of({type: RTLActions.VOID});
+        return of({
+          type: LNDActions.SET_PAYMENTS_LND,
+          payload: { payments: [] }
+        });
       }));
     }))
   );
@@ -706,7 +704,6 @@ export class LNDEffects implements OnDestroy {
             } else {
               this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
               this.store.dispatch(new LNDActions.FetchAllChannels());
-              this.store.dispatch(new LNDActions.FetchBalance('channels'));
               this.store.dispatch(new LNDActions.FetchPayments({ max_payments: PAGE_SIZE, reversed: true }));
               if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
@@ -822,7 +819,8 @@ export class LNDEffects implements OnDestroy {
           this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SetChannelTransaction', status: APICallStatusEnum.COMPLETED}));
           this.store.dispatch(new RTLActions.CloseSpinner());
           this.store.dispatch(new LNDActions.FetchTransactions());            
-          this.store.dispatch(new LNDActions.FetchBalance('blockchain'));
+          this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
+          this.store.dispatch(new LNDActions.FetchAllChannels());
           return {
             type: LNDActions.SET_CHANNEL_TRANSACTION_RES_LND,
             payload: postRes
@@ -1160,16 +1158,16 @@ export class LNDEffects implements OnDestroy {
     };
     this.store.dispatch(new RTLActions.OpenSpinner('Initializing Node Data...'));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));
-    this.store.dispatch(new LNDActions.FetchPeers());
-    this.store.dispatch(new LNDActions.FetchBalance('channels'));
-    this.store.dispatch(new LNDActions.FetchNetwork());
-    this.store.dispatch(new LNDActions.GetAllLightningTransactions());
+    this.store.dispatch(new LNDActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
+    this.store.dispatch(new LNDActions.FetchBalance('Blockchain'));
     this.store.dispatch(new LNDActions.FetchAllChannels());
     this.store.dispatch(new LNDActions.FetchPendingChannels());
     this.store.dispatch(new LNDActions.FetchClosedChannels());
+    this.store.dispatch(new LNDActions.FetchPeers());
+    this.store.dispatch(new LNDActions.FetchNetwork());
+    this.store.dispatch(new LNDActions.GetAllLightningTransactions());
     this.store.dispatch(new LNDActions.FetchInvoices({num_max_invoices: 10, reversed: true}));
     this.store.dispatch(new LNDActions.FetchPayments({max_payments: 10, reversed: true }));
-    this.store.dispatch(new LNDActions.FetchFees()); //Fetches monthly forwarding history as well, to count total number of events
     let newRoute = this.location.path();
     if(newRoute.includes('/cl/')) {
       newRoute = newRoute.replace('/cl/', '/lnd/');

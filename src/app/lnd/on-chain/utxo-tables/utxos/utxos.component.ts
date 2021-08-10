@@ -75,6 +75,7 @@ export class OnChainUTXOsComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (rtlStore.utxos && rtlStore.utxos.length > 0) {
         this.utxos = (this.isDustUTXO) ? rtlStore.utxos.filter(utxo => +utxo.amount_sat < 1000) : rtlStore.utxos;
+        this.loadUTXOsTable(this.utxos);
       }
       this.logger.info(rtlStore);
     });

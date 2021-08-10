@@ -22,8 +22,12 @@
             <button class="mr-1" mat-stroked-button color="primary" tabindex="3" type="button" (click)="resetData()">Clear</button>
             <button mat-flat-button color="primary" tabindex="4" type="submit" (click)="onLookup()">Lookup</button>
           </div>
-        </form>     
-        <div fxFlex="100" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" *ngIf="lookupValue && flgSetLookupValue" class="w-100 mt-2">
+        </form>
+        <div fxFlex="100" *ngIf="errorMessage !== ''" fxLayout="row wrap" fxLayoutAlign="space-between center" [ngClass]="{'w-100 mt-2 p-2 error-border': errorMessage !== '' && errorMessage !== 'Getting lookup details...', 'w-100 mt-2 p-2': true}">
+          <mat-progress-bar *ngIf="errorMessage === 'Getting lookup details...'" mode="indeterminate"></mat-progress-bar>
+          {{errorMessage}}
+        </div>
+        <div fxFlex="100" *ngIf="errorMessage === '' && lookupValue && flgSetLookupValue" fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="w-100 mt-2">
           <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
             <span class="page-title font-bold-500">{{lookupFields[selectedFieldId].name}} Details</span>
           </div>

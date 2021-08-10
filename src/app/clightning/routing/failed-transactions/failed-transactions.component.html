@@ -42,6 +42,7 @@
         <td mat-footer-cell *matFooterCellDef colspan="4">
           <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.COMPLETED">No failed transaction available.</p>
           <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.INITIATED">Getting failed transactions...</p>
+          <p *ngIf="(!forwardingHistoryEvents?.data || forwardingHistoryEvents?.data?.length<1) && apisCallStatus?.GetForwardingHistory.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <tr mat-footer-row *matFooterRowDef="['no_event']" [ngClass]="{'display-none': forwardingHistoryEvents?.data && forwardingHistoryEvents?.data?.length>0}"></tr>

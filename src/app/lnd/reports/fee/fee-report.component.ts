@@ -34,6 +34,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -63,10 +64,12 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
+    this.errorMessage = 'Getting fee report...';
     const startDateInSeconds = Math.round(start.getTime()/1000).toString();
     const endDateInSeconds = Math.round(end.getTime()/1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
     .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
+      this.errorMessage = '';
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
         this.events = res;
@@ -75,7 +78,10 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         this.events = {};
         this.feeReportData = [];
       }
-    });    
+    }, (err) => {
+      this.errorMessage = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
+      this.errorMessage = (typeof this.errorMessage === 'string') ? this.commonService.titleCase(this.errorMessage) : JSON.stringify(this.errorMessage);
+    });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {

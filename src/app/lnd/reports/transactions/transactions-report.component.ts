@@ -5,10 +5,11 @@ import { Store } from '@ngrx/store';
 
 import { Payment, Invoice } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-transactions-report',
@@ -37,6 +38,9 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -47,6 +51,11 @@ export class TransactionsReportComponent implements OnInit, AfterContentInit, On
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchLightningTransactions.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchLightningTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLightningTransactions.message) : this.apisCallStatus.FetchLightningTransactions.message;
+      }
       this.payments = rtlStore.allLightningTransactions.paymentsAll ? rtlStore.allLightningTransactions.paymentsAll.payments : [];
       this.invoices = rtlStore.allLightningTransactions.invoicesAll ? rtlStore.allLightningTransactions.invoicesAll.invoices : [];
       if(this.payments.length > 0 || this.invoices.length > 0) {

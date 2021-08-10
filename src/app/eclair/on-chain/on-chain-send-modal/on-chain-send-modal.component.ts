@@ -30,7 +30,6 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
   public addressTypes = [];
-  public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: OnChainBalance = {};
   public information: GetInfo = {};
