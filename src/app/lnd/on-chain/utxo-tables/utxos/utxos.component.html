@@ -5,15 +5,15 @@
     </mat-form-field>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start">
-    <div [perfectScrollbar] class="table-container" fxFlex="100">
-      <mat-progress-bar *ngIf="errorLoading===true" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table [dataSource]="listUTXOs" matSort
-        [ngClass]="{'overflow-auto error-border': errorLoading==='error','overflow-auto': true}">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
+      <mat-progress-bar *ngIf="apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <table mat-table #table fxFlex="100" [dataSource]="listUTXOs" matSort
+        [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="tx_id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Transaction ID </th>
           <td mat-cell *matCellDef="let utxo" [ngStyle]="{'max-width': (screenSize === screenSizeEnum.XS) ? '12rem' : '25rem'}">
             <span fxLayout="row">
-              <span *ngIf="numDustUTXOs > 0 && !isDustUTXO">
+              <span *ngIf="utxos.length > 0 && !isDustUTXO">
                 <span *ngIf="utxo.amount_sat < 1000; else emptySpace" matTooltip="Risk of dust attack" matTooltipPosition="right">
                   <mat-icon fxLayoutAlign="start center" color="warn" class="mr-1">warning</mat-icon>
                 </span>
@@ -64,12 +64,13 @@
         </ng-container>
         <ng-container matColumnDef="no_utxo">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!listUTXOs?.data || listUTXOs?.data?.length<1">No UTXOs available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.COMPLETED">No UTXO available.</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.INITIATED">Getting UTXOs...</p>
+            <p *ngIf="(!listUTXOs?.data || listUTXOs?.data?.length<1) && apisCallStatus?.FetchUTXOs.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_utxo']" [ngClass]="{'display-none': listUTXOs?.data && listUTXOs?.data?.length>0}"></tr>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
-        <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'alert alert-warn': !isDustUTXO && row.amount_sat < 1000}"></tr> -->
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>

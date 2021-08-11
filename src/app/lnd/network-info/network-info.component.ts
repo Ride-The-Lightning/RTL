@@ -7,10 +7,11 @@ import { faProjectDiagram, faBolt, faServer, faNetworkWired } from '@fortawesome
 import { LoggerService } from '../../shared/services/logger.service';
 import { GetInfo, NetworkInfo, Fees, ChannelsStatus } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
+import { CommonService } from '../../shared/services/common.service';
+import { APICallStatusEnum, ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { CommonService } from '../../shared/services/common.service';
-import { ScreenSizeEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 
 @Component({
   selector: 'rtl-network-info',
@@ -32,7 +33,9 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true];
+  public errorMessages = ['', '', '', '', ''];
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {
@@ -66,38 +69,28 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchInfo') {
-          this.flgLoading[0] = 'error';
-        }
-        if (effectsErr.action === 'FetchNetwork') {
-          this.flgLoading[1] = 'error';
-        }
-        if (effectsErr.action === 'FetchFees') {
-          this.flgLoading[2] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels/all') {
-          this.flgLoading[3] = 'error';
-        }
-        if (effectsErr.action === 'FetchChannels/pending') {
-          this.flgLoading[4] = 'error';
-        }
-      });
+      this.errorMessages = ['', '', '', '', ''];
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+      }
+      if (rtlStore.apisCallStatus.FetchNetwork.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchNetwork.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchNetwork.message) : this.apisCallStatus.FetchNetwork.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+      }
+      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+      }
+      if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[4] = (typeof(this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+      }
+
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.information.identity_pubkey) ? false : true;
-      }
-
       this.networkInfo = rtlStore.networkInfo;
-      if (this.flgLoading[1] !== 'error') {
-        this.flgLoading[1] = ( this.networkInfo.num_nodes) ? false : true;
-      }
-
       this.fees = rtlStore.fees;
-      if (this.flgLoading[2] !== 'error') {
-        this.flgLoading[2] = ( this.fees.day_fee_sum) ? false : true;
-      }
       this.channelsStatus = {
         active: { channels: rtlStore.numberOfActiveChannels, capacity: rtlStore.totalCapacityActive },
         inactive: { channels: rtlStore.numberOfInactiveChannels, capacity: rtlStore.totalCapacityInactive },
@@ -107,12 +100,6 @@ export class NetworkInfoComponent implements OnInit, OnDestroy {
           capacity: rtlStore.numberOfPendingChannels.total_limbo_balance
         }
       };
-      if (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0 && this.flgLoading[3] !== 'error') {
-        this.flgLoading[3] = false;
-      }
-      if (rtlStore.numberOfPendingChannels && this.flgLoading[4] !== 'error') {
-        this.flgLoading[4] = false;
-      }
       this.logger.info(rtlStore);
     });
   }

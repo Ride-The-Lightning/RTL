@@ -13,14 +13,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { OnChainSendFunds } from '../../../shared/models/alertData';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { GetInfo, Balance, AddressType } from '../../../shared/models/lndModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as sha256 from 'sha256';
 
 import { RTLEffects } from '../../../store/rtl.effects';
-
 import * as LNDActions from '../../store/lnd.actions';
 import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
@@ -40,7 +39,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
   public appConfig: RTLConfiguration;
   public nodeData: GetInfoRoot;
   public addressTypes = [];
-  public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress: AddressType = {};
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
@@ -107,13 +105,13 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       this.logger.info(rootStore);
     });
     this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter(action => action.type === LNDActions.EFFECT_ERROR_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
-    .subscribe((action: LNDActions.EffectError | LNDActions.SetChannelTransactionRes) => {
+    filter(action => action.type === LNDActions.UPDATE_API_CALL_STATUS_LND || action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND))
+    .subscribe((action: LNDActions.UpdateAPICallStatus | LNDActions.SetChannelTransactionRes) => {
       if (action.type === LNDActions.SET_CHANNEL_TRANSACTION_RES_LND) {
         this.store.dispatch(new RTLActions.OpenSnackBar(this.sweepAll ? 'All Funds Sent Successfully!' : 'Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === LNDActions.EFFECT_ERROR_LND && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === LNDActions.UPDATE_API_CALL_STATUS_LND && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -167,7 +165,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
-        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
         this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
       }, err => {
         this.transactionAmount = null;
@@ -175,7 +172,6 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
         this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
       });
     } else {
-      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
       this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
     }
   }
@@ -215,7 +211,7 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
 
       case 2:
         this.passwordFormLabel = 'User authenticated successfully';
-        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (' + this.nodeData.smaller_currency_unit + '/vByte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
+        this.sendFundFormLabel = 'Sweep funds | Address: ' + this.sendFundFormGroup.controls.transactionAddress.value + ' | ' + this.transTypes[this.sendFundFormGroup.controls.selTransType.value-1].name + (this.sendFundFormGroup.controls.selTransType.value === '2' ? ' (Sats/vByte)' : '') + ': ' + (this.sendFundFormGroup.controls.selTransType.value === '1' ? this.sendFundFormGroup.controls.transactionBlocks.value : this.sendFundFormGroup.controls.transactionFees.value);
         break;
 
       default:

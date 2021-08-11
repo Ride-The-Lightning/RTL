@@ -11,11 +11,9 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { Peer } from '../../../shared/models/clModels';
 import { CLOpenChannelAlert } from '../../../shared/models/alertData';
-import { FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
 
-import { CLEffects } from '../../store/cl.effects';
 import * as CLActions from '../../store/cl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -87,7 +85,7 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === CLActions.FETCH_CHANNELS_CL) { 
         this.dialogRef.close();
       }
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL) { 
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {
@@ -100,14 +98,12 @@ export class CLConnectPeerComponent implements OnInit, OnDestroy {
   onConnectPeer():boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
     this.store.dispatch(new CLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
   onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0) || (this.channelFormGroup.controls.flgMinConf.value && !this.channelFormGroup.controls.minConfValue.value)) { return true; }
     this.channelConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new CLActions.SaveNewChannel({
       peerId: this.newlyAddedPeer.id, satoshis: this.channelFormGroup.controls.fundingAmount.value, announce: !this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.selFeeRate.value, minconf: this.channelFormGroup.controls.flgMinConf.value ? this.channelFormGroup.controls.minConfValue.value : null
     }));

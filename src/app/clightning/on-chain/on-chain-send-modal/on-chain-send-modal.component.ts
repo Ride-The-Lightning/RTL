@@ -13,7 +13,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
 import { CLOnChainSendFunds } from '../../../shared/models/alertData';
 import { GetInfo, Balance, OnChain, UTXO } from '../../../shared/models/clModels';
-import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES } from '../../../shared/services/consts-enums-functions';
+import { CURRENCY_UNITS, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, ADDRESS_TYPES, FEE_RATE_TYPES, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { RTLConfiguration } from '../../../shared/models/RTLconfig';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -44,7 +44,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   public selUTXOs = [];
   public flgUseAllBalance = false;
   public totalSelectedUTXOAmount = null;
-  public flgLoadingWallet: Boolean | 'error' = true;
   public selectedAddress = ADDRESS_TYPES[1];
   public blockchainBalance: Balance = {};
   public information: GetInfo = {};
@@ -127,7 +126,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.store.dispatch(new RTLActions.OpenSnackBar('Fund Sent Successfully!'));
         this.dialogRef.close();
       }    
-      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.action === 'SetChannelTransaction') {
+      if (action.type === CLActions.UPDATE_API_CALL_STATUS_CL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SetChannelTransaction') {
         this.sendFundError = action.payload.message;
       }
     });
@@ -162,7 +161,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       this.selUTXOs.forEach(utxo => this.transaction.utxos.push(utxo.txid + ':' + utxo.output));
     }
     if (this.sweepAll) {
-      this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
       this.transaction.satoshis = 'all';
       this.transaction.address = this.sendFundFormGroup.controls.transactionAddress.value;
       if (this.sendFundFormGroup.controls.flgMinConf.value) {
@@ -183,7 +181,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
         .pipe(takeUntil(this.unSubs[2]))
         .subscribe(data => {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));
           this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
           this.selAmountUnit = CurrencyUnitEnum.SATS;
           this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
@@ -193,7 +190,6 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
           this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
         });
       } else {
-        this.store.dispatch(new RTLActions.OpenSpinner('Sending Funds...'));        
         this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
       }
     }

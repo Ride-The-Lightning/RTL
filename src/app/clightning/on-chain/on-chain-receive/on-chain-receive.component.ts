@@ -23,7 +23,6 @@ export class CLOnChainReceiveComponent {
   constructor(private store: Store<fromRTLReducer.RTLState>, private clEffects: CLEffects) {}
 
   onGenerateAddress() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new CLActions.GetNewAddress(this.selectedAddressType));
     this.clEffects.setNewAddressCL
     .pipe(take(1))

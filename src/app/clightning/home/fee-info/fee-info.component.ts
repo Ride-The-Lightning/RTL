@@ -8,6 +8,7 @@ import { Fees } from '../../../shared/models/clModels';
 })
 export class CLFeeInfoComponent {
   @Input() fees: Fees;
+  @Input() errorMessage: string;
   totalFees = [{'name': 'Total', 'value': 0}];
 
 }

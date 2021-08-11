@@ -8,6 +8,7 @@ import { ChannelsStatus } from '../../../shared/models/eclModels';
 })
 export class ECLChannelStatusInfoComponent {
   @Input() channelsStatus: ChannelsStatus = {};
+  @Input() errorMessage: string;
 
   constructor() {}
 

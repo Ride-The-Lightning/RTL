@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { 
   GetInfo, Peer, Balance, NetworkInfo, Fees, Channel, Invoice, ListInvoices,
@@ -9,8 +9,7 @@ import {
 from '../../shared/models/lndModels';
 
 export const RESET_LND_STORE = 'RESET_LND_STORE';
-export const CLEAR_EFFECT_ERROR_LND = 'CLEAR_EFFECT_ERROR_LND';
-export const EFFECT_ERROR_LND = 'EFFECT_ERROR_LND';
+export const UPDATE_API_CALL_STATUS_LND = 'UPDATE_API_CALL_STATUS_LND';
 export const SET_CHILD_NODE_SETTINGS_LND = 'SET_CHILD_NODE_SETTINGS_LND';
 export const FETCH_INFO_LND = 'FETCH_INFO_LND';
 export const SET_INFO_LND = 'SET_INFO_LND';
@@ -80,14 +79,9 @@ export const SET_QUERY_ROUTES_LND = 'SET_QUERY_ROUTES_LND';
 export const GET_ALL_LIGHTNING_TRANSATIONS_LND = 'GET_ALL_LIGHTNING_TRANSATIONS_LND';
 export const SET_ALL_LIGHTNING_TRANSATIONS_LND = 'SET_ALL_LIGHTNING_TRANSATIONS_LND';
 
-export class ClearEffectError implements Action {
-  readonly type = CLEAR_EFFECT_ERROR_LND;
-  constructor(public payload: string) {} // payload = errorAction
-}
-
-export class EffectError implements Action {
-  readonly type = EFFECT_ERROR_LND;
-  constructor(public payload: ErrorPayload) {}
+export class UpdateAPICallStatus implements Action {
+  readonly type = UPDATE_API_CALL_STATUS_LND;
+  constructor(public payload: ApiCallStatusPayload) { }
 }
 
 export class ResetLNDStore implements Action {
@@ -141,7 +135,7 @@ export class RemovePeer implements Action {
 
 export class SaveNewInvoice implements Action {
   readonly type = SAVE_NEW_INVOICE_LND;
-  constructor(public payload: {memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
+  constructor(public payload: {uiMessage: string, memo: string, invoiceValue: number, private: boolean, expiry: number, pageSize: number, openModal: boolean}) {}
 }
 
 export class NewlySavedInvoice implements Action {
@@ -231,7 +225,7 @@ export class RemoveChannel implements Action {
 
 export class BackupChannels implements Action {
   readonly type = BACKUP_CHANNELS_LND;
-  constructor(public payload: {channelPoint: string, showMessage: string}) {}
+  constructor(public payload: {uiMessage: string, channelPoint: string, showMessage: string}) {}
 }
 
 export class VerifyChannels implements Action {
@@ -313,7 +307,7 @@ export class SetPayments implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_LND;
-  constructor(public payload: { fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
+  constructor(public payload: { uiMessage: string, fromDialog: boolean, paymentReq: string, paymentAmount?: number, outgoingChannel?: Channel, feeLimitType?: {id: string, name: string}, feeLimit?: number, allowSelfPayment?: boolean, lastHopPubkey?: string }) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -383,7 +377,7 @@ export class PeerLookup implements Action {
 
 export class ChannelLookup implements Action {
   readonly type = CHANNEL_LOOKUP_LND;
-  constructor(public payload: string) {} // payload = chanID
+  constructor(public payload: {uiMessage: string, channelID: string}) {}
 }
 
 export class InvoiceLookup implements Action {
@@ -425,7 +419,7 @@ export class SetAllLightningTransactions implements Action {
   constructor(public payload: { paymentsAll: ListPayments, invoicesAll: ListInvoices }) {}
 }
 
-export type LNDActions = ClearEffectError | EffectError | ResetLNDStore | SetChildNodeSettings |
+export type LNDActions = UpdateAPICallStatus | ResetLNDStore | SetChildNodeSettings |
 FetchInfo | SetInfo | FetchPeers | SetPeers | NewlyAddedPeer | DetachPeer | SaveNewPeer | RemovePeer |
 AddInvoice | SaveNewInvoice | NewlySavedInvoice | GetForwardingHistory | SetForwardingHistory |
 FetchFees | SetFees |

@@ -5,18 +5,20 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GetInfo, Payment, PayRequest, PaymentHTLC, Peer, Hop } from '../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
 
+import { ApiCallsListLND } from '../../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { LightningSendPaymentsComponent } from '../send-payment-modal/send-payment.component';
 import { newlyAddedRowAnimation } from '../../../shared/animation/row-animation';
+
 import { LNDEffects } from '../../store/lnd.effects';
 import { RTLEffects } from '../../../store/rtl.effects';
 import * as LNDActions from '../../store/lnd.actions';
@@ -36,11 +38,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   @Input() calledFrom = 'transactions'; // transactions/home
   @ViewChild('sendPaymentForm', { static: false }) form; //static should be false due to ngIf on form element
   @ViewChild(MatSort, {static: false}) sort: MatSort|undefined;
+  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
   public faHistory = faHistory;
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public peers: Peer[] = [];
   public payments: any;
@@ -58,6 +60,9 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private dataService: DataService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private lndEffects: LNDEffects, private decimalPipe: DecimalPipe, private datePipe: DatePipe) {
@@ -85,11 +90,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+      }
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       this.peers = rtlStore.peers;
@@ -97,13 +102,12 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       this.totalPayments = rtlStore.allLightningTransactions.paymentsAll && rtlStore.allLightningTransactions.paymentsAll.payments && rtlStore.allLightningTransactions.paymentsAll.payments.length ? rtlStore.allLightningTransactions.paymentsAll.payments.length : 0;
       this.firstOffset = +rtlStore.payments.first_index_offset;
       this.lastOffset = +rtlStore.payments.last_index_offset;
-      if (this.paymentJSONArr && this.paymentJSONArr.length > 0) {
+      if (this.paymentJSONArr && this.paymentJSONArr.length > 0 && this.sort && this.paginator) {
         this.loadPaymentsTable(this.paymentJSONArr);
+      } else if (this.paymentJSONArr && this.paymentJSONArr.length === 0) {
+        this.payments = new MatTableDataSource([]);        
       }
       setTimeout(() => { this.flgAnimate = false; }, 3000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( this.paymentJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }
@@ -170,8 +174,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.num_satoshis = confirmRes[0].inputValue;
-            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-            this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false}));
+            this.store.dispatch(new LNDActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, paymentAmount: confirmRes[0].inputValue, fromDialog: false}));
             this.resetData();
           }
         });
@@ -196,8 +199,7 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
       .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
-          this.store.dispatch(new LNDActions.SendPayment({paymentReq: this.paymentRequest, fromDialog: false}));
+          this.store.dispatch(new LNDActions.SendPayment({uiMessage: UI_MESSAGES.SEND_PAYMENT, paymentReq: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }
       });

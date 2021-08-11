@@ -8,8 +8,8 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Channel, GetInfo, ChannelEdge } from '../../../../../shared/models/clModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
-import { ApiCallsList } from '../../../../../shared/models/errorPayload';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, FEE_RATE_TYPES, APICallStatusEnum, UI_MESSAGES } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListCL } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -49,7 +49,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public errorMessage = '';
-  public apisCallStatus: ApiCallsList = null;
+  public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
@@ -97,7 +97,7 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
   }
   
   onViewRemotePolicy(selChannel: Channel) {
-    this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: selChannel.short_channel_id, showError: true}));
+    this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_REMOTE_POLICY, shortChannelID: selChannel.short_channel_id, showError: true}));
     this.clEffects.setLookupCL
     .pipe(take(1))
     .subscribe((resLookup: ChannelEdge[]):boolean|void => {
@@ -147,14 +147,12 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
           this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: 'all'}));
         }
       });
     } else {
       this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
-      this.store.dispatch(new RTLActions.OpenSpinner('Fetching Channel Policy...'));
-      this.store.dispatch(new CLActions.ChannelLookup({shortChannelID: channelToUpdate.short_channel_id, showError: false}));
+      this.store.dispatch(new CLActions.ChannelLookup({uiMessage: UI_MESSAGES.GET_CHAN_POLICY, shortChannelID: channelToUpdate.short_channel_id, showError: false}));
       this.clEffects.setLookupCL
       .pipe(take(1))
       .subscribe((resLookup: ChannelEdge[]) => {
@@ -166,7 +164,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
           this.myChanPolicy = {fee_base_msat: 0, fee_rate_milli_msat: 0};
         }
         this.logger.info(this.myChanPolicy);
-        this.store.dispatch(new RTLActions.CloseSpinner());
         const titleMsg = 'Update fee policy for Channel: ' + channelToUpdate.channel_id;
         const confirmationMsg = [];
         this.store.dispatch(new RTLActions.OpenConfirmation({ data: {
@@ -189,7 +186,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
         if (confirmRes) {
           const base_fee = confirmRes[0].inputValue;
           const fee_rate = confirmRes[1].inputValue;
-          this.store.dispatch(new RTLActions.OpenSpinner('Updating Channel Policy...'));
           this.store.dispatch(new CLActions.UpdateChannels({baseFeeMsat: base_fee, feeRate: fee_rate, channelId: channelToUpdate.channel_id}));
         }
       });
@@ -213,7 +209,6 @@ export class CLChannelOpenTableComponent implements OnInit, AfterViewInit, OnDes
     .pipe(takeUntil(this.unSubs[3]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner('Closing Channel...'));
         this.store.dispatch(new CLActions.CloseChannel({channelId: channelToClose.channel_id, force: false}));
       }
     });

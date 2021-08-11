@@ -1,9 +1,11 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x-large">
   <rtl-horizontal-scroller (stepChanged)="onSelectionChange($event)"></rtl-horizontal-scroller>
+  <mat-progress-bar mode="indeterminate" *ngIf="errorMessage === 'Getting fee report...'" class="mt-2"></mat-progress-bar>
   <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" class="padding-gap-x">
     <div *ngIf="feeReportData.length > 0 && events.forwarding_events" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1"
     [@fadeIn]="events.total_fee_msat">{{(events.total_fee_msat / 1000 || 0) | number:'1.0-2'}} Sats/{{(events?.forwarding_events?.length || 0) | number}} Events</div>
-    <div *ngIf="feeReportData.length <= 0 || !events.forwarding_events" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
+    <div *ngIf="(feeReportData.length <= 0 || !events.forwarding_events) && errorMessage === ''" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1">No fee report for the selected period</div>
+    <div *ngIf="errorMessage !== ''" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 mt-1" [ngClass]="{'error-border': errorMessage !== 'Getting fee report...' && errorMessage !== ''}">{{errorMessage}}</div>
     <div class="mt-1">
       <ngx-charts-bar-vertical
         *ngIf="feeReportData.length > 0 && events.forwarding_events"

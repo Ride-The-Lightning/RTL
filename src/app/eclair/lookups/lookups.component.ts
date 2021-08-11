@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { APICallStatusEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { CommonService } from '../../shared/services/common.service';
+import { LookupNode } from '../../shared/models/eclModels';
 import { LoggerService } from '../../shared/services/logger.service';
 
 import * as ECLActions from '../store/ecl.actions';
-import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
-import { ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
-import { CommonService } from '../../shared/services/common.service';
-import { FormControl } from '@angular/forms';
-import { LookupNode } from '../../shared/models/eclModels';
 
 @Component({
   selector: 'rtl-ecl-lookups',
@@ -46,7 +45,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.actions.pipe(takeUntil(this.unSubs[0]),
-      filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))).subscribe((resLookup: ECLActions.SetLookup | ECLActions.EffectError) => {
+      filter((action) => (action.type === ECLActions.SET_LOOKUP_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))).subscribe((resLookup: ECLActions.SetLookup | ECLActions.UpdateAPICallStatus) => {
         if(resLookup.type === ECLActions.SET_LOOKUP_ECL) {
           this.flgLoading[0] = true;
           switch (this.selectedFieldId) {
@@ -63,7 +62,7 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
           this.logger.info(this.nodeLookupValue);
           this.logger.info(this.channelLookupValue);
         }
-        if (resLookup.type === ECLActions.EFFECT_ERROR_ECL && resLookup.payload.action === 'Lookup') {
+        if (resLookup.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && resLookup.payload.status === APICallStatusEnum.ERROR && resLookup.payload.action === 'Lookup') {
           this.flgLoading[0] = 'error';
         }
     });
@@ -88,7 +87,6 @@ export class ECLLookupsComponent implements OnInit, OnDestroy {
       this.flgSetLookupValue = false;
       this.nodeLookupValue = {};
       this.channelLookupValue = [];
-      this.store.dispatch(new RTLActions.OpenSpinner('Searching ' + this.lookupFields[this.selectedFieldId].name + '...'));
       switch (this.selectedFieldId) {
         case 0:
           this.store.dispatch(new ECLActions.PeerLookup(this.lookupKeyCtrl.value.trim()));

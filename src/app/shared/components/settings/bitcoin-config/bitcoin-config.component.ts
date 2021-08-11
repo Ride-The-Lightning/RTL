@@ -9,6 +9,7 @@ import { RTLEffects } from '../../../../store/rtl.effects';
 import * as RTLActions from '../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../store/rtl.reducers';
 
+
 @Component({
   selector: 'rtl-bitcoin-config',
   templateUrl: './bitcoin-config.component.html',
@@ -29,7 +30,6 @@ export class BitcoinConfigComponent implements OnInit, OnDestroy {
     .subscribe((value: ResolveEnd) => {
       this.selectedNodeType = (value.urlAfterRedirects.includes('bconfig')) ? 'bitcoind' : 'ln';
     });
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Config File...'));
     this.store.dispatch(new RTLActions.FetchConfig(this.selectedNodeType));
     this.rtlEffects.showLnConfig
     .pipe(takeUntil(this.unSubs[1]))

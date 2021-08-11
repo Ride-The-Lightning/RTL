@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ApiCallStatusPayload, ErrorPayload } from '../../shared/models/errorPayload';
+import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Fees, Peer, Payment, PayRequest, QueryRoutes, Channel, FeeRates,
   ForwardingHistoryRes, Invoice, ListInvoices, OnChain, UTXO
@@ -185,7 +185,7 @@ export class SetDecodedPayment implements Action {
 
 export class SendPayment implements Action {
   readonly type = SEND_PAYMENT_CL;
-  constructor(public payload: {fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
+  constructor(public payload: {uiMessage: string, fromDialog: boolean, invoice?: string, amount?: number, pubkey?: string}) {}
 }
 
 export class SendPaymentStatus implements Action {
@@ -239,7 +239,7 @@ export class PeerLookup implements Action {
 
 export class ChannelLookup implements Action {
   readonly type = CHANNEL_LOOKUP_CL;
-  constructor(public payload: {shortChannelID: string, showError: boolean}) {}
+  constructor(public payload: {uiMessage: string, shortChannelID: string, showError: boolean}) {}
 }
 
 export class InvoiceLookup implements Action {

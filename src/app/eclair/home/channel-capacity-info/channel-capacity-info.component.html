@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100">
+<div fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex="100" *ngIf="errorMessage?.trim() === ''; else errorBlock">
   <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <div fxLayout="row" fxLayoutAlign="space-between start" class="w-100">
@@ -33,5 +33,10 @@
   <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start" class="mt-1 w-100">
     No channels available.
     <button mat-stroked-button color="primary" (click)="goToChannels()" tabindex="1">Open Channel</button>
+  </div>
+</ng-template>
+<ng-template #errorBlock>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="p-2">
+    <p>{{errorMessage}}</p>
   </div>
 </ng-template>

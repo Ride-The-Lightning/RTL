@@ -8,7 +8,8 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ClosedChannel } from '../../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CHANNEL_CLOSURE_TYPE, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -31,12 +32,14 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
   public displayedColumns: any[] = [];
   public closedChannelsData: ClosedChannel[] =[];
   public closedChannels: any;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unsub: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {
@@ -57,17 +60,14 @@ export class ChannelClosedTableComponent implements OnInit, AfterViewInit, OnDes
     this.store.select('lnd')
     .pipe(takeUntil(this.unsub[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels/closed') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchClosedChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchClosedChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchClosedChannels.message) : this.apisCallStatus.FetchClosedChannels.message;
+      }
       this.closedChannelsData = rtlStore.closedChannels;
       if (this.closedChannelsData.length > 0) {
         this.loadClosedChannelsTable(this.closedChannelsData);
-      }
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = ( rtlStore.closedChannels) ? false : true;
       }
       this.logger.info(rtlStore);
     });

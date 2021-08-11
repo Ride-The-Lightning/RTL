@@ -8,8 +8,6 @@ export interface GetInfo {
   network?: string;
   blockHeight?: number;
   publicAddresses?: string[];
-  currency_unit?: string;
-  smaller_currency_unit?: string;
   lnImplementation?: string;
 }
 
@@ -124,18 +122,12 @@ export interface OnChainBalance {
   total?: number;
   confirmed?: number;
   unconfirmed?: number;
-  btc_total?: number;
-  btc_confirmed?: number;
-  btc_unconfirmed?: number;
 }
 
 export interface LightningBalance {
   localBalance: number;
   remoteBalance: number;
   pendingBalance?: number;
-  btc_localBalance?: number;
-  btc_remoteBalance?: number;
-  btc_pendingBalance?: number;
 }
 
 export interface ChannelStatus {

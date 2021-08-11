@@ -5,9 +5,9 @@
       <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
     </mat-form-field>
   </div>
-  <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-    <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+  <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+    <mat-progress-bar *ngIf="apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+    <table mat-table #table fxFlex="100" [dataSource]="channels" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
       <!-- Channel Group Row Start -->
       <ng-container matColumnDef="amount">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount (Sats)</th>
@@ -81,11 +81,12 @@
       </ng-container>
       <ng-container matColumnDef="no_channel">
         <td mat-footer-cell *matFooterCellDef colspan="4">
-          <p *ngIf="!channels?.data || channels?.data?.length<1">No active htlc available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.COMPLETED">No active htlc available.</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.INITIATED">Getting active htlcs...</p>
+          <p *ngIf="(!channels?.data || channels?.data?.length<1) && apisCallStatus?.FetchAllChannels.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
         </td>
       </ng-container>
       <!-- channel Group Row End -->
-
       <tr mat-footer-row *matFooterRowDef="['no_channel']" [ngClass]="{'display-none': channels?.data && channels?.data?.length>0}"></tr>
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: flgSticky;"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

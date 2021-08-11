@@ -6,7 +6,7 @@
     </mat-form-field>
     <mat-form-field fxFlex="100" fxLayoutAlign="start end">
       <input matInput [(ngModel)]="invoiceValue" (keyup)="onInvoiceValueChange()" placeholder="Amount" type="number" [step]="100" [min]="1" tabindex="3" name="invValue" #invcVal="ngModel">
-      <span matSuffix> {{information?.smaller_currency_unit}} </span>
+      <span matSuffix>  Sats </span>
       <mat-hint>{{invoiceValueHint}}</mat-hint>
     </mat-form-field>
     <div  fxLayout="row" class="mt-1">
@@ -27,9 +27,9 @@
         <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
       </mat-form-field>
     </div>
-    <div [perfectScrollbar] fxLayout="row" fxLayoutAlign="start center" fxFlex="100" class="table-container w-100">
-      <mat-progress-bar *ngIf="flgLoading[0]===true" mode="indeterminate"></mat-progress-bar>
-      <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': flgLoading[0]==='error','overflow-auto': true}">
+    <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start center" fxFlex="100" class="table-container">
+      <mat-progress-bar *ngIf="apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
+      <table mat-table #table fxFlex="100" [dataSource]="invoices" matSort [ngClass]="{'overflow-auto error-border': errorMessage !== '','overflow-auto': true}">
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
           <td mat-cell *matCellDef="let invoice">
@@ -78,7 +78,9 @@
         </ng-container>
         <ng-container matColumnDef="no_invoice">
           <td mat-footer-cell *matFooterCellDef colspan="4">
-            <p *ngIf="!invoices?.data || invoices?.data?.length<1">No invoices available.</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.COMPLETED">No invoice available.</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.INITIATED">Getting invoices...</p>
+            <p *ngIf="(!invoices?.data || invoices?.data?.length<1) && apisCallStatus?.FetchInvoices.status === apiCallStatusEnum.ERROR">{{errorMessage}}</p>
           </td>
         </ng-container>
         <tr mat-footer-row *matFooterRowDef="['no_invoice']" [ngClass]="{'display-none': invoices?.data && invoices?.data?.length>0}"></tr>

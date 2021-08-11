@@ -1,12 +1,11 @@
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 import { GetInfo, Channel, ChannelStats, Fees, OnChainBalance, LightningBalance, Peer, ChannelsStatus, Payments, Transaction, Invoice } from '../../shared/models/eclModels';
-import { ErrorPayload } from '../../shared/models/errorPayload';
-import { UserPersonaEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListECL } from '../../shared/models/apiCallsPayload';
+import { APICallStatusEnum, UserPersonaEnum } from '../../shared/services/consts-enums-functions';
 import * as ECLActions from './ecl.actions';
 
 export interface ECLState {
-  initialAPIResponseStatus: String[];
-  effectErrors: ErrorPayload[];
+  apisCallStatus: ApiCallsListECL;
   nodeSettings: SelNodeChild;
   information: GetInfo;
   fees: Fees;
@@ -24,8 +23,7 @@ export interface ECLState {
 }
 
 export const initECLState: ECLState = {
-  initialAPIResponseStatus: ['INCOMPLETE'], //[0] for All Data Status
-  effectErrors: [],
+  apisCallStatus: { FetchInfo: { status: APICallStatusEnum.UN_INITIATED }, FetchFees: { status: APICallStatusEnum.UN_INITIATED }, FetchChannels: { status: APICallStatusEnum.UN_INITIATED }, FetchOnchainBalance: { status: APICallStatusEnum.UN_INITIATED }, FetchPeers: { status: APICallStatusEnum.UN_INITIATED }, FetchPayments: { status: APICallStatusEnum.UN_INITIATED }, FetchInvoices: { status: APICallStatusEnum.UN_INITIATED }, FetchTransactions: { status: APICallStatusEnum.UN_INITIATED } },
   nodeSettings: { userPersona: UserPersonaEnum.OPERATOR, selCurrencyUnit: 'USD', fiatConversion: false, channelBackupPath: '', currencyUnits: [] },
   information: {},
   fees: {},
@@ -43,25 +41,19 @@ export const initECLState: ECLState = {
 }
 
 export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) {
-  let newAPIStatus = state.initialAPIResponseStatus;
-
   switch (action.type) {
-    case ECLActions.CLEAR_EFFECT_ERROR_ECL:
-      const clearedEffectErrors = [...state.effectErrors];
-      const removeEffectIdx = state.effectErrors.findIndex(err => {
-        return err.action === action.payload;
-      });
-      if (removeEffectIdx > -1) {
-        clearedEffectErrors.splice(removeEffectIdx, 1);
-      }
-      return {
-        ...state,
-        effectErrors: clearedEffectErrors
+    case ECLActions.UPDATE_API_CALL_STATUS_ECL:
+      const updatedApisCallStatus = state.apisCallStatus;
+      updatedApisCallStatus[action.payload.action] = {
+        status: action.payload.status,
+        statusCode: action.payload.statusCode,
+        message: action.payload.message,
+        URL: action.payload.URL,
+        filePath: action.payload.filePath      
       };
-    case ECLActions.EFFECT_ERROR_ECL:
       return {
         ...state,
-        effectErrors: [...state.effectErrors, action.payload]
+        apisCallStatus: updatedApisCallStatus
       };
     case ECLActions.SET_CHILD_NODE_SETTINGS_ECL:
       return {
@@ -79,10 +71,8 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         information: action.payload
       };
     case ECLActions.SET_FEES_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'FEES'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         fees: action.payload
       };
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
@@ -101,10 +91,8 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         inactiveChannels: action.payload,
       };
     case ECLActions.SET_CHANNELS_STATUS_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'CHANNELS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         channelsStatus: action.payload,
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
@@ -113,10 +101,8 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         channelStats: action.payload,
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'ONCHAINBALANCE'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         onchainBalance: action.payload
       };
     case ECLActions.SET_LIGHTNING_BALANCE_ECL:
@@ -125,10 +111,8 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
         lightningBalance: action.payload
       };
     case ECLActions.SET_PEERS_ECL:
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PEERS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         peers: action.payload
       };
     case ECLActions.REMOVE_PEER_ECL:
@@ -190,10 +174,8 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
           }
         });
       }
-      newAPIStatus = [...state.initialAPIResponseStatus, 'PAYMENTS'];
       return {
         ...state,
-        initialAPIResponseStatus: newAPIStatus,
         payments: action.payload
       };
     case ECLActions.SET_TRANSACTIONS_ECL:

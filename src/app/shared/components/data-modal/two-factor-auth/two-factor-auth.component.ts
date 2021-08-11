@@ -89,7 +89,6 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
 
   onVerifyToken():boolean|void {
     if (this.appConfig.enable2FA) {
-      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
       this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: ''}));
       this.generateSecret();
       this.isTokenValid = true;
@@ -100,7 +99,6 @@ export class TwoFactorAuthComponent implements OnInit, OnDestroy {
         this.tokenFormGroup.controls.token.setErrors({ notValid: true });
         return true;
       }
-      this.store.dispatch(new RTLActions.OpenSpinner('Updating Settings...'));
       this.store.dispatch(new RTLActions.TwoFASaveSettings({secret2fa: this.secretFormGroup.controls.secret.value}));
       this.tokenFormGroup.controls.token.setValue('');
     }

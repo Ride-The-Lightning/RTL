@@ -9,7 +9,8 @@ import { faAngleDoubleDown, faAngleDoubleUp, faChartPie, faBolt, faServer, faNet
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { CommonService } from '../../shared/services/common.service';
-import { UserPersonaEnum, ScreenSizeEnum } from '../../shared/services/consts-enums-functions';
+import { UserPersonaEnum, ScreenSizeEnum, APICallStatusEnum } from '../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../shared/models/apiCallsPayload';
 import { ChannelsStatus, GetInfo, Fees, Channel } from '../../shared/models/lndModels';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
 
@@ -63,7 +64,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
   public screenSizeEnum = ScreenSizeEnum;
-  public flgLoading: Array<Boolean | 'error'> = [true, true, true, true, true, true, true, true]; // 0: Info, 1: Fee, 2: Wallet, 3: Channel, 4: Network
+  public errorMessages = ['', '', '', '', ''];
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private actions: Actions, private commonService: CommonService, private router: Router) {
@@ -139,19 +142,23 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.store.select('lnd')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      this.flgLoading = [true, true, true, true, true, true, true, true];
-      rtlStore.effectErrors.forEach(effectsErr => {
-        this.flgLoading[0] = (effectsErr.action === 'FetchInfo') ? 'error' : this.flgLoading[0];
-        this.flgLoading[1] = (effectsErr.action === 'FetchFees') ? 'error' : this.flgLoading[1];
-        this.flgLoading[2] = (effectsErr.action === 'FetchBalance/channels') ? 'error' : this.flgLoading[2];
-        this.flgLoading[3] = (effectsErr.action === 'FetchChannels/all') ? 'error' : this.flgLoading[3];
-        this.flgLoading[4] = (effectsErr.action === 'FetchChannels/pending') ? 'error' : this.flgLoading[4];
-      });
-      this.flgLoading[0] = (rtlStore.information.identity_pubkey) ? false : this.flgLoading[0];
-      this.flgLoading[1] = (rtlStore.fees.day_fee_sum) ? false : this.flgLoading[1];
-      this.flgLoading[2] = (+rtlStore.blockchainBalance.total_balance >= 0 && rtlStore.totalLocalBalance >= 0) ? false : this.flgLoading[2];
-      this.flgLoading[3] = (rtlStore.totalLocalBalance >= 0 && rtlStore.totalRemoteBalance >= 0) ? false : this.flgLoading[3];
-      this.flgLoading[4] = (this.flgLoading[4] !== 'error' && rtlStore.numberOfPendingChannels) ? false : this.flgLoading[4];
+      this.errorMessages = ['', '', '', '', ''];
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
+      }
+      if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
+      }
+      if (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchBalanceBlockchain.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchBalanceBlockchain.message) : this.apisCallStatus.FetchBalanceBlockchain.message;
+      }
+      if (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchAllChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchAllChannels.message) : this.apisCallStatus.FetchAllChannels.message;
+      }
+      if (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[4] = (typeof(this.apisCallStatus.FetchPendingChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPendingChannels.message) : this.apisCallStatus.FetchPendingChannels.message;
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
       this.fees = rtlStore.fees;

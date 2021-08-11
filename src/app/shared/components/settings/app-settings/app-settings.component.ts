@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faWindowRestore, faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
+import { UI_MESSAGES } from '../../../services/consts-enums-functions';
 import { ConfigSettingsNode, RTLConfiguration } from '../../../models/RTLconfig';
 import { LoggerService } from '../../../services/logger.service';
 
@@ -43,8 +44,7 @@ export class AppSettingsComponent implements OnInit, OnDestroy {
 
   onUpdateSettings():boolean|void {
     let defaultNodeIndex = (this.appConfig.defaultNodeIndex) ? this.appConfig.defaultNodeIndex : +this.appConfig.nodes[0].index;
-    this.store.dispatch(new RTLActions.OpenSpinner('Updating Defaule Node Settings...'));
-    this.store.dispatch(new RTLActions.SaveSettings({defaultNodeIndex: defaultNodeIndex}));
+    this.store.dispatch(new RTLActions.SaveSettings({uiMessage: UI_MESSAGES.UPDATE_DEFAULT_NODE_SETTING, defaultNodeIndex: defaultNodeIndex}));
   }
 
   onResetSettings() {

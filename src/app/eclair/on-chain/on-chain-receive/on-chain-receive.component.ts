@@ -20,7 +20,6 @@ export class ECLOnChainReceiveComponent {
   constructor(private store: Store<fromRTLReducer.RTLState>, private eclEffects: ECLEffects) {}
 
   onGenerateAddress() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting New Address...'));
     this.store.dispatch(new ECLActions.GetNewAddress());
     this.eclEffects.setNewAddress.pipe(take(1))
     .subscribe(newAddress => {

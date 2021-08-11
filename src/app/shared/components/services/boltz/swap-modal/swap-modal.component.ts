@@ -16,7 +16,6 @@ import { SwapAlert } from '../../../../models/alertData';
 import { BoltzService } from '../../../../services/boltz.service';
 import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
-import { Channel } from '../../../../models/lndModels';
 
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
@@ -100,26 +99,32 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.next();
     if (this.direction === SwapTypeEnum.SWAP_IN) {
       this.boltzService.swapIn(this.inputFormGroup.controls.amount.value).pipe(takeUntil(this.unSubs[3]))
-      .subscribe((swapStatus: CreateSwapResponse) => {
-        this.swapStatus = swapStatus;
-        this.boltzService.listSwaps();
-        this.flgEditable = true;
-      }, (err) => {
-        this.swapStatus = { error: (err.error && err.error.error) ? err.error.error : err.error ? err.error : err };
-        this.flgEditable = true;
-        this.logger.error(err);
+      .subscribe({
+        next: (swapStatus: CreateSwapResponse) => {
+          this.swapStatus = swapStatus;
+          this.boltzService.listSwaps();
+          this.flgEditable = true;
+        }, 
+        error: (err) => {
+          this.swapStatus = { error: (err.error && err.error.error) ? err.error.error : err.error ? err.error : err };
+          this.flgEditable = true;
+          this.logger.error(err);
+        }
       });
     } else {
       let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       this.boltzService.swapOut(this.inputFormGroup.controls.amount.value, destAddress).pipe(takeUntil(this.unSubs[4]))
-      .subscribe((swapStatus: CreateReverseSwapResponse) => {
-        this.swapStatus = swapStatus;
-        this.boltzService.listSwaps();
-        this.flgEditable = true;
-      }, (err) => {
+      .subscribe({
+        next: (swapStatus: CreateReverseSwapResponse) => {
+          this.swapStatus = swapStatus;
+          this.boltzService.listSwaps();
+          this.flgEditable = true;
+        },
+        error: (err) => {
         this.swapStatus = { error: (err.error && err.error.error) ? err.error.error : err.error ? err.error : err };
         this.flgEditable = true;
         this.logger.error(err);
+        }
       });
     }
   }

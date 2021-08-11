@@ -5,11 +5,11 @@ import { Store } from '@ngrx/store';
 
 import { PaymentRelayed } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
 import * as fromRTLReducer from '../../../store/rtl.reducers';
-import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
   selector: 'rtl-ecl-fee-report',

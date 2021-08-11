@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../../animation/opacity-animation';
-import { ScreenSizeEnum, LoopTypeEnum } from '../../../../services/consts-enums-functions';
+import { ScreenSizeEnum, LoopTypeEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../../models/loopModels';
 import { LoopAlert } from '../../../../models/alertData';
 import { LoopService } from '../../../../services/loop.service';
@@ -159,13 +159,11 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onEstimateQuote():boolean|void {
     if(!this.inputFormGroup.controls.amount.value || this.inputFormGroup.controls.amount.value < this.minQuote.amount || this.inputFormGroup.controls.amount.value > this.maxQuote.amount || !this.inputFormGroup.controls.sweepConfTarget.value || this.inputFormGroup.controls.sweepConfTarget.value < 2) { return true; }
-    this.store.dispatch(new RTLActions.OpenSpinner('Getting Quotes...'));
     let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
     if(this.direction === LoopTypeEnum.LOOP_IN) {
       this.loopService.getLoopInQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
       .pipe(takeUntil(this.unSubs[2]))
       .subscribe(response => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
         this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
       });
@@ -173,7 +171,6 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loopService.getLoopOutQuote(this.inputFormGroup.controls.amount.value, this.inputFormGroup.controls.sweepConfTarget.value, swapPublicationDeadline)
       .pipe(takeUntil(this.unSubs[3]))
       .subscribe(response => {
-        this.store.dispatch(new RTLActions.CloseSpinner());
         this.quote = response;
         this.quote.off_chain_swap_routing_fee_percentage = this.inputFormGroup.controls.routingFeePercent.value ? this.inputFormGroup.controls.routingFeePercent.value : 2;
       });

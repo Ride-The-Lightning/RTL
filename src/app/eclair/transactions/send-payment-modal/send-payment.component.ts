@@ -10,14 +10,13 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { PayRequest, Channel } from '../../../shared/models/eclModels';
-import { CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
+import { APICallStatusEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, FEE_LIMIT_TYPES } from '../../../shared/services/consts-enums-functions';
 import { CommonService } from '../../../shared/services/common.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { DataService } from '../../../shared/services/data.service';
 
 import { ECLEffects } from '../../store/ecl.effects';
 import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -53,16 +52,14 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
       this.logger.info(rtlStore);
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL))
-    .subscribe((action: ECLActions.EffectError | ECLActions.SendPaymentStatus) => {
+    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.SEND_PAYMENT_STATUS_ECL))
+    .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.SendPaymentStatus) => {
       if (action.type === ECLActions.SEND_PAYMENT_STATUS_ECL) { 
         this.dialogRef.close();
       }    
-      if (action.type === ECLActions.EFFECT_ERROR_ECL) {
-        if (action.payload.action === 'SendPayment') {
-          delete this.paymentDecoded.amount;
-          this.paymentError = action.payload.message;
-        }
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'SendPayment') {
+        delete this.paymentDecoded.amount;
+        this.paymentError = action.payload.message;
       }
     });
   }
@@ -106,7 +103,6 @@ export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   }
 
   sendPayment() {
-    this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
     if (this.zeroAmtInvoice) {
       this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: this.paymentAmount*1000, fromDialog: true}));
     } else {

@@ -1,7 +1,7 @@
 export const mockResponseData = ({
   fiatRates: { USD: { '15m': 33438.82, last: 33438.82, buy: 33438.82, sell: 33438.82, symbol: 'USD'}, EUR: { '15m': 28193.8, last: 28193.8, buy: 28193.8, sell: 28193.8, symbol: 'EUR'}, GBP: { '15m': 23987.68, last: 23987.68, buy: 23987.68, sell: 23987.68, symbol: 'GBP'}, AUD: { '15m': 44548.88, last: 44548.88, buy: 44548.88, sell: 44548.88, symbol: 'AUD'}, BRL: { '15m': 170094.31, last: 170094.31, buy: 170094.31, sell: 170094.31, symbol: 'BRL'}, CAD: { '15m': 41287.51, last: 41287.51, buy: 41287.51, sell: 41287.51, symbol: 'CAD'}, TRY: { '15m': 291352.46, last: 291352.46, buy: 291352.46, sell: 291352.46, symbol: 'TRY'}, CLP: { '15m': 24845458.07, last: 24845458.07, buy: 24845458.07, sell: 24845458.07, symbol: 'CLP'}, ISK: { '15m': 4508648.05, last: 4508648.05, buy: 4508648.05, sell: 4508648.05, symbol: 'ISK'}, JPY: { '15m': 3715369.25, last: 3715369.25, buy: 3715369.25, sell: 3715369.25, symbol: 'JPY'}, KRW: { '15m': 39148401.79, last: 39148401.79, buy: 39148401.79, sell: 39148401.79, symbol: 'KRW'}, CHF: { '15m': 30889.26, last: 30889.26, buy: 30889.26, sell: 30889.26, symbol: 'CHF'}, CNY: { '15m': 216826.46, last: 216826.46, buy: 216826.46, sell: 216826.46, symbol: 'CNY'}, CZK: { '15m': 724605.76, last: 724605.76, buy: 724605.76, sell: 724605.76, symbol: 'CZK'}, DKK: { '15m': 245951.1, last: 245951.1, buy: 245951.1, sell: 245951.1, symbol: 'DKK'}, HKD: { '15m': 260276.41, last: 260276.41, buy: 260276.41, sell: 260276.41, symbol: 'HKD'}, HUF: { '15m': 11866363.6, last: 11866363.6, buy: 11866363.6, sell: 11866363.6, symbol: 'HUF'}, HRK: { '15m': 584240.71, last: 584240.71, buy: 584240.71, sell: 584240.71, symbol: 'HRK'}, INR: { '15m': 2687019.47, last: 2687019.47, buy: 2687019.47, sell: 2687019.47, symbol: 'INR'}, NZD: { '15m': 47535.46, last: 47535.46, buy: 47535.46, sell: 47535.46, symbol: 'NZD'}, PLN: { '15m': 127106.86, last: 127106.86, buy: 127106.86, sell: 127106.86, symbol: 'PLN'}, RON: { '15m': 128655.22, last: 128655.22, buy: 128655.22, sell: 128655.22, symbol: 'RON'}, RUB: { '15m': 2450480.5, last: 2450480.5, buy: 2450480.5, sell: 2450480.5, symbol: 'RUB'}, SEK: { '15m': 285404.7, last: 285404.7, buy: 285404.7, sell: 285404.7, symbol: 'SEK'}, SGD: { '15m': 45233.21, last: 45233.21, buy: 45233.21, sell: 45233.21, symbol: 'SGD'}, THB: { '15m': 1074389.36, last: 1074389.36, buy: 1074389.36, sell: 1074389.36, symbol: 'THB'}, TWD: { '15m': 1092607.79, last: 1092607.79, buy: 1092607.79, sell: 1092607.79, symbol: 'TWD'}},
-  decodePayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', num_satoshis: '400', timestamp: '1623624612', expiry: '3600', description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}, btc_num_satoshis: '0.000004'},
-  decodeEmptyPayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7', num_satoshis: '0', timestamp: '1618601223', expiry: '432000', description: 'Testing Empty Invoice for LND 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=', num_msat: '0', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}, btc_num_satoshis: '0.000000'},
+  decodePayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', num_satoshis: '400', timestamp: '1623624612', expiry: '3600', description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},
+  decodeEmptyPayment: { destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7', num_satoshis: '0', timestamp: '1618601223', expiry: '432000', description: 'Testing Empty Invoice for LND 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=', num_msat: '0', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},
   decodePayments: [{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'a53968453af7ab6fc58d229a91bdf23d7c121963067f06cf02e1a7b581852c07', num_satoshis: '400', timestamp: '1623624612', expiry: '3600', description: 'Testing ngrx Effects 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'NIXNBEqCTmqw89joe0m71Z9MrkkBcF1t1ri+9BZehKw=', num_msat: '400000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'd58d9c37beb517ff50d674b5f6a9ced55f71994f22e9a53d687190130e9685f3', num_satoshis: '300', timestamp: '1623624487', expiry: '3600', description: 'Testing ngrx Effects 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'wNPCjWmyhzJwjZUOMcNn5L4Bn2VQBlDWLEsL+wmp7jQ=', num_msat: '300000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: '74a5d61001c7aac3a90dee448b73925b6a8e4d7dd27f3d22d3585c1c9c9c289b', num_satoshis: '200', timestamp: '1623624099', expiry: '3600', description: 'Testing ngrx Effects', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '028ec70462207b57e3d4d9332d9e0aee676c92d89b7c9fb0850fc2a24814d4d83c', chan_id: '2166413939696009216', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: '7R3g78VT3IXhOGlDemJeTiANZmYkIR0N2x+guCiR4/M=', num_msat: '200000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: 'f81ea5b08648edd1829054e13574a033c477fc01a889b1edfc20702f12edd0ba', num_satoshis: '248731', timestamp: '1623348968', expiry: '31536000', description: 'swap - script:  0020572351296a6bc5acce8426633676898a460ebab14372739f23d9f199486f6ec5', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125910130351734784', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]},{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125937618142953472', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]}], payment_addr: '9RM0886+SiObULWWnDZ8zPH+EPv6qcWMcIWBP5qCg80=', num_msat: '248731000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 14: { name: 'payment-addr', is_required: true, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: '626261dbe0bca553aa39bf1619c5add0c21b7ee317e0dcae7c3df46eea08f57c', num_satoshis: '1337', timestamp: '1623348968', expiry: '31536000', description: 'prepay', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125910130351734784', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]},{ hop_hints: [{ node_id: '0223acffd7f363b4591ce860eda870fea352e981212d8a25e96a0ebea37faae288', chan_id: '2125937618142953472', fee_base_msat: 0, fee_proportional_millionths: 0, cltv_expiry_delta: 40}]}], payment_addr: 'JqE8EIyys/eqny0nDabyjKgn8u0/5WL6TGrgCJyEGxQ=', num_msat: '1337000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 14: { name: 'payment-addr', is_required: true, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: '77b101814c364b3e3e4f3024429c641bab1d76dc090491f591301fc3d0c6a81c', num_satoshis: '100', timestamp: '1618601264', expiry: '432000', description: 'Testing Empty Invoice for LND 4', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '020e73f5a0928d3bd480d1155f3c09dfbc13613aab99dd3edbe65e510d839c6e84', chan_id: '1952447877419368448', fee_base_msat: 2000, fee_proportional_millionths: 100, cltv_expiry_delta: 144}]}], payment_addr: 'WwtWe/HE5Qt/RybXfGOOxJhsNdE5XY0s8e+WoOX0jfY=', num_msat: '100000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '031844beb16bf8dd8c7bc30588b8c37b36e62b71c6e812e9b6d976c0a57e151be2', payment_hash: 'e1cbe4dcc6121fa3c84ba1568066b43c97e80e4b6eac589aab2ae11b81b66aa7', num_satoshis: '0', timestamp: '1618601223', expiry: '432000', description: 'Testing Empty Invoice for LND 3', description_hash: '', fallback_addr: '', cltv_expiry: '10', route_hints: [{ hop_hints: [{ node_id: '02b75534b5960e934840d7a98ddc7e486487b07a544e6e2cc1287c7267bcc3a499', chan_id: '1801940128740540417', fee_base_msat: 1000, fee_proportional_millionths: 1, cltv_expiry_delta: 40}]}], payment_addr: 'TlB3JWmKew2FScn1bNyAT1ajYHJnJ9HnwxzUckmjccg=', num_msat: '0', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}},{ destination: '024ef6d6cb79add6f6f7c144519822a17248c244c8370db35a48a25c9a1db8ffd3', payment_hash: '0181e7484080056483d6c00a5cb70e5f54e48543473fbec74206ddb2b7c74217', num_satoshis: '1337', timestamp: '1610149448', expiry: '31536000', description: 'prepay', description_hash: '', fallback_addr: '', cltv_expiry: '100', route_hints: [], payment_addr: '2qx8NRsnv8CwwZ3Kj+kTQAMHw8DG1EidRl+gzBFHyds=', num_msat: '1337000', features: { 9: { name: 'tlv-onion', is_required: false, is_known: true}, 15: { name: 'payment-addr', is_required: false, is_known: true}, 17: { name: 'multi-path-payments', is_required: false, is_known: true}}}],
   getAliasesFromPubkeys: ['MyCLNode'],
   signMessage: { signature: 'ryon74c9addyr5sgagrkupxaguw7ypn3kfia5m5jbaxjfehi4b8r65ytufwpcrtswo1kqsynicpmkrtoowshqdgyjckzx51e9hu8xmiz'},
@@ -80,7 +80,6 @@ export const mockActionsData = {
 
 export const mockRTLStoreState = {
   root: {
-    effectErrorsRoot: [],
     selNode: {
       index: 1,
       lnNode: 'Local Testnet',
@@ -217,24 +216,10 @@ export const mockRTLStoreState = {
       uris: [
         '02fad37ef58f76c1a5f802d198a07da5a8e55620b9ffbcbdc316fc8c9e9eac02cb@69.122.24.206:9999'
       ],
-      version: '0.12.1-beta',
-      currency_unit: 'BTC',
-      smaller_currency_unit: 'Sats'
+      version: '0.12.1-beta'
     }
   },
   lnd: {
-    initialAPIResponseStatus: [
-      'COMPLETE',
-      'PEERS',
-      'ALLCHANNELS',
-      'INVOICES',
-      'BALANCE',
-      'PENDINGCHANNELS',
-      'PAYMENTS',
-      'CLOSEDCHANNELS',
-      'FEES'
-    ],
-    effectErrors: [],
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\RTL\\backup\\node-1',
@@ -749,9 +734,6 @@ export const mockRTLStoreState = {
       daily_tx_count: 0,
       weekly_tx_count: 0,
       monthly_tx_count: 0,
-      btc_day_fee_sum: '0.000000',
-      btc_week_fee_sum: '0.000000',
-      btc_month_fee_sum: '0.000000'
     },
     networkInfo: {
       graph_diameter: 0,
@@ -765,10 +747,6 @@ export const mockRTLStoreState = {
       max_channel_size: '200000000',
       median_channel_size_sat: '1799895',
       num_zombie_chans: '4435',
-      btc_total_network_capacity: '494.518280',
-      btc_avg_channel_size: '0.064626',
-      btc_min_channel_size: '0.000040',
-      btc_max_channel_size: '2.000000'
     },
     channelBalance: {
       balance: '962258',
@@ -797,16 +775,11 @@ export const mockRTLStoreState = {
         sat: '0',
         msat: '0'
       },
-      btc_balance: '0.009623',
-      btc_pending_open_balance: '0.000000'
     },
     blockchainBalance: {
       total_balance: '1621135',
       confirmed_balance: '1621135',
       unconfirmed_balance: '0',
-      btc_total_balance: '0.016211',
-      btc_confirmed_balance: '0.016211',
-      btc_unconfirmed_balance: '0.000000'
     },
     allChannels: [
       {
@@ -2603,7 +2576,6 @@ export const mockRTLStoreState = {
       pending_closing_channels: [],
       pending_force_closing_channels: [],
       waiting_close_channels: [],
-      btc_total_limbo_balance: '0.000000'
     },
     numberOfActiveChannels: 8,
     numberOfInactiveChannels: 9,
@@ -4362,8 +4334,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'HG8V20p3Zg9A9s3c/j1rDQmTg3Cwexpjv6Wo2NhrMi8=',
-          btc_value: '0.000007',
-          btc_amt_paid_sat: '0.000007'
         },
         {
           memo: 'Testing Eclair Payments 6',
@@ -4420,8 +4390,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'oUmc0csf6YuPaaAD4564TJS5VVwGPT+G8EhqyVjjdds=',
-          btc_value: '0.000006',
-          btc_amt_paid_sat: '0.000006'
         },
         {
           memo: 'Testing ngrx effects 5',
@@ -4478,8 +4446,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'fymlMg/PhRf3JaUHlBrH9hxnkKjCwCD5u4YFzT88epw=',
-          btc_value: '0.000005',
-          btc_amt_paid_sat: '0.000005'
         },
         {
           memo: 'Routing Hint Invoice Test 2',
@@ -4523,8 +4489,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'vM05nYc/d/eTo9+aSL15SgWrLbqVLNBKGijeyLBDL3M=',
-          btc_value: '0.000000',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'my test invoice',
@@ -4568,8 +4532,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'UKGL4sT4xnhBQJoKemi5C80gPIxn54OxVfmwSxPp8Pg=',
-          btc_value: '0.000001',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4613,8 +4575,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'T4QwWtP0EWdR7b7USvakIeFHdLrCOaoMujcSN1iH8tM=',
-          btc_value: '0.000500',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4658,8 +4618,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'yc/O4nDL2TPM37kYxuxGM68RMusJWfZ6jMtu2g6Ke/U=',
-          btc_value: '0.000050',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4703,8 +4661,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: '4EbHkBgA5Foea8YKZUm+V+kIovtZWLrtKwaRyveQyDA=',
-          btc_value: '0.000050',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4748,8 +4704,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: '6p3ATptJOreEh6GLAmTIQGqsBKKHBBXaZQkvPXurBwk=',
-          btc_value: '0.000500',
-          btc_amt_paid_sat: '0.000000'
         },
         {
           memo: 'Submarine Swap from BTC',
@@ -4793,8 +4747,6 @@ export const mockRTLStoreState = {
           },
           is_keysend: false,
           payment_addr: 'npKBJizo7eezLnEAuZRN5wS09Awe0MP0tK4Siquj/Uc=',
-          btc_value: '0.000050',
-          btc_amt_paid_sat: '0.000000'
         }
       ],
       last_index_offset: '817',
@@ -47905,10 +47857,6 @@ export const mockRTLStoreState = {
     }
   },
   cl: {
-    initialAPIResponseStatus: [
-      'INCOMPLETE'
-    ],
-    effectErrors: [],
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\RTL\\backup\\node-1',
@@ -47942,10 +47890,6 @@ export const mockRTLStoreState = {
     utxos: []
   },
   ecl: {
-    initialAPIResponseStatus: [
-      'INCOMPLETE'
-    ],
-    effectErrors: [],
     nodeSettings: {
       userPersona: 'OPERATOR',
       channelBackupPath: '..\\RTL\\backup\\node-1',

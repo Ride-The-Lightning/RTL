@@ -1,5 +1,7 @@
-import { Component, ViewChild, Input, OnChanges } from '@angular/core';
+import { Component, ViewChild, Input, OnChanges, OnInit, OnDestroy } from '@angular/core';
 import { DatePipe } from '@angular/common'
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
@@ -7,7 +9,8 @@ import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Transaction } from '../../../../shared/models/lndModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum } from '../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, APICallStatusEnum } from '../../../../shared/services/consts-enums-functions';
+import { ApiCallsListLND } from '../../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonService } from '../../../../shared/services/common.service';
 
@@ -22,11 +25,10 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
     { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Transactions') }
   ]  
 })
-export class OnChainTransactionHistoryComponent implements OnChanges {
+export class OnChainTransactionHistoryComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort|undefined;
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator|undefined;
-  @Input() transactions: Transaction[];
-  @Input() errorLoading: any;
+  public transactions: Transaction[];
   faHistory = faHistory;
   public displayedColumns: any[] = [];
   public listTransactions: any;
@@ -35,6 +37,10 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListLND = null;
+  public apiCallStatusEnum = APICallStatusEnum;
+  private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private datePipe: DatePipe) {
     this.screenSize = this.commonService.getScreenSize();
@@ -51,6 +57,23 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
       this.flgSticky = true;
       this.displayedColumns = ['time_stamp', 'label', 'amount', 'total_fees', 'block_height', 'num_confirmations', 'actions'];
     }
+  }
+
+  ngOnInit() {
+    this.store.select('lnd')
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((rtlStore) => {
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchTransactions.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchTransactions.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchTransactions.message) : this.apisCallStatus.FetchTransactions.message;
+      }
+      if (rtlStore.transactions && rtlStore.transactions.length > 0) {
+        this.transactions = rtlStore.transactions;
+        this.loadTransactionsTable(this.transactions);
+      }
+      this.logger.info(rtlStore);
+    });
   }
 
   ngOnChanges() {
@@ -101,4 +124,10 @@ export class OnChainTransactionHistoryComponent implements OnChanges {
     }
   }
 
+  ngOnDestroy() {
+    this.unSubs.forEach(completeSub => {
+      completeSub.next(null);
+      completeSub.complete();
+    });
+  }
 }

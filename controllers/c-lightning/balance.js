@@ -11,21 +11,12 @@ exports.getBalance = (req, res, next) => {
     logger.log({level: 'DEBUG', fileName: 'Balance', msg: 'Balance Received', data: body});
     if(!body.totalBalance) {
       body.totalBalance = 0;
-      body.btc_totalBalance = 0;
-    } else {
-      body.btc_totalBalance = common.convertToBTC(body.totalBalance);
     }
     if(!body.confBalance) {
       body.confBalance = 0;
-      body.btc_confBalance = 0;
-    } else {
-      body.btc_confBalance = common.convertToBTC(body.confBalance);
     }
     if(!body.unconfBalance) {
       body.unconfBalance = 0;
-      body.btc_unconfBalance = 0;
-    } else {
-      body.btc_unconfBalance = common.convertToBTC(body.unconfBalance);
     }
     logger.log({level: 'INFO', fileName: 'Balance', msg: 'Balance Received'});
     res.status(200).json(body);

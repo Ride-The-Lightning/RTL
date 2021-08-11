@@ -14,6 +14,7 @@ export class ECLChannelLiquidityInfoComponent implements OnInit {
   @Input() direction: string;
   @Input() totalLiquidity: number;
   @Input() allChannels: Channel[];
+  @Input() errorMessage: string;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
 

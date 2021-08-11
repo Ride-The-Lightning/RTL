@@ -14,7 +14,6 @@ import { CommonService } from '../../../shared/services/common.service';
 
 import { LNDEffects } from '../../store/lnd.effects';
 import * as LNDActions from '../../store/lnd.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -76,7 +75,6 @@ export class ChannelRestoreTableComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onRestoreChannels(selChannel: Channel) {
-    this.store.dispatch(new RTLActions.OpenSpinner('Restoring Channels...'));
     this.store.dispatch(new LNDActions.RestoreChannels({channelPoint: (selChannel.channel_point) ? selChannel.channel_point : 'ALL'}));
   }  
 

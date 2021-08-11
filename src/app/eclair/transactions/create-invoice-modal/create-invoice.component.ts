@@ -8,13 +8,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { ECLInvoiceInformation } from '../../../shared/models/alertData';
-import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE } from '../../../shared/services/consts-enums-functions';
+import { TimeUnitEnum, CurrencyUnitEnum, TIME_UNITS, CURRENCY_UNIT_FORMATS, PAGE_SIZE, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { SelNodeChild } from '../../../shared/models/RTLconfig';
 import { GetInfo } from '../../../shared/models/eclModels';
 import { CommonService } from '../../../shared/services/common.service';
 
 import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -52,12 +51,12 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
       this.information = rtlStore.information;
     });
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter(action => action.type === ECLActions.EFFECT_ERROR_ECL || action.type === ECLActions.ADD_INVOICE_ECL))
-    .subscribe((action: ECLActions.EffectError | ECLActions.AddInvoice) => {
+    filter(action => action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL || action.type === ECLActions.ADD_INVOICE_ECL))
+    .subscribe((action: ECLActions.UpdateAPICallStatus | ECLActions.AddInvoice) => {
       if (action.type === ECLActions.ADD_INVOICE_ECL) {
         this.dialogRef.close();
       }    
-      if (action.type === ECLActions.EFFECT_ERROR_ECL && action.payload.action === 'CreateInvoice') {
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR && action.payload.action === 'CreateInvoice') {
         this.invoiceError = action.payload.message;
       }
     });
@@ -76,7 +75,6 @@ export class ECLCreateInvoiceComponent implements OnInit, OnDestroy {
     } else {
       invoicePayload = { description: this.description, expireIn: expiryInSecs };
     }
-    this.store.dispatch(new RTLActions.OpenSpinner('Creating Invoice...'));
     this.store.dispatch(new ECLActions.CreateInvoice(invoicePayload));
   }
 

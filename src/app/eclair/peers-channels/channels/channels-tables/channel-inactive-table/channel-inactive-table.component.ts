@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 import { Channel, GetInfo } from '../../../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum } from '../../../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, ScreenSizeEnum, FEE_RATE_TYPES, AlertTypeEnum, APICallStatusEnum } from '../../../../../shared/services/consts-enums-functions';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { CommonService } from '../../../../../shared/services/common.service';
 
@@ -17,6 +17,7 @@ import { RTLEffects } from '../../../../../store/rtl.effects';
 import * as ECLActions from '../../../../store/ecl.actions';
 import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
+import { ApiCallsListECL } from '../../../../../shared/models/apiCallsPayload';
 
 @Component({
   selector: 'rtl-ecl-channel-inactive-table',
@@ -39,13 +40,15 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
   public information: GetInfo = {};
   public numPeers = -1;
   public feeRateTypes = FEE_RATE_TYPES;
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public selFilter = '';
   public flgSticky = false;
   public pageSize = PAGE_SIZE;
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private commonService: CommonService) {
@@ -69,19 +72,16 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchChannels') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+      }
       this.information = rtlStore.information;
       this.numPeers = (rtlStore.peers && rtlStore.peers.length) ? rtlStore.peers.length : 0;
       this.totalBalance = rtlStore.onchainBalance.total;
       this.inactiveChannels = rtlStore.inactiveChannels;
       this.loadChannelsTable();
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (rtlStore.inactiveChannels) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
   }
@@ -107,7 +107,6 @@ export class ECLChannelInactiveTableComponent implements OnInit, AfterViewInit, 
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe(confirmRes => {
       if (confirmRes) {
-        this.store.dispatch(new RTLActions.OpenSpinner((forceClose) ? 'Force Closing Channel...' : 'Closing Channel...'));
         this.store.dispatch(new ECLActions.CloseChannel({channelId: channelToClose.channelId, force: forceClose}));
       }
     });

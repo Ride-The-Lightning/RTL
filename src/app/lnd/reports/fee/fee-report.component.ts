@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { SwitchRes } from '../../../shared/models/lndModels';
 import { CommonService } from '../../../shared/services/common.service';
-import { MONTHS, ScreenSizeEnum, SCROLL_RANGES } from '../../../shared/services/consts-enums-functions';
+import { MONTHS, ScreenSizeEnum, SCROLL_RANGES, UI_MESSAGES } from '../../../shared/services/consts-enums-functions';
 import { DataService } from '../../../shared/services/data.service';
 import { fadeIn } from '../../../shared/animation/opacity-animation';
 
@@ -34,6 +34,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   public showYAxisLabel = true;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject()];
 
   constructor(private dataService: DataService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>) {}
@@ -41,13 +42,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.commonService.getScreenSize();
     this.showYAxisLabel = !(this.screenSize === ScreenSizeEnum.XS || this.screenSize === ScreenSizeEnum.SM);
-    this.store.select('lnd')
-    .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((rtlStore) => {
-      if(rtlStore.initialAPIResponseStatus[0] === 'COMPLETE') {
-        this.fetchEvents(this.startDate, this.endDate);
-      }
-    });
+    this.fetchEvents(this.startDate, this.endDate);
   }
 
   ngAfterContentInit() {
@@ -69,10 +64,12 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   fetchEvents(start: Date, end: Date) {
+    this.errorMessage = UI_MESSAGES.GET_FEE_REPORT;
     const startDateInSeconds = Math.round(start.getTime()/1000).toString();
     const endDateInSeconds = Math.round(end.getTime()/1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
     .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
+      this.errorMessage = '';
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
         this.events = res;
@@ -81,7 +78,10 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         this.events = {};
         this.feeReportData = [];
       }
-    });    
+    }, (err) => {
+      this.errorMessage = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
+      this.errorMessage = (typeof this.errorMessage === 'string') ? this.commonService.titleCase(this.errorMessage) : JSON.stringify(this.errorMessage);
+    });
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {

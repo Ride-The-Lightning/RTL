@@ -4,12 +4,13 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { faHistory } from '@fortawesome/free-solid-svg-icons';
-
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+
 import { GetInfo, PayRequest, PaymentSent, PaymentSentPart } from '../../../shared/models/eclModels';
-import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS } from '../../../shared/services/consts-enums-functions';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS, getPaginatorLabel, AlertTypeEnum, DataTypeEnum, ScreenSizeEnum, CurrencyUnitEnum, CURRENCY_UNIT_FORMATS, APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
+import { ApiCallsListECL } from '../../../shared/models/apiCallsPayload';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { DataService } from '../../../shared/services/data.service';
@@ -42,7 +43,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public newlyAddedPayment = '';
   public flgAnimate = true;
   public selNode: SelNodeChild = {};
-  public flgLoading: Array<Boolean | 'error'> = [true];
   public information: GetInfo = {};
   public payments: any;
   public paymentJSONArr: PaymentSent[] = [];
@@ -56,6 +56,9 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
   public pageSizeOptions = PAGE_SIZE_OPTIONS;
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
+  public errorMessage = '';
+  public apisCallStatus: ApiCallsListECL = null;
+  public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject()];
 
   constructor(private logger: LoggerService, private commonService: CommonService, private store: Store<fromRTLReducer.RTLState>, private rtlEffects: RTLEffects, private decimalPipe: DecimalPipe, private dataService: DataService, private datePipe: DatePipe) {
@@ -83,11 +86,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      rtlStore.effectErrors.forEach(effectsErr => {
-        if (effectsErr.action === 'FetchPayments') {
-          this.flgLoading[0] = 'error';
-        }
-      });
+      this.errorMessage = '';
+      this.apisCallStatus = rtlStore.apisCallStatus;
+      if (rtlStore.apisCallStatus.FetchPayments.status === APICallStatusEnum.ERROR) {
+        this.errorMessage = (typeof(this.apisCallStatus.FetchPayments.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchPayments.message) : this.apisCallStatus.FetchPayments.message;
+      }
       this.information = rtlStore.information;
       this.selNode = rtlStore.nodeSettings;
       if (rtlStore.payments.sent) {
@@ -125,9 +128,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       // FOR MPP TESTING END
       this.loadPaymentsTable(this.paymentJSONArr);
       setTimeout(() => { this.flgAnimate = false; }, 3000);
-      if (this.flgLoading[0] !== 'error') {
-        this.flgLoading[0] = (this.paymentJSONArr) ? false : true;
-      }
       this.logger.info(rtlStore);
     });
 
@@ -219,7 +219,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
         .subscribe(confirmRes => {
           if (confirmRes) {
             this.paymentDecoded.amount = confirmRes[0].inputValue;
-            this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
             this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, amountMsat: confirmRes[0].inputValue*1000, fromDialog: false}));
             this.resetData();
           }
@@ -245,7 +244,6 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
       .pipe(take(1))
       .subscribe(confirmRes => {
         if (confirmRes) {
-          this.store.dispatch(new RTLActions.OpenSpinner('Sending Payment...'));
           this.store.dispatch(new ECLActions.SendPayment({invoice: this.paymentRequest, fromDialog: false}));
           this.resetData();
         }

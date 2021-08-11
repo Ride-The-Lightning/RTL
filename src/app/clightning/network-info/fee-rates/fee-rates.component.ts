@@ -10,7 +10,7 @@ import { FeeRates, FeeRatePerObj, feeRateStyle } from '../../../shared/models/cl
 export class CLFeeRatesComponent implements AfterContentChecked {
   @Input() feeRateStyle: string;
   @Input() feeRates: FeeRates;
-  @Input() flgLoading: Boolean | 'error';
+  @Input() errorMessage: string;
   perkbw: FeeRatePerObj = {};
 
   constructor() { }

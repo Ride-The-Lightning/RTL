@@ -6,15 +6,9 @@ var options = {};
 arrangeBalances = (body) => {
   if(!body.confirmed) {
     body.confirmed = 0;
-    body.btc_confirmed = 0;
-  } else {
-    body.btc_confirmed = common.convertToBTC(body.confirmed);
   }
   if(!body.unconfirmed) {
     body.unconfirmed = 0;
-    body.btc_unconfirmed = 0;
-  } else {
-    body.btc_unconfirmed = common.convertToBTC(body.unconfirmed);
   }
   body.total = +body.confirmed + +body.unconfirmed;
   body.btc_total = +body.btc_confirmed + +body.btc_unconfirmed;

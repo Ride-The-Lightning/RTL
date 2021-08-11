@@ -9,11 +9,11 @@ import { MatVerticalStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer } from '../../../shared/models/eclModels';
+import { APICallStatusEnum } from '../../../shared/services/consts-enums-functions';
 import { ECLOpenChannelAlert } from '../../../shared/models/alertData';
 import { LoggerService } from '../../../shared/services/logger.service';
 
 import * as ECLActions from '../../store/ecl.actions';
-import * as RTLActions from '../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../store/rtl.reducers';
 
 @Component({
@@ -58,8 +58,8 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
     });    
     this.statusFormGroup = this.formBuilder.group({}); 
     this.actions.pipe(takeUntil(this.unSubs[1]),
-    filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.EFFECT_ERROR_ECL))
-    .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.EffectError)) => {
+    filter((action) => action.type === ECLActions.NEWLY_ADDED_PEER_ECL || action.type === ECLActions.FETCH_CHANNELS_ECL || action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL))
+    .subscribe((action: (ECLActions.NewlyAddedPeer | ECLActions.FetchChannels | ECLActions.UpdateAPICallStatus)) => {
       if (action.type === ECLActions.NEWLY_ADDED_PEER_ECL) { 
         this.logger.info(action.payload);
         this.flgEditable = false;
@@ -70,7 +70,7 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
       if (action.type === ECLActions.FETCH_CHANNELS_ECL) { 
         this.dialogRef.close();
       }
-      if (action.type === ECLActions.EFFECT_ERROR_ECL) { 
+      if (action.type === ECLActions.UPDATE_API_CALL_STATUS_ECL && action.payload.status === APICallStatusEnum.ERROR) { 
         if (action.payload.action === 'SaveNewPeer') {
           this.peerConnectionError = action.payload.message;
         } else if (action.payload.action === 'SaveNewChannel') {
@@ -83,14 +83,12 @@ export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   onConnectPeer():boolean|void {
     if(!this.peerFormGroup.controls.peerAddress.value) { return true; }
     this.peerConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Adding Peer...'));
     this.store.dispatch(new ECLActions.SaveNewPeer({id: this.peerFormGroup.controls.peerAddress.value}));
 }
 
   onOpenChannel():boolean|void {
     if (!this.channelFormGroup.controls.fundingAmount.value || ((this.totalBalance - this.channelFormGroup.controls.fundingAmount.value) < 0)) { return true; }
     this.channelConnectionError = '';
-    this.store.dispatch(new RTLActions.OpenSpinner('Opening Channel...'));
     this.store.dispatch(new ECLActions.SaveNewChannel({
       nodeId: this.newlyAddedPeer.nodeId, amount: this.channelFormGroup.controls.fundingAmount.value, private: this.channelFormGroup.controls.isPrivate.value, feeRate: this.channelFormGroup.controls.feeRate.value
     }));
