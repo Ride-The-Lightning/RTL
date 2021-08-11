@@ -37,8 +37,9 @@ export class ECLEffects implements OnDestroy {
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
         if (
-          rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED
+          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR)
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
         }

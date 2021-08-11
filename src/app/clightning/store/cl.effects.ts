@@ -37,10 +37,10 @@ export class CLEffects implements OnDestroy {
       .pipe(takeUntil(this.unSubs[0]))
       .subscribe((rtlStore) => {
         if (
-          rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED &&
-          rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED
+          (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalance.status === APICallStatusEnum.ERROR) &&
+          (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR)
         ) {
           this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
         }

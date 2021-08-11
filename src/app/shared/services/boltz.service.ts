@@ -30,13 +30,13 @@ export class BoltzService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));
     this.swapUrl = API_URL + environment.BOLTZ_API + '/listSwaps';
     this.httpClient.get(this.swapUrl)
-    .pipe(takeUntil(this.unSubs[0]),
-    map((swapResponse: ListSwaps) => {
+    .pipe(takeUntil(this.unSubs[0]))
+    .subscribe((swapResponse: ListSwaps) => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_BOLTZ_SWAPS));      
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
-    }), catchError(err => {
-      return this.handleErrorWithAlert('List Swaps', UI_MESSAGES.GET_BOLTZ_SWAPS, err);
+    }, (err => {
+      return this.handleErrorWithAlert(UI_MESSAGES.GET_BOLTZ_SWAPS, this.swapUrl, err);
     }));
   }
 
@@ -54,7 +54,7 @@ export class BoltzService implements OnDestroy {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_SERVICE_INFO));
       return res;
     }),
-    catchError(err => this.handleErrorWithAlert('Service Info', UI_MESSAGES.NO_SPINNER, err)));
+    catchError(err => this.handleErrorWithAlert(UI_MESSAGES.GET_SERVICE_INFO, this.swapUrl, err)));
   }
 
   swapOut(amount: number, address: string) {
@@ -75,7 +75,7 @@ export class BoltzService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -117,7 +117,7 @@ export class BoltzService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.errno === 'ECONNREFUSED' || err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.code === 'ECONNREFUSED' || err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

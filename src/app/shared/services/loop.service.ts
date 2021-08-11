@@ -37,7 +37,7 @@ export class LoopService implements OnDestroy {
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
     }, err => {
-      return this.handleErrorWithAlert('Loop Swaps', UI_MESSAGES.GET_LOOP_SWAPS, err);
+      return this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err);
     });
   }
 
@@ -79,7 +79,7 @@ export class LoopService implements OnDestroy {
         return res;
       }),
       catchError(err => {
-        return this.handleErrorWithAlert(this.loopUrl, UI_MESSAGES.GET_TERMS_QUOTES, err);
+        return this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err);
     }));
   }
 
@@ -119,7 +119,7 @@ export class LoopService implements OnDestroy {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
       return res;
     }),catchError(err => {
-      return this.handleErrorWithAlert(this.loopUrl, UI_MESSAGES.GET_TERMS_QUOTES, err);
+      return this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err);
     }));
   }
 
@@ -134,7 +134,7 @@ export class LoopService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -160,7 +160,7 @@ export class LoopService implements OnDestroy {
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
-    } else if (err.error.errno === 'ECONNREFUSED' || err.error.error.errno === 'ECONNREFUSED') {
+    } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

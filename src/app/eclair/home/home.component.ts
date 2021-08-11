@@ -31,7 +31,6 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public faBolt = faBolt;
   public faServer = faServer;
   public faNetworkWired = faNetworkWired;  
-  public flgChildInfoUpdated = false;
   public userPersonaEnum = UserPersonaEnum;
   public channelBalances = {localBalance: 0, remoteBalance: 0, balancedness: 0};
   public selNode: SelNodeChild = {};
@@ -52,7 +51,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
   public operatorCardHeight = '330px';
   public merchantCardHeight = '65px';
   public sortField = 'Balance Score';
-  public errorMessages = ['', '', ''];
+  public errorMessages = ['', '', '', ''];
   public apisCallStatus: ApiCallsListECL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
@@ -110,7 +109,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
     this.store.select('ecl')
     .pipe(takeUntil(this.unSubs[1]))
     .subscribe((rtlStore) => {
-      this.errorMessages = ['', '', ''];
+      this.errorMessages = ['', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
         this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
@@ -121,8 +120,12 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
       if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
         this.errorMessages[2] = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
       }
+      if (rtlStore.apisCallStatus.FetchOnchainBalance.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchOnchainBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchOnchainBalance.message) : this.apisCallStatus.FetchOnchainBalance.message;
+      }
       this.selNode = rtlStore.nodeSettings;
       this.information = rtlStore.information;
+      this.fees = rtlStore.fees;
       this.channels = rtlStore.activeChannels;
       this.onchainBalance = rtlStore.onchainBalance;
       this.balances.onchain = this.onchainBalance.total;
@@ -143,22 +146,7 @@ export class ECLHomeComponent implements OnInit, OnDestroy {
         this.totalInboundLiquidity = this.totalInboundLiquidity + Math.ceil(channel.toRemote);
         this.totalOutboundLiquidity = this.totalOutboundLiquidity + Math.floor(channel.toLocal);
       });
-      if (this.balances.lightning >= 0 && this.balances.onchain >= 0 && this.fees.monthly_fee >= 0) {
-        this.flgChildInfoUpdated = true;
-      } else {
-        this.flgChildInfoUpdated = false;
-      }
       this.logger.info(rtlStore);
-    });
-    this.actions.pipe(takeUntil(this.unSubs[2]),
-    filter((action) => action.type === ECLActions.FETCH_FEES_ECL || action.type === ECLActions.SET_FEES_ECL))
-    .subscribe(action => {
-      if(action.type === ECLActions.FETCH_FEES_ECL) {
-        this.flgChildInfoUpdated = false;
-      }
-      if(action.type === ECLActions.SET_FEES_ECL) {
-        this.flgChildInfoUpdated = true;
-      }
     });
   }
 

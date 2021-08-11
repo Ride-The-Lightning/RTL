@@ -219,6 +219,10 @@
     font-size: 120%;
   }
 
+  .mat-slide-toggle-bar {
+    background-color: mat.get-color-from-palette($background, lightest-background);
+  }
+
   .mat-slide-toggle.mat-disabled {
     opacity: 1;
     & .mat-slide-toggle-content {

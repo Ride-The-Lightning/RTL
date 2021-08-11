@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { ApiCallStatusPayload } from '../../shared/models/apiCallsPayload';
 import { SelNodeChild } from '../../shared/models/RTLconfig';
-import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, PayRequest, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclModels';
+import { GetInfo, Channel, ChannelStats, Fees, Peer, LightningBalance, OnChainBalance, ChannelsStatus, Payments, Route, Transaction, SendPaymentOnChain, Invoice } from '../../shared/models/eclModels';
 
 export const RESET_ECL_STORE = 'RESET_ECL_STORE';
 export const UPDATE_API_CALL_STATUS_ECL = 'UPDATE_API_CALL_STATUS_ECL';

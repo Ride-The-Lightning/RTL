@@ -42,10 +42,10 @@ export class LNDEffects implements OnDestroy {
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
       if (
-        rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED &&
-        rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED
+        (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) &&
+        (rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchBalanceBlockchain.status === APICallStatusEnum.ERROR) &&
+        (rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchAllChannels.status === APICallStatusEnum.ERROR) &&
+        (rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.COMPLETED || rtlStore.apisCallStatus.FetchPendingChannels.status === APICallStatusEnum.ERROR)
       ) {
         this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
       }
@@ -1055,7 +1055,7 @@ export class LNDEffects implements OnDestroy {
     mergeMap((action: LNDActions.ChannelLookup) => {
       this.store.dispatch(new RTLActions.OpenSpinner(action.payload.uiMessage));
       this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'Lookup', status: APICallStatusEnum.INITIATED}));
-      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload)
+      return this.httpClient.get(this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload.channelID)
         .pipe(
           map((resChannel) => {
             this.logger.info(resChannel);
@@ -1067,7 +1067,7 @@ export class LNDEffects implements OnDestroy {
             };
           }),
           catchError((err: any) => {
-            this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload, err);
+            this.handleErrorWithAlert('Lookup', action.payload.uiMessage, 'Channel Lookup Failed', this.CHILD_API_URL + environment.NETWORK_API + '/edge/' + action.payload.channelID, err);
             this.store.dispatch(new LNDActions.SetLookup({}));
             return of({type: RTLActions.VOID});
         }));

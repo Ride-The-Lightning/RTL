@@ -59,6 +59,7 @@ $dark-bright-background: (
   disabled-button-toggle: map_get($dark-grey, 300),
   unselected-chip: map_get($dark-grey, 300),
   disabled-list-option: map_get($dark-grey, 200),
+  lightest-background: map_get($dark-grey, 50),
 );
 
 @function create-dark-bright-theme($primary, $accent, $warn: mat.define-palette(mat.$red-palette)) {
