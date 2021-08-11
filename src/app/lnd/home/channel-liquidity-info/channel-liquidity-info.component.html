@@ -1,4 +1,4 @@
-<div  *ngIf="errorMessage === ''; else errorBlock" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
+<div  *ngIf="errorMessage?.trim() === ''; else errorBlock" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="100" [ngClass]="{'mb-4': screenSize === screenSizeEnum.XS || screenSize === screenSizeEnum.SM, 'mb-2': screenSize === screenSizeEnum.MD, 'mb-1': screenSize === screenSizeEnum.LG || screenSize === screenSizeEnum.XL}">
   <div fxLayout="column" fxFlex="9" fxLayoutAlign="end start">
     <span class="dashboard-capacity-header this-channel-capacity">Total Capacity</span>
     <mat-hint class="font-size-90">{{totalLiquidity | number}} Sats</mat-hint>

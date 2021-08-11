@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch">
+<div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between stretch" *ngIf="errorMessage?.trim() === ''; else errorBlock">
   <div>
     <h4 fxLayoutAlign="start" class="dashboard-info-title">Lightning</h4>
     <div class="overflow-wrap dashboard-info-value">{{balances.lightning | number}} Sats</div>
@@ -14,3 +14,8 @@
     <div class="overflow-wrap dashboard-info-value">{{balances.total | number}} Sats</div>
   </div>
 </div>
+<ng-template #errorBlock>
+  <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between" class="p-2">
+    <p>{{errorMessage}}</p>
+  </div>
+</ng-template>

@@ -15,6 +15,7 @@ export class CLChannelCapacityInfoComponent {
   @Input() channelBalances: {localBalance: number, remoteBalance: number, balancedness: number};
   @Input() allChannels: Channel[];
   @Input() sortBy: string = 'Balance Score';
+  @Input() errorMessage: string;
 
   constructor(private router: Router) {}
 

@@ -33,7 +33,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
   public screenSize = '';
   public screenSizeEnum = ScreenSizeEnum;
   public userPersonaEnum = UserPersonaEnum;
-  public errorMessages = ['', '', '', ''];
+  public errorMessages = ['', '', '', '', '', '', ''];
   public apisCallStatus: ApiCallsListCL = null;
   public apiCallStatusEnum = APICallStatusEnum;  
   private unSubs: Array<Subject<void>> = [new Subject()];
@@ -71,7 +71,7 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
     this.store.select('cl')
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe((rtlStore) => {
-      this.errorMessages = ['', '', '', ''];
+      this.errorMessages = ['', '', '', '', '', '', ''];
       this.apisCallStatus = rtlStore.apisCallStatus;
       if (rtlStore.apisCallStatus.FetchInfo.status === APICallStatusEnum.ERROR) {
         this.errorMessages[0] = (typeof(this.apisCallStatus.FetchInfo.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchInfo.message) : this.apisCallStatus.FetchInfo.message;
@@ -79,11 +79,20 @@ export class CLNetworkInfoComponent implements OnInit, OnDestroy {
       if (rtlStore.apisCallStatus.FetchFees.status === APICallStatusEnum.ERROR) {
         this.errorMessages[1] = (typeof(this.apisCallStatus.FetchFees.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFees.message) : this.apisCallStatus.FetchFees.message;
       }
+      if (rtlStore.apisCallStatus.FetchLocalRemoteBalance.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchLocalRemoteBalance.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchLocalRemoteBalance.message) : this.apisCallStatus.FetchLocalRemoteBalance.message;
+      }
+      if (rtlStore.apisCallStatus.FetchChannels.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchChannels.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchChannels.message) : this.apisCallStatus.FetchChannels.message;
+      }
+      if (rtlStore.apisCallStatus.GetForwardingHistory.status === APICallStatusEnum.ERROR) {
+        this.errorMessages[4] = (typeof(this.apisCallStatus.GetForwardingHistory.message) === 'object') ? JSON.stringify(this.apisCallStatus.GetForwardingHistory.message) : this.apisCallStatus.GetForwardingHistory.message;
+      }
       if (rtlStore.apisCallStatus.FetchFeeRatesperkb.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[2] = (typeof(this.apisCallStatus.FetchFeeRatesperkb.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkb.message) : this.apisCallStatus.FetchFeeRatesperkb.message;
+        this.errorMessages[5] = (typeof(this.apisCallStatus.FetchFeeRatesperkb.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkb.message) : this.apisCallStatus.FetchFeeRatesperkb.message;
       }
       if (rtlStore.apisCallStatus.FetchFeeRatesperkw.status === APICallStatusEnum.ERROR) {
-        this.errorMessages[3] = (typeof(this.apisCallStatus.FetchFeeRatesperkw.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkw.message) : this.apisCallStatus.FetchFeeRatesperkw.message;
+        this.errorMessages[6] = (typeof(this.apisCallStatus.FetchFeeRatesperkw.message) === 'object') ? JSON.stringify(this.apisCallStatus.FetchFeeRatesperkw.message) : this.apisCallStatus.FetchFeeRatesperkw.message;
       }
 
       this.selNode = rtlStore.nodeSettings;

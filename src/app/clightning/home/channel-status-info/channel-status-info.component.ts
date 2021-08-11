@@ -8,6 +8,7 @@ import { ChannelsStatus } from '../../../shared/models/clModels';
 })
 export class CLChannelStatusInfoComponent {
   @Input() channelsStatus: ChannelsStatus = {};
+  @Input() errorMessage: string;
 
   constructor() {}
 
