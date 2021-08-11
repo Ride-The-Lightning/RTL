@@ -29,19 +29,21 @@
         <mat-card-content fxLayout="column" fxFlex="{{card.id === 'capacity' ? 90 : 70}}"
           [ngClass]="{'dashboard-card-content': true, 
           'error-border': (card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.ERROR) ||
-                          ((card.id === 'balance' || card.id === 'capacity' || card.id === 'status') && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR) ||
+                          (card.id === 'balance' && (apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR || apisCallStatus?.FetchOnchainBalance.status === apiCallStatusEnum.ERROR)) ||
+                          ((card.id === 'capacity' || card.id === 'status') && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.ERROR) ||
                           (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.ERROR)}">
           <mat-progress-bar mode="indeterminate"
             *ngIf="(card.id === 'node' && apisCallStatus?.FetchInfo.status === apiCallStatusEnum.INITIATED) ||
-            ((card.id === 'balance' || card.id === 'capacity' || card.id === 'status') && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED) ||
+            (card.id === 'balance' && (apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED || apisCallStatus?.FetchOnchainBalance.status === apiCallStatusEnum.INITIATED)) ||
+            ((card.id === 'capacity' || card.id === 'status') && apisCallStatus?.FetchChannels.status === apiCallStatusEnum.INITIATED) ||
             (card.id === 'fee' && apisCallStatus?.FetchFees.status === apiCallStatusEnum.INITIATED)"
           ></mat-progress-bar>
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-ecl-node-info>
-            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"></rtl-ecl-balances-info>
-            <rtl-ecl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity"></rtl-ecl-channel-capacity-info>
-            <rtl-ecl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees"></rtl-ecl-fee-info>
-            <rtl-ecl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus"></rtl-ecl-channel-status-info>
+            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-capacity-info fxFlex="100" *ngSwitchCase="'capacity'" [sortBy]="sortField" [channelBalances]="channelBalances" [allChannels]="allChannelsCapacity" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-capacity-info>
+            <rtl-ecl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1]"></rtl-ecl-fee-info>
+            <rtl-ecl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-status-info>
             <h3 *ngSwitchDefault>Error! Unable to find information!</h3>
           </div>
         </mat-card-content>
@@ -86,9 +88,9 @@
           ></mat-progress-bar>
           <div [ngSwitch]="card.id" fxLayout="column" fxFlex="100">
             <rtl-ecl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information"></rtl-ecl-node-info>
-            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances"></rtl-ecl-balances-info>
-            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels"></rtl-ecl-channel-liquidity-info>
-            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels"></rtl-ecl-channel-liquidity-info>
+            <rtl-ecl-balances-info fxFlex="100" *ngSwitchCase="'balance'" [balances]="balances" [errorMessage]="errorMessages[2] + ' ' + errorMessages[3]"></rtl-ecl-balances-info>
+            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'inboundLiq'" [direction]="'In'" [totalLiquidity]="totalInboundLiquidity" [allChannels]="allInboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
+            <rtl-ecl-channel-liquidity-info fxFlex="100" *ngSwitchCase="'outboundLiq'" [direction]="'Out'" [totalLiquidity]="totalOutboundLiquidity" [allChannels]="allOutboundChannels" [errorMessage]="errorMessages[2]"></rtl-ecl-channel-liquidity-info>
             <span fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" *ngSwitchCase="'transactions'">
               <mat-tab-group fxLayout="column" class="w-100 dashboard-tabs-group">
                 <mat-tab label="Receive">

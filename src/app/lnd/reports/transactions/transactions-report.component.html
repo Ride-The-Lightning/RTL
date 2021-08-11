@@ -6,7 +6,7 @@
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         <span>Getting transactions data...</span>
       </div>
-      <div class="p-2 error-border" *ngIf="apisCallStatus.FetchLightningTransactions.status === apiCallStatusEnum.ERROR">{{errorMessage}}</div>
+      <div class="p-2 error-border my-2" *ngIf="apisCallStatus.FetchLightningTransactions.status === apiCallStatusEnum.ERROR">{{errorMessage}}</div>
       <div *ngIf="transactionsNonZeroReportData.length > 0 && apisCallStatus.FetchLightningTransactions.status === apiCallStatusEnum.COMPLETED" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" class="font-size-120 font-bold-700 mt-1" [@fadeIn]="transactionsReportSummary">
         <div *ngIf="transactionsReportSummary.paymentsSelectedPeriod > 0" fxLayout="row" fxLayoutAlign="start stretch" fxFlex="100">
           Paid {{(transactionsReportSummary.amountPaidSelectedPeriod / 1000 || 0) | number:'1.0-2'}} Sats/{{transactionsReportSummary.paymentsSelectedPeriod | number}} Payments

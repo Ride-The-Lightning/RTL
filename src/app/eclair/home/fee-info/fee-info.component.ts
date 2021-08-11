@@ -8,6 +8,7 @@ import { Fees } from '../../../shared/models/eclModels';
 })
 export class ECLFeeInfoComponent implements OnChanges {
   @Input() fees: Fees;
+  @Input() errorMessage: string;
   totalFees = [{'name': 'Monthly', 'value': 0}, {'name': 'Weekly', 'value': 0}, {'name': 'Daily', 'value': 0}];
   maxFeeValue = 100;
 

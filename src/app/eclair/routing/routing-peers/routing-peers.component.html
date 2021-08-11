@@ -1,7 +1,7 @@
-<div fxLayout="column" fxLayoutAlign="start stretch" [ngClass]="{'error-border': errorMessage !== '', 'padding-gap': true}">
-  <div class="p-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
+<div fxLayout="column" fxLayoutAlign="start stretch" class="padding-gap">
+  <div class="p-2 error-border my-2" *ngIf="errorMessage !== ''">{{errorMessage}}</div>
   <div *ngIf="errorMessage === ''" fxLayout="column" fxLayout.gt-md="row" fxFlex="100" fxLayoutAlign="space-between stretch" class="page-sub-title-container">
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start end" class="mb-6">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start stretch" class="mb-4">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize === screenSizeEnum.XS, 'mt-1': screenSize === screenSizeEnum.SM}">
         <div fxFlex="70">Incoming</div>
         <mat-form-field fxFlex="30">
@@ -46,14 +46,14 @@
       </div>
       <mat-paginator #paginatorIn [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="screenSize === screenSizeEnum.XS ? false : true" class="mb-1"></mat-paginator>
     </div>
-    <div fxLayout="column" fxFlex="49" fxLayoutAlign="start start">
+    <div fxLayout="column" fxFlex="49" fxLayoutAlign="end stretch" class="mb-4">
       <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="space-between center" fxLayoutAlign="start stretch" class="page-sub-title-container w-100" [ngClass]="{'mt-2': screenSize !== screenSizeEnum.LG}">
         <div fxFlex="70">Outgoing</div>
         <mat-form-field fxFlex="30">
           <input matInput (keyup)="applyOutgoingFilter($event.target)" placeholder="Filter">
         </mat-form-field>
       </div>
-      <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="end start" fxFlex="100" class="table-container">
+      <div [perfectScrollbar] fxLayout="column" fxLayoutAlign="start end" fxFlex="100" class="table-container">
         <mat-progress-bar *ngIf="apisCallStatus?.FetchPayments.status === apiCallStatusEnum.INITIATED" mode="indeterminate"></mat-progress-bar>
         <table mat-table #tableOut fxFlex="100" [dataSource]="RoutingPeersOutgoing" matSort fxFlex="100" class="overflow-auto outgoing-table">
           <ng-container matColumnDef="channelId">
