@@ -15,8 +15,8 @@ describe('CLInvoiceInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLInvoiceInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [CLInvoiceInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

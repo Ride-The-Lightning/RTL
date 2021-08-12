@@ -11,8 +11,8 @@ describe('ECLPaymentInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPaymentInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [ECLPaymentInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         { provide: MatDialogRef, useClass: mockMatDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {payment:{}, sentPaymentInfo:{}} }

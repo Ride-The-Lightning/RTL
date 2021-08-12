@@ -19,7 +19,7 @@ describe('ECLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLTransactionsComponent, CurrencyUnitConverterComponent ],
+      declarations: [ECLTransactionsComponent, CurrencyUnitConverterComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

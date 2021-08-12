@@ -94,7 +94,7 @@ export class CLOnChainUtxosComponent implements OnInit, OnChanges, AfterViewInit
         {key: 'value', value: selUtxo.value, title: 'Value (Sats)', width: 50, type: DataTypeEnum.NUMBER}],
       [{key: 'status', value: this.commonService.titleCase(selUtxo.status), title: 'Status', width: 50, type: DataTypeEnum.STRING},
         {key: 'blockheight', value: selUtxo.blockheight, title: 'Blockheight', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'address', value: selUtxo.address, title: 'Address', width: 100}],
+      [{key: 'address', value: selUtxo.address, title: 'Address', width: 100}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

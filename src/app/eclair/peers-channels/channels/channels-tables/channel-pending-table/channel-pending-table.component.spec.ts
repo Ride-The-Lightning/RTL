@@ -17,7 +17,7 @@ describe('ECLChannelPendingTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelPendingTableComponent ],
+      declarations: [ECLChannelPendingTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -26,7 +26,7 @@ describe('ECLChannelPendingTableComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
  ],
       providers: [
         CommonService,

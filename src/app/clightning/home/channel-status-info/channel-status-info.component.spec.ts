@@ -9,8 +9,8 @@ describe('CLChannelStatusInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelStatusInfoComponent ],
-      imports: [ SharedModule ]
+      declarations: [CLChannelStatusInfoComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

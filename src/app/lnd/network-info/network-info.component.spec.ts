@@ -16,7 +16,7 @@ describe('NetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NetworkInfoComponent ],
+      declarations: [NetworkInfoComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {

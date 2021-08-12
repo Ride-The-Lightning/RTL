@@ -68,7 +68,7 @@ export class HorizontalScrollerComponent {
         if (this.selScrollRange === SCROLL_RANGES[1]) {
           this.selectedValue = new Date(this.selectedValue.getFullYear() + 1, 0, 1, 0, 0, 0);
         } else {
-          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1 , 1, 0, 0, 0);
+          this.selectedValue = new Date(this.selectedValue.getFullYear(), this.selectedValue.getMonth() + 1, 1, 0, 0, 0);
         }
         this.animationDirection = 'forward';
         this.stepChanged.emit({selDate: this.selectedValue, selScrollRange: this.selScrollRange});

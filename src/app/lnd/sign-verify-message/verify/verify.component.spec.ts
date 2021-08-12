@@ -16,7 +16,7 @@ describe('VerifyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ VerifyComponent ],
+      declarations: [VerifyComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

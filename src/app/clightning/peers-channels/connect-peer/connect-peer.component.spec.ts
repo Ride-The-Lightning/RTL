@@ -17,7 +17,7 @@ describe('CLConnectPeerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLConnectPeerComponent ],
+      declarations: [CLConnectPeerComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

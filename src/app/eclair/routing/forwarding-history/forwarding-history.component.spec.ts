@@ -17,7 +17,7 @@ describe('ECLForwardingHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLForwardingHistoryComponent ],
+      declarations: [ECLForwardingHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

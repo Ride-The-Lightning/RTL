@@ -17,7 +17,7 @@ describe('ChannelClosedTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelClosedTableComponent ],
+      declarations: [ChannelClosedTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

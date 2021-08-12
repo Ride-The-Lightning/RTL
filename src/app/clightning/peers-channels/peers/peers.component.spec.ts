@@ -19,7 +19,7 @@ describe('CLPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLPeersComponent ],
+      declarations: [CLPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

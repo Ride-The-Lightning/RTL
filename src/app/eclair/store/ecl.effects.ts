@@ -206,7 +206,7 @@ export class ECLEffects implements OnDestroy {
             this.logger.info(peers);
             this.store.dispatch(new ECLActions.UpdateAPICallStatus({action: 'FetchPeers', status: APICallStatusEnum.COMPLETED}));
             return {
-              type: ECLActions.SET_PEERS_ECL ,
+              type: ECLActions.SET_PEERS_ECL,
               payload: peers && peers.length ? peers : []
             };
           }),

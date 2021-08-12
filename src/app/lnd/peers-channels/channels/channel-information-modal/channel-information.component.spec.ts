@@ -15,8 +15,8 @@ describe('ChannelInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [ChannelInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

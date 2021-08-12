@@ -17,7 +17,7 @@ describe('ECLRoutingPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRoutingPeersComponent ],
+      declarations: [ECLRoutingPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

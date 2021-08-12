@@ -10,8 +10,8 @@ describe('ECLReportsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLReportsComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [ECLReportsComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

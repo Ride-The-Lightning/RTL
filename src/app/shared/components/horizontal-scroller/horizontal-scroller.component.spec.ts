@@ -12,12 +12,12 @@ describe('HorizontalScrollerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HorizontalScrollerComponent ],
+      declarations: [HorizontalScrollerComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ LoggerService ]
+      providers: [LoggerService]
     })
     .compileComponents();
   }));

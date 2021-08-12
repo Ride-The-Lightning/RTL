@@ -14,8 +14,8 @@ describe('ECLChannelLiquidityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelLiquidityInfoComponent ],
-      imports: [ SharedModule, RouterTestingModule ],
+      declarations: [ECLChannelLiquidityInfoComponent],
+      imports: [SharedModule, RouterTestingModule],
       providers: [ 
         CommonService,
         { provide: DataService, useClass: mockDataService }

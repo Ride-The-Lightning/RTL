@@ -18,7 +18,7 @@ describe('BoltzRootComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoltzRootComponent ],
+      declarations: [BoltzRootComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

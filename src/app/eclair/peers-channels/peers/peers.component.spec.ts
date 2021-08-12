@@ -19,7 +19,7 @@ describe('ECLPeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLPeersComponent ],
+      declarations: [ECLPeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

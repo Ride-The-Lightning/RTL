@@ -20,7 +20,7 @@ describe('CLOnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainSendModalComponent ],
+      declarations: [CLOnChainSendModalComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

@@ -18,7 +18,7 @@ describe('TopMenuComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TopMenuComponent ],
+      declarations: [TopMenuComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {

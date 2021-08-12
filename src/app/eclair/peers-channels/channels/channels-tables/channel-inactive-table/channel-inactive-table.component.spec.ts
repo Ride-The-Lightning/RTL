@@ -18,7 +18,7 @@ describe('ECLChannelInactiveTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelInactiveTableComponent ],
+      declarations: [ECLChannelInactiveTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

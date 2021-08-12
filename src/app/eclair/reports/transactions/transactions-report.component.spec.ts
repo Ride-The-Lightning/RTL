@@ -16,7 +16,7 @@ describe('ECLTransactionsReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLTransactionsReportComponent ],
+      declarations: [ECLTransactionsReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

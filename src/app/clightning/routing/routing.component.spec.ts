@@ -10,8 +10,8 @@ describe('CLRoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLRoutingComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [CLRoutingComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

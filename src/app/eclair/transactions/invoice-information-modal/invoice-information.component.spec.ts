@@ -15,8 +15,8 @@ describe('ECLInvoiceInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLInvoiceInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [ECLInvoiceInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

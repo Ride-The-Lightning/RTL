@@ -16,7 +16,7 @@ describe('CurrencyUnitConverterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CurrencyUnitConverterComponent ],
+      declarations: [CurrencyUnitConverterComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -12,7 +12,7 @@ describe('CLOnChainSendComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainSendComponent ],
+      declarations: [CLOnChainSendComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,
@@ -21,7 +21,7 @@ describe('CLOnChainSendComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
  ]
     })
     .compileComponents();

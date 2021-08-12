@@ -18,7 +18,7 @@ describe('ECLChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelOpenTableComponent ],
+      declarations: [ECLChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

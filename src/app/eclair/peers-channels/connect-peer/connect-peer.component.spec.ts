@@ -17,7 +17,7 @@ describe('ECLConnectPeerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLConnectPeerComponent ],
+      declarations: [ECLConnectPeerComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

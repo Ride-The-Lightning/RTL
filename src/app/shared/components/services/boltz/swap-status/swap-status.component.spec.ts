@@ -9,8 +9,8 @@ describe('SwapStatusComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapStatusComponent ],
-      imports: [ SharedModule ]
+      declarations: [SwapStatusComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

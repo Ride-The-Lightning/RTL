@@ -16,7 +16,7 @@ describe('CLOnChainUtxosComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainUtxosComponent ],
+      declarations: [CLOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

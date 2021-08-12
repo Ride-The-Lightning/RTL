@@ -16,7 +16,7 @@ describe('ChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelsTablesComponent ],
+      declarations: [ChannelsTablesComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,
@@ -29,7 +29,7 @@ describe('ChannelsTablesComponent', () => {
         })
       ],
       providers: [ 
-        { provide: LoggerService, useClass: mockLoggerService },  
+        { provide: LoggerService, useClass: mockLoggerService }  
       ]
     })
     .compileComponents();

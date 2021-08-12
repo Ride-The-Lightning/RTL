@@ -15,7 +15,7 @@ describe('ECLOpenChannelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOpenChannelComponent ],
+      declarations: [ECLOpenChannelComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

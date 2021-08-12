@@ -19,7 +19,7 @@ describe('CLChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelOpenTableComponent ],
+      declarations: [CLChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

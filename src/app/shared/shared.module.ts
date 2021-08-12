@@ -127,7 +127,7 @@ export const DEFAULT_DATE_FORMAT: MatDateFormats = {
     dateInput: 'input',
     monthYearLabel: { month: 'short', year: 'numeric' },
     dateA11yLabel: { day: 'numeric', month: 'short', year: 'numeric' },
-    monthYearA11yLabel: { month: 'short', year: 'numeric' },
+    monthYearA11yLabel: { month: 'short', year: 'numeric' }
   }
 };
 

@@ -61,7 +61,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.RESET_CL_STORE:
       return {
         ...initCLState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case CLActions.SET_INFO_CL:
       return {
@@ -124,7 +124,7 @@ export function CLReducer(state = initCLState, action: CLActions.CLActions) {
     case CLActions.SET_CHANNELS_CL:
       return {
         ...state,
-        allChannels: action.payload,
+        allChannels: action.payload
       };
     case CLActions.REMOVE_CHANNEL_CL:
       const modifiedChannels = [...state.allChannels];

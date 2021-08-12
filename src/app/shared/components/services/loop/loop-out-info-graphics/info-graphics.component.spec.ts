@@ -14,7 +14,7 @@ describe('LoopOutInfoGraphicsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopOutInfoGraphicsComponent ],
+      declarations: [LoopOutInfoGraphicsComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule

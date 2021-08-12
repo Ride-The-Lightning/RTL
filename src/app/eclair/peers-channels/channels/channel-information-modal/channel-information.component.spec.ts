@@ -15,8 +15,8 @@ describe('ECLChannelInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [ECLChannelInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

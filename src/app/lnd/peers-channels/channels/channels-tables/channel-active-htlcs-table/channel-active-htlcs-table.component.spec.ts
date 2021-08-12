@@ -17,7 +17,7 @@ describe('ChannelActiveHTLCsTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelActiveHTLCsTableComponent ],
+      declarations: [ChannelActiveHTLCsTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -14,7 +14,7 @@ describe('AppSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppSettingsComponent ],
+      declarations: [AppSettingsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

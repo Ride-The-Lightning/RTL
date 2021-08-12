@@ -15,7 +15,7 @@ describe('CLOnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOnChainReceiveComponent ],
+      declarations: [CLOnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

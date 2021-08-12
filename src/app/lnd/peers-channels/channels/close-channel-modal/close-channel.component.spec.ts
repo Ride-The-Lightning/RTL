@@ -17,7 +17,7 @@ describe('CloseChannelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CloseChannelComponent ],
+      declarations: [CloseChannelComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

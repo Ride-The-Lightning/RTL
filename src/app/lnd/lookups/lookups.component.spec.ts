@@ -18,7 +18,7 @@ describe('LookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LookupsComponent ],
+      declarations: [LookupsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

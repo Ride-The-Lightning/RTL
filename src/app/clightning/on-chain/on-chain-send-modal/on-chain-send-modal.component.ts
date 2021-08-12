@@ -102,9 +102,9 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         this.sendFundFormGroup.controls.transactionFeeRate.setValue(null);
       }
     });
-    combineLatest(
+    combineLatest([
       this.store.select('root'),
-      this.store.select('cl'))
+      this.store.select('cl')])
     .pipe(takeUntil(this.unSubs[0]))
     .subscribe(([rootStore, rtlStore]) => {
       this.fiatConversion = rootStore.selNode.settings.fiatConversion;

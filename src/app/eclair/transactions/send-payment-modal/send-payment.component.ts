@@ -22,7 +22,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-ecl-lightning-send-payments',
   templateUrl: './send-payment.component.html',
-  styleUrls: ['./send-payment.component.scss'],
+  styleUrls: ['./send-payment.component.scss']
 })
 export class ECLLightningSendPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;

@@ -19,7 +19,7 @@ describe('ECLOnChainComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainComponent, CurrencyUnitConverterComponent, ECLOnChainTransactionHistoryComponent ],
+      declarations: [ECLOnChainComponent, CurrencyUnitConverterComponent, ECLOnChainTransactionHistoryComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

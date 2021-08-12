@@ -10,8 +10,8 @@ describe('ECLRoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLRoutingComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [ECLRoutingComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

@@ -17,7 +17,7 @@ describe('ChannelRebalanceComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelRebalanceComponent ],
+      declarations: [ChannelRebalanceComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

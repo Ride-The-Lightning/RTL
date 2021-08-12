@@ -30,7 +30,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./lightning-invoices.component.scss'],
   animations: [newlyAddedRowAnimation],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Invoices') }
   ]  
 })
 export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDestroy {

@@ -13,7 +13,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 
 import { SharedModule } from '../shared/shared.module';
 import { mockActionsData, mockResponseData, mockRTLStoreState } from '../shared/test-helpers/test-data';
-import { mockDataService, mockLoggerService, mockSessionService, mockMatDialogRef, mockHttpClient } from '../shared/test-helpers/mock-services';
+import { mockDataService, mockLoggerService, mockSessionService, mockMatDialogRef } from '../shared/test-helpers/mock-services';
 import { ThemeOverlay } from '../shared/theme/overlay-container/theme-overlay';
 import { CommonService } from '../shared/services/common.service';
 import { SessionService } from '../shared/services/session.service';
@@ -107,7 +107,7 @@ describe('RTL Root Effects', () => {
 
   it('should throw error on dispatch set selected node', (done) => {
     let storeDispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
-    let httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(mockResponseData.error));
+    let httpClientSpy = spyOn(httpClient, 'post').and.returnValue(throwError(() => mockResponseData.error));
     actions = new ReplaySubject(1);
     const setSelectedNodeAction = {
       type: RTLActions.SET_SELECTED_NODE,

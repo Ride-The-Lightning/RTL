@@ -16,7 +16,7 @@ describe('TransactionsReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TransactionsReportComponent ],
+      declarations: [TransactionsReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

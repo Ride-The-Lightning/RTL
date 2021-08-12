@@ -18,7 +18,7 @@ describe('CLQueryRoutesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLQueryRoutesComponent ],
+      declarations: [CLQueryRoutesComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from "@angular/router/testing";
+import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
@@ -23,7 +23,7 @@ describe('CLHomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLHomeComponent, CLNodeInfoComponent, CLBalancesInfoComponent, CLChannelCapacityInfoComponent, CLChannelStatusInfoComponent, CLFeeInfoComponent ],
+      declarations: [CLHomeComponent, CLNodeInfoComponent, CLBalancesInfoComponent, CLChannelCapacityInfoComponent, CLChannelStatusInfoComponent, CLFeeInfoComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

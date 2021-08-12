@@ -24,7 +24,7 @@ describe('HomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HomeComponent, BalancesInfoComponent, ChannelCapacityInfoComponent, ChannelLiquidityInfoComponent, ChannelStatusInfoComponent, FeeInfoComponent, NodeInfoComponent ],
+      declarations: [HomeComponent, BalancesInfoComponent, ChannelCapacityInfoComponent, ChannelLiquidityInfoComponent, ChannelStatusInfoComponent, FeeInfoComponent, NodeInfoComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

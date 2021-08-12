@@ -18,7 +18,7 @@ describe('PeersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PeersComponent ],
+      declarations: [PeersComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

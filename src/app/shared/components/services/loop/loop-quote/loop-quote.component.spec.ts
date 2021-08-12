@@ -10,7 +10,7 @@ describe('LoopQuoteComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopQuoteComponent ],
+      declarations: [LoopQuoteComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule

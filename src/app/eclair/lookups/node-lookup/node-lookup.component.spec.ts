@@ -12,12 +12,12 @@ describe('ECLNodeLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLNodeLookupComponent ],
+      declarations: [ECLNodeLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule
       ],
-      providers: [ LoggerService ]
+      providers: [LoggerService]
     })
     .compileComponents();
   }));

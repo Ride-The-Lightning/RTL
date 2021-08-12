@@ -12,7 +12,7 @@ describe('ChannelLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelLookupComponent ],
+      declarations: [ChannelLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -22,7 +22,7 @@ describe('ChannelLookupComponent', () => {
             strictActionImmutability: false
           }
         })
-      ],
+      ]
     })
     .compileComponents();
   }));

@@ -12,7 +12,7 @@ describe('ECLOnChainSendComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainSendComponent ],
+      declarations: [ECLOnChainSendComponent],
       imports: [
         SharedModule,
         RouterTestingModule,
@@ -21,8 +21,8 @@ describe('ECLOnChainSendComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
- ],
+        })
+ ]
     })
     .compileComponents();
   }));

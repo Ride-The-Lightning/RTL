@@ -18,7 +18,7 @@ describe('AuthSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AuthSettingsComponent ],
+      declarations: [AuthSettingsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -17,7 +17,7 @@ describe('OnChainTransactionHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainTransactionHistoryComponent ],
+      declarations: [OnChainTransactionHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

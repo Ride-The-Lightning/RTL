@@ -18,7 +18,7 @@ describe('ChannelBackupTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelBackupTableComponent ],
+      declarations: [ChannelBackupTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -14,7 +14,7 @@ describe('SwapOutInfoGraphicsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapOutInfoGraphicsComponent ],
+      declarations: [SwapOutInfoGraphicsComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule

@@ -20,7 +20,7 @@ describe('SwapModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapModalComponent ],
+      declarations: [SwapModalComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

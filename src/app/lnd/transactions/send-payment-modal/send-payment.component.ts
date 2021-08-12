@@ -21,7 +21,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 @Component({
   selector: 'rtl-lightning-send-payments',
   templateUrl: './send-payment.component.html',
-  styleUrls: ['./send-payment.component.scss'],
+  styleUrls: ['./send-payment.component.scss']
 })
 export class LightningSendPaymentsComponent implements OnInit, OnDestroy {
   @ViewChild('paymentReq', { static: false }) paymentReq: NgModel;

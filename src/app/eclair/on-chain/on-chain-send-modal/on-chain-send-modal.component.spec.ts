@@ -19,7 +19,7 @@ describe('ECLOnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainSendModalComponent ],
+      declarations: [ECLOnChainSendModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

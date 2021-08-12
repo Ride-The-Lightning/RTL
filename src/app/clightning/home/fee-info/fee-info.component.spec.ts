@@ -9,8 +9,8 @@ describe('CLFeeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFeeInfoComponent ],
-      imports: [ SharedModule ]
+      declarations: [CLFeeInfoComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

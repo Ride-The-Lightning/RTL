@@ -15,7 +15,7 @@ describe('CLOpenChannelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLOpenChannelComponent ],
+      declarations: [CLOpenChannelComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

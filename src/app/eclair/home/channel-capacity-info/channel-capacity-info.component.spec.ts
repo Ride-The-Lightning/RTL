@@ -10,8 +10,8 @@ describe('ECLChannelCapacityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelCapacityInfoComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [ECLChannelCapacityInfoComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

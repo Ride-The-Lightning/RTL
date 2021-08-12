@@ -25,7 +25,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   templateUrl: './peers.component.html',
   styleUrls: ['./peers.component.scss'],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
 export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -51,10 +51,10 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.screenSize = this.commonService.getScreenSize();
     if(this.screenSize === ScreenSizeEnum.XS) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'alias', 'actions'];
+      this.displayedColumns = ['alias', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.SM) {
       this.flgSticky = false;
-      this.displayedColumns = [ 'alias', 'sat_sent', 'sat_recv', 'actions'];
+      this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'actions'];
     } else if(this.screenSize === ScreenSizeEnum.MD) {
       this.flgSticky = false;
       this.displayedColumns = ['alias', 'sat_sent', 'sat_recv', 'ping_time', 'actions'];
@@ -95,7 +95,7 @@ export class PeersComponent implements OnInit, AfterViewInit, OnDestroy {
       [{key: 'address', value: selPeer.address, title: 'Address', width: 100}],
       [{key: 'alias', value: selPeer.alias, title: 'Alias', width: 40}, {key: 'inbound', value: selPeer.inbound ? 'True' : 'False', title: 'Inbound', width: 30}, {key: 'ping_time', value: selPeer.ping_time, title: 'Ping Time', width: 30, type: DataTypeEnum.NUMBER}],
       [{key: 'sat_sent', value: selPeer.sat_sent, title: 'Satoshis Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'sat_recv', value: selPeer.sat_recv, title: 'Satoshis Received', width: 50, type: DataTypeEnum.NUMBER}],
-      [{key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER}],
+      [{key: 'bytes_sent', value: selPeer.bytes_sent, title: 'Bytes Sent', width: 50, type: DataTypeEnum.NUMBER}, {key: 'bytes_recv', value: selPeer.bytes_recv, title: 'Bytes Received', width: 50, type: DataTypeEnum.NUMBER}]
     ];
     this.store.dispatch(new RTLActions.OpenAlert({ data: {
       type: AlertTypeEnum.INFORMATION,

@@ -17,7 +17,7 @@ describe('CLFailedTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFailedTransactionsComponent ],
+      declarations: [CLFailedTransactionsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

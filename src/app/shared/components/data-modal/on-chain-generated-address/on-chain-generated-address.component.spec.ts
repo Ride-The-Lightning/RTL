@@ -15,8 +15,8 @@ describe('OnChainGeneratedAddressComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainGeneratedAddressComponent ],
-      imports: [ SharedModule ],
+      declarations: [OnChainGeneratedAddressComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

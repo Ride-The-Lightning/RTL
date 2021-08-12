@@ -20,7 +20,7 @@ describe('ChannelOpenTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelOpenTableComponent ],
+      declarations: [ChannelOpenTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

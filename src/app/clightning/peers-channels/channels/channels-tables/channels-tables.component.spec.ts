@@ -17,7 +17,7 @@ describe('CLChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLChannelsTablesComponent ],
+      declarations: [CLChannelsTablesComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

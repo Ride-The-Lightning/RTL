@@ -17,7 +17,7 @@ describe('OnChainLabelModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainLabelModalComponent ],
+      declarations: [OnChainLabelModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

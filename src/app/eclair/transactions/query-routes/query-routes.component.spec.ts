@@ -18,7 +18,7 @@ describe('ECLQueryRoutesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLQueryRoutesComponent ],
+      declarations: [ECLQueryRoutesComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

@@ -17,7 +17,7 @@ export interface RootState {
 }
 
 const initNodeSettings = { userPersona: 'OPERATOR', themeMode: 'DAY', themeColor: 'PURPLE', channelBackupPath: '', selCurrencyUnit: 'USD', fiatConversion: false, currencyUnits: ['Sats', 'BTC', 'USD'], bitcoindConfigPath: '' };
-const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '',  };
+const initNodeAuthentication = { configPath: '', swapMacaroonPath: '', boltzMacaroonPath: '' };
 
 export const initRootState: RootState = {
   apisCallStatus: { Login: { status: APICallStatusEnum.UN_INITIATED }, IsAuthorized: { status: APICallStatusEnum.UN_INITIATED } },
@@ -27,7 +27,7 @@ export const initRootState: RootState = {
     selectedNodeIndex: -1,
     sso: { rtlSSO: 0, logoutRedirectLink: '' },
     enable2FA: false,
-    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication}]
+    nodes: [{ settings: initNodeSettings, authentication: initNodeAuthentication }]
   },
   nodeData: {}
 };

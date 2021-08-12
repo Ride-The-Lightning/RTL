@@ -15,8 +15,8 @@ describe('CLNodeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLNodeInfoComponent ],
-      imports: [ SharedModule ],
+      declarations: [CLNodeInfoComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

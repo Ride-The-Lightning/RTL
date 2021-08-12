@@ -10,8 +10,8 @@ describe('BackupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BackupComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [BackupComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

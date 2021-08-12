@@ -16,7 +16,7 @@ describe('CLNetworkInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLNetworkInfoComponent, CLFeeRatesComponent ],
+      declarations: [CLNetworkInfoComponent, CLFeeRatesComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {
@@ -24,7 +24,7 @@ describe('CLNetworkInfoComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
       providers: [
         CommonService,

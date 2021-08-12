@@ -14,7 +14,7 @@ describe('LoginTokenComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginTokenComponent ],
+      declarations: [LoginTokenComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

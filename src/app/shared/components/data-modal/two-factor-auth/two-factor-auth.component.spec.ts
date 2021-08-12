@@ -15,7 +15,7 @@ describe('TwoFactorAuthComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TwoFactorAuthComponent ],
+      declarations: [TwoFactorAuthComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

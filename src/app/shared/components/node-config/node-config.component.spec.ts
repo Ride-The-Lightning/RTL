@@ -12,7 +12,7 @@ describe('NodeConfigComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeConfigComponent ],
+      declarations: [NodeConfigComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule, 

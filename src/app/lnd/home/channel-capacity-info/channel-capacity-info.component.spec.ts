@@ -10,8 +10,8 @@ describe('ChannelCapacityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelCapacityInfoComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [ChannelCapacityInfoComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

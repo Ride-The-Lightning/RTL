@@ -10,8 +10,8 @@ describe('CLSignVerifyMessageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLSignVerifyMessageComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [CLSignVerifyMessageComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

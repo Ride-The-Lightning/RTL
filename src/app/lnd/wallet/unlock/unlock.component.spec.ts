@@ -12,7 +12,7 @@ describe('UnlockWalletComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnlockWalletComponent ],
+      declarations: [UnlockWalletComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

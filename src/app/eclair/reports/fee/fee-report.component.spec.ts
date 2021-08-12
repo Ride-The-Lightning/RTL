@@ -17,7 +17,7 @@ describe('ECLFeeReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLFeeReportComponent ],
+      declarations: [ECLFeeReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

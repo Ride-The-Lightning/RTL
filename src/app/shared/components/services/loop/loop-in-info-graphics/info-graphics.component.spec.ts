@@ -14,7 +14,7 @@ describe('LoopInInfoGraphicsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoopInInfoGraphicsComponent ],
+      declarations: [LoopInInfoGraphicsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule

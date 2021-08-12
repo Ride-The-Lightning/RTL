@@ -17,7 +17,7 @@ describe('CLFeeReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLFeeReportComponent ],
+      declarations: [CLFeeReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

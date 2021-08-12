@@ -14,7 +14,7 @@ describe('CLSignComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLSignComponent ],
+      declarations: [CLSignComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule

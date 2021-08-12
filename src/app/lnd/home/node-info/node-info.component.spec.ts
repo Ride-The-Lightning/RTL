@@ -13,7 +13,7 @@ describe('NodeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeInfoComponent ],
+      declarations: [NodeInfoComponent],
       providers: [
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

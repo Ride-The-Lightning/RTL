@@ -19,7 +19,7 @@ describe('CLTransactionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLTransactionsComponent, CLQueryRoutesComponent ],
+      declarations: [CLTransactionsComponent, CLQueryRoutesComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

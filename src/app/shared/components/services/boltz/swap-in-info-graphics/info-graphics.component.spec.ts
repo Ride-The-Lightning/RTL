@@ -16,7 +16,7 @@ describe('SwapInInfoGraphicsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapInInfoGraphicsComponent ],
+      declarations: [SwapInInfoGraphicsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

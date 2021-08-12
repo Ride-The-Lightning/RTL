@@ -23,7 +23,7 @@ describe('ECLHomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLHomeComponent, ECLNodeInfoComponent, ECLBalancesInfoComponent, ECLChannelCapacityInfoComponent, ECLFeeInfoComponent, ECLChannelStatusInfoComponent ],
+      declarations: [ECLHomeComponent, ECLNodeInfoComponent, ECLBalancesInfoComponent, ECLChannelCapacityInfoComponent, ECLFeeInfoComponent, ECLChannelStatusInfoComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

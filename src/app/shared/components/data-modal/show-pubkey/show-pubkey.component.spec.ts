@@ -15,8 +15,8 @@ describe('ShowPubkeyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ShowPubkeyComponent ],
-      imports: [ SharedModule ],
+      declarations: [ShowPubkeyComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

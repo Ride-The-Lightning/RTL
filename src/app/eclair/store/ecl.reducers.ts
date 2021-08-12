@@ -63,7 +63,7 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.RESET_ECL_STORE:
       return {
         ...initECLState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case ECLActions.SET_INFO_ECL:
       return {
@@ -78,27 +78,27 @@ export function ECLReducer(state = initECLState, action: ECLActions.ECLActions) 
     case ECLActions.SET_ACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        activeChannels: action.payload,
+        activeChannels: action.payload
       };
     case ECLActions.SET_PENDING_CHANNELS_ECL:
       return {
         ...state,
-        pendingChannels: action.payload,
+        pendingChannels: action.payload
       };
     case ECLActions.SET_INACTIVE_CHANNELS_ECL:
       return {
         ...state,
-        inactiveChannels: action.payload,
+        inactiveChannels: action.payload
       };
     case ECLActions.SET_CHANNELS_STATUS_ECL:
       return {
         ...state,
-        channelsStatus: action.payload,
+        channelsStatus: action.payload
       };
     case ECLActions.SET_CHANNEL_STATS_ECL:
       return {
         ...state,
-        channelStats: action.payload,
+        channelStats: action.payload
       };
     case ECLActions.SET_ONCHAIN_BALANCE_ECL:
       return {

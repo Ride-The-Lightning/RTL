@@ -1,13 +1,13 @@
-import { TitleCasePipe } from "@angular/common";
-import { Store } from "@ngrx/store";
+import { TitleCasePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
 import { of, throwError } from 'rxjs';
-import { DataService } from "./data.service";
-import { LoggerService } from "./logger.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { DataService } from './data.service';
+import { LoggerService } from './logger.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { mockResponseData } from '../test-helpers/test-data';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 
-describe("DataService", () => {
+describe('DataService', () => {
   let httpClientSpy: { get: jasmine.Spy };
   let dataService: DataService;
   let store: Store<fromRTLReducer.RTLState>;

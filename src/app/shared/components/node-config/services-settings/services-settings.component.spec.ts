@@ -14,7 +14,7 @@ describe('ServicesSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent ],
+      declarations: [ServicesSettingsComponent, LoopServiceSettingsComponent, BoltzServiceSettingsComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

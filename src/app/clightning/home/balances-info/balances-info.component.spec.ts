@@ -9,8 +9,8 @@ describe('CLBalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLBalancesInfoComponent ],
-      imports: [ SharedModule ]
+      declarations: [CLBalancesInfoComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

@@ -10,9 +10,9 @@ describe('CLNodeLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLNodeLookupComponent ],
-      imports: [ SharedModule ],
-      providers: [ LoggerService ]
+      declarations: [CLNodeLookupComponent],
+      imports: [SharedModule],
+      providers: [LoggerService]
     })
     .compileComponents();
   }));

@@ -43,7 +43,7 @@ export const YEARLY_DATE_FORMATS: MatDateFormats = {
   providers: [
     {provide: DateAdapter, useClass: CustomDateAdapter},
     {provide: MAT_DATE_FORMATS, useValue: MONTHLY_DATE_FORMATS}
-  ],
+  ]
 })
 export class MonthlyDateDirective {}
 
@@ -52,6 +52,6 @@ export class MonthlyDateDirective {}
   providers: [
     {provide: DateAdapter, useClass: CustomDateAdapter},
     {provide: MAT_DATE_FORMATS, useValue: YEARLY_DATE_FORMATS}
-  ],
+  ]
 })
 export class YearlyDateDirective {}

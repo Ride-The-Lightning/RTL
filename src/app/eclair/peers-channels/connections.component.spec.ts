@@ -16,7 +16,7 @@ describe('ECLConnectionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLConnectionsComponent ],
+      declarations: [ECLConnectionsComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

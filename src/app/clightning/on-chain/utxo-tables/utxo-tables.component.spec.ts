@@ -17,7 +17,7 @@ describe('CLUTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLUTXOTablesComponent, CLOnChainUtxosComponent ],
+      declarations: [CLUTXOTablesComponent, CLOnChainUtxosComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

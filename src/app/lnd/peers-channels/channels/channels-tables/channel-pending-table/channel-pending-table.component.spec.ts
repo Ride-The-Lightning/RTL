@@ -17,7 +17,7 @@ describe('ChannelPendingTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelPendingTableComponent ],
+      declarations: [ChannelPendingTableComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

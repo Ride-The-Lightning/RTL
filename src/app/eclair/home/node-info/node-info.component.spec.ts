@@ -12,7 +12,7 @@ describe('ECLNodeInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLNodeInfoComponent ],
+      declarations: [ECLNodeInfoComponent],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

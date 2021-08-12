@@ -11,9 +11,9 @@ describe('NodeLookupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeLookupComponent ],
-      imports: [ SharedModule ],
-      providers: [ LoggerService ]
+      declarations: [NodeLookupComponent],
+      imports: [SharedModule],
+      providers: [LoggerService]
     })
     .compileComponents();
   }));

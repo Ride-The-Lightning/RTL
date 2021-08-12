@@ -119,7 +119,7 @@ export class LoopService implements OnDestroy {
     map(res => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_TERMS_QUOTES));
       return res;
-    }),catchError(err => {
+    }), catchError(err => {
       return this.handleErrorWithAlert(UI_MESSAGES.GET_TERMS_QUOTES, this.loopUrl, err);
     }));
   }

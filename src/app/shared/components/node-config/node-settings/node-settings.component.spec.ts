@@ -17,7 +17,7 @@ describe('NodeSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeSettingsComponent ],
+      declarations: [NodeSettingsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

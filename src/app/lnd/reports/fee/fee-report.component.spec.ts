@@ -17,7 +17,7 @@ describe('FeeReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FeeReportComponent ],
+      declarations: [FeeReportComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

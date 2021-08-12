@@ -10,8 +10,8 @@ describe('CLReportsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLReportsComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [CLReportsComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

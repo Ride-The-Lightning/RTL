@@ -10,7 +10,7 @@ describe('SwapServiceInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwapServiceInfoComponent ],
+      declarations: [SwapServiceInfoComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule

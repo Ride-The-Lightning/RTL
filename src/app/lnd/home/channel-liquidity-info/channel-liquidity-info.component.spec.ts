@@ -18,7 +18,7 @@ describe('ChannelLiquidityInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChannelLiquidityInfoComponent ],
+      declarations: [ChannelLiquidityInfoComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

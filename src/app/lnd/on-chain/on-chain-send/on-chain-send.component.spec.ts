@@ -12,7 +12,7 @@ describe('OnChainSendComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainSendComponent ],
+      declarations: [OnChainSendComponent],
       imports: [ 
         SharedModule,
         RouterTestingModule,

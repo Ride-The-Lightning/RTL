@@ -19,8 +19,8 @@ export const fadeIn = [
     transition('* => *', [         // when the item is changed
         animate(800, keyframes([  // animate for 800 ms
             style ({ opacity: 0, transform: 'translateY(100%)' }),
-            style ({ opacity: 1, transform: 'translateY(0%)' }),
-        ])),
-    ]),
+            style ({ opacity: 1, transform: 'translateY(0%)' })
+        ]))
+    ])
   ])
 ];

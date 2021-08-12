@@ -18,7 +18,7 @@ describe('ConnectPeerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConnectPeerComponent ],
+      declarations: [ConnectPeerComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

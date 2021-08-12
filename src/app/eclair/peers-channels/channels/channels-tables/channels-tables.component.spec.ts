@@ -16,7 +16,7 @@ describe('ECLChannelsTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLChannelsTablesComponent ],
+      declarations: [ECLChannelsTablesComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

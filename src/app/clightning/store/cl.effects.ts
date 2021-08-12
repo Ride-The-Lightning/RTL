@@ -219,7 +219,7 @@ export class CLEffects implements OnDestroy {
             this.logger.info(peers);
             this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'FetchPeers', status: APICallStatusEnum.COMPLETED}));
             return {
-              type: CLActions.SET_PEERS_CL ,
+              type: CLActions.SET_PEERS_CL,
               payload: peers ? peers : []
             };
           }),

@@ -14,7 +14,7 @@ describe('CLVerifyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLVerifyComponent ],
+      declarations: [CLVerifyComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule

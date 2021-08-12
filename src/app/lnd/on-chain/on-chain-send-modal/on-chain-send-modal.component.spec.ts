@@ -20,7 +20,7 @@ describe('OnChainSendModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainSendModalComponent ],
+      declarations: [OnChainSendModalComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

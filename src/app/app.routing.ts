@@ -37,7 +37,7 @@ export const routes: Routes = [
     { path: 'services', component: ServicesSettingsComponent, canActivate: [AuthGuard], children: [
       { path: '', pathMatch: 'full', redirectTo: 'loop' },
       { path: 'loop', component: LoopServiceSettingsComponent, canActivate: [AuthGuard] },
-      { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] },
+      { path: 'boltz', component: BoltzServiceSettingsComponent, canActivate: [AuthGuard] }
     ]},
     { path: 'lnconfig', component: LNPConfigComponent, canActivate: [AuthGuard] }
   ]},
@@ -46,7 +46,7 @@ export const routes: Routes = [
     { path: 'loop', pathMatch: 'full', redirectTo: 'loop/loopout' },
     { path: 'loop/:selTab', component: LoopComponent },
     { path: 'boltz', pathMatch: 'full', redirectTo: 'boltz/swapout' },
-    { path: 'boltz/:selTab', component: BoltzRootComponent },
+    { path: 'boltz/:selTab', component: BoltzRootComponent }
   ]},
   { path: 'help', component: HelpComponent },
   { path: 'login', component: LoginComponent },

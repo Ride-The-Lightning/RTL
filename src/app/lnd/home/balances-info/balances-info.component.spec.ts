@@ -9,8 +9,8 @@ describe('BalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BalancesInfoComponent ],
-      imports: [ SharedModule ]
+      declarations: [BalancesInfoComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

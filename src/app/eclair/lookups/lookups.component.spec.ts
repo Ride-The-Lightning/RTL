@@ -18,7 +18,7 @@ describe('ECLLookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLLookupsComponent ],
+      declarations: [ECLLookupsComponent],
        imports: [
         BrowserAnimationsModule,
          SharedModule,

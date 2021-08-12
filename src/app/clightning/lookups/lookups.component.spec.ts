@@ -19,7 +19,7 @@ describe('CLLookupsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent ],
+      declarations: [CLLookupsComponent, CLNodeLookupComponent, CLChannelLookupComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

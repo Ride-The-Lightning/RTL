@@ -20,7 +20,7 @@ describe('UTXOTablesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent ],
+      declarations: [UTXOTablesComponent, OnChainTransactionHistoryComponent, OnChainUTXOsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

@@ -1,4 +1,4 @@
-import { APICallStatusEnum } from "../services/consts-enums-functions";
+import { APICallStatusEnum } from '../services/consts-enums-functions';
 
 export interface ApiCallStatusPayload {
   action: string;

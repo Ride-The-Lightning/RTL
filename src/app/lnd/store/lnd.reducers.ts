@@ -88,7 +88,7 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.RESET_LND_STORE:
       return {
         ...initLNDState,
-        nodeSettings: action.payload,
+        nodeSettings: action.payload
       };
     case LNDActions.SET_INFO_LND:
       return {
@@ -127,13 +127,13 @@ export function LNDReducer(state = initLNDState, action: LNDActions.LNDActions) 
     case LNDActions.SET_CLOSED_CHANNELS_LND:
       return {
         ...state,
-        closedChannels: action.payload,
+        closedChannels: action.payload
       };
     case LNDActions.SET_PENDING_CHANNELS_LND:
       return {
         ...state,
         pendingChannels: action.payload.channels,
-        numberOfPendingChannels: action.payload.pendingChannels,
+        numberOfPendingChannels: action.payload.pendingChannels
       };
     case LNDActions.SET_ALL_CHANNELS_LND:
       let localBal = 0, remoteBal = 0, activeChannels = 0, inactiveChannels = 0, totalCapacityActive = 0, totalCapacityInactive = 0;

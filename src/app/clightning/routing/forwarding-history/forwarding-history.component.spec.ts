@@ -17,7 +17,7 @@ describe('CLForwardingHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CLForwardingHistoryComponent ],
+      declarations: [CLForwardingHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

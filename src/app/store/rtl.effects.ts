@@ -168,6 +168,8 @@ export class RTLEffects implements OnDestroy {
     }))
   );
 
+
+
   appConfigFetch = createEffect(() => 
     this.actions.pipe(
     ofType(RTLActions.FETCH_RTL_CONFIG),
@@ -207,11 +209,11 @@ export class RTLEffects implements OnDestroy {
           type: RTLActions.VOID
         }
       }
-    },
+    }),
     catchError((err) => {
       this.handleErrorWithoutAlert('FetchRTLConfig', UI_MESSAGES.GET_RTL_CONFIG, err);
       return of({type: RTLActions.VOID});
-    })))
+    }))
   );
 
   settingSave = createEffect(() =>
@@ -283,11 +285,11 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'Update2FASettings', status: APICallStatusEnum.COMPLETED}));
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.UPDATE_UI_SETTINGS));
       return { type: RTLActions.VOID };
-    },
+    }),
     catchError((err) => {
       this.handleErrorWithAlert('Update2FASettings', UI_MESSAGES.UPDATE_UI_SETTINGS, 'Update 2FA Settings Failed!', environment.CONF_API, err);
       return of({type: RTLActions.VOID});
-    })))
+    }))
   );
 
   configFetch = createEffect(() => 
@@ -374,7 +376,7 @@ export class RTLEffects implements OnDestroy {
       return this.httpClient.post(environment.AUTHENTICATE_API, { 
         authenticateWith: (!action.payload.password) ? AuthenticateWith.JWT : AuthenticateWith.PASSWORD,
         authenticationValue: (!action.payload.password) ? (this.sessionService.getItem('token') ? this.sessionService.getItem('token') : '') : action.payload.password,
-        twoFAToken: (action.payload.twoFAToken) ? action.payload.twoFAToken : '',
+        twoFAToken: (action.payload.twoFAToken) ? action.payload.twoFAToken : ''
       })
       .pipe(
         map((postRes: any) => {

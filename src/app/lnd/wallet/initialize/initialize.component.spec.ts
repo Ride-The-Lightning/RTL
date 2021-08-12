@@ -13,7 +13,7 @@ describe('InitializeWalletComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ InitializeWalletComponent ],
+      declarations: [InitializeWalletComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {

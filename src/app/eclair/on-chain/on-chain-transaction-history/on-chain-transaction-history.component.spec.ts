@@ -17,7 +17,7 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainTransactionHistoryComponent ],
+      declarations: [ECLOnChainTransactionHistoryComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,
@@ -26,7 +26,7 @@ describe('ECLOnChainTransactionHistoryComponent', () => {
             strictStateImmutability: false,
             strictActionImmutability: false
           }
-        }),
+        })
       ],
       providers: [ 
         CommonService,

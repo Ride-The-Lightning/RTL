@@ -18,7 +18,7 @@ describe('OnChainUTXOsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainUTXOsComponent ],
+      declarations: [OnChainUTXOsComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

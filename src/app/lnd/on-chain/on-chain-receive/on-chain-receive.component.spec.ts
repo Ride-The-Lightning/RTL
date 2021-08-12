@@ -14,7 +14,7 @@ describe('OnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnChainReceiveComponent ],
+      declarations: [OnChainReceiveComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

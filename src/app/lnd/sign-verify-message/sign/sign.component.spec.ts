@@ -16,7 +16,7 @@ describe('SignComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignComponent ],
+      declarations: [SignComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

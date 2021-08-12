@@ -13,7 +13,7 @@ describe('RoutingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoutingComponent ],
+      declarations: [RoutingComponent],
       imports: [ 
         BrowserAnimationsModule,
         SharedModule,

@@ -1168,7 +1168,7 @@ export class LNDEffects implements OnDestroy {
       testnet: info.testnet,
       chains: info.chains,
       uris: info.uris,
-      version: (!info.version) ? '' : info.version.split(' ')[0],
+      version: (!info.version) ? '' : info.version.split(' ')[0]
     };
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.INITALIZE_NODE_DATA));
     this.store.dispatch(new RTLActions.SetNodeData(node_data));

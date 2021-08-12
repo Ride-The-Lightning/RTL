@@ -6,7 +6,7 @@ export function getPaginatorLabel(field: string) {
   return appPaginator;
 }
 
-export const CURRENCY_UNITS = [ 'Sats', 'BTC' ];
+export const CURRENCY_UNITS = ['Sats', 'BTC'];
 export const CURRENCY_UNIT_FORMATS = { Sats: '1.0-0', BTC: '1.6-6', OTHER: '1.2-2'};
 export const FIAT_CURRENCY_UNITS = [
   {id: 'USD', name: 'USD'}, 
@@ -44,7 +44,7 @@ export const FEE_LIMIT_TYPES = [
 export const FEE_RATE_TYPES = [
   { feeRateId: 'urgent', feeRateType: 'Urgent'},
   { feeRateId: 'normal', feeRateType: 'Normal'},
-  { feeRateId: 'slow', feeRateType: 'Slow'},
+  { feeRateId: 'slow', feeRateType: 'Slow'}
 ]
 
 
@@ -177,7 +177,7 @@ export const MONTHS = [
   {name: 'Dec', days: 31}
 ];
 
-export const SCROLL_RANGES = ['MONTHLY','YEARLY'];
+export const SCROLL_RANGES = ['MONTHLY', 'YEARLY'];
 
 export enum ServicesEnum {
   LOOP = 'LOOP',

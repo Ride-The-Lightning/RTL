@@ -15,8 +15,8 @@ describe('InvoiceInformationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ InvoiceInformationComponent ],
-      imports: [ SharedModule ],
+      declarations: [InvoiceInformationComponent],
+      imports: [SharedModule],
       providers: [ 
         CommonService,
         { provide: LoggerService, useClass: mockLoggerService },

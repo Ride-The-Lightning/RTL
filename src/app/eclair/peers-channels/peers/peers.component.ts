@@ -29,7 +29,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
   styleUrls: ['./peers.component.scss'],
   animations: [newlyAddedRowAnimation],
   providers: [
-    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') },
+    { provide: MatPaginatorIntl, useValue: getPaginatorLabel('Peers') }
   ]
 })
 export class ECLPeersComponent implements OnInit, AfterViewInit, OnDestroy {

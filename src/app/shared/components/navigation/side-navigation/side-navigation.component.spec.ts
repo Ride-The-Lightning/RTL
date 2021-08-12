@@ -19,7 +19,7 @@ describe('SideNavigationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SideNavigationComponent ],
+      declarations: [SideNavigationComponent],
       imports: [
         SharedModule,
         StoreModule.forRoot(RTLReducer, {

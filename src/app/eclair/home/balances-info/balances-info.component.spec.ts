@@ -9,8 +9,8 @@ describe('ECLBalancesInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLBalancesInfoComponent ],
-      imports: [ SharedModule ]
+      declarations: [ECLBalancesInfoComponent],
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

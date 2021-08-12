@@ -17,7 +17,7 @@ describe('BumpFeeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BumpFeeComponent ],
+      declarations: [BumpFeeComponent],
       imports: [
         BrowserAnimationsModule,
         SharedModule,

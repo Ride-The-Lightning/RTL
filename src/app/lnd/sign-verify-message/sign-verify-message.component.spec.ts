@@ -10,8 +10,8 @@ describe('SignVerifyMessageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignVerifyMessageComponent ],
-      imports: [ SharedModule, RouterTestingModule ]
+      declarations: [SignVerifyMessageComponent],
+      imports: [SharedModule, RouterTestingModule]
     })
     .compileComponents();
   }));

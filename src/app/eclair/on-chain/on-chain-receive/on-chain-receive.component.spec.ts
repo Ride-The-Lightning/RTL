@@ -12,7 +12,7 @@ describe('ECLOnChainReceiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ECLOnChainReceiveComponent ],
+      declarations: [ECLOnChainReceiveComponent],
       imports: [
         StoreModule.forRoot(RTLReducer, {
           runtimeChecks: {
