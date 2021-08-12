@@ -79,8 +79,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         this.feeReportData = [];
       }
     }, (err) => {
-      this.errorMessage = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
-      this.errorMessage = (typeof this.errorMessage === 'string') ? this.commonService.titleCase(this.errorMessage) : JSON.stringify(this.errorMessage);
+      this.errorMessage = err;
     });
   }
 

@@ -83,7 +83,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
       }, err => {
         this.transaction.amount = null;
         this.selAmountUnit = CurrencyUnitEnum.SATS;
-        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.amountError = 'Conversion Error: ' + err;
       });
     } else {
       this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
@@ -113,7 +113,7 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
         self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       }, err => {
         self.transaction.amount = null;
-        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.amountError = 'Conversion Error: ' + err;
         this.selAmountUnit = prevSelectedUnit;
         currSelectedUnit = prevSelectedUnit;
       });

@@ -146,12 +146,11 @@
     & .cc-data-title {
       font-size: 80%;
       font-weight: 500;
+      min-width: 14rem;
     }
     & .cc-data-value {
       font-size: 120%;
       color: $foreground-secondary-text;
-      margin-right: 4rem;
-      min-width: 7rem;
     }
   }
   

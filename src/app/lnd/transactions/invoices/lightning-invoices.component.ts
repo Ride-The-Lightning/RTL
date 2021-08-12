@@ -181,7 +181,7 @@ export class LightningInvoicesComponent implements OnInit, AfterViewInit, OnDest
       .subscribe(data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
       }, err => {
-        this.invoiceValueHint = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.invoiceValueHint = 'Conversion Error: ' + err;
       });
     }
   }

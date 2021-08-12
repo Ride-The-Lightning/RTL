@@ -9,6 +9,7 @@ import { Location } from '@angular/common';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
+import { CommonService } from '../../shared/services/common.service';
 import { SessionService } from '../../shared/services/session.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 import { CLInvoiceInformationComponent } from '../transactions/invoice-information-modal/invoice-information.component';
@@ -30,6 +31,7 @@ export class CLEffects implements OnDestroy {
     private httpClient: HttpClient,
     private store: Store<fromRTLReducer.RTLState>,
     private sessionService: SessionService,
+    private commonService: CommonService,
     private logger: LoggerService,
     private router: Router,
     private location: Location) { 
@@ -82,10 +84,10 @@ export class CLEffects implements OnDestroy {
             }
           }),
           catchError((err) => {
-            const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
-            const message = ((err.error && err.error.message) ? err.error.message + ' ' : '') + ((err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error && err.error.error && err.error.error.errno && typeof err.error.error.errno === 'string') ? err.error.error.errno : (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error');
-            this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-            this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);            
+            const code = this.commonService.extractErrorCode(err);
+            const msg = (code === 'ECONNREFUSED') ? 'Unable to Connect to C Lightning Server.' : this.commonService.extractErrorMessage(err);
+            this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg}});
+            this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', {status: code, error: msg});
             return of({type: RTLActions.VOID});
         }));
     }))
@@ -448,36 +450,24 @@ export class CLEffects implements OnDestroy {
       return this.httpClient.post(paymentUrl, action.payload).pipe(
         map((sendRes: any) => {
           this.logger.info(sendRes);
-          if (sendRes.error) {
-            this.logger.error('Error: ' + sendRes.payment_error);
-            const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
-            if (action.payload.fromDialog) {
-              this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', myErr);
-            } else {
-              this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
-            }
-            return {type: RTLActions.VOID};
-          } else {
-            this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
-            this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
-            this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
-            this.store.dispatch(new CLActions.FetchChannels());
-            this.store.dispatch(new CLActions.FetchBalance());
-            this.store.dispatch(new CLActions.FetchPayments());
-            this.store.dispatch(new CLActions.SetDecodedPayment({}));
-            return {
-              type: CLActions.SEND_PAYMENT_STATUS_CL,
-              payload: sendRes
-            };
-          }
+          this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+          this.store.dispatch(new CLActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
+          this.store.dispatch(new RTLActions.OpenSnackBar('Payment Sent Successfully!'));
+          this.store.dispatch(new CLActions.FetchChannels());
+          this.store.dispatch(new CLActions.FetchBalance());
+          this.store.dispatch(new CLActions.FetchPayments());
+          this.store.dispatch(new CLActions.SetDecodedPayment({}));
+          return {
+            type: CLActions.SEND_PAYMENT_STATUS_CL,
+            payload: sendRes
+          };
         }),
         catchError((err: any) => {
           this.logger.error('Error: ' + JSON.stringify(err));
-          const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
           if (action.payload.fromDialog) {
-            this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', myErr);
+            this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
           } else {
-            this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, myErr);
+            this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.PAYMENTS_API, err);
           }
           return of({type: RTLActions.VOID});
         }));
@@ -777,16 +767,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : genericErrorMessage;
+      const errMsg = this.commonService.extractErrorMessage(err, genericErrorMessage);
       this.store.dispatch(new CLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg}));
     }
   }
@@ -800,16 +781,7 @@ export class CLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : 'Unknown Error.';
+      const errMsg = this.commonService.extractErrorMessage(err);
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

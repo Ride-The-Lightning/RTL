@@ -46,8 +46,7 @@ export class OnChainLabelModalComponent implements OnInit, OnDestroy {
       this.snackBar.open('Successfully labelled the UTXO.');
       this.dialogRef.close();
     }, (err) => {
-      this.labelError = err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : err;
-      this.labelError = (typeof this.labelError === 'string') ? this.commonService.titleCase(this.labelError) : JSON.stringify(this.labelError);
+      this.labelError = err;
     });
   }
 

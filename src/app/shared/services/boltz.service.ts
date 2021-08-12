@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { environment, API_URL } from '../../../environments/environment';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
+import { CommonService } from './common.service';
 import { LoggerService } from './logger.service';
 import { AlertTypeEnum, UI_MESSAGES } from './consts-enums-functions';
 import { ListSwaps } from '../models/boltzModels';
@@ -20,7 +21,7 @@ export class BoltzService implements OnDestroy {
   public swapsChanged = new BehaviorSubject<ListSwaps>({});
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {}
 
   getSwapsList() {
     return this.swaps;
@@ -70,44 +71,31 @@ export class BoltzService implements OnDestroy {
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
+    let errMsg = '';
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
+      errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+      errMsg = 'Unable to Connect to Boltz Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
           alertTitle: 'Boltz Not Connected',
-          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Boltz Server.', URL: actionName },
+          message: { code: 'ECONNREFUSED', message: 'Unable to Connect to Boltz Server', URL: actionName },
           component: ErrorMessageComponent
         }
       }));
-    } else if (err.error) {
-      let msg = '';
-      if (err.error.error) {
-        if (typeof(err.error.error) === 'string') {
-          msg = err.error.error;
-        } else {
-          if (err.error.error.code) {
-            msg = msg + 'Code: ' + err.error.error.code + ', ';
-          }
-          if (err.error.error.message) {
-            msg = msg + err.error.error.message;
-          }
-        }
-      } else if (err.error.message) {
-        msg = err.error.message;
-      } else {
-        msg = (typeof(err.error) === 'object') ? JSON.stringify(err.error) : err.error;
-      }
-      return throwError({code: err.status, message: msg});
+    } else {
+      errMsg = this.commonService.extractErrorMessage(err);
     }
-    return throwError(JSON.stringify(err));
+    return throwError(() => new Error(errMsg));
   }
 
   handleErrorWithAlert(uiMessage: string, errURL: string, err: any) {
+    let errMsg = '';
     if (err.status === 401) {
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
@@ -115,9 +103,11 @@ export class BoltzService implements OnDestroy {
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
+      errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.code === 'ECONNREFUSED' || err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+      errMsg = 'Unable to Connect to Boltz Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -127,32 +117,17 @@ export class BoltzService implements OnDestroy {
         }
       }));
     } else {
-      let msg = '';
-      if (err.error.error) {
-        if (typeof(err.error.error) === 'string') {
-          msg = err.error.error;
-        } else {
-          if (err.error.error.code) {
-            msg = msg + 'Code: ' + err.error.error.code + ', ';
-          }
-          if (err.error.error.message) {
-            msg = msg + err.error.error.message;
-          }
-        }
-      } else if (err.error.message) {
-        msg = err.error.message;
-      } else {
-        msg = (typeof(err.error) === 'object') ? JSON.stringify(err.error) : err.error;
-      }
+      errMsg = this.commonService.extractErrorMessage(err);
+      const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error  && err.error.code) ? err.error.code : err.code ? err.code : err.status;
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
-          message: { code: (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status, message: msg != '' ? msg : 'Unknown Error', URL: errURL },
+          message: { code: errCode, message: errMsg, URL: errURL },
           component: ErrorMessageComponent
         }
       }));
     }
-    return throwError(err);
+    return throwError(() => new Error(errMsg));
   }
 
   ngOnDestroy() {

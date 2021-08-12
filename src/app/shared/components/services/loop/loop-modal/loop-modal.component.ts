@@ -136,7 +136,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loopService.listSwaps();
         this.flgEditable = true;
       }, (err) => {
-        this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
+        this.loopStatus = { error: err };
         this.flgEditable = true;
         this.logger.error(err);
       });
@@ -150,7 +150,7 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loopService.listSwaps();
         this.flgEditable = true;
       }, (err) => {
-        this.loopStatus = { error: err.error.error ? err.error.error : err.error ? err.error : err };
+        this.loopStatus = { error: err };
         this.flgEditable = true;
         this.logger.error(err);
       });

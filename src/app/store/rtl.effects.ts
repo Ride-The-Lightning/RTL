@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, Subject, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, catchError, take, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -445,14 +445,14 @@ export class RTLEffects implements OnDestroy {
     { dispatch: false }
   );
 
-  resetPassword = createEffect(() => 
-    this.actions.pipe(
+  resetPassword = createEffect(() =>
+    this.actions.pipe(takeUntil(this.unSubs[1]),
     ofType(RTLActions.RESET_PASSWORD),
     withLatestFrom(this.store.select('root')),
     mergeMap(([action, rootStore]: [RTLActions.ResetPassword, fromRTLReducer.RootState]) => {
       this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'ResetPassword', status: APICallStatusEnum.INITIATED}));
       return this.httpClient.post(environment.AUTHENTICATE_API + '/reset', {currPassword: action.payload.currPassword, newPassword: action.payload.newPassword})
-      .pipe(map((postRes: any) => {
+      .pipe(takeUntil(this.unSubs[0]), map((postRes: any) => {
         this.logger.info(postRes);
         this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: 'ResetPassword', status: APICallStatusEnum.COMPLETED}));
         this.sessionService.setItem('defaultPassword', false);
@@ -516,7 +516,7 @@ export class RTLEffects implements OnDestroy {
           };
         }),
         catchError((err: any) => {
-          this.handleErrorWithAlert('fetchFile', UI_MESSAGES.DOWNLOAD_BACKUP_FILE, err.error.message, environment.CONF_API + '/file' + query, {status: err.error.error.errno, error: err.error.error.code});
+          this.handleErrorWithAlert('fetchFile', UI_MESSAGES.DOWNLOAD_BACKUP_FILE, 'Download Backup File Failed!', environment.CONF_API + '/file' + query, { status: this.commonService.extractErrorNumber(err), error: { error: this.commonService.extractErrorCode(err) }});
           return of({type: RTLActions.VOID});
         }
       ));
@@ -602,17 +602,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : 'Unknown Error.';
-      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg}));
+      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.commonService.extractErrorMessage(err)}));
     }
   }
 
@@ -625,16 +615,7 @@ export class RTLEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : 'Unknown Error.';
+      const errMsg = this.commonService.extractErrorMessage(err);
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: 'ERROR',
           alertTitle: alertTitle,

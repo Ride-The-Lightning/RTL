@@ -122,7 +122,7 @@
   <ng-container *ngTemplateOutlet="paymentStatus.error ? paymentFailedBlock : paymentSuccessfulBlock"></ng-container>
 </ng-template>
 <ng-template #paymentFailedBlock>
-  <div fxLayout="column"><span class="foreground-secondary-text">{{'Error: ' + (paymentStatus.error.error.error ? paymentStatus.error.error.error : paymentStatus.error.error ? paymentStatus.error.error : paymentStatus.error ? paymentStatus.error : 'Unknown')}}</span></div>
+  <div fxLayout="column"><span class="foreground-secondary-text">Error: {{paymentStatus.error}}</span></div>
 </ng-template>
 <ng-template #paymentSuccessfulBlock>
   <div fxLayout="column">

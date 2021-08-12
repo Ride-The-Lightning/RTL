@@ -58,8 +58,7 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
         .subscribe(data => {
           value[CurrencyUnitEnum.OTHER] = data.OTHER;
         }, err => {
-          console.error(err);
-          this.conversionErrorMsg = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+          this.conversionErrorMsg = 'Conversion Error: ' + err;
         });
       } else {
         value[CurrencyUnitEnum.BTC] = value.dataValue;

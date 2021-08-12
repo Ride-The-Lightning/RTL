@@ -106,7 +106,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.flgEditable = true;
         }, 
         error: (err) => {
-          this.swapStatus = { error: (err.error && err.error.error) ? err.error.error : err.error ? err.error : err };
+          this.swapStatus = { error: err };
           this.flgEditable = true;
           this.logger.error(err);
         }
@@ -121,7 +121,7 @@ export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
           this.flgEditable = true;
         },
         error: (err) => {
-        this.swapStatus = { error: (err.error && err.error.error) ? err.error.error : err.error ? err.error : err };
+        this.swapStatus = { error: err };
         this.flgEditable = true;
         this.logger.error(err);
         }

@@ -219,7 +219,7 @@
     font-size: 120%;
   }
 
-  .mat-slide-toggle-bar {
+  .mat-slide-toggle-bar, .mat-step-header .mat-step-icon:not(.mat-step-icon-selected) {
     background-color: mat.get-color-from-palette($background, lightest-background);
   }
 

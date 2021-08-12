@@ -2,18 +2,20 @@ import { Injectable } from '@angular/core';
 import { of, Observable, throwError } from 'rxjs';
 import { take, map, catchError } from 'rxjs/operators';
 
+import { LoggerService } from './logger.service';
 import { DataService } from './data.service';
-import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum } from './consts-enums-functions';
+import { CurrencyUnitEnum, TimeUnitEnum, ScreenSizeEnum, APICallStatusEnum } from './consts-enums-functions';
 
 @Injectable()
 export class CommonService {
   currencyUnits = [];
   CurrencyUnitEnum = CurrencyUnitEnum;
   conversionData = { data: null, last_fetched: null };
+  private ratesAPIStatus = APICallStatusEnum.UN_INITIATED;
   private screenSize = ScreenSizeEnum.MD;
   private containerSize = {width: 1200, height: 800};
 
-  constructor(public dataService: DataService) {}
+  constructor(public dataService: DataService, private logger: LoggerService) {}
 
   getScreenSize() {
     return this.screenSize;
@@ -75,18 +77,21 @@ export class CommonService {
 
   convertCurrency(value: number, from: string, to: string, otherCurrencyUnit: string, fiatConversion: boolean): Observable<any> {
     let latest_date = new Date().valueOf();
-    if(fiatConversion && otherCurrencyUnit && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
+    if(fiatConversion && otherCurrencyUnit && this.ratesAPIStatus !== APICallStatusEnum.INITIATED && (from === CurrencyUnitEnum.OTHER || to === CurrencyUnitEnum.OTHER)) {
       if(this.conversionData.data && this.conversionData.last_fetched && (latest_date < (this.conversionData.last_fetched.valueOf() + 300000))) {
         return of(this.convertWithFiat(value, from, otherCurrencyUnit));
       } else {
+        this.ratesAPIStatus = APICallStatusEnum.INITIATED;
         return this.dataService.getFiatRates().pipe(take(1),
         map((data: any) => {
+          this.ratesAPIStatus = APICallStatusEnum.COMPLETED;
           this.conversionData.data = (data && typeof data === 'object') ? data : (data && typeof data === 'string') ? JSON.parse(data) : {};
           this.conversionData.last_fetched = latest_date;
           return this.convertWithFiat(value, from, otherCurrencyUnit);
         }),
         catchError(err => {
-          return throwError(err);
+          this.ratesAPIStatus = APICallStatusEnum.ERROR;
+          return throwError(() => this.extractErrorMessage(err, 'Currency Conversion Error.'));
         }));
       }
     } else {
@@ -208,10 +213,6 @@ export class CommonService {
     return value;
   }
 
-  // convertTimestampToDate(num: number) {
-  //   return new Date(num * 1000).toUTCString().substring(5, 22).replace(' ', '/').replace(' ', '/').toUpperCase();
-  // };
-
   downloadFile(data: any[], filename: string, fromFormat = '.json', toFormat = '.csv') {
     let blob = new Blob();
     if (fromFormat === '.json') {
@@ -286,4 +287,38 @@ export class CommonService {
     || (+versionsArr[0] === +checkVersionsArr[0] && +versionsArr[1] === +checkVersionsArr[1] && +versionsArr[2] >= +checkVersionsArr[2]);
   }
 
+  extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
+    const msg = this.titleCase(
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
+      (err.error && typeof err.error === 'string') ? err.error : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message : 
+      (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
+    this.logger.info('Error Message: ' + msg);
+    return msg;
+  }
+
+  extractErrorCode(err: any, genericErrorCode: number = 500) {
+    const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : 
+      (err.error && err.error.error && err.error.error.code) ? err.error.error.code : 
+      (err.error && err.error.code) ? err.error.code : 
+      err.code ? err.code : 
+      err.status ? err.status : genericErrorCode;
+    this.logger.info('Error Code: ' + code);
+    return code;
+  }
+
+  extractErrorNumber(err: any, genericErrorNumber: number = 500) {
+    const errNum = (err.error && err.error.error && err.error.error.errno) ? err.error.error.errno : 
+    (err.error && err.error.errno) ? err.error.errno : 
+    err.errno ? err.errno : 
+    err.status ? err.status : genericErrorNumber;
+    this.logger.info('Error Number: ' + errNum);
+    return errNum;
+  }
 }

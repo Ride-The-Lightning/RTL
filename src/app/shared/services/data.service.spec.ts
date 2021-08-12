@@ -1,3 +1,4 @@
+import { TitleCasePipe } from "@angular/common";
 import { Store } from "@ngrx/store";
 import { of, throwError } from 'rxjs';
 import { DataService } from "./data.service";
@@ -12,10 +13,11 @@ describe("DataService", () => {
   let store: Store<fromRTLReducer.RTLState>;
   let logger: LoggerService;
   let snackbar: MatSnackBar;
+  let titleCasePipe: TitleCasePipe;
   
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get', 'post']);
-    dataService = new DataService(httpClientSpy as any, store, logger, snackbar);
+    dataService = new DataService(httpClientSpy as any, store, logger, snackbar, titleCasePipe);
   });
   
   it('should return expected rates (HttpClient called once)', (done: DoneFn) => {

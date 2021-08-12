@@ -187,7 +187,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         }, err => {
           this.transaction.satoshis = null;
           this.selAmountUnit = CurrencyUnitEnum.SATS;
-          this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+          this.amountError = 'Conversion Error: ' + err;
         });
       } else {
         this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
@@ -278,7 +278,7 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
         self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
       }, err => {
         self.transaction.satoshis = null;
-        this.amountError = 'Conversion Error: ' + (err.error && err.error.error && err.error.error.error ? err.error.error.error : err.error && err.error.error ? err.error.error : err.error ? err.error : 'Currency Conversion Error');
+        this.amountError = 'Conversion Error: ' + err;
         this.selAmountUnit = prevSelectedUnit;
         currSelectedUnit = prevSelectedUnit;
       });

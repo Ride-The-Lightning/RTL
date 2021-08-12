@@ -2,10 +2,11 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { CommonService } from '../../../shared/services/common.service';
+import { DataService } from '../../../shared/services/data.service';
+import { LoggerService } from '../../../shared/services/logger.service';
 import { mockDataService, mockLoggerService } from '../../../shared/test-helpers/mock-services';
 
 import { CLNodeInfoComponent } from './node-info.component';
-import { DataService } from '../../../shared/services/data.service';
 
 describe('CLNodeInfoComponent', () => {
   let component: CLNodeInfoComponent;
@@ -18,6 +19,7 @@ describe('CLNodeInfoComponent', () => {
       imports: [ SharedModule ],
       providers: [ 
         CommonService,
+        { provide: LoggerService, useClass: mockLoggerService },
         { provide: DataService, useClass: mockDataService }
       ]
     })

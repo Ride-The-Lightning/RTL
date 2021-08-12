@@ -102,10 +102,10 @@ export class LNDEffects implements OnDestroy {
               this.router.navigate(['/lnd/wallet']);
               this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
             } else {
-              const code = (err.error && err.error.error && err.error.error.message && err.error.error.message.code) ? err.error.error.message.code : (err.error && err.error.error && err.error.error.code) ? err.error.error.code : err.status ? err.status : '';
-              const message = (err.error.message ? err.error.message + ' ' : '') + ((err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error');
-              this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: message }});
-              this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', err);
+              const code = this.commonService.extractErrorCode(err);
+              const msg = (code === 'ECONNREFUSED') ? 'Unable to Connect to LND Server.' : this.commonService.extractErrorMessage(err);
+              this.router.navigate(['/error'], { state: { errorCode: code, errorMessage: msg }});
+              this.handleErrorWithoutAlert('FetchInfo', UI_MESSAGES.GET_NODE_INFO, 'Fetching Node Info Failed.', {status: code, error: msg});
             }
             return of({type: RTLActions.VOID});
           })
@@ -693,22 +693,20 @@ export class LNDEffects implements OnDestroy {
         .pipe(
           map((sendRes: any) => {
             this.logger.info(sendRes);
+            this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
+            this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
             if (sendRes.payment_error) {
-              if (action.payload.allowSelfPayment) {
-                this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
-                this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
+              if (action.payload.allowSelfPayment) { 
                 this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
                 return {
                   type: LNDActions.SEND_PAYMENT_STATUS_LND,
                   payload: sendRes
                 };
               } else {
-                this.logger.error('Error: ' + sendRes.payment_error);
-                const myErr = {status: sendRes.payment_error.status, error: sendRes.payment_error.error && sendRes.payment_error.error.error && typeof(sendRes.payment_error.error.error) === 'object' ? sendRes.payment_error.error.error : {error: sendRes.payment_error.error && sendRes.payment_error.error.error ? sendRes.payment_error.error.error : 'Unknown Error'}};
                 if (action.payload.fromDialog) {
-                  this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', myErr);
+                  this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', sendRes.payment_error);
                 } else {
-                  this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+                  this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', sendRes.payment_error);
                 }
                 return {type: RTLActions.VOID};
               }
@@ -730,24 +728,22 @@ export class LNDEffects implements OnDestroy {
                 type: LNDActions.SEND_PAYMENT_STATUS_LND,
                 payload: sendRes
               };
-            }
+            }            
           }),
           catchError((err: any) => {
+            this.logger.error('Error: ' + JSON.stringify(err));
             if (action.payload.allowSelfPayment) {
-              this.store.dispatch(new RTLActions.CloseSpinner(action.payload.uiMessage));
-              this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: 'SendPayment', status: APICallStatusEnum.COMPLETED}));
+              this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
               this.store.dispatch(new LNDActions.FetchInvoices({ num_max_invoices: PAGE_SIZE, reversed: true }));
               return of({
                 type: LNDActions.SEND_PAYMENT_STATUS_LND,
-                payload: err
+                payload: {error: this.commonService.extractErrorMessage(err) }
               });
             } else {
-              this.logger.error('Error: ' + JSON.stringify(err));
-              const myErr = {status: err.status, error: err.error && err.error.error && typeof(err.error.error) === 'object' ? err.error.error : {error: err.error && err.error.error ? err.error.error : 'Unknown Error'}};
               if (action.payload.fromDialog) {
-                this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', myErr);
+                this.handleErrorWithoutAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed.', err);
               } else {
-                this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', myErr);
+                this.handleErrorWithAlert('SendPayment', action.payload.uiMessage, 'Send Payment Failed', this.CHILD_API_URL + environment.CHANNELS_API + '/transactions', err);
               }
               return of({type: RTLActions.VOID});
             }
@@ -1207,17 +1203,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : genericErrorMessage;
-      this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg}));
+      this.store.dispatch(new LNDActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.commonService.extractErrorMessage(err, genericErrorMessage)}));
     }
   }
 
@@ -1230,16 +1216,7 @@ export class LNDEffects implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
-      const errMsg = (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
-        (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
-        (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
-        (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
-        (err.error.error && typeof err.error.error === 'string') ? err.error.error : 
-        (err.error.message && typeof err.error.message === 'string') ? err.error.message : 
-        typeof err.error === 'string' ? err.error : 'Unknown Error.';
+      const errMsg = this.commonService.extractErrorMessage(err);
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',

@@ -173,7 +173,7 @@ export class ChannelRebalanceComponent implements OnInit, OnDestroy {
   }
 
   findUnsettledInvoice() {
-    return this.invoices.invoices.find(invoice => (invoice.settle_date === 0 || !invoice.settle_date) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
+    return this.invoices.invoices.find(invoice => (+invoice.settle_date === 0 || !invoice.settle_date) && invoice.memo === 'Local-Rebalance-' + this.inputFormGroup.controls.rebalanceAmount.value + '-Sats' && invoice.state !== 'CANCELED');
   }
 
   sendPayment(payReq: string) {

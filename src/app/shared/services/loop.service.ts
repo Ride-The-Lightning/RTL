@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { environment, API_URL } from '../../../environments/environment';
 import { AlertTypeEnum, UI_MESSAGES } from '../../shared/services/consts-enums-functions';
 import { LoopSwapStatus } from '../models/loopModels';
+import { CommonService } from './common.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { ErrorMessageComponent } from '../../shared/components/data-modal/error-message/error-message.component';
 
@@ -21,7 +22,7 @@ export class LoopService implements OnDestroy {
   public swapsChanged = new BehaviorSubject<LoopSwapStatus[]>([]);
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>) {}
+  constructor(private httpClient: HttpClient, private logger: LoggerService, private store: Store<fromRTLReducer.RTLState>, private commonService: CommonService) {}
 
   getSwapsList() {
     return this.swaps;
@@ -129,12 +130,15 @@ export class LoopService implements OnDestroy {
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
+    let errMsg = '';
     this.logger.error('ERROR IN: ' + actionName + '\n' + JSON.stringify(err));
     this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
+      errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+      errMsg = 'Unable to Connect to Loop Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -143,24 +147,22 @@ export class LoopService implements OnDestroy {
           component: ErrorMessageComponent
         }
       }));
+    } else {
+      errMsg = this.commonService.extractErrorMessage(err);
     }
-    return throwError(err);
+    return throwError(() => new Error(errMsg));
   }
 
   handleErrorWithAlert(uiMessage: string, errURL: string, err: any) {
-    if (err.status === 401) {
-      this.logger.info('Redirecting to Login');
-      this.store.dispatch(new RTLActions.Logout());
-    }
-    err.message = (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error :
-      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error :
-      (err.error && typeof err.error === 'string') ? err.error : 'Unknown Error';
+    let errMsg = '';
     this.logger.error(err);
     this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
     if (err.status === 401) {
+      errMsg = 'Unauthorized User.';
       this.logger.info('Redirecting to Login');
       this.store.dispatch(new RTLActions.Logout());
     } else if (err.error.code === 'ECONNREFUSED' || err.error.error.code === 'ECONNREFUSED') {
+      errMsg = 'Unable to Connect to Loop Server.';
       this.store.dispatch(new RTLActions.OpenAlert({
         data: {
           type: 'ERROR',
@@ -170,15 +172,17 @@ export class LoopService implements OnDestroy {
         }
       }));
     } else {
+      errMsg = this.commonService.extractErrorMessage(err);
+      const errCode = (err.error && err.error.error && err.error.error.code) ? err.error.error.code : (err.error  && err.error.code) ? err.error.code : err.code ? err.code : err.status;
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: AlertTypeEnum.ERROR,
           alertTitle: 'ERROR',
-          message: { code: err.code ? err.code : err.status, message: err.message ? err.message : 'Unknown Error', URL: errURL },
+          message: { code: errCode, message: errMsg, URL: errURL },
           component: ErrorMessageComponent
         }
       }));
     }
-    return throwError(err);
+    return throwError(() => new Error(errMsg));
   }
 
   ngOnDestroy() {

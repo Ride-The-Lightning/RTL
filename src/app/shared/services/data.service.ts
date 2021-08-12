@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { TitleCasePipe } from '@angular/common';
 import { Subject, throwError, of } from 'rxjs';
 import { map, takeUntil, catchError, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -7,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { LoggerService } from '../../shared/services/logger.service';
 import { environment, API_URL } from '../../../environments/environment';
-
+import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
 import { SwitchReq } from '../models/lndModels';
 import { ErrorMessageComponent } from '../components/data-modal/error-message/error-message.component';
 
@@ -15,7 +16,6 @@ import * as RTLActions from '../../store/rtl.actions';
 import * as fromRTLReducer from '../../store/rtl.reducers';
 import * as fromLNDReducers from '../../lnd/store/lnd.reducers';
 import * as LNDActions from '../../lnd/store/lnd.actions';
-import { APICallStatusEnum, UI_MESSAGES } from './consts-enums-functions';
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -23,7 +23,7 @@ export class DataService implements OnDestroy {
   private childAPIUrl = API_URL;
   private unSubs: Array<Subject<void>> = [new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject(), new Subject()];
 
-  constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar) {}
+  constructor(private httpClient: HttpClient, private store: Store<fromRTLReducer.RTLState>, private logger: LoggerService, private snackBar: MatSnackBar, private titleCasePipe: TitleCasePipe) {}
 
   getChildAPIUrl() {
     return this.childAPIUrl;
@@ -71,7 +71,7 @@ export class DataService implements OnDestroy {
       } else {
         this.handleErrorWithAlert('decodePaymentData', UI_MESSAGES.DECODE_PAYMENT, 'Decode Payment Failed', this.childAPIUrl + environment.PAYREQUEST_API, err);
       }
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
   }
 
@@ -91,7 +91,7 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('decodePaymentsData', msg, msg + ' Failed', url, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
   }
 
@@ -114,7 +114,7 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('signMessageData', UI_MESSAGES.SIGN_MESSAGE, 'Sign Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/sign', err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
   }
 
@@ -128,7 +128,7 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('verifyMessageData', UI_MESSAGES.VERIFY_MESSAGE, 'Verify Message Failed', this.childAPIUrl + environment.MESSAGE_API + '/verify', err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));    
   }
 
@@ -146,7 +146,7 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithoutAlert('Bump Fee', UI_MESSAGES.BUMP_FEE, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
   }
 
@@ -158,9 +158,9 @@ export class DataService implements OnDestroy {
     map(res => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LABEL_UTXO));
       return res;
-    }, (err) => {
-      this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LABEL_UTXO));
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+    }), catchError(err => {
+      this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LABEL_UTXO, err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
   }
 
@@ -178,7 +178,7 @@ export class DataService implements OnDestroy {
       this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().substring(4, 21).replace(' ', '/').replace(' ', '/').toUpperCase() + '.');
     }, err => {
       this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LEASE_UTXO, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     });
   }
 
@@ -220,8 +220,22 @@ export class DataService implements OnDestroy {
     }),
     catchError(err => {
       this.handleErrorWithAlert('getForwardingHistoryData', UI_MESSAGES.GET_FEE_REPORT, 'Forwarding History Failed', this.childAPIUrl + environment.SWITCH_API, err);
-      return throwError(err.error && err.error.error ? err.error.error : err.error ? err.error : err);
+      return throwError(() => new Error(this.extractErrorMessage(err)));
     }));
+  }
+
+  extractErrorMessage(err: any, genericErrorMessage: string = 'Unknown Error.') {
+    return this.titleCasePipe.transform(
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : 
+      (err.error && err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : 
+      (err.error && err.error.error && typeof err.error.error === 'string') ? err.error.error : 
+      (err.error && typeof err.error === 'string') ? err.error : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : 
+      (err.error && err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : 
+      (err.error && err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : 
+      (err.error && err.error.message && typeof err.error.message === 'string') ? err.error.message : 
+      (err.message && typeof err.message === 'string') ? err.message : genericErrorMessage);
   }
 
   handleErrorWithoutAlert(actionName: string, uiMessage: string, err: { status: number, error: any }) {
@@ -232,8 +246,8 @@ export class DataService implements OnDestroy {
       this.store.dispatch(new RTLActions.Logout());
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
-      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));      
-      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.error && typeof err.error.error === 'string') ? err.error.error : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error.'}));
+      this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: this.extractErrorMessage(err)}));
     }
   }
 
@@ -246,14 +260,15 @@ export class DataService implements OnDestroy {
       this.store.dispatch(new RTLActions.OpenSnackBar('Authentication Failed. Redirecting to Login.'));
     } else {
       this.store.dispatch(new RTLActions.CloseSpinner(uiMessage));
+      const errMsg = this.extractErrorMessage(err);
       this.store.dispatch(new RTLActions.OpenAlert({data: {
           type: 'ERROR',
           alertTitle: alertTitle,
-          message: { code: err.status ? err.status : 'Unknown Error', message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.error && typeof err.error.error.error.error.error === 'string') ? err.error.error.error.error.error : (err.error.error && err.error.error.error && err.error.error.error.error && typeof err.error.error.error.error === 'string') ? err.error.error.error.error : (err.error.error && err.error.error.error && typeof err.error.error.error === 'string') ? err.error.error.error : (err.error.error && typeof err.error.error === 'string') ? err.error.error : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL },
+          message: { code: err.status ? err.status : 'Unknown Error', message: errMsg, URL: errURL },
           component: ErrorMessageComponent
         }
       }));
-      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: (err.error.error && err.error.error.error && err.error.error.error.error && err.error.error.error.error.message && typeof err.error.error.error.error.message === 'string') ? err.error.error.error.error.message : (err.error.error && err.error.error.error && err.error.error.error.message && typeof err.error.error.error.message === 'string') ? err.error.error.error.message : (err.error.error && err.error.error.message && typeof err.error.error.message === 'string') ? err.error.error.message : (err.error.message && typeof err.error.message === 'string') ? err.error.message : typeof err.error === 'string' ? err.error : 'Unknown Error', URL: errURL}));
+      this.store.dispatch(new RTLActions.UpdateAPICallStatus({action: actionName, status: APICallStatusEnum.ERROR, statusCode: err.status.toString(), message: errMsg, URL: errURL}));
     }
   }
 
