@@ -28,8 +28,8 @@
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>
                 <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cl-channel-status-info>
                 <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[6]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[6]"></rtl-cl-fee-rates>
               </div>
             </mat-card-content>
           </mat-card>
@@ -66,8 +66,8 @@
                 <rtl-cl-node-info fxFlex="100" *ngSwitchCase="'node'" [information]="information" [showColorFieldSeparately]="false"></rtl-cl-node-info>
                 <rtl-cl-channel-status-info fxFlex="100" *ngSwitchCase="'status'" [channelsStatus]="channelsStatus" [errorMessage]="errorMessages[0] + ' ' + errorMessages[2]"></rtl-cl-channel-status-info>
                 <rtl-cl-fee-info fxFlex="100" *ngSwitchCase="'fee'" [fees]="fees" [errorMessage]="errorMessages[1] + ' ' + errorMessages[3] + ' ' + errorMessages[4]"></rtl-cl-fee-info>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkb.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
-                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [flgLoading]="apisCallStatus?.FetchFeeRatesperkw.status === apiCallStatusEnum.INITIATED" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKB'" [feeRates]="feeRatesPerKB" [feeRateStyle]="'KB'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
+                <rtl-cl-fee-rates *ngSwitchCase="'feeRatesKW'" [feeRates]="feeRatesPerKW" [feeRateStyle]="'KW'" class="h-100" [errorMessage]="errorMessages[5]"></rtl-cl-fee-rates>
               </div>
             </mat-card-content>
           </mat-card>
