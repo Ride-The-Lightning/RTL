@@ -551,17 +551,14 @@ export class RTLEffects implements OnDestroy {
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
         case 'CLT':
-          // this.router.navigate(['/cl/' + landingPage.toLowerCase()]);
           this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
           break;
 
         case 'ECL':
-          // this.router.navigate(['/ecl/' + landingPage.toLowerCase()]);
           this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
           break;
             
         default:
-          // this.router.navigate(['/lnd/' + landingPage.toLowerCase()]);
           this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
           break;
       }

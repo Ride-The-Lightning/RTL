@@ -43,14 +43,14 @@ export class BoltzRootComponent implements OnInit, OnDestroy {
     });
     this.boltzService.swapsChanged
     .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((swaps: ListSwaps) => {
+    .subscribe({next: (swaps: ListSwaps) => {
       this.swaps = swaps;
       this.swapsData = (this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? swaps.swaps : swaps.reverseSwaps;
       this.flgLoading[0] = false;
-    }, (err) => {
+    }, error: (err) => {
       this.flgLoading[0] = 'error';
       this.emptyTableMessage = err.message ? err.message : 'No swap ' + ((this.selectedSwapType === SwapTypeEnum.SWAP_IN) ? 'in' : 'out') +  ' available.';
-    });
+    }});
   }
 
   onSelectedIndexChange(activeTab: any) {

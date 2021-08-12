@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Actions } from '@ngrx/effects';
@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../../store/rtl.reducers';
   styleUrls: ['./channel-rebalance.component.scss']
 })
 export class ChannelRebalanceComponent implements OnInit, OnDestroy {
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
   public invoices: ListInvoices = {};
   public selChannel: Channel = {};

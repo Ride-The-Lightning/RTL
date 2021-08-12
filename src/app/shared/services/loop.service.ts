@@ -33,13 +33,13 @@ export class LoopService implements OnDestroy {
     this.loopUrl = this.CHILD_API_URL + environment.LOOP_API + '/swaps';
     this.httpClient.get(this.loopUrl)
     .pipe(takeUntil(this.unSubs[0]))
-    .subscribe((swapResponse: LoopSwapStatus[]) => {
+    .subscribe({next: (swapResponse: LoopSwapStatus[]) => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.GET_LOOP_SWAPS));      
       this.swaps = swapResponse;
       this.swapsChanged.next(this.swaps);
-    }, err => {
+    }, error: err => {
       return this.handleErrorWithAlert(UI_MESSAGES.GET_LOOP_SWAPS, this.loopUrl, err);
-    });
+    }});
   }
 
   loopOut(amount: number, chanId: string, targetConf: number, swapRoutingFee: number, minerFee: number, prepayRoutingFee: number, prepayAmt: number, swapFee: number, swapPublicationDeadline: number, destAddress: string) {

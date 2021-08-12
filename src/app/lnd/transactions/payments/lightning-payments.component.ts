@@ -226,11 +226,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
           if(this.selNode.fiatConversion) {
             this.commonService.convertCurrency(+this.paymentDecoded.num_satoshis, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[2]))
-            .subscribe(data => {
+            .subscribe({next: data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error => {
+            }, error: error => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            });
+            }});
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.num_satoshis ? this.paymentDecoded.num_satoshis : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
@@ -292,11 +292,11 @@ export class LightningPaymentsComponent implements OnInit, AfterViewInit, OnDest
   onHTLCClick(selHtlc: PaymentHTLC, selPayment: Payment) {
     if (selPayment.payment_request && selPayment.payment_request.trim() !== '') {
       this.dataService.decodePayment(selPayment.payment_request, false)
-      .pipe(take(1)).subscribe((decodedPayment: PayRequest) => {
+      .pipe(take(1)).subscribe({next: (decodedPayment: PayRequest) => {
         this.showHTLCView(selHtlc, selPayment, decodedPayment);
-      }, (error) => {
+      }, error: (error) => {
         this.showHTLCView(selHtlc, selPayment, null);
-      });
+      }});
     } else {
       this.showHTLCView(selHtlc, selPayment, null);
     }

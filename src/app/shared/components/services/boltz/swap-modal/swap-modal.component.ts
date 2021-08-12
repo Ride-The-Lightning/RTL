@@ -5,7 +5,7 @@ import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,7 +26,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   animations: [opacityAnimation]
 })
 export class SwapModalComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
   public serviceInfo: ServiceInfo = {fees: {'percentage': null, 'miner': {'normal': null, 'reverse': null}}, 'limits': {'minimal': 10000, 'maximal': 50000000 }};
   public swapTypeEnum = SwapTypeEnum;

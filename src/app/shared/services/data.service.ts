@@ -169,17 +169,17 @@ export class DataService implements OnDestroy {
     this.store.dispatch(new RTLActions.OpenSpinner(UI_MESSAGES.LEASE_UTXO));
     return this.httpClient.post(this.childAPIUrl + environment.WALLET_API + '/lease', leaseBody)
     .pipe(takeUntil(this.unSubs[6]))
-    .subscribe((res: any) => {
+    .subscribe({next: (res: any) => {
       this.store.dispatch(new RTLActions.CloseSpinner(UI_MESSAGES.LEASE_UTXO));
       this.store.dispatch(new LNDActions.FetchTransactions());
       this.store.dispatch(new LNDActions.FetchUTXOs());
       const expirationDate = new Date(res.expiration * 1000);
       const expiryDateInSeconds = Math.round(expirationDate.getTime()) - (expirationDate.getTimezoneOffset() * 60);
       this.snackBar.open('The UTXO has been leased till ' + new Date(expiryDateInSeconds).toString().substring(4, 21).replace(' ', '/').replace(' ', '/').toUpperCase() + '.');
-    }, err => {
+    }, error: err => {
       this.handleErrorWithoutAlert('Lease UTXO', UI_MESSAGES.LEASE_UTXO, err);
       return throwError(() => new Error(this.extractErrorMessage(err)));
-    });
+    }});
   }
 
   getForwardingHistory(start: string, end: string) {

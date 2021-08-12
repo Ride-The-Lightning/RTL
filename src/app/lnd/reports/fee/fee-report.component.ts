@@ -68,7 +68,7 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
     const startDateInSeconds = Math.round(start.getTime()/1000).toString();
     const endDateInSeconds = Math.round(end.getTime()/1000).toString();
     this.dataService.getForwardingHistory(startDateInSeconds, endDateInSeconds)
-    .pipe(takeUntil(this.unSubs[1])).subscribe(res => {
+    .pipe(takeUntil(this.unSubs[1])).subscribe({next: res => {
       this.errorMessage = '';
       if (res.forwarding_events && res.forwarding_events.length) {
         res.forwarding_events = res.forwarding_events.reverse();
@@ -78,9 +78,9 @@ export class FeeReportComponent implements OnInit, AfterContentInit, OnDestroy {
         this.events = {};
         this.feeReportData = [];
       }
-    }, (err) => {
+    }, error: (err) => {
       this.errorMessage = err;
-    });
+    }});
   }
 
   @HostListener('mouseup', ['$event']) onChartMouseUp(e) {

@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { OnChainSendFunds } from '../../../shared/models/alertData';
@@ -32,7 +32,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 export class OnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
   public selNode: SelNodeChild = {};
@@ -162,15 +162,15 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
     if(this.transactionAmount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transactionAmount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         postTransaction.amount = +this.decimalPipe.transform(data[this.amountUnits[0]], this.currencyUnitFormats[this.amountUnits[0]]).replace(/,/g, '');
         this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
-      }, err => {
+      }, error: err => {
         this.transactionAmount = null;
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.amountError = 'Conversion Error: ' + err;
-      });
+      }});
     } else {
       this.store.dispatch(new LNDActions.SetChannelTransaction(postTransaction));
     }
@@ -234,15 +234,15 @@ export class OnChainSendModalComponent implements OnInit, OnDestroy {
       let amount = this.transactionAmount ? this.transactionAmount : 0;
       this.commonService.convertCurrency(amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.selAmountUnit = event.value;
         self.transactionAmount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
-      }, err => {
+      }, error: err => {
         self.transactionAmount = null;
         this.amountError = 'Conversion Error: ' + err;
         this.selAmountUnit = prevSelectedUnit;
         currSelectedUnit = prevSelectedUnit;
-      });
+      }});
     }
   }  
 

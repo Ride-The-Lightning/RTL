@@ -49,12 +49,12 @@ export class BumpFeeComponent implements OnInit, OnDestroy {
     }
     if ((!this.outputIndex && this.outputIndex !== 0) || (this.selTransType === '1' && (!this.blocks || this.blocks === 0)) || (this.selTransType === '2' && (!this.fees || this.fees === 0))) { return true; }
     this.dataService.bumpFee(this.bumpFeeChannel.channel.txid_str, this.outputIndex, this.blocks, this.fees).pipe(takeUntil(this.unSubs[0]))
-    .subscribe(res => { 
+    .subscribe({next: res => { 
       this.dialogRef.close(false);
-    }, (err) => {
+    }, error: (err) => {
       this.logger.error(err);
       this.bumpFeeError = err.message ? err.message : err;
-    });
+    }});
   }
 
   onCopyID(payload: string) {

@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faInfoCircle, faCopy, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { authenticator } from 'otplib';
 import * as sha256 from 'sha256';
@@ -23,7 +23,7 @@ import * as RTLActions from '../../../../store/rtl.actions';
   styleUrls: ['./two-factor-auth.component.scss']
 })
 export class TwoFactorAuthComponent implements OnInit, OnDestroy {
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public faCopy = faCopy;
   public faInfoCircle = faInfoCircle;

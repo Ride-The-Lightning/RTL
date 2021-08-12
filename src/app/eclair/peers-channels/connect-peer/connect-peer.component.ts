@@ -5,7 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { Peer } from '../../../shared/models/eclModels';
@@ -23,7 +23,7 @@ import * as fromRTLReducer from '../../../store/rtl.reducers';
 })
 export class ECLConnectPeerComponent implements OnInit, OnDestroy {
   @ViewChild('peersForm', {static: false}) form: any;
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public peerAddress = '';
   public totalBalance = 0;

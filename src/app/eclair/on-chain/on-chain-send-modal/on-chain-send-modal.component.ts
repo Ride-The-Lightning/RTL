@@ -76,15 +76,15 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     if(this.transaction.amount && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
       this.commonService.convertCurrency(this.transaction.amount, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[2]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.transaction.amount = parseInt(data[CurrencyUnitEnum.SATS]);
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
-      }, err => {
+      }, error: err => {
         this.transaction.amount = null;
         this.selAmountUnit = CurrencyUnitEnum.SATS;
         this.amountError = 'Conversion Error: ' + err;
-      });
+      }});
     } else {
       this.store.dispatch(new ECLActions.SendOnchainFunds(this.transaction));
     }
@@ -108,15 +108,15 @@ export class ECLOnChainSendModalComponent implements OnInit, OnDestroy {
     if(this.transaction.amount && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(this.transaction.amount, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.selAmountUnit = event.value;
         self.transaction.amount = +self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
-      }, err => {
+      }, error: err => {
         self.transaction.amount = null;
         this.amountError = 'Conversion Error: ' + err;
         this.selAmountUnit = prevSelectedUnit;
         currSelectedUnit = prevSelectedUnit;
-      });
+      }});
     }
   }  
 

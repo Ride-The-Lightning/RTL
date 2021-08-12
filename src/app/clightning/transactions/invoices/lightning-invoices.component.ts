@@ -174,11 +174,11 @@ export class CLLightningInvoicesComponent implements OnInit, AfterViewInit, OnDe
       this.invoiceValueHint = '';
       this.commonService.convertCurrency(this.invoiceValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
       .pipe(takeUntil(this.unSubs[1]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.invoiceValueHint = '= ' + data.symbol + this.decimalPipe.transform(data.OTHER, CURRENCY_UNIT_FORMATS.OTHER) + ' ' + data.unit;
-      }, err => {
+      }, error: err => {
         this.invoiceValueHint = 'Conversion Error: ' + err;
-      });
+      }});
     }
   }
 

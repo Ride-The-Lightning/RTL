@@ -22,24 +22,26 @@ describe("DataService", () => {
   
   it('should return expected rates (HttpClient called once)', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(of(mockResponseData.fiatRates));
-    dataService.getFiatRates().subscribe(rates => {
+    dataService.getFiatRates()
+    .subscribe({
+      next: rates => {
         expect(rates).toEqual(mockResponseData.fiatRates);
         done();
       },
-      done.fail
-    );
+      error: done.fail
+    });
     expect(httpClientSpy.get.calls.count()).toBe(1);
   });
   
   it('should return an error when the server returns a 401', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(throwError(() => mockResponseData.error401));
-    dataService.getFiatRates().subscribe(
-      rates => done.fail('expected an error, not rates'),
-      error  => {
+    dataService.getFiatRates().subscribe({
+      next: rates => done.fail('expected an error, not rates'),
+      error: error  => {
         expect(error.status).toEqual('401');
         expect(error.statusText).toContain('Not Found');
         done();
       }
-    );
+    });
   });
 });

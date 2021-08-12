@@ -262,11 +262,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
           if(this.selNode.fiatConversion) {
             this.commonService.convertCurrency(+this.paymentDecoded.amount, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[1]))
-            .subscribe(data => {
+            .subscribe({next: data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error => {
+            }, error: error => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            });
+            }});
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.amount ? this.paymentDecoded.amount : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }
@@ -297,11 +297,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
       this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
-      .subscribe(sentPaymentInfo => {
+      .subscribe({next: sentPaymentInfo => {
         this.showPaymentView(selPayment, (sentPaymentInfo.length && sentPaymentInfo.length > 0) ? sentPaymentInfo[0] : []);
-      }, (error) => {
+      }, error: (error) => {
         this.showPaymentView(selPayment, []);
-      });
+      }});
     } else {
       this.showPaymentView(selPayment, []);
     }
@@ -319,11 +319,11 @@ export class ECLLightningPaymentsComponent implements OnInit, AfterViewInit, OnD
     if (selPayment.paymentHash && selPayment.paymentHash.trim() !== '') {
       this.dataService.decodePayments(selPayment.paymentHash)
       .pipe(take(1))
-      .subscribe(sentPaymentInfo => {
+      .subscribe({next: sentPaymentInfo => {
         this.showPartView(selPart, selPayment, sentPaymentInfo);
-      }, (error) => {
+      }, error: (error) => {
         this.showPartView(selPart, selPayment, []);
-      });
+      }});
     } else {
       this.showPartView(selPart, selPayment, []);
     }

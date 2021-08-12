@@ -48,15 +48,14 @@ export class LoopComponent implements OnInit, OnDestroy {
     });
     this.loopService.swapsChanged
     .pipe(takeUntil(this.unSubs[1]))
-    .subscribe((swaps: LoopSwapStatus[]) => {
+    .subscribe({next: (swaps: LoopSwapStatus[]) => {
       this.flgLoading[0] = false;
       this.storedSwaps = swaps;
       this.filteredSwaps = this.storedSwaps.filter(swap => swap.type === this.selectedSwapType);
-    }, (err) => {
+    }, error: (err) => {
       this.flgLoading[0] = 'error';
       this.emptyTableMessage = err.message ? err.message : 'No loop ' + ((this.selectedSwapType === LoopTypeEnum.LOOP_IN) ? 'in' : 'out') +  ' available.';
-    });
-
+    }});
   }
 
   onSelectedIndexChange(activeTab: any) {

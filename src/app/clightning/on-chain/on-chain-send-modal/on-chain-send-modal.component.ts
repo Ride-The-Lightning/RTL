@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { SelNodeChild, GetInfoRoot } from '../../../shared/models/RTLconfig';
@@ -33,7 +33,7 @@ import * as sha256 from 'sha256';
 export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
   @ViewChild('form', { static: true }) form: any;  
   @ViewChild('formSweepAll', { static: false }) formSweepAll: any;  
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faExclamationTriangle = faExclamationTriangle;
   public sweepAll = false;
   public selNode: SelNodeChild = {};
@@ -180,15 +180,15 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
       if(this.transaction.satoshis && this.transaction.satoshis !== 'all' && this.selAmountUnit !== CurrencyUnitEnum.SATS) {
         this.commonService.convertCurrency(+this.transaction.satoshis, this.selAmountUnit === this.amountUnits[2] ? CurrencyUnitEnum.OTHER : this.selAmountUnit, CurrencyUnitEnum.SATS, this.amountUnits[2], this.fiatConversion)
         .pipe(takeUntil(this.unSubs[2]))
-        .subscribe(data => {
+        .subscribe({next: data => {
           this.transaction.satoshis = data[CurrencyUnitEnum.SATS];
           this.selAmountUnit = CurrencyUnitEnum.SATS;
           this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
-        }, err => {
+        }, error: err => {
           this.transaction.satoshis = null;
           this.selAmountUnit = CurrencyUnitEnum.SATS;
           this.amountError = 'Conversion Error: ' + err;
-        });
+        }});
       } else {
         this.store.dispatch(new CLActions.SetChannelTransaction(this.transaction));
       }
@@ -273,15 +273,15 @@ export class CLOnChainSendModalComponent implements OnInit, OnDestroy {
     if(this.transaction.satoshis && this.selAmountUnit !== event.value) {
       this.commonService.convertCurrency(+this.transaction.satoshis, prevSelectedUnit, currSelectedUnit, this.amountUnits[2], this.fiatConversion)
       .pipe(takeUntil(this.unSubs[3]))
-      .subscribe(data => {
+      .subscribe({next: data => {
         this.selAmountUnit = event.value;
         self.transaction.satoshis = self.decimalPipe.transform(data[currSelectedUnit], self.currencyUnitFormats[currSelectedUnit]).replace(/,/g, '');
-      }, err => {
+      }, error: err => {
         self.transaction.satoshis = null;
         this.amountError = 'Conversion Error: ' + err;
         this.selAmountUnit = prevSelectedUnit;
         currSelectedUnit = prevSelectedUnit;
-      });
+      }});
     }
   }  
 

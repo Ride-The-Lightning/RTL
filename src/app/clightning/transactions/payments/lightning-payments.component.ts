@@ -207,11 +207,11 @@ export class CLLightningPaymentsComponent implements OnInit, AfterViewInit, OnDe
           if(this.selNode.fiatConversion) {
             this.commonService.convertCurrency(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.selNode.currencyUnits[2], this.selNode.fiatConversion)
             .pipe(takeUntil(this.unSubs[1]))
-            .subscribe(data => {
+            .subscribe({next: data => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats (' + data.symbol + this.decimalPipe.transform((data.OTHER ? data.OTHER : 0), CURRENCY_UNIT_FORMATS.OTHER) + ') | Memo: ' + this.paymentDecoded.description;
-            }, error => {
+            }, error: error => {
               this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description + '. Unable to convert currency.';
-            });
+            }});
           } else {
             this.paymentDecodedHint = 'Sending: ' + this.decimalPipe.transform(this.paymentDecoded.msatoshi ? this.paymentDecoded.msatoshi/1000 : 0) + ' Sats | Memo: ' + this.paymentDecoded.description;
           }

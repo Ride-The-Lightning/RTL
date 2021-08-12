@@ -5,12 +5,12 @@ import { DecimalPipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { opacityAnimation } from '../../../../animation/opacity-animation';
-import { ScreenSizeEnum, LoopTypeEnum, UI_MESSAGES } from '../../../../services/consts-enums-functions';
+import { ScreenSizeEnum, LoopTypeEnum } from '../../../../services/consts-enums-functions';
 import { LoopQuote, LoopStatus } from '../../../../models/loopModels';
 import { LoopAlert } from '../../../../models/alertData';
 import { LoopService } from '../../../../services/loop.service';
@@ -18,8 +18,6 @@ import { LoggerService } from '../../../../services/logger.service';
 import { CommonService } from '../../../../services/common.service';
 import { Channel } from '../../../../models/lndModels';
 
-import * as LNDActions from '../../../../../lnd/store/lnd.actions';
-import * as RTLActions from '../../../../../store/rtl.actions';
 import * as fromRTLReducer from '../../../../../store/rtl.reducers';
 
 @Component({
@@ -29,7 +27,7 @@ import * as fromRTLReducer from '../../../../../store/rtl.reducers';
   animations: [opacityAnimation]
 })
 export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('stepper', { static: false }) stepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) stepper: MatStepper;
   public faInfoCircle = faInfoCircle;
   public quote: LoopQuote;
   public channel: Channel;
@@ -131,29 +129,29 @@ export class LoopModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stepper.next();
     if (this.direction === LoopTypeEnum.LOOP_IN) {
       this.loopService.loopIn(this.inputFormGroup.controls.amount.value, +this.quote.swap_fee_sat, +this.quote.htlc_publish_fee_sat, '', true).pipe(takeUntil(this.unSubs[0]))
-      .subscribe((loopStatus: any) => {
+      .subscribe({next: (loopStatus: any) => {
         this.loopStatus = loopStatus;
         this.loopService.listSwaps();
         this.flgEditable = true;
-      }, (err) => {
+      }, error: (err) => {
         this.loopStatus = { error: err };
         this.flgEditable = true;
         this.logger.error(err);
-      });
+      }});
     } else {
       let swapRoutingFee = Math.ceil(this.inputFormGroup.controls.amount.value * (this.inputFormGroup.controls.routingFeePercent.value / 100));
       let destAddress = this.addressFormGroup.controls.addressType.value === 'external' ? this.addressFormGroup.controls.address.value : '';
       let swapPublicationDeadline = this.inputFormGroup.controls.fast.value ? 0 : new Date().getTime() + (30 * 60000);
       this.loopService.loopOut(this.inputFormGroup.controls.amount.value, (this.channel && this.channel.chan_id ? this.channel.chan_id : ''), this.inputFormGroup.controls.sweepConfTarget.value, swapRoutingFee, +this.quote.htlc_sweep_fee_sat, this.prepayRoutingFee, +this.quote.prepay_amt_sat, +this.quote.swap_fee_sat, swapPublicationDeadline, destAddress).pipe(takeUntil(this.unSubs[1]))
-      .subscribe((loopStatus: any) => {
+      .subscribe({next: (loopStatus: any) => {
         this.loopStatus = loopStatus;
         this.loopService.listSwaps();
         this.flgEditable = true;
-      }, (err) => {
+      }, error: (err) => {
         this.loopStatus = { error: err };
         this.flgEditable = true;
         this.logger.error(err);
-      });
+      }});
     }
   }
 

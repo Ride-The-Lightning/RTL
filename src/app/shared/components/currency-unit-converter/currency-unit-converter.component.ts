@@ -55,11 +55,11 @@ export class CurrencyUnitConverterComponent implements OnInit, OnChanges, OnDest
         });
         this.commonService.convertCurrency(value.dataValue, CurrencyUnitEnum.SATS, CurrencyUnitEnum.OTHER, this.currencyUnits[2], this.fiatConversion)
         .pipe(takeUntil(this.unSubs[2]))
-        .subscribe(data => {
+        .subscribe({next: data => {
           value[CurrencyUnitEnum.OTHER] = data.OTHER;
-        }, err => {
+        }, error: err => {
           this.conversionErrorMsg = 'Conversion Error: ' + err;
-        });
+        }});
       } else {
         value[CurrencyUnitEnum.BTC] = value.dataValue;
         if(this.conversionErrorMsg === '') {
