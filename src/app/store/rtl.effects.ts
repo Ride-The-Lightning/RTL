@@ -9,7 +9,7 @@ import { map, mergeMap, catchError, take, withLatestFrom, takeUntil } from 'rxjs
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { environment, API_URL } from '../../environments/environment';
+import { environment } from '../../environments/environment';
 import { LoggerService } from '../shared/services/logger.service';
 import { SessionService } from '../shared/services/session.service';
 import { CommonService } from '../shared/services/common.service';
@@ -32,7 +32,6 @@ import * as fromRTLReducer from './rtl.reducers';
 @Injectable()
 export class RTLEffects implements OnDestroy {
   dialogRef: any;
-  CHILD_API_URL = API_URL + '/lnd';
   screenSize = '';
   alertWidth = '55%';
   confirmWidth = '70%';
@@ -552,17 +551,17 @@ export class RTLEffects implements OnDestroy {
       this.dataService.setChildAPIUrl(node.lnImplementation);
       switch (node.lnImplementation) {
         case 'CLT':
-          this.CHILD_API_URL = API_URL + '/cl';
+          this.router.navigate(['/cl/' + landingPage.toLowerCase()]);
           this.store.dispatch(new CLActions.FetchInfo({loadPage: landingPage}));
           break;
 
         case 'ECL':
-          this.CHILD_API_URL = API_URL + '/ecl';
+          this.router.navigate(['/ecl/' + landingPage.toLowerCase()]);
           this.store.dispatch(new ECLActions.FetchInfo({loadPage: landingPage}));
           break;
             
         default:
-          this.CHILD_API_URL = API_URL + '/lnd';
+          this.router.navigate(['/lnd/' + landingPage.toLowerCase()]);
           this.store.dispatch(new LNDActions.FetchInfo({loadPage: landingPage}));
           break;
       }
